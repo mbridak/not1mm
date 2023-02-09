@@ -1,0 +1,6 @@
+/.vscode
+/dist
+/not1mm.egg-info
+/plugin
+/plugintest.py
+/publish.sh

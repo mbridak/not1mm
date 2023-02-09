@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=not1mm
+StartupWMClass=not1mm
+GenericName=Not1MM logger by K6GTE
+Comment=Amateur Radio Communications
+Exec=not1mm
+Icon=k6gte-not1mm
+Terminal=false
+Type=Application
+Categories=HamRadio;
