@@ -4,3 +4,5 @@
 /plugin
 /plugintest.py
 /publish.sh
+__pycache__
+*.pyc
