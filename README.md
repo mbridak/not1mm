@@ -1,6 +1,6 @@
 # Not1MM
 
-![logo](not1mm/data/k6gte.not1mm-128.png)
+![logo](https://github.com/mbridak/not1mm/raw/master/not1mm/data/k6gte.not1mm.svg)
 
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
@@ -26,7 +26,7 @@ Working.
 
 The current state is "Not Working". I literally just dragged some widgets out on a Qt Designer window, and wrote a couple stubs to display the interface. Next to nothing is working or useful.
 
-![main screen](pic/main.png)
+![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
 ## Changes of note
 
