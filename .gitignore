@@ -4,5 +4,5 @@
 /plugin
 /plugintest.py
 /publish.sh
-not1mm/__pycache__
-not1mm/lib/__pycache__
+/not1mm/__pycache__
+/not1mm/lib/__pycache__
