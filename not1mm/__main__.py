@@ -26,11 +26,13 @@ from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 try:
     from not1mm.lib.cwinterface import CW
     from not1mm.lib.lookup import QRZlookup
+    from not1mm.lib.version import __version__
 
     # from not1mm.lib.settings import Settings
 except ModuleNotFoundError:
     from lib.cwinterface import CW
     from lib.lookup import QRZlookup
+    from lib.version import __version__
 
     # from lib.settings import Settings
 
@@ -54,6 +56,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.textEdited.connect(self.callsign_changed)
         self.sent.setText("59")
         self.receive.setText("59")
+        icon_path = WORKING_PATH + "/data/"
+        self.greendot = QtGui.QPixmap(icon_path + "greendot.png")
+        self.reddot = QtGui.QPixmap(icon_path + "reddot.png")
+        self.leftdot.setPixmap(self.greendot)
+        self.rightdot.setPixmap(self.reddot)
 
     def callsign_changed(self):
         text = self.callsign.text()
@@ -69,6 +76,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode("SSB")
                 self.callsign.setText("")
                 return
+            if stripped_text == "OPON":
+                self.get_opon()
+                self.callsign.setText("")
+                return
             ...
 
     def setmode(self, mode: str) -> None:
@@ -82,6 +93,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.sent.setText("59")
             self.receive.setText("59")
 
+    def get_opon(self):
+        ...
+
 
 def load_fonts_from_dir(directory: str) -> set:
     """
@@ -94,11 +108,7 @@ def load_fonts_from_dir(directory: str) -> set:
     return font_families
 
 
-def run():
-    """
-    Main Entry
-    """
-
+def install_icons():
     os.system(
         "xdg-icon-resource install --size 32 --context apps --mode user "
         f"{WORKING_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
@@ -112,6 +122,14 @@ def run():
         f"{WORKING_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
     )
     os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
+
+
+def run():
+    """
+    Main Entry
+    """
+
+    install_icons()
 
     sys.exit(app.exec())
 
@@ -141,6 +159,8 @@ font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logging.info(families)
 window = MainWindow()
+window.setGeometry(-1, -1, 600, 200)
+window.setWindowTitle(f"Not1MM v{__version__}")
 window.show()
 
 
