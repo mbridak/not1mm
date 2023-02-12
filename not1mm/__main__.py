@@ -15,7 +15,8 @@ from json import dumps, loads
 from pathlib import Path
 from shutil import copyfile
 from xmlrpc.client import Error, ServerProxy
-from _frozen_importlib_external import SourceFileLoader
+
+# from _frozen_importlib_external import SourceFileLoader
 
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
@@ -41,7 +42,7 @@ except ModuleNotFoundError:
 
 
 loader = pkgutil.get_loader("not1mm")
-assert isinstance(loader, SourceFileLoader)  # This makes the linter happy.
+# assert isinstance(loader, SourceFileLoader)  # This makes the linter happy.
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
 
@@ -123,7 +124,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.receive.setText("59")
 
     def get_opon(self):
-        ...
+        self.opon_dialog = OpOn()
+        self.opon_dialog.accepted.connect(self.new_op)
+        self.opon_dialog.open()
+
+    def new_op(self):
+        if self.opon_dialog.NewOperator.text():
+            self.current_op = self.opon_dialog.NewOperator.text()
+
+        self.opon_dialog.close()
+        print(f"New Op: {self.current_op}")
 
     def poll_radio(self):
         if self.rig_control.online:
@@ -190,6 +200,21 @@ class MainWindow(QtWidgets.QMainWindow):
         if "F12" in keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
+
+
+class OpOn(QtWidgets.QDialog):
+    """Change the current operator"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        data_path = WORKING_PATH + "/data/opon.ui"
+        uic.loadUi(data_path, self)
+        self.buttonBox.clicked.connect(self.store)
+
+    def store(self):
+        """dialog magic"""
+        ...
+        # self.accept()
 
 
 def load_fonts_from_dir(directory: str) -> set:
