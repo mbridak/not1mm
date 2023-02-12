@@ -57,6 +57,9 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.actionCW_Macros.triggered.connect(self.show_CW_Macros)
+        self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
+        self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
         self.sent.setText("59")
@@ -67,6 +70,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
         self.rig_control = CAT("rigctld", "localhost", 4532)
+
+    def show_CW_Macros(self):
+        if self.actionCW_Macros.isChecked():
+            self.Button_Row1.show()
+            self.Button_Row2.show()
+        else:
+            self.Button_Row1.hide()
+            self.Button_Row2.hide()
+
+    def show_Command_Buttons(self):
+        if self.actionCommand_Buttons.isChecked():
+            self.Command_Buttons.show()
+        else:
+            self.Command_Buttons.hide()
+
+    def show_Band_Mode(self):
+        if self.actionMode_and_Bands.isChecked():
+            self.Band_Mode_Frame.show()
+        else:
+            self.Band_Mode_Frame.hide()
 
     def callsign_changed(self):
         text = self.callsign.text()
