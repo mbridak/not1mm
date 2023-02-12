@@ -662,6 +662,7 @@
     <addaction name="actionCommand_Buttons"/>
     <addaction name="actionCW_Macros"/>
     <addaction name="actionMode_and_Bands"/>
+    <addaction name="actionDark_Mode"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -718,6 +719,17 @@
     <font>
      <family>JetBrains Mono</family>
     </font>
+   </property>
+  </action>
+  <action name="actionDark_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark Mode</string>
    </property>
   </action>
  </widget>

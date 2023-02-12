@@ -52,15 +52,19 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     current_op = ""
+    current_mode = ""
+    current_band = ""
 
     def __init__(self, *args, **kwargs):
         logging.info("MainWindow: __init__")
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.dark_mode()
         self.actionCW_Macros.triggered.connect(self.show_CW_Macros)
         self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
         self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
+        self.actionDark_Mode.triggered.connect(self.dark_mode)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
         self.sent.setText("59")
@@ -71,6 +75,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
         self.rig_control = CAT("rigctld", "localhost", 4532)
+
+    def dark_mode(self):
+        if self.actionDark_Mode.isChecked():
+            self.setStyleSheet(
+                "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
+            )
+        else:
+            self.setStyleSheet("")
 
     def show_CW_Macros(self):
         if self.actionCW_Macros.isChecked():
@@ -125,6 +137,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def get_opon(self):
         self.opon_dialog = OpOn()
+        if self.actionDark_Mode.isChecked():
+            self.opon_dialog.setStyleSheet(
+                "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
+            )
+        else:
+            self.opon_dialog.setStyleSheet("")
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
