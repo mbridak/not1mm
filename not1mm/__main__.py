@@ -52,7 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     pref_ref = {
-        "useqrz": True,
+        "useqrz": False,
         "lookupusername": "username",
         "lookuppassword": "password",
         "gridsquare": "AA11aa",
@@ -165,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.next_field.setFocus()
 
     def check_callsign(self, callsign):
-        if self.look_up:
+        if self.look_up.session:
             response = self.look_up.lookup(callsign)
             print(f"The Response: {response}\n")
             if response:
