@@ -6,6 +6,7 @@
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [What it is not](#what-it-is-not)
   - [Changes of note](#changes-of-note)
+  - [Running from source](#running-from-source)
 
 ## What and why is Not1MM
 
@@ -32,3 +33,28 @@ The current state is "Not Working". I literally just dragged some widgets out on
 
 - [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
 - [23-2-9] Initial post and name squatting.
+
+## Running from source
+
+Since this is packaged for PyPi, if you want to work on your own source branch, after cloning from github you would:
+
+```bash
+pip install --upgrade pip
+pip install setuptools
+pip install build
+source rebuild.sh
+```
+
+from the root directory. This installs a build chain and a local editable copy of not1mm.
+
+There's two ways to launch the program from the local editable copy.
+
+You can either be in the root of the source directory and type:
+```bash
+python not1mm
+```
+
+or be in some other directory and just type:
+```bash
+not1mm
+```
