@@ -1,6 +1,6 @@
 import socket
 from datetime import datetime
-from math import sin, cos, radians, asin, sqrt, atan2
+from math import sin, cos, radians, asin, sqrt, atan2, pi
 
 
 def gridtolatlon(maiden):
@@ -114,7 +114,7 @@ def has_internet():
     return False
 
 
-def update_time(self) -> None:
+def update_time() -> None:
     """
     Update local and UTC time on screen.
     """
@@ -141,10 +141,13 @@ def haversine(lon1, lat1, lon2, lat2):
     return cee * arrgh
 
 
-def bearing(self, grid1: str, grid2: str) -> float:
-    """calculate bearing to contact"""
-    lat1, lon1 = self.gridtolatlon(grid1)
-    lat2, lon2 = self.gridtolatlon(grid2)
+def bearing(grid1: str, grid2: str) -> float:
+    """
+    Calculate bearing to contact
+    Takes Yourgrid, Theirgrid, returns a float
+    """
+    lat1, lon1 = gridtolatlon(grid1)
+    lat2, lon2 = gridtolatlon(grid2)
     lat1 = radians(lat1)
     lon1 = radians(lon1)
     lat2 = radians(lat2)
@@ -161,10 +164,10 @@ def bearing(self, grid1: str, grid2: str) -> float:
     return round(brng)
 
 
-def distance(self, grid1: str, grid2: str) -> float:
+def distance(grid1: str, grid2: str) -> float:
     """
     Takes two maidenhead gridsquares and returns the distance between the two in kilometers.
     """
-    lat1, lon1 = self.gridtolatlon(grid1)
-    lat2, lon2 = self.gridtolatlon(grid2)
-    return round(self.haversine(lon1, lat1, lon2, lat2))
+    lat1, lon1 = gridtolatlon(grid1)
+    lat2, lon2 = gridtolatlon(grid2)
+    return round(haversine(lon1, lat1, lon2, lat2))

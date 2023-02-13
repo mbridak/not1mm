@@ -175,18 +175,16 @@ class QRZlookup:
         Lookup a call on QRZ
         """
         logging.info("%s", call)
-        grid = False
-        name = False
-        error_text = False
-        nickname = False
+        response = None
         if self.session:
             payload = {"s": self.session, "callsign": call}
             try:
                 query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
             except requests.exceptions.Timeout as exception:
                 self.error = True
-                return grid, name, nickname, exception
+                return {"error": exception}
             baseroot = xmltodict.parse(query_result.text)
+            print(f"xml lookup {baseroot}\n")
             root = baseroot.get("QRZDatabase")
             logging.info("\n\n%s\n\n", root)
             session = root.get("Session")
@@ -198,9 +196,11 @@ class QRZlookup:
                     query_result = requests.get(
                         self.qrzurl, params=payload, timeout=3.0
                     )
-            grid, name, nickname, error_text = self.parse_lookup(query_result)
-        logging.info("%s %s %s %s", grid, name, nickname, error_text)
-        return grid, name, nickname, error_text
+                    baseroot = xmltodict.parse(query_result.text)
+                    root = baseroot.get("QRZDatabase")
+            # grid, name, nickname, error_text = self.parse_lookup(query_result)
+        # logging.info("%s %s %s %s", grid, name, nickname, error_text)
+        return root.get("Callsign")
 
     def parse_lookup(self, query_result):
         """

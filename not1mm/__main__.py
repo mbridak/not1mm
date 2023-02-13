@@ -51,16 +51,26 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
+    pref_ref = {
+        "useqrz": True,
+        "lookupusername": "username",
+        "lookuppassword": "password",
+        "gridsquare": "AA11aa",
+    }
+    pref = None
     current_op = ""
     current_mode = ""
     current_band = ""
+    lookup = None
 
     def __init__(self, *args, **kwargs):
         logging.info("MainWindow: __init__")
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.readpreferences()
         self.dark_mode()
+        self.next_field = self.other
         self.actionCW_Macros.triggered.connect(self.show_CW_Macros)
         self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
         self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
@@ -75,6 +85,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
         self.rig_control = CAT("rigctld", "localhost", 4532)
+
+    def readpreferences(self):
+        """
+        Restore preferences if they exist, otherwise create some sane defaults.
+        """
+        try:
+            if os.path.exists("./not1mm.json"):
+                with open("./not1mm.json", "rt", encoding="utf-8") as file_descriptor:
+                    self.pref = loads(file_descriptor.read())
+                    # logger.info("%s", self.preference)
+            else:
+                # logger.info("No preference file. Writing preference.")
+                with open("./not1mm.json", "wt", encoding="utf-8") as file_descriptor:
+                    self.pref = self.pref_ref.copy()
+                    file_descriptor.write(dumps(self.pref, indent=4))
+                    # logger.info("%s", self.preference)
+        except IOError as exception:
+            ...
+            # logger.critical("Error: %s", exception)
+        if self.pref.get("useqrz"):
+            self.look_up = QRZlookup(
+                self.pref.get("lookupusername"),
+                self.pref.get("lookuppassword"),
+            )
+            # if self.look_up.session:
+            #     self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
+            # else:
+            #     self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
 
     def dark_mode(self):
         if self.actionDark_Mode.isChecked():
@@ -107,8 +145,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def callsign_changed(self):
         text = self.callsign.text()
         text = text.upper()
-        self.callsign.setText(text)
         stripped_text = text.strip()
+        self.callsign.setText(stripped_text)
+
         if text[-1:] == " ":
             if stripped_text == "CW":
                 self.setmode("CW")
@@ -122,7 +161,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_opon()
                 self.callsign.setText("")
                 return
-            ...
+            self.check_callsign(text)
+            self.next_field.setFocus()
+
+    def check_callsign(self, callsign):
+        if self.look_up:
+            response = self.look_up.lookup(callsign)
+            print(f"The Response: {response}\n")
+            if response:
+                theirgrid = response.get("grid")
+                theircountry = response.get("country")
+                if self.pref.get("gridsquare"):
+                    heading = bearing(self.pref.get("gridsquare"), theirgrid)
+                    kilometers = distance(self.pref.get("gridsquare"), theirgrid)
+                    self.heading_distance.setText(
+                        f"heading {heading}° / distance {kilometers}km"
+                    )
+                self.dx_entity.setText(f"{theircountry}")
+            else:
+                self.heading_distance.setText("Lookup failed.")
+        ...
 
     def setmode(self, mode: str) -> None:
         if mode == "CW":
