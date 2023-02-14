@@ -16,8 +16,6 @@ from pathlib import Path
 from shutil import copyfile
 from xmlrpc.client import Error, ServerProxy
 
-# from _frozen_importlib_external import SourceFileLoader
-
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import QDir, Qt  # pylint: disable=no-name-in-module
@@ -42,8 +40,28 @@ except ModuleNotFoundError:
 
 
 loader = pkgutil.get_loader("not1mm")
-# assert isinstance(loader, SourceFileLoader)  # This makes the linter happy.
 WORKING_PATH = os.path.dirname(loader.get_filename())
+
+
+if "XDG_DATA_HOME" in os.environ:
+    DATA_PATH = os.environ.get("XDG_DATA_HOME")
+else:
+    DATA_PATH = str(Path.home() / ".local" / "share")
+DATA_PATH += "/not1mm"
+try:
+    os.mkdir(DATA_PATH)
+except FileExistsError:
+    ...
+
+if "XDG_CONFIG_HOME" in os.environ:
+    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
+else:
+    CONFIG_PATH = str(Path.home() / ".config")
+CONFIG_PATH += "/not1mm"
+try:
+    os.mkdir(CONFIG_PATH)
+except FileExistsError:
+    ...
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -61,7 +79,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_op = ""
     current_mode = ""
     current_band = ""
-    lookup = None
+    look_up = None
 
     def __init__(self, *args, **kwargs):
         logging.info("MainWindow: __init__")
@@ -91,13 +109,17 @@ class MainWindow(QtWidgets.QMainWindow):
         Restore preferences if they exist, otherwise create some sane defaults.
         """
         try:
-            if os.path.exists("./not1mm.json"):
-                with open("./not1mm.json", "rt", encoding="utf-8") as file_descriptor:
+            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+                with open(
+                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     # logger.info("%s", self.preference)
             else:
                 # logger.info("No preference file. Writing preference.")
-                with open("./not1mm.json", "wt", encoding="utf-8") as file_descriptor:
+                with open(
+                    CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
+                ) as file_descriptor:
                     self.pref = self.pref_ref.copy()
                     file_descriptor.write(dumps(self.pref, indent=4))
                     # logger.info("%s", self.preference)
@@ -165,22 +187,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.next_field.setFocus()
 
     def check_callsign(self, callsign):
-        if self.look_up.session:
-            response = self.look_up.lookup(callsign)
-            print(f"The Response: {response}\n")
-            if response:
-                theirgrid = response.get("grid")
-                theircountry = response.get("country")
-                if self.pref.get("gridsquare"):
-                    heading = bearing(self.pref.get("gridsquare"), theirgrid)
-                    kilometers = distance(self.pref.get("gridsquare"), theirgrid)
-                    self.heading_distance.setText(
-                        f"heading {heading}° / distance {kilometers}km"
-                    )
-                self.dx_entity.setText(f"{theircountry}")
-            else:
-                self.heading_distance.setText("Lookup failed.")
-        ...
+        if hasattr(self.look_up, "session"):
+            if self.look_up.session:
+                response = self.look_up.lookup(callsign)
+                print(f"The Response: {response}\n")
+                if response:
+                    theirgrid = response.get("grid")
+                    theircountry = response.get("country")
+                    if self.pref.get("gridsquare"):
+                        heading = bearing(self.pref.get("gridsquare"), theirgrid)
+                        kilometers = distance(self.pref.get("gridsquare"), theirgrid)
+                        self.heading_distance.setText(
+                            f"heading {heading}° / distance {kilometers}km"
+                        )
+                    self.dx_entity.setText(f"{theircountry}")
+                else:
+                    self.heading_distance.setText("Lookup failed.")
+            ...
 
     def setmode(self, mode: str) -> None:
         if mode == "CW":
@@ -224,11 +247,13 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if not Path("./cwmacros.txt").exists():
+        if not Path(DATA_PATH + "/cwmacros.txt").exists():
             # logger.debug("read_cw_macros: copying default macro file.")
-            data_path = self.working_path + "/data/cwmacros.txt"
-            copyfile(data_path, "./cwmacros.txt")
-        with open("./cwmacros.txt", "r", encoding="utf-8") as file_descriptor:
+            # data_path = self.working_path + "/data/cwmacros.txt"
+            copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
+        with open(
+            DATA_PATH + "/cwmacros.txt", "r", encoding="utf-8"
+        ) as file_descriptor:
             for line in file_descriptor:
                 try:
                     mode, fkey, buttonname, cwtext = line.split("|")
@@ -283,8 +308,8 @@ class OpOn(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        data_path = WORKING_PATH + "/data/opon.ui"
-        uic.loadUi(data_path, self)
+        # data_path = WORKING_PATH + "/data/opon.ui"
+        uic.loadUi(WORKING_PATH + "/data/opon.ui", self)
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):
