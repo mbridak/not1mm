@@ -138,9 +138,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dark_mode(self):
         if self.actionDark_Mode.isChecked():
-            self.setStyleSheet(
-                "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
-            )
+            # self.setStyleSheet(
+            #     "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
+            # )
+            with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
+                qss = stylefile.read()
+                self.setStyleSheet(qss)
         else:
             self.setStyleSheet("")
 
