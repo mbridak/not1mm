@@ -109,6 +109,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rightdot.setPixmap(self.reddot)
         self.read_cw_macros()
         self.rig_control = CAT("rigctld", "localhost", 4532)
+        self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F1.customContextMenuRequested.connect(self.edit_F1)
+        self.F1.clicked.connect(self.sendf1)
+        self.F2.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F2.customContextMenuRequested.connect(self.edit_F2)
+        self.F2.clicked.connect(self.sendf2)
+
+    def edit_F1(self):
+        print("F1 Right Clicked.")
+
+    def edit_F2(self):
+        print("F2 Right Clicked.")
+
+    def sendf1(self):
+        print("F1 Clicked")
+
+    def sendf2(self):
+        print("F2 Clicked")
 
     def run_sp_buttons_clicked(self):
         self.pref["run_state"] = self.radioButton_run.isChecked()
