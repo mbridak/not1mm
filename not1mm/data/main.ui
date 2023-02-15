@@ -312,7 +312,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="f1">
+              <widget class="QPushButton" name="F1">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -322,7 +322,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f2">
+              <widget class="QPushButton" name="F2">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -332,7 +332,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f3">
+              <widget class="QPushButton" name="F3">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -342,7 +342,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f4">
+              <widget class="QPushButton" name="F4">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -352,7 +352,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f5">
+              <widget class="QPushButton" name="F5">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -362,7 +362,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f6">
+              <widget class="QPushButton" name="F6">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -393,7 +393,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="f7">
+              <widget class="QPushButton" name="F7">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -403,7 +403,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f8">
+              <widget class="QPushButton" name="F8">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -413,7 +413,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f9">
+              <widget class="QPushButton" name="F9">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -423,7 +423,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f10">
+              <widget class="QPushButton" name="F10">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -433,7 +433,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f11">
+              <widget class="QPushButton" name="F11">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
@@ -443,7 +443,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="f12">
+              <widget class="QPushButton" name="F12">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>

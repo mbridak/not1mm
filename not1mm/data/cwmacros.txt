@@ -1,0 +1,24 @@
+S|F1|MyCall|{MYCALL}
+S|F2|Exch|{MYCLASS} {MYSECT}
+S|F3|MyClass|{MYCLASS}
+S|F4|MySect|{MYSECT}
+S|F5|AGN|agn
+S|F6|?|?
+S|F7|Roger|rr
+S|F8|73|73
+S|F9|..|ee
+S|F10|Call?|call?
+S|F11|Class?|cls?
+S|F12|Sect?|sec?
+R|F1|Run CQ|cq wfd {MYCALL} {MYCALL} wfd
+R|F2|HisCall|{HISCALL}
+R|F3|Run Exch|{HISCALL} {MYCLASS} {MYSECT}
+R|F4|Run TU|tu {MYCALL} wfd
+R|F5|MyCall|{MYCALL}
+R|F6|MyClass|{MYCLASS}
+R|F7|MySect|{MYSECT}
+R|F8|Roger|rr
+R|F9|AGN|agn
+R|F10|Call?|call?
+R|F11|Class?|cls?
+R|F12|Sect?|sec?

@@ -74,12 +74,15 @@ class MainWindow(QtWidgets.QMainWindow):
         "lookupusername": "username",
         "lookuppassword": "password",
         "gridsquare": "AA11aa",
+        "run_state": True,
     }
     pref = None
     current_op = ""
     current_mode = ""
     current_band = ""
     look_up = None
+    run_state = False
+    fkeys = {}
 
     def __init__(self, *args, **kwargs):
         logging.info("MainWindow: __init__")
@@ -93,6 +96,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
         self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
         self.actionDark_Mode.triggered.connect(self.dark_mode)
+        self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
+        self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
         self.sent.setText("59")
@@ -102,7 +107,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.reddot = QtGui.QPixmap(icon_path + "reddot.png")
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
+        self.read_cw_macros()
         self.rig_control = CAT("rigctld", "localhost", 4532)
+
+    def run_sp_buttons_clicked(self):
+        self.pref["run_state"] = self.radioButton_run.isChecked()
+        self.write_preference()
+        self.read_cw_macros()
+
+    def write_preference(self):
+        """
+        Write preferences to json file.
+        """
+        try:
+            with open(
+                CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
+            ) as file_descriptor:
+                file_descriptor.write(dumps(self.pref, indent=4))
+                # logger.info("writing: %s", self.preference)
+        except IOError as exception:
+            ...
+            # logger.critical("writepreferences: %s", exception)
 
     def readpreferences(self):
         """
@@ -135,12 +160,13 @@ class MainWindow(QtWidgets.QMainWindow):
             #     self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
             # else:
             #     self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
+        if self.pref.get("run_state"):
+            self.radioButton_run.setChecked(True)
+        else:
+            self.radioButton_sp.setChecked(True)
 
     def dark_mode(self):
         if self.actionDark_Mode.isChecked():
-            # self.setStyleSheet(
-            #     "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
-            # )
             with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
                 qss = stylefile.read()
                 self.setStyleSheet(qss)
@@ -260,9 +286,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for line in file_descriptor:
                 try:
                     mode, fkey, buttonname, cwtext = line.split("|")
-                    if mode.strip().upper() == "R" and self.run_state:
+                    if mode.strip().upper() == "R" and self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
-                    if mode.strip().upper() != "R" and not self.run_state:
+                    if mode.strip().upper() != "R" and not self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                 except ValueError as err:
                     ...
