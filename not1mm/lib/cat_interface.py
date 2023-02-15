@@ -72,6 +72,10 @@ class CAT:
             self.rigctrlsocket = None
             self.online = False
             logging.debug("%s", exception)
+        except TimeoutError as exception:
+            self.rigctrlsocket = None
+            self.online = False
+            logging.debug("%s", exception)
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""

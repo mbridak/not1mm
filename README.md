@@ -50,11 +50,13 @@ from the root directory. This installs a build chain and a local editable copy o
 There's two ways to launch the program from the local editable copy.
 
 You can either be in the root of the source directory and type:
+
 ```bash
 python not1mm
 ```
 
 or be in some other directory and just type:
+
 ```bash
 not1mm
 ```
