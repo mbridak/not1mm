@@ -92,6 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readpreferences()
         self.dark_mode()
         self.next_field = self.other
+        self.field4.hide()
         self.actionCW_Macros.triggered.connect(self.show_CW_Macros)
         self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
         self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
@@ -115,6 +116,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F2.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.F2.customContextMenuRequested.connect(self.edit_F2)
         self.F2.clicked.connect(self.sendf2)
+        self.F3.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F3.customContextMenuRequested.connect(self.edit_F3)
+        self.F3.clicked.connect(self.sendf3)
+        self.F4.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F4.customContextMenuRequested.connect(self.edit_F4)
+        self.F4.clicked.connect(self.sendf4)
+        self.F5.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F5.customContextMenuRequested.connect(self.edit_F5)
+        self.F5.clicked.connect(self.sendf5)
+        self.F6.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F6.customContextMenuRequested.connect(self.edit_F6)
+        self.F6.clicked.connect(self.sendf6)
+        self.F7.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F7.customContextMenuRequested.connect(self.edit_F7)
+        self.F7.clicked.connect(self.sendf7)
+        self.F8.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F8.customContextMenuRequested.connect(self.edit_F8)
+        self.F8.clicked.connect(self.sendf8)
+        self.F9.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F9.customContextMenuRequested.connect(self.edit_F9)
+        self.F9.clicked.connect(self.sendf9)
+        self.F10.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F10.customContextMenuRequested.connect(self.edit_F10)
+        self.F10.clicked.connect(self.sendf10)
+        self.F11.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F11.customContextMenuRequested.connect(self.edit_F11)
+        self.F11.clicked.connect(self.sendf11)
+        self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F12.customContextMenuRequested.connect(self.edit_F12)
+        self.F12.clicked.connect(self.sendf12)
 
     def edit_F1(self):
         print("F1 Right Clicked.")
@@ -122,11 +153,71 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_F2(self):
         print("F2 Right Clicked.")
 
+    def edit_F3(self):
+        print("F3 Right Clicked.")
+
+    def edit_F4(self):
+        print("F4 Right Clicked.")
+
+    def edit_F5(self):
+        print("F5 Right Clicked.")
+
+    def edit_F6(self):
+        print("F6 Right Clicked.")
+
+    def edit_F7(self):
+        print("F7 Right Clicked.")
+
+    def edit_F8(self):
+        print("F8 Right Clicked.")
+
+    def edit_F9(self):
+        print("F9 Right Clicked.")
+
+    def edit_F10(self):
+        print("F10 Right Clicked.")
+
+    def edit_F11(self):
+        print("F11 Right Clicked.")
+
+    def edit_F12(self):
+        print("F12 Right Clicked.")
+
     def sendf1(self):
         print("F1 Clicked")
 
     def sendf2(self):
         print("F2 Clicked")
+
+    def sendf3(self):
+        print("F3 Clicked")
+
+    def sendf4(self):
+        print("F4 Clicked")
+
+    def sendf5(self):
+        print("F5 Clicked")
+
+    def sendf6(self):
+        print("F6 Clicked")
+
+    def sendf7(self):
+        print("F7 Clicked")
+
+    def sendf8(self):
+        print("F8 Clicked")
+
+    def sendf9(self):
+        print("F9 Clicked")
+
+    def sendf10(self):
+        print("F10 Clicked")
+
+    def sendf11(self):
+        print("F11 Clicked")
+
+    def sendf12(self):
+        print("F12 Clicked")
 
     def run_sp_buttons_clicked(self):
         self.pref["run_state"] = self.radioButton_run.isChecked()

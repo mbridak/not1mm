@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1553</width>
-    <height>347</height>
+    <width>1925</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -146,99 +146,139 @@
         <item>
          <layout class="QVBoxLayout" name="main_dialog" stretch="0,0,0,0,0,0">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,1,2">
+           <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,1,2,2">
             <item>
-             <layout class="QVBoxLayout" name="input_call">
-              <item>
-               <widget class="QLabel" name="callsign_label">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="callsign">
-                <property name="font">
-                 <font>
-                  <family>Monospace</family>
-                  <pointsize>25</pointsize>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QFrame" name="callsignfield">
+              <layout class="QVBoxLayout" name="input_call">
+               <item>
+                <widget class="QLabel" name="callsign_label">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="callsign">
+                 <property name="font">
+                  <font>
+                   <family>JetBrains Mono</family>
+                   <pointsize>25</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="input_snt">
-              <item>
-               <widget class="QLabel" name="snt_label">
-                <property name="text">
-                 <string>SNT</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="sent">
-                <property name="font">
-                 <font>
-                  <family>Monospace</family>
-                  <pointsize>25</pointsize>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QFrame" name="field1">
+              <layout class="QVBoxLayout" name="input_snt">
+               <item>
+                <widget class="QLabel" name="snt_label">
+                 <property name="text">
+                  <string>SNT</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="sent">
+                 <property name="font">
+                  <font>
+                   <family>JetBrains Mono</family>
+                   <pointsize>25</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="input_rcv">
-              <item>
-               <widget class="QLabel" name="rcv_label">
-                <property name="text">
-                 <string>RCV</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="receive">
-                <property name="font">
-                 <font>
-                  <family>Monospace</family>
-                  <pointsize>25</pointsize>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QFrame" name="field2">
+              <layout class="QVBoxLayout" name="input_rcv">
+               <item>
+                <widget class="QLabel" name="rcv_label">
+                 <property name="text">
+                  <string>RCV</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="receive">
+                 <property name="font">
+                  <font>
+                   <family>JetBrains Mono</family>
+                   <pointsize>25</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="input_other">
-              <item>
-               <widget class="QLabel" name="other_label">
-                <property name="text">
-                 <string>OTHER</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="other">
-                <property name="font">
-                 <font>
-                  <family>Monospace</family>
-                  <pointsize>25</pointsize>
-                 </font>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QFrame" name="field3">
+              <layout class="QVBoxLayout" name="input_other">
+               <item>
+                <widget class="QLabel" name="other_label">
+                 <property name="text">
+                  <string>OTHER</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="other">
+                 <property name="font">
+                  <font>
+                   <family>JetBrains Mono</family>
+                   <pointsize>25</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="field4">
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>OTHER2</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                 </property>
+                 <property name="buddy">
+                  <cstring>field4</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit">
+                 <property name="font">
+                  <font>
+                   <family>JetBrains Mono</family>
+                   <pointsize>25</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </item>
@@ -640,7 +680,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1553</width>
+     <width>1925</width>
      <height>30</height>
     </rect>
    </property>
