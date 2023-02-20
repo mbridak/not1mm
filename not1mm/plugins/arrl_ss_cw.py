@@ -1,0 +1,1 @@
+name = "ARRL Sweepstakes CW"

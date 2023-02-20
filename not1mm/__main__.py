@@ -4,6 +4,7 @@ NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member
 
+import importlib
 import logging
 import os
 import pkgutil
@@ -517,6 +518,10 @@ def install_icons():
         f"{WORKING_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
     )
     os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
+
+
+def doimp(modname):
+    return importlib.import_module(modname)
 
 
 def run():
