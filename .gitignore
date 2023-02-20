@@ -1,9 +1,7 @@
 /.vscode
 /dist
 /not1mm.egg-info
-/plugin
-/plugintest.py
 /publish.sh
-/not1mm/__pycache__
-/not1mm/lib/__pycache__
+__pycache__
 not1mm.json
+test.py
