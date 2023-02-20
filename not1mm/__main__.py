@@ -75,6 +75,10 @@ class MainWindow(QtWidgets.QMainWindow):
         "lookuppassword": "password",
         "gridsquare": "AA11aa",
         "run_state": True,
+        "dark_mode": False,
+        "command_buttons": True,
+        "cw_macros": True,
+        "bands_modes": True,
     }
     pref = None
     current_op = ""
@@ -90,13 +94,12 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.readpreferences()
-        self.dark_mode()
         self.next_field = self.other
         self.field4.hide()
-        self.actionCW_Macros.triggered.connect(self.show_CW_Macros)
-        self.actionCommand_Buttons.triggered.connect(self.show_Command_Buttons)
-        self.actionMode_and_Bands.triggered.connect(self.show_Band_Mode)
-        self.actionDark_Mode.triggered.connect(self.dark_mode)
+        self.actionCW_Macros.triggered.connect(self.cw_macros_stateChanged)
+        self.actionCommand_Buttons.triggered.connect(self.command_buttons_stateChange)
+        self.actionMode_and_Bands.triggered.connect(self.show_band_mode_stateChange)
+        self.actionDark_Mode.triggered.connect(self.dark_mode_stateChange)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -265,38 +268,79 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("lookupusername"),
                 self.pref.get("lookuppassword"),
             )
-            # if self.look_up.session:
-            #     self.QRZ_icon.setStyleSheet("color: rgb(128, 128, 0);")
-            # else:
-            #     self.QRZ_icon.setStyleSheet("color: rgb(136, 138, 133);")
         if self.pref.get("run_state"):
             self.radioButton_run.setChecked(True)
         else:
             self.radioButton_sp.setChecked(True)
 
+        if self.pref.get("dark_mode"):
+            self.actionDark_Mode.setChecked(True)
+        else:
+            self.actionDark_Mode.setChecked(False)
+
+        if self.pref.get("command_buttons"):
+            self.actionCommand_Buttons.setChecked(True)
+        else:
+            self.actionCommand_Buttons.setChecked(False)
+
+        if self.pref.get("cw_macros"):
+            self.actionCW_Macros.setChecked(True)
+        else:
+            self.actionCW_Macros.setChecked(False)
+
+        if self.pref.get("bands_modes"):
+            self.actionMode_and_Bands.setChecked(True)
+        else:
+            self.actionMode_and_Bands.setChecked(False)
+
+        self.dark_mode()
+        self.show_command_buttons()
+        self.show_CW_macros()
+        self.show_band_mode()
+
+    def dark_mode_stateChange(self):
+        self.pref["dark_mode"] = self.actionDark_Mode.isChecked()
+        self.write_preference()
+        self.dark_mode()
+
     def dark_mode(self):
-        if self.actionDark_Mode.isChecked():
+        if self.pref.get("dark_mode"):
             with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
                 qss = stylefile.read()
                 self.setStyleSheet(qss)
         else:
             self.setStyleSheet("")
 
-    def show_CW_Macros(self):
-        if self.actionCW_Macros.isChecked():
+    def cw_macros_stateChanged(self):
+        self.pref["cw_macros"] = self.actionCW_Macros.isChecked()
+        self.write_preference()
+        self.show_CW_macros()
+
+    def show_CW_macros(self):
+        if self.pref.get("cw_macros"):
             self.Button_Row1.show()
             self.Button_Row2.show()
         else:
             self.Button_Row1.hide()
             self.Button_Row2.hide()
 
-    def show_Command_Buttons(self):
-        if self.actionCommand_Buttons.isChecked():
+    def command_buttons_stateChange(self):
+        self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
+        self.write_preference()
+        self.show_command_buttons()
+
+    def show_command_buttons(self):
+        if self.pref.get("command_buttons"):
             self.Command_Buttons.show()
         else:
             self.Command_Buttons.hide()
 
-    def show_Band_Mode(self):
+    def show_band_mode_stateChange(self):
+        self.pref["bands_modes"] = self.actionMode_and_Bands.isChecked()
+        self.write_preference()
+        self.show_band_mode()
+
+    def show_band_mode(self):
         if self.actionMode_and_Bands.isChecked():
             self.Band_Mode_Frame.show()
         else:
@@ -356,12 +400,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def get_opon(self):
         self.opon_dialog = OpOn()
-        if self.actionDark_Mode.isChecked():
-            self.opon_dialog.setStyleSheet(
-                "background-color: rgb(42, 42, 42);\ncolor: rgb(211, 215, 207);"
-            )
-        else:
-            self.opon_dialog.setStyleSheet("")
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
@@ -387,7 +425,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if not Path(DATA_PATH + "/cwmacros.txt").exists():
             # logger.debug("read_cw_macros: copying default macro file.")
-            # data_path = self.working_path + "/data/cwmacros.txt"
             copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
         with open(
             DATA_PATH + "/cwmacros.txt", "r", encoding="utf-8"
@@ -446,7 +483,6 @@ class OpOn(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # data_path = WORKING_PATH + "/data/opon.ui"
         uic.loadUi(WORKING_PATH + "/data/opon.ui", self)
         self.buttonBox.clicked.connect(self.store)
 
