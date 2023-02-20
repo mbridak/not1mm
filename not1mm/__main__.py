@@ -89,7 +89,7 @@ class MainWindow(QtWidgets.QMainWindow):
     fkeys = {}
 
     def __init__(self, *args, **kwargs):
-        logging.info("MainWindow: __init__")
+        logger.info("MainWindow: __init__")
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
@@ -151,76 +151,76 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.clicked.connect(self.sendf12)
 
     def edit_F1(self):
-        print("F1 Right Clicked.")
+        logger.debug("F1 Right Clicked.")
 
     def edit_F2(self):
-        print("F2 Right Clicked.")
+        logger.debug("F2 Right Clicked.")
 
     def edit_F3(self):
-        print("F3 Right Clicked.")
+        logger.debug("F3 Right Clicked.")
 
     def edit_F4(self):
-        print("F4 Right Clicked.")
+        logger.debug("F4 Right Clicked.")
 
     def edit_F5(self):
-        print("F5 Right Clicked.")
+        logger.debug("F5 Right Clicked.")
 
     def edit_F6(self):
-        print("F6 Right Clicked.")
+        logger.debug("F6 Right Clicked.")
 
     def edit_F7(self):
-        print("F7 Right Clicked.")
+        logger.debug("F7 Right Clicked.")
 
     def edit_F8(self):
-        print("F8 Right Clicked.")
+        logger.debug("F8 Right Clicked.")
 
     def edit_F9(self):
-        print("F9 Right Clicked.")
+        logger.debug("F9 Right Clicked.")
 
     def edit_F10(self):
-        print("F10 Right Clicked.")
+        logger.debug("F10 Right Clicked.")
 
     def edit_F11(self):
-        print("F11 Right Clicked.")
+        logger.debug("F11 Right Clicked.")
 
     def edit_F12(self):
-        print("F12 Right Clicked.")
+        logger.debug("F12 Right Clicked.")
 
     def sendf1(self):
-        print("F1 Clicked")
+        logger.debug("F1 Clicked")
 
     def sendf2(self):
-        print("F2 Clicked")
+        logger.debug("F2 Clicked")
 
     def sendf3(self):
-        print("F3 Clicked")
+        logger.debug("F3 Clicked")
 
     def sendf4(self):
-        print("F4 Clicked")
+        logger.debug("F4 Clicked")
 
     def sendf5(self):
-        print("F5 Clicked")
+        logger.debug("F5 Clicked")
 
     def sendf6(self):
-        print("F6 Clicked")
+        logger.debug("F6 Clicked")
 
     def sendf7(self):
-        print("F7 Clicked")
+        logger.debug("F7 Clicked")
 
     def sendf8(self):
-        print("F8 Clicked")
+        logger.debug("F8 Clicked")
 
     def sendf9(self):
-        print("F9 Clicked")
+        logger.debug("F9 Clicked")
 
     def sendf10(self):
-        print("F10 Clicked")
+        logger.debug("F10 Clicked")
 
     def sendf11(self):
-        print("F11 Clicked")
+        logger.debug("F11 Clicked")
 
     def sendf12(self):
-        print("F12 Clicked")
+        logger.debug("F12 Clicked")
 
     def run_sp_buttons_clicked(self):
         self.pref["run_state"] = self.radioButton_run.isChecked()
@@ -236,10 +236,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.pref, indent=4))
-                # logger.info("writing: %s", self.preference)
+                logger.info("writing: %s", self.preference)
         except IOError as exception:
             ...
-            # logger.critical("writepreferences: %s", exception)
+            logger.critical("writepreferences: %s", exception)
 
     def readpreferences(self):
         """
@@ -251,18 +251,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
-                    # logger.info("%s", self.preference)
+                    logger.info("%s", self.pref)
             else:
-                # logger.info("No preference file. Writing preference.")
+                logger.info("No preference file. Writing preference.")
                 with open(
                     CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = self.pref_ref.copy()
                     file_descriptor.write(dumps(self.pref, indent=4))
-                    # logger.info("%s", self.preference)
+                    logger.info("%s", self.pref)
         except IOError as exception:
             ...
-            # logger.critical("Error: %s", exception)
+            logger.critical("Error: %s", exception)
         if self.pref.get("useqrz"):
             self.look_up = QRZlookup(
                 self.pref.get("lookupusername"),
@@ -372,7 +372,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if hasattr(self.look_up, "session"):
             if self.look_up.session:
                 response = self.look_up.lookup(callsign)
-                print(f"The Response: {response}\n")
+                logger.debug(f"The Response: {response}\n")
                 if response:
                     theirgrid = response.get("grid")
                     theircountry = response.get("country")
@@ -408,13 +408,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.current_op = self.opon_dialog.NewOperator.text()
 
         self.opon_dialog.close()
-        print(f"New Op: {self.current_op}")
+        logger.debug(f"New Op: {self.current_op}")
 
     def poll_radio(self):
         if self.rig_control.online:
             vfo = self.rig_control.get_vfo()
             mode = self.rig_control.get_mode()
-            print(f"VFO: {vfo}  MODE: {mode}")
+            logger.debug(f"VFO: {vfo}  MODE: {mode}")
 
     def read_cw_macros(self) -> None:
         """
@@ -424,7 +424,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if not Path(DATA_PATH + "/cwmacros.txt").exists():
-            # logger.debug("read_cw_macros: copying default macro file.")
+            logger.debug("read_cw_macros: copying default macro file.")
             copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
         with open(
             DATA_PATH + "/cwmacros.txt", "r", encoding="utf-8"
@@ -438,7 +438,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                 except ValueError as err:
                     ...
-                    # logger.info("read_cw_macros: %s", err)
+                    logger.info("read_cw_macros: %s", err)
         keys = self.fkeys.keys()
         if "F1" in keys:
             self.F1.setText(f"F1: {self.fkeys['F1'][0]}")
@@ -530,30 +530,28 @@ def run():
     sys.exit(app.exec())
 
 
+logger = logging.getLogger("__name__")
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    datefmt="%H:%M:%S",
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 if Path("./debug").exists():
-    logging.basicConfig(
-        format=(
-            "[%(asctime)s] %(levelname)s %(module)s - "
-            "%(funcName)s Line %(lineno)d:\n%(message)s"
-        ),
-        datefmt="%H:%M:%S",
-        level=logging.INFO,
-    )
+    # if True:
+    logger.setLevel(logging.DEBUG)
+    logger.debug("debugging on")
 else:
-    logging.basicConfig(
-        format=(
-            "[%(asctime)s] %(levelname)s %(module)s - "
-            "%(funcName)s Line %(lineno)d:\n%(message)s"
-        ),
-        datefmt="%H:%M:%S",
-        level=logging.WARNING,
-    )
+    logger.setLevel(logging.WARNING)
+    logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
-logging.info(families)
+logger.info(families)
 window = MainWindow()
 window.setGeometry(-1, -1, 600, 200)
 window.setWindowTitle(f"Not1MM v{__version__}")
