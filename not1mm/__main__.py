@@ -28,16 +28,12 @@ try:
     from not1mm.lib.ham_utility import *
     from not1mm.lib.lookup import QRZlookup
     from not1mm.lib.version import __version__
-
-    # from not1mm.lib.settings import Settings
 except ModuleNotFoundError:
     from lib.cat_interface import CAT
     from lib.cwinterface import CW
     from lib.ham_utility import *
     from lib.lookup import QRZlookup
     from lib.version import __version__
-
-    # from lib.settings import Settings
 
 
 loader = pkgutil.get_loader("not1mm")
@@ -81,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "cw_macros": True,
         "bands_modes": True,
     }
+    contest = None
     pref = None
     current_op = ""
     current_mode = ""
@@ -150,6 +147,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.F12.customContextMenuRequested.connect(self.edit_F12)
         self.F12.clicked.connect(self.sendf12)
+        self.select_contest()
+
+    def select_contest(self):
+        self.contest = doimp("arrl_field_day")
+        logger.debug(f"Loaded Contest Name = {self.contest.name}")
+        ...
 
     def edit_F1(self):
         logger.debug("F1 Right Clicked.")
@@ -521,7 +524,7 @@ def install_icons():
 
 
 def doimp(modname):
-    return importlib.import_module(modname)
+    return importlib.import_module(f"not1mm.plugins.{modname}")
 
 
 def run():
