@@ -31,6 +31,7 @@ The current state is "Not Working". I literally just dragged some widgets out on
 
 ## Changes of note
 
+- [23-2-20] Save view states. fixed debug messages.
 - [23-2-15] Added qss stylesheet. Connected Run and S&P radio buttons. Reads in cwmacros.
 - [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
 - [23-2-9] Initial post and name squatting.
