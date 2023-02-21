@@ -152,6 +152,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def select_contest(self):
         self.contest = doimp("arrl_field_day")
         logger.debug(f"Loaded Contest Name = {self.contest.name}")
+        self.contest.interface(self)
         ...
 
     def edit_F1(self):
@@ -240,7 +241,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.pref, indent=4))
-                logger.info("writing: %s", self.preference)
+                logger.info("writing: %s", self.pref)
         except IOError as exception:
             ...
             logger.critical("writepreferences: %s", exception)
