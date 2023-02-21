@@ -155,41 +155,68 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest.interface(self)
         ...
 
+    def edit_macro(self, function_key):
+        self.edit_macro_dialog = EditMacro(function_key)
+        self.edit_macro_dialog.accepted.connect(self.edited_macro)
+        self.edit_macro_dialog.open()
+
+    def edited_macro(self):
+        self.edit_macro_dialog.function_key.setText(
+            self.edit_macro_dialog.macro_label.text()
+        )
+        self.edit_macro_dialog.function_key.setToolTip(
+            self.edit_macro_dialog.the_macro.text()
+        )
+        self.edit_macro_dialog.close()
+        # logger.debug(f"{self.current_op}")
+
     def edit_F1(self):
         logger.debug("F1 Right Clicked.")
+        self.edit_macro(self.F1)
 
     def edit_F2(self):
         logger.debug("F2 Right Clicked.")
+        self.edit_macro(self.F2)
 
     def edit_F3(self):
         logger.debug("F3 Right Clicked.")
+        self.edit_macro(self.F3)
 
     def edit_F4(self):
         logger.debug("F4 Right Clicked.")
+        self.edit_macro(self.F4)
 
     def edit_F5(self):
         logger.debug("F5 Right Clicked.")
+        self.edit_macro(self.F5)
 
     def edit_F6(self):
         logger.debug("F6 Right Clicked.")
+        self.edit_macro(self.F6)
 
     def edit_F7(self):
         logger.debug("F7 Right Clicked.")
+        self.edit_macro(self.F7)
 
     def edit_F8(self):
         logger.debug("F8 Right Clicked.")
+        self.edit_macro(self.F8)
 
     def edit_F9(self):
         logger.debug("F9 Right Clicked.")
+        self.edit_macro(self.F9)
 
     def edit_F10(self):
         logger.debug("F10 Right Clicked.")
+        self.edit_macro(self.F10)
 
     def edit_F11(self):
         logger.debug("F11 Right Clicked.")
+        self.edit_macro(self.F11)
 
     def edit_F12(self):
         logger.debug("F12 Right Clicked.")
+        self.edit_macro(self.F12)
 
     def sendf1(self):
         logger.debug("F1 Clicked")
@@ -481,6 +508,24 @@ class MainWindow(QtWidgets.QMainWindow):
         if "F12" in keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
+
+
+class EditMacro(QtWidgets.QDialog):
+    """Change the current operator"""
+
+    def __init__(self, function_key):
+        self.function_key = function_key
+        parent = None
+        super().__init__(parent)
+        uic.loadUi(WORKING_PATH + "/data/editmacro.ui", self)
+        self.buttonBox.clicked.connect(self.store)
+        self.macro_label.setText(function_key.text())
+        self.the_macro.setText(function_key.toolTip())
+
+    def store(self):
+        """dialog magic"""
+        ...
+        # self.accept()
 
 
 class OpOn(QtWidgets.QDialog):
