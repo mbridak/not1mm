@@ -12,6 +12,8 @@
   - [What it is not](#what-it-is-not)
   - [Changes of note](#changes-of-note)
   - [Running from source](#running-from-source)
+  - [Hiding screen elements](#hiding-screen-elements)
+  - [Editing function key macros](#editing-function-key-macros)
 
 ## What and why is Not1MM
 
@@ -36,7 +38,8 @@ The current state is "Not Working". I literally just dragged some widgets out on
 
 ## Changes of note
 
-- [23-2-20] Save view states. fixed debug messages. Started coding plugins/stubs
+- [23-2-21] Added edit macro dialog.
+- [23-2-20] Save view states. fixed debug messages. Started coding plugins/stubs.
 - [23-2-15] Added qss stylesheet. Connected Run and S&P radio buttons. Reads in cwmacros.
 - [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
 - [23-2-9] Initial post and name squatting.
@@ -67,3 +70,16 @@ or be in some other directory and just type:
 ```bash
 not1mm
 ```
+
+## Hiding screen elements
+
+You can show or hide certain buttons/indicators by checking and unchecking their boxes under the view menu. You can then resize the screen to make it more compact.
+
+![View Menu](https://github.com/mbridak/not1mm/raw/master/pic/view_menu.png)
+
+The your choices will be remembered when you relaunch the program.
+
+## Editing function key macros
+
+You can edit the CW macros by right clicking on the buttons and filling out the dialog.
+![Edit Macro](https://github.com/mbridak/not1mm/raw/master/pic/edit_macro.png)
