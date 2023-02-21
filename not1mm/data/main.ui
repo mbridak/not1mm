@@ -688,6 +688,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -770,6 +771,11 @@
    </property>
    <property name="text">
     <string>Dark Mode</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>
