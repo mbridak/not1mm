@@ -1,6 +1,9 @@
 import socket
+import logging
 from datetime import datetime
 from math import sin, cos, radians, asin, sqrt, atan2, pi
+
+logger = logging.getLogger("__name__")
 
 
 def gridtolatlon(maiden):
@@ -28,6 +31,7 @@ def gridtolatlon(maiden):
         lon += (ord(maiden[6])) * 5.0 / 600
         lat += (ord(maiden[7])) * 2.5 / 600
 
+    logger.debug(f"lat:{lat} lon:{lon}")
     return lat, lon
 
 
@@ -164,10 +168,44 @@ def bearing(grid1: str, grid2: str) -> float:
     return round(brng)
 
 
+def bearing_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
+    """
+    Calculate bearing to contact
+    Takes Yourgrid, Theirgrid, returns a float
+    """
+    lat1, lon1 = gridtolatlon(grid1)
+    logger.debug(f"lat1:{lat1} lon1:{lon1} lat2:{lat2} lon2:{lon2}")
+    # lat2, lon2 = gridtolatlon(grid2)
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+    londelta = lon2 - lon1
+    why = sin(londelta) * cos(lat2)
+    exs = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(londelta)
+    brng = atan2(why, exs)
+    brng *= 180 / pi
+
+    if brng < 0:
+        brng += 360
+
+    return round(brng)
+
+
 def distance(grid1: str, grid2: str) -> float:
     """
     Takes two maidenhead gridsquares and returns the distance between the two in kilometers.
     """
     lat1, lon1 = gridtolatlon(grid1)
     lat2, lon2 = gridtolatlon(grid2)
+    return round(haversine(lon1, lat1, lon2, lat2))
+
+
+def distance_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
+    """
+    Takes two maidenhead gridsquares and returns the distance between the two in kilometers.
+    """
+    lat1, lon1 = gridtolatlon(grid1)
+    logger.debug(f"lat1:{lat1} lon1:{lon1} lat2:{lat2} lon2:{lon2}")
+    # lat2, lon2 = gridtolatlon(grid2)
     return round(haversine(lon1, lat1, lon2, lat2))
