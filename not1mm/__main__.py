@@ -60,6 +60,28 @@ try:
 except FileExistsError:
     ...
 
+"/data/cty.json"
+
+CTYFILE = {}
+
+with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as fd:
+    CTYFILE = loads(fd.read())
+
+
+def cty_lookup(callsign: str):
+    callsign = callsign.upper()
+    for x in reversed(range(len(callsign))):
+        searchitem = callsign[: x + 1]
+        result = {key: val for key, val in CTYFILE.items() if key == searchitem}
+        if not result:
+            continue
+        if result.get(searchitem).get("exact_match"):
+            if searchitem == callsign:
+                return result
+            else:
+                continue
+        return result
+
 
 class MainWindow(QtWidgets.QMainWindow):
     """
@@ -398,9 +420,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.callsign.setText("")
                 return
             self.check_callsign(text)
+            self.check_callsign2(text)
             self.next_field.setFocus()
 
     def check_callsign(self, callsign):
+        result = cty_lookup(callsign)
+
+        print(result)
+        for a in result.items():
+            entity = a[1].get("entity")
+            cq = a[1].get("cq")
+            itu = a[1].get("itu")
+            continent = a[1].get("continent")
+            lat = float(a[1].get("lat"))
+            lon = float(a[1].get("long"))
+            lon = lon * -1  # cty.dat file inverts longitudes
+            primary_pfx = a[1].get("primary_pfx")
+            heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
+            kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
+            self.heading_distance.setText(
+                f"heading {heading}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
+            )
+            self.dx_entity.setText(
+                f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
+            )
+
+    def check_callsign2(self, callsign):  # fixme
         if hasattr(self.look_up, "session"):
             if self.look_up.session:
                 response = self.look_up.lookup(callsign)
@@ -412,11 +457,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         heading = bearing(self.pref.get("gridsquare"), theirgrid)
                         kilometers = distance(self.pref.get("gridsquare"), theirgrid)
                         self.heading_distance.setText(
-                            f"heading {heading}° / distance {kilometers}km"
+                            f"heading {heading}° / distance {int(kilometers*0.621371)}mi {kilometers}km {theirgrid}"
                         )
-                    self.dx_entity.setText(f"{theircountry}")
-                else:
-                    self.heading_distance.setText("Lookup failed.")
+                    # self.dx_entity.setText(f"{theircountry}")
+                # else:
+                # self.heading_distance.setText("Lookup failed.")
             ...
 
     def setmode(self, mode: str) -> None:
