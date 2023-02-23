@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Settings</class>
+ <widget class="QDialog" name="Settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>876</width>
+    <height>636</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>JetBrains Mono</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Settings</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,10,0,0,10,0,10">
+   <item row="12" column="5">
+    <widget class="QLabel" name="label_18">
+     <property name="text">
+      <string>ITU Zone</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QLineEdit" name="Call"/>
+   </item>
+   <item row="6" column="4">
+    <widget class="QLineEdit" name="State"/>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Station TX/RX</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="1" colspan="2">
+    <widget class="QLineEdit" name="StationTXRX"/>
+   </item>
+   <item row="15" column="6">
+    <widget class="QLineEdit" name="ASL"/>
+   </item>
+   <item row="13" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>License</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="2">
+    <widget class="QLineEdit" name="City"/>
+   </item>
+   <item row="18" column="0">
+    <widget class="QLabel" name="label_13">
+     <property name="text">
+      <string>Club</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="3">
+    <widget class="QLabel" name="label_22">
+     <property name="text">
+      <string>Ant. Height</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="6">
+    <widget class="QLineEdit" name="Address2"/>
+   </item>
+   <item row="18" column="1" colspan="2">
+    <widget class="QLineEdit" name="Club"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Call</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="5">
+    <widget class="QLabel" name="label_20">
+     <property name="text">
+      <string>Longitude</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="4">
+    <widget class="QLineEdit" name="AntHeight"/>
+   </item>
+   <item row="15" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Antenna</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="3">
+    <widget class="QLabel" name="label_21">
+     <property name="text">
+      <string>Power</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="0">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>ARRL Section</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Name</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="4">
+    <widget class="QLineEdit" name="CQZone">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="20" column="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="6">
+    <widget class="QLineEdit" name="Name"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Address</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="6">
+    <widget class="QLineEdit" name="ITUZone"/>
+   </item>
+   <item row="13" column="1" colspan="2">
+    <widget class="QLineEdit" name="License"/>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Country</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="17" column="1" colspan="2">
+    <widget class="QLineEdit" name="RoverQTH"/>
+   </item>
+   <item row="14" column="4">
+    <widget class="QLineEdit" name="Power"/>
+   </item>
+   <item row="15" column="5">
+    <widget class="QLabel" name="label_23">
+     <property name="text">
+      <string>a.s.l.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="3">
+    <widget class="QLabel" name="label_15">
+     <property name="text">
+      <string>State</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="3">
+    <widget class="QLabel" name="label_17">
+     <property name="text">
+      <string>CQ Zone</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>City</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Grid Square</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="1" colspan="2">
+    <widget class="QLineEdit" name="Antenna"/>
+   </item>
+   <item row="13" column="3">
+    <widget class="QLabel" name="label_19">
+     <property name="text">
+      <string>Latitude</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="1" colspan="2">
+    <widget class="QLineEdit" name="Country"/>
+   </item>
+   <item row="13" column="6">
+    <widget class="QLineEdit" name="Longitude"/>
+   </item>
+   <item row="17" column="0">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>Rover QTH</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="1" colspan="2">
+    <widget class="QLineEdit" name="ARRLSection"/>
+   </item>
+   <item row="13" column="4">
+    <widget class="QLineEdit" name="Latitude"/>
+   </item>
+   <item row="6" column="6">
+    <widget class="QLineEdit" name="Zip"/>
+   </item>
+   <item row="4" column="1" colspan="6">
+    <widget class="QLineEdit" name="Address1"/>
+   </item>
+   <item row="6" column="5">
+    <widget class="QLabel" name="label_16">
+     <property name="text">
+      <string>Zip</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Address</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1" colspan="2">
+    <widget class="QLineEdit" name="GridSquare"/>
+   </item>
+   <item row="19" column="1" colspan="2">
+    <widget class="QLineEdit" name="Email"/>
+   </item>
+   <item row="19" column="0">
+    <widget class="QLabel" name="label_14">
+     <property name="text">
+      <string>Email address</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>Call</tabstop>
+  <tabstop>Name</tabstop>
+  <tabstop>Address1</tabstop>
+  <tabstop>Address2</tabstop>
+  <tabstop>City</tabstop>
+  <tabstop>State</tabstop>
+  <tabstop>Zip</tabstop>
+  <tabstop>Country</tabstop>
+  <tabstop>GridSquare</tabstop>
+  <tabstop>CQZone</tabstop>
+  <tabstop>ITUZone</tabstop>
+  <tabstop>License</tabstop>
+  <tabstop>Latitude</tabstop>
+  <tabstop>Longitude</tabstop>
+  <tabstop>StationTXRX</tabstop>
+  <tabstop>Power</tabstop>
+  <tabstop>Antenna</tabstop>
+  <tabstop>AntHeight</tabstop>
+  <tabstop>ASL</tabstop>
+  <tabstop>ARRLSection</tabstop>
+  <tabstop>RoverQTH</tabstop>
+  <tabstop>Club</tabstop>
+  <tabstop>Email</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Settings</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>629</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Settings</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>629</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
