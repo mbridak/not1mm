@@ -39,6 +39,7 @@ The current state is "Not Working". I literally just dragged some widgets out on
 
 ## Changes of note
 
+- [23.2.23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
 - [23-2-22] Added cty.dat file.
 - [23-2-21] Added edit macro dialog.
 - [23-2-20] Save view states. fixed debug messages. Started coding plugins/stubs.
