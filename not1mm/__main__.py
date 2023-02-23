@@ -19,7 +19,13 @@ from xmlrpc.client import Error, ServerProxy
 
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QDir, Qt  # pylint: disable=no-name-in-module
+from PyQt5.QtCore import (
+    QDir,
+    QPoint,
+    QSize,
+    QRect,
+    Qt,
+)  # pylint: disable=no-name-in-module
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
 try:
@@ -60,12 +66,15 @@ try:
 except FileExistsError:
     ...
 
-"/data/cty.json"
-
 CTYFILE = {}
 
 with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as fd:
     CTYFILE = loads(fd.read())
+
+DARK_STYLESHEET = ""
+
+with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
+    DARK_STYLESHEET = stylefile.read()
 
 
 def cty_lookup(callsign: str):
@@ -98,7 +107,12 @@ class MainWindow(QtWidgets.QMainWindow):
         "command_buttons": True,
         "cw_macros": True,
         "bands_modes": True,
+        "window_height": 500,
+        "window_width": 1000,
+        "window_x": 120,
+        "window_y": 120,
     }
+    appstarted = False
     contest = None
     pref = None
     current_op = ""
@@ -113,13 +127,14 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
-        self.readpreferences()
+
         self.next_field = self.other
         self.field4.hide()
         self.actionCW_Macros.triggered.connect(self.cw_macros_stateChanged)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_stateChange)
         self.actionMode_and_Bands.triggered.connect(self.show_band_mode_stateChange)
         self.actionDark_Mode.triggered.connect(self.dark_mode_stateChange)
+        self.actionPreferences.triggered.connect(self.preference_selected)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -131,8 +146,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.reddot = QtGui.QPixmap(icon_path + "reddot.png")
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
-        self.read_cw_macros()
-        self.rig_control = CAT("rigctld", "localhost", 4532)
+
         self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(self.edit_F1)
         self.F1.clicked.connect(self.sendf1)
@@ -170,6 +184,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.customContextMenuRequested.connect(self.edit_F12)
         self.F12.clicked.connect(self.sendf12)
         self.select_contest()
+        self.readpreferences()
+        self.read_cw_macros()
+        self.rig_control = CAT("rigctld", "localhost", 4532)
+
+    def closeEvent(self, e):
+        # Write window size and position to config file
+        self.pref["window_width"] = self.size().width()
+        self.pref["window_height"] = self.size().height()
+        self.pref["window_x"] = self.pos().x()
+        self.pref["window_y"] = self.pos().y()
+        self.write_preference()
+
+    def preference_selected(self):
+        logger.debug("Preference selected")
+        self.settings_dialog = EditSettings()
+        self.settings_dialog.accepted.connect(self.save_settings)
+        if self.pref.get("dark_mode"):
+            self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.settings_dialog.open()
+
+    def save_settings(self):
+        # self.settings_dialog.object.text():
+        self.settings_dialog.close()
 
     def select_contest(self):
         self.contest = doimp("arrl_field_day")
@@ -180,6 +217,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_macro(self, function_key):
         self.edit_macro_dialog = EditMacro(function_key)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
+        if self.pref.get("dark_mode"):
+            self.edit_macro_dialog.setStyleSheet(DARK_STYLESHEET)
         self.edit_macro_dialog.open()
 
     def edited_macro(self):
@@ -359,9 +398,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dark_mode(self):
         if self.pref.get("dark_mode"):
-            with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
-                qss = stylefile.read()
-                self.setStyleSheet(qss)
+            self.setStyleSheet(DARK_STYLESHEET)
         else:
             self.setStyleSheet("")
 
@@ -555,6 +592,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setToolTip(self.fkeys["F12"][1])
 
 
+class EditSettings(QtWidgets.QDialog):
+    """Edit Settings"""
+
+    def __init__(self):
+        super().__init__(None)
+        uic.loadUi(WORKING_PATH + "/data/settings.ui", self)
+        self.buttonBox.clicked.connect(self.store)
+
+    def store(self):
+        """dialog magic"""
+        ...
+        # self.accept()
+
+
 class EditMacro(QtWidgets.QDialog):
     """Change the current operator"""
 
@@ -652,7 +703,11 @@ font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
 window = MainWindow()
-window.setGeometry(-1, -1, 600, 200)
+height = window.pref.get("window_height")
+width = window.pref.get("window_width")
+x = window.pref.get("window_x")
+y = window.pref.get("window_y")
+window.setGeometry(x, y, width, height)
 window.setWindowTitle(f"Not1MM v{__version__}")
 window.show()
 timer = QtCore.QTimer()
