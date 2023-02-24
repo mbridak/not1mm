@@ -15,6 +15,7 @@
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing function key macros](#editing-function-key-macros)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
+  - [Settings dialog](#settings-dialog)
 
 ## What and why is Not1MM
 
@@ -94,3 +95,11 @@ When a callsign is entered, a look up is first done in a cty.dat file to determi
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance.png)
 
 After this, a request is made to QRZ for the gridsquare of the callsign. If there is a response the information is recalculated and displayed. You'll know is this has happened, since the gridsquare will be shown after the distance.
+
+## Settings dialog
+
+Added a settings screen.
+
+![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
+
+You can fill it out if you want to.
