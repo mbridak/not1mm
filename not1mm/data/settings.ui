@@ -30,10 +30,18 @@
     </widget>
    </item>
    <item row="2" column="1" colspan="2">
-    <widget class="QLineEdit" name="Call"/>
+    <widget class="QLineEdit" name="Call">
+     <property name="placeholderText">
+      <string>W1AW</string>
+     </property>
+    </widget>
    </item>
    <item row="6" column="4">
-    <widget class="QLineEdit" name="State"/>
+    <widget class="QLineEdit" name="State">
+     <property name="placeholderText">
+      <string>CT</string>
+     </property>
+    </widget>
    </item>
    <item row="14" column="0">
     <widget class="QLabel" name="label_9">
@@ -62,7 +70,11 @@
     </widget>
    </item>
    <item row="6" column="1" colspan="2">
-    <widget class="QLineEdit" name="City"/>
+    <widget class="QLineEdit" name="City">
+     <property name="placeholderText">
+      <string>Newington</string>
+     </property>
+    </widget>
    </item>
    <item row="18" column="0">
     <widget class="QLabel" name="label_13">
@@ -86,9 +98,6 @@
    </item>
    <item row="5" column="1" colspan="6">
     <widget class="QLineEdit" name="Address2"/>
-   </item>
-   <item row="18" column="1" colspan="2">
-    <widget class="QLineEdit" name="Club"/>
    </item>
    <item row="2" column="0">
     <widget class="QLabel" name="label">
@@ -171,7 +180,11 @@
     </widget>
    </item>
    <item row="3" column="1" colspan="6">
-    <widget class="QLineEdit" name="Name"/>
+    <widget class="QLineEdit" name="Name">
+     <property name="placeholderText">
+      <string>Hiram Percy Maxim</string>
+     </property>
+    </widget>
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="label_4">
@@ -187,7 +200,11 @@
     <widget class="QLineEdit" name="ITUZone"/>
    </item>
    <item row="13" column="1" colspan="2">
-    <widget class="QLineEdit" name="License"/>
+    <widget class="QLineEdit" name="License">
+     <property name="placeholderText">
+      <string>Extra</string>
+     </property>
+    </widget>
    </item>
    <item row="11" column="0">
     <widget class="QLabel" name="label_6">
@@ -269,7 +286,11 @@
     </widget>
    </item>
    <item row="11" column="1" colspan="2">
-    <widget class="QLineEdit" name="Country"/>
+    <widget class="QLineEdit" name="Country">
+     <property name="placeholderText">
+      <string>USA</string>
+     </property>
+    </widget>
    </item>
    <item row="13" column="6">
     <widget class="QLineEdit" name="Longitude"/>
@@ -285,16 +306,28 @@
     </widget>
    </item>
    <item row="16" column="1" colspan="2">
-    <widget class="QLineEdit" name="ARRLSection"/>
+    <widget class="QLineEdit" name="ARRLSection">
+     <property name="placeholderText">
+      <string>CT</string>
+     </property>
+    </widget>
    </item>
    <item row="13" column="4">
     <widget class="QLineEdit" name="Latitude"/>
    </item>
    <item row="6" column="6">
-    <widget class="QLineEdit" name="Zip"/>
+    <widget class="QLineEdit" name="Zip">
+     <property name="placeholderText">
+      <string>06111</string>
+     </property>
+    </widget>
    </item>
    <item row="4" column="1" colspan="6">
-    <widget class="QLineEdit" name="Address1"/>
+    <widget class="QLineEdit" name="Address1">
+     <property name="placeholderText">
+      <string>225 Main Street</string>
+     </property>
+    </widget>
    </item>
    <item row="6" column="5">
     <widget class="QLabel" name="label_16">
@@ -317,10 +350,11 @@
     </widget>
    </item>
    <item row="12" column="1" colspan="2">
-    <widget class="QLineEdit" name="GridSquare"/>
-   </item>
-   <item row="19" column="1" colspan="2">
-    <widget class="QLineEdit" name="Email"/>
+    <widget class="QLineEdit" name="GridSquare">
+     <property name="placeholderText">
+      <string>Dm13at</string>
+     </property>
+    </widget>
    </item>
    <item row="19" column="0">
     <widget class="QLabel" name="label_14">
@@ -329,6 +363,20 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="19" column="1" colspan="6">
+    <widget class="QLineEdit" name="Email">
+     <property name="placeholderText">
+      <string>Hiram.P.Maxim@ARRL.NET</string>
+     </property>
+    </widget>
+   </item>
+   <item row="18" column="1" colspan="6">
+    <widget class="QLineEdit" name="Club">
+     <property name="placeholderText">
+      <string>Americal Radio Relay League</string>
      </property>
     </widget>
    </item>

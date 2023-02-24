@@ -101,16 +101,38 @@ class MainWindow(QtWidgets.QMainWindow):
         "useqrz": False,
         "lookupusername": "username",
         "lookuppassword": "password",
-        "gridsquare": "AA11aa",
+        "gridsquare": "",
         "run_state": True,
         "dark_mode": False,
         "command_buttons": True,
         "cw_macros": True,
         "bands_modes": True,
-        "window_height": 500,
-        "window_width": 1000,
+        "window_height": 200,
+        "window_width": 600,
         "window_x": 120,
         "window_y": 120,
+        "callsign": "",
+        "name": "",
+        "address1": "",
+        "address2": "",
+        "city": "",
+        "state": "",
+        "zip": "",
+        "country": "",
+        "cqzone": "",
+        "ituzone": "",
+        "license": "",
+        "latitude": "",
+        "longitude": "",
+        "stationtxrx": "",
+        "power": "",
+        "antenna": "",
+        "antheight": "",
+        "asl": "",
+        "section": "",
+        "roverqth": "",
+        "club": "",
+        "email": "",
     }
     appstarted = False
     contest = None
@@ -202,11 +224,59 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.accepted.connect(self.save_settings)
         if self.pref.get("dark_mode"):
             self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.settings_dialog.Call.setText(self.pref.get("callsign", ""))
+        self.settings_dialog.Name.setText(self.pref.get("name", ""))
+        self.settings_dialog.Address1.setText(self.pref.get("address1", ""))
+        self.settings_dialog.Address2.setText(self.pref.get("address2", ""))
+        self.settings_dialog.City.setText(self.pref.get("city", ""))
+        self.settings_dialog.State.setText(self.pref.get("state", ""))
+        self.settings_dialog.Zip.setText(self.pref.get("zip", ""))
+        self.settings_dialog.Country.setText(self.pref.get("country", ""))
+        self.settings_dialog.GridSquare.setText(self.pref.get("gridsquare", ""))
+        self.settings_dialog.CQZone.setText(self.pref.get("cqzone", ""))
+        self.settings_dialog.ITUZone.setText(self.pref.get("ituzone", ""))
+        self.settings_dialog.License.setText(self.pref.get("license", ""))
+        self.settings_dialog.Latitude.setText(self.pref.get("latitude", ""))
+        self.settings_dialog.Longitude.setText(self.pref.get("longitude", ""))
+        self.settings_dialog.StationTXRX.setText(self.pref.get("stationtxrx", ""))
+        self.settings_dialog.Power.setText(self.pref.get("power", ""))
+        self.settings_dialog.Antenna.setText(self.pref.get("antenna", ""))
+        self.settings_dialog.AntHeight.setText(self.pref.get("antheight", ""))
+        self.settings_dialog.ASL.setText(self.pref.get("asl", ""))
+        self.settings_dialog.ARRLSection.setText(self.pref.get("section", ""))
+        self.settings_dialog.RoverQTH.setText(self.pref.get("roverqth", ""))
+        self.settings_dialog.Club.setText(self.pref.get("club", ""))
+        self.settings_dialog.Email.setText(self.pref.get("email", ""))
         self.settings_dialog.open()
 
     def save_settings(self):
         # self.settings_dialog.object.text():
+        cs = self.settings_dialog.Call.text()
+        self.pref["callsign"] = cs.upper()
+        self.pref["name"] = self.settings_dialog.Name.text()
+        self.pref["address1"] = self.settings_dialog.Address1.text()
+        self.pref["address2"] = self.settings_dialog.Address2.text()
+        self.pref["city"] = self.settings_dialog.City.text()
+        self.pref["state"] = self.settings_dialog.State.text()
+        self.pref["zip"] = self.settings_dialog.Zip.text()
+        self.pref["country"] = self.settings_dialog.Country.text()
+        self.pref["gridsquare"] = self.settings_dialog.GridSquare.text()
+        self.pref["cqzone"] = self.settings_dialog.CQZone.text()
+        self.pref["ituzone"] = self.settings_dialog.ITUZone.text()
+        self.pref["license"] = self.settings_dialog.License.text()
+        self.pref["latitude"] = self.settings_dialog.Latitude.text()
+        self.pref["longitude"] = self.settings_dialog.Longitude.text()
+        self.pref["stationtxrx"] = self.settings_dialog.StationTXRX.text()
+        self.pref["power"] = self.settings_dialog.Power.text()
+        self.pref["antenna"] = self.settings_dialog.Antenna.text()
+        self.pref["antheight"] = self.settings_dialog.AntHeight.text()
+        self.pref["asl"] = self.settings_dialog.ASL.text()
+        self.pref["section"] = self.settings_dialog.ARRLSection.text()
+        self.pref["roverqth"] = self.settings_dialog.RoverQTH.text()
+        self.pref["club"] = self.settings_dialog.Club.text()
+        self.pref["email"] = self.settings_dialog.Email.text()
         self.settings_dialog.close()
+        self.write_preference()
 
     def select_contest(self):
         self.contest = doimp("arrl_field_day")
@@ -599,11 +669,17 @@ class EditSettings(QtWidgets.QDialog):
         super().__init__(None)
         uic.loadUi(WORKING_PATH + "/data/settings.ui", self)
         self.buttonBox.clicked.connect(self.store)
+        self.GridSquare.textEdited.connect(self.gridchanged)
 
     def store(self):
         """dialog magic"""
         ...
         # self.accept()
+
+    def gridchanged(self):
+        lat, lon = gridtolatlon(self.GridSquare.text())
+        self.Latitude.setText(str(round(lat, 4)))
+        self.Longitude.setText(str(round(lon, 4)))
 
 
 class EditMacro(QtWidgets.QDialog):
