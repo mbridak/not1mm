@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1975</width>
-    <height>350</height>
+    <height>366</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,12 +19,19 @@
   <property name="font">
    <font>
     <family>JetBrains Mono</family>
+    <pointsize>11</pointsize>
    </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>NOT1MM</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
      <number>10</number>
@@ -165,6 +172,9 @@
                    <pointsize>25</pointsize>
                   </font>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -190,6 +200,9 @@
                    <family>JetBrains Mono</family>
                    <pointsize>25</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                 </widget>
                </item>
@@ -217,6 +230,9 @@
                    <pointsize>25</pointsize>
                   </font>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -228,7 +244,7 @@
                <item>
                 <widget class="QLabel" name="other_label">
                  <property name="text">
-                  <string>OTHER</string>
+                  <string>OTHER_1</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -236,12 +252,15 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="other">
+                <widget class="QLineEdit" name="other_1">
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>25</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                 </widget>
                </item>
@@ -257,7 +276,10 @@
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
-                  <string>OTHER2</string>
+                  <string>OTHER_2</string>
+                 </property>
+                 <property name="textFormat">
+                  <enum>Qt::AutoText</enum>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
@@ -268,12 +290,15 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="lineEdit">
+                <widget class="QLineEdit" name="other_2">
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>25</pointsize>
                   </font>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                 </widget>
                </item>
@@ -315,6 +340,13 @@
               </property>
               <property name="text">
                <string>S&amp;&amp;P</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="cw_speed">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
              </widget>
             </item>
