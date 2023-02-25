@@ -41,6 +41,9 @@ except ModuleNotFoundError:
     from lib.lookup import QRZlookup
     from lib.version import __version__
 
+# os.environ["QT_QPA_PLATFORM"] = "wayland"
+os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+os.environ["QT_STYLE_OVERRIDE"] = "Fusion"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -145,13 +148,12 @@ class MainWindow(QtWidgets.QMainWindow):
     fkeys = {}
 
     def __init__(self, *args, **kwargs):
-        logger.info("MainWindow: __init__")
         super().__init__(*args, **kwargs)
+        logger.info("MainWindow: __init__")
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
 
-        self.next_field = self.other
-        self.field4.hide()
+        self.next_field = self.other_1
         self.actionCW_Macros.triggered.connect(self.cw_macros_stateChanged)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_stateChange)
         self.actionMode_and_Bands.triggered.connect(self.show_band_mode_stateChange)
@@ -218,6 +220,92 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
 
+    def keyPressEvent(self, event):  # fixme
+        """This overrides Qt key event."""
+        logger.debug("***************key event***************")
+        modifier = event.modifiers()
+        if event.key() == Qt.Key.Key_Escape:
+            self.clearinputs()
+        # if self.cw is not None and modifier == Qt.ControlModifier:
+        #     if self.cw.servertype == 1:
+        #         self.cw.sendcw("\x1b4")
+        # if event.key() == Qt.Key.Key_PageUp:
+        #     if self.cw is not None:
+        #         if self.cw.servertype == 1:
+        #             self.cw.speed += 1
+        #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        # if event.key() == Qt.Key.Key_PageDown:
+        #     if self.cw is not None:
+        #         if self.cw.servertype == 1:
+        #             self.cw.speed -= 1
+        #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        # if event.key() == Qt.Key.Key_Tab:
+        #     if self.section_entry.hasFocus():
+        #         logger.debug("From section")
+        #         self.callsign_entry.setFocus()
+        #         self.callsign_entry.deselect()
+        #         self.callsign_entry.end(False)
+        #         return
+        #     if self.class_entry.hasFocus():
+        #         logger.debug("From class")
+        #         self.section_entry.setFocus()
+        #         self.section_entry.deselect()
+        #         self.section_entry.end(False)
+        #         return
+        #     if self.callsign_entry.hasFocus():
+        #         logger.debug("From callsign")
+        #         cse = self.callsign_entry.text()
+        #         # if len(cse):
+        #         #     if cse[0] == ".":
+        #         #         self.keyboardcommand(cse)
+        #         #         return
+        #         #     else:
+        #         #         _thethread = threading.Thread(
+        #         #             target=self.lazy_lookup,
+        #         #             args=(self.callsign_entry.text(),),
+        #         #             daemon=True,
+        #         #         )
+        #         #         _thethread.start()
+        #         self.class_entry.setFocus()
+        #         self.class_entry.deselect()
+        #         self.class_entry.end(False)
+        #         return
+        if event.key() == Qt.Key_F1:
+            self.sendf1()
+        if event.key() == Qt.Key_F2:
+            self.sendf2()
+        if event.key() == Qt.Key_F3:
+            self.sendf3()
+        if event.key() == Qt.Key_F4:
+            self.sendf4()
+        if event.key() == Qt.Key_F5:
+            self.sendf5()
+        if event.key() == Qt.Key_F6:
+            self.sendf6()
+        if event.key() == Qt.Key_F7:
+            self.sendf7()
+        if event.key() == Qt.Key_F8:
+            self.sendf8()
+        if event.key() == Qt.Key_F9:
+            self.sendf9()
+        if event.key() == Qt.Key_F10:
+            self.sendf10()
+        if event.key() == Qt.Key_F11:
+            self.sendf11()
+        if event.key() == Qt.Key_F12:
+            self.sendf12()
+
+    def clearinputs(self):
+        """Clears the text input fields and sets focus to callsign field."""
+        self.heading_distance.setText("No Heading")
+        self.dx_entity.setText("")
+        self.callsign.clear()
+        self.sent.setText("59")
+        self.receive.setText("59")
+        self.other_1.clear()
+        self.other_2.clear()
+        self.callsign.setFocus()
+
     def preference_selected(self):
         logger.debug("Preference selected")
         self.settings_dialog = EditSettings()
@@ -279,7 +367,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
 
     def select_contest(self):
-        self.contest = doimp("arrl_field_day")
+        self.contest = doimp("general_logging")
         logger.debug(f"Loaded Contest Name = {self.contest.name}")
         self.contest.interface(self)
         ...
@@ -529,30 +617,34 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_callsign(text)
             self.check_callsign2(text)
             self.next_field.setFocus()
+            return
+        self.check_callsign(stripped_text)
 
     def check_callsign(self, callsign):
         result = cty_lookup(callsign)
 
-        print(result)
-        for a in result.items():
-            entity = a[1].get("entity")
-            cq = a[1].get("cq")
-            itu = a[1].get("itu")
-            continent = a[1].get("continent")
-            lat = float(a[1].get("lat"))
-            lon = float(a[1].get("long"))
-            lon = lon * -1  # cty.dat file inverts longitudes
-            primary_pfx = a[1].get("primary_pfx")
-            heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
-            kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
-            self.heading_distance.setText(
-                f"heading {heading}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
-            )
-            self.dx_entity.setText(
-                f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
-            )
+        logger.debug(f"{result}")
+        if result:
+            for a in result.items():
+                entity = a[1].get("entity")
+                cq = a[1].get("cq")
+                itu = a[1].get("itu")
+                continent = a[1].get("continent")
+                lat = float(a[1].get("lat"))
+                lon = float(a[1].get("long"))
+                lon = lon * -1  # cty.dat file inverts longitudes
+                primary_pfx = a[1].get("primary_pfx")
+                heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
+                kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
+                self.heading_distance.setText(
+                    f"Regional Hdg {heading}° LP {reciprocol(heading)}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
+                )
+                self.dx_entity.setText(
+                    f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
+                )
 
     def check_callsign2(self, callsign):  # fixme
+        logger.debug(f"{callsign}, {self.look_up}")
         if hasattr(self.look_up, "session"):
             if self.look_up.session:
                 response = self.look_up.lookup(callsign)
@@ -564,7 +656,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         heading = bearing(self.pref.get("gridsquare"), theirgrid)
                         kilometers = distance(self.pref.get("gridsquare"), theirgrid)
                         self.heading_distance.setText(
-                            f"heading {heading}° / distance {int(kilometers*0.621371)}mi {kilometers}km {theirgrid}"
+                            f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
                         )
                     # self.dx_entity.setText(f"{theircountry}")
                 # else:
@@ -774,7 +866,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Fusion")
+# app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
@@ -785,6 +877,7 @@ x = window.pref.get("window_x")
 y = window.pref.get("window_y")
 window.setGeometry(x, y, width, height)
 window.setWindowTitle(f"Not1MM v{__version__}")
+window.callsign.setFocus()
 window.show()
 timer = QtCore.QTimer()
 timer.timeout.connect(window.poll_radio)
