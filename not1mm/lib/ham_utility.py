@@ -32,7 +32,7 @@ def gridtolatlon(maiden):
         lat += (ord(maiden[7])) * 2.5 / 600
 
     logger.debug(f"lat:{lat} lon:{lon}")
-    return lat, lon
+    return round(lat, 4), round(lon, 4)
 
 
 def getband(freq: str) -> str:
@@ -166,6 +166,14 @@ def bearing(grid1: str, grid2: str) -> float:
         brng += 360
 
     return round(brng)
+
+
+def reciprocol(bearing):
+    """return back of the beam heading"""
+    bearing += 180
+    if bearing > 360:
+        bearing -= 360
+    return bearing
 
 
 def bearing_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
