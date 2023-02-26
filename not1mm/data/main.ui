@@ -721,6 +721,8 @@
      <string>File</string>
     </property>
     <addaction name="actionPreferences"/>
+    <addaction name="actionQRZ_Settings"/>
+    <addaction name="actionConnection_Settings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -807,7 +809,17 @@
   </action>
   <action name="actionPreferences">
    <property name="text">
-    <string>Preferences</string>
+    <string>Station Settings</string>
+   </property>
+  </action>
+  <action name="actionQRZ_Settings">
+   <property name="text">
+    <string>QRZ Settings</string>
+   </property>
+  </action>
+  <action name="actionConnection_Settings">
+   <property name="text">
+    <string>Connection Settings</string>
    </property>
   </action>
  </widget>
