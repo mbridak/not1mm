@@ -324,6 +324,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["lookuppassword"] = self.qrz_dialog.password.text()
         self.qrz_dialog.close()
         self.write_preference()
+        self.readpreferences()
 
     def preference_selected(self):
         logger.debug("Preference selected")
@@ -384,6 +385,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["email"] = self.settings_dialog.Email.text()
         self.settings_dialog.close()
         self.write_preference()
+        self.readpreferences()
 
     def select_contest(self):
         self.contest = doimp("general_logging")
