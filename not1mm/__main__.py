@@ -159,6 +159,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionMode_and_Bands.triggered.connect(self.show_band_mode_stateChange)
         self.actionDark_Mode.triggered.connect(self.dark_mode_stateChange)
         self.actionPreferences.triggered.connect(self.preference_selected)
+        self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -305,6 +306,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_1.clear()
         self.other_2.clear()
         self.callsign.setFocus()
+
+    def qrz_preference_selected(self):
+        logger.debug("QRZ preference selected")
+        self.qrz_dialog = UseQRZ()
+        self.qrz_dialog.accepted.connect(self.save_qrz_settings)
+        if self.pref.get("dark_mode"):
+            self.qrz_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.qrz_dialog.useqrz.setChecked(self.pref.get("useqrz", False))
+        self.qrz_dialog.username.setText(self.pref.get("lookupusername", ""))
+        self.qrz_dialog.password.setText(self.pref.get("lookuppassword", ""))
+        self.qrz_dialog.open()
+
+    def save_qrz_settings(self):
+        self.pref["useqrz"] = self.qrz_dialog.useqrz.isChecked()
+        self.pref["lookupusername"] = self.qrz_dialog.username.text()
+        self.pref["lookuppassword"] = self.qrz_dialog.password.text()
+        self.qrz_dialog.close()
+        self.write_preference()
 
     def preference_selected(self):
         logger.debug("Preference selected")
@@ -752,6 +771,19 @@ class MainWindow(QtWidgets.QMainWindow):
         if "F12" in keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
+
+
+class UseQRZ(QtWidgets.QDialog):
+    """QRZ settings"""
+
+    def __init__(self):
+        super().__init__(None)
+        uic.loadUi(WORKING_PATH + "/data/use_qrz_dialog.ui", self)
+        self.buttonBox.clicked.connect(self.store)
+
+    def store(self):
+        """dialog magic"""
+        ...
 
 
 class EditSettings(QtWidgets.QDialog):
