@@ -17,3 +17,19 @@ def interface(self):
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Comment")
     ...
+
+
+def set_tab_next(self):
+    self.tab_next = {
+        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
+        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+    }

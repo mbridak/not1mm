@@ -43,7 +43,7 @@ except ModuleNotFoundError:
 
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-os.environ["QT_STYLE_OVERRIDE"] = "Fusion"
+# os.environ["QT_STYLE_OVERRIDE"] = "Fusion"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -240,37 +240,62 @@ class MainWindow(QtWidgets.QMainWindow):
         #         if self.cw.servertype == 1:
         #             self.cw.speed -= 1
         #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
-        # if event.key() == Qt.Key.Key_Tab:
-        #     if self.section_entry.hasFocus():
-        #         logger.debug("From section")
-        #         self.callsign_entry.setFocus()
-        #         self.callsign_entry.deselect()
-        #         self.callsign_entry.end(False)
-        #         return
-        #     if self.class_entry.hasFocus():
-        #         logger.debug("From class")
-        #         self.section_entry.setFocus()
-        #         self.section_entry.deselect()
-        #         self.section_entry.end(False)
-        #         return
-        #     if self.callsign_entry.hasFocus():
-        #         logger.debug("From callsign")
-        #         cse = self.callsign_entry.text()
-        #         # if len(cse):
-        #         #     if cse[0] == ".":
-        #         #         self.keyboardcommand(cse)
-        #         #         return
-        #         #     else:
-        #         #         _thethread = threading.Thread(
-        #         #             target=self.lazy_lookup,
-        #         #             args=(self.callsign_entry.text(),),
-        #         #             daemon=True,
-        #         #         )
-        #         #         _thethread.start()
-        #         self.class_entry.setFocus()
-        #         self.class_entry.deselect()
-        #         self.class_entry.end(False)
-        #         return
+        if event.key() == Qt.Key.Key_Tab:
+            if self.sent.hasFocus():
+                logger.debug("Sent")
+                next_tab = self.tab_next.get(self.sent)
+                logger.debug(f"{next_tab}")
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
+                return
+            if self.receive.hasFocus():
+                logger.debug("From receive")
+                next_tab = self.tab_next.get(self.receive)
+                logger.debug(f"{next_tab}")
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
+                return
+            if self.other_1.hasFocus():
+                logger.debug("From other_1")
+                next_tab = self.tab_next.get(self.other_1)
+                logger.debug(f"{next_tab}")
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
+                return
+            if self.other_2.hasFocus():
+                logger.debug("From other_2")
+                next_tab = self.tab_next.get(self.other_2)
+                logger.debug(f"{next_tab}")
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
+                return
+            if self.callsign.hasFocus():
+                logger.debug("From callsign")
+                next_tab = self.tab_next.get(self.callsign)
+                logger.debug(f"{next_tab}")
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
+                # cse = self.callsign_entry.text()
+                # if len(cse):
+                #     if cse[0] == ".":
+                #         self.keyboardcommand(cse)
+                #         return
+                #     else:
+                #         _thethread = threading.Thread(
+                #             target=self.lazy_lookup,
+                #             args=(self.callsign_entry.text(),),
+                #             daemon=True,
+                #         )
+                #         _thethread.start()
+                # self.class_entry.setFocus()
+                # self.class_entry.deselect()
+                # self.class_entry.end(False)
+                return
         if event.key() == Qt.Key_F1:
             self.sendf1()
         if event.key() == Qt.Key_F2:
@@ -391,6 +416,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest = doimp("general_logging")
         logger.debug(f"Loaded Contest Name = {self.contest.name}")
         self.contest.interface(self)
+        self.contest.set_tab_next(self)
         ...
 
     def edit_macro(self, function_key):
@@ -540,6 +566,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("lookupusername"),
                 self.pref.get("lookuppassword"),
             )
+        else:
+            self.look_up = None
         if self.pref.get("run_state"):
             self.radioButton_run.setChecked(True)
         else:
