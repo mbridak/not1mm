@@ -223,7 +223,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def keyPressEvent(self, event):  # fixme
         """This overrides Qt key event."""
-        logger.debug("***************key event***************")
         modifier = event.modifiers()
         if event.key() == Qt.Key.Key_Escape:
             self.clearinputs()
@@ -240,46 +239,71 @@ class MainWindow(QtWidgets.QMainWindow):
         #         if self.cw.servertype == 1:
         #             self.cw.speed -= 1
         #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
-        if event.key() == Qt.Key.Key_Tab:
+        if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
-                logger.debug("Sent")
-                next_tab = self.tab_next.get(self.sent)
-                logger.debug(f"{next_tab}")
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
+                logger.debug("From sent")
+                if modifier == Qt.ShiftModifier:
+                    prev_tab = self.tab_prev.get(self.sent)
+                    prev_tab.setFocus()
+                    prev_tab.deselect()
+                    prev_tab.end(False)
+                else:
+                    next_tab = self.tab_next.get(self.sent)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
                 return
             if self.receive.hasFocus():
                 logger.debug("From receive")
-                next_tab = self.tab_next.get(self.receive)
-                logger.debug(f"{next_tab}")
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
+                if modifier == Qt.ShiftModifier:
+                    prev_tab = self.tab_prev.get(self.receive)
+                    prev_tab.setFocus()
+                    prev_tab.deselect()
+                    prev_tab.end(False)
+                else:
+                    next_tab = self.tab_next.get(self.receive)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
                 return
             if self.other_1.hasFocus():
                 logger.debug("From other_1")
-                next_tab = self.tab_next.get(self.other_1)
-                logger.debug(f"{next_tab}")
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
+                if modifier == Qt.ShiftModifier:
+                    prev_tab = self.tab_prev.get(self.other_1)
+                    prev_tab.setFocus()
+                    prev_tab.deselect()
+                    prev_tab.end(False)
+                else:
+                    next_tab = self.tab_next.get(self.other_1)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
                 return
             if self.other_2.hasFocus():
                 logger.debug("From other_2")
-                next_tab = self.tab_next.get(self.other_2)
-                logger.debug(f"{next_tab}")
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
+                if modifier == Qt.ShiftModifier:
+                    prev_tab = self.tab_prev.get(self.other_2)
+                    prev_tab.setFocus()
+                    prev_tab.deselect()
+                    prev_tab.end(False)
+                else:
+                    next_tab = self.tab_next.get(self.other_2)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
                 return
             if self.callsign.hasFocus():
                 logger.debug("From callsign")
-                next_tab = self.tab_next.get(self.callsign)
-                logger.debug(f"{next_tab}")
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
+                if modifier == Qt.ShiftModifier:
+                    prev_tab = self.tab_prev.get(self.callsign)
+                    prev_tab.setFocus()
+                    prev_tab.deselect()
+                    prev_tab.end(False)
+                else:
+                    next_tab = self.tab_next.get(self.callsign)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
                 # cse = self.callsign_entry.text()
                 # if len(cse):
                 #     if cse[0] == ".":
@@ -415,9 +439,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def select_contest(self):
         self.contest = doimp("general_logging")
         logger.debug(f"Loaded Contest Name = {self.contest.name}")
-        self.contest.interface(self)
-        self.contest.set_tab_next(self)
-        ...
+        self.contest.init_contest(self)
 
     def edit_macro(self, function_key):
         self.edit_macro_dialog = EditMacro(function_key)
@@ -910,7 +932,7 @@ def run():
     sys.exit(app.exec())
 
 
-logger = logging.getLogger("__name__")
+logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",
