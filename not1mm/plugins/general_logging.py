@@ -7,6 +7,12 @@ mode = "BOTH"  # CW SSB BOTH RTTY
 dupe_type = 4
 
 
+def init_contest(self):
+    set_tab_next(self)
+    set_tab_prev(self)
+    interface(self)
+
+
 def interface(self):
     self.field1.show()
     self.field2.show()
@@ -16,7 +22,6 @@ def interface(self):
     label.setText("Name")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Comment")
-    ...
 
 
 def set_tab_next(self):
@@ -32,4 +37,20 @@ def set_tab_next(self):
             QtWidgets.QLineEdit
         ),
         self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+    }
+
+
+def set_tab_prev(self):
+    self.tab_prev = {
+        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
+        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
+            QtWidgets.QLineEdit
+        ),
     }
