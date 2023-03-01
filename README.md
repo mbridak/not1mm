@@ -40,6 +40,7 @@ The current state is "Not Working". I literally just dragged some widgets out on
 
 ## Changes of note
 
+- [23.3.1] Add shift tab for field movement.
 - [23.2.23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
 - [23-2-22] Added cty.dat file.
 - [23-2-21] Added edit macro dialog.
@@ -90,11 +91,13 @@ You can edit the CW macros by right clicking on the buttons and filling out the 
 
 ## cty.dat and QRZ lookups for distance and bearing
 
-When a callsign is entered, a look up is first done in a cty.dat file to determin the country of origin, geographic center, cq zone and ITU region. Great circle calculations are done to determin the heading and distance from your gridsquare. This information then displayed at the bottom left.
+When a callsign is entered, a look up is first done in a cty.dat file to determin the country of origin, geographic center, cq zone and ITU region. Great circle calculations are done to determin the heading and distance from your gridsquare to the grographic center. This information then displayed at the bottom left.
 
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance.png)
 
-After this, a request is made to QRZ for the gridsquare of the callsign. If there is a response the information is recalculated and displayed. You'll know is this has happened, since the gridsquare will be shown after the distance.
+After this, a request is made to QRZ for the gridsquare of the callsign. If there is a response the information is recalculated and displayed. You'll know is this has happened, since the gridsquare will replace the word "Regional".
+
+![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance_qrz.png)
 
 ## Settings dialog
 
