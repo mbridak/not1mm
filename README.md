@@ -10,6 +10,7 @@
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [What it is not](#what-it-is-not)
+  - [What it probably never will be](#what-it-probably-never-will-be)
   - [Changes of note](#changes-of-note)
   - [Running from source](#running-from-source)
   - [Hiding screen elements](#hiding-screen-elements)
@@ -26,7 +27,7 @@ If you use Windows(tm) you should run their, or some other, program.
 
 I personally don't. While it may be possible to get N1MM working under Wine, I haven't checked, I'd rather not have to jump thru the hoops.
 
-Currently this exists for my own personal amusement.
+**Currently this exists for my own personal amusement**.
 Something to do in my free time.
 While I'm not watching TV, Right vs Left political 'News' programs, mind numbing 'Reality' TV etc...
 
@@ -34,7 +35,11 @@ While I'm not watching TV, Right vs Left political 'News' programs, mind numbing
 
 Working.
 
-The current state is "Not Working". I literally just dragged some widgets out on a Qt Designer window, and wrote a couple stubs to display the interface. Next to nothing is working or useful.
+The current state is "**Not Working**". I literally just dragged some widgets out on a Qt Designer window, and wrote a couple stubs to display the interface. Next to nothing is working or useful.
+
+## What it probably never will be
+
+Feature complete.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
@@ -105,4 +110,6 @@ Added a settings screen.
 
 ![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
 
-You can fill it out if you want to.
+You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of yours.
+
+You can fill. You can fill. Everyone look at your keys.
