@@ -31,7 +31,7 @@ def gridtolatlon(maiden):
         lon += (ord(maiden[6])) * 5.0 / 600
         lat += (ord(maiden[7])) * 2.5 / 600
 
-    logger.debug(f"lat:{lat} lon:{lon}")
+    logger.debug("lat:%d lon:%d", lat, lon)
     return round(lat, 4), round(lon, 4)
 
 
@@ -122,8 +122,8 @@ def update_time() -> None:
     """
     Update local and UTC time on screen.
     """
-    now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
-    utcnow = datetime.utcnow().isoformat(" ")[5:19].replace("-", "/")
+    _now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
+    _utcnow = datetime.utcnow().isoformat(" ")[5:19].replace("-", "/")
     # self.localtime.setText(now)
     # self.utctime.setText(utcnow)
 
@@ -168,12 +168,12 @@ def bearing(grid1: str, grid2: str) -> float:
     return round(brng)
 
 
-def reciprocol(bearing):
+def reciprocol(heading):
     """return back of the beam heading"""
-    bearing += 180
-    if bearing > 360:
-        bearing -= 360
-    return bearing
+    heading += 180
+    if heading > 360:
+        heading -= 360
+    return heading
 
 
 def bearing_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
@@ -182,7 +182,7 @@ def bearing_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
     Takes Yourgrid, Theirgrid, returns a float
     """
     lat1, lon1 = gridtolatlon(grid1)
-    logger.debug(f"lat1:{lat1} lon1:{lon1} lat2:{lat2} lon2:{lon2}")
+    logger.debug("lat1:%d lon1:%d lat2:%d lon2:%d", lat1, lon1, lat2, lon2)
     # lat2, lon2 = gridtolatlon(grid2)
     lat1 = radians(lat1)
     lon1 = radians(lon1)
@@ -214,6 +214,6 @@ def distance_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
     Takes two maidenhead gridsquares and returns the distance between the two in kilometers.
     """
     lat1, lon1 = gridtolatlon(grid1)
-    logger.debug(f"lat1:{lat1} lon1:{lon1} lat2:{lat2} lon2:{lon2}")
+    logger.debug("lat1:%d lon1:%d lat2:%d lon2:%d", lat1, lon1, lat2, lon2)
     # lat2, lon2 = gridtolatlon(grid2)
     return round(haversine(lon1, lat1, lon2, lat2))
