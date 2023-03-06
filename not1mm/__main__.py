@@ -2,7 +2,7 @@
 """
 NOT1MM Logger
 """
-# pylint: disable=unused-import, c-extension-no-member
+# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name
 
 import importlib
 import logging
@@ -28,18 +28,22 @@ from PyQt5.QtCore import (
 )  # pylint: disable=no-name-in-module
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
-try:
-    from not1mm.lib.cat_interface import CAT
-    from not1mm.lib.cwinterface import CW
-    from not1mm.lib.ham_utility import *
-    from not1mm.lib.lookup import QRZlookup
-    from not1mm.lib.version import __version__
-except ModuleNotFoundError:
-    from lib.cat_interface import CAT
-    from lib.cwinterface import CW
-    from lib.ham_utility import *
-    from lib.lookup import QRZlookup
-    from lib.version import __version__
+from not1mm.lib.cat_interface import CAT
+from not1mm.lib.cwinterface import CW
+from not1mm.lib.edit_settings import EditSettings
+from not1mm.lib.edit_macro import EditMacro
+from not1mm.lib.edit_opon import OpOn
+from not1mm.lib.qrz_dialog import UseQRZ
+from not1mm.lib.ham_utility import (
+    bearing,
+    distance,
+    reciprocol,
+    bearing_with_latlon,
+    distance_with_latlon,
+)
+from not1mm.lib.lookup import QRZlookup
+from not1mm.lib.version import __version__
+
 
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
@@ -76,22 +80,22 @@ with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as fd:
 
 DARK_STYLESHEET = ""
 
-with open(WORKING_PATH + "/data/Combinear.qss") as stylefile:
+with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
     DARK_STYLESHEET = stylefile.read()
 
 
 def cty_lookup(callsign: str):
+    """Lookup callsign in cty.dat file"""
     callsign = callsign.upper()
-    for x in reversed(range(len(callsign))):
-        searchitem = callsign[: x + 1]
+    for count in reversed(range(len(callsign))):
+        searchitem = callsign[: count + 1]
         result = {key: val for key, val in CTYFILE.items() if key == searchitem}
         if not result:
             continue
         if result.get(searchitem).get("exact_match"):
             if searchitem == callsign:
                 return result
-            else:
-                continue
+            continue
         return result
 
 
@@ -146,6 +150,10 @@ class MainWindow(QtWidgets.QMainWindow):
     look_up = None
     run_state = False
     fkeys = {}
+    qrz_dialog = None
+    settings_dialog = None
+    edit_macro_dialog = None
+    opon_dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -154,10 +162,10 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(data_path, self)
 
         self.next_field = self.other_1
-        self.actionCW_Macros.triggered.connect(self.cw_macros_stateChanged)
-        self.actionCommand_Buttons.triggered.connect(self.command_buttons_stateChange)
-        self.actionMode_and_Bands.triggered.connect(self.show_band_mode_stateChange)
-        self.actionDark_Mode.triggered.connect(self.dark_mode_stateChange)
+        self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
+        self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
+        self.actionMode_and_Bands.triggered.connect(self.show_band_mode_state_change)
+        self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
         self.actionPreferences.triggered.connect(self.preference_selected)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
@@ -213,18 +221,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.read_cw_macros()
         self.rig_control = CAT("rigctld", "localhost", 4532)
 
-    def closeEvent(self, e):
-        # Write window size and position to config file
+    def closeEvent(self, _event):
+        """
+        Write window size and position to config file
+        """
         self.pref["window_width"] = self.size().width()
         self.pref["window_height"] = self.size().height()
         self.pref["window_x"] = self.pos().x()
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
 
-    def keyPressEvent(self, event):  # fixme
+    def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This overrides Qt key event."""
         modifier = event.modifiers()
-        if event.key() == Qt.Key.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:  # pylint: disable=no-member
             self.clearinputs()
         # if self.cw is not None and modifier == Qt.ControlModifier:
         #     if self.cw.servertype == 1:
@@ -357,8 +367,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setFocus()
 
     def qrz_preference_selected(self):
+        """Show QRZ settings dialog"""
         logger.debug("QRZ preference selected")
-        self.qrz_dialog = UseQRZ()
+        self.qrz_dialog = UseQRZ(WORKING_PATH)
         self.qrz_dialog.accepted.connect(self.save_qrz_settings)
         if self.pref.get("dark_mode"):
             self.qrz_dialog.setStyleSheet(DARK_STYLESHEET)
@@ -368,6 +379,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.qrz_dialog.open()
 
     def save_qrz_settings(self):
+        """Save QRZ settings"""
         self.pref["useqrz"] = self.qrz_dialog.useqrz.isChecked()
         self.pref["lookupusername"] = self.qrz_dialog.username.text()
         self.pref["lookuppassword"] = self.qrz_dialog.password.text()
@@ -376,8 +388,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readpreferences()
 
     def preference_selected(self):
+        """Show settings dialog"""
         logger.debug("Preference selected")
-        self.settings_dialog = EditSettings()
+        self.settings_dialog = EditSettings(WORKING_PATH)
         self.settings_dialog.accepted.connect(self.save_settings)
         if self.pref.get("dark_mode"):
             self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
@@ -407,6 +420,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.open()
 
     def save_settings(self):
+        """Save settings"""
         # self.settings_dialog.object.text():
         cs = self.settings_dialog.Call.text()
         self.pref["callsign"] = cs.upper()
@@ -437,18 +451,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readpreferences()
 
     def select_contest(self):
+        """Load contest"""
         self.contest = doimp("general_logging")
-        logger.debug(f"Loaded Contest Name = {self.contest.name}")
+        logger.debug("Loaded Contest Name = %s", self.contest.name)
         self.contest.init_contest(self)
 
     def edit_macro(self, function_key):
-        self.edit_macro_dialog = EditMacro(function_key)
+        """Show edit macro dialog"""
+        self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         if self.pref.get("dark_mode"):
             self.edit_macro_dialog.setStyleSheet(DARK_STYLESHEET)
         self.edit_macro_dialog.open()
 
     def edited_macro(self):
+        """Save edited macro"""
         self.edit_macro_dialog.function_key.setText(
             self.edit_macro_dialog.macro_label.text()
         )
@@ -459,90 +476,115 @@ class MainWindow(QtWidgets.QMainWindow):
         # logger.debug(f"{self.current_op}")
 
     def edit_F1(self):
+        """stub"""
         logger.debug("F1 Right Clicked.")
         self.edit_macro(self.F1)
 
     def edit_F2(self):
+        """stub"""
         logger.debug("F2 Right Clicked.")
         self.edit_macro(self.F2)
 
     def edit_F3(self):
+        """stub"""
         logger.debug("F3 Right Clicked.")
         self.edit_macro(self.F3)
 
     def edit_F4(self):
+        """stub"""
         logger.debug("F4 Right Clicked.")
         self.edit_macro(self.F4)
 
     def edit_F5(self):
+        """stub"""
         logger.debug("F5 Right Clicked.")
         self.edit_macro(self.F5)
 
     def edit_F6(self):
+        """stub"""
         logger.debug("F6 Right Clicked.")
         self.edit_macro(self.F6)
 
     def edit_F7(self):
+        """stub"""
         logger.debug("F7 Right Clicked.")
         self.edit_macro(self.F7)
 
     def edit_F8(self):
+        """stub"""
         logger.debug("F8 Right Clicked.")
         self.edit_macro(self.F8)
 
     def edit_F9(self):
+        """stub"""
         logger.debug("F9 Right Clicked.")
         self.edit_macro(self.F9)
 
     def edit_F10(self):
+        """stub"""
         logger.debug("F10 Right Clicked.")
         self.edit_macro(self.F10)
 
     def edit_F11(self):
+        """stub"""
         logger.debug("F11 Right Clicked.")
         self.edit_macro(self.F11)
 
     def edit_F12(self):
+        """stub"""
         logger.debug("F12 Right Clicked.")
         self.edit_macro(self.F12)
 
     def sendf1(self):
+        """stub"""
         logger.debug("F1 Clicked")
 
     def sendf2(self):
+        """stub"""
         logger.debug("F2 Clicked")
 
     def sendf3(self):
+        """stub"""
         logger.debug("F3 Clicked")
 
     def sendf4(self):
+        """stub"""
         logger.debug("F4 Clicked")
 
     def sendf5(self):
+        """stub"""
         logger.debug("F5 Clicked")
 
     def sendf6(self):
+        """stub"""
         logger.debug("F6 Clicked")
 
     def sendf7(self):
+        """stub"""
         logger.debug("F7 Clicked")
 
     def sendf8(self):
+        """stub"""
         logger.debug("F8 Clicked")
 
     def sendf9(self):
+        """stub"""
         logger.debug("F9 Clicked")
 
     def sendf10(self):
+        """stub"""
         logger.debug("F10 Clicked")
 
     def sendf11(self):
+        """stub"""
         logger.debug("F11 Clicked")
 
     def sendf12(self):
+        """stub"""
         logger.debug("F12 Clicked")
 
     def run_sp_buttons_clicked(self):
+        """Handle run/s&p mode"""
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
         self.read_cw_macros()
@@ -558,7 +600,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 file_descriptor.write(dumps(self.pref, indent=4))
                 logger.info("writing: %s", self.pref)
         except IOError as exception:
-            ...
             logger.critical("writepreferences: %s", exception)
 
     def readpreferences(self):
@@ -581,7 +622,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     file_descriptor.write(dumps(self.pref, indent=4))
                     logger.info("%s", self.pref)
         except IOError as exception:
-            ...
             logger.critical("Error: %s", exception)
         if self.pref.get("useqrz"):
             self.look_up = QRZlookup(
@@ -620,23 +660,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_CW_macros()
         self.show_band_mode()
 
-    def dark_mode_stateChange(self):
+    def dark_mode_state_change(self):
+        """darkmode dropdown checkmark changed"""
         self.pref["dark_mode"] = self.actionDark_Mode.isChecked()
         self.write_preference()
         self.dark_mode()
 
     def dark_mode(self):
+        """change display mode"""
         if self.pref.get("dark_mode"):
             self.setStyleSheet(DARK_STYLESHEET)
         else:
             self.setStyleSheet("")
 
-    def cw_macros_stateChanged(self):
+    def cw_macros_state_changed(self):
+        """Menu item to show/hide macro buttons"""
         self.pref["cw_macros"] = self.actionCW_Macros.isChecked()
         self.write_preference()
         self.show_CW_macros()
 
     def show_CW_macros(self):
+        """macro button state change"""
         if self.pref.get("cw_macros"):
             self.Button_Row1.show()
             self.Button_Row2.show()
@@ -644,29 +688,34 @@ class MainWindow(QtWidgets.QMainWindow):
             self.Button_Row1.hide()
             self.Button_Row2.hide()
 
-    def command_buttons_stateChange(self):
+    def command_buttons_state_change(self):
+        """Menu item to show/hide command buttons"""
         self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
         self.write_preference()
         self.show_command_buttons()
 
     def show_command_buttons(self):
+        """command button state change"""
         if self.pref.get("command_buttons"):
             self.Command_Buttons.show()
         else:
             self.Command_Buttons.hide()
 
-    def show_band_mode_stateChange(self):
+    def show_band_mode_state_change(self):
+        """Called when the mode and bads menu item changes"""
         self.pref["bands_modes"] = self.actionMode_and_Bands.isChecked()
         self.write_preference()
         self.show_band_mode()
 
     def show_band_mode(self):
+        """Hide or show band/mode indicator"""
         if self.actionMode_and_Bands.isChecked():
             self.Band_Mode_Frame.show()
         else:
             self.Band_Mode_Frame.hide()
 
     def callsign_changed(self):
+        """Called when text in the callsign field has changed"""
         text = self.callsign.text()
         text = text.upper()
         stripped_text = text.strip()
@@ -692,9 +741,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.check_callsign(stripped_text)
 
     def check_callsign(self, callsign):
+        """Check call as entered"""
         result = cty_lookup(callsign)
-
-        logger.debug(f"{result}")
+        debug_result = f"{result}"
+        logger.debug("%s", debug_result)
         if result:
             for a in result.items():
                 entity = a[1].get("entity")
@@ -708,33 +758,38 @@ class MainWindow(QtWidgets.QMainWindow):
                 heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
                 kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
                 self.heading_distance.setText(
-                    f"Regional Hdg {heading}° LP {reciprocol(heading)}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
+                    f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
+                    f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                 )
                 self.dx_entity.setText(
                     f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
                 )
 
-    def check_callsign2(self, callsign):  # fixme
-        logger.debug(f"{callsign}, {self.look_up}")
+    def check_callsign2(self, callsign):
+        """Check call once entered"""
+        debug_lookup = f"{self.look_up}"
+        logger.debug("%s, %s", callsign, debug_lookup)
         if hasattr(self.look_up, "session"):
             if self.look_up.session:
                 response = self.look_up.lookup(callsign)
-                logger.debug(f"The Response: {response}\n")
+                debug_response = f"{response}"
+                logger.debug("The Response: %s\n", debug_response)
                 if response:
                     theirgrid = response.get("grid")
-                    theircountry = response.get("country")
+                    _theircountry = response.get("country")
                     if self.pref.get("gridsquare"):
                         heading = bearing(self.pref.get("gridsquare"), theirgrid)
                         kilometers = distance(self.pref.get("gridsquare"), theirgrid)
                         self.heading_distance.setText(
-                            f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / distance {int(kilometers*0.621371)}mi {kilometers}km"
+                            f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                         )
                     # self.dx_entity.setText(f"{theircountry}")
                 # else:
                 # self.heading_distance.setText("Lookup failed.")
-            ...
 
     def setmode(self, mode: str) -> None:
+        """stub for when the mode changes."""
         if mode == "CW":
             self.mode.setText("CW")
             self.sent.setText("599")
@@ -746,22 +801,25 @@ class MainWindow(QtWidgets.QMainWindow):
             self.receive.setText("59")
 
     def get_opon(self):
-        self.opon_dialog = OpOn()
+        """Ctrl+O or OPON dialog"""
+        self.opon_dialog = OpOn(WORKING_PATH)
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
     def new_op(self):
+        """Save new OP"""
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text()
 
         self.opon_dialog.close()
-        logger.debug(f"New Op: {self.current_op}")
+        logger.debug("New Op: %s", self.current_op)
 
     def poll_radio(self):
+        """stub"""
         if self.rig_control.online:
             vfo = self.rig_control.get_vfo()
             mode = self.rig_control.get_mode()
-            logger.debug(f"VFO: {vfo}  MODE: {mode}")
+            logger.debug("VFO: %s  MODE: %s", vfo, mode)
 
     def read_cw_macros(self) -> None:
         """
@@ -784,7 +842,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     if mode.strip().upper() != "R" and not self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                 except ValueError as err:
-                    ...
                     logger.info("read_cw_macros: %s", err)
         keys = self.fkeys.keys()
         if "F1" in keys:
@@ -825,71 +882,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setToolTip(self.fkeys["F12"][1])
 
 
-class UseQRZ(QtWidgets.QDialog):
-    """QRZ settings"""
-
-    def __init__(self):
-        super().__init__(None)
-        uic.loadUi(WORKING_PATH + "/data/use_qrz_dialog.ui", self)
-        self.buttonBox.clicked.connect(self.store)
-
-    def store(self):
-        """dialog magic"""
-        ...
-
-
-class EditSettings(QtWidgets.QDialog):
-    """Edit Settings"""
-
-    def __init__(self):
-        super().__init__(None)
-        uic.loadUi(WORKING_PATH + "/data/settings.ui", self)
-        self.buttonBox.clicked.connect(self.store)
-        self.GridSquare.textEdited.connect(self.gridchanged)
-
-    def store(self):
-        """dialog magic"""
-        ...
-        # self.accept()
-
-    def gridchanged(self):
-        lat, lon = gridtolatlon(self.GridSquare.text())
-        self.Latitude.setText(str(round(lat, 4)))
-        self.Longitude.setText(str(round(lon, 4)))
-
-
-class EditMacro(QtWidgets.QDialog):
-    """Change the current operator"""
-
-    def __init__(self, function_key):
-        self.function_key = function_key
-        parent = None
-        super().__init__(parent)
-        uic.loadUi(WORKING_PATH + "/data/editmacro.ui", self)
-        self.buttonBox.clicked.connect(self.store)
-        self.macro_label.setText(function_key.text())
-        self.the_macro.setText(function_key.toolTip())
-
-    def store(self):
-        """dialog magic"""
-        ...
-        # self.accept()
-
-
-class OpOn(QtWidgets.QDialog):
-    """Change the current operator"""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        uic.loadUi(WORKING_PATH + "/data/opon.ui", self)
-        self.buttonBox.clicked.connect(self.store)
-
-    def store(self):
-        """dialog magic"""
-        ...
-        # self.accept()
-
-
 def load_fonts_from_dir(directory: str) -> set:
     """
     Well it loads fonts from a directory...
@@ -902,6 +894,7 @@ def load_fonts_from_dir(directory: str) -> set:
 
 
 def install_icons():
+    """Install icons"""
     os.system(
         "xdg-icon-resource install --size 32 --context apps --mode user "
         f"{WORKING_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
@@ -918,6 +911,7 @@ def install_icons():
 
 
 def doimp(modname):
+    """return module path"""
     return importlib.import_module(f"not1mm.plugins.{modname}")
 
 
