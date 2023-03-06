@@ -1,3 +1,5 @@
+"""A sad collection of maybe useful things."""
+
 import socket
 import logging
 from datetime import datetime
