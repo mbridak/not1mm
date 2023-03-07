@@ -28,6 +28,7 @@ from PyQt5.QtCore import (
 )  # pylint: disable=no-name-in-module
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
+from not1mm.lib.database import DataBase
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.edit_settings import EditSettings
@@ -154,10 +155,12 @@ class MainWindow(QtWidgets.QMainWindow):
     settings_dialog = None
     edit_macro_dialog = None
     opon_dialog = None
+    dbname = DATA_PATH + "/ham.db"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
+        self.database = DataBase(self.dbname, WORKING_PATH)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
 
