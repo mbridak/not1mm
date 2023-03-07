@@ -22,52 +22,49 @@ class DataBase:
         logger.debug("Database: %s", database)
         self.working_path = working_path
         self.empty_contact = {
-            "primarykey": 1,
-            "app": "",
-            "contestname": "",
-            "contestnr": "",
-            "timestamp": "",
-            "mycall": "",
-            "band": "",
-            "rxfreq": "",
-            "txfreq": "",
-            "operator": "",
-            "mode": "",
-            "call": "",
-            "countryprefix": "",
-            "wpxprefix": "",
-            "stationprefix": "",
-            "continent": "",
-            "snt": "",
-            "sntnr": "",
-            "rcv": "",
-            "rcvnr": "",
-            "gridsquare": "",
-            "exchangel": "",
-            "section": "",
-            "comment": "",
-            "qth": "",
-            "name": "",
-            "power": "",
-            "misctext": "",
-            "zone": "",
-            "prec": "",
-            "ck": "",
-            "ismultiplierl": "",
-            "ismultiplier2": "",
-            "ismultiplier3": "",
-            "points": "",
-            "radionr": "",
-            "run1run2": "",
+            "TS": "",
+            "Call": "",
+            "Freq": "",
+            "QSXFreq": "",
+            "Mode": "",
+            "ContestName": "",
+            "SNT": "",
+            "RCV": "",
+            "CountryPrefix": "",
+            "StationPrefix": "",
+            "QTH": "",
+            "Name": "",
+            "Comment": "",
+            "NR": "",
+            "Sect": "",
+            "Prec": "",
+            "CK": "",
+            "ZN": "",
+            "SentNr": "",
+            "Points": "",
+            "IsMultiplier1": "",
+            "IsMultiplier2": "",
+            "Power": "",
+            "Band": "",
+            "WPXPrefix": "",
+            "Exchange1": "",
+            "RadioNR": "",
+            "ContestNR": "",
+            "isMultiplier3": "",
+            "MiscText": "",
+            "IsRunQSO": "",
+            "ContactType": "",
+            "Run1Run2": "",
+            "GridSquare": "",
+            "Operator": "",
+            "Continent": "",
             "RoverLocation": "",
             "RadioInterfaced": "",
             "NetworkedCompNr": "",
-            "IsOriginal": "",
             "NetBiosName": "",
-            "IsRunQSO": "",
-            "StationName": "",
+            "IsOriginal": "",
             "ID": "",
-            "IsClaimedQso": 1,
+            "CLAIMEDQSO": "",
         }
         self.database = database
         self.create_dxlog_table()
@@ -253,72 +250,15 @@ class DataBase:
             cursor.execute(sql_command)
             conn.commit()
 
-    def create_db(self) -> None:
-        """create a database and table if it does not exist"""
-        logger.info("Creating Database: %s", self.database)
-        with sqlite3.connect(self.database) as conn:
-            cursor = conn.cursor()
-            sql_table = (
-                "CREATE TABLE IF NOT EXISTS contactinfo "
-                "(primarykey INTEGER PRIMARY KEY, "
-                "app TEXT DEFAULT K6GTELOGGER,"
-                "contestname TEXT,"
-                "contestnr TEXT,"
-                "timestamp TEXT,"
-                "mycall TEXT,"
-                "band TEXT,"
-                "rxfreq TEXT,"
-                "txfreq TEXT,"
-                "operator TEXT,"
-                "mode TEXT,"
-                "call TEXT,"
-                "countryprefix TEXT,"
-                "wpxprefix TEXT,"
-                "stationprefix TEXT,"
-                "continent TEXT,"
-                "snt TEXT,"
-                "sntnr TEXT,"
-                "rcv TEXT,"
-                "rcvnr TEXT,"
-                "gridsquare TEXT,"
-                "exchangel TEXT,"
-                "section TEXT,"
-                "comment TEXT,"
-                "qth TEXT,"
-                "name TEXT,"
-                "power TEXT,"
-                "misctext TEXT,"
-                "zone TEXT,"
-                "prec TEXT,"
-                "ck TEXT,"
-                "ismultiplierl TEXT,"
-                "ismultiplier2 TEXT,"
-                "ismultiplier3 TEXT,"
-                "points TEXT,"
-                "radionr TEXT,"
-                "run1run2 TEXT,"
-                "RoverLocation TEXT,"
-                "RadioInterfaced TEXT,"
-                "NetworkedCompNr TEXT,"
-                "IsOriginal TEXT,"
-                "NetBiosName TEXT,"
-                "IsRunQSO TEXT,"
-                "StationName TEXT,"
-                "ID TEXT UNIQUE,"
-                "IsClaimedQso TEXT,"
-                "dirty INTEGER DEFAULT 1);"
-            )
-            cursor.execute(sql_table)
-            conn.commit()
-
     def log_contact(self, contact: dict) -> None:
         """
         Inserts a contact into the db.
         pass in a dict object, see get_empty() for keys
         """
+
         logger.info("%s", contact)
 
-        pre = "INSERT INTO contactinfo("
+        pre = "INSERT INTO DXLOG("
         values = []
         columns = ""
         placeholders = ""
@@ -341,10 +281,10 @@ class DataBase:
     def change_contact(self, qso: dict) -> None:
         """Update an existing contact."""
 
-        pre = "UPDATE contactinfo set "
+        pre = "UPDATE dxlog set "
         for key in qso.keys():
             pre += f"{key} = '{qso[key]}',"
-        sql = f"{pre[:-1]} where primarykey='{qso['primarykey']}';"
+        sql = f"{pre[:-1]} where ID='{qso['ID']}';"
 
         try:
             with sqlite3.connect(self.database) as conn:
@@ -355,26 +295,26 @@ class DataBase:
         except sqlite3.Error as exception:
             logger.info("DataBase change_contact: %s", exception)
 
-    def get_unique_id(self, contact) -> str:
-        """get unique id"""
-        unique_id = ""
-        if contact:
-            try:
-                with sqlite3.connect(self.database) as conn:
-                    sql = f"select ID from contactinfo where primarykey={int(contact)}"
-                    cursor = conn.cursor()
-                    cursor.execute(sql)
-                    unique_id = str(cursor.fetchone()[0])
-            except sqlite3.Error as exception:
-                logger.debug("%s", exception)
-        return unique_id
+    # def get_unique_id(self, contact) -> str:
+    #     """get unique id"""
+    #     unique_id = ""
+    #     if contact:
+    #         try:
+    #             with sqlite3.connect(self.database) as conn:
+    #                 sql = f"select ID from dxlog where ID={int(contact)}"
+    #                 cursor = conn.cursor()
+    #                 cursor.execute(sql)
+    #                 unique_id = str(cursor.fetchone()[0])
+    #         except sqlite3.Error as exception:
+    #             logger.debug("%s", exception)
+    #     return unique_id
 
-    def delete_contact(self, contact) -> None:
+    def delete_contact(self, unique_id: str) -> None:
         """Deletes a contact from the db."""
-        if contact:
+        if unique_id:
             try:
                 with sqlite3.connect(self.database) as conn:
-                    sql = f"delete from contactinfo where primarykey={int(contact)};"
+                    sql = f"delete from dxlog where ID='{unique_id}';"
                     cur = conn.cursor()
                     cur.execute(sql)
                     conn.commit()
@@ -386,7 +326,7 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
-            cursor.execute("select * from contactinfo order by timestamp ASC;")
+            cursor.execute("select * from dxlog order by ts ASC;")
             return cursor.fetchall()
 
     def fetch_all_contacts_desc(self) -> list:
@@ -394,7 +334,7 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
-            cursor.execute("select * from contactinfo order by timestamp desc;")
+            cursor.execute("select * from dxlog order by ts desc;")
             return cursor.fetchall()
 
     def fetch_last_contact(self) -> dict:
@@ -402,18 +342,18 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
-            cursor.execute("select * from contactinfo order by timestamp desc;")
+            cursor.execute("select * from dxlog order by ts desc;")
             return cursor.fetchone()
 
-    def fetch_all_dirty_contacts(self) -> list:
-        """
-        Return a list of dict, containing all contacts still flagged as dirty.\n
-        """
-        with sqlite3.connect(self.database) as conn:
-            conn.row_factory = self.row_factory
-            cursor = conn.cursor()
-            cursor.execute("select * from contactinfo where dirty=1 order by id")
-            return cursor.fetchall()
+    # def fetch_all_dirty_contacts(self) -> list:
+    #     """
+    #     Return a list of dict, containing all contacts still flagged as dirty.\n
+    #     """
+    #     with sqlite3.connect(self.database) as conn:
+    #         conn.row_factory = self.row_factory
+    #         cursor = conn.cursor()
+    #         cursor.execute("select * from dxlog where dirty=1 order by id")
+    #         return cursor.fetchall()
 
     def get_empty(self) -> dict:
         """Return a dictionary object with keys and no values."""
