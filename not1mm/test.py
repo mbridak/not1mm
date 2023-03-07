@@ -44,55 +44,56 @@ class main:
     def __init__(self):
         # create the DB
         # self.db = DataBase("file::memory:?cache=shared")
-        self.db = DataBase("testdb.db")
+        self.db = DataBase("testdb.db", ".")
         self.db_object = None
 
     def run(self):
         """run"""
         # Set persistent values for contact
-        self.db.empty_contact["app"] = "K6GTELogger"
-        self.db.empty_contact["mycall"] = "K6GTE"
-        self.db.empty_contact["operator"] = "K6GTE"
-        self.db.empty_contact["contestname"] = "CQWWCW"
-        self.db.empty_contact["contestnr"] = "1"
-        self.db.empty_contact["StationName"] = "20M CW"
+        # self.db.empty_contact["app"] = "K6GTELogger"
+        self.db.empty_contact["StationPrefix"] = "K6GTE"
+        self.db.empty_contact["Operator"] = "K6GTE"
+        self.db.empty_contact["ContestName"] = "CQWWCW"
+        self.db.empty_contact["ContestNR"] = "1"
+        # self.db.empty_contact["StationName"] = "20M CW"
 
         # get clean contact object with persistent changes from above
         self.db_object = self.db.get_empty()
 
         # Make changes to save to the DB
         self.db_object["ID"] = uuid.uuid4().hex
-        self.db_object["timestamp"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        self.db_object["band"] = "20"
-        self.db_object["rxfreq"] = ""
-        self.db_object["txfreq"] = ""
-        self.db_object["countryprefix"] = "K"
-        self.db_object["continent"] = "NA"
-        self.db_object["snt"] = "599"
-        self.db_object["sntnr"] = "1"
-        self.db_object["rcv"] = "599"
-        self.db_object["rcvnr"] = "37"
-        self.db_object["gridsquare"] = "DM13at"
-        self.db_object["section"] = "ORG"
-        self.db_object["qth"] = "Their Home"
-        self.db_object["name"] = "Russ"
-        self.db_object["power"] = "100"
-        self.db_object["points"] = "2"
-        self.db_object["call"] = "K5TUX"
-        self.db_object["mode"] = "CW"
+        self.db_object["TS"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        self.db_object["Band"] = 14.0
+        self.db_object["QSXFreq"] = 14030.0
+        self.db_object["Freq"] = 14030.0
+        self.db_object["CountryPrefix"] = "K"
+        self.db_object["Continent"] = "NA"
+        self.db_object["SNT"] = "599"
+        self.db_object["SentNr"] = 1
+        self.db_object["RCV"] = "599"
+        self.db_object["NR"] = 37
+        self.db_object["GridSquare"] = "DM13at"
+        self.db_object["Sect"] = "ORG"
+        self.db_object["QTH"] = "Their Home"
+        self.db_object["Name"] = "Russ"
+        self.db_object["Power"] = "100"
+        self.db_object["Points"] = 2
+        self.db_object["Call"] = "K5TUX"
+        self.db_object["Mode"] = "CW"
 
         # Save the contact to the DB
         self.db.log_contact(self.db_object)
         print(f"\nSaved Data:\n{self.db.fetch_all_contacts_asc()}\n\n")
 
         # save changes
-        self.db_object["rxfreq"] = "1402700"
+        self.db_object["QSXFreq"] = 14027.0
+        self.db_object["Freq"] = 14027.0
         self.db.change_contact(self.db_object)
         print(f"\nUpdated Data:\n{self.db.fetch_all_contacts_asc()}\n\n")
 
         # get unique id of record
-        uniqid = self.db.get_unique_id(1)
-        print(f"Unique ID: {uniqid}")
+        # uniqid = self.db.get_unique_id(1)
+        # print(f"Unique ID: {uniqid}")
 
         # fetch descending
         print(f"\nSorted Descending Data:\n{self.db.fetch_all_contacts_desc()}\n\n")
@@ -101,11 +102,28 @@ class main:
         print(f"\nGet last contact:\n{self.db.fetch_last_contact()}\n\n")
 
         # fetch all dirty
-        print(f"\nGet all marked dirty:\n{self.db.fetch_all_dirty_contacts()}\n\n")
+        # print(f"\nGet all marked dirty:\n{self.db.fetch_all_dirty_contacts()}\n\n")
 
         # fetch all dirty
         print(f"\nDeleting Contact:\n{self.db.delete_contact(1)}\n\n")
 
+
+logger = logging.getLogger("__main__")
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    datefmt="%H:%M:%S",
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+if Path("./debug").exists():
+    # if True:
+    logger.setLevel(logging.DEBUG)
+    logger.debug("debugging on")
+else:
+    logger.setLevel(logging.WARNING)
+    logger.warning("debugging off")
 
 if __name__ == "__main__":
     app = main()
