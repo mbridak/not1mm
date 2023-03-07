@@ -929,6 +929,7 @@ def run():
     sys.exit(app.exec())
 
 
+# logger = logging
 logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(

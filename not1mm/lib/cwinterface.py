@@ -11,19 +11,20 @@ import logging
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
+logger = logging.getLogger("__main__")
+
 
 class CW:
     """An interface to cwdaemon and PyWinkeyerSerial"""
 
     def __init__(self, servertype: int, host: str, port: int) -> None:
-        self.logger = logging.getLogger("__name__")
         self.servertype = servertype
         self.host = host
         self.port = port
 
     def sendcw(self, texttosend):
         """sends cw to k1el"""
-        self.logger.info("sendcw: %s", texttosend)
+        logger.info("sendcw: %s", texttosend)
         if self.servertype == 2:
             self._sendcw_xmlrpc(texttosend)
         if self.servertype == 1:
@@ -31,22 +32,22 @@ class CW:
 
     def _sendcw_xmlrpc(self, texttosend):
         """sends cw to xmlrpc"""
-        self.logger.info("xmlrpc: %s", texttosend)
+        logger.info("xmlrpc: %s", texttosend)
         with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
             try:
                 proxy.k1elsendstring(texttosend)
             except Error as exception:
-                self.logger.info(
+                logger.info(
                     "http://%s:%s, xmlrpc error: %s", self.host, self.port, exception
                 )
             except ConnectionRefusedError:
-                self.logger.info(
+                logger.info(
                     "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
                 )
 
     def _sendcw_udp(self, texttosend):
         """send cw to udp port"""
-        self.logger.info("UDP: %s", texttosend)
+        logger.info("UDP: %s", texttosend)
         server_address_port = (self.host, self.port)
         # bufferSize          = 1024
         udp_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)

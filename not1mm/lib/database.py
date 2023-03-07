@@ -11,14 +11,15 @@ import sqlite3
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
+logger = logging.getLogger("__main__")
+
 
 class DataBase:
     """Database class for our database."""
 
     def __init__(self, database: str, working_path: str):
         """initializes DataBase instance"""
-        self.logger = logging.getLogger("__name__")
-        self.logger.debug("Database: %s", database)
+        logger.debug("Database: %s", database)
         self.working_path = working_path
         self.empty_contact = {
             "primarykey": 1,
@@ -91,7 +92,7 @@ class DataBase:
 
     def create_dxlog_table(self) -> None:
         """creates the dxlog table"""
-        self.logger.debug("Creating DXLOG Table")
+        logger.debug("Creating DXLOG Table")
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             sql_command = (
@@ -145,7 +146,7 @@ class DataBase:
 
     def create_contest_table(self) -> None:
         """Creates the Contest table"""
-        self.logger.debug("Creating Contest Table")
+        logger.debug("Creating Contest Table")
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
@@ -183,7 +184,7 @@ class DataBase:
 
     def create_contest_instance_table(self) -> None:
         """Creates the ContestInstance table"""
-        self.logger.debug("Creating ContestInstance Table")
+        logger.debug("Creating ContestInstance Table")
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             sql_command = (
@@ -219,7 +220,7 @@ class DataBase:
 
     def create_station_table(self) -> None:
         """Creates the Station table"""
-        self.logger.debug("Creating Station Table")
+        logger.debug("Creating Station Table")
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             sql_command = (
@@ -254,7 +255,7 @@ class DataBase:
 
     def create_db(self) -> None:
         """create a database and table if it does not exist"""
-        self.logger.info("Creating Database: %s", self.database)
+        logger.info("Creating Database: %s", self.database)
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             sql_table = (
@@ -315,7 +316,7 @@ class DataBase:
         Inserts a contact into the db.
         pass in a dict object, see get_empty() for keys
         """
-        self.logger.info("%s", contact)
+        logger.info("%s", contact)
 
         pre = "INSERT INTO contactinfo("
         values = []
@@ -330,12 +331,12 @@ class DataBase:
 
         try:
             with sqlite3.connect(self.database) as conn:
-                self.logger.info("%s", sql)
+                logger.info("%s", sql)
                 cur = conn.cursor()
                 cur.execute(sql, tuple(values))
                 conn.commit()
         except sqlite3.Error as exception:
-            self.logger.info("DataBase log_contact: %s", exception)
+            logger.info("DataBase log_contact: %s", exception)
 
     def change_contact(self, qso: dict) -> None:
         """Update an existing contact."""
@@ -347,12 +348,12 @@ class DataBase:
 
         try:
             with sqlite3.connect(self.database) as conn:
-                self.logger.info("%s\n%s", sql, qso)
+                logger.info("%s\n%s", sql, qso)
                 cur = conn.cursor()
                 cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
-            self.logger.info("DataBase change_contact: %s", exception)
+            logger.info("DataBase change_contact: %s", exception)
 
     def get_unique_id(self, contact) -> str:
         """get unique id"""
@@ -365,7 +366,7 @@ class DataBase:
                     cursor.execute(sql)
                     unique_id = str(cursor.fetchone()[0])
             except sqlite3.Error as exception:
-                self.logger.debug("%s", exception)
+                logger.debug("%s", exception)
         return unique_id
 
     def delete_contact(self, contact) -> None:
@@ -378,7 +379,7 @@ class DataBase:
                     cur.execute(sql)
                     conn.commit()
             except sqlite3.Error as exception:
-                self.logger.info("DataBase delete_contact: %s", exception)
+                logger.info("DataBase delete_contact: %s", exception)
 
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""

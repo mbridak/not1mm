@@ -5,7 +5,7 @@ import logging
 from datetime import datetime
 from math import sin, cos, radians, asin, sqrt, atan2, pi
 
-logger = logging.getLogger("__name__")
+logger = logging.getLogger("__main__")
 
 
 def gridtolatlon(maiden):
