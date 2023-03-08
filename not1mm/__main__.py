@@ -906,6 +906,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode(mode)
             if mode == "LSB" or mode == "USB":
                 self.setmode("SSB")
+            if mode == "RTTY":
+                self.setmode("RTTY")
             self.radio_state["vfoa"] = vfo
             band = getband(str(vfo))
             self.set_band_indicator(band)
