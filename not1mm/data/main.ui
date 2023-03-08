@@ -169,7 +169,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>25</pointsize>
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -198,7 +198,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>25</pointsize>
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -227,7 +227,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>25</pointsize>
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -256,7 +256,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>25</pointsize>
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -294,7 +294,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>25</pointsize>
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -347,6 +347,15 @@
              <widget class="QSpinBox" name="cw_speed">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::PlusMinus</enum>
+              </property>
+              <property name="suffix">
+               <string/>
+              </property>
+              <property name="prefix">
+               <string/>
               </property>
              </widget>
             </item>
