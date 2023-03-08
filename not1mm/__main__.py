@@ -781,6 +781,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rig_control.set_mode("CW")
                 self.clearinputs()
                 return
+            if stripped_text == "RTTY":
+                self.setmode("RTTY")
+                if self.rig_control.online:
+                    self.rig_control.set_mode("RTTY")
+                self.clearinputs()
+                return
             if stripped_text == "SSB":
                 self.setmode("SSB")
                 if self.rig_control.online:
@@ -869,6 +875,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode == "SSB":
             self.current_mode = "SSB"
             self.mode.setText("SSB")
+            self.sent.setText("59")
+            self.receive.setText("59")
+        if mode == "RTTY":
+            self.current_mode = "RTTY"
+            self.mode.setText("RTTY")
             self.sent.setText("59")
             self.receive.setText("59")
 
