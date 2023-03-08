@@ -48,6 +48,12 @@
        <layout class="QHBoxLayout" name="mainsection">
         <item>
          <widget class="QFrame" name="Band_Mode_Frame">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -348,8 +354,17 @@
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
+              <property name="wrapping">
+               <bool>false</bool>
+              </property>
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
               <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::PlusMinus</enum>
+               <enum>QAbstractSpinBox::UpDownArrows</enum>
               </property>
               <property name="suffix">
                <string/>
@@ -756,6 +771,11 @@
    <property name="text">
     <string>About</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionCommand_Buttons">
    <property name="checkable">
@@ -813,22 +833,42 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Dark Mode</string>
+    <string>Force Dark Mode</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
   </action>
   <action name="actionPreferences">
    <property name="text">
     <string>Station Settings</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionQRZ_Settings">
    <property name="text">
     <string>QRZ Settings</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionConnection_Settings">
    <property name="text">
     <string>Connection Settings</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
   </action>
  </widget>
