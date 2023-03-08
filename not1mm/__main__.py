@@ -41,6 +41,7 @@ from not1mm.lib.ham_utility import (
     reciprocol,
     bearing_with_latlon,
     distance_with_latlon,
+    getband,
 )
 from not1mm.lib.lookup import QRZlookup
 from not1mm.lib.version import __version__
@@ -224,6 +225,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readpreferences()
         self.read_cw_macros()
         self.rig_control = CAT("rigctld", "localhost", 4532)
+        self.band_indicators = {
+            "160": self.band_160,
+            "80": self.band_80,
+            "40": self.band_40,
+            "20": self.band_20,
+            "15": self.band_15,
+            "10": self.band_10,
+        }
+
+    def clear_band_indicators(self):
+        """Clear the indicators"""
+        self.band_160.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.band_80.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.band_40.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.band_20.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.band_15.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.band_10.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+    def set_band_indicator(self, band: str) -> None:
+        """Set the band indicator"""
+        self.clear_band_indicators()
+        indicator = self.band_indicators.get(band)
+        if indicator:
+            indicator.setFrameShape(QtWidgets.QFrame.Box)
 
     def closeEvent(self, _event):
         """
@@ -374,8 +399,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.heading_distance.setText("No Heading")
         self.dx_entity.setText("")
         self.callsign.clear()
-        self.sent.setText("59")
-        self.receive.setText("59")
+        if self.current_mode == "CW":
+            self.sent.setText("599")
+            self.receive.setText("599")
+        else:
+            self.sent.setText("59")
+            self.receive.setText("59")
         self.other_1.clear()
         self.other_2.clear()
         self.callsign.setFocus()
@@ -768,6 +797,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.is_floatable(stripped_text):
                 vfo = float(stripped_text)
                 vfo = int(vfo * 1000)
+                band = getband(str(vfo))
+                self.set_band_indicator(band)
                 logger.debug("Set VFO - %s", vfo)
                 self.clearinputs()
                 self.rig_control.set_vfo(vfo)
@@ -830,11 +861,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def setmode(self, mode: str) -> None:
         """stub for when the mode changes."""
         if mode == "CW":
+            self.current_mode = "CW"
             self.mode.setText("CW")
             self.sent.setText("599")
             self.receive.setText("599")
             return
         if mode == "SSB":
+            self.current_mode = "SSB"
             self.mode.setText("SSB")
             self.sent.setText("59")
             self.receive.setText("59")
@@ -858,7 +891,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rig_control.online:
             vfo = self.rig_control.get_vfo()
             mode = self.rig_control.get_mode()
+            if mode == "CW":
+                self.setmode(mode)
+            if mode == "LSB" or mode == "USB":
+                self.setmode("SSB")
             self.radio_state["vfoa"] = vfo
+            band = getband(str(vfo))
+            self.set_band_indicator(band)
             self.radio_state["mode"] = mode
             # logger.debug("VFO: %s  MODE: %s", vfo, mode)
             self.set_window_title()
