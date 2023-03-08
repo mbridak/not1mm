@@ -156,6 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
     edit_macro_dialog = None
     opon_dialog = None
     dbname = DATA_PATH + "/ham.db"
+    radio_state = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -357,6 +358,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.sendf11()
         if event.key() == Qt.Key_F12:
             self.sendf12()
+
+    def set_window_title(self):
+        """Set window title"""
+        vfoa = self.radio_state.get("vfoa", "")
+        if vfoa:
+            vfoa = int(vfoa) / 1000
+        self.setWindowTitle(
+            f"{round(vfoa,2)} "
+            f"{self.radio_state.get('mode', '')} - Not1MM v{__version__}"
+        )
 
     def clearinputs(self):
         """Clears the text input fields and sets focus to callsign field."""
@@ -717,6 +728,16 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.Band_Mode_Frame.hide()
 
+    def is_floatable(self, item: str) -> bool:
+        """check to see if string can be a float"""
+        if item.isnumeric():
+            return True
+        try:
+            _test = float(item)
+        except ValueError:
+            return False
+        return True
+
     def callsign_changed(self):
         """Called when text in the callsign field has changed"""
         text = self.callsign.text()
@@ -727,16 +748,31 @@ class MainWindow(QtWidgets.QMainWindow):
         if text[-1:] == " ":
             if stripped_text == "CW":
                 self.setmode("CW")
-                self.callsign.setText("")
+                if self.rig_control.online:
+                    self.rig_control.set_mode("CW")
+                self.clearinputs()
                 return
             if stripped_text == "SSB":
                 self.setmode("SSB")
-                self.callsign.setText("")
+                if self.rig_control.online:
+                    if int(self.radio_state.get("vfoa", 0)) > 10000000:
+                        self.rig_control.set_mode("USB")
+                    else:
+                        self.rig_control.set_mode("LSB")
+                self.clearinputs()
                 return
             if stripped_text == "OPON":
                 self.get_opon()
-                self.callsign.setText("")
+                self.clearinputs()
                 return
+            if self.is_floatable(stripped_text):
+                vfo = float(stripped_text)
+                vfo = int(vfo * 1000)
+                logger.debug("Set VFO - %s", vfo)
+                self.clearinputs()
+                self.rig_control.set_vfo(vfo)
+                return
+
             self.check_callsign(text)
             self.check_callsign2(text)
             self.next_field.setFocus()
@@ -822,7 +858,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rig_control.online:
             vfo = self.rig_control.get_vfo()
             mode = self.rig_control.get_mode()
-            logger.debug("VFO: %s  MODE: %s", vfo, mode)
+            self.radio_state["vfoa"] = vfo
+            self.radio_state["mode"] = mode
+            # logger.debug("VFO: %s  MODE: %s", vfo, mode)
+            self.set_window_title()
 
     def read_cw_macros(self) -> None:
         """
