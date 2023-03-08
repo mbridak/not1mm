@@ -17,6 +17,7 @@
   - [Editing function key macros](#editing-function-key-macros)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Settings dialog](#settings-dialog)
+  - [Other uses for the call field](#other-uses-for-the-call-field)
 
 ## What and why is Not1MM
 
@@ -45,6 +46,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23.3.8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
 - [23.3.7] Changed dxlog table column names.
 - [23.3.1] Add shift tab for field movement.
 - [23.2.23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
@@ -116,3 +118,11 @@ You can fill it out if you want to. You can leave our friends behind. 'Cause you
 You can fill. You can fill. Everyone look at your keys.
 
 **I forgot my hat today**.
+
+## Other uses for the call field
+
+- [Freqnency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
+- [CW, SSB, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+- [OPON] Change the operator currently logging.
+
+**You must press the SPACE bar after entering any of the above.**
