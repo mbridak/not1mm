@@ -84,10 +84,8 @@ class CAT:
         vfo = ""
         if self.interface == "flrig":
             vfo = self.__getvfo_flrig()
-            logger.debug("%s", vfo)
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
-            logger.debug("%s", vfo)
             if "RPRT -" in vfo:
                 vfo = ""
         return vfo
@@ -125,7 +123,6 @@ class CAT:
             mode = self.__getmode_flrig()
         if self.interface == "rigctld":
             mode = self.__getmode_rigctld()
-        logger.debug("%s", mode)
         return mode
 
     def __getmode_flrig(self) -> str:
