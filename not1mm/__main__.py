@@ -383,6 +383,8 @@ class MainWindow(QtWidgets.QMainWindow):
         vfoa = self.radio_state.get("vfoa", "")
         if vfoa:
             vfoa = int(vfoa) / 1000
+        else:
+            vfoa = 0.0
         self.setWindowTitle(
             f"{round(vfoa,2)} "
             f"{self.radio_state.get('mode', '')} - Not1MM v{__version__}"
@@ -773,21 +775,28 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode("CW")
                 if self.rig_control.online:
                     self.rig_control.set_mode("CW")
+                else:
+                    self.radio_state["mode"] = "CW"
+                    self.set_window_title()
                 self.clearinputs()
                 return
             if stripped_text == "RTTY":
                 self.setmode("RTTY")
                 if self.rig_control.online:
                     self.rig_control.set_mode("RTTY")
+                else:
+                    self.radio_state["mode"] = "RTTY"
+                    self.set_window_title()
                 self.clearinputs()
                 return
             if stripped_text == "SSB":
                 self.setmode("SSB")
-                if self.rig_control.online:
-                    if int(self.radio_state.get("vfoa", 0)) > 10000000:
-                        self.rig_control.set_mode("USB")
-                    else:
-                        self.rig_control.set_mode("LSB")
+                self.radio_state["mode"] = "SSB"
+                self.set_window_title()
+                if int(self.radio_state.get("vfoa", 0)) > 10000000:
+                    self.rig_control.set_mode("USB")
+                else:
+                    self.rig_control.set_mode("LSB")
                 self.clearinputs()
                 return
             if stripped_text == "OPON":
@@ -799,7 +808,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 vfo = int(vfo * 1000)
                 band = getband(str(vfo))
                 self.set_band_indicator(band)
-                logger.debug("Set VFO - %s", vfo)
+                self.radio_state["vfoa"] = vfo
+                self.set_window_title()
                 self.clearinputs()
                 self.rig_control.set_vfo(vfo)
                 return
@@ -1019,7 +1029,6 @@ def run():
     sys.exit(app.exec())
 
 
-# logger = logging
 logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
@@ -1030,7 +1039,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 if Path("./debug").exists():
-    # if True:
     logger.setLevel(logging.DEBUG)
     logger.debug("debugging on")
 else:
@@ -1038,7 +1046,6 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-# app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
