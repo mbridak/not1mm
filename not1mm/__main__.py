@@ -11,6 +11,7 @@ import pkgutil
 import re
 import sqlite3
 import sys
+import threading
 from datetime import datetime
 from json import dumps, loads
 from pathlib import Path
@@ -339,25 +340,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.deselect()
                     prev_tab.end(False)
                 else:
+                    text = self.callsign.text()
+                    text = text.upper()
+                    _thethread = threading.Thread(
+                        target=self.check_callsign2,
+                        args=(text,),
+                        daemon=True,
+                    )
+                    _thethread.start()
                     next_tab = self.tab_next.get(self.callsign)
                     next_tab.setFocus()
                     next_tab.deselect()
                     next_tab.end(False)
-                # cse = self.callsign_entry.text()
-                # if len(cse):
-                #     if cse[0] == ".":
-                #         self.keyboardcommand(cse)
-                #         return
-                #     else:
-                #         _thethread = threading.Thread(
-                #             target=self.lazy_lookup,
-                #             args=(self.callsign_entry.text(),),
-                #             daemon=True,
-                #         )
-                #         _thethread.start()
-                # self.class_entry.setFocus()
-                # self.class_entry.deselect()
-                # self.class_entry.end(False)
                 return
         if event.key() == Qt.Key_F1:
             self.sendf1()
@@ -811,7 +805,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
 
             self.check_callsign(text)
-            self.check_callsign2(text)
+            _thethread = threading.Thread(
+                target=self.check_callsign2,
+                args=(text,),
+                daemon=True,
+            )
+            _thethread.start()
             self.next_field.setFocus()
             return
         self.check_callsign(stripped_text)
