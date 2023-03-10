@@ -9,9 +9,11 @@ import logging
 import os
 import pkgutil
 import re
+import socket
 import sqlite3
 import sys
 import threading
+import uuid
 from datetime import datetime
 from json import dumps, loads
 from pathlib import Path
@@ -43,6 +45,7 @@ from not1mm.lib.ham_utility import (
     bearing_with_latlon,
     distance_with_latlon,
     getband,
+    calculate_wpx_prefix,
 )
 from not1mm.lib.lookup import QRZlookup
 from not1mm.lib.version import __version__
@@ -165,6 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info("MainWindow: __init__")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.cw = CW(1, "127.0.0.1", 6789)
+        self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
 
@@ -179,6 +183,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
+        self.callsign.returnPressed.connect(self.save_contact)
+        self.sent.returnPressed.connect(self.save_contact)
+        self.receive.returnPressed.connect(self.save_contact)
+        self.other_1.returnPressed.connect(self.save_contact)
+        self.other_2.returnPressed.connect(self.save_contact)
         self.sent.setText("59")
         self.receive.setText("59")
         icon_path = WORKING_PATH + "/data/"
@@ -280,6 +289,8 @@ class MainWindow(QtWidgets.QMainWindow):
         #         if self.cw.servertype == 1:
         #             self.cw.speed -= 1
         #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        # if event.key() == Qt.Key.Key_Enter:
+        #     self.save_contact()
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
@@ -393,6 +404,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clearinputs(self):
         """Clears the text input fields and sets focus to callsign field."""
+        self.contact = self.database.empty_contact
         self.heading_distance.setText("No Heading")
         self.dx_entity.setText("")
         self.callsign.clear()
@@ -405,6 +417,58 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_1.clear()
         self.other_2.clear()
         self.callsign.setFocus()
+
+    # fixme
+    def save_contact(self):
+        """Save to db"""
+        logger.debug("saving")
+        self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
+        self.contact["Call"] = self.callsign.text()
+        self.contact["Freq"] = round(self.radio_state.get("vfoa", 0.0) / 1000, 2)
+        self.contact["QSXFreq"] = round(self.radio_state.get("vfoa", 0.0) / 1000, 2)
+        self.contact["Mode"] = self.radio_state.get("mode", "")
+        self.contact["ContestName"] = self.contest.name
+        self.contact["SNT"] = self.sent.text()
+        self.contact["RCV"] = self.receive.text()
+        # self.contact["CountryPrefix"]
+        # self.contact["StationPrefix"]
+        # self.contact["QTH"]
+        # self.contact["Name"]
+        # self.contact["Comment"]
+        # self.contact["NR"]
+        # self.contact["Sect"]
+        # self.contact["Prec"]
+        # self.contact["CK"]
+        # self.contact["ZN"]
+        # self.contact["SentNr"]
+        # self.contact["Points"]
+        # self.contact["IsMultiplier1"]
+        # self.contact["IsMultiplier2"]
+        # self.contact["Power"]
+        # self.contact["Band"]
+        self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
+        # self.contact["Exchange1"]
+        # self.contact["RadioNR"]
+        # self.contact["ContestNR"]
+        # self.contact["isMultiplier3"]
+        # self.contact["MiscText"]
+        # self.contact["IsRunQSO"]
+        # self.contact["ContactType"]
+        # self.contact["Run1Run2"]
+        # self.contact["GridSquare"]
+        self.contact["Operator"] = self.current_op
+        # self.contact["Continent"]
+        # self.contact["RoverLocation"]
+        # self.contact["RadioInterfaced"]
+        # self.contact["NetworkedCompNr"]
+        self.contact["NetBiosName"] = socket.gethostname()
+        # self.contact["IsOriginal"]
+        self.contact["ID"] = uuid.uuid4().hex
+        # self.contact["CLAIMEDQSO"]
+        debug_output = f"{self.contact}"
+        logger.debug(debug_output)
+        self.database.log_contact(self.contact)
+        self.clearinputs()
 
     def qrz_preference_selected(self):
         """Show QRZ settings dialog"""
@@ -885,6 +949,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
                     f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                 )
+                self.contact["CountryPrefix"] = primary_pfx
+                self.contact["ZN"] = int(cq)
+                self.contact["Continent"] = continent
                 self.dx_entity.setText(
                     f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
                 )
@@ -900,6 +967,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("The Response: %s\n", debug_response)
                 if response:
                     theirgrid = response.get("grid")
+                    self.contact["GridSquare"] = theirgrid
                     _theircountry = response.get("country")
                     if self.pref.get("gridsquare"):
                         heading = bearing(self.pref.get("gridsquare"), theirgrid)
