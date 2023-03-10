@@ -164,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         self.database = DataBase(self.dbname, WORKING_PATH)
+        self.cw = CW(1, "127.0.0.1", 6789)
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
 
@@ -574,53 +575,91 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("F12 Right Clicked.")
         self.edit_macro(self.F12)
 
+    def process_macro(self, macro: str) -> str:
+        """Process CW macro substitutions"""
+        macro = macro.upper()
+        # if self.groupcall and self.connect_to_server:
+        #     macro = macro.replace("{MYCALL}", self.groupcall)
+        # else:
+        macro = macro.replace("{MYCALL}", self.pref.get("callsign"))
+        # macro = macro.replace("{MYCLASS}", self.preference.get("myclass"))
+        # macro = macro.replace("{MYSECT}", self.preference.get("mysection"))
+        macro = macro.replace("{HISCALL}", self.callsign.text())
+        return macro
+
     def sendf1(self):
         """stub"""
         logger.debug("F1 Clicked")
+        if self.cw:
+            # if self.preference.get("send_n1mm_packets"):
+            #     self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
+            self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
     def sendf2(self):
         """stub"""
         logger.debug("F2 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
     def sendf3(self):
         """stub"""
         logger.debug("F3 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
     def sendf4(self):
         """stub"""
         logger.debug("F4 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
     def sendf5(self):
         """stub"""
         logger.debug("F5 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
     def sendf6(self):
         """stub"""
         logger.debug("F6 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
     def sendf7(self):
         """stub"""
         logger.debug("F7 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
     def sendf8(self):
         """stub"""
         logger.debug("F8 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
     def sendf9(self):
         """stub"""
         logger.debug("F9 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
     def sendf10(self):
         """stub"""
         logger.debug("F10 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
     def sendf11(self):
         """stub"""
         logger.debug("F11 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
     def sendf12(self):
         """stub"""
         logger.debug("F12 Clicked")
+        if self.cw:
+            self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
     def run_sp_buttons_clicked(self):
         """Handle run/s&p mode"""
