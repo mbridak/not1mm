@@ -424,8 +424,10 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("saving")
         self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
-        self.contact["Freq"] = round(self.radio_state.get("vfoa", 0.0) / 1000, 2)
-        self.contact["QSXFreq"] = round(self.radio_state.get("vfoa", 0.0) / 1000, 2)
+        self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
+        self.contact["QSXFreq"] = round(
+            float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
+        )
         self.contact["Mode"] = self.radio_state.get("mode", "")
         self.contact["ContestName"] = self.contest.name
         self.contact["SNT"] = self.sent.text()
