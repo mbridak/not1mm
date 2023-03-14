@@ -20,36 +20,36 @@ from pathlib import Path
 from shutil import copyfile
 from xmlrpc.client import Error, ServerProxy
 
+# import dbus
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import (
     QDir,
-    QPoint,
-    QSize,
+    QPoint,  # pylint: disable=no-name-in-module
     QRect,
+    QSize,
     Qt,
-)  # pylint: disable=no-name-in-module
+)
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
-from not1mm.lib.database import DataBase
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.cwinterface import CW
-from not1mm.lib.edit_settings import EditSettings
+from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
-from not1mm.lib.qrz_dialog import UseQRZ
+from not1mm.lib.edit_settings import EditSettings
 from not1mm.lib.ham_utility import (
     bearing,
-    distance,
-    reciprocol,
     bearing_with_latlon,
+    calculate_wpx_prefix,
+    distance,
     distance_with_latlon,
     getband,
-    calculate_wpx_prefix,
+    reciprocol,
 )
 from not1mm.lib.lookup import QRZlookup
+from not1mm.lib.qrz_dialog import UseQRZ
 from not1mm.lib.version import __version__
-
 
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
