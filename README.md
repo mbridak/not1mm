@@ -46,6 +46,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-10] Started work on saving contacts to the DB. Added a claculate_wpx_prefix routine.
 - [23-3-9] Placed network call lookup in a thread. Display freq/mode for non CAT radios. Hooked up the CW macros to cwdaemon.
 - [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
 - [23-3-7] Changed dxlog table column names.
