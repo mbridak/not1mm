@@ -76,20 +76,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
-        self.generalLog.setColumnCount(11)
+        self.generalLog.setColumnCount(10)
         icon_path = WORKING_PATH + "/data/"
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
-        self.generalLog.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("MM-DD"))
-        self.generalLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("HH:MM"))
-        self.generalLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Call"))
-        self.generalLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Freq"))
-        self.generalLog.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Snt"))
-        self.generalLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("Rcv"))
-        self.generalLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("M1"))
-        self.generalLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("ZN"))
-        self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("M2"))
-        self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PFX"))
-        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("PTS"))
+        self.checkicon = QtGui.QIcon()
+        self.checkicon.addPixmap(self.checkmark)
+        self.generalLog.setHorizontalHeaderItem(
+            0, QtWidgets.QTableWidgetItem("MM-DD HH:MM")
+        )
+        self.generalLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Call"))
+        self.generalLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Freq"))
+        self.generalLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Snt"))
+        self.generalLog.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Rcv"))
+        self.generalLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("M1"))
+        self.generalLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("ZN"))
+        self.generalLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("M2"))
+        self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("PFX"))
+        self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PTS"))
+        self.generalLog.setColumnWidth(0, 125)
+        self.generalLog.setColumnWidth(3, 50)
+        self.generalLog.setColumnWidth(4, 50)
+        self.generalLog.setColumnWidth(5, 25)
+        self.generalLog.setColumnWidth(6, 50)
+        self.generalLog.setColumnWidth(7, 25)
+        self.generalLog.setColumnWidth(8, 50)
+        self.generalLog.setColumnWidth(9, 50)
         path = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
         watcher = Watcher(path, Handler())
         watcher.start()
@@ -108,74 +119,63 @@ class MainWindow(QtWidgets.QMainWindow):
             hour, minute, _ = hour_min.split(":")
             month_day = f"{month}-{day}"
             hour_min = f"{hour}:{minute}"
+            time_stamp = f"{month_day} {hour_min}"
+            first_item = QtWidgets.QTableWidgetItem(time_stamp)
 
-            first_item = QtWidgets.QTableWidgetItem(month_day)
             self.generalLog.setItem(number_of_rows, 0, first_item)
             self.generalLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
-            self.generalLog.setItem(
-                number_of_rows, 1, QtWidgets.QTableWidgetItem(hour_min)
-            )
 
             self.generalLog.setItem(
                 number_of_rows,
-                2,
+                1,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Call", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                3,
+                2,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Freq", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                4,
+                3,
                 QtWidgets.QTableWidgetItem(str(log_item.get("SNT", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                5,
+                4,
                 QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
             )
             m1 = log_item.get("IsMultiplier1", False)
             item = QtWidgets.QTableWidgetItem()
-            icon = QtGui.QIcon()
-            icon.addPixmap(self.checkmark)
             if m1:
-                item.setIcon(icon)
+                item.setIcon(self.checkicon)
+            self.generalLog.setItem(
+                number_of_rows,
+                5,
+                item,
+            )
             self.generalLog.setItem(
                 number_of_rows,
                 6,
-                item,
+                QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
+            m2 = log_item.get("IsMultiplier2", False)
+            item = QtWidgets.QTableWidgetItem()
+            if m2:
+                item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
                 7,
-                QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
-            )
-            # self.generalLog.setItem(
-            #     number_of_rows,
-            #     8,
-            #     QtWidgets.QTableWidgetItem(str(log_item.get("IsMultiplier2", ""))),
-            # )
-            m2 = log_item.get("IsMultiplier2", False)
-            item = QtWidgets.QTableWidgetItem()
-            icon = QtGui.QIcon()
-            icon.addPixmap(self.checkmark)
-            if m2:
-                item.setIcon(icon)
-            self.generalLog.setItem(
-                number_of_rows,
-                8,
                 item,
             )
             self.generalLog.setItem(
                 number_of_rows,
-                9,
+                8,
                 QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                10,
+                9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
 
