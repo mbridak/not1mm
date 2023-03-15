@@ -145,9 +145,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 4,
                 QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
             )
-            m1 = log_item.get("IsMultiplier1", False)
             item = QtWidgets.QTableWidgetItem()
-            if m1:
+            if log_item.get("IsMultiplier1", False):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
@@ -159,9 +158,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 6,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
-            m2 = log_item.get("IsMultiplier2", False)
             item = QtWidgets.QTableWidgetItem()
-            if m2:
+            if log_item.get("IsMultiplier2", False):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
