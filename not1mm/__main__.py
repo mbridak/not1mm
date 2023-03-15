@@ -8,9 +8,11 @@ import importlib
 import logging
 import os
 import pkgutil
-import re
+
+# import re
 import socket
-import sqlite3
+
+# import sqlite3
 import sys
 import subprocess
 import threading
@@ -58,7 +60,6 @@ os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
-
 
 if "XDG_DATA_HOME" in os.environ:
     DATA_PATH = os.environ.get("XDG_DATA_HOME")
@@ -168,10 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         self.database = DataBase(self.dbname, WORKING_PATH)
-        _ = subprocess.Popen(
-            [sys.executable, WORKING_PATH + "/logwindow.py"]
-        )  # Call subprocess
-        # subprocess.run(WORKING_PATH + "/logwindow.py")
+        _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
         self.cw = CW(1, "127.0.0.1", 6789)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/main.ui"
