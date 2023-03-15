@@ -72,6 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.table_loading = False
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
@@ -101,13 +102,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setColumnWidth(7, 25)
         self.generalLog.setColumnWidth(8, 50)
         self.generalLog.setColumnWidth(9, 50)
+        self.generalLog.cellDoubleClicked.connect(self.double_clicked)
+        self.generalLog.cellChanged.connect(self.cell_changed)
+        # self.generalLog.setColumnHidden(0, True)
         path = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
         watcher = Watcher(path, Handler())
         watcher.start()
         self.get_log()
 
+    def double_clicked(self, row, column):
+        """Slot for doubleclick event"""
+        if not self.table_loading:
+            print("DoubleClicked")
+            print(f"{row} {column} {self.generalLog.currentItem().text()}")
+
+    def cell_changed(self, row, column):
+        """Slot for changed cell"""
+        if not self.table_loading:
+            print("cell changed")
+            print(f"{row} {column} {self.generalLog.currentItem().text()}")
+
     def get_log(self):
         """Get Log, Show it."""
+        self.table_loading = True
         current_log = self.database.fetch_all_contacts_asc()
         self.generalLog.setRowCount(0)
         for log_item in current_log:
@@ -176,6 +193,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
+        self.table_loading = False
 
 
 def load_fonts_from_dir(directory: str) -> set:
