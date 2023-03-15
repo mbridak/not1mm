@@ -77,7 +77,8 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
         self.generalLog.setColumnCount(11)
-        # item = QtWidgets.QTableWidgetItem("")
+        icon_path = WORKING_PATH + "/data/"
+        self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.generalLog.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("MM-DD"))
         self.generalLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("HH:MM"))
         self.generalLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Call"))
@@ -135,20 +136,37 @@ class MainWindow(QtWidgets.QMainWindow):
                 5,
                 QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
             )
+            m1 = log_item.get("IsMultiplier1", False)
+            item = QtWidgets.QTableWidgetItem()
+            icon = QtGui.QIcon()
+            icon.addPixmap(self.checkmark)
+            if m1:
+                item.setIcon(icon)
             self.generalLog.setItem(
                 number_of_rows,
                 6,
-                QtWidgets.QTableWidgetItem(str(log_item.get("IsMultiplier1", ""))),
+                item,
             )
             self.generalLog.setItem(
                 number_of_rows,
                 7,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
+            # self.generalLog.setItem(
+            #     number_of_rows,
+            #     8,
+            #     QtWidgets.QTableWidgetItem(str(log_item.get("IsMultiplier2", ""))),
+            # )
+            m2 = log_item.get("IsMultiplier2", False)
+            item = QtWidgets.QTableWidgetItem()
+            icon = QtGui.QIcon()
+            icon.addPixmap(self.checkmark)
+            if m2:
+                item.setIcon(icon)
             self.generalLog.setItem(
                 number_of_rows,
                 8,
-                QtWidgets.QTableWidgetItem(str(log_item.get("IsMultiplier2", ""))),
+                item,
             )
             self.generalLog.setItem(
                 number_of_rows,
