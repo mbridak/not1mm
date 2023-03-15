@@ -173,17 +173,16 @@ def load_fonts_from_dir(directory: str) -> set:
     return font_families
 
 
-app = QtWidgets.QApplication(sys.argv)
-font_path = WORKING_PATH + "/data"
-_families = load_fonts_from_dir(os.fspath(font_path))
-window = MainWindow()
-window.show()
-
-
 def main():
     """main entry"""
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    font_path = WORKING_PATH + "/data"
+    _families = load_fonts_from_dir(os.fspath(font_path))
+    window = MainWindow()
+    window.setWindowTitle("Log Display")
+    window.show()
     main()
