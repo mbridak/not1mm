@@ -89,13 +89,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("M2"))
         self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PFX"))
         self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("PTS"))
-        PATH = (
-            sys.argv[1]
-            if len(sys.argv) > 1
-            else "/home/mbridak/.local/share/not1mm/ham.db"
-        )
-        w = Watcher(PATH, Handler())
-        w.start()
+        path = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
+        watcher = Watcher(path, Handler())
+        watcher.start()
         self.get_log()
 
     def get_log(self):
@@ -164,14 +160,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 10,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
-        # print(
-        #     f"row count {self.generalLog.rowCount()} item {self.generalLog.item(self.generalLog.rowCount() - 1, 0)}"
-        # )
-        # self.generalLog.scrollToItem(
-        #     self.generalLog.item(self.generalLog.rowCount() - 1, 0),
-        #     QtWidgets.QAbstractItemView.EnsureVisible,
-        # )
-        # self.generalLog.selectRow(self.generalLog.rowCount() - 1)
 
 
 def load_fonts_from_dir(directory: str) -> set:
