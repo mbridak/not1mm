@@ -418,7 +418,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_2.clear()
         self.callsign.setFocus()
 
-    # fixme
     def save_contact(self):
         """Save to db"""
         logger.debug("saving")
