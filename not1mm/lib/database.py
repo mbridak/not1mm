@@ -326,7 +326,7 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
-            cursor.execute("select * from dxlog order by ts ASC;")
+            cursor.execute("select * from dxlog order by TS ASC;")
             return cursor.fetchall()
 
     def fetch_all_contacts_desc(self) -> list:
