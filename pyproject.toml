@@ -16,6 +16,7 @@ dependencies = [
     "requests",
     "dicttoxml",
     "xmltodict",
+    "watchdog",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
