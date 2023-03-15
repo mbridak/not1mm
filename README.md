@@ -18,6 +18,7 @@
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Settings dialog](#settings-dialog)
   - [Other uses for the call field](#other-uses-for-the-call-field)
+  - [Log Display](#log-display)
 
 ## What and why is Not1MM
 
@@ -46,6 +47,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-15] Added a rudimentary log view window.
 - [23-3-10] Started work on saving contacts to the DB. Added a claculate_wpx_prefix routine.
 - [23-3-9] Placed network call lookup in a thread. Display freq/mode for non CAT radios. Hooked up the CW macros to cwdaemon.
 - [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
@@ -128,3 +130,9 @@ You can fill. You can fill. Everyone look at your keys.
 - [OPON] Change the operator currently logging.
 
 **You must press the SPACE bar after entering any of the above.**
+
+## Log Display
+
+At this point the log display window doesn't do all that much except exist.
+
+![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
