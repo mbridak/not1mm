@@ -85,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("MM-DD HH:MM")
         )
+        self.generalLog.verticalHeader().setVisible(False)
         self.generalLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Call"))
         self.generalLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Freq"))
         self.generalLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Snt"))
@@ -126,6 +127,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """Get Log, Show it."""
         self.table_loading = True
         current_log = self.database.fetch_all_contacts_asc()
+        keys = current_log[0].keys()
+        print(len(keys))
+        print(keys)
         self.generalLog.setRowCount(0)
         for log_item in current_log:
             number_of_rows = self.generalLog.rowCount()
@@ -147,10 +151,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 1,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Call", ""))),
             )
+            freq = log_item.get("Freq", "")
             self.generalLog.setItem(
                 number_of_rows,
                 2,
-                QtWidgets.QTableWidgetItem(str(log_item.get("Freq", ""))),
+                QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
             )
             self.generalLog.setItem(
                 number_of_rows,
