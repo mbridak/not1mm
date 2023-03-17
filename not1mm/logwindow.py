@@ -5,6 +5,7 @@ Display current log
 # pylint: disable=no-name-in-module, unused-import, no-member
 # QTableWidget
 # focusedLog, generalLog
+import logging
 import os
 import pkgutil
 import queue
@@ -124,25 +125,26 @@ class MainWindow(QtWidgets.QMainWindow):
         """Slot for doubleclick event"""
         if self.table_loading:
             return
-        print("DoubleClicked")
+        logger.debug("DoubleClicked")
 
-    def cell_changed(self, row, _column):
+    def cell_changed(self, row, column):
         """Slot for changed cell"""
         if self.table_loading:
             return
         db_record = {
             "TS": self.generalLog.item(row, 0).text(),
-            "Call": self.generalLog.item(row, 1).text(),
+            "Call": self.generalLog.item(row, 1).text().upper(),
             "Freq": self.generalLog.item(row, 2).text(),
             "SNT": self.generalLog.item(row, 3).text(),
             "RCV": self.generalLog.item(row, 4).text(),
             "ZN": self.generalLog.item(row, 6).text(),
-            "WPXPrefix": self.generalLog.item(row, 8).text(),
+            "WPXPrefix": self.generalLog.item(row, 8).text().upper(),
             "Points": self.generalLog.item(row, 9).text(),
             "ID": self.generalLog.item(row, 10).text(),
         }
         self.database.change_contact(db_record)
         self.get_log()
+        self.generalLog.scrollToItem(self.generalLog.item(row, column))
 
     def dummy(self):
         """the dummy"""
@@ -227,9 +229,8 @@ class MainWindow(QtWidgets.QMainWindow):
         while True:
             try:
                 datagram = self.server_udp.recv(1500)
-                print(datagram.decode())
+                logger.debug(datagram.decode())
             except socket.timeout:
-                print("socket timeout")
                 time.sleep(1)
                 continue
             if datagram:
@@ -240,18 +241,19 @@ class MainWindow(QtWidgets.QMainWindow):
         while not self.udp_fifo.empty():
             datagram = self.udp_fifo.get()
             try:
-                print(f"*************\n{datagram.decode()}\n********************")
+                debug_info = f"*************\n{datagram.decode()}\n********************"
+                logger.debug(debug_info)
                 json_data = loads(datagram.decode())
             except UnicodeDecodeError as err:
                 the_error = f"Not Unicode: {err}\n{datagram}"
-                print(the_error)
+                logger.debug(the_error)
                 continue
             except JSONDecodeError as err:
                 the_error = f"Not JSON: {err}\n{datagram}"
-                print(the_error)
+                logger.debug(the_error)
                 continue
-            # logger.info("%s", json_data)
             if json_data.get("cmd") == "UPDATELOG":
+                logger.debug("External refresh command.")
                 self.get_log()
 
 
@@ -271,6 +273,22 @@ def main():
     timer.start(1000)
     sys.exit(app.exec())
 
+
+logger = logging.getLogger("__main__")
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    datefmt="%H:%M:%S",
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+if Path("./debug").exists():
+    logger.setLevel(logging.DEBUG)
+    logger.debug("debugging on")
+else:
+    logger.setLevel(logging.WARNING)
+    logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
 font_path = WORKING_PATH + "/data"
