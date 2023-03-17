@@ -47,6 +47,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-17] Added multicast UDP messages to update the log window when new contact made. You can now edit existing contacts in the log window. You can't delete them yet. Got rid of watchdog.
 - [23-3-15] Added a rudimentary log view window.
 - [23-3-10] Started work on saving contacts to the DB. Added a claculate_wpx_prefix routine.
 - [23-3-9] Placed network call lookup in a thread. Display freq/mode for non CAT radios. Hooked up the CW macros to cwdaemon.
@@ -133,6 +134,6 @@ You can fill. You can fill. Everyone look at your keys.
 
 ## Log Display
 
-At this point the log display window doesn't do all that much except exist.
+You can double click a cell and edit the contents.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
