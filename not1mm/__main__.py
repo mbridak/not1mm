@@ -94,6 +94,15 @@ with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
     DARK_STYLESHEET = stylefile.read()
 
 
+def check_process(name: str) -> bool:
+    """checks to see if program of name is in the active process list"""
+    for proc in psutil.process_iter():
+        if len(proc.cmdline()) == 2:
+            if name in proc.cmdline()[1]:
+                return True
+    return False
+
+
 def cty_lookup(callsign: str):
     """Lookup callsign in cty.dat file"""
     callsign = callsign.upper()
