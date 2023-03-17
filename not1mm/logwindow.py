@@ -67,6 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
         self.generalLog.setColumnCount(11)
+        self.focusedLog.setColumnCount(11)
         icon_path = WORKING_PATH + "/data/"
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.checkicon = QtGui.QIcon()
@@ -96,6 +97,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
         self.generalLog.setColumnHidden(10, True)
+
+        self.focusedLog.setHorizontalHeaderItem(
+            0, QtWidgets.QTableWidgetItem("YYYY-MM-DD HH:MM:SS")
+        )
+        self.focusedLog.verticalHeader().setVisible(False)
+        self.focusedLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Call"))
+        self.focusedLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Freq"))
+        self.focusedLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Snt"))
+        self.focusedLog.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Rcv"))
+        self.focusedLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("M1"))
+        self.focusedLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("ZN"))
+        self.focusedLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("M2"))
+        self.focusedLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("PFX"))
+        self.focusedLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PTS"))
+        self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("UUID"))
+        self.focusedLog.setColumnWidth(0, 200)
+        self.focusedLog.setColumnWidth(3, 50)
+        self.focusedLog.setColumnWidth(4, 50)
+        self.focusedLog.setColumnWidth(5, 25)
+        self.focusedLog.setColumnWidth(6, 50)
+        self.focusedLog.setColumnWidth(7, 25)
+        self.focusedLog.setColumnWidth(8, 50)
+        self.focusedLog.setColumnWidth(9, 50)
+        # self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
+        # self.focusedLog.cellChanged.connect(self.cell_changed)
+        self.focusedLog.setColumnHidden(10, True)
         self.get_log()
         self.multicast_interface = Multicast(
             MULTICAST_GROUP, MULTICAST_PORT, INTERFACE_IP
@@ -141,7 +168,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dummy(self):
         """the dummy"""
-        ...
 
     def get_log(self):
         """Get Log, Show it."""
@@ -224,10 +250,88 @@ class MainWindow(QtWidgets.QMainWindow):
                 datagram = self.multicast_interface.server_udp.recv(1500)
                 logger.debug(datagram.decode())
             except socket.timeout:
-                time.sleep(1)
+                time.sleep(0.1)
                 continue
             if datagram:
                 self.udp_fifo.put(datagram)
+
+    def show_like_calls(self, call):
+        """Show like calls"""
+        if call == "":
+            self.focusedLog.setRowCount(0)
+            return
+        lines = self.database.fetch_like_calls(call)
+        debug_line = f"{lines}"
+        logger.debug(debug_line)
+        self.focusedLog.setRowCount(0)
+        for log_item in lines:
+            number_of_rows = self.focusedLog.rowCount()
+            self.focusedLog.insertRow(number_of_rows)
+            time_stamp = log_item.get("TS", "YY-MM-DD HH:MM:SS")
+            first_item = QtWidgets.QTableWidgetItem(time_stamp)
+            self.focusedLog.setItem(number_of_rows, 0, first_item)
+            self.focusedLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
+            try:
+                self.focusedLog.item(number_of_rows, 0).setTextAlignment(0x0004)
+            except AttributeError:
+                ...
+            self.focusedLog.setItem(
+                number_of_rows,
+                1,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Call", ""))),
+            )
+            freq = log_item.get("Freq", "")
+            self.focusedLog.setItem(
+                number_of_rows,
+                2,
+                QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                3,
+                QtWidgets.QTableWidgetItem(str(log_item.get("SNT", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                4,
+                QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
+            )
+            item = QtWidgets.QTableWidgetItem()
+            if log_item.get("IsMultiplier1", False):
+                item.setIcon(self.checkicon)
+            self.focusedLog.setItem(
+                number_of_rows,
+                5,
+                item,
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                6,
+                QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
+            )
+            item = QtWidgets.QTableWidgetItem()
+            if log_item.get("IsMultiplier2", False):
+                item.setIcon(self.checkicon)
+            self.focusedLog.setItem(
+                number_of_rows,
+                7,
+                item,
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                8,
+                QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                9,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                10,
+                QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
+            )
 
     def check_udp_traffic(self):
         """Checks UDP Traffic"""
@@ -245,9 +349,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 the_error = f"Not JSON: {err}\n{datagram}"
                 logger.debug(the_error)
                 continue
-            if json_data.get("cmd") == "UPDATELOG":
+            if json_data.get("cmd", "") == "UPDATELOG":
                 logger.debug("External refresh command.")
                 self.get_log()
+            if json_data.get("cmd", "") == "CALLCHANGED":
+                call = json_data.get("call", "")
+                self.show_like_calls(call)
 
 
 def load_fonts_from_dir(directory: str) -> set:
