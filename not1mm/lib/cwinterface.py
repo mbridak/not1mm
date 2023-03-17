@@ -21,6 +21,7 @@ class CW:
         self.servertype = servertype
         self.host = host
         self.port = port
+        self.speed = 20
 
     def sendcw(self, texttosend):
         """sends cw to k1el"""
