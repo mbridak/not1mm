@@ -51,6 +51,7 @@ from not1mm.lib.ham_utility import (
     reciprocol,
 )
 from not1mm.lib.lookup import QRZlookup
+from not1mm.lib.n1mm import N1MM
 from not1mm.lib.qrz_dialog import UseQRZ
 from not1mm.lib.version import __version__
 
@@ -148,6 +149,17 @@ class MainWindow(QtWidgets.QMainWindow):
         "roverqth": "",
         "club": "",
         "email": "",
+        "multicast_group": "224.1.1.1",
+        "multicast_port": 2239,
+        "interface_ip": "0.0.0.0",
+        "send_n1mm_packets": False,
+        "n1mm_station_name": "20M CW Tent",
+        "n1mm_operator": "Bernie",
+        "n1mm_ip": "127.0.0.1",
+        "n1mm_radioport": 12060,
+        "n1mm_contactport": 12061,
+        "n1mm_lookupport": 12060,
+        "n1mm_scoreport": 12062,
     }
     appstarted = False
     contest = None
@@ -164,6 +176,10 @@ class MainWindow(QtWidgets.QMainWindow):
     opon_dialog = None
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
+    server_udp = None
+    multicast_group = None
+    multicast_port = None
+    interface_ip = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -174,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
-
+        self.n1mm = N1MM()
         self.next_field = self.other_1
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
@@ -473,6 +489,17 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug(debug_output)
         self.database.log_contact(self.contact)
         self.clearinputs()
+        self.n1mm.send_contact_info()
+        cmd = {}
+        cmd["cmd"] = "UPDATELOG"
+        bytesToSend = bytes(dumps(cmd), encoding="ascii")
+        try:
+            self.server_udp.sendto(
+                bytesToSend,
+                (self.multicast_group, int(self.multicast_port)),
+            )
+        except OSError as err:
+            logger.warning("%s", err)
 
     def qrz_preference_selected(self):
         """Show QRZ settings dialog"""
@@ -801,10 +828,25 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actionMode_and_Bands.setChecked(False)
 
+        self.multicast_group = self.pref.get("multicast_group", "224.1.1.1")
+        self.multicast_port = self.pref.get("multicast_port", 2239)
+        self.interface_ip = self.pref.get("interface_ip", "0.0.0.0")
+
         self.dark_mode()
         self.show_command_buttons()
         self.show_CW_macros()
         self.show_band_mode()
+
+        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_udp.bind(("", int(self.multicast_port)))
+        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
+            self.interface_ip
+        )
+        self.server_udp.setsockopt(
+            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
+        )
+        self.server_udp.settimeout(0.01)
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
