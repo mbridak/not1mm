@@ -22,6 +22,7 @@ from PyQt5.QtCore import QDir, QItemSelectionModel
 from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.database import DataBase
+from not1mm.lib.multicast import Multicast
 
 # from not1mm.lib.n1mm import N1MM
 
@@ -96,25 +97,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.cellChanged.connect(self.cell_changed)
         self.generalLog.setColumnHidden(10, True)
         self.get_log()
-        self.multicast_port = 2239
-        self.multicast_group = "224.1.1.1"
-        self.interface_ip = "0.0.0.0"
-        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_udp.bind(("", int(self.multicast_port)))
-        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
-            self.interface_ip
+        self.multicast_interface = Multicast(
+            MULTICAST_GROUP, MULTICAST_PORT, INTERFACE_IP
         )
-        self.server_udp.setsockopt(
-            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
-        )
-        self.server_udp.settimeout(0.01)
+
         if self._udpwatch is None:
             self._udpwatch = threading.Thread(
                 target=self.watch_udp,
                 daemon=True,
             )
             self._udpwatch.start()
+
         # self.n1mm = N1MM(
         #     ip_address=self.preference.get("n1mm_ip"),
         #     radioport=self.preference.get("n1mm_radioport"),
@@ -228,7 +221,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Puts UDP datagrams in a FIFO queue"""
         while True:
             try:
-                datagram = self.server_udp.recv(1500)
+                datagram = self.multicast_interface.server_udp.recv(1500)
                 logger.debug(datagram.decode())
             except socket.timeout:
                 time.sleep(1)
@@ -241,7 +234,7 @@ class MainWindow(QtWidgets.QMainWindow):
         while not self.udp_fifo.empty():
             datagram = self.udp_fifo.get()
             try:
-                debug_info = f"*************\n{datagram.decode()}\n********************"
+                debug_info = f"{datagram.decode()}"
                 logger.debug(debug_info)
                 json_data = loads(datagram.decode())
             except UnicodeDecodeError as err:

@@ -51,6 +51,7 @@ from not1mm.lib.ham_utility import (
     reciprocol,
 )
 from not1mm.lib.lookup import QRZlookup
+from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.qrz_dialog import UseQRZ
 from not1mm.lib.version import __version__
@@ -492,14 +493,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.n1mm.send_contact_info()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
-        bytesToSend = bytes(dumps(cmd), encoding="ascii")
-        try:
-            self.server_udp.sendto(
-                bytesToSend,
-                (self.multicast_group, int(self.multicast_port)),
-            )
-        except OSError as err:
-            logger.warning("%s", err)
+        self.multicast_interface.send_as_json(cmd)
 
     def qrz_preference_selected(self):
         """Show QRZ settings dialog"""
@@ -556,7 +550,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_settings(self):
         """Save settings"""
-        # self.settings_dialog.object.text():
         cs = self.settings_dialog.Call.text()
         self.pref["callsign"] = cs.upper()
         self.pref["name"] = self.settings_dialog.Name.text()
@@ -828,25 +821,17 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actionMode_and_Bands.setChecked(False)
 
-        self.multicast_group = self.pref.get("multicast_group", "224.1.1.1")
-        self.multicast_port = self.pref.get("multicast_port", 2239)
-        self.interface_ip = self.pref.get("interface_ip", "0.0.0.0")
+        multicast_group = self.pref.get("multicast_group", "224.1.1.1")
+        multicast_port = self.pref.get("multicast_port", 2239)
+        interface_ip = self.pref.get("interface_ip", "0.0.0.0")
+        self.multicast_interface = Multicast(
+            multicast_group, multicast_port, interface_ip
+        )
 
         self.dark_mode()
         self.show_command_buttons()
         self.show_CW_macros()
         self.show_band_mode()
-
-        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server_udp.bind(("", int(self.multicast_port)))
-        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
-            self.interface_ip
-        )
-        self.server_udp.setsockopt(
-            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
-        )
-        self.server_udp.settimeout(0.01)
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
