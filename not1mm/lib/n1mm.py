@@ -17,7 +17,7 @@ class N1MM:
     """ "Send N1MM style packets"""
 
     radio_info = {
-        "app": "K6GTE-WFD",
+        "app": "NOT1MM",
         "StationName": "",
         "uNICORNbLOOD": "1",
         "RadioNr": "1",
@@ -42,8 +42,8 @@ class N1MM:
     }
 
     contact_info = {
-        "app": "K6GTE-WFD",
-        "contestname": "Winter Field Day",
+        "app": "NOT1MM",
+        "contestname": "",
         "contestnr": "1",
         "timestamp": "",
         "mycall": "",
@@ -91,7 +91,7 @@ class N1MM:
     }
 
     contactdelete = {
-        "app": "K6GTE-WFD",
+        "app": "NOT1MM",
         "timestamp": "",
         "call": "",
         "contestnr": "1",
