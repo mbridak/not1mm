@@ -195,7 +195,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         self.database = DataBase(self.dbname, WORKING_PATH)
-        _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
+        if not check_process("logwindow.py"):
+            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
         self.cw = CW(1, "127.0.0.1", 6789)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/main.ui"
