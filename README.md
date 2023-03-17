@@ -137,3 +137,4 @@ You can fill. You can fill. Everyone look at your keys.
 You can double click a cell and edit the contents.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
+[call_focus.webm](https://user-images.githubusercontent.com/49108421/225993202-3a58afa1-ede4-4938-a745-f93d6303b612.webm)
