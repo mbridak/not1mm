@@ -72,6 +72,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
+        self.generalLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.generalLog.customContextMenuRequested.connect(self.testing)
         self.generalLog.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("YYYY-MM-DD HH:MM:SS")
         )
@@ -183,6 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.generalLog.setItem(number_of_rows, 0, first_item)
             self.generalLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
             self.generalLog.item(number_of_rows, 0).setTextAlignment(0x0004)
+
             self.generalLog.setItem(
                 number_of_rows,
                 1,
@@ -242,6 +245,14 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         self.table_loading = False
         self.generalLog.cellChanged.connect(self.cell_changed)
+
+    def testing(self, a):
+        """ignore"""
+        item = self.generalLog.itemAt(a)
+        if item:
+            print(
+                f"{item.row()}, {item.column()} {item.icon().isNull()}***************TESTING****************"
+            )
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
