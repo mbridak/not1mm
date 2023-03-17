@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
 
 class N1MM:
-    """ "Send N1MM style packets"""
+    """Send N1MM style packets"""
 
     radio_info = {
         "app": "NOT1MM",
