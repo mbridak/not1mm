@@ -203,6 +203,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(data_path, self)
         self.n1mm = N1MM()
         self.next_field = self.other_1
+        self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
         self.actionMode_and_Bands.triggered.connect(self.show_band_mode_state_change)
@@ -301,24 +302,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
 
+    def cwspeed_spinbox_changed(self):
+        """triggered when value of CW speed in the spinbox changes."""
+        if self.cw.servertype == 1:
+            self.cw.speed = self.cw_speed.value()
+            self.cw.sendcw(f"\x1b2{self.cw.speed}")
+
     def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This overrides Qt key event."""
         modifier = event.modifiers()
         if event.key() == Qt.Key.Key_Escape:  # pylint: disable=no-member
             self.clearinputs()
-        # if self.cw is not None and modifier == Qt.ControlModifier:
-        #     if self.cw.servertype == 1:
-        #         self.cw.sendcw("\x1b4")
-        # if event.key() == Qt.Key.Key_PageUp:
-        #     if self.cw is not None:
-        #         if self.cw.servertype == 1:
-        #             self.cw.speed += 1
-        #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
-        # if event.key() == Qt.Key.Key_PageDown:
-        #     if self.cw is not None:
-        #         if self.cw.servertype == 1:
-        #             self.cw.speed -= 1
-        #             self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        if self.cw is not None and modifier == Qt.ControlModifier:
+            if self.cw.servertype == 1:
+                self.cw.sendcw("\x1b4")
+        if event.key() == Qt.Key.Key_PageUp:
+            if self.cw is not None:
+                if self.cw.servertype == 1:
+                    self.cw.speed += 1
+                    self.cw_speed.setValue(self.cw.speed)
+                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        if event.key() == Qt.Key.Key_PageDown:
+            if self.cw is not None:
+                if self.cw.servertype == 1:
+                    self.cw.speed -= 1
+                    self.cw_speed.setValue(self.cw.speed)
+                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
         # if event.key() == Qt.Key.Key_Enter:
         #     self.save_contact()
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
