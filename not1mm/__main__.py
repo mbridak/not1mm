@@ -437,6 +437,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_1.clear()
         self.other_2.clear()
         self.callsign.setFocus()
+        cmd = {}
+        cmd["cmd"] = "CALLCHANGED"
+        cmd["call"] = ""
+        self.multicast_interface.send_as_json(cmd)
 
     def save_contact(self):
         """Save to db"""
@@ -957,6 +961,10 @@ class MainWindow(QtWidgets.QMainWindow):
             _thethread.start()
             self.next_field.setFocus()
             return
+        cmd = {}
+        cmd["cmd"] = "CALLCHANGED"
+        cmd["call"] = stripped_text
+        self.multicast_interface.send_as_json(cmd)
         self.check_callsign(stripped_text)
 
     def check_callsign(self, callsign):
