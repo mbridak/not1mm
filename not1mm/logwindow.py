@@ -7,18 +7,22 @@ Display current log
 # focusedLog, generalLog
 import os
 import pkgutil
+import queue
+import socket
 import sys
+import time
+import threading
 
-# from json import dumps, loads
+from json import JSONDecodeError, loads, dumps
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
 from PyQt5.QtCore import QDir, QItemSelectionModel
 from PyQt5.QtGui import QFontDatabase
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
 
 from not1mm.lib.database import DataBase
+
+# from not1mm.lib.n1mm import N1MM
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -35,32 +39,13 @@ else:
     CONFIG_PATH = str(Path.home() / ".config")
 CONFIG_PATH += "/not1mm"
 
+MULTICAST_PORT = 2239
+MULTICAST_GROUP = "224.1.1.1"
+INTERFACE_IP = "0.0.0.0"
+# NODE_RED_SERVER_IP = "127.0.0.1"
+# NODE_RED_SERVER_PORT = 12062
 
-class Watcher:
-    """Keep an eye out"""
-
-    def __init__(self, directory=".", handler=FileSystemEventHandler()):
-        self.observer = Observer()
-        self.handler = handler
-        self.directory = directory
-
-    def start(self):
-        """Starts the file watcher"""
-        self.observer.schedule(self.handler, self.directory, recursive=True)
-        self.observer.start()
-
-    def stop(self):
-        """Stops the file watcher"""
-        self.observer.stop()
-        self.observer.join()
-
-
-class Handler(FileSystemEventHandler):
-    """Make them accoutable"""
-
-    def on_modified(self, event):
-        if not event.is_directory:
-            window.get_log()
+# n1mm_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -68,22 +53,24 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
-    dbname = DATA_PATH + "/ham.db"
+    # dbname = DATA_PATH + "/ham.db"
+    dbname = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.table_loading = False
+        self._udpwatch = None
+        self.udp_fifo = queue.Queue()
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
-        self.generalLog.setColumnCount(10)
+        self.generalLog.setColumnCount(11)
         icon_path = WORKING_PATH + "/data/"
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
         self.generalLog.setHorizontalHeaderItem(
-            0, QtWidgets.QTableWidgetItem("MM-DD HH:MM")
+            0, QtWidgets.QTableWidgetItem("YYYY-MM-DD HH:MM:SS")
         )
         self.generalLog.verticalHeader().setVisible(False)
         self.generalLog.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Call"))
@@ -95,7 +82,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("M2"))
         self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("PFX"))
         self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PTS"))
-        self.generalLog.setColumnWidth(0, 125)
+        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("UUID"))
+        self.generalLog.setColumnWidth(0, 200)
         self.generalLog.setColumnWidth(3, 50)
         self.generalLog.setColumnWidth(4, 50)
         self.generalLog.setColumnWidth(5, 25)
@@ -105,47 +93,75 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setColumnWidth(9, 50)
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
-        # self.generalLog.setColumnHidden(0, True)
-        path = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
-        watcher = Watcher(path, Handler())
-        watcher.start()
+        self.generalLog.setColumnHidden(10, True)
+        self.get_log()
+        self.multicast_port = 2239
+        self.multicast_group = "224.1.1.1"
+        self.interface_ip = "0.0.0.0"
+        self.server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_udp.bind(("", int(self.multicast_port)))
+        mreq = socket.inet_aton(self.multicast_group) + socket.inet_aton(
+            self.interface_ip
+        )
+        self.server_udp.setsockopt(
+            socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, bytes(mreq)
+        )
+        self.server_udp.settimeout(0.01)
+        if self._udpwatch is None:
+            self._udpwatch = threading.Thread(
+                target=self.watch_udp,
+                daemon=True,
+            )
+            self._udpwatch.start()
+        # self.n1mm = N1MM(
+        #     ip_address=self.preference.get("n1mm_ip"),
+        #     radioport=self.preference.get("n1mm_radioport"),
+        #     contactport=self.preference.get("n1mm_contactport"),
+        # )
+
+    def double_clicked(self, _row, _column):
+        """Slot for doubleclick event"""
+        if self.table_loading:
+            return
+        print("DoubleClicked")
+
+    def cell_changed(self, row, _column):
+        """Slot for changed cell"""
+        if self.table_loading:
+            return
+        db_record = {
+            "TS": self.generalLog.item(row, 0).text(),
+            "Call": self.generalLog.item(row, 1).text(),
+            "Freq": self.generalLog.item(row, 2).text(),
+            "SNT": self.generalLog.item(row, 3).text(),
+            "RCV": self.generalLog.item(row, 4).text(),
+            "ZN": self.generalLog.item(row, 6).text(),
+            "WPXPrefix": self.generalLog.item(row, 8).text(),
+            "Points": self.generalLog.item(row, 9).text(),
+            "ID": self.generalLog.item(row, 10).text(),
+        }
+        self.database.change_contact(db_record)
         self.get_log()
 
-    def double_clicked(self, row, column):
-        """Slot for doubleclick event"""
-        if not self.table_loading:
-            print("DoubleClicked")
-            print(f"{row} {column} {self.generalLog.currentItem().text()}")
-
-    def cell_changed(self, row, column):
-        """Slot for changed cell"""
-        if not self.table_loading:
-            print("cell changed")
-            print(f"{row} {column} {self.generalLog.currentItem().text()}")
+    def dummy(self):
+        """the dummy"""
+        ...
 
     def get_log(self):
         """Get Log, Show it."""
+        self.generalLog.cellChanged.connect(self.dummy)
         self.table_loading = True
         current_log = self.database.fetch_all_contacts_asc()
-        keys = current_log[0].keys()
-        print(len(keys))
-        print(keys)
         self.generalLog.setRowCount(0)
         for log_item in current_log:
             number_of_rows = self.generalLog.rowCount()
             self.generalLog.insertRow(number_of_rows)
-            time_stamp = log_item.get("TS", "MM-DD HH:MM")
-            month_day, hour_min = time_stamp.split(" ")
-            _, month, day = month_day.split("-")
-            hour, minute, _ = hour_min.split(":")
-            month_day = f"{month}-{day}"
-            hour_min = f"{hour}:{minute}"
-            time_stamp = f"{month_day} {hour_min}"
+            time_stamp = log_item.get("TS", "YY-MM-DD HH:MM:SS")
             first_item = QtWidgets.QTableWidgetItem(time_stamp)
-
             self.generalLog.setItem(number_of_rows, 0, first_item)
             self.generalLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
-
+            self.generalLog.item(number_of_rows, 0).setTextAlignment(0x0004)
             self.generalLog.setItem(
                 number_of_rows,
                 1,
@@ -198,7 +214,45 @@ class MainWindow(QtWidgets.QMainWindow):
                 9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
+            self.generalLog.setItem(
+                number_of_rows,
+                10,
+                QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
+            )
         self.table_loading = False
+        self.generalLog.cellChanged.connect(self.cell_changed)
+
+    def watch_udp(self):
+        """Puts UDP datagrams in a FIFO queue"""
+        while True:
+            try:
+                datagram = self.server_udp.recv(1500)
+                print(datagram.decode())
+            except socket.timeout:
+                print("socket timeout")
+                time.sleep(1)
+                continue
+            if datagram:
+                self.udp_fifo.put(datagram)
+
+    def check_udp_traffic(self):
+        """Checks UDP Traffic"""
+        while not self.udp_fifo.empty():
+            datagram = self.udp_fifo.get()
+            try:
+                print(f"*************\n{datagram.decode()}\n********************")
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                print(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                print(the_error)
+                continue
+            # logger.info("%s", json_data)
+            if json_data.get("cmd") == "UPDATELOG":
+                self.get_log()
 
 
 def load_fonts_from_dir(directory: str) -> set:
@@ -214,14 +268,18 @@ def load_fonts_from_dir(directory: str) -> set:
 
 def main():
     """main entry"""
+    timer.start(1000)
     sys.exit(app.exec())
 
 
+app = QtWidgets.QApplication(sys.argv)
+font_path = WORKING_PATH + "/data"
+_families = load_fonts_from_dir(os.fspath(font_path))
+window = MainWindow()
+window.setWindowTitle("Log Display")
+window.show()
+timer = QtCore.QTimer()
+timer.timeout.connect(window.check_udp_traffic)
+
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    font_path = WORKING_PATH + "/data"
-    _families = load_fonts_from_dir(os.fspath(font_path))
-    window = MainWindow()
-    window.setWindowTitle("Log Display")
-    window.show()
     main()
