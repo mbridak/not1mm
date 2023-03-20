@@ -13,6 +13,8 @@ def calculate_wpx_prefix(the_call: str) -> str:
     """Calculate a WPX Prefix"""
     if not the_call:
         return ""
+    if the_call in ["OPON", "CW", "SSB", "RTTY"]:
+        return ""
     suffix_to_ignore = ["M", "MM", "P", "QRP", "A", "LH", "NLD"]
     result = None
     working_call = the_call.split("/")
