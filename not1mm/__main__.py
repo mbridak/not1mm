@@ -464,6 +464,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def save_contact(self):
         """Save to db"""
         logger.debug("saving")
+        if len(self.callsign.text()) < 4:
+            return
+        if not any(char.isdigit() for char in self.callsign.text()):
+            return
+        if not any(char.isalpha() for char in self.callsign.text()):
+            return
         self.contest.set_contact_vars(self)
         self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
