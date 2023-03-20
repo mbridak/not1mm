@@ -345,7 +345,15 @@ class DataBase:
             cursor.execute("select * from dxlog order by ts desc;")
             return cursor.fetchone()
 
-    def fetch_like_calls(self, call) -> list:
+    def fetch_contact_by_uuid(self, uuid: str) -> dict:
+        """returns a list of dicts with last contact in the database."""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute(f"select * from dxlog where ID='{uuid}';")
+            return cursor.fetchone()
+
+    def fetch_like_calls(self, call: str) -> list:
         """returns a list of dicts with contacts in the database."""
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
