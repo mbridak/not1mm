@@ -464,6 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def save_contact(self):
         """Save to db"""
         logger.debug("saving")
+        self.contest.set_contact_vars(self)
         self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
         self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
@@ -472,13 +473,23 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contact["Mode"] = self.radio_state.get("mode", "")
         self.contact["ContestName"] = self.contest.name
-        self.contact["SNT"] = self.sent.text()
-        self.contact["RCV"] = self.receive.text()
+        self.contact["StationPrefix"] = self.pref.get("callsign", "")
+        self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
+        # self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
+        # self.contact["Call"] = self.callsign.text()
+        # self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
+        # self.contact["QSXFreq"] = round(
+        #     float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
+        # )
+        # self.contact["Mode"] = self.radio_state.get("mode", "")
+        # self.contact["ContestName"] = self.contest.name
+        # self.contact["SNT"] = self.sent.text()
+        # self.contact["RCV"] = self.receive.text()
         # self.contact["CountryPrefix"]
-        # self.contact["StationPrefix"]
+        # self.contact["StationPrefix"] = self.pref.get("callsign", "")
         # self.contact["QTH"]
-        # self.contact["Name"]
-        # self.contact["Comment"]
+        # self.contact["Name"] = self.other_1.text()
+        # self.contact["Comment"] = self.other_2.text()
         # self.contact["NR"]
         # self.contact["Sect"]
         # self.contact["Prec"]
@@ -490,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["IsMultiplier2"]
         # self.contact["Power"]
         # self.contact["Band"]
-        self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
+        # self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         # self.contact["Exchange1"]
         # self.contact["RadioNR"]
         # self.contact["ContestNR"]
