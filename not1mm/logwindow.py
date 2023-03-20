@@ -23,6 +23,7 @@ from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
+from not1mm.lib.edit_contact import EditContact
 
 # from not1mm.lib.n1mm import N1MM
 
@@ -57,6 +58,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # dbname = DATA_PATH + "/ham.db"
     dbname = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
+    edit_contact_dialog = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,7 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
         self.generalLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.generalLog.customContextMenuRequested.connect(self.testing)
+        self.generalLog.customContextMenuRequested.connect(self.edit_contact_selected)
         self.generalLog.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("YYYY-MM-DD HH:MM:SS")
         )
@@ -170,6 +172,64 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dummy(self):
         """the dummy"""
+
+    def edit_contact_selected(self, clicked_cell):
+        """Show edit contact dialog"""
+        logger.debug("Opening EditContact dialog")
+        item = self.generalLog.itemAt(clicked_cell)
+        uuid = self.generalLog.item(item.row(), 10).text()
+        self.edit_contact_dialog = EditContact(WORKING_PATH)
+        self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
+        contact = self.database.fetch_contact_by_uuid(uuid)
+
+        self.edit_contact_dialog.call.setText(contact.get("Call", ""))
+        self.edit_contact_dialog.time_stamp.setText(contact.get("TS", ""))
+        self.edit_contact_dialog.rx_freq.setText(str(contact.get("Freq", "")))
+        self.edit_contact_dialog.tx_freq.setText(str(contact.get("QSXFreq", "")))
+        self.edit_contact_dialog.mode.setText(contact.get("Mode", ""))
+        self.edit_contact_dialog.contest.setText(contact.get("ContestName", ""))
+        self.edit_contact_dialog.rst_sent.setText(contact.get("SNT", ""))
+        self.edit_contact_dialog.rst_rcv.setText(contact.get("RCV", ""))
+        self.edit_contact_dialog.country.setText(contact.get("CountryPrefix", ""))
+        self.edit_contact_dialog.station_call.setText(contact.get("Operator", ""))
+        self.edit_contact_dialog.name.setText(contact.get("Name", ""))
+        self.edit_contact_dialog.qth.setText(contact.get("QTH", ""))
+        self.edit_contact_dialog.comment.setText(contact.get("Comment", ""))
+
+        self.edit_contact_dialog.nr.setText(str(contact.get("NR", "0")))
+        self.edit_contact_dialog.nr_sent.setText(str(contact.get("SentNr", "0")))
+        self.edit_contact_dialog.points.setText(str(contact.get("Points", "0")))
+        self.edit_contact_dialog.power.setText(str(contact.get("Power", "0")))
+        self.edit_contact_dialog.zone.setText(str(contact.get("ZN", "")))
+        self.edit_contact_dialog.section.setText(contact.get("Sect", ""))
+        self.edit_contact_dialog.band.setText(str(contact.get("Band", "")))
+        self.edit_contact_dialog.check.setText(str(contact.get("CK", "")))
+        self.edit_contact_dialog.prec.setText(contact.get("Prec", ""))
+        self.edit_contact_dialog.wpx.setText(contact.get("WPXPrefix", ""))
+        self.edit_contact_dialog.exchange.setText(contact.get("Exchange1", ""))
+        self.edit_contact_dialog.run_12.setText(str(contact.get("Run1Run2", "")))
+        self.edit_contact_dialog.radio.setText(str(contact.get("RadioNR", "")))
+        self.edit_contact_dialog.grid.setText(contact.get("GridSquare", ""))
+        self.edit_contact_dialog.op.setText(contact.get("Operator", ""))
+        self.edit_contact_dialog.misc.setText(contact.get("MiscText", ""))
+        self.edit_contact_dialog.rover_qth.setText(contact.get("RoverLocation", ""))
+
+        self.edit_contact_dialog.mult_1.setChecked(
+            bool(contact.get("IsMultiplier1", ""))
+        )
+        self.edit_contact_dialog.mult_2.setChecked(
+            bool(contact.get("IsMultiplier2", ""))
+        )
+        self.edit_contact_dialog.mult_3.setChecked(
+            bool(contact.get("IsMultiplier3", ""))
+        )
+
+        self.edit_contact_dialog.show()
+        debugline = f"Right Clicked Item: {uuid}"
+        logger.debug(debugline)
+
+    def save_edited_contact(self):
+        """save the goods"""
 
     def get_log(self):
         """Get Log, Show it."""
