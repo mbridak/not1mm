@@ -19,6 +19,7 @@
   - [Settings dialog](#settings-dialog)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
+  - [Editing a contact](#editing-a-contact)
 
 ## What and why is Not1MM
 
@@ -134,8 +135,18 @@ You can fill. You can fill. Everyone look at your keys.
 
 ## Log Display
 
-You can double click a cell and edit the contents.
+The Log display gets updated automatically when a contact is entered. The top half is a list of all contacts.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
 
-The second half of the log displays contacts sorted by what's currently in the call entry field.
+The bottom half of the log displays contacts sorted by what's currently in the call entry field.
+
+## Editing a contact
+
+![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_cell.png)
+
+You can double click a cell in the log window and edit its contents.
+
+You can also Right-Click on a cell to bring up the edit dialog.
+
+![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
