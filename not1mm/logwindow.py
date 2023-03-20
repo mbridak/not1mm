@@ -102,6 +102,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.cellChanged.connect(self.cell_changed)
         self.generalLog.setColumnHidden(10, True)
 
+        self.focusedLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.focusedLog.customContextMenuRequested.connect(
+            self.edit_focused_contact_selected
+        )
         self.focusedLog.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("YYYY-MM-DD HH:MM:SS")
         )
@@ -173,14 +177,27 @@ class MainWindow(QtWidgets.QMainWindow):
     def dummy(self):
         """the dummy"""
 
+    def edit_focused_contact_selected(self, clicked_cell):
+        """Show edit contact dialog"""
+        logger.debug("Opening EditContact dialog")
+        item = self.focusedLog.itemAt(clicked_cell)
+        uuid = self.focusedLog.item(item.row(), 10).text()
+        self.edit_contact(uuid)
+
     def edit_contact_selected(self, clicked_cell):
         """Show edit contact dialog"""
         logger.debug("Opening EditContact dialog")
         item = self.generalLog.itemAt(clicked_cell)
         uuid = self.generalLog.item(item.row(), 10).text()
+        self.edit_contact(uuid)
+
+    def edit_contact(self, uuid):
+        """Show edit contact dialog"""
+
         self.edit_contact_dialog = EditContact(WORKING_PATH)
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
+        self.edit_contact_dialog.delete_2.clicked.connect(self.delete_contact)
 
         self.edit_contact_dialog.call.setText(self.contact.get("Call", ""))
         self.edit_contact_dialog.time_stamp.setText(self.contact.get("TS", ""))
@@ -191,7 +208,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.edit_contact_dialog.rst_sent.setText(self.contact.get("SNT", ""))
         self.edit_contact_dialog.rst_rcv.setText(self.contact.get("RCV", ""))
         self.edit_contact_dialog.country.setText(self.contact.get("CountryPrefix", ""))
-        self.edit_contact_dialog.station_call.setText(self.contact.get("Operator", ""))
+        self.edit_contact_dialog.station_call.setText(
+            self.contact.get("StationPrefix", "")
+        )
         self.edit_contact_dialog.name.setText(self.contact.get("Name", ""))
         self.edit_contact_dialog.qth.setText(self.contact.get("QTH", ""))
         self.edit_contact_dialog.comment.setText(self.contact.get("Comment", ""))
@@ -266,6 +285,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.database.change_contact(self.contact)
         self.get_log()
+        self.show_like_calls(self.contact.get("Call", ""))
+
+    def delete_contact(self):
+        """Delete Contact"""
+        self.database.delete_contact(self.contact.get("ID", ""))
+        self.edit_contact_dialog.close()
+        self.get_log()
+        self.show_like_calls(self.contact.get("Call", ""))
 
     def get_log(self):
         """Get Log, Show it."""
@@ -342,13 +369,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.table_loading = False
         self.generalLog.cellChanged.connect(self.cell_changed)
 
-    def testing(self, a):
-        """ignore"""
-        item = self.generalLog.itemAt(a)
-        if item:
-            print(
-                f"{item.row()}, {item.column()} {item.icon().isNull()}***************TESTING****************"
-            )
+    # def testing(self, a):
+    #     """ignore"""
+    #     item = self.generalLog.itemAt(a)
+    #     if item:
+    #         print(
+    #             f"{item.row()}, {item.column()} {item.icon().isNull()}*TESTING*"
+    #         )
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
