@@ -14,6 +14,7 @@ def init_contest(self):
 
 
 def interface(self):
+    """Setup user interface"""
     self.field1.show()
     self.field2.show()
     self.field3.show()
@@ -25,6 +26,7 @@ def interface(self):
 
 
 def set_tab_next(self):
+    """Set TAB Advances"""
     self.tab_next = {
         self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
         self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
@@ -41,6 +43,7 @@ def set_tab_next(self):
 
 
 def set_tab_prev(self):
+    """Set TAB Advances"""
     self.tab_prev = {
         self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
         self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
@@ -54,3 +57,11 @@ def set_tab_prev(self):
             QtWidgets.QLineEdit
         ),
     }
+
+
+def set_contact_vars(self):
+    """Contest Specific"""
+    self.contact["SNT"] = self.sent.text()
+    self.contact["RCV"] = self.receive.text()
+    self.contact["Name"] = self.other_1.text()
+    self.contact["Comment"] = self.other_2.text()
