@@ -101,3 +101,24 @@ def points(self):
                 return 3
             return 6
     return 0
+
+
+def show_mults(self):
+    """Return display string for mults"""
+    result = self.database.fetch_wpx_count()
+    return int(result.get("wpx_count", 0))
+
+
+def get_points(self):
+    """Return raw points before mults"""
+    result = self.database.fetch_points()
+    return int(result.get("Points", 0))
+
+
+def calc_score(self):
+    """Return calculated score"""
+    result = self.database.fetch_points()
+    contest_points = int(result.get("Points", 0))
+    result = self.database.fetch_wpx_count()
+    mults = int(result.get("wpx_count", 0))
+    return contest_points * mults
