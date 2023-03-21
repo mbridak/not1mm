@@ -470,7 +470,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not any(char.isalpha() for char in self.callsign.text()):
             return
-        self.contest.set_contact_vars(self)
+
         self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
         self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
@@ -478,7 +478,7 @@ class MainWindow(QtWidgets.QMainWindow):
             float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
         )
         self.contact["Mode"] = self.radio_state.get("mode", "")
-        self.contact["ContestName"] = self.contest.name
+        self.contact["ContestName"] = self.contest.carillo_name
         self.contact["StationPrefix"] = self.pref.get("callsign", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         # self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
@@ -526,6 +526,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["IsOriginal"]
         self.contact["ID"] = uuid.uuid4().hex
         # self.contact["CLAIMEDQSO"]
+        self.contest.set_contact_vars(self)
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
         self.database.log_contact(self.contact)
@@ -620,7 +621,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def select_contest(self):
         """Load contest"""
-        self.contest = doimp("general_logging")
+        self.contest = doimp("cqww_dx_ssb")
         logger.debug("Loaded Contest Name = %s", self.contest.name)
         self.contest.init_contest(self)
 
@@ -1030,6 +1031,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.dx_entity.setText(
                     f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
                 )
+                if len(callsign) > 2:
+                    self.contest.prefill(self)
 
     def check_callsign2(self, callsign):
         """Check call once entered"""
@@ -1083,7 +1086,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def new_op(self):
         """Save new OP"""
         if self.opon_dialog.NewOperator.text():
-            self.current_op = self.opon_dialog.NewOperator.text()
+            self.current_op = self.opon_dialog.NewOperator.text().upper()
 
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
