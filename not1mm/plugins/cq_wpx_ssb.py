@@ -72,3 +72,32 @@ def prefill(self):
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
         field.setText(str(self.contact.get("ZN", "")))
+
+
+def points(self):
+    """Calc points"""
+    result = self.cty_lookup(self.pref.get("callsign", ""))
+    if result:
+        for item in result.items():
+            mycountry = item[1].get("entity", "")
+            mycontinent = item[1].get("continent", "")
+    result = self.cty_lookup(self.contact.get("Call", ""))
+    band = int(int(float(self.contact.get("Freq"))) / 1000)
+    if result:
+        for item in result.items():
+            entity = item[1].get("entity", "")
+            continent = item[1].get("continent", "")
+            if mycountry.upper() == entity.upper():
+                return 1
+            if mycontinent and continent == "NA":
+                if band in [28, 21, 14]:
+                    return 2
+                return 4
+            if mycontinent == continent:
+                if band in [28, 21, 14]:
+                    return 1
+                return 2
+            if band in [28, 21, 14]:
+                return 3
+            return 6
+    return 0
