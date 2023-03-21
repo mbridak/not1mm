@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>644</height>
+    <width>639</width>
+    <height>638</height>
    </rect>
   </property>
   <property name="font">
@@ -513,6 +513,14 @@
        </item>
        <item>
         <widget class="QPushButton" name="delete_2">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 120, 0);</string>
+         </property>
          <property name="text">
           <string>Delete</string>
          </property>
@@ -529,11 +537,22 @@
        </item>
        <item>
         <widget class="QDialogButtonBox" name="buttonBox">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="standardButtons">
           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+         </property>
+         <property name="centerButtons">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
