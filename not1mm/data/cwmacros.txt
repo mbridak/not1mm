@@ -10,10 +10,10 @@ S|F9|..|ee
 S|F10|Call?|call?
 S|F11|Class?|cls?
 S|F12|Sect?|sec?
-R|F1|Run CQ|cq wfd {MYCALL} {MYCALL} wfd
+R|F1|Run CQ|cq test {MYCALL} {MYCALL} test
 R|F2|HisCall|{HISCALL}
 R|F3|Run Exch|{HISCALL} {MYCLASS} {MYSECT}
-R|F4|Run TU|tu {MYCALL} wfd
+R|F4|Run TU|tu {MYCALL} qrz
 R|F5|MyCall|{MYCALL}
 R|F6|MyClass|{MYCLASS}
 R|F7|MySect|{MYSECT}
