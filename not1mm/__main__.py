@@ -302,6 +302,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
 
+    def cty_lookup(self, callsign: str):
+        """Lookup callsign in cty.dat file"""
+        callsign = callsign.upper()
+        for count in reversed(range(len(callsign))):
+            searchitem = callsign[: count + 1]
+            result = {key: val for key, val in CTYFILE.items() if key == searchitem}
+            if not result:
+                continue
+            if result.get(searchitem).get("exact_match"):
+                if searchitem == callsign:
+                    return result
+                continue
+            return result
+
     def cwspeed_spinbox_changed(self):
         """triggered when value of CW speed in the spinbox changes."""
         if self.cw.servertype == 1:
@@ -527,6 +541,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["ID"] = uuid.uuid4().hex
         # self.contact["CLAIMEDQSO"]
         self.contest.set_contact_vars(self)
+        self.contact["Points"] = self.contest.points(self)
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
         self.database.log_contact(self.contact)
@@ -621,7 +636,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def select_contest(self):
         """Load contest"""
-        self.contest = doimp("cqww_dx_ssb")
+        self.contest = doimp("cq_wpx_ssb")
         logger.debug("Loaded Contest Name = %s", self.contest.name)
         self.contest.init_contest(self)
 
@@ -1011,14 +1026,14 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("%s", debug_result)
         if result:
             for a in result.items():
-                entity = a[1].get("entity")
-                cq = a[1].get("cq")
-                itu = a[1].get("itu")
+                entity = a[1].get("entity", "")
+                cq = a[1].get("cq", "")
+                itu = a[1].get("itu", "")
                 continent = a[1].get("continent")
-                lat = float(a[1].get("lat"))
-                lon = float(a[1].get("long"))
+                lat = float(a[1].get("lat", "0.0"))
+                lon = float(a[1].get("long", "0.0"))
                 lon = lon * -1  # cty.dat file inverts longitudes
-                primary_pfx = a[1].get("primary_pfx")
+                primary_pfx = a[1].get("primary_pfx", "")
                 heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
                 kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
                 self.heading_distance.setText(
