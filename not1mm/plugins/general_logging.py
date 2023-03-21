@@ -1,6 +1,8 @@
+"""General Logging plugin"""
 from PyQt5 import QtWidgets
 
 name = "General Logging"
+carillo_name = "GeneralLogging"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
@@ -8,6 +10,7 @@ dupe_type = 4
 
 
 def init_contest(self):
+    """setup plugin"""
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
@@ -65,3 +68,7 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["Name"] = self.other_1.text()
     self.contact["Comment"] = self.other_2.text()
+
+
+def prefill(self):
+    """xxx"""
