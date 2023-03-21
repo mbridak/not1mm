@@ -353,6 +353,24 @@ class DataBase:
             cursor.execute(f"select * from dxlog where ID='{uuid}';")
             return cursor.fetchone()
 
+    def fetch_wpx_count(self) -> dict:
+        """returns a list of dicts with last contact in the database."""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute("select count(DISTINCT WPXPrefix) as wpx_count from dxlog;")
+            return cursor.fetchone()
+
+    def fetch_wpx_exists(self, wpx) -> dict:
+        """returns a list of dicts with last contact in the database."""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute(
+                f"select count(*) as wpx_count from dxlog where WPXPrefix = '{wpx}';"
+            )
+            return cursor.fetchone()
+
     def fetch_like_calls(self, call: str) -> list:
         """returns a list of dicts with contacts in the database."""
         with sqlite3.connect(self.database) as conn:
