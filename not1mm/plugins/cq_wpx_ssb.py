@@ -14,6 +14,7 @@ def init_contest(self):
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
+    self.next_field = self.other_2
 
 
 def interface(self):
