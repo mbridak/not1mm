@@ -105,6 +105,47 @@ def getband(freq: str) -> str:
         return "0"
 
 
+def get_logged_band(freq: str) -> str:
+    """
+    Convert a (string) frequency into a (string) band.
+    Returns a (string) band.
+    Returns a "0" if frequency is out of band.
+    """
+    # logger.info("getband: %s %s", type(freq), freq)
+    if freq.isnumeric():
+        frequency = int(float(freq))
+        if 2000000 > frequency > 1800000:
+            return "1.8"
+        if 4000000 > frequency > 3500000:
+            return "3.5"
+        if 5406000 > frequency > 5330000:
+            return "5"
+        if 7300000 > frequency > 7000000:
+            return "7"
+        if 10150000 > frequency > 10100000:
+            return "10"
+        if 14350000 > frequency > 14000000:
+            return "14"
+        if 18168000 > frequency > 18068000:
+            return "18"
+        if 21450000 > frequency > 21000000:
+            return "21"
+        if 24990000 > frequency > 24890000:
+            return "24"
+        if 29700000 > frequency > 28000000:
+            return "28"
+        if 54000000 > frequency > 50000000:
+            return "50"
+        if 148000000 > frequency > 144000000:
+            return "144"
+        if 225000000 > frequency > 222000000:
+            return "222"
+        if 450000000 > frequency > 420000000:
+            return "430"
+    else:
+        return "0"
+
+
 def fakefreq(band, mode):
     """
     If unable to obtain a frequency from the rig,
