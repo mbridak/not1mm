@@ -48,6 +48,7 @@ from not1mm.lib.ham_utility import (
     distance,
     distance_with_latlon,
     getband,
+    get_logged_band,
     reciprocol,
 )
 from not1mm.lib.lookup import QRZlookup
@@ -265,7 +266,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.clicked.connect(self.sendf12)
         self.select_contest()
         self.readpreferences()
+        self.current_op = self.pref.get("callsign", "")
         self.read_cw_macros()
+        self.clearinputs()
         self.rig_control = CAT("rigctld", "localhost", 4532)
         self.band_indicators = {
             "160": self.band_160,
@@ -452,7 +455,9 @@ class MainWindow(QtWidgets.QMainWindow):
             vfoa = 0.0
         self.setWindowTitle(
             f"{round(vfoa,2)} "
-            f"{self.radio_state.get('mode', '')} - Not1MM v{__version__}"
+            f"{self.radio_state.get('mode', '')} "
+            f"OP:{self.current_op} {self.contest.name} "
+            f"- Not1MM v{__version__}"
         )
 
     def clearinputs(self):
@@ -1125,6 +1130,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode("RTTY")
             self.radio_state["vfoa"] = vfo
             band = getband(str(vfo))
+            self.contact["Band"] = get_logged_band(str(vfo))
             self.set_band_indicator(band)
             self.radio_state["mode"] = mode
             # logger.debug("VFO: %s  MODE: %s", vfo, mode)
