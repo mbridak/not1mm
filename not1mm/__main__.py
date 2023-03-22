@@ -467,7 +467,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dx_entity.setText("dxentity")
         mults = self.contest.show_mults(self)
         qsos = self.contest.show_qso(self)
-        multstring = f"{mults}/{qsos}"
+        multstring = f"{qsos}/{mults}"
         self.mults.setText(multstring)
         score = self.contest.calc_score(self)
         self.score.setText(str(score))
@@ -538,7 +538,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["ContestNR"]
         # self.contact["isMultiplier3"]
         # self.contact["MiscText"]
-        # self.contact["IsRunQSO"]
+        self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
         # self.contact["ContactType"]
         # self.contact["Run1Run2"]
         # self.contact["GridSquare"]
@@ -548,7 +548,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["RadioInterfaced"]
         # self.contact["NetworkedCompNr"]
         self.contact["NetBiosName"] = socket.gethostname()
-        # self.contact["IsOriginal"]
+        self.contact["IsOriginal"] = 1
         self.contact["ID"] = uuid.uuid4().hex
         # self.contact["CLAIMEDQSO"]
         self.contest.set_contact_vars(self)
@@ -556,8 +556,8 @@ class MainWindow(QtWidgets.QMainWindow):
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
         self.database.log_contact(self.contact)
-        self.clearinputs()
         self.n1mm.send_contact_info()
+        self.clearinputs()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
         self.multicast_interface.send_as_json(cmd)
