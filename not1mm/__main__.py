@@ -202,7 +202,7 @@ class MainWindow(QtWidgets.QMainWindow):
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.n1mm = N1MM()
-        self.next_field = self.other_1
+        self.next_field = self.other_2
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
@@ -460,6 +460,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         self.heading_distance.setText("No Heading")
         self.dx_entity.setText("")
+        mults = self.contest.show_mults(self)
+        qsos = self.contest.show_qso(self)
+        multstring = f"{mults}/{qsos}"
+        self.mults.setText(multstring)
+        score = self.contest.calc_score(self)
+        self.score.setText(str(score))
         self.callsign.clear()
         if self.current_mode == "CW":
             self.sent.setText("599")
