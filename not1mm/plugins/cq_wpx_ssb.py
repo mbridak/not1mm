@@ -2,7 +2,7 @@
 from PyQt5 import QtWidgets
 
 name = "CQ WPX SSB"
-carillo_name = "CQWPXSSB"
+carillo_name = "CQ-WPX-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
