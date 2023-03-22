@@ -69,6 +69,12 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
     self.contact["NR"] = self.other_2.text()
+    if self.contact.get("WPXPrefix"):
+        result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
+        if result.get("wpx_count"):
+            self.contact["IsMultiplier1"] = 0
+        else:
+            self.contact["IsMultiplier1"] = 1
 
 
 def prefill(self):
