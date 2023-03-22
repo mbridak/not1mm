@@ -348,7 +348,7 @@ class DataBase:
             return cursor.fetchone()
 
     def fetch_wpx_exists(self, wpx) -> dict:
-        """returns a list of dicts with last contact in the database."""
+        """returns a dict key of wpx_count"""
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
