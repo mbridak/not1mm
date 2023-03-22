@@ -295,20 +295,6 @@ class DataBase:
         except sqlite3.Error as exception:
             logger.info("DataBase change_contact: %s", exception)
 
-    # def get_unique_id(self, contact) -> str:
-    #     """get unique id"""
-    #     unique_id = ""
-    #     if contact:
-    #         try:
-    #             with sqlite3.connect(self.database) as conn:
-    #                 sql = f"select ID from dxlog where ID={int(contact)}"
-    #                 cursor = conn.cursor()
-    #                 cursor.execute(sql)
-    #                 unique_id = str(cursor.fetchone()[0])
-    #         except sqlite3.Error as exception:
-    #             logger.debug("%s", exception)
-    #     return unique_id
-
     def delete_contact(self, unique_id: str) -> None:
         """Deletes a contact from the db."""
         if unique_id:
@@ -404,16 +390,6 @@ class DataBase:
             cursor = conn.cursor()
             cursor.execute("select max(SentNR) + 1 as serial_nr from DXLOG;")
             return cursor.fetchone()
-
-    # def fetch_all_dirty_contacts(self) -> list:
-    #     """
-    #     Return a list of dict, containing all contacts still flagged as dirty.\n
-    #     """
-    #     with sqlite3.connect(self.database) as conn:
-    #         conn.row_factory = self.row_factory
-    #         cursor = conn.cursor()
-    #         cursor.execute("select * from dxlog where dirty=1 order by id")
-    #         return cursor.fetchall()
 
     def get_empty(self) -> dict:
         """Return a dictionary object with keys and no values."""
