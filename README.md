@@ -48,6 +48,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-21] Worked on CQ WPX SSB plugin.
 - [23-3-20] Added a contact edit dialog. RightClick to edit contact. Changed placeholder text color in settings dialog. Hooked up CW speedchange widget. PgUp/PgDn to change speed.
 - [23-3-17] Added multicast UDP messages to update the log window when new contact made. You can now edit existing contacts in the log window. You can't delete them yet. Got rid of watchdog. Isolated common multicast code to it's own class.
 - [23-3-15] Added a rudimentary log view window.
