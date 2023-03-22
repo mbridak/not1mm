@@ -6,6 +6,7 @@ Display current log
 # QTableWidget
 # focusedLog, generalLog
 import logging
+import math
 import os
 import pkgutil
 import queue
@@ -221,7 +222,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.edit_contact_dialog.power.setText(str(self.contact.get("Power", "0")))
         self.edit_contact_dialog.zone.setText(str(self.contact.get("ZN", "")))
         self.edit_contact_dialog.section.setText(self.contact.get("Sect", ""))
-        self.edit_contact_dialog.band.setText(str(self.contact.get("Band", "")))
+        the_band = self.contact.get("Band", "0")
+        c_band = (
+            str(int(the_band))
+            if float(math.floor(the_band)) == the_band
+            else str(the_band)
+        )
+        self.edit_contact_dialog.band.setText(c_band)
         self.edit_contact_dialog.check.setText(str(self.contact.get("CK", "")))
         self.edit_contact_dialog.prec.setText(self.contact.get("Prec", ""))
         self.edit_contact_dialog.wpx.setText(self.contact.get("WPXPrefix", ""))
