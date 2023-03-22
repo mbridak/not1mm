@@ -72,9 +72,11 @@ def set_contact_vars(self):
 
 def prefill(self):
     """Fill SentNR"""
+    result = self.database.get_serial()
+    serial_nr = str(result.get("serial_nr", "1"))
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
-        field.setText("001")
+        field.setText(serial_nr)
 
 
 def points(self):
