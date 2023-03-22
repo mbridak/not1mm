@@ -21,9 +21,11 @@ def interface(self):
     self.field1.show()
     self.field2.show()
     self.field3.show()
-    self.field4.hide()
+    self.field4.show()
     label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("CQ Zone")
+    label.setText("SentNR")
+    label = self.field4.findChild(QtWidgets.QLabel)
+    label.setText("RcvNR")
 
 
 def set_tab_next(self):
@@ -64,18 +66,19 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["ZN"] = self.other_1.text()
+    self.contact["SentNr"] = self.other_1.text()
+    self.contact["NR"] = self.other_2.text()
 
 
 def prefill(self):
-    """xxx"""
+    """Fill SentNR"""
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
-        field.setText(str(self.contact.get("ZN", "")))
+        field.setText("001")
 
 
 def points(self):
-    """Calc points"""
+    """Calc point"""
     result = self.cty_lookup(self.pref.get("callsign", ""))
     if result:
         for item in result.items():
@@ -107,6 +110,12 @@ def show_mults(self):
     """Return display string for mults"""
     result = self.database.fetch_wpx_count()
     return int(result.get("wpx_count", 0))
+
+
+def show_qso(self):
+    """Return qso count"""
+    result = self.database.fetch_qso_count()
+    return int(result.get("qsos", 0))
 
 
 def get_points(self):
