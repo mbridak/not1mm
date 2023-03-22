@@ -397,6 +397,14 @@ class DataBase:
             )
             return cursor.fetchall()
 
+    def get_serial(self) -> dict:
+        """Return serial number"""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute("select max(SentNR) + 1 as serial_nr from DXLOG;")
+            return cursor.fetchone()
+
     # def fetch_all_dirty_contacts(self) -> list:
     #     """
     #     Return a list of dict, containing all contacts still flagged as dirty.\n
