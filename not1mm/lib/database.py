@@ -379,6 +379,14 @@ class DataBase:
             cursor.execute("select sum(Points) as Points from dxlog;")
             return cursor.fetchone()
 
+    def fetch_qso_count(self) -> dict:
+        """return QSO count"""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute("select count(*) as qsos from dxlog;")
+            return cursor.fetchone()
+
     def fetch_like_calls(self, call: str) -> list:
         """returns a list of dicts with contacts in the database."""
         with sqlite3.connect(self.database) as conn:
