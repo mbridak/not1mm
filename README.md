@@ -20,6 +20,7 @@
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
   - [Editing a contact](#editing-a-contact)
+  - [Cabrillo](#cabrillo)
 
 ## What and why is Not1MM
 
@@ -154,3 +155,17 @@ You can double click a cell in the log window and edit its contents.
 You can also Right-Click on a cell to bring up the edit dialog.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
+
+## Cabrillo
+
+Kinda working in a forced way. Need to generalize it for multiple contests. Click on `File` then `Generate Cabrillo`
+
+There's a few more fields I have to code in. But it's enough for me to edit and submit.
+
+The file will be placed in your home directory. The name will be in the format of:
+
+`StationCall`_`ContestName`.log
+
+So for me it would be:
+
+K6GTE_CQ-WPX-SSB.log
