@@ -69,8 +69,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
-        self.generalLog.setColumnCount(11)
-        self.focusedLog.setColumnCount(11)
+        self.generalLog.setColumnCount(14)
+        self.focusedLog.setColumnCount(14)
         icon_path = WORKING_PATH + "/data/"
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.checkicon = QtGui.QIcon()
@@ -85,23 +85,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Freq"))
         self.generalLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Snt"))
         self.generalLog.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Rcv"))
-        self.generalLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("M1"))
-        self.generalLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("ZN"))
-        self.generalLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("M2"))
-        self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("PFX"))
-        self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PTS"))
-        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("UUID"))
+        self.generalLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("Sent"))
+        self.generalLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("NR"))
+        self.generalLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("WPX"))
+        self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("M1"))
+        self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("ZN"))
+        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("M2"))
+        self.generalLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("PFX"))
+        self.generalLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("PTS"))
+        self.generalLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("UUID"))
         self.generalLog.setColumnWidth(0, 200)
         self.generalLog.setColumnWidth(3, 50)
         self.generalLog.setColumnWidth(4, 50)
-        self.generalLog.setColumnWidth(5, 25)
+        self.generalLog.setColumnWidth(5, 50)
         self.generalLog.setColumnWidth(6, 50)
-        self.generalLog.setColumnWidth(7, 25)
+        self.generalLog.setColumnWidth(7, 50)
         self.generalLog.setColumnWidth(8, 50)
         self.generalLog.setColumnWidth(9, 50)
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
+        self.generalLog.setColumnHidden(9, True)
         self.generalLog.setColumnHidden(10, True)
+        self.generalLog.setColumnHidden(11, True)
+        self.generalLog.setColumnHidden(13, True)
 
         self.focusedLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.focusedLog.customContextMenuRequested.connect(
@@ -115,23 +121,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.focusedLog.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Freq"))
         self.focusedLog.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Snt"))
         self.focusedLog.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Rcv"))
-        self.focusedLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("M1"))
-        self.focusedLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("ZN"))
-        self.focusedLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("M2"))
-        self.focusedLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("PFX"))
-        self.focusedLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("PTS"))
-        self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("UUID"))
+        self.focusedLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("Sent"))
+        self.focusedLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("NR"))
+        self.focusedLog.setHorizontalHeaderItem(7, QtWidgets.QTableWidgetItem("WPX"))
+        self.focusedLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("M1"))
+        self.focusedLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("ZN"))
+        self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("M2"))
+        self.focusedLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("PFX"))
+        self.focusedLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("PTS"))
+        self.focusedLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("UUID"))
         self.focusedLog.setColumnWidth(0, 200)
         self.focusedLog.setColumnWidth(3, 50)
         self.focusedLog.setColumnWidth(4, 50)
-        self.focusedLog.setColumnWidth(5, 25)
+        self.focusedLog.setColumnWidth(5, 50)
         self.focusedLog.setColumnWidth(6, 50)
-        self.focusedLog.setColumnWidth(7, 25)
+        self.focusedLog.setColumnWidth(7, 50)
         self.focusedLog.setColumnWidth(8, 50)
         self.focusedLog.setColumnWidth(9, 50)
         # self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         # self.focusedLog.cellChanged.connect(self.cell_changed)
+        self.focusedLog.setColumnHidden(9, True)
         self.focusedLog.setColumnHidden(10, True)
+        self.focusedLog.setColumnHidden(11, True)
+        self.focusedLog.setColumnHidden(13, True)
         self.get_log()
         self.multicast_interface = Multicast(
             MULTICAST_GROUP, MULTICAST_PORT, INTERFACE_IP
@@ -166,10 +178,15 @@ class MainWindow(QtWidgets.QMainWindow):
             "Freq": self.generalLog.item(row, 2).text(),
             "SNT": self.generalLog.item(row, 3).text(),
             "RCV": self.generalLog.item(row, 4).text(),
-            "ZN": self.generalLog.item(row, 6).text(),
-            "WPXPrefix": self.generalLog.item(row, 8).text().upper(),
-            "Points": self.generalLog.item(row, 9).text(),
-            "ID": self.generalLog.item(row, 10).text(),
+            "SentNr": self.generalLog.item(row, 5).text(),
+            "NR": self.generalLog.item(row, 6).text(),
+            "WPXPrefix": self.generalLog.item(row, 7).text(),
+            "IsMultiplier1": self.generalLog.item(row, 8).text(),
+            "ZN": self.generalLog.item(row, 9).text(),
+            "IsMultiplier2": self.generalLog.item(row, 10).text().upper(),
+            "CountryPrefix": self.generalLog.item(row, 11).text(),
+            "Points": self.generalLog.item(row, 12).text(),
+            "ID": self.generalLog.item(row, 13).text(),
         }
         self.database.change_contact(db_record)
         self.get_log()
@@ -182,19 +199,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show edit contact dialog"""
         logger.debug("Opening EditContact dialog")
         item = self.focusedLog.itemAt(clicked_cell)
-        uuid = self.focusedLog.item(item.row(), 10).text()
+        uuid = self.focusedLog.item(item.row(), 13).text()
         self.edit_contact(uuid)
 
     def edit_contact_selected(self, clicked_cell):
         """Show edit contact dialog"""
         logger.debug("Opening EditContact dialog")
         item = self.generalLog.itemAt(clicked_cell)
-        uuid = self.generalLog.item(item.row(), 10).text()
+        uuid = self.generalLog.item(item.row(), 13).text()
         self.edit_contact(uuid)
 
     def edit_contact(self, uuid):
         """Show edit contact dialog"""
-
+        logger.debug("Edit: %s", uuid)
         self.edit_contact_dialog = EditContact(WORKING_PATH)
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
@@ -337,17 +354,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 4,
                 QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
             )
+            self.generalLog.setItem(
+                number_of_rows,
+                5,
+                QtWidgets.QTableWidgetItem(str(log_item.get("SentNr", ""))),
+            )
+            self.generalLog.setItem(
+                number_of_rows,
+                6,
+                QtWidgets.QTableWidgetItem(str(log_item.get("NR", ""))),
+            )
+            self.generalLog.setItem(
+                number_of_rows,
+                7,
+                QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
+            )
             item = QtWidgets.QTableWidgetItem()
             if log_item.get("IsMultiplier1", False):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
-                5,
+                8,
                 item,
             )
             self.generalLog.setItem(
                 number_of_rows,
-                6,
+                9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
             item = QtWidgets.QTableWidgetItem()
@@ -355,22 +387,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
-                7,
+                10,
                 item,
             )
             self.generalLog.setItem(
                 number_of_rows,
-                8,
-                QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
+                11,
+                QtWidgets.QTableWidgetItem(str(log_item.get("CountryPrefix", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                9,
+                12,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                10,
+                13,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
         self.table_loading = False
@@ -437,17 +469,34 @@ class MainWindow(QtWidgets.QMainWindow):
                 4,
                 QtWidgets.QTableWidgetItem(str(log_item.get("RCV", ""))),
             )
+
+            self.focusedLog.setItem(
+                number_of_rows,
+                5,
+                QtWidgets.QTableWidgetItem(str(log_item.get("SentNr", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                6,
+                QtWidgets.QTableWidgetItem(str(log_item.get("NR", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                7,
+                QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
+            )
+
             item = QtWidgets.QTableWidgetItem()
             if log_item.get("IsMultiplier1", False):
                 item.setIcon(self.checkicon)
             self.focusedLog.setItem(
                 number_of_rows,
-                5,
+                8,
                 item,
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                6,
+                9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
             item = QtWidgets.QTableWidgetItem()
@@ -455,22 +504,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 item.setIcon(self.checkicon)
             self.focusedLog.setItem(
                 number_of_rows,
-                7,
+                10,
                 item,
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                8,
-                QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
+                11,
+                QtWidgets.QTableWidgetItem(str(log_item.get("CountryPrefix", ""))),
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                9,
+                12,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                10,
+                13,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
 
