@@ -84,6 +84,8 @@ def prefill(self):
     """Fill SentNR"""
     result = self.database.get_serial()
     serial_nr = str(result.get("serial_nr", "1"))
+    if serial_nr == "None":
+        serial_nr = "1"
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
         field.setText(serial_nr)
@@ -121,25 +123,36 @@ def points(self):
 def show_mults(self):
     """Return display string for mults"""
     result = self.database.fetch_wpx_count()
-    return int(result.get("wpx_count", 0))
+    if result:
+        return int(result.get("wpx_count", 0))
+    return 0
 
 
 def show_qso(self):
     """Return qso count"""
     result = self.database.fetch_qso_count()
-    return int(result.get("qsos", 0))
+    if result:
+        return int(result.get("qsos", 0))
+    return 0
 
 
 def get_points(self):
     """Return raw points before mults"""
     result = self.database.fetch_points()
-    return int(result.get("Points", 0))
+    if result:
+        return int(result.get("Points", 0))
+    return 0
 
 
 def calc_score(self):
     """Return calculated score"""
     result = self.database.fetch_points()
-    contest_points = int(result.get("Points", 0))
-    result = self.database.fetch_wpx_count()
-    mults = int(result.get("wpx_count", 0))
-    return contest_points * mults
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        contest_points = int(score)
+        result = self.database.fetch_wpx_count()
+        mults = int(result.get("wpx_count", 0))
+        return contest_points * mults
+    return 0
