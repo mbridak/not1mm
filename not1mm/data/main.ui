@@ -768,6 +768,7 @@
     <addaction name="actionPreferences"/>
     <addaction name="actionQRZ_Settings"/>
     <addaction name="actionConnection_Settings"/>
+    <addaction name="actionGenerate_Cabrillo"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -890,6 +891,11 @@
     <font>
      <family>JetBrains Mono</family>
     </font>
+   </property>
+  </action>
+  <action name="actionGenerate_Cabrillo">
+   <property name="text">
+    <string>Generate Cabrillo</string>
    </property>
   </action>
  </widget>
