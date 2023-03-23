@@ -504,7 +504,7 @@ class MainWindow(QtWidgets.QMainWindow):
             float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
         )
         self.contact["Mode"] = self.radio_state.get("mode", "")
-        self.contact["ContestName"] = self.contest.carillo_name
+        self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["StationPrefix"] = self.pref.get("callsign", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         # self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
