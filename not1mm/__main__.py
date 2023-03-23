@@ -196,8 +196,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         self.database = DataBase(self.dbname, WORKING_PATH)
-        if not check_process("logwindow.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
+        self.launch_log_window()
         self.cw = CW(1, "127.0.0.1", 6789)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/main.ui"
@@ -212,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionPreferences.triggered.connect(self.preference_selected)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
+        self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -279,6 +279,11 @@ class MainWindow(QtWidgets.QMainWindow):
             "15": self.band_15,
             "10": self.band_10,
         }
+
+    def launch_log_window(self):
+        """launch the Log Window"""
+        if not check_process("logwindow.py"):
+            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
 
     def clear_band_indicators(self):
         """Clear the indicators"""
