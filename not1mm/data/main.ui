@@ -785,8 +785,15 @@
     <addaction name="actionMode_and_Bands"/>
     <addaction name="actionDark_Mode"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionLog_Window"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
@@ -896,6 +903,11 @@
   <action name="actionGenerate_Cabrillo">
    <property name="text">
     <string>Generate Cabrillo</string>
+   </property>
+  </action>
+  <action name="actionLog_Window">
+   <property name="text">
+    <string>Log Window</string>
    </property>
   </action>
  </widget>
