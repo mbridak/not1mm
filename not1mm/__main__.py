@@ -211,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
         self.actionPreferences.triggered.connect(self.preference_selected)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
+        self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -1195,6 +1196,136 @@ class MainWindow(QtWidgets.QMainWindow):
         if "F12" in keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
+
+    def generate_cabrillo(self):
+        """Generates Cabrillo file. Maybe."""
+        # https://www.cqwpx.com/cabrillo.htm
+        logger.debug("******Cabrillo*****")
+        filename = (
+            str(Path.home())
+            + "/"
+            + f"{self.pref.get('callsign').upper()}_{self.contest.cabrillo_name}.log"
+        )
+        logger.debug("%s", filename)
+        # self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
+        # self.infobox.insertPlainText(f"Saving cabrillo to: {filename}")
+        # app.processEvents()
+        # bonuses = 0
+        log = self.database.fetch_all_contacts_asc()
+        # catpower = ""
+        try:
+            with open(filename, "w", encoding="ascii") as file_descriptor:
+                print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
+                print(
+                    f"CREATED-BY: Not1MM v{__version__}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"CONTEST: {self.contest.cabrillo_name}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"CALLSIGN: {self.pref.get('callsign','')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"LOCATION: {self.pref.get('section', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                # print(
+                #     f"ARRL-SECTION: {self.pref.get('section', '')}",
+                #     end="\r\n",
+                #     file=file_descriptor,
+                # )
+                print(
+                    f"CATEGORY: {None}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print("CATEGORY-POWER: ", end="\r\n", file=file_descriptor)
+
+                print(
+                    f"CLAIMED-SCORE: {self.contest.calc_score(self)}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    "OPERATORS: ",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"NAME: {self.pref.get('name', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"ADDRESS: {self.pref.get('address1', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"ADDRESS-CITY: {self.pref.get('city', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"ADDRESS-STATE: {self.pref.get('state', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"ADDRESS-POSTALCODE: {self.pref.get('zip', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"ADDRESS-COUNTRY: {self.pref.get('country', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"EMAIL: {self.pref.get('email', '')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                for contact in log:
+                    # hiscall = contact.get("Call", "")
+                    # hisclass = contact.get("class")
+                    # hissection = contact.get("section")
+                    the_date_and_time = contact.get("TS", "")
+                    # band = contact.get("Band", "")
+                    mode = contact.get("Mode", "")
+                    if mode == "LSB" or mode == "USB":
+                        mode = "PH"
+                    frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+
+                    loggeddate = the_date_and_time[:10]
+                    loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+                    print(
+                        f"QSO: {frequency} {mode} {loggeddate} {loggedtime} "
+                        f"{contact.get('StationPrefix', '').ljust(13)} "
+                        f"{str(contact.get('SNT', '')).ljust(3)} "
+                        f"{str(contact.get('SentNr', '')).ljust(6)} "
+                        f"{contact.get('Call', '').ljust(13)} "
+                        f"{str(contact.get('RCV', '')).ljust(3)} "
+                        f"{str(contact.get('NR', '')).ljust(6)}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+        except IOError as exception:
+            logger.critical(
+                "cabrillo: IO error: %s, writing to %s", exception, filename
+            )
+            # self.infobox.insertPlainText(" Failed\n\n")
+            # app.processEvents()
+            return
+        # self.infobox.insertPlainText(" Done\n\n")
 
 
 def load_fonts_from_dir(directory: str) -> set:
