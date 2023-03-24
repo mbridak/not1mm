@@ -51,7 +51,7 @@ Feature complete.
 
 ## Changes of note
 
-- [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld.
+- [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
 - [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
 - [23-3-22] Add prefill of serial nr. set OP call on startup. Set IsMultiplier1 new unique wpx. Add OP and contest name to window title. and stuff.
 - [23-3-21] Worked on CQ WPX SSB plugin.
