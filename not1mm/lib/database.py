@@ -357,6 +357,19 @@ class DataBase:
             )
             return cursor.fetchone()
 
+    def check_dupe_on_band_mode(self, call, band, mode) -> dict:
+        """Checks if a call is dupe on band/mode"""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            print(
+                f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}';"
+            )
+            cursor.execute(
+                f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}';"
+            )
+            return cursor.fetchone()
+
     def fetch_points(self) -> dict:
         """return points"""
         with sqlite3.connect(self.database) as conn:
