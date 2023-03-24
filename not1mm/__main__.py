@@ -191,8 +191,6 @@ class MainWindow(QtWidgets.QMainWindow):
     multicast_group = None
     multicast_port = None
     interface_ip = None
-    vfo = 0
-    mode = None
     rig_control = None
 
     def __init__(self, *args, **kwargs):
@@ -274,7 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.pref.get("callsign", "")
         self.read_cw_macros()
         self.clearinputs()
-        # self.rig_control = CAT("rigctld", "localhost", 4532)
+        self.rig_control = CAT("rigctld", "localhost", 4532)
         # self.rig_control = CAT("flrig", "localhost", 12345)
         self.band_indicators = {
             "160": self.band_160,
@@ -1146,19 +1144,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         if self.rig_control:
             if self.rig_control.online:
-                self.vfo = self.rig_control.get_vfo()
-                self.mode = self.rig_control.get_mode()
-                if self.mode == "CW":
-                    self.setmode(self.mode)
-                if self.mode == "LSB" or self.mode == "USB":
+                vfo = self.rig_control.get_vfo()
+                mode = self.rig_control.get_mode()
+                if mode == "CW":
+                    self.setmode(mode)
+                if mode == "LSB" or mode == "USB":
                     self.setmode("SSB")
-                if self.mode == "RTTY":
+                if mode == "RTTY":
                     self.setmode("RTTY")
-                self.radio_state["vfoa"] = self.vfo
-                band = getband(str(self.vfo))
-                self.contact["Band"] = get_logged_band(str(self.vfo))
+                self.radio_state["vfoa"] = vfo
+                band = getband(str(vfo))
+                self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_band_indicator(band)
-                self.radio_state["mode"] = self.mode
+                self.radio_state["mode"] = mode
                 # logger.debug("VFO: %s  MODE: %s", vfo, mode)
                 self.set_window_title()
 
