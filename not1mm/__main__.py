@@ -8,13 +8,12 @@ import importlib
 import logging
 import os
 import pkgutil
-
-# import re
+import re
 import socket
+import subprocess
 
 # import sqlite3
 import sys
-import subprocess
 import threading
 import uuid
 from datetime import datetime
@@ -23,16 +22,10 @@ from pathlib import Path
 from shutil import copyfile
 from xmlrpc.client import Error, ServerProxy
 
-# import dbus
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import (
-    QDir,
-    QPoint,  # pylint: disable=no-name-in-module
-    QRect,
-    QSize,
-    Qt,
-)
+from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
+from PyQt5.QtCore import QDir, QRect, QSize, Qt
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
 from not1mm.lib.cat_interface import CAT
@@ -47,8 +40,8 @@ from not1mm.lib.ham_utility import (
     calculate_wpx_prefix,
     distance,
     distance_with_latlon,
-    getband,
     get_logged_band,
+    getband,
     reciprocol,
 )
 from not1mm.lib.lookup import QRZlookup
@@ -272,8 +265,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.pref.get("callsign", "")
         self.read_cw_macros()
         self.clearinputs()
-        self.rig_control = CAT("rigctld", "localhost", 4532)
-        # self.rig_control = CAT("flrig", "localhost", 12345)
+
+        self.rig_control = None
+        local_flrig = self.check_process("flrig")
+        local_rigctld = self.check_process("rigctld")
+        if local_flrig:
+            address, port = "localhost", "12345"
+            self.rig_control = CAT("flrig", address, int(port))
+        if local_rigctld:
+            address, port = "localhost", "4532"
+            self.rig_control = CAT("rigctld", address, int(port))
+
         self.band_indicators = {
             "160": self.band_160,
             "80": self.band_80,
@@ -282,6 +284,14 @@ class MainWindow(QtWidgets.QMainWindow):
             "15": self.band_15,
             "10": self.band_10,
         }
+
+    @staticmethod
+    def check_process(name: str) -> bool:
+        """checks to see if program of name is in the active process list"""
+        for proc in psutil.process_iter():
+            if bool(re.match(name, proc.name().lower())):
+                return True
+        return False
 
     def launch_log_window(self):
         """launch the Log Window"""
