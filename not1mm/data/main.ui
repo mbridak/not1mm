@@ -396,6 +396,26 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="dupe_indicator">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="font">
+               <font>
+                <family>JetBrains Mono</family>
+                <pointsize>20</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: rgb(246, 10, 10);</string>
+              </property>
+              <property name="text">
+               <string>Dupe</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
