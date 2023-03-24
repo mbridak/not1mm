@@ -21,6 +21,8 @@
   - [Log Display](#log-display)
   - [Editing a contact](#editing-a-contact)
   - [Cabrillo](#cabrillo)
+  - [Dupe checking](#dupe-checking)
+  - [CAT](#cat)
 
 ## What and why is Not1MM
 
@@ -49,6 +51,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld.
 - [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
 - [23-3-22] Add prefill of serial nr. set OP call on startup. Set IsMultiplier1 new unique wpx. Add OP and contest name to window title. and stuff.
 - [23-3-21] Worked on CQ WPX SSB plugin.
@@ -169,3 +172,11 @@ The file will be placed in your home directory. The name will be in the format o
 So for me it would be:
 
 K6GTE_CQ-WPX-SSB.log
+
+## Dupe checking
+
+Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
+
+## CAT
+
+Added rudimentary check for running instance of flrig or rigctld. It will connect to whichever it finds first.
