@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>876</width>
-    <height>636</height>
+    <height>638</height>
    </rect>
   </property>
   <property name="font">
@@ -299,7 +299,7 @@
       </palette>
      </property>
      <property name="placeholderText">
-      <string>USA</string>
+      <string>United States</string>
      </property>
     </widget>
    </item>
@@ -343,7 +343,7 @@
       </palette>
      </property>
      <property name="placeholderText">
-      <string>Dm13at</string>
+      <string>DM13at</string>
      </property>
     </widget>
    </item>
