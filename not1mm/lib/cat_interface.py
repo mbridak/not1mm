@@ -60,6 +60,7 @@ class CAT:
             target = f"http://{host}:{port}"
             logger.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
+            self.online = True
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
 
