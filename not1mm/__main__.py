@@ -270,9 +270,11 @@ class MainWindow(QtWidgets.QMainWindow):
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
         if local_flrig:
+            logger.debug("Found flrig")
             address, port = "localhost", "12345"
             self.rig_control = CAT("flrig", address, int(port))
         if local_rigctld:
+            logger.debug("Found rigctld")
             address, port = "localhost", "4532"
             self.rig_control = CAT("rigctld", address, int(port))
 
