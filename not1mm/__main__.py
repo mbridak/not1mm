@@ -191,6 +191,9 @@ class MainWindow(QtWidgets.QMainWindow):
     multicast_group = None
     multicast_port = None
     interface_ip = None
+    vfo = 0
+    mode = None
+    rig_control = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -203,6 +206,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(data_path, self)
         self.n1mm = N1MM()
         self.next_field = self.other_2
+        self.dupe_indicator.hide()
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
@@ -270,7 +274,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.pref.get("callsign", "")
         self.read_cw_macros()
         self.clearinputs()
-        self.rig_control = CAT("rigctld", "localhost", 4532)
+        # self.rig_control = CAT("rigctld", "localhost", 4532)
+        # self.rig_control = CAT("flrig", "localhost", 12345)
         self.band_indicators = {
             "160": self.band_160,
             "80": self.band_80,
@@ -468,6 +473,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clearinputs(self):
         """Clears the text input fields and sets focus to callsign field."""
+        self.dupe_indicator.hide()
         self.contact = self.database.empty_contact
         self.heading_distance.setText("No Heading")
         self.dx_entity.setText("dxentity")
@@ -512,13 +518,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["StationPrefix"] = self.pref.get("callsign", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
-        # self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
-        # self.contact["Call"] = self.callsign.text()
-        # self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
-        # self.contact["QSXFreq"] = round(
-        #     float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
-        # )
-        # self.contact["Mode"] = self.radio_state.get("mode", "")
+        self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
+        self.contact["Operator"] = self.current_op
+        self.contact["NetBiosName"] = socket.gethostname()
+        self.contact["IsOriginal"] = 1
+        self.contact["ID"] = uuid.uuid4().hex
+        self.contest.set_contact_vars(self)
+        self.contact["Points"] = self.contest.points(self)
+        debug_output = f"{self.contact}"
+        logger.debug(debug_output)
+        self.database.log_contact(self.contact)
+        self.n1mm.send_contact_info()
+        self.clearinputs()
+        cmd = {}
+        cmd["cmd"] = "UPDATELOG"
+        self.multicast_interface.send_as_json(cmd)
         # self.contact["ContestName"] = self.contest.name
         # self.contact["SNT"] = self.sent.text()
         # self.contact["RCV"] = self.receive.text()
@@ -544,29 +558,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["ContestNR"]
         # self.contact["isMultiplier3"]
         # self.contact["MiscText"]
-        self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
         # self.contact["ContactType"]
         # self.contact["Run1Run2"]
         # self.contact["GridSquare"]
-        self.contact["Operator"] = self.current_op
         # self.contact["Continent"]
         # self.contact["RoverLocation"]
         # self.contact["RadioInterfaced"]
         # self.contact["NetworkedCompNr"]
-        self.contact["NetBiosName"] = socket.gethostname()
-        self.contact["IsOriginal"] = 1
-        self.contact["ID"] = uuid.uuid4().hex
         # self.contact["CLAIMEDQSO"]
-        self.contest.set_contact_vars(self)
-        self.contact["Points"] = self.contest.points(self)
-        debug_output = f"{self.contact}"
-        logger.debug(debug_output)
-        self.database.log_contact(self.contact)
-        self.n1mm.send_contact_info()
-        self.clearinputs()
-        cmd = {}
-        cmd["cmd"] = "UPDATELOG"
-        self.multicast_interface.send_as_json(cmd)
 
     def qrz_preference_selected(self):
         """Show QRZ settings dialog"""
@@ -980,30 +979,32 @@ class MainWindow(QtWidgets.QMainWindow):
         if text[-1:] == " ":
             if stripped_text == "CW":
                 self.setmode("CW")
-                if self.rig_control.online:
-                    self.rig_control.set_mode("CW")
-                else:
-                    self.radio_state["mode"] = "CW"
-                    self.set_window_title()
+                self.radio_state["mode"] = "CW"
+                if self.rig_control:
+                    if self.rig_control.online:
+                        self.rig_control.set_mode("CW")
+                self.set_window_title()
                 self.clearinputs()
                 return
             if stripped_text == "RTTY":
                 self.setmode("RTTY")
-                if self.rig_control.online:
-                    self.rig_control.set_mode("RTTY")
-                else:
-                    self.radio_state["mode"] = "RTTY"
-                    self.set_window_title()
+                if self.rig_control:
+                    if self.rig_control.online:
+                        self.rig_control.set_mode("RTTY")
+                    else:
+                        self.radio_state["mode"] = "RTTY"
+                self.set_window_title()
                 self.clearinputs()
                 return
             if stripped_text == "SSB":
                 self.setmode("SSB")
-                self.radio_state["mode"] = "SSB"
-                self.set_window_title()
                 if int(self.radio_state.get("vfoa", 0)) > 10000000:
-                    self.rig_control.set_mode("USB")
+                    self.radio_state["mode"] = "USB"
                 else:
-                    self.rig_control.set_mode("LSB")
+                    self.radio_state["mode"] = "LSB"
+                self.set_window_title()
+                if self.rig_control:
+                    self.rig_control.set_mode(self.radio_state.get("mode"))
                 self.clearinputs()
                 return
             if stripped_text == "OPON":
@@ -1015,13 +1016,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 vfo = int(vfo * 1000)
                 band = getband(str(vfo))
                 self.set_band_indicator(band)
+                # self.contact["Band"] = get_logged_band(str(self.radio_state.get("vfoa", 0.0)))
                 self.radio_state["vfoa"] = vfo
                 self.set_window_title()
                 self.clearinputs()
-                self.rig_control.set_vfo(vfo)
+                if self.rig_control:
+                    self.rig_control.set_vfo(vfo)
                 return
 
-            self.check_callsign(text)
+            self.check_callsign(stripped_text)
+            if self.check_dupe(stripped_text):
+                self.dupe_indicator.show()
+            else:
+                self.dupe_indicator.hide()
             _thethread = threading.Thread(
                 target=self.check_callsign2,
                 args=(text,),
@@ -1068,6 +1075,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_callsign2(self, callsign):
         """Check call once entered"""
+        callsign = callsign.strip()
         debug_lookup = f"{self.look_up}"
         logger.debug("%s, %s", callsign, debug_lookup)
         if hasattr(self.look_up, "session"):
@@ -1089,6 +1097,17 @@ class MainWindow(QtWidgets.QMainWindow):
                     # self.dx_entity.setText(f"{theircountry}")
                 # else:
                 # self.heading_distance.setText("Lookup failed.")
+
+    def check_dupe(self, call: str) -> bool:
+        """Checks if a callsign is a dupe on current band/mode."""
+        band = float(get_logged_band(str(self.radio_state.get("vfoa", 0.0))))
+        mode = self.radio_state.get("mode", "")
+        debugline = f"Call: {call} Band: {band} Mode: {mode}"
+        logger.debug("%s", debugline)
+        result = self.database.check_dupe_on_band_mode(call, band, mode)
+        debugline = f"{result}"
+        logger.debug("%s", debugline)
+        return result.get("isdupe", False)
 
     def setmode(self, mode: str) -> None:
         """stub for when the mode changes."""
@@ -1125,22 +1144,23 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def poll_radio(self):
         """stub"""
-        if self.rig_control.online:
-            vfo = self.rig_control.get_vfo()
-            mode = self.rig_control.get_mode()
-            if mode == "CW":
-                self.setmode(mode)
-            if mode == "LSB" or mode == "USB":
-                self.setmode("SSB")
-            if mode == "RTTY":
-                self.setmode("RTTY")
-            self.radio_state["vfoa"] = vfo
-            band = getband(str(vfo))
-            self.contact["Band"] = get_logged_band(str(vfo))
-            self.set_band_indicator(band)
-            self.radio_state["mode"] = mode
-            # logger.debug("VFO: %s  MODE: %s", vfo, mode)
-            self.set_window_title()
+        if self.rig_control:
+            if self.rig_control.online:
+                self.vfo = self.rig_control.get_vfo()
+                self.mode = self.rig_control.get_mode()
+                if self.mode == "CW":
+                    self.setmode(self.mode)
+                if self.mode == "LSB" or self.mode == "USB":
+                    self.setmode("SSB")
+                if self.mode == "RTTY":
+                    self.setmode("RTTY")
+                self.radio_state["vfoa"] = self.vfo
+                band = getband(str(self.vfo))
+                self.contact["Band"] = get_logged_band(str(self.vfo))
+                self.set_band_indicator(band)
+                self.radio_state["mode"] = self.mode
+                # logger.debug("VFO: %s  MODE: %s", vfo, mode)
+                self.set_window_title()
 
     def read_cw_macros(self) -> None:
         """
