@@ -21,6 +21,7 @@
   - [Log Display](#log-display)
   - [Editing a contact](#editing-a-contact)
   - [Cabrillo](#cabrillo)
+  - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
   - [CAT](#cat)
 
@@ -173,6 +174,14 @@ The file will be placed in your home directory. The name will be in the format o
 So for me it would be:
 
 K6GTE_CQ-WPX-SSB.log
+
+## ADIF
+
+`File` > `Generate ADIF`
+
+Boom... ADIF
+
+`StationCall`_`ContestName`.adi
 
 ## Dupe checking
 
