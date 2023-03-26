@@ -6,6 +6,8 @@ from pathlib import Path
 
 from PyQt5 import QtWidgets
 
+from not1mm.lib.version import __version__
+
 logger = logging.getLogger("__main__")
 
 name = "CQ WPX SSB"
@@ -180,7 +182,7 @@ def adif(self):
 
                 hiscall = contact.get("Call", "")
                 the_date_and_time = contact.get("TS")
-                band = contact.get("Band")
+                # band = contact.get("Band")
                 themode = contact.get("Mode")
                 frequency = str(contact.get("Freq", 0) / 1000)
                 sentrst = contact.get("SNT", "")
