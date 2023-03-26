@@ -206,6 +206,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionPreferences.triggered.connect(self.preference_selected)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
+        self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
@@ -511,7 +512,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def save_contact(self):
         """Save to db"""
         logger.debug("saving")
-        if len(self.callsign.text()) < 4:
+        if len(self.callsign.text()) < 3:
             return
         if not any(char.isdigit() for char in self.callsign.text()):
             return
@@ -1232,6 +1233,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
 
+    def generate_adif(self):
+        """Generate ADIF"""
+        logger.debug("******ADIF*****")
+        self.contest.adif(self)
+
     def generate_cabrillo(self):
         """Generates Cabrillo file. Maybe."""
         # https://www.cqwpx.com/cabrillo.htm
@@ -1242,12 +1248,7 @@ class MainWindow(QtWidgets.QMainWindow):
             + f"{self.pref.get('callsign').upper()}_{self.contest.cabrillo_name}.log"
         )
         logger.debug("%s", filename)
-        # self.infobox.setTextColor(QtGui.QColor(211, 215, 207))
-        # self.infobox.insertPlainText(f"Saving cabrillo to: {filename}")
-        # app.processEvents()
-        # bonuses = 0
         log = self.database.fetch_all_contacts_asc()
-        # catpower = ""
         try:
             with open(filename, "w", encoding="ascii") as file_descriptor:
                 print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
@@ -1276,6 +1277,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 #     end="\r\n",
                 #     file=file_descriptor,
                 # )
+                # CATEGORY-OPERATOR: SINGLE-OP
+                # CATEGORY-ASSISTED: NON-ASSISTED
+                # CATEGORY-BAND: ALL
+                # CATEGORY-MODE: SSB
+                # CATEGORY-TRANSMITTER: ONE
+                # CATEGORY-OVERLAY: CLASSIC
+                # GRID-LOCATOR: DM13at
                 print(
                     f"CATEGORY: {None}",
                     end="\r\n",
@@ -1309,7 +1317,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     file=file_descriptor,
                 )
                 print(
-                    f"ADDRESS-STATE: {self.pref.get('state', '')}",
+                    f"ADDRESS-STATE-PROVINCE: {self.pref.get('state', '')}",
                     end="\r\n",
                     file=file_descriptor,
                 )
@@ -1329,11 +1337,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     file=file_descriptor,
                 )
                 for contact in log:
-                    # hiscall = contact.get("Call", "")
-                    # hisclass = contact.get("class")
-                    # hissection = contact.get("section")
                     the_date_and_time = contact.get("TS", "")
-                    # band = contact.get("Band", "")
                     mode = contact.get("Mode", "")
                     if mode == "LSB" or mode == "USB":
                         mode = "PH"
@@ -1357,10 +1361,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.critical(
                 "cabrillo: IO error: %s, writing to %s", exception, filename
             )
-            # self.infobox.insertPlainText(" Failed\n\n")
-            # app.processEvents()
             return
-        # self.infobox.insertPlainText(" Done\n\n")
 
 
 def load_fonts_from_dir(directory: str) -> set:
