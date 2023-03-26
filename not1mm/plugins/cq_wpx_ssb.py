@@ -1,15 +1,19 @@
 """CQ WPX SSB plugin"""
 
 # pylint: disable=invalid-name
+import logging
+from pathlib import Path
 
 from PyQt5 import QtWidgets
+
+logger = logging.getLogger("__main__")
 
 name = "CQ WPX SSB"
 cabrillo_name = "CQ-WPX-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 4
+dupe_type = 2
 
 
 def init_contest(self):
@@ -162,10 +166,14 @@ def adif(self):
     """
     Creates an ADIF file of the contacts made.
     """
-    logname = "cqwpxssb.adi"
+    filename = (
+        str(Path.home())
+        + "/"
+        + f"{self.pref.get('callsign').upper()}_{cabrillo_name}.adi"
+    )
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(logname, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding="utf-8") as file_descriptor:
             print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
             print("<EOH>", end="\r\n", file=file_descriptor)
             for contact in log:
@@ -253,3 +261,127 @@ def adif(self):
                 print("", end="\r\n", file=file_descriptor)
     except IOError:
         ...
+
+
+def cabrillo(self):
+    """Generates Cabrillo file. Maybe."""
+    # https://www.cqwpx.com/cabrillo.htm
+    logger.debug("******Cabrillo*****")
+    filename = (
+        str(Path.home())
+        + "/"
+        + f"{self.pref.get('callsign').upper()}_{cabrillo_name}.log"
+    )
+    logger.debug("%s", filename)
+    log = self.database.fetch_all_contacts_asc()
+    try:
+        with open(filename, "w", encoding="ascii") as file_descriptor:
+            print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
+            print(
+                f"CREATED-BY: Not1MM v{__version__}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CONTEST: {cabrillo_name}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CALLSIGN: {self.pref.get('callsign','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"LOCATION: {self.pref.get('section', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            # print(
+            #     f"ARRL-SECTION: {self.pref.get('section', '')}",
+            #     end="\r\n",
+            #     file=file_descriptor,
+            # )
+            # CATEGORY-OPERATOR: SINGLE-OP
+            # CATEGORY-ASSISTED: NON-ASSISTED
+            # CATEGORY-BAND: ALL
+            # CATEGORY-MODE: SSB
+            # CATEGORY-TRANSMITTER: ONE
+            # CATEGORY-OVERLAY: CLASSIC
+            # GRID-LOCATOR: DM13at
+            print(
+                f"CATEGORY: {None}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print("CATEGORY-POWER: ", end="\r\n", file=file_descriptor)
+
+            print(
+                f"CLAIMED-SCORE: {calc_score(self)}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                "OPERATORS: ",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"NAME: {self.pref.get('name', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"ADDRESS: {self.pref.get('address1', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"ADDRESS-CITY: {self.pref.get('city', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"ADDRESS-STATE-PROVINCE: {self.pref.get('state', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"ADDRESS-POSTALCODE: {self.pref.get('zip', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"ADDRESS-COUNTRY: {self.pref.get('country', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"EMAIL: {self.pref.get('email', '')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            for contact in log:
+                the_date_and_time = contact.get("TS", "")
+                themode = contact.get("Mode", "")
+                if themode == "LSB" or themode == "USB":
+                    themode = "PH"
+                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+
+                loggeddate = the_date_and_time[:10]
+                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+                print(
+                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
+                    f"{contact.get('StationPrefix', '').ljust(13)} "
+                    f"{str(contact.get('SNT', '')).ljust(3)} "
+                    f"{str(contact.get('SentNr', '')).ljust(6)} "
+                    f"{contact.get('Call', '').ljust(13)} "
+                    f"{str(contact.get('RCV', '')).ljust(3)} "
+                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+            print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+    except IOError as exception:
+        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
+        return
