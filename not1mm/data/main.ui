@@ -789,6 +789,7 @@
     <addaction name="actionQRZ_Settings"/>
     <addaction name="actionConnection_Settings"/>
     <addaction name="actionGenerate_Cabrillo"/>
+    <addaction name="actionGenerate_ADIF"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -928,6 +929,11 @@
   <action name="actionLog_Window">
    <property name="text">
     <string>Log Window</string>
+   </property>
+  </action>
+  <action name="actionGenerate_ADIF">
+   <property name="text">
+    <string>Generate ADIF</string>
    </property>
   </action>
  </widget>
