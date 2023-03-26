@@ -1113,9 +1113,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """Checks if a callsign is a dupe on current band/mode."""
         band = float(get_logged_band(str(self.radio_state.get("vfoa", 0.0))))
         mode = self.radio_state.get("mode", "")
-        debugline = f"Call: {call} Band: {band} Mode: {mode}"
+        debugline = (
+            f"Call: {call} Band: {band} Mode: {mode} Dupetype: {self.contest.dupe_type}"
+        )
         logger.debug("%s", debugline)
-        result = self.database.check_dupe_on_band_mode(call, band, mode)
+        if self.contest.dupe_type == 1:
+            result = self.database.check_dupe(call)
+        if self.contest.dupe_type == 2:
+            result = self.database.check_dupe_on_band(call, band)
+        if self.contest.dupe_type == 3:
+            result = self.database.check_dupe_on_band_mode(call, band, mode)
+        if self.contest.dupe_type == 4:
+            result = {"isdupe": False}
         debugline = f"{result}"
         logger.debug("%s", debugline)
         return result.get("isdupe", False)
@@ -1242,126 +1251,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Generates Cabrillo file. Maybe."""
         # https://www.cqwpx.com/cabrillo.htm
         logger.debug("******Cabrillo*****")
-        filename = (
-            str(Path.home())
-            + "/"
-            + f"{self.pref.get('callsign').upper()}_{self.contest.cabrillo_name}.log"
-        )
-        logger.debug("%s", filename)
-        log = self.database.fetch_all_contacts_asc()
-        try:
-            with open(filename, "w", encoding="ascii") as file_descriptor:
-                print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
-                print(
-                    f"CREATED-BY: Not1MM v{__version__}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"CONTEST: {self.contest.cabrillo_name}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"CALLSIGN: {self.pref.get('callsign','')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"LOCATION: {self.pref.get('section', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                # print(
-                #     f"ARRL-SECTION: {self.pref.get('section', '')}",
-                #     end="\r\n",
-                #     file=file_descriptor,
-                # )
-                # CATEGORY-OPERATOR: SINGLE-OP
-                # CATEGORY-ASSISTED: NON-ASSISTED
-                # CATEGORY-BAND: ALL
-                # CATEGORY-MODE: SSB
-                # CATEGORY-TRANSMITTER: ONE
-                # CATEGORY-OVERLAY: CLASSIC
-                # GRID-LOCATOR: DM13at
-                print(
-                    f"CATEGORY: {None}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print("CATEGORY-POWER: ", end="\r\n", file=file_descriptor)
-
-                print(
-                    f"CLAIMED-SCORE: {self.contest.calc_score(self)}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    "OPERATORS: ",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"NAME: {self.pref.get('name', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"ADDRESS: {self.pref.get('address1', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"ADDRESS-CITY: {self.pref.get('city', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"ADDRESS-STATE-PROVINCE: {self.pref.get('state', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"ADDRESS-POSTALCODE: {self.pref.get('zip', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"ADDRESS-COUNTRY: {self.pref.get('country', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"EMAIL: {self.pref.get('email', '')}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                for contact in log:
-                    the_date_and_time = contact.get("TS", "")
-                    mode = contact.get("Mode", "")
-                    if mode == "LSB" or mode == "USB":
-                        mode = "PH"
-                    frequency = str(int(contact.get("Freq", "0"))).rjust(5)
-
-                    loggeddate = the_date_and_time[:10]
-                    loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                    print(
-                        f"QSO: {frequency} {mode} {loggeddate} {loggedtime} "
-                        f"{contact.get('StationPrefix', '').ljust(13)} "
-                        f"{str(contact.get('SNT', '')).ljust(3)} "
-                        f"{str(contact.get('SentNr', '')).ljust(6)} "
-                        f"{contact.get('Call', '').ljust(13)} "
-                        f"{str(contact.get('RCV', '')).ljust(3)} "
-                        f"{str(contact.get('NR', '')).ljust(6)}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                print("END-OF-LOG:", end="\r\n", file=file_descriptor)
-        except IOError as exception:
-            logger.critical(
-                "cabrillo: IO error: %s, writing to %s", exception, filename
-            )
-            return
+        self.contest.cabrillo(self)
 
 
 def load_fonts_from_dir(directory: str) -> set:
