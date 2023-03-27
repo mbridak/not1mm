@@ -52,6 +52,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-27] Fix cursor behaviour when editing text in callsign field.
 - [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
 - [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
 - [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
