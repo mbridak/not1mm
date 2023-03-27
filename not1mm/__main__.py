@@ -663,7 +663,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def select_contest(self):
         """Load contest"""
-        self.contest = doimp("cq_wpx_ssb")
+        self.contest = doimp("cq_wpx_cw")
         logger.debug("Loaded Contest Name = %s", self.contest.name)
         self.contest.init_contest(self)
 
@@ -984,10 +984,12 @@ class MainWindow(QtWidgets.QMainWindow):
         """Called when text in the callsign field has changed"""
         text = self.callsign.text()
         text = text.upper()
-        stripped_text = text.strip()
+        position = self.callsign.cursorPosition()
+        stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
+        self.callsign.setCursorPosition(position)
 
-        if text[-1:] == " ":
+        if " " in text:
             if stripped_text == "CW":
                 self.setmode("CW")
                 self.radio_state["mode"] = "CW"
