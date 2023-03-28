@@ -790,6 +790,7 @@
     <addaction name="actionConnection_Settings"/>
     <addaction name="actionGenerate_Cabrillo"/>
     <addaction name="actionGenerate_ADIF"/>
+    <addaction name="actionNew_Contest"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -946,6 +947,11 @@
   <action name="actionRecalculate_Mults">
    <property name="text">
     <string>Recalculate Mults</string>
+   </property>
+  </action>
+  <action name="actionNew_Contest">
+   <property name="text">
+    <string>New Contest</string>
    </property>
   </action>
  </widget>

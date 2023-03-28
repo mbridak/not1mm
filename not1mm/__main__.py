@@ -46,6 +46,7 @@ from not1mm.lib.ham_utility import (
 )
 from not1mm.lib.lookup import QRZlookup
 from not1mm.lib.multicast import Multicast
+from not1mm.lib.new_contest import NewContest
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.qrz_dialog import UseQRZ
 from not1mm.lib.version import __version__
@@ -177,6 +178,7 @@ class MainWindow(QtWidgets.QMainWindow):
     qrz_dialog = None
     settings_dialog = None
     edit_macro_dialog = None
+    contest_dialog = None
     opon_dialog = None
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
@@ -209,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
+        self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -603,6 +606,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.qrz_dialog.close()
         self.write_preference()
         self.readpreferences()
+
+    def new_contest_dialog(self):
+        """Show new contest dialog"""
+        logger.debug("New contest Dialog")
+        self.contest_dialog = NewContest(WORKING_PATH)
+        self.contest_dialog.accepted.connect(self.save_contest)
+        if self.pref.get("dark_mode"):
+            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
+        # from PyQt5.QtCore import QDateTime
+        # dt = QDateTime(2020, 10, 10, 21, 30)
+
+        # # setting date time to datetimeedit
+        # datetimeedit.setDateTime(dt)
+        self.contest_dialog.dateTimeEdit.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.contest_dialog.open()
+
+    def save_contest(self):
+        """Save Contest"""
+        value = self.contest_dialog.dateTimeEdit.dateTime()
+        print(str(value))
 
     def preference_selected(self):
         """Show settings dialog"""
