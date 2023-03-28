@@ -208,6 +208,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
+        self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -295,6 +296,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
+
+    def recalculate_mults(self):
+        """Recalculate Multipliers"""
+        self.contest.recalculate_mults(self)
 
     def launch_log_window(self):
         """launch the Log Window"""
