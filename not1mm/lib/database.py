@@ -357,6 +357,16 @@ class DataBase:
             )
             return cursor.fetchone()
 
+    def fetch_wpx_exists_before_me(self, wpx, ts) -> dict:
+        """returns a dict key of wpx_count"""
+        with sqlite3.connect(self.database) as conn:
+            conn.row_factory = self.row_factory
+            cursor = conn.cursor()
+            cursor.execute(
+                f"select count(*) as wpx_count from dxlog where  TS < '{ts}' and WPXPrefix = '{wpx}';"
+            )
+            return cursor.fetchone()
+
     def check_dupe_on_band_mode(self, call, band, mode) -> dict:
         """Checks if a call is dupe on band/mode"""
         with sqlite3.connect(self.database) as conn:
