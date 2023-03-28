@@ -1,4 +1,7 @@
 """General Logging plugin"""
+
+# pylint: disable=invalid-name, unused-argument, unused-variable
+
 from PyQt5 import QtWidgets
 
 name = "General Logging"
@@ -71,4 +74,47 @@ def set_contact_vars(self):
 
 
 def prefill(self):
-    """xxx"""
+    """Fill SentNR"""
+
+
+def points(self):
+    """Calc point"""
+
+
+def show_mults(self):
+    """Return display string for mults"""
+
+
+def show_qso(self):
+    """Return qso count"""
+    result = self.database.fetch_qso_count()
+    if result:
+        return int(result.get("qsos", 0))
+    return 0
+
+
+def get_points(self):
+    """Return raw points before mults"""
+    result = self.database.fetch_points()
+    if result:
+        return int(result.get("Points", 0))
+    return 0
+
+
+def calc_score(self):
+    """Return calculated score"""
+    result = self.database.fetch_points()
+
+
+def adif(self):
+    """
+    Creates an ADIF file of the contacts made.
+    """
+
+
+def cabrillo(self):
+    """Generates Cabrillo file. Maybe."""
+
+
+def recalculate_mults(self):
+    """Recalculates multipliers after change in logged qso."""

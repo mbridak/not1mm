@@ -1,4 +1,7 @@
 """CQ World Wide DX CW plugin"""
+
+# pylint: disable=invalid-name, unused-argument, unused-variable
+
 from PyQt5 import QtWidgets
 
 name = "CQ World Wide DX CW"
