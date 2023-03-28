@@ -20,6 +20,7 @@
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
   - [Editing a contact](#editing-a-contact)
+  - [Recalulate Mults](#recalulate-mults)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -52,6 +53,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-27] Add menu item to recalculate mults.
 - [23-3-27] Fix cursor behaviour when editing text in callsign field.
 - [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
 - [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
@@ -66,6 +68,10 @@ Feature complete.
 - [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
 - [23-3-7] Changed dxlog table column names.
 - [23-3-1] Add shift tab for field movement.
+
+<details>
+<summary>February 2023</summary>
+
 - [23-2-23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
 - [23-2-22] Added cty.dat file.
 - [23-2-21] Added edit macro dialog.
@@ -73,6 +79,8 @@ Feature complete.
 - [23-2-15] Added qss stylesheet. Connected Run and S&P radio buttons. Reads in cwmacros.
 - [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
 - [23-2-9] Initial post and name squatting.
+
+</details>
 
 ## Running from source
 
@@ -161,6 +169,10 @@ You can double click a cell in the log window and edit its contents.
 You can also Right-Click on a cell to bring up the edit dialog.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
+
+## Recalulate Mults
+
+After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
 
 ## Cabrillo
 
