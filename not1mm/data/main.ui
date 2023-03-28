@@ -812,9 +812,16 @@
     </property>
     <addaction name="actionLog_Window"/>
    </widget>
+   <widget class="QMenu" name="menuOther">
+    <property name="title">
+     <string>Misc</string>
+    </property>
+    <addaction name="actionRecalculate_Mults"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuWindow"/>
+   <addaction name="menuOther"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
@@ -934,6 +941,11 @@
   <action name="actionGenerate_ADIF">
    <property name="text">
     <string>Generate ADIF</string>
+   </property>
+  </action>
+  <action name="actionRecalculate_Mults">
+   <property name="text">
+    <string>Recalculate Mults</string>
    </property>
   </action>
  </widget>
