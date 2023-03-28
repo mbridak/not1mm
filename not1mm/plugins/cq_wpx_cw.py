@@ -179,7 +179,6 @@ def adif(self):
             print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
             print("<EOH>", end="\r\n", file=file_descriptor)
             for contact in log:
-
                 hiscall = contact.get("Call", "")
                 the_date_and_time = contact.get("TS")
                 # band = contact.get("Band")
@@ -387,3 +386,18 @@ def cabrillo(self):
     except IOError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         return
+
+
+def recalculate_mults(self):
+    """Recalculates multipliers after change in logged qso."""
+    all_contacts = self.database.fetch_all_contacts_asc()
+    for contact in all_contacts:
+        time_stamp = contact.get("TS")
+        wpx = contact.get("WPXPrefix")
+        result = self.database.fetch_wpx_exists_before_me(wpx, time_stamp)
+        wpx_count = result.get("wpx_count", 1)
+        if wpx_count == 0:
+            contact["IsMultiplier1"] = 1
+        else:
+            contact["IsMultiplier1"] = 0
+        self.database.change_contact(contact)
