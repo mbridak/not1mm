@@ -619,13 +619,39 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # # setting date time to datetimeedit
         # datetimeedit.setDateTime(dt)
-        self.contest_dialog.dateTimeEdit.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
+        self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
+        self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime(0, 0))
+        self.contest_dialog.power.setCurrentText("LOW")
+        self.contest_dialog.station.setCurrentText("FIXED")
         self.contest_dialog.open()
 
     def save_contest(self):
         """Save Contest"""
-        value = self.contest_dialog.dateTimeEdit.dateTime()
-        print(str(value))
+        contest = {}
+        contest["ContestName"] = (
+            self.contest_dialog.contest.currentText().lower().replace(" ", "_")
+        )
+        contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
+            "yyyy-MM-dd hh:mm:ss"
+        )
+        contest["OperatorCategory"] = self.contest_dialog.operator_class.currentText()
+        contest["BandCategory"] = self.contest_dialog.band.currentText()
+        contest["PowerCategory"] = self.contest_dialog.power.currentText()
+        contest["ModeCategory"] = self.contest_dialog.mode.currentText()
+        contest["OverlayCategory"] = self.contest_dialog.overlay.currentText()
+        # contest['ClaimedScore'] = self.contest_dialog.
+        contest["Operators"] = self.contest_dialog.operators.text()
+        contest["Soapbox"] = self.contest_dialog.soapbox.toPlainText()
+        contest["SentExchange"] = self.contest_dialog.exchange.text()
+        # contest['ContestNR'] = self.contest_dialog.
+        # contest['SubType'] = self.contest_dialog.
+        contest["StationCategory"] = self.contest_dialog.station.currentText()
+        contest["AssistedCategory"] = self.contest_dialog.assisted.currentText()
+        contest["TransmitterCategory"] = self.contest_dialog.transmitter.currentText()
+        # contest['TimeCategory'] = self.contest_dialog.
+        logger.debug("%s", f"{contest}")
+        self.database.add_contest(contest)
 
     def preference_selected(self):
         """Show settings dialog"""
