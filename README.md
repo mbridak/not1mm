@@ -13,6 +13,10 @@
   - [What it probably never will be](#what-it-probably-never-will-be)
   - [Changes of note](#changes-of-note)
   - [Running from source](#running-from-source)
+  - [Various data file locations](#various-data-file-locations)
+    - [Data](#data)
+    - [Config](#config)
+  - [Adding a contest](#adding-a-contest)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing function key macros](#editing-function-key-macros)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
@@ -108,6 +112,22 @@ or be in some other directory and just type:
 ```bash
 not1mm
 ```
+
+## Various data file locations
+
+### Data
+
+If your system has an `XDG_DATA_HOME` environment variable set, the databases can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
+
+### Config
+
+Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`. Otherwise they will be found at `yourhome/.config/not1mm`
+
+## Adding a contest
+
+Select `File` > `New Contest`
+
+![New Contest Dialog](https://github.com/mbridak/not1mm/raw/master/pic/new_contest.png)
 
 ## Hiding screen elements
 
