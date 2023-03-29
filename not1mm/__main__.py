@@ -154,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "roverqth": "",
         "club": "",
         "email": "",
+        "current_database": "ham.db",
         "multicast_group": "224.1.1.1",
         "multicast_port": 2239,
         "interface_ip": "0.0.0.0",
@@ -203,7 +204,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
-        self.actionMode_and_Bands.triggered.connect(self.show_band_mode_state_change)
         self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
         self.actionPreferences.triggered.connect(self.preference_selected)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
@@ -283,13 +283,37 @@ class MainWindow(QtWidgets.QMainWindow):
             address, port = "localhost", "4532"
             self.rig_control = CAT("rigctld", address, int(port))
 
-        self.band_indicators = {
-            "160": self.band_160,
-            "80": self.band_80,
-            "40": self.band_40,
-            "20": self.band_20,
-            "15": self.band_15,
-            "10": self.band_10,
+        self.band_indicators_cw = {
+            "160": self.cw_band_160,
+            "80": self.cw_band_80,
+            "40": self.cw_band_40,
+            "20": self.cw_band_20,
+            "15": self.cw_band_15,
+            "10": self.cw_band_10,
+        }
+
+        self.band_indicators_ssb = {
+            "160": self.ssb_band_160,
+            "80": self.ssb_band_80,
+            "40": self.ssb_band_40,
+            "20": self.ssb_band_20,
+            "15": self.ssb_band_15,
+            "10": self.ssb_band_10,
+        }
+
+        self.band_indicators_rtty = {
+            "160": self.rtty_band_160,
+            "80": self.rtty_band_80,
+            "40": self.rtty_band_40,
+            "20": self.rtty_band_20,
+            "15": self.rtty_band_15,
+            "10": self.rtty_band_10,
+        }
+
+        self.all_mode_indicators = {
+            "CW": self.band_indicators_cw,
+            "SSB": self.band_indicators_ssb,
+            "RTTY": self.band_indicators_rtty,
         }
 
     @staticmethod
@@ -311,17 +335,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clear_band_indicators(self):
         """Clear the indicators"""
-        self.band_160.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.band_80.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.band_40.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.band_20.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.band_15.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.band_10.setFrameShape(QtWidgets.QFrame.NoFrame)
+        for _, indicators in self.all_mode_indicators.items():
+            for _, indicator in indicators.items():
+                indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
 
     def set_band_indicator(self, band: str) -> None:
         """Set the band indicator"""
         self.clear_band_indicators()
-        indicator = self.band_indicators.get(band)
+        indicator = self.all_mode_indicators[self.current_mode].get(band, None)
         if indicator:
             indicator.setFrameShape(QtWidgets.QFrame.Box)
 
@@ -968,7 +989,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dark_mode()
         self.show_command_buttons()
         self.show_CW_macros()
-        self.show_band_mode()
+        # self.show_band_mode()
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
@@ -1011,18 +1032,18 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.Command_Buttons.hide()
 
-    def show_band_mode_state_change(self):
-        """Called when the mode and bads menu item changes"""
-        self.pref["bands_modes"] = self.actionMode_and_Bands.isChecked()
-        self.write_preference()
-        self.show_band_mode()
+    # def show_band_mode_state_change(self):
+    #     """Called when the mode and bads menu item changes"""
+    #     self.pref["bands_modes"] = self.actionMode_and_Bands.isChecked()
+    #     self.write_preference()
+    #     self.show_band_mode()
 
-    def show_band_mode(self):
-        """Hide or show band/mode indicator"""
-        if self.actionMode_and_Bands.isChecked():
-            self.Band_Mode_Frame.show()
-        else:
-            self.Band_Mode_Frame.hide()
+    # def show_band_mode(self):
+    #     """Hide or show band/mode indicator"""
+    #     if self.actionMode_and_Bands.isChecked():
+    #         self.Band_Mode_Frame.show()
+    #     else:
+    #         self.Band_Mode_Frame.hide()
 
     def is_floatable(self, item: str) -> bool:
         """check to see if string can be a float"""
@@ -1189,18 +1210,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub for when the mode changes."""
         if mode == "CW":
             self.current_mode = "CW"
-            self.mode.setText("CW")
+            # self.mode.setText("CW")
             self.sent.setText("599")
             self.receive.setText("599")
             return
         if mode == "SSB":
             self.current_mode = "SSB"
-            self.mode.setText("SSB")
+            # self.mode.setText("SSB")
             self.sent.setText("59")
             self.receive.setText("59")
         if mode == "RTTY":
             self.current_mode = "RTTY"
-            self.mode.setText("RTTY")
+            # self.mode.setText("RTTY")
             self.sent.setText("59")
             self.receive.setText("59")
 
