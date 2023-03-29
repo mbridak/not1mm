@@ -185,33 +185,33 @@ class DataBase:
         with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             sql_command = (
-                "CREATE TABLE IF NOT EXISTS [ContestInstance] ("
-                "[ContestID] INT NOT NULL,"
-                "[ContestName] NVARCHAR(10),"
-                "[StartDate] DATETIME,"
-                "[OperatorCategory] NVARCHAR(20) DEFAULT "
+                "CREATE TABLE IF NOT EXISTS ContestInstance ("
+                "ContestID INTEGER PRIMARY KEY,"
+                "ContestName NVARCHAR(10),"
+                "StartDate DATETIME,"
+                "OperatorCategory NVARCHAR(20) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[BandCategory] NVARCHAR(20) DEFAULT "
+                "BandCategory NVARCHAR(20) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[PowerCategory] NVARCHAR(20) DEFAULT "
+                "PowerCategory NVARCHAR(20) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[ModeCategory] NVARCHAR(20) DEFAULT "
+                "ModeCategory NVARCHAR(20) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[OverlayCategory] NVARCHAR(20) DEFAULT "
+                "OverlayCategory NVARCHAR(20) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[ClaimedScore] MONEY DEFAULT '''''''''''''''0''''''''''''''',"
-                "[Operators] NVARCHAR(255) DEFAULT "
+                "ClaimedScore MONEY DEFAULT '''''''''''''''0''''''''''''''',"
+                "Operators NVARCHAR(255) DEFAULT "
                 "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"
-                "[Soapbox] TEXT,"
-                "[SentExchange] NVARCHAR(50),"
-                "[ContestNR] INT,"
-                "[SubType] NVARCHAR(9),"
-                "[StationCategory] NVARCHAR(20),"
-                "[AssistedCategory] NVARCHAR(20),"
-                "[TransmitterCategory] NVARCHAR(20),"
-                "[TimeCategory] NVARCHAR(20),"
-                "CONSTRAINT [sqlite_autoindex_ContestInstance_1] PRIMARY KEY ([ContestID]));"
+                "Soapbox TEXT,"
+                "SentExchange NVARCHAR(50),"
+                "ContestNR INT,"
+                "SubType NVARCHAR(9),"
+                "StationCategory NVARCHAR(20),"
+                "AssistedCategory NVARCHAR(20),"
+                "TransmitterCategory NVARCHAR(20),"
+                "TimeCategory NVARCHAR(20));"
             )
+            logger.debug(sql_command)
             cursor.execute(sql_command)
             conn.commit()
 
@@ -249,6 +249,30 @@ class DataBase:
             )
             cursor.execute(sql_command)
             conn.commit()
+
+    def add_contest(self, contest: dict) -> None:
+        """Add Contest"""
+
+        logger.info("%s", contest)
+        pre = "INSERT INTO ContestInstance("
+        values = []
+        columns = ""
+        placeholders = ""
+        for key in contest.keys():
+            columns += f"{key},"
+            values.append(contest[key])
+            placeholders += "?,"
+        post = f") VALUES({placeholders[:-1]});"
+        sql = f"{pre}{columns[:-1]}{post}"
+
+        try:
+            with sqlite3.connect(self.database) as conn:
+                logger.info("%s", sql)
+                cur = conn.cursor()
+                cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("DataBase add_contest: %s", exception)
 
     def log_contact(self, contact: dict) -> None:
         """
@@ -357,13 +381,13 @@ class DataBase:
             )
             return cursor.fetchone()
 
-    def fetch_wpx_exists_before_me(self, wpx, ts) -> dict:
+    def fetch_wpx_exists_before_me(self, wpx, time_stamp) -> dict:
         """returns a dict key of wpx_count"""
         with sqlite3.connect(self.database) as conn:
             conn.row_factory = self.row_factory
             cursor = conn.cursor()
             cursor.execute(
-                f"select count(*) as wpx_count from dxlog where  TS < '{ts}' and WPXPrefix = '{wpx}';"
+                f"select count(*) as wpx_count from dxlog where  TS < '{time_stamp}' and WPXPrefix = '{wpx}';"
             )
             return cursor.fetchone()
 
