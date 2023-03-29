@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
+    <width>540</width>
     <height>693</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="15" column="2" colspan="2">
-    <widget class="QPlainTextEdit" name="plainTextEdit"/>
+    <widget class="QPlainTextEdit" name="soapbox"/>
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="label_5">
@@ -45,7 +45,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Start Date</string>
+      <string>Start UTC</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -53,7 +53,7 @@
     </widget>
    </item>
    <item row="10" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_3">
+    <widget class="QComboBox" name="assisted">
      <item>
       <property name="text">
        <string>ASSISTED</string>
@@ -67,10 +67,10 @@
     </widget>
    </item>
    <item row="12" column="2" rowspan="2">
-    <widget class="QLineEdit" name="lineEdit"/>
+    <widget class="QLineEdit" name="exchange"/>
    </item>
    <item row="7" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_6">
+    <widget class="QComboBox" name="mode">
      <item>
       <property name="text">
        <string>CW</string>
@@ -151,7 +151,7 @@
     </widget>
    </item>
    <item row="1" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="contest">
      <item>
       <property name="text">
        <string>ARRL Field Day</string>
@@ -181,15 +181,12 @@
    </item>
    <item row="2" column="2">
     <widget class="QDateTimeEdit" name="dateTimeEdit">
-     <property name="dateTime">
-      <datetime>
-       <hour>0</hour>
+     <property name="time">
+      <time>
+       <hour>8</hour>
        <minute>0</minute>
-       <second>3</second>
-       <year>2000</year>
-       <month>1</month>
-       <day>2</day>
-      </datetime>
+       <second>0</second>
+      </time>
      </property>
      <property name="maximumDateTime">
       <datetime>
@@ -201,8 +198,11 @@
        <day>1</day>
       </datetime>
      </property>
+     <property name="currentSection">
+      <enum>QDateTimeEdit::YearSection</enum>
+     </property>
      <property name="displayFormat">
-      <string>MM/dd/yyyy HH:mm</string>
+      <string>yyyy-MM-dd HH:mm:ss</string>
      </property>
      <property name="timeSpec">
       <enum>Qt::UTC</enum>
@@ -263,7 +263,7 @@
     </spacer>
    </item>
    <item row="4" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_9">
+    <widget class="QComboBox" name="operator_class">
      <item>
       <property name="text">
        <string>SINGLE-OP</string>
@@ -282,7 +282,7 @@
     </widget>
    </item>
    <item row="6" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_7">
+    <widget class="QComboBox" name="power">
      <item>
       <property name="text">
        <string>HIGH</string>
@@ -331,7 +331,7 @@
     </widget>
    </item>
    <item row="11" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_2">
+    <widget class="QComboBox" name="transmitter">
      <item>
       <property name="text">
        <string>ONE</string>
@@ -365,7 +365,7 @@
     </widget>
    </item>
    <item row="5" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_8">
+    <widget class="QComboBox" name="band">
      <item>
       <property name="text">
        <string>ALL</string>
@@ -506,7 +506,7 @@
     </widget>
    </item>
    <item row="8" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_5">
+    <widget class="QComboBox" name="overlay">
      <item>
       <property name="text">
        <string>N/A</string>
@@ -540,7 +540,7 @@
     </widget>
    </item>
    <item row="14" column="2" colspan="2">
-    <widget class="QLineEdit" name="lineEdit_2"/>
+    <widget class="QLineEdit" name="operators"/>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="label_4">
@@ -553,7 +553,7 @@
     </widget>
    </item>
    <item row="9" column="2" colspan="2">
-    <widget class="QComboBox" name="comboBox_4">
+    <widget class="QComboBox" name="station">
      <item>
       <property name="text">
        <string>DISTRIBUTED</string>
