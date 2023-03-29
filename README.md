@@ -57,6 +57,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-29] Added a new contest dialog.
 - [23-3-27] Add menu item to recalculate mults.
 - [23-3-27] Fix cursor behaviour when editing text in callsign field.
 - [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
