@@ -47,7 +47,7 @@
       <item>
        <layout class="QHBoxLayout" name="mainsection">
         <item>
-         <widget class="QFrame" name="Band_Mode_Frame">
+         <widget class="QFrame" name="Band_Mode_Frame_CW">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -71,9 +71,9 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="mode">
+            <widget class="QLabel" name="mode_cw">
              <property name="text">
-              <string>SSB</string>
+              <string>CW</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -81,7 +81,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_160">
+            <widget class="QLabel" name="cw_band_160">
              <property name="text">
               <string>160</string>
              </property>
@@ -91,7 +91,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_80">
+            <widget class="QLabel" name="cw_band_80">
              <property name="text">
               <string>80</string>
              </property>
@@ -101,7 +101,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_40">
+            <widget class="QLabel" name="cw_band_40">
              <property name="text">
               <string>40</string>
              </property>
@@ -111,7 +111,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_20">
+            <widget class="QLabel" name="cw_band_20">
              <property name="text">
               <string>20</string>
              </property>
@@ -121,7 +121,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_15">
+            <widget class="QLabel" name="cw_band_15">
              <property name="text">
               <string>15</string>
              </property>
@@ -131,7 +131,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="band_10">
+            <widget class="QLabel" name="cw_band_10">
              <property name="text">
               <string>10</string>
              </property>
@@ -142,6 +142,232 @@
            </item>
            <item>
             <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="Band_Mode_Frame_SSB">
+          <property name="minimumSize">
+           <size>
+            <width>35</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>27</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="mode_ssb">
+             <property name="text">
+              <string>SSB</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_160">
+             <property name="text">
+              <string>160</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_80">
+             <property name="text">
+              <string>80</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_40">
+             <property name="text">
+              <string>40</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_20">
+             <property name="text">
+              <string>20</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_15">
+             <property name="text">
+              <string>15</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="ssb_band_10">
+             <property name="text">
+              <string>10</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="Band_Mode_Frame_RTTY">
+          <property name="minimumSize">
+           <size>
+            <width>33</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>27</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="mode_rtty">
+             <property name="text">
+              <string>RTTY</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_160">
+             <property name="text">
+              <string>160</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_80">
+             <property name="text">
+              <string>80</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_40">
+             <property name="text">
+              <string>40</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_20">
+             <property name="text">
+              <string>20</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_15">
+             <property name="text">
+              <string>15</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rtty_band_10">
+             <property name="text">
+              <string>10</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -804,7 +1030,6 @@
     </property>
     <addaction name="actionCommand_Buttons"/>
     <addaction name="actionCW_Macros"/>
-    <addaction name="actionMode_and_Bands"/>
     <addaction name="actionDark_Mode"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
