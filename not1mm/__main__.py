@@ -341,10 +341,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_band_indicator(self, band: str) -> None:
         """Set the band indicator"""
-        self.clear_band_indicators()
-        indicator = self.all_mode_indicators[self.current_mode].get(band, None)
-        if indicator:
-            indicator.setFrameShape(QtWidgets.QFrame.Box)
+        logger.debug("%s", f"band:{band} mode: {self.current_mode}")
+        if band and self.current_mode:
+            self.clear_band_indicators()
+            indicator = self.all_mode_indicators[self.current_mode].get(band, None)
+            if indicator:
+                indicator.setFrameShape(QtWidgets.QFrame.Box)
 
     def closeEvent(self, _event):
         """
