@@ -354,6 +354,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
+            self.clearinputs()
 
     def open_database(self):
         """Open existing database."""
@@ -368,6 +369,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
+            self.clearinputs()
 
     def new_contest(self):
         """Create new contest in existing database."""
