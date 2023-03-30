@@ -72,6 +72,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
+        self.setWindowTitle(
+            f"Log Display - {self.pref.get('current_database', 'ham.db')}"
+        )
         self.generalLog.setColumnCount(14)
         self.focusedLog.setColumnCount(14)
         icon_path = WORKING_PATH + "/data/"
@@ -189,6 +192,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.contact = self.database.empty_contact
         self.get_log()
+        self.setWindowTitle(
+            f"Log Display - {self.pref.get('current_database', 'ham.db')}"
+        )
 
     def double_clicked(self, _row, _column):
         """Slot for doubleclick event"""
@@ -614,7 +620,7 @@ app = QtWidgets.QApplication(sys.argv)
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
-window.setWindowTitle("Log Display")
+# window.setWindowTitle("Log Display")
 window.show()
 timer = QtCore.QTimer()
 timer.timeout.connect(window.check_udp_traffic)
