@@ -16,6 +16,7 @@
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
+  - [Adding a database](#adding-a-database)
   - [Adding a contest](#adding-a-contest)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing function key macros](#editing-function-key-macros)
@@ -57,6 +58,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-30] Added Open new and Open existing database
 - [23-3-29] Added a new contest dialog.
 - [23-3-27] Add menu item to recalculate mults.
 - [23-3-27] Fix cursor behaviour when editing text in callsign field.
@@ -123,6 +125,10 @@ If your system has an `XDG_DATA_HOME` environment variable set, the databases ca
 ### Config
 
 Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`. Otherwise they will be found at `yourhome/.config/not1mm`
+
+## Adding a database
+
+On the initial running, a database is created for you called `ham.db`. This and all future databases are located in the data directory mentioned above. You can create new databases by selecting `File` > `New Database` from the main window. You can select previously created databases by selecting `File` > `Open Database`.
 
 ## Adding a contest
 
