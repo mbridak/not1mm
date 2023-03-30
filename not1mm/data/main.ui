@@ -1011,12 +1011,19 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionPreferences"/>
-    <addaction name="actionQRZ_Settings"/>
-    <addaction name="actionConnection_Settings"/>
+    <addaction name="actionNew_Database"/>
+    <addaction name="actionOpen_Database"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_Contest"/>
+    <addaction name="actionOpen_Contest"/>
+    <addaction name="separator"/>
     <addaction name="actionGenerate_Cabrillo"/>
     <addaction name="actionGenerate_ADIF"/>
-    <addaction name="actionNew_Contest"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnection_Settings"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="actionQRZ_Settings"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1177,6 +1184,21 @@
   <action name="actionNew_Contest">
    <property name="text">
     <string>New Contest</string>
+   </property>
+  </action>
+  <action name="actionNew_Database">
+   <property name="text">
+    <string>New Database</string>
+   </property>
+  </action>
+  <action name="actionOpen_Database">
+   <property name="text">
+    <string>Open Database</string>
+   </property>
+  </action>
+  <action name="actionOpen_Contest">
+   <property name="text">
+    <string>Open Contest</string>
    </property>
   </action>
  </widget>
