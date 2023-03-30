@@ -24,6 +24,7 @@ from xmlrpc.client import Error, ServerProxy
 
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
 from PyQt5.QtCore import QDir, QRect, QSize, Qt
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
@@ -323,6 +324,21 @@ class MainWindow(QtWidgets.QMainWindow):
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
+
+    def filepicker(self):
+        """get a file maybe"""
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        options |= QFileDialog.DontConfirmOverwrite
+        # picker = QFileDialog(self)
+        file, _ = QFileDialog.getSaveFileName(
+            self,
+            "Choose a Database",
+            DATA_PATH,
+            "Database (*.db)",
+            options=options,
+        )
+        return file
 
     def recalculate_mults(self):
         """Recalculate Multipliers"""
