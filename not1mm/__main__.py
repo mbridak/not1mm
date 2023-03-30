@@ -193,26 +193,31 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-        self.database = DataBase(self.dbname, WORKING_PATH)
-        self.launch_log_window()
-        self.cw = CW(1, "127.0.0.1", 6789)
-        self.contact = self.database.empty_contact
+
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.n1mm = N1MM()
         self.next_field = self.other_2
         self.dupe_indicator.hide()
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
+
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
         self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
-        self.actionPreferences.triggered.connect(self.preference_selected)
-        self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
-        self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
-        self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
+
+        self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
+        self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
+
+        self.actionPreferences.triggered.connect(self.preference_selected)
+        self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
+
         self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
+        self.actionOpen_Contest.triggered.connect(self.open_contest)
+        self.actionNew_Database.triggered.connect(self.new_database)
+        self.actionOpen_Database.triggered.connect(self.open_database)
+
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -266,11 +271,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.F12.customContextMenuRequested.connect(self.edit_F12)
         self.F12.clicked.connect(self.sendf12)
-        self.select_contest()
+
         self.readpreferences()
+        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.contact = self.database.empty_contact
         self.current_op = self.pref.get("callsign", "")
+
+        self.cw = CW(1, "127.0.0.1", 6789)
+
+        self.select_contest()
+
         self.read_cw_macros()
         self.clearinputs()
+        self.launch_log_window()
 
         self.rig_control = None
         local_flrig = self.check_process("flrig")
@@ -325,19 +339,67 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
         return False
 
-    def filepicker(self):
-        """get a file maybe"""
+    def new_database(self):
+        """Create new database."""
+        filename = self.filepicker("new")
+        if filename:
+            if filename[-3:] != ".db":
+                filename += ".db"
+            self.pref["current_database"] = filename.split("/")[-1:][0]
+            self.write_preference()
+            self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+            self.database = DataBase(self.dbname, WORKING_PATH)
+            self.contact = self.database.empty_contact
+            self.current_op = self.pref.get("callsign", "")
+            cmd = {}
+            cmd["cmd"] = "NEWDB"
+            self.multicast_interface.send_as_json(cmd)
+
+    def open_database(self):
+        """Open existing database."""
+        filename = self.filepicker("open")
+        if filename:
+            self.pref["current_database"] = filename.split("/")[-1:][0]
+            self.write_preference()
+            self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+            self.database = DataBase(self.dbname, WORKING_PATH)
+            self.contact = self.database.empty_contact
+            self.current_op = self.pref.get("callsign", "")
+            cmd = {}
+            cmd["cmd"] = "NEWDB"
+            self.multicast_interface.send_as_json(cmd)
+
+    def new_contest(self):
+        """Create new contest in existing database."""
+
+    def open_contest(self):
+        """Switch to a different existing contest in existing database."""
+
+    def filepicker(self, action: str) -> str:
+        """
+        Get a filename
+        action: "new" or "open"
+        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         options |= QFileDialog.DontConfirmOverwrite
         # picker = QFileDialog(self)
-        file, _ = QFileDialog.getSaveFileName(
-            self,
-            "Choose a Database",
-            DATA_PATH,
-            "Database (*.db)",
-            options=options,
-        )
+        if action == "new":
+            file, _ = QFileDialog.getSaveFileName(
+                self,
+                "Choose a Database",
+                DATA_PATH,
+                "Database (*.db)",
+                options=options,
+            )
+        if action == "open":
+            file, _ = QFileDialog.getOpenFileName(
+                self,
+                "Choose a Database",
+                DATA_PATH,
+                "Database (*.db)",
+                options=options,
+            )
         return file
 
     def recalculate_mults(self):

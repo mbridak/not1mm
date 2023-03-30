@@ -58,13 +58,16 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     # dbname = DATA_PATH + "/ham.db"
-    dbname = sys.argv[1] if len(sys.argv) > 1 else DATA_PATH + "/ham.db"
+    dbname = None
     edit_contact_dialog = None
+    pref = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
+        self.load_pref()
+        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
@@ -163,6 +166,29 @@ class MainWindow(QtWidgets.QMainWindow):
         #     radioport=self.preference.get("n1mm_radioport"),
         #     contactport=self.preference.get("n1mm_contactport"),
         # )
+
+    def load_pref(self):
+        """Load preference file to get current db filename."""
+        try:
+            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+                with open(
+                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                ) as file_descriptor:
+                    self.pref = loads(file_descriptor.read())
+                    logger.info("%s", self.pref)
+            else:
+                self.pref["current_database"] = "ham.db"
+
+        except IOError as exception:
+            logger.critical("Error: %s", exception)
+
+    def load_new_db(self):
+        """if db changes reload it."""
+        self.load_pref()
+        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.contact = self.database.empty_contact
+        self.get_log()
 
     def double_clicked(self, _row, _column):
         """Slot for doubleclick event"""
@@ -547,6 +573,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd", "") == "CALLCHANGED":
                 call = json_data.get("call", "")
                 self.show_like_calls(call)
+            if json_data.get("cmd", "") == "NEWDB":
+                self.load_new_db()
 
 
 def load_fonts_from_dir(directory: str) -> set:
