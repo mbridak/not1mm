@@ -173,7 +173,7 @@ You can fill. You can fill. Everyone look at your keys.
 
 ## Other uses for the call field
 
-- [Freqnency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
+- [A Frequency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
 - [CW, SSB, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
 - [OPON] Change the operator currently logging.
 
