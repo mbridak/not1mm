@@ -5,8 +5,8 @@ from PyQt5 import QtWidgets, uic
 from not1mm.lib.ham_utility import gridtolatlon
 
 
-class EditSettings(QtWidgets.QDialog):
-    """Edit Settings"""
+class EditStation(QtWidgets.QDialog):
+    """Edit Station Settings"""
 
     def __init__(self, WORKING_PATH):
         super().__init__(None)

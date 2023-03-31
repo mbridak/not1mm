@@ -34,7 +34,7 @@ from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
-from not1mm.lib.edit_settings import EditSettings
+from not1mm.lib.edit_station import EditStation
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -123,7 +123,6 @@ class MainWindow(QtWidgets.QMainWindow):
         "useqrz": False,
         "lookupusername": "username",
         "lookuppassword": "password",
-        "gridsquare": "",
         "run_state": True,
         "dark_mode": False,
         "command_buttons": True,
@@ -133,28 +132,6 @@ class MainWindow(QtWidgets.QMainWindow):
         "window_width": 600,
         "window_x": 120,
         "window_y": 120,
-        "callsign": "",
-        "name": "",
-        "address1": "",
-        "address2": "",
-        "city": "",
-        "state": "",
-        "zip": "",
-        "country": "",
-        "cqzone": "",
-        "ituzone": "",
-        "license": "",
-        "latitude": "",
-        "longitude": "",
-        "stationtxrx": "",
-        "power": "",
-        "antenna": "",
-        "antheight": "",
-        "asl": "",
-        "section": "",
-        "roverqth": "",
-        "club": "",
-        "email": "",
         "current_database": "ham.db",
         "multicast_group": "224.1.1.1",
         "multicast_port": 2239,
@@ -171,6 +148,7 @@ class MainWindow(QtWidgets.QMainWindow):
     appstarted = False
     contest = None
     pref = None
+    station = {}
     current_op = ""
     current_mode = ""
     current_band = ""
@@ -210,7 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
 
-        self.actionPreferences.triggered.connect(self.preference_selected)
+        self.actionStationSettings.triggered.connect(self.edit_station_settings)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
 
         self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
@@ -275,8 +253,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.readpreferences()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
+        self.station = self.database.fetch_station()
+        if self.station is None:
+            self.station = {}
         self.contact = self.database.empty_contact
-        self.current_op = self.pref.get("callsign", "")
+        self.current_op = self.station.get("Call", "")
 
         self.cw = CW(1, "127.0.0.1", 6789)
 
@@ -350,11 +331,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
             self.database = DataBase(self.dbname, WORKING_PATH)
             self.contact = self.database.empty_contact
-            self.current_op = self.pref.get("callsign", "")
+            self.station = self.database.fetch_station()
+            if self.station is None:
+                self.station = {}
+            self.current_op = self.station.get("Call", "")
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
             self.clearinputs()
+            self.edit_station_settings()
 
     def open_database(self):
         """Open existing database."""
@@ -365,7 +350,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
             self.database = DataBase(self.dbname, WORKING_PATH)
             self.contact = self.database.empty_contact
-            self.current_op = self.pref.get("callsign", "")
+            self.station = self.database.fetch_station()
+            # if self.station is None:
+            #     self.edit_station_settings()
+            # if self.station.get("Call", "") == "":
+            #     self.edit_station_settings()
+            self.current_op = self.station.get("Call", "")
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
@@ -638,7 +628,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contact["Mode"] = self.radio_state.get("mode", "")
         self.contact["ContestName"] = self.contest.cabrillo_name
-        self.contact["StationPrefix"] = self.pref.get("callsign", "")
+        self.contact["StationPrefix"] = self.station.get("Call", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
         self.contact["Operator"] = self.current_op
@@ -756,67 +746,90 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("%s", f"{contest}")
         self.database.add_contest(contest)
 
-    def preference_selected(self):
+    def edit_station_settings(self):
         """Show settings dialog"""
-        logger.debug("Preference selected")
-        self.settings_dialog = EditSettings(WORKING_PATH)
+        logger.debug("Station Settings selected")
+        self.settings_dialog = EditStation(WORKING_PATH)
         self.settings_dialog.accepted.connect(self.save_settings)
-        if self.pref.get("dark_mode"):
-            self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
-        self.settings_dialog.Call.setText(self.pref.get("callsign", ""))
-        self.settings_dialog.Name.setText(self.pref.get("name", ""))
-        self.settings_dialog.Address1.setText(self.pref.get("address1", ""))
-        self.settings_dialog.Address2.setText(self.pref.get("address2", ""))
-        self.settings_dialog.City.setText(self.pref.get("city", ""))
-        self.settings_dialog.State.setText(self.pref.get("state", ""))
-        self.settings_dialog.Zip.setText(self.pref.get("zip", ""))
-        self.settings_dialog.Country.setText(self.pref.get("country", ""))
-        self.settings_dialog.GridSquare.setText(self.pref.get("gridsquare", ""))
-        self.settings_dialog.CQZone.setText(self.pref.get("cqzone", ""))
-        self.settings_dialog.ITUZone.setText(self.pref.get("ituzone", ""))
-        self.settings_dialog.License.setText(self.pref.get("license", ""))
-        self.settings_dialog.Latitude.setText(self.pref.get("latitude", ""))
-        self.settings_dialog.Longitude.setText(self.pref.get("longitude", ""))
-        self.settings_dialog.StationTXRX.setText(self.pref.get("stationtxrx", ""))
-        self.settings_dialog.Power.setText(self.pref.get("power", ""))
-        self.settings_dialog.Antenna.setText(self.pref.get("antenna", ""))
-        self.settings_dialog.AntHeight.setText(self.pref.get("antheight", ""))
-        self.settings_dialog.ASL.setText(self.pref.get("asl", ""))
-        self.settings_dialog.ARRLSection.setText(self.pref.get("section", ""))
-        self.settings_dialog.RoverQTH.setText(self.pref.get("roverqth", ""))
-        self.settings_dialog.Club.setText(self.pref.get("club", ""))
-        self.settings_dialog.Email.setText(self.pref.get("email", ""))
+        # if self.pref.get("dark_mode"):
+        #     self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.settings_dialog.Call.setText(self.station.get("Call", ""))
+        self.settings_dialog.Name.setText(self.station.get("Name", ""))
+        self.settings_dialog.Address1.setText(self.station.get("Street1", ""))
+        self.settings_dialog.Address2.setText(self.station.get("Street2", ""))
+        self.settings_dialog.City.setText(self.station.get("City", ""))
+        self.settings_dialog.State.setText(self.station.get("State", ""))
+        self.settings_dialog.Zip.setText(self.station.get("Zip", ""))
+        self.settings_dialog.Country.setText(self.station.get("Country", ""))
+        self.settings_dialog.GridSquare.setText(self.station.get("GridSquare", ""))
+        self.settings_dialog.CQZone.setText(str(self.station.get("CQZone", "")))
+        self.settings_dialog.ITUZone.setText(str(self.station.get("IARUZone", "")))
+        self.settings_dialog.License.setText(self.station.get("LicenseClass", ""))
+        self.settings_dialog.Latitude.setText(str(self.station.get("Latitude", "")))
+        self.settings_dialog.Longitude.setText(str(self.station.get("Longitude", "")))
+        self.settings_dialog.StationTXRX.setText(self.station.get("stationtxrx", ""))
+        self.settings_dialog.Power.setText(self.station.get("SPowe", ""))
+        self.settings_dialog.Antenna.setText(self.station.get("SAnte", ""))
+        self.settings_dialog.AntHeight.setText(self.station.get("SAntH1", ""))
+        self.settings_dialog.ASL.setText(self.station.get("SAntH2", ""))
+        self.settings_dialog.ARRLSection.setText(self.station.get("ARRLSection", ""))
+        self.settings_dialog.RoverQTH.setText(self.station.get("RoverQTH", ""))
+        self.settings_dialog.Club.setText(self.station.get("Club", ""))
+        self.settings_dialog.Email.setText(self.station.get("Email", ""))
         self.settings_dialog.open()
 
     def save_settings(self):
         """Save settings"""
+        # Call
+        # Name
+        # Street1
+        # Street2
+        # City
+        # State
+        # Zip
+        # Country
+        # GridSquare
+        # LicenseClass
+        # Latitude
+        # Longitude
+        # PacketNode
+        # ARRLSection
+        # Club
+        # IARUZone
+        # CQZone
+        # STXeq
+        # SPowe
+        # SAnte
+        # SAntH1
+        # SAntH2
+        # RoverQTH
         cs = self.settings_dialog.Call.text()
-        self.pref["callsign"] = cs.upper()
-        self.pref["name"] = self.settings_dialog.Name.text()
-        self.pref["address1"] = self.settings_dialog.Address1.text()
-        self.pref["address2"] = self.settings_dialog.Address2.text()
-        self.pref["city"] = self.settings_dialog.City.text()
-        self.pref["state"] = self.settings_dialog.State.text()
-        self.pref["zip"] = self.settings_dialog.Zip.text()
-        self.pref["country"] = self.settings_dialog.Country.text()
-        self.pref["gridsquare"] = self.settings_dialog.GridSquare.text()
-        self.pref["cqzone"] = self.settings_dialog.CQZone.text()
-        self.pref["ituzone"] = self.settings_dialog.ITUZone.text()
-        self.pref["license"] = self.settings_dialog.License.text()
-        self.pref["latitude"] = self.settings_dialog.Latitude.text()
-        self.pref["longitude"] = self.settings_dialog.Longitude.text()
-        self.pref["stationtxrx"] = self.settings_dialog.StationTXRX.text()
-        self.pref["power"] = self.settings_dialog.Power.text()
-        self.pref["antenna"] = self.settings_dialog.Antenna.text()
-        self.pref["antheight"] = self.settings_dialog.AntHeight.text()
-        self.pref["asl"] = self.settings_dialog.ASL.text()
-        self.pref["section"] = self.settings_dialog.ARRLSection.text()
-        self.pref["roverqth"] = self.settings_dialog.RoverQTH.text()
-        self.pref["club"] = self.settings_dialog.Club.text()
-        self.pref["email"] = self.settings_dialog.Email.text()
+        self.station = {}
+        self.station["Call"] = cs.upper()
+        self.station["Name"] = self.settings_dialog.Name.text()
+        self.station["Street1"] = self.settings_dialog.Address1.text()
+        self.station["Street2"] = self.settings_dialog.Address2.text()
+        self.station["City"] = self.settings_dialog.City.text()
+        self.station["State"] = self.settings_dialog.State.text()
+        self.station["Zip"] = self.settings_dialog.Zip.text()
+        self.station["Country"] = self.settings_dialog.Country.text()
+        self.station["GridSquare"] = self.settings_dialog.GridSquare.text()
+        self.station["CQZone"] = self.settings_dialog.CQZone.text()
+        self.station["IARUZone"] = self.settings_dialog.ITUZone.text()
+        self.station["LicenseClass"] = self.settings_dialog.License.text()
+        self.station["Latitude"] = self.settings_dialog.Latitude.text()
+        self.station["Longitude"] = self.settings_dialog.Longitude.text()
+        self.station["STXeq"] = self.settings_dialog.StationTXRX.text()
+        self.station["SPowe"] = self.settings_dialog.Power.text()
+        self.station["SAnte"] = self.settings_dialog.Antenna.text()
+        self.station["SAntH1"] = self.settings_dialog.AntHeight.text()
+        self.station["SAntH2"] = self.settings_dialog.ASL.text()
+        self.station["ARRLSection"] = self.settings_dialog.ARRLSection.text()
+        self.station["RoverQTH"] = self.settings_dialog.RoverQTH.text()
+        self.station["Club"] = self.settings_dialog.Club.text()
+        self.station["Email"] = self.settings_dialog.Email.text()
+        self.database.add_station(self.station)
         self.settings_dialog.close()
-        self.write_preference()
-        self.readpreferences()
 
     def select_contest(self):
         """Load contest"""
@@ -906,12 +919,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
         macro = macro.upper()
-        # if self.groupcall and self.connect_to_server:
-        #     macro = macro.replace("{MYCALL}", self.groupcall)
-        # else:
-        macro = macro.replace("{MYCALL}", self.pref.get("callsign"))
-        # macro = macro.replace("{MYCLASS}", self.preference.get("myclass"))
-        # macro = macro.replace("{MYSECT}", self.preference.get("mysection"))
+        macro = macro.replace("{MYCALL}", self.station.get("Call"))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         return macro
 
@@ -1228,8 +1236,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 lon = float(a[1].get("long", "0.0"))
                 lon = lon * -1  # cty.dat file inverts longitudes
                 primary_pfx = a[1].get("primary_pfx", "")
-                heading = bearing_with_latlon(self.pref.get("gridsquare"), lat, lon)
-                kilometers = distance_with_latlon(self.pref.get("gridsquare"), lat, lon)
+                heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
+                kilometers = distance_with_latlon(
+                    self.station.get("GridSquare"), lat, lon
+                )
                 self.heading_distance.setText(
                     f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
                     f"distance {int(kilometers*0.621371)}mi {kilometers}km"
@@ -1257,9 +1267,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     theirgrid = response.get("grid")
                     self.contact["GridSquare"] = theirgrid
                     _theircountry = response.get("country")
-                    if self.pref.get("gridsquare"):
-                        heading = bearing(self.pref.get("gridsquare"), theirgrid)
-                        kilometers = distance(self.pref.get("gridsquare"), theirgrid)
+                    if self.station.get("GridSquare", ""):
+                        heading = bearing(self.station.get("GridSquare", ""), theirgrid)
+                        kilometers = distance(self.station.get("GridSquare"), theirgrid)
                         self.heading_distance.setText(
                             f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / "
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"

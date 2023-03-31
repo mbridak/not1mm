@@ -39,29 +39,32 @@ def gridtolatlon(maiden):
     """
     Converts a maidenhead gridsquare to a latitude longitude pair.
     """
-    maiden = str(maiden).strip().upper()
+    try:
+        maiden = str(maiden).strip().upper()
 
-    chars_in_grid_square = len(maiden)
-    if not 8 >= chars_in_grid_square >= 2 and chars_in_grid_square % 2 == 0:
+        chars_in_grid_square = len(maiden)
+        if not 8 >= chars_in_grid_square >= 2 and chars_in_grid_square % 2 == 0:
+            return 0, 0
+
+        lon = (ord(maiden[0]) - 65) * 20 - 180
+        lat = (ord(maiden[1]) - 65) * 10 - 90
+
+        if chars_in_grid_square >= 4:
+            lon += (ord(maiden[2]) - 48) * 2
+            lat += ord(maiden[3]) - 48
+
+        if chars_in_grid_square >= 6:
+            lon += (ord(maiden[4]) - 65) / 12 + 1 / 24
+            lat += (ord(maiden[5]) - 65) / 24 + 1 / 48
+
+        if chars_in_grid_square >= 8:
+            lon += (ord(maiden[6])) * 5.0 / 600
+            lat += (ord(maiden[7])) * 2.5 / 600
+
+        logger.debug("lat:%d lon:%d", lat, lon)
+        return round(lat, 4), round(lon, 4)
+    except IndexError:
         return 0, 0
-
-    lon = (ord(maiden[0]) - 65) * 20 - 180
-    lat = (ord(maiden[1]) - 65) * 10 - 90
-
-    if chars_in_grid_square >= 4:
-        lon += (ord(maiden[2]) - 48) * 2
-        lat += ord(maiden[3]) - 48
-
-    if chars_in_grid_square >= 6:
-        lon += (ord(maiden[4]) - 65) / 12 + 1 / 24
-        lat += (ord(maiden[5]) - 65) / 24 + 1 / 48
-
-    if chars_in_grid_square >= 8:
-        lon += (ord(maiden[6])) * 5.0 / 600
-        lat += (ord(maiden[7])) * 2.5 / 600
-
-    logger.debug("lat:%d lon:%d", lat, lon)
-    return round(lat, 4), round(lon, 4)
 
 
 def getband(freq: str) -> str:

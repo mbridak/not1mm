@@ -99,7 +99,7 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
-    result = self.cty_lookup(self.pref.get("callsign", ""))
+    result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
             mycountry = item[1].get("entity", "")
@@ -171,7 +171,7 @@ def adif(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.pref.get('callsign').upper()}_{cabrillo_name}.adi"
+        + f"{self.station.get('Call').upper()}_{cabrillo_name}.adi"
     )
     log = self.database.fetch_all_contacts_asc()
     try:
@@ -271,7 +271,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.pref.get('callsign').upper()}_{cabrillo_name}.log"
+        + f"{self.station.get('Call').upper()}_{cabrillo_name}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -289,12 +289,12 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             print(
-                f"CALLSIGN: {self.pref.get('callsign','')}",
+                f"CALLSIGN: {self.station.get('Call','')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"LOCATION: {self.pref.get('section', '')}",
+                f"LOCATION: {self.station.get('ARRLSection', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
@@ -328,37 +328,37 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             print(
-                f"NAME: {self.pref.get('name', '')}",
+                f"NAME: {self.station.get('Name', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS: {self.pref.get('address1', '')}",
+                f"ADDRESS: {self.station.get('Street1', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS-CITY: {self.pref.get('city', '')}",
+                f"ADDRESS-CITY: {self.station.get('City', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS-STATE-PROVINCE: {self.pref.get('state', '')}",
+                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS-POSTALCODE: {self.pref.get('zip', '')}",
+                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS-COUNTRY: {self.pref.get('country', '')}",
+                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )
             print(
-                f"EMAIL: {self.pref.get('email', '')}",
+                f"EMAIL: {self.station.get('Email', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )

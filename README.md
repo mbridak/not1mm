@@ -17,11 +17,11 @@
     - [Data](#data)
     - [Config](#config)
   - [Adding a database](#adding-a-database)
-  - [Adding a contest](#adding-a-contest)
+  - [Station Settings dialog](#station-settings-dialog)
+  - [Adding a contest (This doesn't work yet)](#adding-a-contest-this-doesnt-work-yet)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing function key macros](#editing-function-key-macros)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
-  - [Settings dialog](#settings-dialog)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
   - [Editing a contact](#editing-a-contact)
@@ -58,6 +58,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-3-31] Now saving station settings in the contest database.
 - [23-3-30] Added Open new and Open existing database
 - [23-3-29] Added a new contest dialog.
 - [23-3-27] Add menu item to recalculate mults.
@@ -130,7 +131,19 @@ Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`.
 
 On the initial running, a database is created for you called `ham.db`. This and all future databases are located in the data directory mentioned above. You can create new databases by selecting `File` > `New Database` from the main window. You can select previously created databases by selecting `File` > `Open Database`.
 
-## Adding a contest
+## Station Settings dialog
+
+After initial run of the program or creating a new contact database you will need to fo to `File` > `Station Settings` and fill out the information in the dialog.
+
+![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
+
+You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of yours.
+
+You can fill. You can fill. Everyone look at your keys.
+
+**I forgot my hat today**.
+
+## Adding a contest (This doesn't work yet)
 
 Select `File` > `New Contest`
 
@@ -159,18 +172,6 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance_qrz.png)
 
-## Settings dialog
-
-Added a settings screen.
-
-![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
-
-You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of yours.
-
-You can fill. You can fill. Everyone look at your keys.
-
-**I forgot my hat today**.
-
 ## Other uses for the call field
 
 - [A Frequency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
@@ -189,13 +190,15 @@ The bottom half of the log displays contacts sorted by what's currently in the c
 
 ## Editing a contact
 
-![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_cell.png)
+![Editing a cell](https://github.com/mbridak/not1mm/raw/master/pic/edit_cell.png)
 
 You can double click a cell in the log window and edit its contents.
 
 You can also Right-Click on a cell to bring up the edit dialog.
 
-![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
+![right click edit dialog](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
+
+You can not directly edit the multiplier status of a contact. Instead see the next section on recalculating mults. If you change the callsign make sure the `WPX` field is still valid.
 
 ## Recalulate Mults
 
@@ -203,7 +206,7 @@ After editing a contact and before generating a Cabrillo file. There is a Misc m
 
 ## Cabrillo
 
-Kinda working in a forced way. Need to generalize it for multiple contests. Click on `File` then `Generate Cabrillo`
+Kinda working in a forced way. Need to generalize it for multiple contests. Click on `File` > `Generate Cabrillo`
 
 There's a few more fields I have to code in. But it's enough for me to edit and submit.
 

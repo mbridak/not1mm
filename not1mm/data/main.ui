@@ -1021,7 +1021,7 @@
     <addaction name="actionGenerate_ADIF"/>
     <addaction name="separator"/>
     <addaction name="actionConnection_Settings"/>
-    <addaction name="actionPreferences"/>
+    <addaction name="actionStationSettings"/>
     <addaction name="actionQRZ_Settings"/>
     <addaction name="separator"/>
    </widget>
@@ -1131,7 +1131,7 @@
     </font>
    </property>
   </action>
-  <action name="actionPreferences">
+  <action name="actionStationSettings">
    <property name="text">
     <string>Station Settings</string>
    </property>

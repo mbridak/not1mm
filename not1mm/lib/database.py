@@ -5,6 +5,9 @@ GPL V3
 """
 # pylint: disable=line-too-long
 
+# get Saturday plus 48 hours: select datetime('now', 'WEEKDAY 6','48 HOURS');
+# DROP TABLE IF EXISTS t1;
+
 import logging
 import sqlite3
 
@@ -234,6 +237,7 @@ class DataBase:
                     "CREATE TABLE IF NOT EXISTS [Station] ("
                     "[Call] NVARCHAR(20) NOT NULL, "
                     "[Name] NVARCHAR(50), "
+                    "[Email] NVARCHAR(50), "
                     "[Street1] NVARCHAR(50), "
                     "[Street2] NVARCHAR(50), "
                     "[City] NVARCHAR(30), "
@@ -261,6 +265,52 @@ class DataBase:
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
+
+    def add_station(self, station: dict) -> None:
+        """Add station information"""
+
+        logger.info("%s", station)
+        sql = "DELETE FROM Station;"
+        try:
+            with sqlite3.connect(self.database) as conn:
+                logger.info("%s", sql)
+                cur = conn.cursor()
+                cur.execute(sql)
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("DataBase add_station: %s", exception)
+
+        pre = "INSERT INTO Station("
+        values = []
+        columns = ""
+        placeholders = ""
+        for key in station.keys():
+            columns += f"{key},"
+            values.append(station[key])
+            placeholders += "?,"
+        post = f") VALUES({placeholders[:-1]});"
+        sql = f"{pre}{columns[:-1]}{post}"
+
+        try:
+            with sqlite3.connect(self.database) as conn:
+                logger.info("%s", sql)
+                cur = conn.cursor()
+                cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("DataBase add_station: %s", exception)
+
+    def fetch_station(self) -> dict:
+        """returns a list of dicts with last contact in the database."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute("select * from Station;")
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
 
     def add_contest(self, contest: dict) -> None:
         """Add Contest"""
