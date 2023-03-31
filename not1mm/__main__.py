@@ -35,6 +35,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
+from not1mm.lib.select_contest import SelectContest
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -133,6 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "window_x": 120,
         "window_y": 120,
         "current_database": "ham.db",
+        "contest": "",
         "multicast_group": "224.1.1.1",
         "multicast_port": 2239,
         "interface_ip": "0.0.0.0",
@@ -147,6 +149,7 @@ class MainWindow(QtWidgets.QMainWindow):
     }
     appstarted = False
     contest = None
+    contest_settings = {}
     pref = None
     station = {}
     current_op = ""
@@ -258,10 +261,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.station = {}
         self.contact = self.database.empty_contact
         self.current_op = self.station.get("Call", "")
+        if self.pref.get("contest"):
+            self.load_contest()
 
         self.cw = CW(1, "127.0.0.1", 6789)
-
-        self.select_contest()
 
         self.read_cw_macros()
         self.clearinputs()
@@ -351,10 +354,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.database = DataBase(self.dbname, WORKING_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
-            # if self.station is None:
-            #     self.edit_station_settings()
-            # if self.station.get("Call", "") == "":
-            #     self.edit_station_settings()
+            if self.station is None:
+                self.station = {}
+            if self.station.get("Call", "") == "":
+                self.edit_station_settings()
             self.current_op = self.station.get("Call", "")
             cmd = {}
             cmd["cmd"] = "NEWDB"
@@ -366,6 +369,39 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def open_contest(self):
         """Switch to a different existing contest in existing database."""
+        contests = self.database.fetch_all_contests()
+        if contests:
+            logger.debug("%s", f"{contests}")
+        logger.debug("Open Contest selected")
+        self.contest_dialog = SelectContest(WORKING_PATH)
+        self.contest_dialog.contest_list.setColumnCount(4)
+        self.contest_dialog.contest_list.setHorizontalHeaderItem(
+            0, QtWidgets.QTableWidgetItem("Contest Name")
+        )
+        self.contest_dialog.contest_list.setHorizontalHeaderItem(
+            1, QtWidgets.QTableWidgetItem("Contest Name")
+        )
+        self.contest_dialog.contest_list.setHorizontalHeaderItem(
+            2, QtWidgets.QTableWidgetItem("Contest Name")
+        )
+        self.contest_dialog.contest_list.setHorizontalHeaderItem(
+            3, QtWidgets.QTableWidgetItem("Contest Name")
+        )
+        self.contest_dialog.accepted.connect(self.open_contest_return)
+
+    def open_contest_return(self):
+        """Called by open_contest"""
+
+    def load_contest(self):
+        """load a contest"""
+        if self.pref.get("contest"):
+            self.contest_settings = self.database.fetch_contest_by_id(
+                self.pref.get("contest")
+            )
+            if self.contest_settings.get("ContestName"):
+                self.contest = doimp(self.contest_settings.get("ContestName"))
+                logger.debug("Loaded Contest Name = %s", self.contest.name)
+                self.contest.init_contest(self)
 
     def filepicker(self, action: str) -> str:
         """
@@ -576,10 +612,13 @@ class MainWindow(QtWidgets.QMainWindow):
             vfoa = int(vfoa) / 1000
         else:
             vfoa = 0.0
+        contest_name = ""
+        if self.contest:
+            contest_name = self.contest.name
         self.setWindowTitle(
             f"{round(vfoa,2)} "
             f"{self.radio_state.get('mode', '')} "
-            f"OP:{self.current_op} {self.contest.name} "
+            f"OP:{self.current_op} {contest_name} "
             f"- Not1MM v{__version__}"
         )
 
@@ -589,12 +628,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         self.heading_distance.setText("No Heading")
         self.dx_entity.setText("dxentity")
-        mults = self.contest.show_mults(self)
-        qsos = self.contest.show_qso(self)
-        multstring = f"{qsos}/{mults}"
-        self.mults.setText(multstring)
-        score = self.contest.calc_score(self)
-        self.score.setText(str(score))
+        if self.contest:
+            mults = self.contest.show_mults(self)
+            qsos = self.contest.show_qso(self)
+            multstring = f"{qsos}/{mults}"
+            self.mults.setText(multstring)
+            score = self.contest.calc_score(self)
+            self.score.setText(str(score))
         self.callsign.clear()
         if self.current_mode == "CW":
             self.sent.setText("599")
@@ -707,11 +747,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.accepted.connect(self.save_contest)
         if self.pref.get("dark_mode"):
             self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
-        # from PyQt5.QtCore import QDateTime
-        # dt = QDateTime(2020, 10, 10, 21, 30)
-
-        # # setting date time to datetimeedit
-        # datetimeedit.setDateTime(dt)
         self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
         self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime(0, 0))
@@ -721,6 +756,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_contest(self):
         """Save Contest"""
+        next_number = self.database.get_next_contest_nr()
         contest = {}
         contest["ContestName"] = (
             self.contest_dialog.contest.currentText().lower().replace(" ", "_")
@@ -737,7 +773,8 @@ class MainWindow(QtWidgets.QMainWindow):
         contest["Operators"] = self.contest_dialog.operators.text()
         contest["Soapbox"] = self.contest_dialog.soapbox.toPlainText()
         contest["SentExchange"] = self.contest_dialog.exchange.text()
-        # contest['ContestNR'] = self.contest_dialog.
+        contest["ContestNR"] = next_number.get("count", 1)
+        self.pref["contest"] = next_number.get("count", 1)
         # contest['SubType'] = self.contest_dialog.
         contest["StationCategory"] = self.contest_dialog.station.currentText()
         contest["AssistedCategory"] = self.contest_dialog.assisted.currentText()
@@ -745,6 +782,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # contest['TimeCategory'] = self.contest_dialog.
         logger.debug("%s", f"{contest}")
         self.database.add_contest(contest)
+        self.write_preference()
+        self.load_contest()
 
     def edit_station_settings(self):
         """Show settings dialog"""
@@ -753,6 +792,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.accepted.connect(self.save_settings)
         # if self.pref.get("dark_mode"):
         #     self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
+
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
         self.settings_dialog.Address1.setText(self.station.get("Street1", ""))
@@ -780,29 +820,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_settings(self):
         """Save settings"""
-        # Call
-        # Name
-        # Street1
-        # Street2
-        # City
-        # State
-        # Zip
-        # Country
-        # GridSquare
-        # LicenseClass
-        # Latitude
-        # Longitude
-        # PacketNode
-        # ARRLSection
-        # Club
-        # IARUZone
-        # CQZone
-        # STXeq
-        # SPowe
-        # SAnte
-        # SAntH1
-        # SAntH2
-        # RoverQTH
         cs = self.settings_dialog.Call.text()
         self.station = {}
         self.station["Call"] = cs.upper()
@@ -830,12 +847,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station["Email"] = self.settings_dialog.Email.text()
         self.database.add_station(self.station)
         self.settings_dialog.close()
-
-    def select_contest(self):
-        """Load contest"""
-        self.contest = doimp("cq_wpx_cw")
-        logger.debug("Loaded Contest Name = %s", self.contest.name)
-        self.contest.init_contest(self)
 
     def edit_macro(self, function_key):
         """Show edit macro dialog"""

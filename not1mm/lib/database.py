@@ -312,6 +312,33 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def get_next_contest_nr(self):
+        """Returns the next ContestNR to use."""
+        # select count(*) + 1 as count from ContestInstance;
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute("select count(*) + 1 as count from ContestInstance;")
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_contest_by_id(self, ContestNR: str) -> dict:
+        """returns a dict of ContestInstance"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select * from ContestInstance where ContestNR='{ContestNR}';"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def add_contest(self, contest: dict) -> None:
         """Add Contest"""
 
@@ -335,6 +362,18 @@ class DataBase:
                 conn.commit()
         except sqlite3.Error as exception:
             logger.info("DataBase add_contest: %s", exception)
+
+    def fetch_all_contests(self) -> list:
+        """returns a list of dicts with contests in the database."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute("select * from ContestInstance;")
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return ()
 
     def log_contact(self, contact: dict) -> None:
         """
