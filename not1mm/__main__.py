@@ -265,6 +265,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_contest()
 
         self.cw = CW(1, "127.0.0.1", 6789)
+        # self.cw = CW(2, "127.0.0.1", 8000)
 
         self.read_cw_macros()
         self.clearinputs()
@@ -369,28 +370,56 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def open_contest(self):
         """Switch to a different existing contest in existing database."""
-        contests = self.database.fetch_all_contests()
-        if contests:
-            logger.debug("%s", f"{contests}")
         logger.debug("Open Contest selected")
-        self.contest_dialog = SelectContest(WORKING_PATH)
-        self.contest_dialog.contest_list.setColumnCount(4)
-        self.contest_dialog.contest_list.setHorizontalHeaderItem(
-            0, QtWidgets.QTableWidgetItem("Contest Name")
-        )
-        self.contest_dialog.contest_list.setHorizontalHeaderItem(
-            1, QtWidgets.QTableWidgetItem("Contest Name")
-        )
-        self.contest_dialog.contest_list.setHorizontalHeaderItem(
-            2, QtWidgets.QTableWidgetItem("Contest Name")
-        )
-        self.contest_dialog.contest_list.setHorizontalHeaderItem(
-            3, QtWidgets.QTableWidgetItem("Contest Name")
-        )
-        self.contest_dialog.accepted.connect(self.open_contest_return)
+        contests = self.database.fetch_all_contests()
+        logger.debug("%s", f"{contests}")
+
+        if contests:
+            self.contest_dialog = SelectContest(WORKING_PATH)
+            self.contest_dialog.contest_list.setRowCount(0)
+            self.contest_dialog.contest_list.setColumnCount(4)
+            self.contest_dialog.contest_list.verticalHeader().setVisible(False)
+            self.contest_dialog.contest_list.setColumnWidth(1, 200)
+            self.contest_dialog.contest_list.setColumnWidth(2, 200)
+            self.contest_dialog.contest_list.setHorizontalHeaderItem(
+                0, QtWidgets.QTableWidgetItem("Contest Nr")
+            )
+            self.contest_dialog.contest_list.setHorizontalHeaderItem(
+                1, QtWidgets.QTableWidgetItem("Contest Name")
+            )
+            self.contest_dialog.contest_list.setHorizontalHeaderItem(
+                2, QtWidgets.QTableWidgetItem("Contest Start")
+            )
+            self.contest_dialog.contest_list.setHorizontalHeaderItem(
+                3, QtWidgets.QTableWidgetItem("Not UIsed")
+            )
+            self.contest_dialog.contest_list.setColumnHidden(0, True)
+            self.contest_dialog.contest_list.setColumnHidden(3, True)
+            self.contest_dialog.accepted.connect(self.open_contest_return)
+            for contest in contests:
+                number_of_rows = self.contest_dialog.contest_list.rowCount()
+                self.contest_dialog.contest_list.insertRow(number_of_rows)
+                contest_id = str(contest.get("ContestID", 1))
+                contest_name = contest.get("ContestName", 1)
+                start_date = contest.get("StartDate", 1)
+                self.contest_dialog.contest_list.setItem(
+                    number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_id)
+                )
+                self.contest_dialog.contest_list.setItem(
+                    number_of_rows, 1, QtWidgets.QTableWidgetItem(contest_name)
+                )
+                self.contest_dialog.contest_list.setItem(
+                    number_of_rows, 2, QtWidgets.QTableWidgetItem(start_date)
+                )
+        self.contest_dialog.show()
 
     def open_contest_return(self):
         """Called by open_contest"""
+        selected_row = self.contest_dialog.contest_list.currentRow()
+        contest = self.contest_dialog.contest_list.item(selected_row, 0).text()
+        self.pref["contest"] = contest
+        logger.debug("Selected contest: %s", f"{contest}")
+        self.load_contest()
 
     def load_contest(self):
         """load a contest"""
