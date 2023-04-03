@@ -365,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
             first_item = QtWidgets.QTableWidgetItem(time_stamp)
             self.generalLog.setItem(number_of_rows, 0, first_item)
             self.generalLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
-            self.generalLog.item(number_of_rows, 0).setTextAlignment(0x0004)
+            self.generalLog.item(number_of_rows, 0).setTextAlignment(0x0004 | 0x0080)
 
             self.generalLog.setItem(
                 number_of_rows,
@@ -479,7 +479,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.focusedLog.setItem(number_of_rows, 0, first_item)
             self.focusedLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
             try:
-                self.focusedLog.item(number_of_rows, 0).setTextAlignment(0x0004)
+                self.focusedLog.item(number_of_rows, 0).setTextAlignment(
+                    0x0004 | 0x0080
+                )
             except AttributeError:
                 ...
             self.focusedLog.setItem(
