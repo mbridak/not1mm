@@ -59,10 +59,12 @@ Feature complete.
 
 ## Changes of note
 
-- [23-4-3] Added dialog to select from defined contests in the active database.
+- [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging type.
 
 <details>
+
 <summary>March 2023</summary>
+
 - [23-3-31] Now saving station settings in the contest database.
 - [23-3-30] Added Open new and Open existing database
 - [23-3-29] Added a new contest dialog.
@@ -81,8 +83,11 @@ Feature complete.
 - [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
 - [23-3-7] Changed dxlog table column names.
 - [23-3-1] Add shift tab for field movement.
+
 </details>
+
 <details>
+
 <summary>February 2023</summary>
 
 - [23-2-23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
