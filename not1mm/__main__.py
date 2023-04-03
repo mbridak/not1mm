@@ -259,6 +259,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station = self.database.fetch_station()
         if self.station is None:
             self.station = {}
+            self.edit_station_settings()
+            self.station = self.database.fetch_station()
+            if self.station is None:
+                self.station = {}
         self.contact = self.database.empty_contact
         self.current_op = self.station.get("Call", "")
         if self.pref.get("contest"):
@@ -269,7 +273,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.read_cw_macros()
         self.clearinputs()
-        self.launch_log_window()
+        # self.launch_log_window()
 
         self.rig_control = None
         local_flrig = self.check_process("flrig")
@@ -697,6 +701,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contact["Mode"] = self.radio_state.get("mode", "")
         self.contact["ContestName"] = self.contest.cabrillo_name
+        self.contact["ContestNR"] = self.pref.get("contest", "0")
         self.contact["StationPrefix"] = self.station.get("Call", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
@@ -736,7 +741,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         # self.contact["Exchange1"]
         # self.contact["RadioNR"]
-        # self.contact["ContestNR"]
         # self.contact["isMultiplier3"]
         # self.contact["MiscText"]
         # self.contact["ContactType"]
@@ -876,6 +880,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station["Email"] = self.settings_dialog.Email.text()
         self.database.add_station(self.station)
         self.settings_dialog.close()
+        contest_count = self.database.fetch_all_contests()
+        if len(contest_count) == 0:
+            self.new_contest_dialog()
 
     def edit_macro(self, function_key):
         """Show edit macro dialog"""
