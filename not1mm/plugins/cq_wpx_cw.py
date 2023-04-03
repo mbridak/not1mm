@@ -268,6 +268,8 @@ def cabrillo(self):
     """Generates Cabrillo file. Maybe."""
     # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
+    logger.debug("Station: %s", f"{self.station}")
+    logger.debug("Contest: %s", f"{self.contest_settings}")
     filename = (
         str(Path.home())
         + "/"
@@ -303,19 +305,51 @@ def cabrillo(self):
             #     end="\r\n",
             #     file=file_descriptor,
             # )
-            # CATEGORY-OPERATOR: SINGLE-OP
-            # CATEGORY-ASSISTED: NON-ASSISTED
-            # CATEGORY-BAND: ALL
-            # CATEGORY-MODE: SSB
-            # CATEGORY-TRANSMITTER: ONE
-            # CATEGORY-OVERLAY: CLASSIC
-            # GRID-LOCATOR: DM13at
             print(
-                f"CATEGORY: {None}",
+                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory','')}",
                 end="\r\n",
                 file=file_descriptor,
             )
-            print("CATEGORY-POWER: ", end="\r\n", file=file_descriptor)
+            print(
+                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CATEGORY-MODE: {self.contest_settings.get('ModeCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            print(
+                f"GRID-LOCATOR: {self.station.get('GridSquare','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
+            # print(
+            #     f"CATEGORY: {None}",
+            #     end="\r\n",
+            #     file=file_descriptor,
+            # )
+            print(
+                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory','')}",
+                end="\r\n",
+                file=file_descriptor,
+            )
 
             print(
                 f"CLAIMED-SCORE: {calc_score(self)}",
