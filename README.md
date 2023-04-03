@@ -18,7 +18,8 @@
     - [Config](#config)
   - [Adding a database](#adding-a-database)
   - [Station Settings dialog](#station-settings-dialog)
-  - [Adding a contest (This doesn't work yet)](#adding-a-contest-this-doesnt-work-yet)
+  - [Adding a contest](#adding-a-contest)
+  - [Selecting an added contest as the current contest](#selecting-an-added-contest-as-the-current-contest)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing function key macros](#editing-function-key-macros)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
@@ -58,6 +59,10 @@ Feature complete.
 
 ## Changes of note
 
+- [23-4-3] Added dialog to select from defined contests in the active database.
+
+<details>
+<summary>March 2023</summary>
 - [23-3-31] Now saving station settings in the contest database.
 - [23-3-30] Added Open new and Open existing database
 - [23-3-29] Added a new contest dialog.
@@ -76,7 +81,7 @@ Feature complete.
 - [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
 - [23-3-7] Changed dxlog table column names.
 - [23-3-1] Add shift tab for field movement.
-
+</details>
 <details>
 <summary>February 2023</summary>
 
@@ -143,11 +148,17 @@ You can fill. You can fill. Everyone look at your keys.
 
 **I forgot my hat today**.
 
-## Adding a contest (This doesn't work yet)
+## Adding a contest
 
 Select `File` > `New Contest`
 
 ![New Contest Dialog](https://github.com/mbridak/not1mm/raw/master/pic/new_contest.png)
+
+## Selecting an added contest as the current contest
+
+Select `File` > `Open Contest`
+
+![Open an existing contest](https://github.com/mbridak/not1mm/raw/master/pic/select_contest.png)
 
 ## Hiding screen elements
 
