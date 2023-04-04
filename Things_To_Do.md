@@ -1,7 +1,6 @@
 # Things needed
 
-- ~~~Add a create new database.~~~
-- ~~~Add a Select database.~~~
-- ~~~need to add dropdown with available contests.~~~
-- have logging window columns dynamically chosen.
+- Have logging window columns dynamically chosen.
+- Have logging window only show contacts matching current contest Nr.
 - Voice keying.
+- Hide unused Mode/Band indicators.
