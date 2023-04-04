@@ -436,6 +436,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contest = doimp(self.contest_settings.get("ContestName"))
                 logger.debug("Loaded Contest Name = %s", self.contest.name)
                 self.contest.init_contest(self)
+                self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
+
+    def hide_band_mode(self, the_mode: str) -> None:
+        """hide"""
+        logger.debug("%s", f"{the_mode}")
+        self.Band_Mode_Frame_CW.hide()
+        self.Band_Mode_Frame_SSB.hide()
+        self.Band_Mode_Frame_RTTY.hide()
+        modes = {
+            "CW": (self.Band_Mode_Frame_CW),
+            "SSB": (self.Band_Mode_Frame_SSB),
+            "RTTY": (self.Band_Mode_Frame_RTTY),
+            "PSK": (self.Band_Mode_Frame_RTTY),
+            "SSB+CW": (self.Band_Mode_Frame_CW, self.Band_Mode_Frame_SSB),
+            "DIGITAL": (self.Band_Mode_Frame_RTTY),
+            "SSB+CW+DIGITAL": (
+                self.Band_Mode_Frame_RTTY,
+                self.Band_Mode_Frame_CW,
+                self.Band_Mode_Frame_SSB,
+            ),
+            "FM": (self.Band_Mode_Frame_SSB),
+        }
+        frames = modes.get(the_mode)
+        if frames:
+            for frame in frames:
+                frame.show()
 
     def filepicker(self, action: str) -> str:
         """
@@ -1521,7 +1547,7 @@ logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d: %(message)s",
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
