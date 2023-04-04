@@ -126,7 +126,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "lookuppassword": "password",
         "run_state": True,
         "dark_mode": False,
-        "command_buttons": True,
+        "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
         "window_height": 200,
@@ -880,6 +880,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station["Email"] = self.settings_dialog.Email.text()
         self.database.add_station(self.station)
         self.settings_dialog.close()
+        if self.current_op == "":
+            self.current_op = self.station.get("Call", "")
         contest_count = self.database.fetch_all_contests()
         if len(contest_count) == 0:
             self.new_contest_dialog()
