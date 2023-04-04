@@ -20,6 +20,8 @@ logger = logging.getLogger("__main__")
 class DataBase:
     """Database class for our database."""
 
+    current_contest = 1
+
     def __init__(self, database: str, working_path: str):
         """initializes DataBase instance"""
         logger.debug("Database: %s", database)
@@ -438,7 +440,9 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                cursor.execute("select * from dxlog order by TS ASC;")
+                cursor.execute(
+                    f"select * from dxlog where ContestNR = {self.current_contest} order by TS ASC;"
+                )
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -450,7 +454,9 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                cursor.execute("select * from dxlog order by ts desc;")
+                cursor.execute(
+                    f"select * from dxlog where ContestNR = {self.current_contest} order by ts desc;"
+                )
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -486,7 +492,7 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    "select count(DISTINCT WPXPrefix) as wpx_count from dxlog;"
+                    f"select count(DISTINCT WPXPrefix) as wpx_count from dxlog and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -500,7 +506,7 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select count(*) as wpx_count from dxlog where WPXPrefix = '{wpx}';"
+                    f"select count(*) as wpx_count from dxlog where WPXPrefix = '{wpx}' and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -514,7 +520,7 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select count(*) as wpx_count from dxlog where  TS < '{time_stamp}' and WPXPrefix = '{wpx}';"
+                    f"select count(*) as wpx_count from dxlog where  TS < '{time_stamp}' and WPXPrefix = '{wpx}' and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -527,11 +533,8 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                print(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}';"
-                )
                 cursor.execute(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}';"
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}' and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -544,11 +547,8 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                print(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Band = '{band}';"
-                )
                 cursor.execute(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Band = '{band}';"
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Band = '{band}' and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -561,9 +561,8 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                print(f"select count(*) as isdupe from dxlog where Call = '{call}';")
                 cursor.execute(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}';"
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -576,7 +575,9 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                cursor.execute("select sum(Points) as Points from dxlog;")
+                cursor.execute(
+                    f"select sum(Points) as Points from dxlog where ContestNR = {self.current_contest};"
+                )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -588,7 +589,9 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                cursor.execute("select count(*) as qsos from dxlog;")
+                cursor.execute(
+                    f"select count(*) as qsos from dxlog where ContestNR = {self.current_contest};"
+                )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -601,7 +604,7 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select * from dxlog where call like '%{call}%' order by TS ASC;"
+                    f"select * from dxlog where call like '%{call}%' and ContestNR = {self.current_contest} order by TS ASC;"
                 )
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
@@ -614,7 +617,9 @@ class DataBase:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
-                cursor.execute("select max(SentNR) + 1 as serial_nr from DXLOG;")
+                cursor.execute(
+                    f"select max(SentNR) + 1 as serial_nr from DXLOG where ContestNR = {self.current_contest};"
+                )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
