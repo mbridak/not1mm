@@ -143,8 +143,8 @@ class CAT:
                 self.online = True
                 self.rigctrlsocket.send(b"m\n")
                 mode = self.rigctrlsocket.recv(1024).decode()
-                logger.debug("%s", mode)
                 mode = mode.strip().split()[0]
+                logger.debug("%s", mode)
                 return mode
             except IndexError as exception:
                 logger.debug("%s", exception)
