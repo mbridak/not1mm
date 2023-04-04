@@ -129,16 +129,17 @@ def adif(self):
             print("<EOH>", end="\r\n", file=file_descriptor)
             for contact in log:
                 hiscall = contact.get("Call", "")
+                hisname = contact.get("Name", "")
                 the_date_and_time = contact.get("TS")
                 # band = contact.get("Band")
                 themode = contact.get("Mode")
                 frequency = str(contact.get("Freq", 0) / 1000)
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
-                sentnr = str(contact.get("SentNr", "59"))
-                rcvnr = str(contact.get("NR", "59"))
+                sentnr = str(contact.get("SentNr", "0"))
+                rcvnr = str(contact.get("NR", "0"))
                 grid = contact.get("GridSquare", "")
-                comment = contact.get("ContestName", "")
+                comment = contact.get("Comment", "")
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 print(
@@ -153,10 +154,16 @@ def adif(self):
                     file=file_descriptor,
                 )
                 print(
-                    f"<CALL:{len(hiscall)}>{hiscall}",
+                    f"<CALL:{len(hiscall)}>{hiscall.upper()}",
                     end="\r\n",
                     file=file_descriptor,
                 )
+                if len(hisname):
+                    print(
+                        f"<NAME:{len(hisname)}>{hisname.title()}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
                 print(
                     f"<MODE:{len(themode)}>{themode}", end="\r\n", file=file_descriptor
                 )
@@ -184,29 +191,30 @@ def adif(self):
                     end="\r\n",
                     file=file_descriptor,
                 )
-
-                print(
-                    f"<STX_STRING:{len(sentnr)}>{sentnr}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
+                if sentnr != "0":
+                    print(
+                        f"<STX_STRING:{len(sentnr)}>{sentnr}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                if rcvnr != "0":
+                    print(
+                        f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
                 if len(grid) > 1:
                     print(
                         f"<GRIDSQUARE:{len(grid)}>{grid}",
                         end="\r\n",
                         file=file_descriptor,
                     )
-
-                print(
-                    f"<COMMENT:{len(comment)}>{comment}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
+                if len(comment):
+                    print(
+                        f"<COMMENT:{len(comment)}>{comment}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
                 print("<EOR>", end="\r\n", file=file_descriptor)
                 print("", end="\r\n", file=file_descriptor)
     except IOError:
