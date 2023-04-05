@@ -104,8 +104,7 @@ def getband(freq: str) -> str:
             return "222"
         if 450000000 > frequency > 420000000:
             return "432"
-    else:
-        return "0"
+    return "0"
 
 
 def get_logged_band(freq: str) -> str:
@@ -114,7 +113,7 @@ def get_logged_band(freq: str) -> str:
     Returns a (string) band.
     Returns a "0" if frequency is out of band.
     """
-    # logger.info("getband: %s %s", type(freq), freq)
+
     if freq.isnumeric():
         frequency = int(float(freq))
         if 2000000 > frequency > 1800000:
@@ -145,8 +144,7 @@ def get_logged_band(freq: str) -> str:
             return "222"
         if 450000000 > frequency > 420000000:
             return "430"
-    else:
-        return "0"
+    return "0"
 
 
 def fakefreq(band, mode):
