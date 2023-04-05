@@ -422,6 +422,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.contest_dialog.contest_list.currentRow()
         contest = self.contest_dialog.contest_list.item(selected_row, 0).text()
         self.pref["contest"] = contest
+        self.write_preference()
         logger.debug("Selected contest: %s", f"{contest}")
         self.load_contest()
 
@@ -437,6 +438,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("Loaded Contest Name = %s", self.contest.name)
                 self.contest.init_contest(self)
                 self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
+            cmd = {}
+            cmd["cmd"] = "NEWDB"
+            self.multicast_interface.send_as_json(cmd)
 
     def hide_band_mode(self, the_mode: str) -> None:
         """hide"""
@@ -445,18 +449,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Band_Mode_Frame_SSB.hide()
         self.Band_Mode_Frame_RTTY.hide()
         modes = {
-            "CW": (self.Band_Mode_Frame_CW),
-            "SSB": (self.Band_Mode_Frame_SSB),
-            "RTTY": (self.Band_Mode_Frame_RTTY),
-            "PSK": (self.Band_Mode_Frame_RTTY),
+            "CW": (self.Band_Mode_Frame_CW,),
+            "SSB": (self.Band_Mode_Frame_SSB,),
+            "RTTY": (self.Band_Mode_Frame_RTTY,),
+            "PSK": (self.Band_Mode_Frame_RTTY,),
             "SSB+CW": (self.Band_Mode_Frame_CW, self.Band_Mode_Frame_SSB),
-            "DIGITAL": (self.Band_Mode_Frame_RTTY),
+            "DIGITAL": (self.Band_Mode_Frame_RTTY,),
             "SSB+CW+DIGITAL": (
                 self.Band_Mode_Frame_RTTY,
                 self.Band_Mode_Frame_CW,
                 self.Band_Mode_Frame_SSB,
             ),
-            "FM": (self.Band_Mode_Frame_SSB),
+            "FM": (self.Band_Mode_Frame_SSB,),
         }
         frames = modes.get(the_mode)
         if frames:
