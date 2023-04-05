@@ -2,7 +2,14 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable
 
+import logging
+
+from pathlib import Path
 from PyQt5 import QtWidgets
+
+from not1mm.lib.version import __version__
+
+logger = logging.getLogger("__main__")
 
 name = "ARRL Field Day"
 mode = "BOTH"  # CW SSB BOTH RTTY
@@ -68,6 +75,10 @@ def set_tab_prev(self):
 
 def set_contact_vars(self):
     """Contest Specific"""
+    self.contact["SNT"] = self.sent.text()
+    self.contact["RCV"] = self.receive.text()
+    self.contact["Exchange1"] = self.other_1.text()
+    self.contact["Sect"] = self.other_2.text()
 
 
 def prefill(self):
@@ -76,10 +87,20 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+    _mode = self.contact.get("Mode", "")
+    if _mode in "SSB, USB, LSB":
+        return 1
+    if _mode in "CW, RTTY":
+        return 2
+    return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
+    result = self.database.get_unique_band_and_mode()
+    if result:
+        return int(result.get("mult", 0))
+    return 0
 
 
 def show_qso(self):
@@ -100,13 +121,109 @@ def get_points(self):
 
 def calc_score(self):
     """Return calculated score"""
-    result = self.database.fetch_points()
+    _points = get_points(self)
+    _mults = show_mults(self)
+    return _points * _mults
 
 
 def adif(self):
     """
     Creates an ADIF file of the contacts made.
     """
+    filename = (
+        str(Path.home())
+        + "/"
+        + f"{self.station.get('Call').upper()}_{cabrillo_name}.adi"
+    )
+    log = self.database.fetch_all_contacts_asc()
+    try:
+        with open(filename, "w", encoding="utf-8") as file_descriptor:
+            print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
+            print("<EOH>", end="\r\n", file=file_descriptor)
+            for contact in log:
+                hiscall = contact.get("Call", "")
+                the_date_and_time = contact.get("TS")
+                # band = contact.get("Band")
+                themode = contact.get("Mode")
+                frequency = str(contact.get("Freq", 0) / 1000)
+                sentrst = contact.get("SNT", "")
+                rcvrst = contact.get("RCV", "")
+                sentnr = self.contest_settings.get("SentExchange", "")
+                rcvnr = f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
+                grid = contact.get("GridSquare", "")
+                comment = contact.get("ContestName", "")
+                loggeddate = the_date_and_time[:10]
+                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+                print(
+                    f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>"
+                    f"{''.join(loggeddate.split('-'))}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"<CALL:{len(hiscall)}>{hiscall}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"<MODE:{len(themode)}>{themode}", end="\r\n", file=file_descriptor
+                )
+                # print(
+                #     f"<BAND:{len(band + 'M')}>{band + 'M'}",
+                #     end="\r\n",
+                #     file=file_descriptor,
+                # )
+                try:
+                    print(
+                        f"<FREQ:{len(frequency)}>{frequency}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                except TypeError:
+                    pass  # This is bad form... I can't remember why this is in a try block
+
+                print(
+                    f"<RST_SENT:{len(sentrst)}>{sentrst}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"<RST_RCVD:{len(rcvrst)}>{rcvrst}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+
+                print(
+                    f"<STX_STRING:{len(sentnr)}>{sentnr}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print(
+                    f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                if len(grid) > 1:
+                    print(
+                        f"<GRIDSQUARE:{len(grid)}>{grid}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+
+                print(
+                    f"<COMMENT:{len(comment)}>{comment}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
+                print("<EOR>", end="\r\n", file=file_descriptor)
+                print("", end="\r\n", file=file_descriptor)
+    except IOError:
+        ...
 
 
 def cabrillo(self):
