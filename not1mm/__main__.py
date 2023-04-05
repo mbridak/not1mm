@@ -716,7 +716,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_contact(self):
         """Save to db"""
-        logger.debug("saving")
+        logger.debug("saving contact")
         if len(self.callsign.text()) < 3:
             return
         if not any(char.isdigit() for char in self.callsign.text()):
