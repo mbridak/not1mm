@@ -42,8 +42,8 @@ def interface(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
+        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
         self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
@@ -61,12 +61,8 @@ def set_tab_prev(self):
     self.tab_prev = {
         self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
         self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
         self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
@@ -77,8 +73,8 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["Exchange1"] = self.other_1.text()
-    self.contact["Sect"] = self.other_2.text()
+    self.contact["Exchange1"] = self.other_1.text().upper()
+    self.contact["Sect"] = self.other_2.text().upper()
 
 
 def prefill(self):
