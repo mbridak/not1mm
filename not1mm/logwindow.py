@@ -69,6 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_pref()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
+        self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
         data_path = WORKING_PATH + "/data/logwindow.ui"
         uic.loadUi(data_path, self)
@@ -190,6 +191,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_pref()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
+        self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
         self.get_log()
         self.setWindowTitle(
