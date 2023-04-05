@@ -628,3 +628,17 @@ class DataBase:
     def get_empty(self) -> dict:
         """Return a dictionary object with keys and no values."""
         return self.empty_contact
+
+    def get_unique_band_and_mode(self) -> dict:
+        """get count of unique band and mode as {mult: x}"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select DISTINCT band, mode, count(*) as mult from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
