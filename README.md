@@ -37,7 +37,7 @@
 Not1MM's interface is a blantent ripoff of N1MM.
 It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
 
-If you use Windows(tm) you should run their, or some other, program.
+If you use Windows(tm) you should run away from this and use someother program.
 
 I personally don't. While it may be possible to get N1MM working under Wine, I haven't checked, I'd rather not have to jump thru the hoops.
 
@@ -47,13 +47,13 @@ While I'm not watching TV, Right vs Left political 'News' programs, mind numbing
 
 ## What it is not
 
-Working.
+Fully working.
 
-The current state is "**Not Working**". I literally just dragged some widgets out on a Qt Designer window, and wrote a couple stubs to display the interface. Next to nothing is working or useful.
+The current state is "**ALPHA**". I've used it for CQ WPX SSB, and was able to work about 40 contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
 
 ## What it probably never will be
 
-Feature complete.
+Feature complete. I'm only one guy, and I'm not what you'd consider to be a contester. So new contests will be sparse.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
