@@ -199,6 +199,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionNew_Database.triggered.connect(self.new_database)
         self.actionOpen_Database.triggered.connect(self.open_database)
 
+        self.actionEdit_CW_Macros.triggered.connect(self.edit_cw_macros)
+
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -1432,6 +1434,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.radio_state["mode"] = mode
                 # logger.debug("VFO: %s  MODE: %s", vfo, mode)
                 self.set_window_title()
+
+    def edit_cw_macros(self) -> None:
+        """
+        Calls the default text editor to edit the CW macro file.
+        """
+        if not Path(DATA_PATH + "/cwmacros.txt").exists():
+            logger.debug("read_cw_macros: copying default macro file.")
+            copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
+        os.system(f"xdg-open {DATA_PATH}/cwmacros.txt")
+        self.read_cw_macros()
 
     def read_cw_macros(self) -> None:
         """

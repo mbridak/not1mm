@@ -21,7 +21,8 @@
   - [Adding a contest](#adding-a-contest)
   - [Selecting an added contest as the current contest](#selecting-an-added-contest-as-the-current-contest)
   - [Hiding screen elements](#hiding-screen-elements)
-  - [Editing function key macros](#editing-function-key-macros)
+  - [Editing current sessions function key macros](#editing-current-sessions-function-key-macros)
+  - [Editing macro keys (Persistent)](#editing-macro-keys-persistent)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
@@ -59,7 +60,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros.
+- [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
 - [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
 - [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
 - [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging contest type. Added other Cabrillo tags.
@@ -176,9 +177,9 @@ You can show or hide certain buttons/indicators by checking and unchecking their
 
 The your choices will be remembered when you relaunch the program.
 
-## Editing function key macros
+## Editing current sessions function key macros
 
-You can edit the CW macros by right clicking on the buttons and filling out the dialog.
+You can edit the CW macros for the current session by right clicking on the buttons and filling out the dialog.
 ![Edit Macro](https://github.com/mbridak/not1mm/raw/master/pic/edit_macro.png)
 
 You can include a limited set of substitution instructions.
@@ -186,7 +187,11 @@ You can include a limited set of substitution instructions.
 - {MYCALL} Sends the station call.
 - {HISCALL} Send what's in the callsign field.
 - {SNT} Sends 5nn
-- {SENTNR} Sends whats in the SentNR field. 
+- {SENTNR} Sends whats in the SentNR field.
+
+## Editing macro keys (Persistent)
+
+To edit the macros in a more persistent way. Choose `File` > `Edit CW Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The logger will then reload the macros. This will persist across until you change them again.
 
 ## cty.dat and QRZ lookups for distance and bearing
 

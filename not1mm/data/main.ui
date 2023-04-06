@@ -1024,6 +1024,7 @@
     <addaction name="actionStationSettings"/>
     <addaction name="actionQRZ_Settings"/>
     <addaction name="separator"/>
+    <addaction name="actionEdit_CW_Macros"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1199,6 +1200,11 @@
   <action name="actionOpen_Contest">
    <property name="text">
     <string>Open Contest</string>
+   </property>
+  </action>
+  <action name="actionEdit_CW_Macros">
+   <property name="text">
+    <string>Edit CW Macros</string>
    </property>
   </action>
  </widget>
