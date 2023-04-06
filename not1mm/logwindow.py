@@ -119,9 +119,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setColumnWidth(14, 50)
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
-        self.generalLog.setColumnHidden(11, True)
-        self.generalLog.setColumnHidden(12, True)
-        self.generalLog.setColumnHidden(13, True)
+        # self.generalLog.setColumnHidden(11, True)
+        # self.generalLog.setColumnHidden(12, True)
+        # self.generalLog.setColumnHidden(13, True)
         self.generalLog.setColumnHidden(15, True)
 
         self.focusedLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -163,9 +163,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.focusedLog.setColumnWidth(14, 50)
         # self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         # self.focusedLog.cellChanged.connect(self.cell_changed)
-        self.focusedLog.setColumnHidden(11, True)
-        self.focusedLog.setColumnHidden(12, True)
-        self.focusedLog.setColumnHidden(13, True)
+        # self.focusedLog.setColumnHidden(11, True)
+        # self.focusedLog.setColumnHidden(12, True)
+        # self.focusedLog.setColumnHidden(13, True)
         self.focusedLog.setColumnHidden(15, True)
         self.get_log()
         self.multicast_interface = Multicast(
@@ -372,6 +372,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def get_log(self):
         """Get Log, Show it."""
+
+        """
+            The horizontal flags are:
+
+            Constant	Value	Description
+            Qt::AlignLeft	0x0001	Aligns with the left edge.
+            Qt::AlignRight	0x0002	Aligns with the right edge.
+            Qt::AlignHCenter	0x0004	Centers horizontally in the available space.
+            Qt::AlignJustify	0x0008	Justifies the text in the available space.
+            
+            The vertical flags are:
+
+            Constant	Value	Description
+            Qt::AlignTop	0x0020	Aligns with the top.
+            Qt::AlignBottom	0x0040	Aligns with the bottom.
+            Qt::AlignVCenter	0x0080	Centers vertically in the available space.
+            Qt::AlignBaseline	0x0100	Aligns with the baseline.
+        """
         self.generalLog.cellChanged.connect(self.dummy)
         self.table_loading = True
         current_log = self.database.fetch_all_contacts_asc()
