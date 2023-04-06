@@ -59,6 +59,7 @@ Feature complete.
 
 ## Changes of note
 
+- [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros.
 - [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
 - [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
 - [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging contest type. Added other Cabrillo tags.
@@ -179,6 +180,13 @@ The your choices will be remembered when you relaunch the program.
 
 You can edit the CW macros by right clicking on the buttons and filling out the dialog.
 ![Edit Macro](https://github.com/mbridak/not1mm/raw/master/pic/edit_macro.png)
+
+You can include a limited set of substitution instructions.
+
+- {MYCALL} Sends the station call.
+- {HISCALL} Send what's in the callsign field.
+- {SNT} Sends 5nn
+- {SENTNR} Sends whats in the SentNR field. 
 
 ## cty.dat and QRZ lookups for distance and bearing
 
