@@ -1001,6 +1001,8 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.upper()
         macro = macro.replace("{MYCALL}", self.station.get("Call"))
         macro = macro.replace("{HISCALL}", self.callsign.text())
+        macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))  # FIXME
+        macro = macro.replace("{SENTNR}", self.other_1.text())
         return macro
 
     def sendf1(self):
