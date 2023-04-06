@@ -327,14 +327,14 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
-    def fetch_contest_by_id(self, ContestNR: str) -> dict:
+    def fetch_contest_by_id(self, contest_nr: str) -> dict:
         """returns a dict of ContestInstance"""
         try:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select * from ContestInstance where ContestNR='{ContestNR}';"
+                    f"select * from ContestInstance where ContestNR='{contest_nr}';"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -485,14 +485,62 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
-    def fetch_wpx_count(self) -> dict:
-        """returns a list of dicts with last contact in the database."""
+    def fetch_nr_count(self) -> dict:
+        """
+        returns dict with count of unique NR.
+        {nr_count: count}
+        """
         try:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select count(DISTINCT WPXPrefix) as wpx_count from dxlog and ContestNR = {self.current_contest};"
+                    f"select count(DISTINCT NR) as nr_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_nr_exists(self, number) -> dict:
+        """returns a dict key of nr_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as nr_count from dxlog where NR = '{number}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_nr_exists_before_me(self, number, time_stamp) -> dict:
+        """returns a dict key of nr_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as nr_count from dxlog where  TS < '{time_stamp}' and NR = '{number}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_wpx_count(self) -> dict:
+        """
+        returns dict with count of unique WPXPrefix.
+        {wpx_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT WPXPrefix) as wpx_count from dxlog where ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
