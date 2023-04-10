@@ -20,6 +20,7 @@
   - [Station Settings dialog](#station-settings-dialog)
   - [Adding a contest](#adding-a-contest)
   - [Selecting an added contest as the current contest](#selecting-an-added-contest-as-the-current-contest)
+  - [Configuration Settings](#configuration-settings)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing current sessions function key macros](#editing-current-sessions-function-key-macros)
   - [Editing macro keys (Persistent)](#editing-macro-keys-persistent)
@@ -61,6 +62,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
 - [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
 - [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
 - [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
@@ -170,6 +172,12 @@ Select `File` > `Open Contest`
 
 ![Open an existing contest](https://github.com/mbridak/not1mm/raw/master/pic/select_contest.png)
 
+## Configuration Settings
+
+Select `File` > `Configuration Settings`
+
+![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_settings.png)
+
 ## Hiding screen elements
 
 You can show or hide certain buttons/indicators by checking and unchecking their boxes under the view menu. You can then resize the screen to make it more compact.
@@ -265,8 +273,8 @@ Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
 
 ## CAT
 
-Added rudimentary check for running instance of flrig or rigctld. It will connect to whichever it finds first.
+Go to `File` > `Configuration Settings`, You will find a `CAT` tab to accept your configutaion.
 
 ## CW Keyer interface
 
-It currently just connects to an already running instance of cwdaemon.
+Go to `File` > `Configuration Settings`, You will find a `CW` tab to accept your configutaion.
