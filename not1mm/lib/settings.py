@@ -1,8 +1,6 @@
 """Settings Dialog Class"""
 
 import logging
-import os
-import pkgutil
 from json import dumps, loads
 from PyQt5 import QtWidgets, uic
 
@@ -22,63 +20,49 @@ class Settings(QtWidgets.QDialog):
 
     def setup(self):
         """setup dialog"""
-        with open(
-            self.config_path + "/not1mm.json", "rt", encoding="utf-8"
-        ) as file_descriptor:
-            self.preference = loads(file_descriptor.read())
-            self.logger.info("reading: %s", self.preference)
-            self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
-            self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
-            self.usehamqth_radioButton.setChecked(
-                bool(self.preference.get("usehamqth"))
-            )
-            self.lookup_user_name_field.setText(
-                str(self.preference.get("lookupusername", ""))
-            )
-            self.lookup_password_field.setText(
-                str(self.preference.get("lookuppassword", ""))
-            )
-            self.cloudlogapi_field.setText(str(self.preference.get("cloudlogapi", "")))
-            self.cloudlogurl_field.setText(str(self.preference.get("cloudlogurl", "")))
-            self.rigcontrolip_field.setText(str(self.preference.get("CAT_ip", "")))
-            self.rigcontrolport_field.setText(str(self.preference.get("CAT_port", "")))
-            self.usecloudlog_checkBox.setChecked(bool(self.preference.get("cloudlog")))
-            self.userigctld_radioButton.setChecked(
-                bool(self.preference.get("userigctld"))
-            )
-            self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
-            self.cwip_field.setText(str(self.preference.get("cwip", "")))
-            self.cwport_field.setText(str(self.preference.get("cwport", "")))
-            self.usecwdaemon_radioButton.setChecked(
-                bool(self.preference.get("cwtype") == 1)
-            )
-            self.usepywinkeyer_radioButton.setChecked(
-                bool(self.preference.get("cwtype") == 2)
-            )
-            self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
-            self.multicast_group.setText(
-                str(self.preference.get("multicast_group", ""))
-            )
-            self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
-            self.interface_ip.setText(str(self.preference.get("interface_ip", "")))
+        self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
+        self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
+        self.usehamqth_radioButton.setChecked(bool(self.preference.get("usehamqth")))
+        self.lookup_user_name_field.setText(
+            str(self.preference.get("lookupusername", ""))
+        )
+        self.lookup_password_field.setText(
+            str(self.preference.get("lookuppassword", ""))
+        )
+        self.cloudlogapi_field.setText(str(self.preference.get("cloudlogapi", "")))
+        self.cloudlogurl_field.setText(str(self.preference.get("cloudlogurl", "")))
+        self.rigcontrolip_field.setText(str(self.preference.get("CAT_ip", "")))
+        self.rigcontrolport_field.setText(str(self.preference.get("CAT_port", "")))
+        self.usecloudlog_checkBox.setChecked(bool(self.preference.get("cloudlog")))
+        self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
+        self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
-            self.send_n1mm_packets.setChecked(
-                bool(self.preference.get("send_n1mm_packets"))
-            )
-            self.n1mm_station_name.setText(
-                str(self.preference.get("n1mm_station_name", ""))
-            )
-            self.n1mm_operator.setText(str(self.preference.get("n1mm_operator", "")))
-            self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
-            self.n1mm_radioport.setText(str(self.preference.get("n1mm_radioport", "")))
-            self.n1mm_contactport.setText(
-                str(self.preference.get("n1mm_contactport", ""))
-            )
-            self.n1mm_lookupport.setText(
-                str(self.preference.get("n1mm_lookupport", ""))
-            )
-            self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
+        self.cwip_field.setText(str(self.preference.get("cwip", "")))
+        self.cwport_field.setText(str(self.preference.get("cwport", "")))
+        self.usecwdaemon_radioButton.setChecked(
+            bool(self.preference.get("cwtype") == 1)
+        )
+        self.usepywinkeyer_radioButton.setChecked(
+            bool(self.preference.get("cwtype") == 2)
+        )
+        self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
+        self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
+        self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
+        self.interface_ip.setText(str(self.preference.get("interface_ip", "")))
+
+        self.send_n1mm_packets.setChecked(
+            bool(self.preference.get("send_n1mm_packets"))
+        )
+        self.n1mm_station_name.setText(
+            str(self.preference.get("n1mm_station_name", ""))
+        )
+        self.n1mm_operator.setText(str(self.preference.get("n1mm_operator", "")))
+        self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
+        self.n1mm_radioport.setText(str(self.preference.get("n1mm_radioport", "")))
+        self.n1mm_contactport.setText(str(self.preference.get("n1mm_contactport", "")))
+        self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
+        self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
 
     def save_changes(self):
         """
@@ -123,13 +107,3 @@ class Settings(QtWidgets.QDialog):
         self.preference["n1mm_contactport"] = self.n1mm_contactport.text()
         self.preference["n1mm_lookupport"] = self.n1mm_lookupport.text()
         self.preference["n1mm_scoreport"] = self.n1mm_scoreport.text()
-
-        try:
-            self.logger.info("save_changes:")
-            with open(
-                "./fd_preferences.json", "wt", encoding="utf-8"
-            ) as file_descriptor:
-                file_descriptor.write(dumps(self.preference, indent=4))
-                self.logger.info("writing: %s", self.preference)
-        except IOError as exception:
-            self.logger.critical("save_changes: %s", exception)
