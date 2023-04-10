@@ -1,7 +1,6 @@
 """Settings Dialog Class"""
 
 import logging
-from json import dumps, loads
 from PyQt5 import QtWidgets, uic
 
 
