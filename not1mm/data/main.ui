@@ -1020,7 +1020,7 @@
     <addaction name="actionGenerate_Cabrillo"/>
     <addaction name="actionGenerate_ADIF"/>
     <addaction name="separator"/>
-    <addaction name="actionConnection_Settings"/>
+    <addaction name="actionConfiguration_Settings"/>
     <addaction name="actionStationSettings"/>
     <addaction name="actionQRZ_Settings"/>
     <addaction name="separator"/>
@@ -1152,9 +1152,9 @@
     </font>
    </property>
   </action>
-  <action name="actionConnection_Settings">
+  <action name="actionConfiguration_Settings">
    <property name="text">
-    <string>Connection Settings</string>
+    <string>Configuration Settings</string>
    </property>
    <property name="font">
     <font>

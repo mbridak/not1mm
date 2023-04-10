@@ -36,6 +36,7 @@ from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
 from not1mm.lib.select_contest import SelectContest
+from not1mm.lib.settings import Settings
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -162,6 +163,7 @@ class MainWindow(QtWidgets.QMainWindow):
     settings_dialog = None
     edit_macro_dialog = None
     contest_dialog = None
+    configuration_dialog = None
     opon_dialog = None
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
@@ -191,6 +193,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
 
+        self.actionConfiguration_Settings.triggered.connect(
+            self.edit_configuration_settings
+        )
         self.actionStationSettings.triggered.connect(self.edit_station_settings)
         self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
 
@@ -270,8 +275,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("contest"):
             self.load_contest()
 
-        self.cw = CW(1, "127.0.0.1", 6789)
-        # self.cw = CW(2, "127.0.0.1", 8000)
+        # if self.check_process("cwdaemon"):
+        #     self.cw = CW(1, "127.0.0.1", 6789)
+        # else:
+        self.cw = CW(2, "127.0.0.1", 8000)
 
         self.read_cw_macros()
         self.clearinputs()
@@ -329,6 +336,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
+
+    def edit_configuration_settings(self):
+        """Configuration Settings was clicked"""
+        self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
+        self.configuration_dialog.show()
 
     def new_database(self):
         """Create new database."""
@@ -936,7 +948,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_macro_dialog.the_macro.text()
         )
         self.edit_macro_dialog.close()
-        # logger.debug(f"{self.current_op}")
 
     def edit_F1(self):
         """stub"""
@@ -1003,7 +1014,7 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.upper()
         macro = macro.replace("{MYCALL}", self.station.get("Call"))
         macro = macro.replace("{HISCALL}", self.callsign.text())
-        macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))  # FIXME
+        macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
         macro = macro.replace("{SENTNR}", self.other_1.text())
         return macro
 

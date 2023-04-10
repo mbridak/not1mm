@@ -32,6 +32,7 @@
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
   - [CAT](#cat)
+  - [CW Keyer interface](#cw-keyer-interface)
 
 ## What and why is Not1MM
 
@@ -151,7 +152,7 @@ After initial run of the program or creating a new contact database you will nee
 
 ![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
 
-You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of yours.
+You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of mine.
 
 You can fill. You can fill. Everyone look at your keys.
 
@@ -180,6 +181,7 @@ The your choices will be remembered when you relaunch the program.
 ## Editing current sessions function key macros
 
 You can edit the CW macros for the current session by right clicking on the buttons and filling out the dialog.
+
 ![Edit Macro](https://github.com/mbridak/not1mm/raw/master/pic/edit_macro.png)
 
 You can include a limited set of substitution instructions.
@@ -264,3 +266,7 @@ Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
 ## CAT
 
 Added rudimentary check for running instance of flrig or rigctld. It will connect to whichever it finds first.
+
+## CW Keyer interface
+
+It currently just connects to an already running instance of cwdaemon.
