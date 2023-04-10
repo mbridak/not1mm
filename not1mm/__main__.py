@@ -341,6 +341,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """Configuration Settings was clicked"""
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
         self.configuration_dialog.show()
+        self.configuration_dialog.accepted.connect(self.edit_configuration_return)
+
+    def edit_configuration_return(self):
+        """Returns here when configuration dialog closed with okay."""
+        self.configuration_dialog.save_changes()
+        self.write_preference()
+        logger.debug("%s", f"{self.pref}")
 
     def new_database(self):
         """Create new database."""

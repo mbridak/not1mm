@@ -1022,7 +1022,6 @@
     <addaction name="separator"/>
     <addaction name="actionConfiguration_Settings"/>
     <addaction name="actionStationSettings"/>
-    <addaction name="actionQRZ_Settings"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_CW_Macros"/>
    </widget>
