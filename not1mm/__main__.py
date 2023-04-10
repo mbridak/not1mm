@@ -2,7 +2,7 @@
 """
 NOT1MM Logger
 """
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name
+# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
 import importlib
 import logging
@@ -29,6 +29,7 @@ from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
 from PyQt5.QtCore import QDir, QRect, QSize, Qt
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
 
+from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -173,6 +174,7 @@ class MainWindow(QtWidgets.QMainWindow):
     look_up = None
     run_state = False
     fkeys = {}
+    about_dialog = None
     qrz_dialog = None
     settings_dialog = None
     edit_macro_dialog = None
@@ -219,6 +221,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionOpen_Database.triggered.connect(self.open_database)
 
         self.actionEdit_CW_Macros.triggered.connect(self.edit_cw_macros)
+
+        self.actionAbout.triggered.connect(self.show_about_dialog)
 
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
@@ -333,6 +337,13 @@ class MainWindow(QtWidgets.QMainWindow):
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
+
+    def show_about_dialog(self):
+        """Show about dialog"""
+        self.about_dialog = About(WORKING_PATH)
+        if self.pref.get("dark_mode"):
+            self.about_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.about_dialog.open()
 
     def edit_configuration_settings(self):
         """Configuration Settings was clicked"""
