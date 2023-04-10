@@ -52,7 +52,7 @@ While I'm not watching TV, Right vs Left political 'News' programs, mind numbing
 
 Fully working.
 
-The current state is "**ALPHA**". I've used it for CQ WPX SSB, and was able to work about 40 contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
+The current state is "**ALPHA**". I've used it for CQ WPX SSB and JIDX CW, and was able to work contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
 
 ## What it probably never will be
 
