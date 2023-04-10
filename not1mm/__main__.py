@@ -12,7 +12,6 @@ import re
 import socket
 import subprocess
 
-# import sqlite3
 import sys
 import threading
 import uuid
@@ -54,9 +53,7 @@ from not1mm.lib.new_contest import NewContest
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.version import __version__
 
-# os.environ["QT_QPA_PLATFORM"] = "wayland"
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-# os.environ["QT_STYLE_OVERRIDE"] = "Fusion"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
