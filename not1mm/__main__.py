@@ -47,11 +47,10 @@ from not1mm.lib.ham_utility import (
     getband,
     reciprocol,
 )
-from not1mm.lib.lookup import QRZlookup
+from not1mm.lib.lookup import QRZlookup, HamDBlookup, HamQTH
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.new_contest import NewContest
 from not1mm.lib.n1mm import N1MM
-from not1mm.lib.qrz_dialog import UseQRZ
 from not1mm.lib.version import __version__
 
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
@@ -147,8 +146,22 @@ class MainWindow(QtWidgets.QMainWindow):
         "n1mm_contactport": 12061,
         "n1mm_lookupport": 12060,
         "n1mm_scoreport": 12062,
+        "usehamdb": False,
+        "usehamqth": False,
+        "cloudlog": False,
+        "cloudlogapi": "",
+        "cloudlogurl": "",
+        "CAT_ip": "127.0.0.1",
+        "userigctld": True,
+        "useflrig": False,
+        "cwip": "127.0.0.1",
+        "cwport": 6789,
+        "cwtype": 1,
+        "useserver": False,
+        "CAT_port": 4532,
     }
     appstarted = False
+    contact = {}
     contest = None
     contest_settings = {}
     pref = None
@@ -156,6 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_op = ""
     current_mode = ""
     current_band = ""
+    cw = None
     look_up = None
     run_state = False
     fkeys = {}
@@ -167,6 +181,7 @@ class MainWindow(QtWidgets.QMainWindow):
     opon_dialog = None
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
+    rig_control = None
     server_udp = None
     multicast_group = None
     multicast_port = None
@@ -197,7 +212,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_configuration_settings
         )
         self.actionStationSettings.triggered.connect(self.edit_station_settings)
-        self.actionQRZ_Settings.triggered.connect(self.qrz_preference_selected)
 
         self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
         self.actionOpen_Contest.triggered.connect(self.open_contest)
@@ -275,26 +289,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("contest"):
             self.load_contest()
 
-        # if self.check_process("cwdaemon"):
-        #     self.cw = CW(1, "127.0.0.1", 6789)
-        # else:
-        self.cw = CW(2, "127.0.0.1", 8000)
-
         self.read_cw_macros()
         self.clearinputs()
         # self.launch_log_window()
-
-        self.rig_control = None
-        local_flrig = self.check_process("flrig")
-        local_rigctld = self.check_process("rigctld")
-        if local_flrig:
-            logger.debug("Found flrig")
-            address, port = "localhost", "12345"
-            self.rig_control = CAT("flrig", address, int(port))
-        if local_rigctld:
-            logger.debug("Found rigctld")
-            address, port = "localhost", "4532"
-            self.rig_control = CAT("rigctld", address, int(port))
 
         self.band_indicators_cw = {
             "160": self.cw_band_160,
@@ -804,26 +801,26 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["NetworkedCompNr"]
         # self.contact["CLAIMEDQSO"]
 
-    def qrz_preference_selected(self):
-        """Show QRZ settings dialog"""
-        logger.debug("QRZ preference selected")
-        self.qrz_dialog = UseQRZ(WORKING_PATH)
-        self.qrz_dialog.accepted.connect(self.save_qrz_settings)
-        if self.pref.get("dark_mode"):
-            self.qrz_dialog.setStyleSheet(DARK_STYLESHEET)
-        self.qrz_dialog.useqrz.setChecked(self.pref.get("useqrz", False))
-        self.qrz_dialog.username.setText(self.pref.get("lookupusername", ""))
-        self.qrz_dialog.password.setText(self.pref.get("lookuppassword", ""))
-        self.qrz_dialog.open()
+    # def qrz_preference_selected(self):
+    #     """Show QRZ settings dialog"""
+    #     logger.debug("QRZ preference selected")
+    #     self.qrz_dialog = UseQRZ(WORKING_PATH)
+    #     self.qrz_dialog.accepted.connect(self.save_qrz_settings)
+    #     if self.pref.get("dark_mode"):
+    #         self.qrz_dialog.setStyleSheet(DARK_STYLESHEET)
+    #     self.qrz_dialog.useqrz.setChecked(self.pref.get("useqrz", False))
+    #     self.qrz_dialog.username.setText(self.pref.get("lookupusername", ""))
+    #     self.qrz_dialog.password.setText(self.pref.get("lookuppassword", ""))
+    #     self.qrz_dialog.open()
 
-    def save_qrz_settings(self):
-        """Save QRZ settings"""
-        self.pref["useqrz"] = self.qrz_dialog.useqrz.isChecked()
-        self.pref["lookupusername"] = self.qrz_dialog.username.text()
-        self.pref["lookuppassword"] = self.qrz_dialog.password.text()
-        self.qrz_dialog.close()
-        self.write_preference()
-        self.readpreferences()
+    # def save_qrz_settings(self):
+    #     """Save QRZ settings"""
+    #     self.pref["useqrz"] = self.qrz_dialog.useqrz.isChecked()
+    #     self.pref["lookupusername"] = self.qrz_dialog.username.text()
+    #     self.pref["lookuppassword"] = self.qrz_dialog.password.text()
+    #     self.qrz_dialog.close()
+    #     self.write_preference()
+    #     self.readpreferences()
 
     def new_contest_dialog(self):
         """Show new contest dialog"""
@@ -1177,6 +1174,65 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface = Multicast(
             multicast_group, multicast_port, interface_ip
         )
+
+        self.rig_control = None
+
+        if self.pref.get("useflrig", False):
+            logger.debug(
+                "Using flrig: %s",
+                f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+            )
+            self.rig_control = CAT(
+                "flrig",
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 12345)),
+            )
+        if self.pref.get("userigctld", False):
+            logger.debug(
+                "Using rigctld: %s",
+                f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+            )
+            self.rig_control = CAT(
+                "rigctld",
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 4532)),
+            )
+
+        # if self.preference["useqrz"]:
+        #     self.look_up = QRZlookup(
+        #         self.preference["lookupusername"], self.preference["lookuppassword"]
+        #     )
+        #     self.callbook_icon.setText("QRZ")
+        #     if self.look_up.session:
+        #         self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+        #     else:
+        #         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
+
+        # if self.preference["usehamdb"]:
+        #     self.look_up = HamDBlookup()
+        #     self.callbook_icon.setText("HamDB")
+        #     self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+
+        # if self.preference["usehamqth"]:
+        #     self.look_up = HamQTH(
+        #         self.preference["lookupusername"],
+        #         self.preference["lookuppassword"],
+        #     )
+        #     self.callbook_icon.setText("HamQTH")
+        #     if self.look_up.session:
+        #         self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
+        #     else:
+        #         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
+
+        if self.pref.get("cwtype", 0) == 0:
+            self.cw = None
+        else:
+            self.cw = CW(
+                int(self.pref.get("cwtype")),
+                self.pref.get("cwip"),
+                int(self.pref.get("cwport", 6789)),
+            )
+            self.cw.speed = 20
 
         self.dark_mode()
         self.show_command_buttons()
