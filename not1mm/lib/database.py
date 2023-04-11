@@ -485,6 +485,54 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_cqzn_exists(self, number) -> dict:
+        """returns a dict key of nr_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as zn_count from dxlog where ZN = '{number}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_zn_band_count(self) -> dict:
+        """
+        returns dict with count of unique NR.
+        {nr_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(ZN || ':' || Band)) as zb_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_country_band_count(self) -> dict:
+        """
+        returns dict with count of unique NR.
+        {nr_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(CountryPrefix || ':' || Band)) as cb_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_nr_count(self) -> dict:
         """
         returns dict with count of unique NR.
@@ -660,7 +708,7 @@ class DataBase:
             return ()
 
     def get_serial(self) -> dict:
-        """Return serial number"""
+        """Return next serial number"""
         try:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
