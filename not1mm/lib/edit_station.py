@@ -31,13 +31,12 @@ class EditStation(QtWidgets.QDialog):
 
     def call_changed(self):
         """Populate zones"""
-        result = self.cty_lookup()
-        print(f"{result}")
-        if result:
-            for a in result.items():
-                self.CQZone.setText(str(a[1].get("cq", "")))
-                self.ITUZone.setText(str(a[1].get("itu", "")))
-                self.Country.setText(str(a[1].get("entity", "")))
+        results = self.cty_lookup()
+        if results:
+            for result in results.items():
+                self.CQZone.setText(str(result[1].get("cq", "")))
+                self.ITUZone.setText(str(result[1].get("itu", "")))
+                self.Country.setText(str(result[1].get("entity", "")))
 
     def cty_lookup(self):
         """Lookup callsign in cty.dat file"""
