@@ -179,6 +179,16 @@
      </item>
      <item>
       <property name="text">
+       <string>CQ WW CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>CQ WW SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>JIDX CW</string>
       </property>
      </item>
