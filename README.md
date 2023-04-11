@@ -11,6 +11,7 @@
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [What it is not](#what-it-is-not)
   - [What it probably never will be](#what-it-probably-never-will-be)
+  - [List of should be working contests](#list-of-should-be-working-contests)
   - [Changes of note](#changes-of-note)
   - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
@@ -52,13 +53,23 @@ While I'm not watching TV, Right vs Left political 'News' programs, mind numbing
 
 Fully working.
 
-The current state is "**ALPHA**". I've used it for CQ WPX SSB and JIDX CW, and was able to work contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
+The current state is "**BETA**". I've used it for CQ WPX SSB and JIDX CW, and was able to work contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
 
 ## What it probably never will be
 
 Feature complete. I'm only one guy, and I'm not what you'd consider to be a contester. So new contests will be sparse.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
+
+## List of should be working contests
+
+- General Logging
+- CQ WPX CW
+- CQ WPX SSB
+- CQ World Wide CW
+- CQ World Wide SSB
+- Japan International DX CW
+- Japan International DX SSB
 
 ## Changes of note
 
