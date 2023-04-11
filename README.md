@@ -62,6 +62,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB.
 - [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
 - [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
 - [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
