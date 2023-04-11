@@ -458,15 +458,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contest_settings = self.database.fetch_contest_by_id(
                 self.pref.get("contest")
             )
-            self.database.current_contest = self.pref.get("contest")
-            if self.contest_settings.get("ContestName"):
-                self.contest = doimp(self.contest_settings.get("ContestName"))
-                logger.debug("Loaded Contest Name = %s", self.contest.name)
-                self.contest.init_contest(self)
-                self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
-            cmd = {}
-            cmd["cmd"] = "NEWDB"
-            self.multicast_interface.send_as_json(cmd)
+            if self.contest_settings:
+                self.database.current_contest = self.pref.get("contest")
+                if self.contest_settings.get("ContestName"):
+                    self.contest = doimp(self.contest_settings.get("ContestName"))
+                    logger.debug("Loaded Contest Name = %s", self.contest.name)
+                    self.contest.init_contest(self)
+                    self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
+                cmd = {}
+                cmd["cmd"] = "NEWDB"
+                self.multicast_interface.send_as_json(cmd)
 
     def hide_band_mode(self, the_mode: str) -> None:
         """hide"""
