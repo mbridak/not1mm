@@ -169,11 +169,6 @@
      </item>
      <item>
       <property name="text">
-       <string>CQ WPX RTTY</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
        <string>CQ WPX SSB</string>
       </property>
      </item>
