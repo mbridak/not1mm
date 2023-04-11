@@ -9,7 +9,7 @@ from not1mm.lib.ham_utility import gridtolatlon
 class EditStation(QtWidgets.QDialog):
     """Edit Station Settings"""
 
-    CTYFILE = {}
+    cty_file = {}
 
     def __init__(self, WORKING_PATH):
         super().__init__(None)
@@ -17,8 +17,10 @@ class EditStation(QtWidgets.QDialog):
         self.buttonBox.clicked.connect(self.store)
         self.GridSquare.textEdited.connect(self.gridchanged)
         self.Call.textEdited.connect(self.call_changed)
-        with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as fd:
-            self.CTYFILE = loads(fd.read())
+        with open(
+            WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8"
+        ) as file_descriptor:
+            self.cty_file = loads(file_descriptor.read())
 
     def store(self):
         """dialog magic"""
@@ -45,7 +47,7 @@ class EditStation(QtWidgets.QDialog):
         for count in reversed(range(len(callsign))):
             searchitem = callsign[: count + 1]
             result = {
-                key: val for key, val in self.CTYFILE.items() if key == searchitem
+                key: val for key, val in self.cty_file.items() if key == searchitem
             }
             if not result:
                 continue
