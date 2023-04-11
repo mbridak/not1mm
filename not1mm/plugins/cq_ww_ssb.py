@@ -73,6 +73,8 @@ def set_contact_vars(self):
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["ZN"] = self.other_1.text()
+    self.contact["NR"] = self.other_1.text()
+    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
 
 def prefill(self):
