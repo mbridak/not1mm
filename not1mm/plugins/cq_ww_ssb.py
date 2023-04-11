@@ -79,8 +79,8 @@ def set_contact_vars(self):
 
 def prefill(self):
     """Fill CQ Zone"""
-    if len(self.other_1.text()) == 0:
-        self.other_1.setText(str(self.contact.get("ZN", "")))
+    if len(self.other_2.text()) == 0:
+        self.other_2.setText(str(self.contact.get("ZN", "")))
     self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
