@@ -80,8 +80,8 @@ except FileExistsError:
 
 CTYFILE = {}
 
-with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as file_descriptor:
-    CTYFILE = loads(file_descriptor.read())
+with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as c_file:
+    CTYFILE = loads(c_file.read())
 
 DARK_STYLESHEET = ""
 
