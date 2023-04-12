@@ -275,9 +275,7 @@ After editing a contact and before generating a Cabrillo file. There is a Misc m
 
 ## Cabrillo
 
-Kinda working in a forced way. Need to generalize it for multiple contests. Click on `File` > `Generate Cabrillo`
-
-There's a few more fields I have to code in. But it's enough for me to edit and submit.
+Click on `File` > `Generate Cabrillo`
 
 The file will be placed in your home directory. The name will be in the format of:
 
@@ -301,8 +299,8 @@ Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
 
 ## CAT
 
-Go to `File` > `Configuration Settings`, You will find a `CAT` tab to accept your configutaion.
+Go to `File` > `Configuration Settings`, You will find a `CAT` TAB. You can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
 
 ## CW Keyer interface
 
-Go to `File` > `Configuration Settings`, You will find a `CW` tab to accept your configutaion.
+Go to `File` > `Configuration Settings`, You will find a `CW` TAB. There are three options. `cwdaemon`, IP `127.0.0.1`, port `6789`. `pywinkeyer`, IP `127.0.0.1`, port `8000`. And `None` if you want to Morse it like it's 1899.
