@@ -37,6 +37,7 @@ class Multicast:
     def send_as_json(self, dict_object: dict):
         """Send dict as json encoded packet"""
         bytes_to_send = bytes(dumps(dict_object), encoding="ascii")
+        logger.debug("%s", f"{dict_object}")
         try:
             self.server_udp.sendto(
                 bytes_to_send,
