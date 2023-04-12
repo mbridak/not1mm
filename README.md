@@ -17,14 +17,18 @@
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
-  - [Adding a database](#adding-a-database)
+  - [The database](#the-database)
+    - [Why](#why)
+    - [The first one](#the-first-one)
+    - [Why limit yourself](#why-limit-yourself)
+    - [Revisiting an old friend](#revisiting-an-old-friend)
   - [Station Settings dialog](#station-settings-dialog)
+    - [Changing station information](#changing-station-information)
   - [Adding a contest](#adding-a-contest)
   - [Selecting an added contest as the current contest](#selecting-an-added-contest-as-the-current-contest)
   - [Configuration Settings](#configuration-settings)
   - [Hiding screen elements](#hiding-screen-elements)
-  - [Editing current sessions function key macros](#editing-current-sessions-function-key-macros)
-  - [Editing macro keys (Persistent)](#editing-macro-keys-persistent)
+  - [Editing macro keys](#editing-macro-keys)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
@@ -156,13 +160,27 @@ If your system has an `XDG_DATA_HOME` environment variable set, the databases ca
 
 Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`. Otherwise they will be found at `yourhome/.config/not1mm`
 
-## Adding a database
+## The database
 
-On the initial running, a database is created for you called `ham.db`. This and all future databases are located in the data directory mentioned above. You can create new databases by selecting `File` > `New Database` from the main window. You can select previously created databases by selecting `File` > `Open Database`.
+### Why
+
+The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do You Boo.
+
+### The first one
+
+On the initial running, a database is created for you called `ham.db`. This, and all future databases, are located in the data directory mentioned above.
+
+### Why limit yourself
+
+You can create a new database by selecting `File` > `New Database` from the main window, and give it a snazzy name. Why limit yourself. Hell, create one every day for all I care. You can manage your own digital disaster.
+
+### Revisiting an old friend
+
+You can select previously created databases by selecting `File` > `Open Database`.
 
 ## Station Settings dialog
 
-After initial run of the program or creating a new contact database you will need to fo to `File` > `Station Settings` and fill out the information in the dialog.
+After initial run of the program or creating a new database you will need to fill out the Station Settings dialog that will pop up.
 
 ![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
 
@@ -171,6 +189,10 @@ You can fill it out if you want to. You can leave our friends behind. 'Cause you
 You can fill. You can fill. Everyone look at your keys.
 
 **I forgot my hat today**.
+
+### Changing station information
+
+Station information can be changed any time by going to `File` > `Station Settings` and editing the information.
 
 ## Adding a contest
 
@@ -198,11 +220,9 @@ You can show or hide certain buttons/indicators by checking and unchecking their
 
 The your choices will be remembered when you relaunch the program.
 
-## Editing current sessions function key macros
+## Editing macro keys
 
-You can edit the CW macros for the current session by right clicking on the buttons and filling out the dialog.
-
-![Edit Macro](https://github.com/mbridak/not1mm/raw/master/pic/edit_macro.png)
+To edit the CW macros, choose `File` > `Edit CW Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor.
 
 You can include a limited set of substitution instructions.
 
@@ -210,10 +230,6 @@ You can include a limited set of substitution instructions.
 - {HISCALL} Send what's in the callsign field.
 - {SNT} Sends 5nn
 - {SENTNR} Sends whats in the SentNR field.
-
-## Editing macro keys (Persistent)
-
-To edit the macros in a more persistent way. Choose `File` > `Edit CW Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The logger will then reload the macros. This will persist across until you change them again.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
