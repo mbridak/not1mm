@@ -188,7 +188,7 @@ You can fill it out if you want to. You can leave our friends behind. 'Cause you
 
 You can fill. You can fill. Everyone look at your keys.
 
-**I forgot my hat today**.
+[**I forgot my hat today**](https://www.youtube.com/watch?v=nM4okRvCg2g).
 
 ### Changing station information
 
