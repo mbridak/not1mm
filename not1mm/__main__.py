@@ -8,15 +8,17 @@ import importlib
 import logging
 import os
 import pkgutil
+import queue
 import re
 import socket
 import subprocess
-
 import sys
 import threading
+import time
 import uuid
+
 from datetime import datetime
-from json import dumps, loads
+from json import dumps, loads, JSONDecodeError
 from pathlib import Path
 from shutil import copyfile
 from xmlrpc.client import Error, ServerProxy
@@ -190,7 +192,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-
+        self._udpwatch = None
+        self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.n1mm = N1MM()
@@ -326,6 +329,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "SSB": self.band_indicators_ssb,
             "RTTY": self.band_indicators_rtty,
         }
+        if self._udpwatch is None:
+            self._udpwatch = threading.Thread(
+                target=self.watch_udp,
+                daemon=True,
+            )
+            self._udpwatch.start()
 
     @staticmethod
     def check_process(name: str) -> bool:
@@ -468,6 +477,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
                 self.multicast_interface.send_as_json(cmd)
+                if hasattr(self.contest, "columns"):
+                    cmd = {}
+                    cmd["cmd"] = "SHOWCOLUMNS"
+                    cmd["COLUMNS"] = self.contest.columns
+                    self.multicast_interface.send_as_json(cmd)
 
     def hide_band_mode(self, the_mode: str) -> None:
         """hide"""
@@ -1248,6 +1262,41 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_CW_macros()
         # self.show_band_mode()
 
+    def watch_udp(self):
+        """Puts UDP datagrams in a FIFO queue"""
+        while True:
+            try:
+                datagram = self.multicast_interface.server_udp.recv(1500)
+                logger.debug(datagram.decode())
+            except socket.timeout:
+                time.sleep(0.1)
+                continue
+            if datagram:
+                self.udp_fifo.put(datagram)
+
+    def check_udp_traffic(self):
+        """Checks UDP Traffic"""
+        while not self.udp_fifo.empty():
+            datagram = self.udp_fifo.get()
+            try:
+                debug_info = f"{datagram.decode()}"
+                logger.debug(debug_info)
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logger.debug(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logger.debug(the_error)
+                continue
+            if json_data.get("cmd", "") == "GETCOLUMNS":
+                if hasattr(self.contest, "columns"):
+                    cmd = {}
+                    cmd["cmd"] = "SHOWCOLUMNS"
+                    cmd["COLUMNS"] = self.contest.columns
+                    self.multicast_interface.send_as_json(cmd)
+
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
         self.pref["dark_mode"] = self.actionDark_Mode.isChecked()
@@ -1640,6 +1689,7 @@ def run():
 
     install_icons()
     timer.start(1000)
+    timer2.start(1000)
 
     sys.exit(app.exec())
 
@@ -1675,7 +1725,8 @@ window.callsign.setFocus()
 window.show()
 timer = QtCore.QTimer()
 timer.timeout.connect(window.poll_radio)
-
+timer2 = QtCore.QTimer()
+timer2.timeout.connect(window.check_udp_traffic)
 
 if __name__ == "__main__":
     run()
