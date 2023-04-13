@@ -77,6 +77,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
 - [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill. 
 - [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
 - [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
