@@ -362,6 +362,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configuration_dialog.save_changes()
         self.write_preference()
         logger.debug("%s", f"{self.pref}")
+        self.readpreferences()
 
     def new_database(self):
         """Create new database."""
