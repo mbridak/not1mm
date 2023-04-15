@@ -203,7 +203,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>0</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
@@ -654,6 +654,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>contest</tabstop>
+  <tabstop>dateTimeEdit</tabstop>
+  <tabstop>operator_class</tabstop>
+  <tabstop>band</tabstop>
+  <tabstop>power</tabstop>
+  <tabstop>mode</tabstop>
+  <tabstop>overlay</tabstop>
+  <tabstop>station</tabstop>
+  <tabstop>assisted</tabstop>
+  <tabstop>transmitter</tabstop>
+  <tabstop>exchange</tabstop>
+  <tabstop>operators</tabstop>
+  <tabstop>soapbox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
