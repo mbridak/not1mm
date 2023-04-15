@@ -16,7 +16,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Settings</string>
+   <string>Configuration Settings</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(46, 52, 54);
@@ -54,6 +54,9 @@ color: rgb(211, 215, 207);</string>
    </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
@@ -67,7 +70,7 @@ color: rgb(211, 215, 207);</string>
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -84,7 +87,12 @@ color: rgb(211, 215, 207);</string>
      <property name="tabBarAutoHide">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab_1">
+     <widget class="QWidget" name="lookup_tab">
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>Lookup</string>
       </attribute>
@@ -116,6 +124,9 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
           <string>W1AW</string>
          </property>
         </widget>
@@ -147,7 +158,10 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="text">
-          <string>Secret</string>
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>Your Password</string>
          </property>
         </widget>
        </item>
@@ -230,7 +244,15 @@ color: rgb(211, 215, 207);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="cloudlog_tab">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>Cloudlog</string>
       </attribute>
@@ -262,7 +284,10 @@ color: rgb(211, 215, 207);</string>
           </font>
          </property>
          <property name="text">
-          <string>cl12345678901234567890</string>
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>Your API Key</string>
          </property>
         </widget>
        </item>
@@ -279,6 +304,9 @@ color: rgb(211, 215, 207);</string>
           <set>Qt::ImhUrlCharactersOnly</set>
          </property>
          <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
           <string>http://Cloudlog.com/Cloudlog/index.php/api/qso</string>
          </property>
         </widget>
@@ -319,7 +347,12 @@ color: rgb(211, 215, 207);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="cat_tab">
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>CAT</string>
       </attribute>
@@ -498,7 +531,12 @@ color: rgb(211, 215, 207);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="cw_tab">
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>CW</string>
       </attribute>
@@ -605,7 +643,15 @@ color: rgb(211, 215, 207);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_5">
+     <widget class="QWidget" name="group_tab">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>Group Operation</string>
       </attribute>
@@ -715,7 +761,15 @@ color: rgb(211, 215, 207);</string>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_6">
+     <widget class="QWidget" name="n1mm_tab">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+       </font>
+      </property>
       <attribute name="title">
        <string>N1MM</string>
       </attribute>
