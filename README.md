@@ -211,7 +211,7 @@ Select `File` > `Open Contest`
 
 ## Configuration Settings
 
-To setup your CAT control, CW keyer, QRZ credentials, select `File` > `Configuration Settings`
+To setup your CAT control, CW keyer, Callsign lookups, select `File` > `Configuration Settings`
 
 The tabs for cloudlog, groups and n1mm are disabled and are for future expansion.
 
@@ -223,11 +223,11 @@ For callsign lookup, several services are supported. QRZ, HamQTH and HamDB. If y
 
 ### CAT
 
-Go to `File` > `Configuration Settings`, You will find a `CAT` TAB. You can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
+Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
 
 ### CW Keyer interface
 
-Go to `File` > `Configuration Settings`, You will find a `CW` TAB. There are three options. `cwdaemon`, IP `127.0.0.1`, port `6789`. `pywinkeyer`, IP `127.0.0.1`, port `8000`. And `None` if you want to Morse it like it's 1899.
+Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP `127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and port `8000`. Or `None`, if you want to Morse it like it's 1899.
 
 
 ## Hiding screen elements
