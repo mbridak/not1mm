@@ -24,9 +24,12 @@
     - [Revisiting an old friend](#revisiting-an-old-friend)
   - [Station Settings dialog](#station-settings-dialog)
     - [Changing station information](#changing-station-information)
-  - [Adding a contest](#adding-a-contest)
-  - [Selecting an added contest as the current contest](#selecting-an-added-contest-as-the-current-contest)
+  - [Adding a contest to the current dababase](#adding-a-contest-to-the-current-dababase)
+  - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
   - [Configuration Settings](#configuration-settings)
+    - [Lookup](#lookup)
+    - [CAT](#cat)
+    - [CW Keyer interface](#cw-keyer-interface)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing macro keys](#editing-macro-keys)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
@@ -37,8 +40,6 @@
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
-  - [CAT](#cat)
-  - [CW Keyer interface](#cw-keyer-interface)
 
 ## What and why is Not1MM
 
@@ -77,6 +78,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
 - [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
 - [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill. 
 - [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
@@ -155,7 +157,7 @@ not1mm
 
 ### Data
 
-If your system has an `XDG_DATA_HOME` environment variable set, the databases can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
+If your system has an `XDG_DATA_HOME` environment variable set, the database and CW macro files can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
 
 ### Config
 
@@ -177,7 +179,7 @@ You can create a new database by selecting `File` > `New Database` from the main
 
 ### Revisiting an old friend
 
-You can select previously created databases by selecting `File` > `Open Database`.
+You can select a previously created databases for use by selecting `File` > `Open Database`.
 
 ## Station Settings dialog
 
@@ -195,13 +197,13 @@ You can fill. You can fill. Everyone look at your keys.
 
 Station information can be changed any time by going to `File` > `Station Settings` and editing the information.
 
-## Adding a contest
+## Adding a contest to the current dababase
 
 Select `File` > `New Contest`
 
 ![New Contest Dialog](https://github.com/mbridak/not1mm/raw/master/pic/new_contest.png)
 
-## Selecting an added contest as the current contest
+## Selecting an existing contest as the current contest
 
 Select `File` > `Open Contest`
 
@@ -209,9 +211,24 @@ Select `File` > `Open Contest`
 
 ## Configuration Settings
 
-Select `File` > `Configuration Settings`
+To setup your CAT control, CW keyer, QRZ credentials, select `File` > `Configuration Settings`
+
+The tabs for cloudlog, groups and n1mm are disabled and are for future expansion.
 
 ![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_settings.png)
+
+### Lookup
+
+For callsign lookup, several services are supported. QRZ, HamQTH and HamDB. If your service of choice requires a username and password, Enter it here.
+
+### CAT
+
+Go to `File` > `Configuration Settings`, You will find a `CAT` TAB. You can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
+
+### CW Keyer interface
+
+Go to `File` > `Configuration Settings`, You will find a `CW` TAB. There are three options. `cwdaemon`, IP `127.0.0.1`, port `6789`. `pywinkeyer`, IP `127.0.0.1`, port `8000`. And `None` if you want to Morse it like it's 1899.
+
 
 ## Hiding screen elements
 
@@ -256,7 +273,7 @@ The Log display gets updated automatically when a contact is entered. The top ha
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
 
-The bottom half of the log displays contacts sorted by what's currently in the call entry field.
+The bottom half of the log displays contacts sorted by what's currently in the call entry field. The columns displayed in the log window are dependant on what contests is currently active.
 
 ## Editing a contact
 
@@ -297,11 +314,3 @@ Boom... ADIF
 ## Dupe checking
 
 Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
-
-## CAT
-
-Go to `File` > `Configuration Settings`, You will find a `CAT` TAB. You can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
-
-## CW Keyer interface
-
-Go to `File` > `Configuration Settings`, You will find a `CW` TAB. There are three options. `cwdaemon`, IP `127.0.0.1`, port `6789`. `pywinkeyer`, IP `127.0.0.1`, port `8000`. And `None` if you want to Morse it like it's 1899.
