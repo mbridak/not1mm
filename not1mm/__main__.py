@@ -732,8 +732,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Clears the text input fields and sets focus to callsign field."""
         self.dupe_indicator.hide()
         self.contact = self.database.empty_contact
-        self.heading_distance.setText("No Heading")
-        self.dx_entity.setText("dxentity")
+        self.heading_distance.setText("")
+        self.dx_entity.setText("")
         if self.contest:
             mults = self.contest.show_mults(self)
             qsos = self.contest.show_qso(self)
