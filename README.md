@@ -260,7 +260,7 @@ The macros when used with voice, will also accept filenames of WAV files to play
 
 The current wav files in place are not the ones you will want to use. They sound like some little kid. You can use something like Audacity to record new wav files in your own voice.
 
-Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered the K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in a little kids voice.
+Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in a little kids voice.
 
 Right now, the sound is played out of the default sound device. This is NOT what we want. I still have to code up the dialog to choose the correct sound device to use.
 
