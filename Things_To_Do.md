@@ -1,3 +1,4 @@
 # Things needed
 
-- Dialog to select sound device.
+- Dialog to select an output sound device.
+- Edit an existing contest.
