@@ -1,3 +1,3 @@
 # Things needed
 
-- Voice keying. (I'm avoiding this.)
+- Dialog to select sound device.
