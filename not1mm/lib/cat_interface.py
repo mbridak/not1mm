@@ -326,6 +326,7 @@ class CAT:
     def __ptt_on_rigctld(self):
         """stub"""
         rig_cmd = bytes("T 1\n", "utf-8")
+        logger.debug("%s", f"{rig_cmd}")
         try:
             self.online = True
             self.rigctrlsocket.send(rig_cmd)
@@ -341,14 +342,15 @@ class CAT:
     def ptt_off(self):
         """turn ptt on/off"""
         if self.interface == "flrig":
-            return self.__ptt_on_flrig()
+            return self.__ptt_off_flrig()
         if self.interface == "rigctld":
-            return self.__ptt_on_rigctld()
+            return self.__ptt_off_rigctld()
         return False
 
     def __ptt_off_rigctld(self):
         """stub"""
         rig_cmd = bytes("T 0\n", "utf-8")
+        logger.debug("%s", f"{rig_cmd}")
         try:
             self.online = True
             self.rigctrlsocket.send(rig_cmd)
