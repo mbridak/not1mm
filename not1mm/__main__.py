@@ -222,7 +222,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionNew_Database.triggered.connect(self.new_database)
         self.actionOpen_Database.triggered.connect(self.open_database)
 
-        self.actionEdit_CW_Macros.triggered.connect(self.edit_cw_macros)
+        self.actionEdit_Macros.triggered.connect(self.edit_cw_macros)
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
 
@@ -1664,10 +1664,15 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Calls the default text editor to edit the CW macro file.
         """
-        if not Path(DATA_PATH + "/cwmacros.txt").exists():
+        # FIXME
+        if self.radio_state.get("mode") == "CW":
+            macro_file = "/cwmacros.txt"
+        else:
+            macro_file = "/ssbmacros.txt"
+        if not Path(DATA_PATH + macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
-        os.system(f"xdg-open {DATA_PATH}/cwmacros.txt")
+            copyfile(WORKING_PATH + "/data" + macro_file, DATA_PATH + macro_file)
+        os.system(f"xdg-open {DATA_PATH}{macro_file}")
         self.read_cw_macros()
 
     def read_cw_macros(self) -> None:
