@@ -1046,7 +1046,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
         macro = macro.upper()
-        macro = macro.replace("{MYCALL}", self.station.get("Call"))
+        macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
@@ -1075,11 +1075,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 if letter == " ":
                     letter = "space"
                 filename = f"{str(op_path)}/{letter}.wav"
-                logger.debug("Voicing: %s", filename)
-                data, fs = sf.read(filename, dtype="float32")
+                if Path(filename).is_file():
+                    logger.debug("Voicing: %s", filename)
+                    data, fs = sf.read(filename, dtype="float32")
 
-                sd.play(data, fs)
-                _status = sd.wait()
+                    sd.play(data, fs)
+                    _status = sd.wait()
 
     def sendf1(self):
         """stub"""
@@ -1451,6 +1452,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.rig_control.set_mode("CW")
                 self.set_window_title()
                 self.clearinputs()
+                self.read_cw_macros()
                 return
             if stripped_text == "RTTY":
                 self.setmode("RTTY")
@@ -1472,6 +1474,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control:
                     self.rig_control.set_mode(self.radio_state.get("mode"))
                 self.clearinputs()
+                self.read_cw_macros()
                 return
             if stripped_text == "OPON":
                 self.get_opon()
@@ -1539,7 +1542,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
                 )
                 if len(callsign) > 2:
-                    self.contest.prefill(self)
+                    if self.contest:
+                        self.contest.prefill(self)
 
     def check_callsign2(self, callsign):
         """Check call once entered"""
@@ -1673,12 +1677,15 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if not Path(DATA_PATH + "/cwmacros.txt").exists():
+        if self.radio_state.get("mode") == "CW":
+            macro_file = "/cwmacros.txt"
+        else:
+            macro_file = "/ssbmacros.txt"
+
+        if not Path(DATA_PATH + macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH + "/data/cwmacros.txt", DATA_PATH + "/cwmacros.txt")
-        with open(
-            DATA_PATH + "/cwmacros.txt", "r", encoding="utf-8"
-        ) as file_descriptor:
+            copyfile(WORKING_PATH + "/data" + macro_file, DATA_PATH + macro_file)
+        with open(DATA_PATH + macro_file, "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
                     mode, fkey, buttonname, cwtext = line.split("|")
