@@ -1023,7 +1023,7 @@
     <addaction name="actionConfiguration_Settings"/>
     <addaction name="actionStationSettings"/>
     <addaction name="separator"/>
-    <addaction name="actionEdit_CW_Macros"/>
+    <addaction name="actionEdit_Macros"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1225,6 +1225,11 @@
    <property name="text">
     <string>Generate Cabrillo</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1239,6 +1244,11 @@
    <property name="text">
     <string>Log Window</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1252,6 +1262,11 @@
   <action name="actionGenerate_ADIF">
    <property name="text">
     <string>Generate ADIF</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
    <property name="shortcut">
     <string/>
@@ -1270,6 +1285,11 @@
    <property name="text">
     <string>Recalculate Mults</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1283,6 +1303,11 @@
   <action name="actionNew_Contest">
    <property name="text">
     <string>New Contest</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -1298,6 +1323,11 @@
    <property name="text">
     <string>New Database</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1311,6 +1341,11 @@
   <action name="actionOpen_Database">
    <property name="text">
     <string>Open Database</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -1326,6 +1361,11 @@
    <property name="text">
     <string>Open Contest</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1336,9 +1376,14 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionEdit_CW_Macros">
+  <action name="actionEdit_Macros">
    <property name="text">
-    <string>Edit CW Macros</string>
+    <string>Edit Macros</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
