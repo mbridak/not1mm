@@ -32,6 +32,8 @@
     - [CW Keyer interface](#cw-keyer-interface)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing macro keys](#editing-macro-keys)
+    - [Macro substitutions](#macro-substitutions)
+    - [Macro use with voice](#macro-use-with-voice)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Log Display](#log-display)
@@ -78,6 +80,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-18] Added voice keying. Fixed a bunch of crashes.
 - [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
 - [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
 - [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill. 
@@ -240,14 +243,26 @@ The your choices will be remembered when you relaunch the program.
 
 ## Editing macro keys
 
-To edit the CW macros, choose `File` > `Edit CW Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor.
+To edit the macros, choose `File` > `Edit Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit will be determined by your current operating mode.
+
+### Macro substitutions
 
 You can include a limited set of substitution instructions.
 
 - {MYCALL} Sends the station call.
 - {HISCALL} Send what's in the callsign field.
-- {SNT} Sends 5nn
+- {SNT} Sends 5nn (cw) or 599 (ssb)
 - {SENTNR} Sends whats in the SentNR field.
+
+### Macro use with voice
+
+The macros when used with voice, will also accept filenames of WAV files to play, excluding the file extension. The filename must be enclosed by brackets. For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav files are stored in the operators personal data directory. The filenames must be in lowercase. See [Various data file locations](#various-data-file-locations) above for the location of your data files. For me, the macro `[cq]` will play `/home/mbridak/.local/share/not1mm/K6GTE/cq.wav`
+
+The current wav files in place are not the ones you will want to use. They sound like some little kid. You can use something like Audacity to record new wav files in your own voice.
+
+Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered the K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in a little kids voice.
+
+Right now, the sound is played out of the default sound device. This is NOT what we want. I still have to code up the dialog to choose the correct sound device to use.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
