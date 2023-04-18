@@ -29,6 +29,8 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
 from PyQt5.QtCore import QDir, QRect, QSize, Qt
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
+import sounddevice as sd
+import soundfile as sf
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
@@ -1046,13 +1048,33 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.upper()
         macro = macro.replace("{MYCALL}", self.station.get("Call"))
         macro = macro.replace("{HISCALL}", self.callsign.text())
-        macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
+        if self.radio_state.get("mode") == "CW":
+            macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
+        else:
+            macro = macro.replace("{SNT}", self.sent.text())
         macro = macro.replace("{SENTNR}", self.other_1.text())
         return macro
+
+    def voice_string(self, the_string: str) -> None:
+        """voices string using nato phonetics"""
+        op_path = Path(DATA_PATH) / self.current_op
+        for letter in the_string.lower():
+            if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
+                if letter == " ":
+                    letter = "space"
+                filename = f"{str(op_path)}/{letter}.wav"
+                logger.debug("Voicing: %s", filename)
+                data, fs = sf.read(filename, dtype="float32")
+
+                sd.play(data, fs)
+                _status = sd.wait()
 
     def sendf1(self):
         """stub"""
         logger.debug("F1 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F1.toolTip()))
+            return
         if self.cw:
             # if self.preference.get("send_n1mm_packets"):
             #     self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
@@ -1061,66 +1083,99 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf2(self):
         """stub"""
         logger.debug("F2 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F2.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
     def sendf3(self):
         """stub"""
         logger.debug("F3 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F3.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
     def sendf4(self):
         """stub"""
         logger.debug("F4 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F4.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
     def sendf5(self):
         """stub"""
         logger.debug("F5 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F5.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
     def sendf6(self):
         """stub"""
         logger.debug("F6 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F6.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
     def sendf7(self):
         """stub"""
         logger.debug("F7 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F7.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
     def sendf8(self):
         """stub"""
         logger.debug("F8 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F8.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
     def sendf9(self):
         """stub"""
         logger.debug("F9 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F9.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
     def sendf10(self):
         """stub"""
         logger.debug("F10 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F10.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
     def sendf11(self):
         """stub"""
         logger.debug("F11 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F11.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
     def sendf12(self):
         """stub"""
         logger.debug("F12 Clicked")
+        if self.radio_state.get("mode") in ["USB", "SSB"]:
+            self.voice_string(self.process_macro(self.F12.toolTip()))
+            return
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 

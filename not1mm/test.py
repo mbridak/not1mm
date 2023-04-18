@@ -14,7 +14,7 @@ GPL V3
 # pylint: disable=c-extension-no-member
 # pylint: disable=unused-import
 
-import threading
+# import threading
 
 import sounddevice as sd
 import soundfile as sf
@@ -22,23 +22,23 @@ import soundfile as sf
 print(f"{sd.query_devices(kind='output')}")
 
 # FILENAME = "/home/mbridak/.local/share/not1mm/K6GTE/z.wav"
-current_frame = 0
-event = threading.Event()
+# current_frame = 0
+# event = threading.Event()
 
 callsign = "k6gte 599 org"
 
 
-def callback(outdata, frames, _time, status):
-    """docstring"""
-    global current_frame
-    if status:
-        print(status)
-    chunksize = min(len(data) - current_frame, frames)
-    outdata[:chunksize] = data[current_frame : current_frame + chunksize]
-    if chunksize < frames:
-        outdata[chunksize:] = 0
-        raise sd.CallbackStop()
-    current_frame += chunksize
+# def callback(outdata, frames, _time, status):
+#     """docstring"""
+#     global current_frame
+#     if status:
+#         print(status)
+#     chunksize = min(len(data) - current_frame, frames)
+#     outdata[:chunksize] = data[current_frame : current_frame + chunksize]
+#     if chunksize < frames:
+#         outdata[chunksize:] = 0
+#         raise sd.CallbackStop()
+#     current_frame += chunksize
 
 
 # data, fs = sf.read(FILENAME)
@@ -52,4 +52,4 @@ for letter in callsign:
     data, fs = sf.read(filename, dtype="float32")
 
     sd.play(data, fs)
-    status = sd.wait()
+    _status = sd.wait()
