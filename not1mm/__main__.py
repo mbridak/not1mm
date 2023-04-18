@@ -1057,7 +1057,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def voice_string(self, the_string: str) -> None:
         """voices string using nato phonetics"""
+        logger.debug("Voicing: %s", the_string)
         op_path = Path(DATA_PATH) / self.current_op
+        if "[" in the_string:
+            sub_string = the_string.strip("[]").lower()
+            filename = f"{str(op_path)}/{sub_string}.wav"
+            if Path(filename).is_file():
+                logger.debug("Voicing: %s", filename)
+                data, fs = sf.read(filename, dtype="float32")
+
+                sd.play(data, fs)
+                _status = sd.wait()
+            return
+
         for letter in the_string.lower():
             if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
                 if letter == " ":
