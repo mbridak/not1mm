@@ -19,11 +19,13 @@ import threading
 import sounddevice as sd
 import soundfile as sf
 
-print(f"{sd.query_devices()}")
+print(f"{sd.query_devices(kind='output')}")
 
-FILENAME = "/home/mbridak/Nextcloud/dev/the-last-blade/Assets/sounds/zombie_kick.wav"
+# FILENAME = "/home/mbridak/.local/share/not1mm/K6GTE/z.wav"
 current_frame = 0
 event = threading.Event()
+
+callsign = "k6gte 599 org"
 
 
 def callback(outdata, frames, _time, status):
@@ -39,15 +41,15 @@ def callback(outdata, frames, _time, status):
     current_frame += chunksize
 
 
-data, fs = sf.read(FILENAME, always_2d=True)
+# data, fs = sf.read(FILENAME)
 
 
-stream = sd.OutputStream(
-    samplerate=fs,
-    device="pipewire",
-    channels=data.shape[1],
-    callback=callback,
-    finished_callback=event.set,
-)
-with stream:
-    event.wait()  # Wait until playback is finished
+for letter in callsign:
+    if letter == " ":
+        letter = "space"
+    filename = f"/home/mbridak/.local/share/not1mm/K6GTE/{letter}.wav"
+    print(filename)
+    data, fs = sf.read(filename, dtype="float32")
+
+    sd.play(data, fs)
+    status = sd.wait()

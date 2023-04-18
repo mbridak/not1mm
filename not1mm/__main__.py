@@ -290,6 +290,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.station = {}
         self.contact = self.database.empty_contact
         self.current_op = self.station.get("Call", "")
+        self.make_op_dir()
         if self.pref.get("contest"):
             self.load_contest()
 
@@ -379,6 +380,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.station is None:
                 self.station = {}
             self.current_op = self.station.get("Call", "")
+            self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
@@ -400,6 +402,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.station.get("Call", "") == "":
                 self.edit_station_settings()
             self.current_op = self.station.get("Call", "")
+            self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
             self.multicast_interface.send_as_json(cmd)
@@ -955,6 +958,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.close()
         if self.current_op == "":
             self.current_op = self.station.get("Call", "")
+            self.make_op_dir()
         contest_count = self.database.fetch_all_contests()
         if len(contest_count) == 0:
             self.new_contest_dialog()
@@ -1544,9 +1548,26 @@ class MainWindow(QtWidgets.QMainWindow):
         """Save new OP"""
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text().upper()
-
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
+        self.make_op_dir()
+
+    def make_op_dir(self):
+        """Create OP directory if it does not exist."""
+        if self.current_op:
+            op_path = Path(DATA_PATH) / self.current_op
+            logger.debug("op_path: %s", str(op_path))
+            if op_path.is_dir() is False:
+                logger.debug("Creating Op Directory: %s", str(op_path))
+                os.mkdir(str(op_path))
+            if op_path.is_dir():
+                source_path = Path(WORKING_PATH) / "data" / "phonetics"
+                logger.debug("source_path: %s", str(source_path))
+                for child in source_path.iterdir():
+                    destination_file = op_path / child.name
+                    logger.debug("Destination: %s", str(destination_file))
+                    if destination_file.is_file() is False:
+                        destination_file.write_bytes(child.read_bytes())
 
     def poll_radio(self):
         """stub"""
