@@ -314,3 +314,49 @@ class CAT:
             except socket.error:
                 self.online = False
                 self.rigctrlsocket = None
+
+    def ptt_on(self):
+        """turn ptt on/off"""
+        if self.interface == "flrig":
+            return self.__ptt_on_flrig()
+        if self.interface == "rigctld":
+            return self.__ptt_on_rigctld()
+        return False
+
+    def __ptt_on_rigctld(self):
+        """stub"""
+        rig_cmd = bytes("T 1\n", "utf-8")
+        try:
+            self.online = True
+            self.rigctrlsocket.send(rig_cmd)
+            _ = self.rigctrlsocket.recv(1024).decode().strip()
+        except socket.error:
+            self.online = False
+            self.rigctrlsocket = None
+
+    def __ptt_on_flrig(self):
+        """stub"""
+        return
+
+    def ptt_off(self):
+        """turn ptt on/off"""
+        if self.interface == "flrig":
+            return self.__ptt_on_flrig()
+        if self.interface == "rigctld":
+            return self.__ptt_on_rigctld()
+        return False
+
+    def __ptt_off_rigctld(self):
+        """stub"""
+        rig_cmd = bytes("T 0\n", "utf-8")
+        try:
+            self.online = True
+            self.rigctrlsocket.send(rig_cmd)
+            _ = self.rigctrlsocket.recv(1024).decode().strip()
+        except socket.error:
+            self.online = False
+            self.rigctrlsocket = None
+
+    def __ptt_off_flrig(self):
+        """stub"""
+        return

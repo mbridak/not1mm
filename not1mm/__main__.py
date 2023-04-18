@@ -1065,9 +1065,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if Path(filename).is_file():
                 logger.debug("Voicing: %s", filename)
                 data, fs = sf.read(filename, dtype="float32")
-
+                self.ptt_on()
                 sd.play(data, fs)
                 _status = sd.wait()
+                self.ptt_off
             return
 
         for letter in the_string.lower():
@@ -1078,9 +1079,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     data, fs = sf.read(filename, dtype="float32")
-
+                    self.ptt_on()
                     sd.play(data, fs)
                     _status = sd.wait()
+                    self.ptt_off()
+
+    def ptt_on(self):
+        """turn on ptt"""
+        if self.rig_control:
+            self.rig_control.ptt_on()
+
+    def ptt_off(self):
+        """turn off ptt"""
+        if self.rig_control:
+            self.rig_control.ptt_off()
 
     def sendf1(self):
         """stub"""
