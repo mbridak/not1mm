@@ -76,8 +76,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(
             f"Log Display - {self.pref.get('current_database', 'ham.db')}"
         )
-        self.generalLog.setColumnCount(18)
-        self.focusedLog.setColumnCount(18)
+        self.generalLog.setColumnCount(19)
+        self.focusedLog.setColumnCount(19)
         icon_path = WORKING_PATH + "/data/"
         self.checkmark = QtGui.QPixmap(icon_path + "check.png")
         self.checkicon = QtGui.QIcon()
@@ -101,16 +101,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("Sect"))
 
         self.generalLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("WPX"))
-        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("M1"))
-        self.generalLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("ZN"))
-        self.generalLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("M2"))
-        self.generalLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("PFX"))
-        self.generalLog.setHorizontalHeaderItem(14, QtWidgets.QTableWidgetItem("PTS"))
-        self.generalLog.setHorizontalHeaderItem(15, QtWidgets.QTableWidgetItem("Name"))
+        self.generalLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("Power"))
+        self.generalLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("M1"))
+        self.generalLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("ZN"))
+        self.generalLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("M2"))
+        self.generalLog.setHorizontalHeaderItem(14, QtWidgets.QTableWidgetItem("PFX"))
+        self.generalLog.setHorizontalHeaderItem(15, QtWidgets.QTableWidgetItem("PTS"))
+        self.generalLog.setHorizontalHeaderItem(16, QtWidgets.QTableWidgetItem("Name"))
         self.generalLog.setHorizontalHeaderItem(
-            16, QtWidgets.QTableWidgetItem("Comment")
+            17, QtWidgets.QTableWidgetItem("Comment")
         )
-        self.generalLog.setHorizontalHeaderItem(17, QtWidgets.QTableWidgetItem("UUID"))
+        self.generalLog.setHorizontalHeaderItem(18, QtWidgets.QTableWidgetItem("UUID"))
         self.generalLog.setColumnWidth(0, 200)
         self.generalLog.setColumnWidth(3, 50)
         self.generalLog.setColumnWidth(4, 50)
@@ -120,15 +121,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setColumnWidth(9, 50)
         self.generalLog.setColumnWidth(10, 50)
         self.generalLog.setColumnWidth(11, 50)
-        self.generalLog.setColumnWidth(14, 50)
-        self.generalLog.setColumnWidth(15, 75)
-        self.generalLog.setColumnWidth(16, 200)
+        self.generalLog.setColumnWidth(12, 50)
+        self.generalLog.setColumnWidth(15, 50)
+        self.generalLog.setColumnWidth(16, 75)
+        self.generalLog.setColumnWidth(17, 200)
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
         # self.generalLog.setColumnHidden(11, True)
         # self.generalLog.setColumnHidden(12, True)
         # self.generalLog.setColumnHidden(13, True)
-        self.generalLog.setColumnHidden(17, True)
+        self.generalLog.setColumnHidden(18, True)
 
         self.focusedLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.focusedLog.customContextMenuRequested.connect(
@@ -151,16 +153,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("Sect"))
 
         self.focusedLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("WPX"))
-        self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("M1"))
-        self.focusedLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("ZN"))
-        self.focusedLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("M2"))
-        self.focusedLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("PFX"))
-        self.focusedLog.setHorizontalHeaderItem(14, QtWidgets.QTableWidgetItem("PTS"))
-        self.focusedLog.setHorizontalHeaderItem(15, QtWidgets.QTableWidgetItem("Name"))
+        self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("Power"))
+        self.focusedLog.setHorizontalHeaderItem(11, QtWidgets.QTableWidgetItem("M1"))
+        self.focusedLog.setHorizontalHeaderItem(12, QtWidgets.QTableWidgetItem("ZN"))
+        self.focusedLog.setHorizontalHeaderItem(13, QtWidgets.QTableWidgetItem("M2"))
+        self.focusedLog.setHorizontalHeaderItem(14, QtWidgets.QTableWidgetItem("PFX"))
+        self.focusedLog.setHorizontalHeaderItem(15, QtWidgets.QTableWidgetItem("PTS"))
+        self.focusedLog.setHorizontalHeaderItem(16, QtWidgets.QTableWidgetItem("Name"))
         self.focusedLog.setHorizontalHeaderItem(
-            16, QtWidgets.QTableWidgetItem("Comment")
+            17, QtWidgets.QTableWidgetItem("Comment")
         )
-        self.focusedLog.setHorizontalHeaderItem(17, QtWidgets.QTableWidgetItem("UUID"))
+        self.focusedLog.setHorizontalHeaderItem(18, QtWidgets.QTableWidgetItem("UUID"))
         self.focusedLog.setColumnWidth(0, 200)
         self.focusedLog.setColumnWidth(3, 50)
         self.focusedLog.setColumnWidth(4, 50)
@@ -170,15 +173,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.focusedLog.setColumnWidth(9, 50)
         self.focusedLog.setColumnWidth(10, 50)
         self.focusedLog.setColumnWidth(11, 50)
-        self.focusedLog.setColumnWidth(14, 50)
-        self.focusedLog.setColumnWidth(15, 75)
-        self.focusedLog.setColumnWidth(16, 200)
+        self.focusedLog.setColumnWidth(12, 50)
+        self.focusedLog.setColumnWidth(15, 50)
+        self.focusedLog.setColumnWidth(16, 75)
+        self.focusedLog.setColumnWidth(17, 200)
         # self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         # self.focusedLog.cellChanged.connect(self.cell_changed)
         # self.focusedLog.setColumnHidden(11, True)
         # self.focusedLog.setColumnHidden(12, True)
         # self.focusedLog.setColumnHidden(13, True)
-        self.focusedLog.setColumnHidden(17, True)
+        self.focusedLog.setColumnHidden(18, True)
         self.get_log()
         self.multicast_interface = Multicast(
             MULTICAST_GROUP, MULTICAST_PORT, INTERFACE_IP
@@ -247,14 +251,15 @@ class MainWindow(QtWidgets.QMainWindow):
             "Exchange1": self.generalLog.item(row, 7).text(),
             "Sect": self.generalLog.item(row, 8).text(),
             "WPXPrefix": self.generalLog.item(row, 9).text(),
-            "IsMultiplier1": self.generalLog.item(row, 10).text(),
-            "ZN": self.generalLog.item(row, 11).text(),
-            "IsMultiplier2": self.generalLog.item(row, 12).text().upper(),
-            "CountryPrefix": self.generalLog.item(row, 13).text(),
-            "Points": self.generalLog.item(row, 14).text(),
-            "Name": self.generalLog.item(row, 15).text(),
-            "Comment": self.generalLog.item(row, 16).text(),
-            "ID": self.generalLog.item(row, 17).text(),
+            "Power": self.generalLog.item(row, 10).text(),
+            "IsMultiplier1": self.generalLog.item(row, 11).text(),
+            "ZN": self.generalLog.item(row, 12).text(),
+            "IsMultiplier2": self.generalLog.item(row, 13).text().upper(),
+            "CountryPrefix": self.generalLog.item(row, 14).text(),
+            "Points": self.generalLog.item(row, 15).text(),
+            "Name": self.generalLog.item(row, 16).text(),
+            "Comment": self.generalLog.item(row, 17).text(),
+            "ID": self.generalLog.item(row, 18).text(),
         }
         self.database.change_contact(db_record)
         self.get_log()
@@ -267,14 +272,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show edit contact dialog"""
         logger.debug("Opening EditContact dialog")
         item = self.focusedLog.itemAt(clicked_cell)
-        uuid = self.focusedLog.item(item.row(), 17).text()
+        uuid = self.focusedLog.item(item.row(), 18).text()
         self.edit_contact(uuid)
 
     def edit_contact_selected(self, clicked_cell):
         """Show edit contact dialog"""
         logger.debug("Opening EditContact dialog")
         item = self.generalLog.itemAt(clicked_cell)
-        uuid = self.generalLog.item(item.row(), 17).text()
+        uuid = self.generalLog.item(item.row(), 18).text()
         self.edit_contact(uuid)
 
     def edit_contact(self, uuid):
@@ -389,23 +394,22 @@ class MainWindow(QtWidgets.QMainWindow):
     def get_log(self):
         """Get Log, Show it."""
 
-        """
-            The horizontal flags are:
+        # The horizontal flags are:
 
-            Constant	Value	Description
-            Qt::AlignLeft	0x0001	Aligns with the left edge.
-            Qt::AlignRight	0x0002	Aligns with the right edge.
-            Qt::AlignHCenter	0x0004	Centers horizontally in the available space.
-            Qt::AlignJustify	0x0008	Justifies the text in the available space.
-            
-            The vertical flags are:
+        # Constant	Value	Description
+        # Qt::AlignLeft	0x0001	Aligns with the left edge.
+        # Qt::AlignRight	0x0002	Aligns with the right edge.
+        # Qt::AlignHCenter	0x0004	Centers horizontally in the available space.
+        # Qt::AlignJustify	0x0008	Justifies the text in the available space.
 
-            Constant	Value	Description
-            Qt::AlignTop	0x0020	Aligns with the top.
-            Qt::AlignBottom	0x0040	Aligns with the bottom.
-            Qt::AlignVCenter	0x0080	Centers vertically in the available space.
-            Qt::AlignBaseline	0x0100	Aligns with the baseline.
-        """
+        # The vertical flags are:
+
+        # Constant	Value	Description
+        # Qt::AlignTop	0x0020	Aligns with the top.
+        # Qt::AlignBottom	0x0040	Aligns with the bottom.
+        # Qt::AlignVCenter	0x0080	Centers vertically in the available space.
+        # Qt::AlignBaseline	0x0100	Aligns with the baseline.
+
         self.generalLog.cellChanged.connect(self.dummy)
         self.table_loading = True
         current_log = self.database.fetch_all_contacts_asc()
@@ -465,17 +469,22 @@ class MainWindow(QtWidgets.QMainWindow):
                 9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
             )
+            self.generalLog.setItem(
+                number_of_rows,
+                10,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Power", ""))),
+            )
             item = QtWidgets.QTableWidgetItem()
             if log_item.get("IsMultiplier1", False):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
-                10,
+                11,
                 item,
             )
             self.generalLog.setItem(
                 number_of_rows,
-                11,
+                12,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
             item = QtWidgets.QTableWidgetItem()
@@ -483,32 +492,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 item.setIcon(self.checkicon)
             self.generalLog.setItem(
                 number_of_rows,
-                12,
+                13,
                 item,
             )
             self.generalLog.setItem(
                 number_of_rows,
-                13,
+                14,
                 QtWidgets.QTableWidgetItem(str(log_item.get("CountryPrefix", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                14,
+                15,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                15,
+                16,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Name", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                16,
+                17,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Comment", ""))),
             )
             self.generalLog.setItem(
                 number_of_rows,
-                17,
+                18,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
         self.table_loading = False
@@ -657,7 +666,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.load_new_db()
             if json_data.get("cmd", "") == "SHOWCOLUMNS":
                 columns_to_show = json_data.get("COLUMNS", [])
-                for column in range(17):
+                for column in range(18):
                     if column in columns_to_show:
                         self.generalLog.setColumnHidden(column, False)
                         self.focusedLog.setColumnHidden(column, False)
