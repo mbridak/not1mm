@@ -80,7 +80,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-18] Added voice keying. Fixed a bunch of crashes.
+- [23-4-18] Added voice keying. Fixed a bunch of crashes. Added PTT to rigctld.
 - [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
 - [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
 - [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill. 
