@@ -317,6 +317,15 @@ class CAT:
 
     def ptt_on(self):
         """turn ptt on/off"""
+
+        # T, set_ptt 'PTT'
+        # Set 'PTT'.
+        # PTT is a value: ‘0’ (RX), ‘1’ (TX), ‘2’ (TX mic), or ‘3’ (TX data).
+
+        # t, get_ptt
+        # Get 'PTT' status.
+        # Returns PTT as a value in set_ptt above.
+
         if self.interface == "flrig":
             return self.__ptt_on_flrig()
         if self.interface == "rigctld":
