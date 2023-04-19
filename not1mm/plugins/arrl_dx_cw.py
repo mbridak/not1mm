@@ -5,11 +5,12 @@
 from PyQt5 import QtWidgets
 
 name = "ARRL DX CW"
-mode = "BOTH"  # CW SSB BOTH RTTY
-columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+cabrillo_name = "ARRL-DX-CW"
+mode = "CW"  # CW SSB BOTH RTTY
+columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 4
+dupe_type = 2
 
 
 def init_contest(self):

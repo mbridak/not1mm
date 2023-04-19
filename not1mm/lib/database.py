@@ -533,6 +533,23 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_arrldx_country_band_count(self) -> dict:
+        """
+        returns dict with count of unique NR.
+        {nr_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(CountryPrefix || ':' || Band)) as cb_count from dxlog where ContestNR = {self.current_contest} and points = 3;"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_nr_count(self) -> dict:
         """
         returns dict with count of unique NR.
@@ -738,3 +755,27 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
             return {}
+
+    def exec_sql(self, query: str) -> dict:
+        """Exec one off queries returning one dict"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(query)
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def exec_sql_mult(self, query: str) -> list:
+        """Exec one off queries returning list of dicts"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(query)
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return ()

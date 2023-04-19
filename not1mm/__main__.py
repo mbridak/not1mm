@@ -1656,6 +1656,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control.online:
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
+                self.radio_state["ptt"] = self.rig_control.get_ptt()
+                # if self.radio_state.get("ptt", 0) == 1:
+                #     self.leftdot.setPixmap(self.greendot)
+                # else:
+                #     self.leftdot.setPixmap(self.reddot)
                 if mode == "CW":
                     self.setmode(mode)
                 if mode == "LSB" or mode == "USB":
