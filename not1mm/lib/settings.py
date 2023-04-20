@@ -2,6 +2,7 @@
 
 import logging
 from PyQt5 import QtWidgets, uic
+import sounddevice as sd
 
 
 class Settings(QtWidgets.QDialog):
@@ -15,11 +16,18 @@ class Settings(QtWidgets.QDialog):
         uic.loadUi(WORKING_PATH + "/data/configuration.ui", self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = pref
+        self.devices = sd.query_devices()
         self.setup()
 
     def setup(self):
         """setup dialog"""
-
+        for device in self.devices:
+            if device.get("max_output_channels"):
+                self.sounddevice.addItem(device.get("name"))
+        value = self.preference.get("sounddevice", "default")
+        index = self.sounddevice.findText(value)
+        if index != -1:
+            self.sounddevice.setCurrentIndex(index)
         self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
         self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
         self.usehamqth_radioButton.setChecked(bool(self.preference.get("usehamqth")))
@@ -29,11 +37,8 @@ class Settings(QtWidgets.QDialog):
         self.lookup_password_field.setText(
             str(self.preference.get("lookuppassword", ""))
         )
-        self.cloudlogapi_field.setText(str(self.preference.get("cloudlogapi", "")))
-        self.cloudlogurl_field.setText(str(self.preference.get("cloudlogurl", "")))
         self.rigcontrolip_field.setText(str(self.preference.get("CAT_ip", "")))
         self.rigcontrolport_field.setText(str(self.preference.get("CAT_port", "")))
-        self.usecloudlog_checkBox.setChecked(bool(self.preference.get("cloudlog")))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
@@ -67,15 +72,12 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
-
+        self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
         self.preference["usehamdb"] = self.usehamdb_radioButton.isChecked()
         self.preference["usehamqth"] = self.usehamqth_radioButton.isChecked()
         self.preference["lookupusername"] = self.lookup_user_name_field.text()
         self.preference["lookuppassword"] = self.lookup_password_field.text()
-        self.preference["cloudlog"] = self.usecloudlog_checkBox.isChecked()
-        self.preference["cloudlogapi"] = self.cloudlogapi_field.text()
-        self.preference["cloudlogurl"] = self.cloudlogurl_field.text()
         self.preference["CAT_ip"] = self.rigcontrolip_field.text()
         try:
             self.preference["CAT_port"] = int(self.rigcontrolport_field.text())

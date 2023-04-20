@@ -123,6 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     pref_ref = {
+        "sounddevice": "default",
         "useqrz": False,
         "lookupusername": "username",
         "lookuppassword": "password",
@@ -511,9 +512,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.refill_dropdown(self.contest_dialog.transmitter, value)
         value = self.contest_settings.get("StartDate")
         the_date, the_time = value.split()
-        self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.fromString(the_date, "yyyy-MM-dd"))
+        self.contest_dialog.dateTimeEdit.setDate(
+            QtCore.QDate.fromString(the_date, "yyyy-MM-dd")
+        )
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
-        self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime.fromString(the_time, "hh:mm:ss"))
+        self.contest_dialog.dateTimeEdit.setTime(
+            QtCore.QTime.fromString(the_time, "hh:mm:ss")
+        )
         self.contest_dialog.open()
 
     def save_edited_contest(self):
@@ -1151,8 +1156,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ptt_on()
                 try:
                     # sd.default.device = "USB Audio CODEC"
-                    sd.default.device = "default"
-                    sd.default.samplerate = 44100
+                    sd.default.device = self.pref.get("sounddevice", "default")
+                    # sd.default.samplerate = 44100
                     sd.play(data, fs)
                     _status = sd.wait()
                     # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
@@ -1172,8 +1177,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     data, fs = sf.read(filename, dtype="float32")
                     try:
                         # sd.default.device = "USB Audio CODEC"
-                        sd.default.device = "default"
-                        sd.default.samplerate = 44100
+                        sd.default.device = self.pref.get("sounddevice", "default")
+                        # sd.default.samplerate = 44100
                         sd.play(data, fs)
                         logger.debug("%s", f"{sd.wait()}")
                     except sd.PortAudioError as err:
