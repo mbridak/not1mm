@@ -134,7 +134,7 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="4">
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="title">
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
@@ -213,7 +213,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>16</hour>
+       <hour>0</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
