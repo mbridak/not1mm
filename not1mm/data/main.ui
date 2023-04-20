@@ -1016,6 +1016,7 @@
     <addaction name="separator"/>
     <addaction name="actionNew_Contest"/>
     <addaction name="actionOpen_Contest"/>
+    <addaction name="actionEdit_Current_Contest"/>
     <addaction name="separator"/>
     <addaction name="actionGenerate_Cabrillo"/>
     <addaction name="actionGenerate_ADIF"/>
@@ -1393,6 +1394,11 @@
    </property>
    <property name="shortcutVisibleInContextMenu">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionEdit_Current_Contest">
+   <property name="text">
+    <string>Edit Current Contest</string>
    </property>
   </action>
  </widget>

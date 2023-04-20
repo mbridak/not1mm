@@ -221,6 +221,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
         self.actionOpen_Contest.triggered.connect(self.open_contest)
+        self.actionEdit_Current_Contest.triggered.connect(self.edit_contest)
+
         self.actionNew_Database.triggered.connect(self.new_database)
         self.actionOpen_Database.triggered.connect(self.open_database)
 
@@ -467,6 +469,78 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["contest"] = contest
         self.write_preference()
         logger.debug("Selected contest: %s", f"{contest}")
+        self.load_contest()
+
+    def refill_dropdown(self, target, source):
+        """Refill QCombobox widget with value."""
+        index = target.findText(source)
+        target.setCurrentIndex(index)
+
+    def edit_contest(self):
+        """Edit the current contest"""
+        logger.debug("Edit contest Dialog")
+        self.contest_dialog = NewContest(WORKING_PATH)
+        self.contest_dialog.setWindowTitle("Edit Contest")
+        self.contest_dialog.title.setText("")
+        self.contest_dialog.accepted.connect(self.save_edited_contest)
+        if self.pref.get("dark_mode"):
+            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
+
+        value = self.contest_settings.get("ContestName").upper().replace("_", " ")
+        if value == "GENERAL LOGGING":
+            value = "General Logging"
+        self.refill_dropdown(self.contest_dialog.contest, value)
+        value = self.contest_settings.get("OperatorCategory")
+        self.refill_dropdown(self.contest_dialog.operator_class, value)
+        value = self.contest_settings.get("BandCategory")
+        self.refill_dropdown(self.contest_dialog.band, value)
+        value = self.contest_settings.get("PowerCategory")
+        self.refill_dropdown(self.contest_dialog.power, value)
+        value = self.contest_settings.get("ModeCategory")
+        self.refill_dropdown(self.contest_dialog.mode, value)
+        value = self.contest_settings.get("OverlayCategory")
+        self.refill_dropdown(self.contest_dialog.overlay, value)
+        self.contest_dialog.operators.setText(self.contest_settings.get("Operators"))
+        self.contest_dialog.soapbox.setPlainText(self.contest_settings.get("Soapbox"))
+        self.contest_dialog.exchange.setText(self.contest_settings.get("SentExchange"))
+        value = self.contest_settings.get("StationCategory")
+        self.refill_dropdown(self.contest_dialog.station, value)
+        value = self.contest_settings.get("AssistedCategory")
+        self.refill_dropdown(self.contest_dialog.assisted, value)
+        value = self.contest_settings.get("TransmitterCategory")
+        self.refill_dropdown(self.contest_dialog.transmitter, value)
+        value = self.contest_settings.get("StartDate")
+        the_date, the_time = value.split()
+        self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.fromString(the_date, "yyyy-MM-dd"))
+        self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
+        self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime.fromString(the_time, "hh:mm:ss"))
+        self.contest_dialog.open()
+
+    def save_edited_contest(self):
+        """Save the edited contest"""
+        contest = {}
+        contest["ContestName"] = (
+            self.contest_dialog.contest.currentText().lower().replace(" ", "_")
+        )
+        contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
+            "yyyy-MM-dd hh:mm:ss"
+        )
+        contest["OperatorCategory"] = self.contest_dialog.operator_class.currentText()
+        contest["BandCategory"] = self.contest_dialog.band.currentText()
+        contest["PowerCategory"] = self.contest_dialog.power.currentText()
+        contest["ModeCategory"] = self.contest_dialog.mode.currentText()
+        contest["OverlayCategory"] = self.contest_dialog.overlay.currentText()
+        contest["Operators"] = self.contest_dialog.operators.text()
+        contest["Soapbox"] = self.contest_dialog.soapbox.toPlainText()
+        contest["SentExchange"] = self.contest_dialog.exchange.text()
+        contest["ContestNR"] = self.pref.get("contest", 1)
+        contest["StationCategory"] = self.contest_dialog.station.currentText()
+        contest["AssistedCategory"] = self.contest_dialog.assisted.currentText()
+        contest["TransmitterCategory"] = self.contest_dialog.transmitter.currentText()
+
+        logger.debug("%s", f"{contest}")
+        self.database.update_contest(contest)
+        self.write_preference()
         self.load_contest()
 
     def load_contest(self):
@@ -1077,7 +1151,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ptt_on()
                 try:
                     # sd.default.device = "USB Audio CODEC"
-                    sd.default.device = "pipewire"
+                    sd.default.device = "default"
                     sd.default.samplerate = 44100
                     sd.play(data, fs)
                     _status = sd.wait()
@@ -1098,7 +1172,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     data, fs = sf.read(filename, dtype="float32")
                     try:
                         # sd.default.device = "USB Audio CODEC"
-                        sd.default.device = "pipewire"
+                        sd.default.device = "default"
                         sd.default.samplerate = 44100
                         sd.play(data, fs)
                         logger.debug("%s", f"{sd.wait()}")

@@ -26,6 +26,7 @@
     - [Changing station information](#changing-station-information)
   - [Adding a contest to the current dababase](#adding-a-contest-to-the-current-dababase)
   - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
+  - [Editing an existing contest parameters](#editing-an-existing-contest-parameters)
   - [Configuration Settings](#configuration-settings)
     - [Lookup](#lookup)
     - [CAT](#cat)
@@ -82,7 +83,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest.
+- [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest. Added edit existing contest dialog.
 - [23-4-18] Added voice keying. Fixed a bunch of crashes. Added PTT to rigctld.
 - [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
 - [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
@@ -214,6 +215,10 @@ Select `File` > `New Contest`
 Select `File` > `Open Contest`
 
 ![Open an existing contest](https://github.com/mbridak/not1mm/raw/master/pic/select_contest.png)
+
+## Editing an existing contest parameters
+
+You can edit the parameters of a previously defined contest by selecting it as the current contest. Then select `File` > `Edit Current Contest`. Click `OK` to save the new values and reload the contest. `Cancel` to keep the existing parameters.
 
 ## Configuration Settings
 
