@@ -1343,13 +1343,21 @@ class MainWindow(QtWidgets.QMainWindow):
                     logger.info("%s", self.pref)
         except IOError as exception:
             logger.critical("Error: %s", exception)
+
+        self.look_up = None
         if self.pref.get("useqrz"):
             self.look_up = QRZlookup(
                 self.pref.get("lookupusername"),
                 self.pref.get("lookuppassword"),
             )
-        else:
-            self.look_up = None
+        # if self.pref.get("usehamdb"):
+        #     self.look_up = HamDBlookup()
+        if self.pref.get("usehamqth"):
+            self.look_up = HamQTH(
+                self.pref.get("lookupusername"),
+                self.pref.get("lookuppassword"),
+            )
+
         if self.pref.get("run_state"):
             self.radioButton_run.setChecked(True)
         else:
@@ -1404,32 +1412,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
-
-        # if self.preference["useqrz"]:
-        #     self.look_up = QRZlookup(
-        #         self.preference["lookupusername"], self.preference["lookuppassword"]
-        #     )
-        #     self.callbook_icon.setText("QRZ")
-        #     if self.look_up.session:
-        #         self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
-        #     else:
-        #         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
-
-        # if self.preference["usehamdb"]:
-        #     self.look_up = HamDBlookup()
-        #     self.callbook_icon.setText("HamDB")
-        #     self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
-
-        # if self.preference["usehamqth"]:
-        #     self.look_up = HamQTH(
-        #         self.preference["lookupusername"],
-        #         self.preference["lookuppassword"],
-        #     )
-        #     self.callbook_icon.setText("HamQTH")
-        #     if self.look_up.session:
-        #         self.callbook_icon.setStyleSheet("color: rgb(128, 128, 0);")
-        #     else:
-        #         self.callbook_icon.setStyleSheet("color: rgb(136, 138, 133);")
 
         if self.pref.get("cwtype", 0) == 0:
             self.cw = None
