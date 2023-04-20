@@ -29,6 +29,7 @@
   - [Editing an existing contest parameters](#editing-an-existing-contest-parameters)
   - [Configuration Settings](#configuration-settings)
     - [Lookup](#lookup)
+    - [Soundcard](#soundcard)
     - [CAT](#cat)
     - [CW Keyer interface](#cw-keyer-interface)
   - [Hiding screen elements](#hiding-screen-elements)
@@ -231,6 +232,10 @@ The tabs for cloudlog, groups and n1mm are disabled and are for future expansion
 ### Lookup
 
 For callsign lookup, several services are supported. QRZ, HamQTH and HamDB. If your service of choice requires a username and password, Enter it here.
+
+### Soundcard
+
+Choose the sound output device for the voice keyer.
 
 ### CAT
 
