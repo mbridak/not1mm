@@ -198,6 +198,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.leftdot.hide()
+        self.rightdot.hide()
         self.n1mm = N1MM()
         self.next_field = self.other_2
         self.dupe_indicator.hide()
@@ -480,6 +482,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     logger.debug("Loaded Contest Name = %s", self.contest.name)
                     self.contest.init_contest(self)
                     self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
+
+                if hasattr(self.contest, "mode"):
+                    if self.contest.mode in ["CW", "BOTH"]:
+                        self.cw_speed.show()
+                    else:
+                        self.cw_speed.hide()
+
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
                 self.multicast_interface.send_as_json(cmd)
@@ -1066,8 +1075,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("Voicing: %s", filename)
                 data, fs = sf.read(filename, dtype="float32")
                 self.ptt_on()
-                sd.play(data, fs)
-                _status = sd.wait()
+                try:
+                    # sd.default.device = "USB Audio CODEC"
+                    sd.default.device = "pipewire"
+                    sd.default.samplerate = 44100
+                    sd.play(data, fs)
+                    _status = sd.wait()
+                    # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
+                except sd.PortAudioError as err:
+                    logger.debug("%s", f"{err}")
+
                 self.ptt_off()
             return
         self.ptt_on()
@@ -1079,17 +1096,27 @@ class MainWindow(QtWidgets.QMainWindow):
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     data, fs = sf.read(filename, dtype="float32")
-                    sd.play(data, fs)
-                    logger.debug("%s", f"{sd.wait()}")
+                    try:
+                        # sd.default.device = "USB Audio CODEC"
+                        sd.default.device = "pipewire"
+                        sd.default.samplerate = 44100
+                        sd.play(data, fs)
+                        logger.debug("%s", f"{sd.wait()}")
+                    except sd.PortAudioError as err:
+                        logger.debug("%s", f"{err}")
         self.ptt_off()
 
     def ptt_on(self):
         """turn on ptt"""
         if self.rig_control:
+            self.leftdot.setPixmap(self.greendot)
+            app.processEvents()
             self.rig_control.ptt_on()
 
     def ptt_off(self):
         """turn off ptt"""
+        self.leftdot.setPixmap(self.reddot)
+        app.processEvents()
         self.rig_control.ptt_off()
 
     def sendf1(self):
