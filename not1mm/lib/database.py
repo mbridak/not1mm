@@ -365,6 +365,22 @@ class DataBase:
         except sqlite3.Error as exception:
             logger.info("DataBase add_contest: %s", exception)
 
+    def update_contest(self, contest: dict) -> None:
+        """Update an existing contest"""
+        pre = "UPDATE ContestInstance set "
+        for key in contest.keys():
+            pre += f"{key} = '{contest[key]}',"
+        sql = f"{pre[:-1]} where ContestNR='{contest['ContestNR']}';"
+
+        try:
+            with sqlite3.connect(self.database) as conn:
+                logger.info("%s\n%s", sql, contest)
+                cur = conn.cursor()
+                cur.execute(sql)
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("DataBase update_contest: %s", exception)
+
     def fetch_all_contests(self) -> list:
         """returns a list of dicts with contests in the database."""
         try:
