@@ -13,6 +13,10 @@
   - [What it probably never will be](#what-it-probably-never-will-be)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Changes of note](#changes-of-note)
+  - [Installing from PyPi](#installing-from-pypi)
+    - [Python and pip](#python-and-pip)
+    - [Installing with pip](#installing-with-pip)
+    - [Updating with pip](#updating-with-pip)
   - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
@@ -134,6 +138,20 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 - [23-2-9] Initial post and name squatting.
 
 </details>
+
+## Installing from PyPi
+
+### Python and pip
+
+This software is a Python package hosted on PyPi, and installable with the pip command. If this is your first exposure to pip you can get all the details from [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/). In short, most linux distros come with Python pre installed. And pip usually comes with Python as a standard module. If pip is not installed by default, you can usually load it through your package manager. For example `sudo apt install python3-pip` or `sudo dnf install python3-pip`.
+
+### Installing with pip
+
+But just try `pip install not1mm` in your terminal. Once it's installed just type `not1mm` in the same terminal. On the first run, the program will install a launchable icon, which you can then click on to run like a normal program.
+
+### Updating with pip
+
+I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm`.
 
 ## Running from source
 
