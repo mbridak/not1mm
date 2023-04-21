@@ -84,7 +84,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-21] Seems phrases were mp3, resaved as wav.
+- [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT.
 - [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest. Added edit existing contest dialog.
 - [23-4-18] Added voice keying. Fixed a bunch of crashes. Added PTT to rigctld.
 - [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
