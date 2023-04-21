@@ -317,6 +317,14 @@ class CAT:
 
     def ptt_on(self):
         """turn ptt on/off"""
+        if self.interface == "flrig":
+            return self.__ptt_on_flrig()
+        if self.interface == "rigctld":
+            return self.__ptt_on_rigctld()
+        return False
+
+    def __ptt_on_rigctld(self):
+        """Toggle PTT state on"""
 
         # T, set_ptt 'PTT'
         # Set 'PTT'.
@@ -326,14 +334,6 @@ class CAT:
         # Get 'PTT' status.
         # Returns PTT as a value in set_ptt above.
 
-        if self.interface == "flrig":
-            return self.__ptt_on_flrig()
-        if self.interface == "rigctld":
-            return self.__ptt_on_rigctld()
-        return False
-
-    def __ptt_on_rigctld(self):
-        """stub"""
         rig_cmd = bytes("T 1\n", "utf-8")
         logger.debug("%s", f"{rig_cmd}")
         try:
@@ -345,8 +345,14 @@ class CAT:
             self.rigctrlsocket = None
 
     def __ptt_on_flrig(self):
-        """stub"""
-        return
+        """Toggle PTT state on"""
+        try:
+            self.online = True
+            return self.server.rig.set_ptt(1)
+        except ConnectionRefusedError as exception:
+            self.online = False
+            logger.debug("%s", exception)
+        return "0"
 
     def ptt_off(self):
         """turn ptt on/off"""
@@ -357,7 +363,7 @@ class CAT:
         return False
 
     def __ptt_off_rigctld(self):
-        """stub"""
+        """Toggle PTT state off"""
         rig_cmd = bytes("T 0\n", "utf-8")
         logger.debug("%s", f"{rig_cmd}")
         try:
@@ -369,5 +375,11 @@ class CAT:
             self.rigctrlsocket = None
 
     def __ptt_off_flrig(self):
-        """stub"""
-        return
+        """Toggle PTT state off"""
+        try:
+            self.online = True
+            return self.server.rig.set_ptt(0)
+        except ConnectionRefusedError as exception:
+            self.online = False
+            logger.debug("%s", exception)
+        return "0"
