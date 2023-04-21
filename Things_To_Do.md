@@ -1,4 +1,3 @@
 # Things needed
 
-- Dialog to select an output sound device.
-
+- Test sound output on actual radio.
