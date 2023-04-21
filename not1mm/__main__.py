@@ -1155,10 +1155,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 data, fs = sf.read(filename, dtype="float32")
                 self.ptt_on()
                 try:
-                    # sd.default.device = "USB Audio CODEC"
                     sd.default.device = self.pref.get("sounddevice", "default")
-                    # sd.default.samplerate = 44100
-                    sd.play(data, fs)
+                    sd.default.samplerate = 44100.0
+                    sd.play(data)
                     _status = sd.wait()
                     # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
                 except sd.PortAudioError as err:
@@ -1176,10 +1175,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     logger.debug("Voicing: %s", filename)
                     data, fs = sf.read(filename, dtype="float32")
                     try:
-                        # sd.default.device = "USB Audio CODEC"
                         sd.default.device = self.pref.get("sounddevice", "default")
-                        # sd.default.samplerate = 44100
-                        sd.play(data, fs)
+                        sd.default.samplerate = 44100.0
+                        sd.play(data)
                         logger.debug("%s", f"{sd.wait()}")
                     except sd.PortAudioError as err:
                         logger.debug("%s", f"{err}")
