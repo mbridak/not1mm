@@ -1152,7 +1152,7 @@ class MainWindow(QtWidgets.QMainWindow):
             filename = f"{str(op_path)}/{sub_string}.wav"
             if Path(filename).is_file():
                 logger.debug("Voicing: %s", filename)
-                data, fs = sf.read(filename, dtype="float32")
+                data, _fs = sf.read(filename, dtype="float32")
                 self.ptt_on()
                 try:
                     sd.default.device = self.pref.get("sounddevice", "default")
@@ -1765,7 +1765,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Calls the default text editor to edit the CW macro file.
         """
-        # FIXME
         if self.radio_state.get("mode") == "CW":
             macro_file = "/cwmacros.txt"
         else:
