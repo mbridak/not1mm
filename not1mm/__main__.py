@@ -362,6 +362,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_configuration_settings(self):
         """Configuration Settings was clicked"""
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
+        self.configuration_dialog.usehamdb_radioButton.hide()
+        # self.configuration_dialog.n1mm_tab.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
 

@@ -29,7 +29,7 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.sounddevice.setCurrentIndex(index)
         self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
-        self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
+        # self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
         self.usehamqth_radioButton.setChecked(bool(self.preference.get("usehamqth")))
         self.lookup_user_name_field.setText(
             str(self.preference.get("lookupusername", ""))
@@ -74,7 +74,7 @@ class Settings(QtWidgets.QDialog):
         """
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
-        self.preference["usehamdb"] = self.usehamdb_radioButton.isChecked()
+        # self.preference["usehamdb"] = self.usehamdb_radioButton.isChecked()
         self.preference["usehamqth"] = self.usehamqth_radioButton.isChecked()
         self.preference["lookupusername"] = self.lookup_user_name_field.text()
         self.preference["lookuppassword"] = self.lookup_password_field.text()
