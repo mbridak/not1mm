@@ -257,7 +257,9 @@ The your choices will be remembered when you relaunch the program.
 
 ## Editing macro keys
 
-To edit the macros, choose `File` > `Edit Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit will be determined by your current operating mode.
+To edit the macros, choose `File` > `Edit Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit, CW or SSB, will be determined by your current operating mode.
+
+After editing and saving the macro file. You can force the logger to reload the macro file by toggeling between `Run` and `S&P` states.
 
 ### Macro substitutions
 
@@ -272,11 +274,9 @@ You can include a limited set of substitution instructions.
 
 The macros when used with voice, will also accept filenames of WAV files to play, excluding the file extension. The filename must be enclosed by brackets. For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav files are stored in the operators personal data directory. The filenames must be in lowercase. See [Various data file locations](#various-data-file-locations) above for the location of your data files. For me, the macro `[cq]` will play `/home/mbridak/.local/share/not1mm/K6GTE/cq.wav`
 
-The current wav files in place are not the ones you will want to use. They sound like some little kid. You can use something like Audacity to record new wav files in your own voice.
+**The current wav files in place are not the ones you will want to use. They sound like some little kid.** You can use something like Audacity to record new wav files in your own voice.
 
 Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in a little kids voice.
-
-Right now, the sound is played out of the default sound device. This is NOT what we want. I still have to code up the dialog to choose the correct sound device to use.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
