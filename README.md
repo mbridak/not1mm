@@ -244,7 +244,7 @@ You can edit the parameters of a previously defined contest by selecting it as t
 
 To setup your CAT control, CW keyer, Callsign lookups, select `File` > `Configuration Settings`
 
-The tabs for cloudlog, groups and n1mm are disabled and are for future expansion.
+The tabs for groups and n1mm are disabled and are for future expansion.
 
 ![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_settings.png)
 
@@ -263,7 +263,6 @@ Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127
 ### CW Keyer interface
 
 Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP `127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and port `8000`. Or `None`, if you want to Morse it like it's 1899.
-
 
 ## Hiding screen elements
 
