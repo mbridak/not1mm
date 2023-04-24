@@ -147,10 +147,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.focusedLog.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("SentNr"))
         self.focusedLog.setHorizontalHeaderItem(6, QtWidgets.QTableWidgetItem("RcvNr"))
 
-        self.generalLog.setHorizontalHeaderItem(
+        self.focusedLog.setHorizontalHeaderItem(
             7, QtWidgets.QTableWidgetItem("Exchange1")
         )
-        self.generalLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("Sect"))
+        self.focusedLog.setHorizontalHeaderItem(8, QtWidgets.QTableWidgetItem("Sect"))
 
         self.focusedLog.setHorizontalHeaderItem(9, QtWidgets.QTableWidgetItem("WPX"))
         self.focusedLog.setHorizontalHeaderItem(10, QtWidgets.QTableWidgetItem("Power"))
@@ -600,20 +600,34 @@ class MainWindow(QtWidgets.QMainWindow):
             self.focusedLog.setItem(
                 number_of_rows,
                 7,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Exchange1", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                8,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Sect", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                9,
                 QtWidgets.QTableWidgetItem(str(log_item.get("WPXPrefix", ""))),
             )
-
+            self.focusedLog.setItem(
+                number_of_rows,
+                10,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Power", ""))),
+            )
             item = QtWidgets.QTableWidgetItem()
             if log_item.get("IsMultiplier1", False):
                 item.setIcon(self.checkicon)
             self.focusedLog.setItem(
                 number_of_rows,
-                8,
+                11,
                 item,
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                9,
+                12,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ZN", ""))),
             )
             item = QtWidgets.QTableWidgetItem()
@@ -621,22 +635,32 @@ class MainWindow(QtWidgets.QMainWindow):
                 item.setIcon(self.checkicon)
             self.focusedLog.setItem(
                 number_of_rows,
-                10,
+                13,
                 item,
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                11,
+                14,
                 QtWidgets.QTableWidgetItem(str(log_item.get("CountryPrefix", ""))),
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                12,
+                15,
                 QtWidgets.QTableWidgetItem(str(log_item.get("Points", ""))),
             )
             self.focusedLog.setItem(
                 number_of_rows,
-                13,
+                16,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Name", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                17,
+                QtWidgets.QTableWidgetItem(str(log_item.get("Comment", ""))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                18,
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
 
