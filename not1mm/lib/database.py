@@ -597,6 +597,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_call_exists(self, call) -> dict:
+        """returns a dict key of nr_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as call_count from dxlog where Call = '{call}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_nr_exists_before_me(self, number, time_stamp) -> dict:
         """returns a dict key of nr_count"""
         try:
@@ -605,6 +619,23 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(*) as nr_count from dxlog where  TS < '{time_stamp}' and NR = '{number}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_call_count(self) -> dict:
+        """
+        returns dict with count of unique calls.
+        {call_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT Call) as call_count from dxlog where ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
