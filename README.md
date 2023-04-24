@@ -91,7 +91,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-24] CWT now prefills exchange based on past CWT contacts in database.
+- [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
 - [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
 - [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT. Added Select sound device. Reworked Configuration Settings dialog. Rerecorded phonetics.
 - [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest. Added edit existing contest dialog.
