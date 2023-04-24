@@ -19,8 +19,7 @@
    <string>Configuration Settings</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(46, 52, 54);
-color: rgb(211, 215, 207);</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
@@ -42,7 +41,7 @@ color: rgb(211, 215, 207);</string>
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -1028,8 +1027,6 @@ color: rgb(211, 215, 207);</string>
     </widget>
    </item>
   </layout>
-  <zorder>tabWidget</zorder>
-  <zorder>buttonBox</zorder>
  </widget>
  <resources/>
  <connections>
