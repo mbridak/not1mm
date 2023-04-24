@@ -83,6 +83,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 - CQ WPX SSB
 - CQ World Wide CW
 - CQ World Wide SSB
+- CWOps CWT
 - Japan International DX CW
 - Japan International DX SSB
 
@@ -286,6 +287,7 @@ You can include a limited set of substitution instructions.
 - {HISCALL} Send what's in the callsign field.
 - {SNT} Sends 5nn (cw) or 599 (ssb)
 - {SENTNR} Sends whats in the SentNR field.
+- {EXCH} Sends what's in the Sent Exchange field when contest is defined.
 
 ### Macro use with voice
 
