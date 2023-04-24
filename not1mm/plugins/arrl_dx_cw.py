@@ -78,6 +78,10 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill sentnr"""
     # if len(self.other_2.text()) == 0:
@@ -106,12 +110,14 @@ def points(self):
             return 0
     return 0
 
+
 def show_mults(self):
     """Return display string for mults"""
     result = self.database.fetch_arrldx_country_band_count()
     if result:
         return int(result.get("cb_count", 0))
     return 0
+
 
 def show_qso(self):
     """Return qso count"""
@@ -127,7 +133,6 @@ def get_points(self):
     if result:
         return int(result.get("Points", 0))
     return 0
-
 
 
 def calc_score(self):
@@ -241,7 +246,6 @@ def adif(self):
                 print("", end="\r\n", file=file_descriptor)
     except IOError:
         ...
-
 
 
 def cabrillo(self):

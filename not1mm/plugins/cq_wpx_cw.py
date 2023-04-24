@@ -87,6 +87,10 @@ def set_contact_vars(self):
             self.contact["IsMultiplier1"] = 1
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill SentNR"""
     result = self.database.get_serial()

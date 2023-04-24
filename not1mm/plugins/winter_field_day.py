@@ -68,6 +68,10 @@ def set_contact_vars(self):
     """Contest Specific"""
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill SentNR"""
 

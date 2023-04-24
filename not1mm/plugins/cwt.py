@@ -79,7 +79,7 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["Name"] = self.other_1.text().upper()
     self.contact["NR"] = self.other_1.text().upper() + " " + self.other_2.text().upper()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
     result = self.database.fetch_call_exists(self.callsign.text().upper())
     logger.debug("%s", f"{result}")
     if result:
@@ -89,8 +89,24 @@ def set_contact_vars(self):
     self.contact["IsMultiplier1"] = 0
 
 
+def predupe(self):
+    """prefill his exchange with last known values"""
+    if self.other_1.text() == "" and self.other_2.text() == "":
+        call = self.callsign.text().upper()
+        query = f"select NR from dxlog where Call = '{call}' and ContestName = 'CWOPS-CWT' order by ts desc;"
+        logger.debug(query)
+        result = self.database.exec_sql(query)
+        logger.debug("%s", f"{result}")
+        if result:
+            value = result.get("NR", "").upper()
+            if len(value.split(" ")) == 2:
+                parsed_name, suffix = value.split()
+                self.other_1.setText(str(parsed_name))
+                self.other_2.setText(str(suffix))
+
+
 def prefill(self):
-    """Fill SentNR"""
+    """call changed but not complete yet"""
 
 
 def points(self):
@@ -157,8 +173,8 @@ def adif(self):
                 frequency = str(contact.get("Freq", 0) / 1000)
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
-                sentnr = str(contact.get("SentNr", ""))
-                rcvnr = str(contact.get("NR", ""))
+                sentnr = str(contact.get("SentNr", "").upper())
+                rcvnr = str(contact.get("NR", "").upper())
                 grid = contact.get("GridSquare", "")
                 comment = contact.get("ContestName", "")
                 loggeddate = the_date_and_time[:10]
@@ -272,7 +288,7 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             # print(
-            #     f"ARRL-SECTION: {self.pref.get('section', '')}",
+            #     f"ARRL-SECTION: {self.pref.get('section', '').upper()}",
             #     end="\r\n",
             #     file=file_descriptor,
             # )
@@ -328,7 +344,7 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             print(
-                f"OPERATORS: {self.contest_settings.get('Operators','')}",
+                f"OPERATORS: {self.contest_settings.get('Operators','').upper()}",
                 end="\r\n",
                 file=file_descriptor,
             )

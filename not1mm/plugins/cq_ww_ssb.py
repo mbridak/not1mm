@@ -79,6 +79,10 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill CQ Zone"""
     if len(self.other_2.text()) == 0:

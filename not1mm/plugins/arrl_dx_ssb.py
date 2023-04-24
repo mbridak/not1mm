@@ -78,6 +78,10 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill sentnr"""
     # if len(self.other_2.text()) == 0:
@@ -242,7 +246,6 @@ def adif(self):
                 print("", end="\r\n", file=file_descriptor)
     except IOError:
         ...
-
 
 
 def cabrillo(self):

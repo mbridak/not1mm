@@ -81,6 +81,10 @@ def set_contact_vars(self):
     self.contact["Comment"] = self.other_2.text()
 
 
+def predupe(self):
+    """called after callsign entered"""
+
+
 def prefill(self):
     """Fill SentNR"""
 
