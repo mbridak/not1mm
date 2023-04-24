@@ -482,6 +482,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_contest(self):
         """Edit the current contest"""
         logger.debug("Edit contest Dialog")
+        if self.contest_settings is None:
+            return
         self.contest_dialog = NewContest(WORKING_PATH)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
