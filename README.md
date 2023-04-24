@@ -17,6 +17,8 @@
     - [Python and pip](#python-and-pip)
     - [Installing with pip](#installing-with-pip)
     - [Updating with pip](#updating-with-pip)
+  - [Other Libraries](#other-libraries)
+  - [Running on Ubuntu LTS 22.04](#running-on-ubuntu-lts-2204)
   - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
@@ -155,6 +157,24 @@ But just try `pip install not1mm` in your terminal. Once it's installed just typ
 ### Updating with pip
 
 I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm`.
+
+## Other Libraries
+
+The audio library used, uses pipewire/portaudio. You may need to install portaudio. Ubuntu: `sudo apt install libportaudio2`
+
+## Running on Ubuntu LTS 22.04
+
+Seems Ubuntu LTS is not a big fan of wayland. When launching from the command line you'll see a message:
+
+`Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.`
+
+To avoid this you can export an environment variable and launch the app like this:
+
+`mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
+
+For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
 
 ## Running from source
 
