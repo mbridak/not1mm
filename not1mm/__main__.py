@@ -920,27 +920,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["NetworkedCompNr"]
         # self.contact["CLAIMEDQSO"]
 
-    # def qrz_preference_selected(self):
-    #     """Show QRZ settings dialog"""
-    #     logger.debug("QRZ preference selected")
-    #     self.qrz_dialog = UseQRZ(WORKING_PATH)
-    #     self.qrz_dialog.accepted.connect(self.save_qrz_settings)
-    #     if self.pref.get("dark_mode"):
-    #         self.qrz_dialog.setStyleSheet(DARK_STYLESHEET)
-    #     self.qrz_dialog.useqrz.setChecked(self.pref.get("useqrz", False))
-    #     self.qrz_dialog.username.setText(self.pref.get("lookupusername", ""))
-    #     self.qrz_dialog.password.setText(self.pref.get("lookuppassword", ""))
-    #     self.qrz_dialog.open()
-
-    # def save_qrz_settings(self):
-    #     """Save QRZ settings"""
-    #     self.pref["useqrz"] = self.qrz_dialog.useqrz.isChecked()
-    #     self.pref["lookupusername"] = self.qrz_dialog.username.text()
-    #     self.pref["lookuppassword"] = self.qrz_dialog.password.text()
-    #     self.qrz_dialog.close()
-    #     self.write_preference()
-    #     self.readpreferences()
-
     def new_contest_dialog(self):
         """Show new contest dialog"""
         logger.debug("New contest Dialog")
@@ -1143,6 +1122,9 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro = macro.replace("{SNT}", self.sent.text())
         macro = macro.replace("{SENTNR}", self.other_1.text())
+        macro = macro.replace(
+            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
+        )
         return macro
 
     def voice_string(self, the_string: str) -> None:
@@ -1175,7 +1157,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 filename = f"{str(op_path)}/{letter}.wav"
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
-                    data, fs = sf.read(filename, dtype="float32")
+                    data, _fs = sf.read(filename, dtype="float32")
                     try:
                         sd.default.device = self.pref.get("sounddevice", "default")
                         sd.default.samplerate = 44100.0
@@ -1509,19 +1491,6 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.Command_Buttons.hide()
 
-    # def show_band_mode_state_change(self):
-    #     """Called when the mode and bads menu item changes"""
-    #     self.pref["bands_modes"] = self.actionMode_and_Bands.isChecked()
-    #     self.write_preference()
-    #     self.show_band_mode()
-
-    # def show_band_mode(self):
-    #     """Hide or show band/mode indicator"""
-    #     if self.actionMode_and_Bands.isChecked():
-    #         self.Band_Mode_Frame.show()
-    #     else:
-    #         self.Band_Mode_Frame.hide()
-
     def is_floatable(self, item: str) -> bool:
         """check to see if string can be a float"""
         if item.isnumeric():
@@ -1695,12 +1664,14 @@ class MainWindow(QtWidgets.QMainWindow):
             # self.mode.setText("CW")
             self.sent.setText("599")
             self.receive.setText("599")
+            self.read_cw_macros()
             return
         if mode == "SSB":
             self.current_mode = "SSB"
             # self.mode.setText("SSB")
             self.sent.setText("59")
             self.receive.setText("59")
+            self.read_cw_macros()
         if mode == "RTTY":
             self.current_mode = "RTTY"
             # self.mode.setText("RTTY")
@@ -1775,7 +1746,6 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("read_cw_macros: copying default macro file.")
             copyfile(WORKING_PATH + "/data" + macro_file, DATA_PATH + macro_file)
         os.system(f"xdg-open {DATA_PATH}{macro_file}")
-        self.read_cw_macros()
 
     def read_cw_macros(self) -> None:
         """
