@@ -1639,6 +1639,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
+        self.contest.predupe(self)
         band = float(get_logged_band(str(self.radio_state.get("vfoa", 0.0))))
         mode = self.radio_state.get("mode", "")
         debugline = (
