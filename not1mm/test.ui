@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>493</width>
+    <width>374</width>
     <height>637</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>JetBrains Mono</family>
+   </font>
   </property>
   <property name="windowTitle">
    <string>BandMap</string>
@@ -17,6 +22,12 @@
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QScrollArea" name="scrollArea">
+      <property name="font">
+       <font>
+        <family>JetBrains Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -25,13 +36,26 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>477</width>
+         <width>358</width>
          <height>527</height>
         </rect>
        </property>
+       <property name="font">
+        <font>
+         <family>JetBrains Mono</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QGraphicsView" name="graphicsView"/>
+         <widget class="QGraphicsView" name="graphicsView">
+          <property name="font">
+           <font>
+            <family>JetBrains Mono</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
