@@ -8,6 +8,7 @@ GPL V3
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
 from datetime import datetime
+from enum import Enum
 
 import sys
 import sqlite3
@@ -16,6 +17,18 @@ from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
 
 PIXELSPERSTEP = 10
+
+
+class zoomlevel(Enum):
+    """doc"""
+
+    ZOOM_100HZ = 1
+    ZOOM_250HZ = 2
+    ZOOM_500HZ = 3
+    ZOOM_1KHZ = 4
+    ZOOM_2K5HZ = 5
+    ZOOM_5KHZ = 6
+    ZOOM_10KHZ = 7
 
 
 class Band:
@@ -122,7 +135,7 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
-    zoom = "ZOOM_2K5HZ"
+    zoom = 5
     currentBand = Band("40m")
     txMark = None
     rxMark = None
@@ -136,6 +149,8 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("/home/mbridak/Nextcloud/dev/not1mm/not1mm/test.ui", self)
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spotAgingChanged)
         self.clearButton.clicked.connect(self.clearSpots)
+        self.zoominButton.clicked.connect(self.dec_zoom)
+        self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.spots = Database()
         self.bandmap_scene = QtWidgets.QGraphicsScene()
         self.socket = QtNetwork.QTcpSocket()
@@ -166,7 +181,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clearFreqMark(self.txMark)
         self.bandmap_scene.clear()
 
-        step, digits = self.determineStepDigits()
+        step, _digits = self.determineStepDigits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
@@ -200,6 +215,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.updateStations()
 
+    def inc_zoom(self):
+        """doc"""
+        self.zoom += 1
+        self.zoom = min(self.zoom, 7)
+        self.update()
+
+    def dec_zoom(self):
+        """doc"""
+        self.zoom -= 1
+        self.zoom = max(self.zoom, 1)
+        self.update()
+
     def drawTXRXMarks(self, step):
         """doc"""
 
@@ -220,14 +247,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 text_y = max(min_y + 5, freq_y)
                 self.lineitemlist.append(
                     self.bandmap_scene.addLine(
-                        17, freq_y, 40, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
+                        30, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
                     )
                 )
                 text = self.bandmap_scene.addText(
                     items.get("callsign") + " @ " + items.get("ts").split()[1][:-3]
                 )
                 text.document().setDocumentMargin(0)
-                text.setPos(40, text_y - (text.boundingRect().height() / 2))
+                text.setPos(60, text_y - (text.boundingRect().height() / 2))
                 text.setFlags(
                     QtWidgets.QGraphicsItem.ItemIsFocusable
                     | QtWidgets.QGraphicsItem.ItemIsSelectable
@@ -245,13 +272,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def determineStepDigits(self):
         """doc"""
         return_zoom = {
-            "ZOOM_100HZ": (0.0001, 4),
-            "ZOOM_250HZ": (0.00025, 4),
-            "ZOOM_500HZ": (0.0005, 4),
-            "ZOOM_1KHZ": (0.001, 3),
-            "ZOOM_2K5HZ": (0.0025, 3),
-            "ZOOM_5KHZ": (0.005, 3),
-            "ZOOM_10KHZ": (0.01, 2),
+            1: (0.0001, 4),
+            2: (0.00025, 4),
+            3: (0.0005, 4),
+            4: (0.001, 3),
+            5: (0.0025, 3),
+            6: (0.005, 3),
+            7: (0.01, 2),
         }
         step, digits = return_zoom.get(self.zoom, (0.0001, 4))
 
@@ -311,7 +338,10 @@ class MainWindow(QtWidgets.QMainWindow):
             spot["ts"] = datetime.utcnow().isoformat(" ")[:19]
             spot["callsign"] = dx
             spot["spotter"] = spotter
-            spot["freq"] = float(freq) / 1000
+            try:
+                spot["freq"] = float(freq) / 1000
+            except ValueError:
+                print(data)
             self.spots.addspot(spot)
 
     def connected(self):
