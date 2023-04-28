@@ -44,7 +44,9 @@
     - [Macro use with voice](#macro-use-with-voice)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
-  - [Log Display](#log-display)
+  - [Windows](#windows)
+    - [Log Display](#log-display)
+    - [Bandmap](#bandmap)
   - [Editing a contact](#editing-a-contact)
   - [Recalulate Mults](#recalulate-mults)
   - [Cabrillo](#cabrillo)
@@ -91,6 +93,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-28] Added a bandmap window (WIP) to track spots.
 - [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
 - [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
 - [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT. Added Select sound device. Reworked Configuration Settings dialog. Rerecorded phonetics.
@@ -337,13 +340,25 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 **You must press the SPACE bar after entering any of the above.**
 
-## Log Display
+## Windows
+
+### Log Display
+
+`Window`>`Log Window`
 
 The Log display gets updated automatically when a contact is entered. The top half is a list of all contacts.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
 
 The bottom half of the log displays contacts sorted by what's currently in the call entry field. The columns displayed in the log window are dependant on what contests is currently active.
+
+### Bandmap
+
+`Window`>`Bandmap`
+
+The bandmap window is, as with everything, a work in progress.
+
+![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 
 ## Editing a contact
 
