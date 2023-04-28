@@ -1060,6 +1060,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionLog_Window"/>
+    <addaction name="actionBandmap"/>
    </widget>
    <widget class="QMenu" name="menuOther">
     <property name="title">
@@ -1414,6 +1415,11 @@
   <action name="actionEdit_Current_Contest">
    <property name="text">
     <string>Edit Current Contest</string>
+   </property>
+  </action>
+  <action name="actionBandmap">
+   <property name="text">
+    <string>Bandmap</string>
    </property>
   </action>
  </widget>

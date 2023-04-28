@@ -210,6 +210,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
         self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
+        self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
 
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
@@ -641,6 +642,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """launch the Log Window"""
         if not check_process("logwindow.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
+
+    def launch_bandmap_window(self):
+        """launch the Log Window"""
+        if not check_process("bandmap.py"):
+            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/bandmap.py"])
 
     def clear_band_indicators(self):
         """Clear the indicators"""
