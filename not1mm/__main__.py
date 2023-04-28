@@ -1737,11 +1737,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.setmode("RTTY")
                 self.radio_state["vfoa"] = vfo
                 band = getband(str(vfo))
+                self.radio_state["band"] = band
                 self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_band_indicator(band)
                 self.radio_state["mode"] = mode
                 # logger.debug("VFO: %s  MODE: %s", vfo, mode)
                 self.set_window_title()
+                cmd = {}
+                cmd["cmd"] = "RADIO_STATE"
+                cmd["band"] = band
+                cmd["vfoa"] = vfo
+                cmd["mode"] = mode
+                self.multicast_interface.send_as_json(cmd)
 
     def edit_cw_macros(self) -> None:
         """
