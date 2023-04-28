@@ -110,6 +110,12 @@ class Database:
         )
         return self.cursor.fetchall()
 
+    def delete_spots(self, minutes: int):
+        """doc"""
+        self.cursor.execute(
+            f"delete from spots where ts < datetime('now', '-{minutes} minutes');"
+        )
+
 
 class MainWindow(QtWidgets.QMainWindow):
     """
@@ -123,10 +129,13 @@ class MainWindow(QtWidgets.QMainWindow):
     something = None
     lineitemlist = []
     textItemList = []
+    agetime = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         uic.loadUi("/home/mbridak/Nextcloud/dev/not1mm/not1mm/test.ui", self)
+        self.clear_spot_olderSpinBox.valueChanged.connect(self.spotAgingChanged)
+        self.clearButton.clicked.connect(self.clearSpots)
         self.spots = Database()
         self.bandmap_scene = QtWidgets.QGraphicsScene()
         self.socket = QtNetwork.QTcpSocket()
@@ -201,12 +210,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spotAging()
         step, digits = self.determineStepDigits()
 
-        print("**********")
         result = self.spots.getspotsinband(self.currentBand.start, self.currentBand.end)
         if result:
             min_y = 0.0
             for items in result:
-                print(f"{items.get('callsign')} {items.get('freq')} {items.get('ts')}")
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
@@ -266,6 +273,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def spotAging(self):
         """doc"""
+        if self.agetime:
+            self.spots.delete_spots(self.agetime)
 
     def clearAllCallsignFromScene(self):
         """doc"""
@@ -328,6 +337,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clearSpots(self):
         """doc"""
+        self.spots.delete_spots(0)
 
     def zoomIn(self):
         """doc"""
@@ -337,6 +347,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def spotAgingChanged(self):
         """doc"""
+        self.agetime = self.clear_spot_olderSpinBox.value()
 
     def showContextMenu(self):
         """doc"""

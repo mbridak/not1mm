@@ -101,7 +101,7 @@
          <string>Never</string>
         </property>
         <property name="suffix">
-         <string>min(s)</string>
+         <string> min(s)</string>
         </property>
         <property name="maximum">
          <number>9999</number>
