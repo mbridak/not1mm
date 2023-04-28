@@ -8,14 +8,22 @@ GPL V3
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
 from datetime import datetime
+from json import JSONDecodeError, loads, dumps
 from pathlib import Path
+import logging
 import os
 import pkgutil
+import queue
+import socket
 import sys
 import sqlite3
-from PyQt5 import QtCore, QtGui
+import time
+import threading
+from PyQt5 import QtCore, QtGui, Qt
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
+
+from not1mm.lib.multicast import Multicast
 
 PIXELSPERSTEP = 10
 
@@ -98,23 +106,28 @@ class Database:
 
     def addspot(self, spot):
         """doc"""
-        delete_call = f"delete from spots where callsign = '{spot.get('callsign')}';"
-        self.cursor.execute(delete_call)
-        self.db.commit()
+        try:
+            delete_call = (
+                f"delete from spots where callsign = '{spot.get('callsign')}';"
+            )
+            self.cursor.execute(delete_call)
+            self.db.commit()
 
-        pre = "INSERT INTO spots("
-        values = []
-        columns = ""
-        placeholders = ""
-        for key in spot.keys():
-            columns += f"{key},"
-            values.append(spot[key])
-            placeholders += "?,"
-        post = f") VALUES({placeholders[:-1]});"
+            pre = "INSERT INTO spots("
+            values = []
+            columns = ""
+            placeholders = ""
+            for key in spot.keys():
+                columns += f"{key},"
+                values.append(spot[key])
+                placeholders += "?,"
+            post = f") VALUES({placeholders[:-1]});"
 
-        sql = f"{pre}{columns[:-1]}{post}"
-        self.cursor.execute(sql, tuple(values))
-        self.db.commit()
+            sql = f"{pre}{columns[:-1]}{post}"
+            self.cursor.execute(sql, tuple(values))
+            self.db.commit()
+        except:
+            ...
 
     def getspots(self) -> list:
         """returns a list of dicts."""
@@ -147,6 +160,8 @@ class MainWindow(QtWidgets.QMainWindow):
     currentBand = Band("40m")
     txMark = None
     rxMark = None
+    rx_freq = None
+    tx_freq = None
     something = None
     lineitemlist = []
     textItemList = []
@@ -154,6 +169,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._udpwatch = None
+        self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
@@ -178,6 +195,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(1000)
         self.update()
+        self.udpsocket = QtNetwork.QUdpSocket(self)
+        self.udpsocket.bind(
+            QtNetwork.QHostAddress.AnyIPv4,
+            MULTICAST_PORT,
+            QtNetwork.QUdpSocket.ShareAddress,
+        )
+        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
+        self.udpsocket.readyRead.connect(self.watch_udp)
+
+    def watch_udp(self):
+        """doc"""
+        while self.udpsocket.hasPendingDatagrams():
+            datagram = self.udpsocket.readDatagram(self.udpsocket.pendingDatagramSize())
+            bundle, _, _ = datagram
+            logger.debug("%s", f"{bundle}")
+            try:
+                packet = loads(bundle.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{packet}"
+                logger.debug(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{packet}"
+                logger.debug(the_error)
+                continue
+            if packet.get("cmd", "") == "RADIO_STATE":
+                self.set_band(packet.get("band") + "m", False)
+                self.rx_freq = float(packet.get("vfoa")) / 1000000
+                self.tx_freq = self.rx_freq
 
     def spot_clicked(self):
         """dunno"""
@@ -248,6 +294,39 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def drawTXRXMarks(self, step):
         """doc"""
+        if self.rx_freq:
+            self.drawfreqmark(
+                self.rx_freq, step, QtGui.QColor(30, 180, 30), self.rxMark
+            )
+
+    def Freq2ScenePos(self, freq: float):
+        """doc"""
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return QtCore.QPointF()
+        step, _digits = self.determine_step_digits()
+        ret = QtCore.QPointF(
+            0, ((freq - self.currentBand.start) / step) * PIXELSPERSTEP
+        )
+        return ret
+
+    def drawfreqmark(self, freq, step, color, currentPolygon):
+        """doc"""
+        self.clear_freq_mark(currentPolygon)
+
+        # do not show the freq mark if it is outside the bandmap
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return
+
+        Yposition = self.Freq2ScenePos(freq).y()
+
+        poly = QtGui.QPolygonF()
+
+        poly.append(QtCore.QPointF(17, Yposition))
+        poly.append(QtCore.QPointF(10, Yposition - 7))
+        poly.append(QtCore.QPointF(10, Yposition + 7))
+        pen = QtGui.QPen()
+        brush = QtGui.QBrush(color)
+        currentPolygon = self.bandmap_scene.addPolygon(poly, pen, brush)
 
     def update_stations(self):
         """doc"""
@@ -312,10 +391,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_band(self, band: str, savePrevBandZoom: bool):
         """doc"""
+        logger.debug("%s", f"{band} {savePrevBandZoom}")
         if savePrevBandZoom:
             self.saveCurrentZoom()
         self.currentBand = Band(band)
-        self.zoom = self.savedZoom(band)
+        # self.zoom = self.savedZoom(band)
+        self.update()
 
     def spot_aging(self):
         """doc"""
@@ -400,6 +481,22 @@ def run():
     """doc"""
     sys.exit(app.exec())
 
+
+logger = logging.getLogger("__main__")
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    datefmt="%H:%M:%S",
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+if Path("./debug").exists():
+    logger.setLevel(logging.DEBUG)
+    logger.debug("debugging on")
+else:
+    logger.setLevel(logging.WARNING)
+    logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
 
