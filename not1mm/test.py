@@ -8,8 +8,9 @@ GPL V3
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
 from datetime import datetime
-from enum import Enum
-
+from pathlib import Path
+import os
+import pkgutil
 import sys
 import sqlite3
 from PyQt5 import QtCore, QtGui
@@ -18,17 +19,24 @@ from PyQt5 import QtWidgets, uic
 
 PIXELSPERSTEP = 10
 
+loader = pkgutil.get_loader("not1mm")
+WORKING_PATH = os.path.dirname(loader.get_filename())
 
-class zoomlevel(Enum):
-    """doc"""
+if "XDG_DATA_HOME" in os.environ:
+    DATA_PATH = os.environ.get("XDG_DATA_HOME")
+else:
+    DATA_PATH = str(Path.home() / ".local" / "share")
+DATA_PATH += "/not1mm"
 
-    ZOOM_100HZ = 1
-    ZOOM_250HZ = 2
-    ZOOM_500HZ = 3
-    ZOOM_1KHZ = 4
-    ZOOM_2K5HZ = 5
-    ZOOM_5KHZ = 6
-    ZOOM_10KHZ = 7
+if "XDG_CONFIG_HOME" in os.environ:
+    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
+else:
+    CONFIG_PATH = str(Path.home() / ".config")
+CONFIG_PATH += "/not1mm"
+
+MULTICAST_PORT = 2239
+MULTICAST_GROUP = "224.1.1.1"
+INTERFACE_IP = "0.0.0.0"
 
 
 class Band:
@@ -146,9 +154,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi("/home/mbridak/Nextcloud/dev/not1mm/not1mm/test.ui", self)
-        self.clear_spot_olderSpinBox.valueChanged.connect(self.spotAgingChanged)
-        self.clearButton.clicked.connect(self.clearSpots)
+        data_path = WORKING_PATH + "/data/bandmap.ui"
+        uic.loadUi(data_path, self)
+        self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
+        self.clearButton.clicked.connect(self.clear_spots)
         self.zoominButton.clicked.connect(self.dec_zoom)
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.spots = Database()
@@ -162,26 +171,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
+        self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
         self.freq = 0.0
         self.keepRXCenter = False
         self.update_timer = QtCore.QTimer()
-        self.update_timer.timeout.connect(self.updateStationTimer)
+        self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(1000)
         self.update()
 
-    def updateStationTimer(self):
+    def spot_clicked(self):
+        """dunno"""
+        print("whatnow")
+        items = self.bandmap_scene.selectedItems()
+        if items:
+            print(
+                f"{items[0].toPlainText()} tip: {items[0].toolTip()} prop:{items[0].property('freq')}"
+            )
+
+    def update_station_timer(self):
         """doc"""
-        self.updateStations()
+        self.update_stations()
 
     def update(self):
         """doc"""
         self.update_timer.setInterval(1000)
-        self.clearAllCallsignFromScene()
-        self.clearFreqMark(self.rxMark)
-        self.clearFreqMark(self.txMark)
+        self.clear_all_callsign_from_scene()
+        self.clear_freq_mark(self.rxMark)
+        self.clear_freq_mark(self.txMark)
         self.bandmap_scene.clear()
 
-        step, _digits = self.determineStepDigits()
+        step, _digits = self.determine_step_digits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
@@ -213,7 +232,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.drawTXRXMarks(step)
 
-        self.updateStations()
+        self.update_stations()
 
     def inc_zoom(self):
         """doc"""
@@ -230,12 +249,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def drawTXRXMarks(self, step):
         """doc"""
 
-    def updateStations(self):
+    def update_stations(self):
         """doc"""
         self.update_timer.setInterval(1000)
-        self.clearAllCallsignFromScene()
-        self.spotAging()
-        step, digits = self.determineStepDigits()
+        self.clear_all_callsign_from_scene()
+        self.spot_aging()
+        step, _digits = self.determine_step_digits()
 
         result = self.spots.getspotsinband(self.currentBand.start, self.currentBand.end)
         if result:
@@ -269,7 +288,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # text->setDefaultTextColor(textColor);
                 self.textItemList.append(text)
 
-    def determineStepDigits(self):
+    def determine_step_digits(self):
         """doc"""
         return_zoom = {
             1: (0.0001, 4),
@@ -291,19 +310,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return (step, digits)
 
-    def setBand(self, band: str, savePrevBandZoom: bool):
+    def set_band(self, band: str, savePrevBandZoom: bool):
         """doc"""
         if savePrevBandZoom:
             self.saveCurrentZoom()
         self.currentBand = Band(band)
         self.zoom = self.savedZoom(band)
 
-    def spotAging(self):
+    def spot_aging(self):
         """doc"""
         if self.agetime:
             self.spots.delete_spots(self.agetime)
 
-    def clearAllCallsignFromScene(self):
+    def clear_all_callsign_from_scene(self):
         """doc"""
         for items in self.textItemList:
             self.bandmap_scene.removeItem(items)
@@ -312,7 +331,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bandmap_scene.removeItem(items)
         self.lineitemlist.clear()
 
-    def clearFreqMark(self, currentPolygon):
+    def clear_freq_mark(self, currentPolygon):
         """doc"""
         if currentPolygon:
             self.bandmap_scene.removeItem(currentPolygon)
@@ -332,7 +351,7 @@ class MainWindow(QtWidgets.QMainWindow):
             spotter = parts[2]
             freq = parts[3]
             dx = parts[4]
-            time = parts[-1]
+            _time = parts[-1]
             # spot = DxSpot()
             spot = {}
             spot["ts"] = datetime.utcnow().isoformat(" ")[:19]
@@ -365,17 +384,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.socket.isOpen():
                 self.socket.write(tosend)
 
-    def clearSpots(self):
+    def clear_spots(self):
         """doc"""
         self.spots.delete_spots(0)
 
-    def zoomIn(self):
-        """doc"""
-
-    def zoomOut(self):
-        """doc"""
-
-    def spotAgingChanged(self):
+    def spot_aging_changed(self):
         """doc"""
         self.agetime = self.clear_spot_olderSpinBox.value()
 
