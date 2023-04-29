@@ -1466,6 +1466,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rig_control.set_vfo(int(vfo))
                 spot = json_data.get("spot", "")
                 self.callsign.setText(spot)
+                self.callsign_changed()
+                self.callsign.setFocus()
+                self.callsign.activateWindow()
+                window.raise_()
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""

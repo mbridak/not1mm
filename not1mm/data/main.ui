@@ -1421,6 +1421,11 @@
    <property name="text">
     <string>Bandmap</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
  </widget>
  <resources/>
