@@ -93,7 +93,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-28] Added a bandmap window (WIP) to track spots.
+- [23-4-28] Added a bandmap window (WIP) to track spots. Clicked spots now tune radio and sets callsign.
 - [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
 - [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
 - [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT. Added Select sound device. Reworked Configuration Settings dialog. Rerecorded phonetics.
@@ -356,7 +356,7 @@ The bottom half of the log displays contacts sorted by what's currently in the c
 
 `Window`>`Bandmap`
 
-The bandmap window is, as with everything, a work in progress.
+The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. Clicked on spots now tune the radio and set the callsign field.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 
