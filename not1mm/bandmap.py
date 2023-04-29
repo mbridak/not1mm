@@ -213,11 +213,11 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 packet = loads(bundle.decode())
             except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{packet}"
+                the_error = f"Not Unicode: {err}\n{bundle}"
                 logger.debug(the_error)
                 continue
             except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{packet}"
+                the_error = f"Not JSON: {err}\n{bundle}"
                 logger.debug(the_error)
                 continue
             if packet.get("cmd", "") == "RADIO_STATE":
@@ -227,12 +227,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def spot_clicked(self):
         """dunno"""
-        print("whatnow")
         items = self.bandmap_scene.selectedItems()
-        if items:
-            print(
-                f"{items[0].toPlainText()} tip: {items[0].toolTip()} prop:{items[0].property('freq')}"
-            )
+        for item in items:
+            print(f"{item}")
+            if item:
+                print(
+                    f"{item.toPlainText()} tip: {item.toolTip()} prop:{item.property('freq')}"
+                )
+                cmd = {}
+                cmd["cmd"] = "TUNE"
+                cmd["freq"] = items[0].property("freq")
+                cmd["spot"] = items[0].toPlainText().split()[0]
+                packet = bytes(dumps(cmd), encoding="ascii")
+                self.udpsocket.writeDatagram(
+                    packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
+                )
 
     def update_station_timer(self):
         """doc"""

@@ -1457,6 +1457,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["cmd"] = "SHOWCOLUMNS"
                     cmd["COLUMNS"] = self.contest.columns
                     self.multicast_interface.send_as_json(cmd)
+            if json_data.get("cmd", "") == "TUNE":
+                # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                vfo = json_data.get("freq")
+                vfo = float(vfo) * 1000000
+                self.radio_state["vfoa"] = int(vfo)
+                if self.rig_control:
+                    self.rig_control.set_vfo(int(vfo))
+                spot = json_data.get("spot", "")
+                self.callsign.setText(spot)
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
