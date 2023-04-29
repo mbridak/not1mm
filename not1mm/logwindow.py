@@ -28,6 +28,8 @@ from not1mm.lib.edit_contact import EditContact
 
 # from not1mm.lib.n1mm import N1MM
 
+os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
