@@ -2,7 +2,7 @@
 """
 NOT1MM Logger
 """
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
+# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 
 import importlib
 import logging
