@@ -180,8 +180,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     zoom = 5
     currentBand = Band("20m")
-    txMark = None
-    rxMark = None
+    txMark = []
+    rxMark = []
     rx_freq = None
     tx_freq = None
     something = None
@@ -246,6 +246,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band(packet.get("band") + "m", False)
                 self.rx_freq = float(packet.get("vfoa")) / 1000000
                 self.tx_freq = self.rx_freq
+                step, _ = self.determine_step_digits()
+                self.drawTXRXMarks(step)
 
     def spot_clicked(self):
         """dunno"""
@@ -325,6 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def drawTXRXMarks(self, step):
         """doc"""
         if self.rx_freq:
+            self.clear_freq_mark(self.rxMark)
             self.drawfreqmark(
                 self.rx_freq, step, QtGui.QColor(30, 180, 30), self.rxMark
             )
@@ -341,6 +344,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def drawfreqmark(self, freq, step, color, currentPolygon):
         """doc"""
+
         self.clear_freq_mark(currentPolygon)
 
         # do not show the freq mark if it is outside the bandmap
@@ -356,7 +360,7 @@ class MainWindow(QtWidgets.QMainWindow):
         poly.append(QtCore.QPointF(10, Yposition + 7))
         pen = QtGui.QPen()
         brush = QtGui.QBrush(color)
-        currentPolygon = self.bandmap_scene.addPolygon(poly, pen, brush)
+        currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
 
     def update_stations(self):
         """doc"""
@@ -456,7 +460,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_freq_mark(self, currentPolygon):
         """doc"""
         if currentPolygon:
-            self.bandmap_scene.removeItem(currentPolygon)
+            for mark in currentPolygon:
+                self.bandmap_scene.removeItem(mark)
+        currentPolygon.clear()
 
     def receive(self):
         """doc"""
@@ -465,6 +471,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if "login:" in data:
             self.send_command("k6gte")
             self.send_command("Set DX Filter Not Skimmer AND SpotterCont=NA")
+            self.send_command("sh dx o filter")
             # self.send_command("reject/spot 0 info FT8")
             # self.send_command("accept/spot 0 freq hf/cw")
             # self.send_command("accept/spot 1 freq hf/ssb")
