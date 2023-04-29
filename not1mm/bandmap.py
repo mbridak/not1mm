@@ -10,22 +10,24 @@ GPL V3
 from datetime import datetime
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
+
 import logging
 import os
 import pkgutil
 import queue
-import socket
 import sys
 import sqlite3
-import time
-import threading
+
 from PyQt5 import QtCore, QtGui, Qt
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
 
 from not1mm.lib.multicast import Multicast
 
+os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+
 PIXELSPERSTEP = 10
+UPDATE_INTERVAL = 2000
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -45,6 +47,26 @@ CONFIG_PATH += "/not1mm"
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
+
+# CTYFILE = {}
+
+# with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as c_file:
+#     CTYFILE = loads(c_file.read())
+
+
+# def cty_lookup(callsign: str):
+#     """Lookup callsign in cty.dat file"""
+#     callsign = callsign.upper()
+#     for count in reversed(range(len(callsign))):
+#         searchitem = callsign[: count + 1]
+#         result = {key: val for key, val in CTYFILE.items() if key == searchitem}
+#         if not result:
+#             continue
+#         if result.get(searchitem).get("exact_match"):
+#             if searchitem == callsign:
+#                 return result
+#             continue
+#         return result
 
 
 class Band:
@@ -157,7 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     zoom = 5
-    currentBand = Band("40m")
+    currentBand = Band("20m")
     txMark = None
     rxMark = None
     rx_freq = None
@@ -193,7 +215,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.keepRXCenter = False
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
-        self.update_timer.start(1000)
+        self.update_timer.start(UPDATE_INTERVAL)
         self.update()
         self.udpsocket = QtNetwork.QUdpSocket(self)
         self.udpsocket.bind(
@@ -249,7 +271,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update(self):
         """doc"""
-        self.update_timer.setInterval(1000)
+        self.update_timer.setInterval(UPDATE_INTERVAL)
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -286,7 +308,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.drawTXRXMarks(step)
-
         self.update_stations()
 
     def inc_zoom(self):
@@ -330,7 +351,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         poly = QtGui.QPolygonF()
 
-        poly.append(QtCore.QPointF(17, Yposition))
+        poly.append(QtCore.QPointF(21, Yposition))
         poly.append(QtCore.QPointF(10, Yposition - 7))
         poly.append(QtCore.QPointF(10, Yposition + 7))
         pen = QtGui.QPen()
@@ -339,26 +360,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_stations(self):
         """doc"""
-        self.update_timer.setInterval(1000)
+        self.update_timer.setInterval(UPDATE_INTERVAL)
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
 
         result = self.spots.getspotsinband(self.currentBand.start, self.currentBand.end)
+        entity = ""
         if result:
             min_y = 0.0
             for items in result:
+                # lookup = cty_lookup(items.get("callsign"))
+                # if lookup:
+                #     for a in lookup.items():
+                #         entity = a[1].get("entity", "")
+
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
                 text_y = max(min_y + 5, freq_y)
                 self.lineitemlist.append(
                     self.bandmap_scene.addLine(
-                        30, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
+                        22, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
                     )
                 )
                 text = self.bandmap_scene.addText(
-                    items.get("callsign") + " @ " + items.get("ts").split()[1][:-3]
+                    items.get("callsign")
+                    + " @ "
+                    + entity
+                    + " "
+                    + items.get("ts").split()[1][:-3]
                 )
                 text.document().setDocumentMargin(0)
                 text.setPos(60, text_y - (text.boundingRect().height() / 2))
@@ -368,7 +399,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     | text.flags()
                 )
                 text.setProperty("freq", items.get("freq"))
-                text.setToolTip(items.get("comment", ""))
+                text.setToolTip(items.get(entity, ""))
 
                 min_y = text_y + text.boundingRect().height() / 2
 
@@ -401,11 +432,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def set_band(self, band: str, savePrevBandZoom: bool):
         """doc"""
         logger.debug("%s", f"{band} {savePrevBandZoom}")
-        if savePrevBandZoom:
-            self.saveCurrentZoom()
-        self.currentBand = Band(band)
-        # self.zoom = self.savedZoom(band)
-        self.update()
+        if band != self.currentBand.name:
+            if savePrevBandZoom:
+                self.saveCurrentZoom()
+            self.currentBand = Band(band)
+            # self.zoom = self.savedZoom(band)
+            self.update()
 
     def spot_aging(self):
         """doc"""
@@ -469,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
         cmd += "\r\n"
         tosend = bytes(cmd, encoding="ascii")
-        print(f"{tosend}")
+        logger.debug("%s", f"{tosend}")
         if self.socket:
             if self.socket.isOpen():
                 self.socket.write(tosend)
