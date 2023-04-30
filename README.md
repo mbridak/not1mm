@@ -93,6 +93,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-4-29] Added callsign and connect button to the bandmap.
 - [23-4-28] Added a bandmap window (WIP) to track spots. Clicked spots now tune radio and sets callsign.
 - [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
 - [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
