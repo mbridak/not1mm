@@ -356,6 +356,8 @@ The bottom half of the log displays contacts sorted by what's currently in the c
 
 `Window`>`Bandmap`
 
+Put your callsign in the top and press the connect button.
+
 The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. Clicked on spots now tune the radio and set the callsign field.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)

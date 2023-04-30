@@ -187,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
     something = None
     lineitemlist = []
     textItemList = []
-    agetime = 0
+    connected = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -195,19 +195,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
+        self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
         self.zoominButton.clicked.connect(self.dec_zoom)
         self.zoomoutButton.clicked.connect(self.inc_zoom)
+        self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
         self.bandmap_scene = QtWidgets.QGraphicsScene()
         self.socket = QtNetwork.QTcpSocket()
         self.socket.readyRead.connect(self.receive)
-        self.socket.connected.connect(self.connected)
+        self.socket.connected.connect(self.maybeconnected)
+        self.socket.disconnected.connect(self.disconnected)
         self.socket.errorOccurred.connect(self.socket_error)
         # self.socket.connectToHost("hamqth.com", 7300)
-        self.socket.connectToHost("dxc.nc7j.com", 7373)
-
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
         self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
@@ -225,6 +226,19 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
         self.udpsocket.readyRead.connect(self.watch_udp)
+
+    def connect(self):
+        """doc"""
+        if self.connected is True:
+            self.socket.close()
+            self.connected = False
+            self.connectButton.setStyleSheet("color: red;")
+            self.connectButton.setText("Closed")
+            return
+        self.socket.connectToHost("dxc.nc7j.com", 7373)
+        self.connectButton.setStyleSheet("color: white;")
+        self.connectButton.setText("Connecting")
+        self.connected = True
 
     def watch_udp(self):
         """doc"""
@@ -469,12 +483,13 @@ class MainWindow(QtWidgets.QMainWindow):
         data = self.socket.readAll()
         data = str(data, "utf-8").strip()
         if "login:" in data:
-            self.send_command("k6gte")
-            self.send_command("Set DX Filter Not Skimmer AND SpotterCont=NA")
-            self.send_command("sh dx o filter")
+            self.send_command(self.callsignField.text())
+            # self.send_command("Set DX Filter Not Skimmer AND SpotterCont=NA")
+            # self.send_command("sh dx o open")
             # self.send_command("reject/spot 0 info FT8")
             # self.send_command("accept/spot 0 freq hf/cw")
             # self.send_command("accept/spot 1 freq hf/ssb")
+            return
         if "DX de" in data:
             parts = data.split()
             spotter = parts[2]
@@ -489,20 +504,28 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 spot["freq"] = float(freq) / 1000
             except ValueError:
-                print(data)
+                logger.debug("%s", f"{data}")
             self.spots.addspot(spot)
+            return
+        if self.callsignField.text().upper() in data:
+            self.connectButton.setStyleSheet("color: green;")
+            self.connectButton.setText("Connected")
+            logger.debug("%s", f"{data}")
 
-    def connected(self):
+    def maybeconnected(self):
         """doc"""
-        print("Connected")
+        self.connectButton.setStyleSheet("color: yellow;")
+        self.connectButton.setText("Connecting")
 
     def socket_error(self):
         """doc"""
         print("An Error occurred.")
 
-    def disconnect(self):
+    def disconnected(self):
         """doc"""
-        self.socket.close()
+        self.connected = False
+        self.connectButton.setStyleSheet("color: red;")
+        self.connectButton.setText("Closed")
 
     def send_command(self, cmd: str):
         """doc"""
