@@ -14,7 +14,6 @@ from pathlib import Path
 import logging
 import os
 import pkgutil
-import queue
 import sys
 import sqlite3
 
@@ -47,6 +46,12 @@ CONFIG_PATH += "/not1mm"
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
+
+PREF = {}
+if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+    with open(CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8") as file_descriptor:
+        PREF = loads(file_descriptor.read())
+
 
 # CTYFILE = {}
 
@@ -192,7 +197,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
-        self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
         self.agetime = self.clear_spot_olderSpinBox.value()
@@ -235,7 +239,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.connectButton.setStyleSheet("color: red;")
             self.connectButton.setText("Closed")
             return
-        self.socket.connectToHost("dxc.nc7j.com", 7373)
+        server = PREF.get("cluster_server", "dxc.nc7j.com")
+        port = PREF.get("cluster_port", 7373)
+        self.socket.connectToHost(server, port)
         self.connectButton.setStyleSheet("color: white;")
         self.connectButton.setText("Connecting")
         self.connected = True

@@ -67,6 +67,10 @@ class Settings(QtWidgets.QDialog):
         self.n1mm_contactport.setText(str(self.preference.get("n1mm_contactport", "")))
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
         self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
+        self.cluster_server_field.setText(
+            str(self.preference.get("cluster_server", "dxc.nc7j.com"))
+        )
+        self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
 
     def save_changes(self):
         """
@@ -108,3 +112,5 @@ class Settings(QtWidgets.QDialog):
         self.preference["n1mm_contactport"] = self.n1mm_contactport.text()
         self.preference["n1mm_lookupport"] = self.n1mm_lookupport.text()
         self.preference["n1mm_scoreport"] = self.n1mm_scoreport.text()
+        self.preference["cluster_server"] = self.cluster_server_field.text()
+        self.preference["cluster_port"] = int(self.cluster_port_field.text())

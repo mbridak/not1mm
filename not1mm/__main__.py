@@ -162,6 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
         "cwtype": 1,
         "useserver": False,
         "CAT_port": 4532,
+        "cluster_server": "dxc.nc7j.com",
+        "cluster_port": 7373,
     }
     appstarted = False
     contact = {}

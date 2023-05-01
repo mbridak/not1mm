@@ -38,6 +38,7 @@
     - [Soundcard](#soundcard)
     - [CAT](#cat)
     - [CW Keyer interface](#cw-keyer-interface)
+    - [Cluster](#cluster)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -94,7 +95,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-5-1] Added 10 10 Spring CW.
+- [23-5-1] Added 10 10 Spring CW. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
 
 <details>
 
@@ -299,6 +300,10 @@ Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127
 ### CW Keyer interface
 
 Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP `127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and port `8000`. Or `None`, if you want to Morse it like it's 1899.
+
+### Cluster
+
+  Under the `Cluster` TAB you can change the default AR Cluster server and port settings used for the bandmap window.
 
 ## Hiding screen elements
 

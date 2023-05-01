@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>437</height>
+    <width>616</width>
+    <height>464</height>
    </rect>
   </property>
   <property name="font">
@@ -62,6 +62,8 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <attribute name="title">
@@ -74,6 +76,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="styleSheet">
@@ -94,6 +97,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="autoFillBackground">
@@ -116,6 +120,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -133,6 +138,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -152,6 +158,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="styleSheet">
@@ -172,6 +179,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -189,6 +197,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -206,6 +215,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -251,6 +261,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
       </property>
@@ -307,6 +318,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
       </property>
@@ -321,6 +333,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -359,6 +372,7 @@
              <family>JetBrains Mono</family>
              <pointsize>12</pointsize>
              <bold>false</bold>
+             <strikeout>false</strikeout>
             </font>
            </property>
            <property name="styleSheet">
@@ -378,6 +392,7 @@
             <font>
              <family>JetBrains Mono</family>
              <pointsize>12</pointsize>
+             <strikeout>false</strikeout>
             </font>
            </property>
            <property name="styleSheet">
@@ -397,6 +412,7 @@
             <font>
              <family>JetBrains Mono</family>
              <pointsize>12</pointsize>
+             <strikeout>false</strikeout>
             </font>
            </property>
            <property name="text">
@@ -442,6 +458,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -472,6 +489,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -502,6 +520,7 @@
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
            <bold>false</bold>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -518,6 +537,8 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <attribute name="title">
@@ -530,6 +551,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -546,6 +568,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -575,6 +598,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -588,6 +612,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -601,6 +626,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -614,6 +640,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -627,6 +654,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -652,6 +680,33 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="cluster_tab">
+      <attribute name="title">
+       <string>Cluster</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Server:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="cluster_server_field"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="cluster_port_field"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Port:</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="group_tab">
       <property name="enabled">
        <bool>false</bool>
@@ -659,6 +714,8 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <attribute name="title">
@@ -671,6 +728,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -684,6 +742,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -700,6 +759,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -713,6 +773,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -729,6 +790,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -745,6 +807,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -761,6 +824,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -777,6 +841,8 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <pointsize>12</pointsize>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <attribute name="title">
@@ -788,6 +854,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -800,6 +868,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="placeholderText">
@@ -812,6 +882,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -824,6 +896,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="placeholderText">
@@ -836,6 +910,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -848,6 +924,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -860,6 +938,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -872,6 +952,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -884,6 +966,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="styleSheet">
@@ -899,6 +983,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -911,6 +997,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="text">
@@ -926,6 +1014,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -944,6 +1034,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -962,6 +1054,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -980,6 +1074,8 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
           </font>
          </property>
          <property name="inputMethodHints">
@@ -1028,6 +1124,38 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>usehamqth_radioButton</tabstop>
+  <tabstop>useqrz_radioButton</tabstop>
+  <tabstop>radioButton_3</tabstop>
+  <tabstop>lookup_user_name_field</tabstop>
+  <tabstop>usehamdb_radioButton</tabstop>
+  <tabstop>lookup_password_field</tabstop>
+  <tabstop>sounddevice</tabstop>
+  <tabstop>rigcontrolip_field</tabstop>
+  <tabstop>userigctld_radioButton</tabstop>
+  <tabstop>useflrig_radioButton</tabstop>
+  <tabstop>radioButton</tabstop>
+  <tabstop>rigcontrolport_field</tabstop>
+  <tabstop>cwport_field</tabstop>
+  <tabstop>usepywinkeyer_radioButton</tabstop>
+  <tabstop>radioButton_5</tabstop>
+  <tabstop>cwip_field</tabstop>
+  <tabstop>usecwdaemon_radioButton</tabstop>
+  <tabstop>connect_to_server</tabstop>
+  <tabstop>multicast_group</tabstop>
+  <tabstop>multicast_port</tabstop>
+  <tabstop>interface_ip</tabstop>
+  <tabstop>n1mm_station_name</tabstop>
+  <tabstop>n1mm_operator</tabstop>
+  <tabstop>send_n1mm_packets</tabstop>
+  <tabstop>n1mm_ip</tabstop>
+  <tabstop>n1mm_radioport</tabstop>
+  <tabstop>n1mm_contactport</tabstop>
+  <tabstop>n1mm_lookupport</tabstop>
+  <tabstop>n1mm_scoreport</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
