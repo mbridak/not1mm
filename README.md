@@ -81,6 +81,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 ## List of should be working contests
 
 - General Logging
+- 10 10 Spring CW
 - ARRL DX CW
 - ARRL DX SSB
 - CQ WPX CW
@@ -93,7 +94,13 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-4-29] Added callsign and connect button to the bandmap.
+- [23-5-1] Added 10 10 Spring CW.
+
+<details>
+
+<summary>April 2023</summary>
+
+- [23-4-29] Added callsign and connect button to the bandmap. Fixed rxmarker not updateing.
 - [23-4-28] Added a bandmap window (WIP) to track spots. Clicked spots now tune radio and sets callsign.
 - [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
 - [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
@@ -108,6 +115,8 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 - [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
 - [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
 - [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging contest type. Added other Cabrillo tags.
+
+</details>
 
 <details>
 
