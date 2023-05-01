@@ -353,6 +353,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
         return False
 
+    def show_message_box(self, message: str) -> None:
+        """doc"""
+        message_box = QtWidgets.QMessageBox()
+        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setText(message)
+        message_box.setWindowTitle("Information")
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        _ = message_box.exec_()
+
     def show_about_dialog(self):
         """Show about dialog"""
         self.about_dialog = About(WORKING_PATH)
@@ -1566,6 +1575,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if stripped_text == "OPON":
                 self.get_opon()
+                self.clearinputs()
+                return
+            if stripped_text == "TEST":
+                self.show_message_box("This is a test")
                 self.clearinputs()
                 return
             if self.is_floatable(stripped_text):
