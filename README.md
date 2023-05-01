@@ -82,7 +82,10 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 ## List of should be working contests
 
 - General Logging
+- 10 10 Fall CW
 - 10 10 Spring CW
+- 10 10 Summer Phone
+- 10 10 Winter Phone
 - ARRL DX CW
 - ARRL DX SSB
 - CQ WPX CW
@@ -95,7 +98,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-5-1] Added 10 10 Spring CW. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
+- [23-5-1] Added 10 10 CW and Phone contests. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
 
 <details>
 

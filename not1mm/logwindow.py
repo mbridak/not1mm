@@ -735,6 +735,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
+app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()

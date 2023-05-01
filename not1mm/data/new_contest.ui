@@ -163,7 +163,22 @@
      </item>
      <item>
       <property name="text">
+       <string>10 10 FALL CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>10 10 SPRING CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10 10 SUMMER PHONE</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10 10 WINTER PHONE</string>
       </property>
      </item>
      <item>
@@ -227,7 +242,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>0</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>

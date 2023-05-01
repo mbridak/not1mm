@@ -58,6 +58,7 @@ from not1mm.lib.n1mm import N1MM
 from not1mm.lib.version import __version__
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+# os.environ["QT_STYLE_OVERRIDE"] = "adwaita"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -1928,6 +1929,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
+app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
