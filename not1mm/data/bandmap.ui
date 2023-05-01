@@ -45,7 +45,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="callsignField"/>
+       <widget class="QLineEdit" name="callsignField">
+        <property name="styleSheet">
+         <string notr="true">text-transform: uppercase;</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="connectButton">
