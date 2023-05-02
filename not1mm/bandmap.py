@@ -273,11 +273,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """dunno"""
         items = self.bandmap_scene.selectedItems()
         for item in items:
-            print(f"{item}")
             if item:
-                print(
-                    f"{item.toPlainText()} tip: {item.toolTip()} prop:{item.property('freq')}"
-                )
                 cmd = {}
                 cmd["cmd"] = "TUNE"
                 cmd["freq"] = items[0].property("freq")
@@ -398,7 +394,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 # if lookup:
                 #     for a in lookup.items():
                 #         entity = a[1].get("entity", "")
-
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
@@ -423,7 +418,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     | text.flags()
                 )
                 text.setProperty("freq", items.get("freq"))
-                text.setToolTip(items.get(entity, ""))
+                text.setToolTip(items.get("comment"))
 
                 min_y = text_y + text.boundingRect().height() / 2
 
@@ -490,11 +485,8 @@ class MainWindow(QtWidgets.QMainWindow):
         data = str(data, "utf-8").strip()
         if "login:" in data:
             self.send_command(self.callsignField.text())
-            # self.send_command("Set DX Filter Not Skimmer AND SpotterCont=NA")
-            # self.send_command("sh dx o open")
-            # self.send_command("reject/spot 0 info FT8")
-            # self.send_command("accept/spot 0 freq hf/cw")
-            # self.send_command("accept/spot 1 freq hf/ssb")
+            # self.send_command("Set DX Filter SpotterCont=NA")
+            self.send_command("set dx mode filter")
             return
         if "DX de" in data:
             parts = data.split()
@@ -502,11 +494,13 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = parts[3]
             dx = parts[4]
             _time = parts[-1]
+            comment = " ".join(parts[5:-1])
             # spot = DxSpot()
             spot = {}
             spot["ts"] = datetime.utcnow().isoformat(" ")[:19]
             spot["callsign"] = dx
             spot["spotter"] = spotter
+            spot["comment"] = comment
             try:
                 spot["freq"] = float(freq) / 1000
             except ValueError:
