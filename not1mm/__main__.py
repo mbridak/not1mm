@@ -576,6 +576,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.contest_settings.get("ContestName"):
                     self.contest = doimp(self.contest_settings.get("ContestName"))
                     logger.debug("Loaded Contest Name = %s", self.contest.name)
+                    self.set_window_title()
                     self.contest.init_contest(self)
                     self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
 
@@ -837,8 +838,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest:
             contest_name = self.contest.name
         self.setWindowTitle(
-            f"{round(vfoa,2)} "
-            f"{self.radio_state.get('mode', '')} "
+            f"vfoa:{round(vfoa,2)} "
+            f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
             f"- Not1MM v{__version__}"
         )
@@ -1134,7 +1135,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
+        result = self.database.get_serial()
+        print(result)
+        next_serial = str(result.get("serial_nr", "1"))
+        if next_serial == "None":
+            next_serial = "1"
+        print(next_serial)
         macro = macro.upper()
+        macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         if self.radio_state.get("mode") == "CW":
@@ -1743,8 +1751,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("source_path: %s", str(source_path))
                 for child in source_path.iterdir():
                     destination_file = op_path / child.name
-                    logger.debug("Destination: %s", str(destination_file))
                     if destination_file.is_file() is False:
+                        logger.debug("Destination: %s", str(destination_file))
                         destination_file.write_bytes(child.read_bytes())
 
     def poll_radio(self):
