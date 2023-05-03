@@ -98,6 +98,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-5-3] Added '#' macro.
 - [23-5-1] Added 10 10 CW and Phone contests. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
 
 <details>
@@ -331,6 +332,7 @@ You can include a limited set of substitution instructions.
 - {SNT} Sends 5nn (cw) or 599 (ssb)
 - {SENTNR} Sends whats in the SentNR field.
 - {EXCH} Sends what's in the Sent Exchange field when contest is defined.
+- '#' Sends serial number.
 
 ### Macro use with voice
 

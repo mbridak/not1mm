@@ -570,6 +570,8 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
+
+
 app.setStyle("Fusion")
 window = MainWindow()
 window.show()
