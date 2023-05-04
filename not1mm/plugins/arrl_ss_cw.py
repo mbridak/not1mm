@@ -38,6 +38,11 @@ def interface(self):
     label.setText("sn prec ck sec")
 
 
+def reset_label(self):
+    """reset label after field cleared"""
+    self.exch_label.setText("sn prec ck sec")
+
+
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
