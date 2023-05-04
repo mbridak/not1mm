@@ -837,12 +837,14 @@ class MainWindow(QtWidgets.QMainWindow):
         contest_name = ""
         if self.contest:
             contest_name = self.contest.name
-        self.setWindowTitle(
+        line = (
             f"vfoa:{round(vfoa,2)} "
             f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
             f"- Not1MM v{__version__}"
         )
+        logger.debug("%s", line)
+        self.setWindowTitle(line)
 
     def clearinputs(self):
         """Clears the text input fields and sets focus to callsign field."""
@@ -1947,7 +1949,7 @@ width = window.pref.get("window_width", 700)
 x = window.pref.get("window_x", -1)
 y = window.pref.get("window_y", -1)
 window.setGeometry(x, y, width, height)
-window.setWindowTitle(f"Not1MM v{__version__}")
+# window.setWindowTitle(f"Not1MM v{__version__}")
 window.callsign.setFocus()
 window.show()
 timer = QtCore.QTimer()
