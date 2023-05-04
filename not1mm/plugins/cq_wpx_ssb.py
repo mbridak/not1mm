@@ -362,7 +362,7 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             print(
-                "OPERATORS: ",
+                f"OPERATORS: {self.contest_settings.get('Operators','')}".upper(),
                 end="\r\n",
                 file=file_descriptor,
             )
