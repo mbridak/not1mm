@@ -518,7 +518,7 @@
                 <enum>QLayout::SetDefaultConstraint</enum>
                </property>
                <item>
-                <widget class="QLabel" name="label">
+                <widget class="QLabel" name="exch_label">
                  <property name="text">
                   <string>OTHER_2</string>
                  </property>
