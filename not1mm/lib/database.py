@@ -687,6 +687,34 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_sect_exists(self, sect) -> dict:
+        """returns a dict key of sect_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as sect_count from dxlog where Sect = '{sect}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_sect_exists_before_me(self, sec, time_stamp) -> dict:
+        """returns a dict key of sect_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as sect_count from dxlog where  TS < '{time_stamp}' and Sect = '{sec}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def check_dupe_on_band_mode(self, call, band, mode) -> dict:
         """Checks if a call is dupe on band/mode"""
         try:
