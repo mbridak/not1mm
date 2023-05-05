@@ -56,7 +56,7 @@
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
-    - [The exchange](#the-exchange)
+      - [The exchange](#the-exchange)
 
 ## What and why is Not1MM
 
@@ -450,7 +450,7 @@ If the callsign was entered wrong in the callsign field, you can put the correct
 
 The best thing you can do is play around with it to see how it behaves.
 
-### The exchange
+#### The exchange
 
 In the `Sent Exchange` field of the New Contest dialog put in the Precidence, Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
