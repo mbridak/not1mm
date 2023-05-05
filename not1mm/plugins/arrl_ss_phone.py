@@ -6,7 +6,28 @@ from PyQt5 import QtWidgets
 
 name = "ARRL Sweepstakes Phone"
 mode = "BOTH"  # CW SSB BOTH RTTY
-columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+columns = [
+    "YYYY-MM-DD HH:MM:SS",
+    "Call",
+    "Freq",
+    "Snt",
+    "Rcv",
+    "SentNr",
+    "RcvNr",
+    "Exchange1",
+    "CK",
+    "Prec",
+    "Sect",
+    "WPX",
+    "Power",
+    "M1",
+    "ZN",
+    "M2",
+    "PFX",
+    "PTS",
+    "Name",
+    "Comment",
+]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 4

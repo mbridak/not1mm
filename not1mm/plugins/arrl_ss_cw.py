@@ -12,7 +12,28 @@ logger = logging.getLogger("__main__")
 name = "ARRL Sweepstakes CW"
 cabrillo_name = "ARRL-SWEEPSTAKES-CW"
 mode = "CW"  # CW SSB BOTH RTTY
-columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+columns = [
+    "YYYY-MM-DD HH:MM:SS",
+    "Call",
+    "Freq",
+    "Snt",
+    "Rcv",
+    "SentNr",
+    "RcvNr",
+    "Exchange1",
+    "CK",
+    "Prec",
+    "Sect",
+    "WPX",
+    "Power",
+    "M1",
+    "ZN",
+    "M2",
+    "PFX",
+    "PTS",
+    "Name",
+    "Comment",
+]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 1
@@ -194,6 +215,6 @@ def parse_exchange(self):
             else:
                 sec = text
                 ck = numb
-    label = f"sn:{sn} prec:{prec} call:{call} ck:{ck} sec:{sec}"
+    label = f"sn:{sn} p:{prec} cl:{call} ck:{ck} sec:{sec}"
     self.exch_label.setText(label)
     return (sn, prec, ck, sec, call)

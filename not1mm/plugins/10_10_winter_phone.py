@@ -13,7 +13,17 @@ logger = logging.getLogger("__main__")
 name = "10 10 WINTER PHONE"
 cabrillo_name = "10-10-SPRING-PHONE"
 mode = "SSB"  # CW SSB BOTH RTTY
-columns = [0, 1, 2, 3, 4, 5, 6, 15]
+# columns = [0, 1, 2, 3, 4, 5, 6, 15]
+columns = [
+    "YYYY-MM-DD HH:MM:SS",
+    "Call",
+    "Freq",
+    "Snt",
+    "Rcv",
+    "SentNr",
+    "RcvNr",
+    "PTS",
+]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 1

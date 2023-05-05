@@ -13,7 +13,19 @@ logger = logging.getLogger("__main__")
 name = "CQ WPX SSB"
 cabrillo_name = "CQ-WPX-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
-columns = [0, 1, 2, 3, 4, 5, 6, 9, 11, 15]
+# columns = [0, 1, 2, 3, 4, 5, 6, 9, 11, 15]
+columns = [
+    "YYYY-MM-DD HH:MM:SS",
+    "Call",
+    "Freq",
+    "Snt",
+    "Rcv",
+    "SentNr",
+    "RcvNr",
+    "WPX",
+    "M1",
+    "PTS",
+]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
