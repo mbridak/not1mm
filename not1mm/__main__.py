@@ -244,6 +244,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.receive.returnPressed.connect(self.save_contact)
         self.other_1.returnPressed.connect(self.save_contact)
         self.other_2.returnPressed.connect(self.save_contact)
+        self.other_2.textEdited.connect(self.other_2_changed)
         self.sent.setText("59")
         self.receive.setText("59")
         icon_path = WORKING_PATH + "/data/"
@@ -1543,6 +1544,12 @@ class MainWindow(QtWidgets.QMainWindow):
         except ValueError:
             return False
         return True
+
+    def other_2_changed(self):
+        """Called when we need to parse SS exchange."""
+        if self.contest:
+            if "ARRL Sweepstakes" in self.contest.name:
+                self.contest.parse_exchange(self)
 
     def callsign_changed(self):
         """Called when text in the callsign field has changed"""
