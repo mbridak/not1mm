@@ -44,6 +44,10 @@ def interface(self):
     """Setup user interface"""
 
 
+def reset_label(self):
+    """reset label after field cleared"""
+
+
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {

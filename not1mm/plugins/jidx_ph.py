@@ -50,6 +50,10 @@ def interface(self):
     label.setText("RcvNR")
 
 
+def reset_label(self):
+    """reset label after field cleared"""
+
+
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {

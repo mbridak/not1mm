@@ -860,6 +860,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mults.setText(multstring)
             score = self.contest.calc_score(self)
             self.score.setText(str(score))
+            self.contest.reset_label(self)
         self.callsign.clear()
         if self.current_mode == "CW":
             self.sent.setText("599")
