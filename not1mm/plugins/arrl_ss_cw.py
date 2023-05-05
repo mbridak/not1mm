@@ -24,7 +24,6 @@ columns = [
     "Prec",
     "Sect",
     "M1",
-    "M2",
     "PTS",
 ]
 
@@ -102,6 +101,11 @@ def set_contact_vars(self):
     self.contact["CK"] = ck
     self.contact["Sect"] = sec
     self.contact["Call"] = call
+    result = self.database.fetch_sect_exists(sec)
+    if result.get("sect_count"):
+        self.contact["IsMultiplier1"] = 0
+    else:
+        self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):
@@ -121,10 +125,14 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+    return 2
 
 
 def show_mults(self):
     """Return display string for mults"""
+    sql = f"select count(DISTINCT(Sect)) as mults from dxlog where ContestNR = {self.database.current_contest};"
+    result = self.database.exec_sql(sql)
+    return int(result.get("mults", 0))
 
 
 def show_qso(self):
@@ -138,14 +146,20 @@ def show_qso(self):
 def get_points(self):
     """Return raw points before mults"""
     result = self.database.fetch_points()
+    logger.debug("%s", f"{result}")
     if result:
-        return int(result.get("Points", 0))
+        points = result.get("Points", "0")
+        if points is None:
+            return 0
+        return int(result.get("Points", "0"))
     return 0
 
 
 def calc_score(self):
     """Return calculated score"""
-    result = self.database.fetch_points()
+    points = get_points(self)
+    mults = show_mults(self)
+    return points * mults
 
 
 def adif(self):
@@ -160,6 +174,17 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    all_contacts = self.database.fetch_all_contacts_asc()
+    for contact in all_contacts:
+        time_stamp = contact.get("TS")
+        sec = contact.get("Sect")
+        result = self.database.fetch_sect_exists_before_me(sec, time_stamp)
+        sect_count = result.get("sect_count", 1)
+        if sect_count == 0:
+            contact["IsMultiplier1"] = 1
+        else:
+            contact["IsMultiplier1"] = 0
+        self.database.change_contact(contact)
 
 
 def parse_exchange(self):
@@ -185,7 +210,7 @@ def parse_exchange(self):
             continue
         elif tokens.isalpha():
             print(f"{tokens} is alpha")
-            if prec == "":
+            if len(tokens) == 1:
                 prec = tokens
             else:
                 sec = tokens
