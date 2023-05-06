@@ -104,6 +104,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-5-6] Added AR Cluster filter options for the bandmap.
 - [23-5-5] Re-wrote most of the log window code. Added ARRL Sweepstakes.
 - [23-5-4] Fixed 'Operators' line in WPX cabrillo file. Fix window title not updating if no CAT control.
 - [23-5-3] Added '#' macro.
@@ -315,7 +316,9 @@ Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP 
 
 ### Cluster
 
-  Under the `Cluster` TAB you can change the default AR Cluster server and port settings used for the bandmap window.
+![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
+
+  Under the `Cluster` TAB you can change the default AR Cluster server, port and filter settings used for the bandmap window.
 
 ## Hiding screen elements
 
