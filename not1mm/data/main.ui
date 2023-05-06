@@ -645,6 +645,7 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>20</pointsize>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -1019,7 +1020,7 @@
      <x>0</x>
      <y>0</y>
      <width>1975</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1104,7 +1105,10 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Command Buttons</string>

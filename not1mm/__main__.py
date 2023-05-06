@@ -165,6 +165,8 @@ class MainWindow(QtWidgets.QMainWindow):
         "CAT_port": 4532,
         "cluster_server": "dxc.nc7j.com",
         "cluster_port": 7373,
+        "cluster_filter": "Set DX Filter SpotterCont=NA",
+        "cluster_mode": "OPEN",
     }
     appstarted = False
     contact = {}

@@ -71,6 +71,11 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_filter.setText(self.preference.get("cluster_filter", ""))
+        value = self.preference.get("cluster_mode", "")
+        index = self.cluster_mode.findText(value)
+        if index != -1:
+            self.cluster_mode.setCurrentIndex(index)
 
     def save_changes(self):
         """
@@ -114,3 +119,5 @@ class Settings(QtWidgets.QDialog):
         self.preference["n1mm_scoreport"] = self.n1mm_scoreport.text()
         self.preference["cluster_server"] = self.cluster_server_field.text()
         self.preference["cluster_port"] = int(self.cluster_port_field.text())
+        self.preference["cluster_filter"] = self.cluster_filter.text()
+        self.preference["cluster_mode"] = self.cluster_mode.currentText()

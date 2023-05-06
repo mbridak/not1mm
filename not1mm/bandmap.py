@@ -485,8 +485,8 @@ class MainWindow(QtWidgets.QMainWindow):
         data = str(data, "utf-8").strip()
         if "login:" in data:
             self.send_command(self.callsignField.text())
-            # self.send_command("Set DX Filter SpotterCont=NA")
-            self.send_command("set dx mode filter")
+            self.send_command(PREF.get("cluster_filter", ""))
+            self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
             return
         if "DX de" in data:
             parts = data.split()
