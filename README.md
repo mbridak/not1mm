@@ -104,7 +104,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
-- [23-5-6] Added AR Cluster filter options for the bandmap.
+- [23-5-6] Added AR Cluster filter options for the bandmap. Added a station ID to the multicast packets. This will prevent erratic bevahiour if 2 stations are on the same network.
 - [23-5-5] Re-wrote most of the log window code. Added ARRL Sweepstakes.
 - [23-5-4] Fixed 'Operators' line in WPX cabrillo file. Fix window title not updating if no CAT control.
 - [23-5-3] Added '#' macro.
@@ -143,7 +143,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 - [23-3-27] Fix cursor behaviour when editing text in callsign field.
 - [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
 - [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
-- [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
+- [23-3-23] Added json_data.get("cmd", "")most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
 - [23-3-22] Add prefill of serial nr. set OP call on startup. Set IsMultiplier1 new unique wpx. Add OP and contest name to window title. and stuff.
 - [23-3-21] Worked on CQ WPX SSB plugin.
 - [23-3-20] Added a contact edit dialog. RightClick to edit contact. Changed placeholder text color in settings dialog. Hooked up CW speedchange widget. PgUp/PgDn to change speed.
@@ -231,6 +231,8 @@ not1mm
 ```
 
 ## Various data file locations
+
+json_data.get("cmd", "")
 
 ### Data
 
