@@ -14,6 +14,7 @@ from pathlib import Path
 import logging
 import os
 import pkgutil
+import platform
 import sys
 import sqlite3
 
@@ -262,7 +263,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 the_error = f"Not JSON: {err}\n{bundle}"
                 logger.debug(the_error)
                 continue
-            if packet.get("cmd", "") == "RADIO_STATE":
+            if (
+                packet.get("cmd", "") == "RADIO_STATE"
+                and packet.get("station", "") == platform.node()
+            ):
                 self.set_band(packet.get("band") + "m", False)
                 self.rx_freq = float(packet.get("vfoa")) / 1000000
                 self.tx_freq = self.rx_freq
@@ -276,6 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if item:
                 cmd = {}
                 cmd["cmd"] = "TUNE"
+                cmd["station"] = platform.node()
                 cmd["freq"] = items[0].property("freq")
                 cmd["spot"] = items[0].toPlainText().split()[0]
                 packet = bytes(dumps(cmd), encoding="ascii")

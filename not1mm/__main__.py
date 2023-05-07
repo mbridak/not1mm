@@ -8,6 +8,7 @@ import importlib
 import logging
 import os
 import pkgutil
+import platform
 import queue
 import re
 import socket
@@ -408,6 +409,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
+            cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             self.clearinputs()
             self.edit_station_settings()
@@ -430,6 +432,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
+            cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             self.clearinputs()
 
@@ -591,10 +594,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
+                cmd["station"] = platform.node()
                 self.multicast_interface.send_as_json(cmd)
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
+                    cmd["station"] = platform.node()
                     cmd["COLUMNS"] = self.contest.columns
                     self.multicast_interface.send_as_json(cmd)
 
@@ -875,6 +880,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setFocus()
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
+        cmd["station"] = platform.node()
         cmd["call"] = ""
         self.multicast_interface.send_as_json(cmd)
 
@@ -913,6 +919,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clearinputs()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
+        cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
         # self.contact["ContestName"] = self.contest.name
         # self.contact["SNT"] = self.sent.text()
@@ -1481,9 +1488,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
+                    cmd["station"] = platform.node()
                     cmd["COLUMNS"] = self.contest.columns
                     self.multicast_interface.send_as_json(cmd)
-            if json_data.get("cmd", "") == "TUNE":
+            if (
+                json_data.get("cmd", "") == "TUNE"
+                and json_data.get("station", "") == platform.node()
+            ):
                 # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
                 vfo = json_data.get("freq")
                 vfo = float(vfo) * 1000000
@@ -1632,6 +1643,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
+        cmd["station"] = platform.node()
         cmd["call"] = stripped_text
         self.multicast_interface.send_as_json(cmd)
         self.check_callsign(stripped_text)
@@ -1773,7 +1785,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control.online:
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
-                self.radio_state["ptt"] = self.rig_control.get_ptt()
+                # self.radio_state["ptt"] = self.rig_control.get_ptt()
                 # if self.radio_state.get("ptt", 0) == 1:
                 #     self.leftdot.setPixmap(self.greendot)
                 # else:
@@ -1790,10 +1802,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_band_indicator(band)
                 self.radio_state["mode"] = mode
-                # logger.debug("VFO: %s  MODE: %s", vfo, mode)
+                logger.debug("VFO: %s  MODE: %s", vfo, mode)
                 self.set_window_title()
                 cmd = {}
                 cmd["cmd"] = "RADIO_STATE"
+                cmd["station"] = platform.node()
                 cmd["band"] = band
                 cmd["vfoa"] = vfo
                 cmd["mode"] = mode
