@@ -379,6 +379,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_configuration_settings(self):
         """Configuration Settings was clicked"""
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
+        if self.pref.get("dark_mode"):
+            self.configuration_dialog.setStyleSheet(DARK_STYLESHEET)
         self.configuration_dialog.usehamdb_radioButton.hide()
         # self.configuration_dialog.n1mm_tab.hide()
         self.configuration_dialog.show()
@@ -447,6 +449,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if contests:
             self.contest_dialog = SelectContest(WORKING_PATH)
+            if self.pref.get("dark_mode"):
+                self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
             self.contest_dialog.contest_list.setRowCount(0)
             self.contest_dialog.contest_list.setColumnCount(4)
             self.contest_dialog.contest_list.verticalHeader().setVisible(False)
@@ -504,6 +508,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest_settings is None:
             return
         self.contest_dialog = NewContest(WORKING_PATH)
+        if self.pref.get("dark_mode"):
+            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
@@ -615,6 +621,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "RTTY": (self.Band_Mode_Frame_RTTY,),
             "PSK": (self.Band_Mode_Frame_RTTY,),
             "SSB+CW": (self.Band_Mode_Frame_CW, self.Band_Mode_Frame_SSB),
+            "BOTH": (self.Band_Mode_Frame_CW, self.Band_Mode_Frame_SSB),
             "DIGITAL": (self.Band_Mode_Frame_RTTY,),
             "SSB+CW+DIGITAL": (
                 self.Band_Mode_Frame_RTTY,
@@ -1003,6 +1010,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show settings dialog"""
         logger.debug("Station Settings selected")
         self.settings_dialog = EditStation(WORKING_PATH)
+        if self.pref.get("dark_mode"):
+            self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
         self.settings_dialog.accepted.connect(self.save_settings)
         # if self.pref.get("dark_mode"):
         #     self.settings_dialog.setStyleSheet(DARK_STYLESHEET)

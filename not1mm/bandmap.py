@@ -44,6 +44,11 @@ else:
     CONFIG_PATH = str(Path.home() / ".config")
 CONFIG_PATH += "/not1mm"
 
+DARK_STYLESHEET = ""
+
+with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
+    DARK_STYLESHEET = stylefile.read()
+
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
@@ -202,6 +207,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self._udpwatch = None
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
+        if PREF.get("dark_mode"):
+            self.setStyleSheet(DARK_STYLESHEET)
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -308,7 +315,7 @@ class MainWindow(QtWidgets.QMainWindow):
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
-        for i in range(steps):
+        for i in range(steps):  # Draw tickmarks
             length = 10
             if i % 5 == 0:
                 length = 15
@@ -319,7 +326,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 i * PIXELSPERSTEP,
                 QtGui.QPen(QtGui.QColor(192, 192, 192)),
             )
-            if i % 5 == 0:
+            if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
@@ -342,12 +349,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoom += 1
         self.zoom = min(self.zoom, 7)
         self.update()
+        self.center_on_rxfreq()
 
     def dec_zoom(self):
         """doc"""
         self.zoom -= 1
         self.zoom = max(self.zoom, 1)
         self.update()
+        self.center_on_rxfreq()
 
     def drawTXRXMarks(self, step):
         """doc"""
@@ -355,10 +364,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clear_freq_mark(self.bandwidth_mark)
             self.clear_freq_mark(self.rxMark)
             self.draw_bandwidth(
-                self.rx_freq, step, QtGui.QColor(30, 30, 180), self.bandwidth_mark
+                self.rx_freq, step, QtGui.QColor(30, 30, 180, 180), self.bandwidth_mark
             )
             self.drawfreqmark(
-                self.rx_freq, step, QtGui.QColor(30, 180, 30), self.rxMark
+                self.rx_freq, step, QtGui.QColor(30, 180, 30, 180), self.rxMark
             )
 
     def Freq2ScenePos(self, freq: float):
@@ -370,6 +379,21 @@ class MainWindow(QtWidgets.QMainWindow):
             0, ((freq - self.currentBand.start) / step) * PIXELSPERSTEP
         )
         return ret
+
+    def center_on_rxfreq(self):
+        """doc"""
+        freq_pos = self.Freq2ScenePos(self.rx_freq).y()
+        self.scrollArea.verticalScrollBar().setValue(
+            int(freq_pos - (self.height() / 2) + 80)
+        )
+        # This does not work... Have no idea why.
+        # anim = QtCore.QPropertyAnimation(
+        #     self.scrollArea.verticalScrollBar(), "value".encode()
+        # )
+        # anim.setDuration(300)
+        # anim.setStartValue(self.scrollArea.verticalScrollBar().value())
+        # anim.setEndValue(int(freq_pos - (self.height() / 2) + 80))
+        # anim.start(QtCore.QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
     def drawfreqmark(self, freq, step, color, currentPolygon):
         """doc"""
@@ -397,7 +421,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if freq < self.currentBand.start or freq > self.currentBand.end:
             return
         if freq and self.bandwidth:
-            color = QtGui.QColor(30, 30, 180)
+            # color = QtGui.QColor(30, 30, 180)
             bw_start = freq - ((self.bandwidth / 2) / 1000000)
             bw_end = freq + ((self.bandwidth / 2) / 1000000)
             logger.debug("%s", f"s:{bw_start} e:{bw_end}")
@@ -518,6 +542,12 @@ class MainWindow(QtWidgets.QMainWindow):
         data = self.socket.readAll()
         data = str(data, "utf-8").strip()
         if "login:" in data:
+            self.send_command(self.callsignField.text())
+            self.send_command(PREF.get("cluster_filter", ""))
+            self.send_command("set dx extension Name CTY State Section")
+            self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
+            return
+        if "call:" in data:
             self.send_command(self.callsignField.text())
             self.send_command(PREF.get("cluster_filter", ""))
             self.send_command("set dx extension Name CTY State Section")

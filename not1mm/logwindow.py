@@ -45,6 +45,11 @@ else:
     CONFIG_PATH = str(Path.home() / ".config")
 CONFIG_PATH += "/not1mm"
 
+DARK_STYLESHEET = ""
+
+with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
+    DARK_STYLESHEET = stylefile.read()
+
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
@@ -92,6 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
         self.load_pref()
+        if self.pref.get("dark_mode"):
+            self.setStyleSheet(DARK_STYLESHEET)
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
@@ -256,6 +263,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show edit contact dialog"""
         logger.debug("Edit: %s", uuid)
         self.edit_contact_dialog = EditContact(WORKING_PATH)
+        if self.pref.get("dark_mode"):
+            self.edit_contact_dialog.setStyleSheet(DARK_STYLESHEET)
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
         self.edit_contact_dialog.delete_2.clicked.connect(self.delete_contact)
