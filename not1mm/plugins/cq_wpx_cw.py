@@ -45,10 +45,8 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("SentNR")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("RcvNR")
+    self.other_label.setText("SentNR")
+    self.exch_label.setText("RcvNR")
 
 
 def reset_label(self):
