@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1975</width>
-    <height>366</height>
+    <width>1731</width>
+    <height>358</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -645,7 +645,6 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>20</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -1019,11 +1018,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1975</width>
-     <height>23</height>
+     <width>1731</width>
+     <height>30</height>
     </rect>
    </property>
+   <property name="nativeMenuBar">
+    <bool>true</bool>
+   </property>
    <widget class="QMenu" name="menuFile">
+    <property name="font">
+     <font>
+      <family>JetBrains Mono</family>
+     </font>
+    </property>
     <property name="title">
      <string>File</string>
     </property>
