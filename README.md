@@ -9,8 +9,7 @@
 
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
-  - [What it is not](#what-it-is-not)
-  - [What it probably never will be](#what-it-probably-never-will-be)
+  - [Current state](#current-state)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Changes of note](#changes-of-note)
   - [Installing from PyPi](#installing-from-pypi)
@@ -71,15 +70,9 @@ I personally don't. While it may be possible to get N1MM working under Wine, I h
 Something to do in my free time.
 While I'm not watching TV, Right vs Left political 'News' programs, mind numbing 'Reality' TV etc...
 
-## What it is not
+## Current state
 
-Fully working.
-
-The current state is "**BETA**". I've used it for CQ WPX SSB and JIDX CW, and was able to work contacts and submit a cabrillo at the end. I'll add contests as/if I work them.
-
-## What it probably never will be
-
-Feature complete. I'm only one guy, and I'm not what you'd consider to be a contester. So new contests will be sparse.
+The current state is "**BETA**". I've used it for A few contests, and was able to work contacts and submit a cabrillo at the end. I'm not a "Contester". So I'll add contests as/if I work them. I'm only one guy, so if you see a bug let me know. I don't do much of any Data or RTTY operating. This is why you don't see RTTY in the list of working contests. The Lord helps those who burn people at the... I mean who help themselves. Feel free to fill in that hole with a pull request.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
@@ -104,6 +97,7 @@ Feature complete. I'm only one guy, and I'm not what you'd consider to be a cont
 
 ## Changes of note
 
+- [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
 - [23-5-7] Added bandwidth marker to the bandmap.
 - [23-5-6] Added AR Cluster filter options for the bandmap. Added a station ID to the multicast packets. This will prevent erratic bevahiour if 2 stations are on the same network.
 - [23-5-5] Re-wrote most of the log window code. Added ARRL Sweepstakes.
