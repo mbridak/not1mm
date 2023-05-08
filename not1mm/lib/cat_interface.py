@@ -156,6 +156,44 @@ class CAT:
         self.__initialize_rigctrld()
         return ""
 
+    def get_bw(self):
+        """Get current vfo bandwidth"""
+        if self.interface == "flrig":
+            return self.__getbw_flrig()
+        if self.interface == "rigctld":
+            return self.__getbw_rigctld()
+        return False
+
+    def __getbw_flrig(self):
+        """ccc"""
+        try:
+            self.online = True
+            return self.server.rig.get_bw()
+        except ConnectionRefusedError as exception:
+            self.online = False
+            logger.debug("getbw_flrig: %s", exception)
+            return ""
+
+    def __getbw_rigctld(self):
+        """ccc"""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(b"m\n")
+                mode = self.rigctrlsocket.recv(1024).decode()
+                mode = mode.strip().split()[1]
+                logger.debug("%s", mode)
+                return mode
+            except IndexError as exception:
+                logger.debug("%s", exception)
+            except socket.error as exception:
+                self.online = False
+                logger.debug("%s", exception)
+                self.rigctrlsocket = None
+            return ""
+        self.__initialize_rigctrld()
+        return ""
+
     def get_power(self):
         """Get power level from rig"""
         if self.interface == "flrig":

@@ -1785,6 +1785,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control.online:
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
+                bw = self.rig_control.get_bw()
                 # self.radio_state["ptt"] = self.rig_control.get_ptt()
                 # if self.radio_state.get("ptt", 0) == 1:
                 #     self.leftdot.setPixmap(self.greendot)
@@ -1802,7 +1803,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_band_indicator(band)
                 self.radio_state["mode"] = mode
-                logger.debug("VFO: %s  MODE: %s", vfo, mode)
+                self.radio_state["bw"] = bw
+                logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
                 self.set_window_title()
                 cmd = {}
                 cmd["cmd"] = "RADIO_STATE"
@@ -1810,6 +1812,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["band"] = band
                 cmd["vfoa"] = vfo
                 cmd["mode"] = mode
+                cmd["bw"] = bw
                 self.multicast_interface.send_as_json(cmd)
 
     def edit_cw_macros(self) -> None:

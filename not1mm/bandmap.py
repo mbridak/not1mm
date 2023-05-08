@@ -194,6 +194,8 @@ class MainWindow(QtWidgets.QMainWindow):
     lineitemlist = []
     textItemList = []
     connected = False
+    bandwidth = 0
+    bandwidth_mark = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -270,6 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band(packet.get("band") + "m", False)
                 self.rx_freq = float(packet.get("vfoa")) / 1000000
                 self.tx_freq = self.rx_freq
+                self.bandwidth = int(packet.get("bw", "0"))
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
 
@@ -298,6 +301,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
+        self.clear_freq_mark(self.bandwidth_mark)
         self.bandmap_scene.clear()
 
         step, _digits = self.determine_step_digits()
@@ -348,7 +352,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def drawTXRXMarks(self, step):
         """doc"""
         if self.rx_freq:
+            self.clear_freq_mark(self.bandwidth_mark)
             self.clear_freq_mark(self.rxMark)
+            self.draw_bandwidth(
+                self.rx_freq, step, QtGui.QColor(30, 30, 180), self.bandwidth_mark
+            )
             self.drawfreqmark(
                 self.rx_freq, step, QtGui.QColor(30, 180, 30), self.rxMark
             )
@@ -367,7 +375,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
 
         self.clear_freq_mark(currentPolygon)
-
         # do not show the freq mark if it is outside the bandmap
         if freq < self.currentBand.start or freq > self.currentBand.end:
             return
@@ -382,6 +389,28 @@ class MainWindow(QtWidgets.QMainWindow):
         pen = QtGui.QPen()
         brush = QtGui.QBrush(color)
         currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
+
+    def draw_bandwidth(self, freq, step, color, currentPolygon):
+        """bandwidth"""
+        logger.debug("%s", f"mark:{currentPolygon} f:{freq} b:{self.bandwidth}")
+        self.clear_freq_mark(currentPolygon)
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return
+        if freq and self.bandwidth:
+            color = QtGui.QColor(30, 30, 180)
+            bw_start = freq - ((self.bandwidth / 2) / 1000000)
+            bw_end = freq + ((self.bandwidth / 2) / 1000000)
+            logger.debug("%s", f"s:{bw_start} e:{bw_end}")
+            Yposition_neg = self.Freq2ScenePos(bw_start).y()
+            Yposition_pos = self.Freq2ScenePos(bw_end).y()
+            poly = QtGui.QPolygonF()
+            poly.append(QtCore.QPointF(15, Yposition_neg))
+            poly.append(QtCore.QPointF(20, Yposition_neg))
+            poly.append(QtCore.QPointF(20, Yposition_pos))
+            poly.append(QtCore.QPointF(15, Yposition_pos))
+            pen = QtGui.QPen()
+            brush = QtGui.QBrush(color)
+            currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
 
     def update_stations(self):
         """doc"""
@@ -491,6 +520,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if "login:" in data:
             self.send_command(self.callsignField.text())
             self.send_command(PREF.get("cluster_filter", ""))
+            self.send_command("set dx extension Name CTY State Section")
             self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
             return
         if "DX de" in data:
