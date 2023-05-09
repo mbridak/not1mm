@@ -45,6 +45,8 @@
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Windows](#windows)
+    - [The Main Window](#the-main-window)
+      - [Keyboard commands](#keyboard-commands)
     - [Log Display](#log-display)
     - [Bandmap](#bandmap)
   - [Editing a contact](#editing-a-contact)
@@ -97,7 +99,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
-- [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother.
+- [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother. Add CTRL-PgUp and CTRL-PgDown keys to jump to the next/prev spots in the bandmap.
 - [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
 - [23-5-7] Added bandwidth marker to the bandmap.
 - [23-5-6] Added AR Cluster filter options for the bandmap. Added a station ID to the multicast packets. This will prevent erratic bevahiour if 2 stations are on the same network.
@@ -369,6 +371,22 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 ## Windows
 
+### The Main Window
+
+#### Keyboard commands
+
+- [Esc] Clears the input fields of any text.
+- [CTRL-Esc] Stops cwdaemon from sending Morse.
+- [PgUp] Increases the cwdaemon sending speed.
+- [PgDown] Decreases the cwdaemon sending speed.
+- [CTRL-PgUp] Jump to the next spot above the current VFO cursor in the bamdmap window.
+- [CTRL-PgDown] Jump to the next spot below the current VFO cursor in the bamdmap window.
+- [TAB] Move cursor to the right one field.
+- [Shift-Tab] Move cursor left One field.
+- [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
+- [Enter] Submits the fields to the log.
+- [F1-F12] Send (CW or Voice) macros.
+
 ### Log Display
 
 `Window`>`Log Window`
@@ -385,7 +403,7 @@ The bottom half of the log displays contacts sorted by what's currently in the c
 
 Put your callsign in the top and press the connect button.
 
-The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. Clicked on spots now tune the radio and set the callsign field.
+The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth. Clicked on spots now tune the radio and set the callsign field.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 

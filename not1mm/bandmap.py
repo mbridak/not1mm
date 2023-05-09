@@ -177,6 +177,22 @@ class Database:
         )
         return self.cursor.fetchall()
 
+    def get_next_spot(self, current: float, limit: float) -> dict:
+        """ "return a list of dict where freq range is defined"""
+        print(f"Next {current} {limit}")
+        self.cursor.execute(
+            f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
+        )
+        return self.cursor.fetchone()
+
+    def get_prev_spot(self, current: float, limit: float) -> dict:
+        """ "return a list of dict where freq range is defined"""
+        print(f"Prev {current} {limit}")
+        self.cursor.execute(
+            f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
+        )
+        return self.cursor.fetchone()
+
     def delete_spots(self, minutes: int):
         """doc"""
         self.cursor.execute(
@@ -282,6 +298,45 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.bandwidth = int(packet.get("bw", "0"))
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
+            if (
+                packet.get("cmd", "") == "NEXTSPOT"
+                and packet.get("station", "") == platform.node()
+            ):
+                spot = self.spots.get_next_spot(
+                    self.rx_freq + 0.000001, self.currentBand.end
+                )
+                if spot:
+                    print(f"{spot}")
+                    cmd = {}
+                    cmd["cmd"] = "TUNE"
+                    cmd["station"] = platform.node()
+                    cmd["freq"] = spot.get("freq", self.rx_freq)
+                    cmd["spot"] = spot.get("callsign", "")
+                    packet = bytes(dumps(cmd), encoding="ascii")
+                    self.udpsocket.writeDatagram(
+                        packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
+                    )
+                continue
+
+            if (
+                packet.get("cmd", "") == "PREVSPOT"
+                and packet.get("station", "") == platform.node()
+            ):
+                spot = self.spots.get_prev_spot(
+                    self.rx_freq - 0.000001, self.currentBand.start
+                )
+                if spot:
+                    print(f"{spot}")
+                    cmd = {}
+                    cmd["cmd"] = "TUNE"
+                    cmd["station"] = platform.node()
+                    cmd["freq"] = spot.get("freq", self.rx_freq)
+                    cmd["spot"] = spot.get("callsign", "")
+                    packet = bytes(dumps(cmd), encoding="ascii")
+                    self.udpsocket.writeDatagram(
+                        packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
+                    )
+                continue
 
     def spot_clicked(self):
         """dunno"""
