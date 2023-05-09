@@ -179,7 +179,6 @@ class Database:
 
     def get_next_spot(self, current: float, limit: float) -> dict:
         """ "return a list of dict where freq range is defined"""
-        print(f"Next {current} {limit}")
         self.cursor.execute(
             f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
         )
@@ -187,7 +186,6 @@ class Database:
 
     def get_prev_spot(self, current: float, limit: float) -> dict:
         """ "return a list of dict where freq range is defined"""
-        print(f"Prev {current} {limit}")
         self.cursor.execute(
             f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
         )
@@ -306,7 +304,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rx_freq + 0.000001, self.currentBand.end
                 )
                 if spot:
-                    print(f"{spot}")
                     cmd = {}
                     cmd["cmd"] = "TUNE"
                     cmd["station"] = platform.node()
@@ -326,7 +323,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rx_freq - 0.000001, self.currentBand.start
                 )
                 if spot:
-                    print(f"{spot}")
                     cmd = {}
                     cmd["cmd"] = "TUNE"
                     cmd["station"] = platform.node()

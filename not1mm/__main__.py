@@ -1177,11 +1177,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
         result = self.database.get_serial()
-        print(result)
         next_serial = str(result.get("serial_nr", "1"))
         if next_serial == "None":
             next_serial = "1"
-        print(next_serial)
         macro = macro.upper()
         macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
@@ -1252,7 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf1(self):
         """stub"""
         logger.debug("F1 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F1.toolTip()))
             return
         if self.cw:
@@ -1263,7 +1261,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf2(self):
         """stub"""
         logger.debug("F2 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F2.toolTip()))
             return
         if self.cw:
@@ -1272,7 +1270,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf3(self):
         """stub"""
         logger.debug("F3 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F3.toolTip()))
             return
         if self.cw:
@@ -1281,7 +1279,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf4(self):
         """stub"""
         logger.debug("F4 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F4.toolTip()))
             return
         if self.cw:
@@ -1290,7 +1288,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf5(self):
         """stub"""
         logger.debug("F5 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F5.toolTip()))
             return
         if self.cw:
@@ -1299,7 +1297,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf6(self):
         """stub"""
         logger.debug("F6 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F6.toolTip()))
             return
         if self.cw:
@@ -1308,7 +1306,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf7(self):
         """stub"""
         logger.debug("F7 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F7.toolTip()))
             return
         if self.cw:
@@ -1317,7 +1315,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf8(self):
         """stub"""
         logger.debug("F8 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F8.toolTip()))
             return
         if self.cw:
@@ -1326,7 +1324,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf9(self):
         """stub"""
         logger.debug("F9 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F9.toolTip()))
             return
         if self.cw:
@@ -1335,7 +1333,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf10(self):
         """stub"""
         logger.debug("F10 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F10.toolTip()))
             return
         if self.cw:
@@ -1344,7 +1342,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf11(self):
         """stub"""
         logger.debug("F11 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F11.toolTip()))
             return
         if self.cw:
@@ -1353,7 +1351,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf12(self):
         """stub"""
         logger.debug("F12 Clicked")
-        if self.radio_state.get("mode") in ["USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F12.toolTip()))
             return
         if self.cw:
