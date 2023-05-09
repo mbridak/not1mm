@@ -1493,7 +1493,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 the_error = f"Not JSON: {err}\n{datagram}"
                 logger.debug(the_error)
                 continue
-            if json_data.get("cmd", "") == "GETCOLUMNS":
+            if (
+                json_data.get("cmd", "") == "GETCOLUMNS"
+                and json_data.get("station", "") == platform.node()
+            ):
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
@@ -1951,8 +1954,8 @@ def run():
     """
 
     install_icons()
-    timer.start(1000)
-    timer2.start(1000)
+    timer.start(100)
+    timer2.start(250)
 
     sys.exit(app.exec())
 
@@ -1974,7 +1977,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Fusion")
+# app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)

@@ -9,6 +9,7 @@ import logging
 import math
 import os
 import pkgutil
+import platform
 import queue
 import socket
 import sys
@@ -20,6 +21,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
 from PyQt5.QtCore import QDir, QItemSelectionModel
+from PyQt5 import QtNetwork
 from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.database import DataBase
@@ -149,19 +151,23 @@ class MainWindow(QtWidgets.QMainWindow):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
-        self.multicast_interface = Multicast(
-            MULTICAST_GROUP, MULTICAST_PORT, INTERFACE_IP
+        self.udpsocket = QtNetwork.QUdpSocket(self)
+        self.udpsocket.bind(
+            QtNetwork.QHostAddress.AnyIPv4,
+            MULTICAST_PORT,
+            QtNetwork.QUdpSocket.ShareAddress,
         )
+        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
+        self.udpsocket.readyRead.connect(self.watch_udp)
 
-        if self._udpwatch is None:
-            self._udpwatch = threading.Thread(
-                target=self.watch_udp,
-                daemon=True,
-            )
-            self._udpwatch.start()
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
-        self.multicast_interface.send_as_json(cmd)
+        cmd["station"] = platform.node()
+
+        packet = bytes(dumps(cmd), encoding="ascii")
+        self.udpsocket.writeDatagram(
+            packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
+        )
         # self.n1mm = N1MM(
         #     ip_address=self.preference.get("n1mm_ip"),
         #     radioport=self.preference.get("n1mm_radioport"),
@@ -518,15 +524,41 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
-        while True:
+        while self.udpsocket.hasPendingDatagrams():
+            datagram, _, _ = self.udpsocket.readDatagram(
+                self.udpsocket.pendingDatagramSize()
+            )
+
             try:
-                datagram = self.multicast_interface.server_udp.recv(1500)
-                logger.debug(datagram.decode())
-            except socket.timeout:
-                time.sleep(0.1)
+                debug_info = f"{datagram.decode()}"
+                logger.debug(debug_info)
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logger.debug(the_error)
                 continue
-            if datagram:
-                self.udp_fifo.put(datagram)
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logger.debug(the_error)
+                continue
+            if json_data.get("station", "") != platform.node():
+                continue
+            if json_data.get("cmd", "") == "UPDATELOG":
+                logger.debug("External refresh command.")
+                self.get_log()
+            if json_data.get("cmd", "") == "CALLCHANGED":
+                call = json_data.get("call", "")
+                self.show_like_calls(call)
+            if json_data.get("cmd", "") == "NEWDB":
+                self.load_new_db()
+            if json_data.get("cmd", "") == "SHOWCOLUMNS":
+                for column in range(len(self.columns)):
+                    self.generalLog.setColumnHidden(column, True)
+                    self.focusedLog.setColumnHidden(column, True)
+                columns_to_show = json_data.get("COLUMNS", [])
+                for column in columns_to_show:
+                    self.generalLog.setColumnHidden(self.get_column(column), False)
+                    self.focusedLog.setColumnHidden(self.get_column(column), False)
 
     def show_like_calls(self, call):
         """Show like calls"""
@@ -661,39 +693,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
 
-    def check_udp_traffic(self):
-        """Checks UDP Traffic"""
-        while not self.udp_fifo.empty():
-            datagram = self.udp_fifo.get()
-            try:
-                debug_info = f"{datagram.decode()}"
-                logger.debug(debug_info)
-                json_data = loads(datagram.decode())
-            except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            if json_data.get("cmd", "") == "UPDATELOG":
-                logger.debug("External refresh command.")
-                self.get_log()
-            if json_data.get("cmd", "") == "CALLCHANGED":
-                call = json_data.get("call", "")
-                self.show_like_calls(call)
-            if json_data.get("cmd", "") == "NEWDB":
-                self.load_new_db()
-            if json_data.get("cmd", "") == "SHOWCOLUMNS":
-                for column in range(len(self.columns)):
-                    self.generalLog.setColumnHidden(column, True)
-                    self.focusedLog.setColumnHidden(column, True)
-                columns_to_show = json_data.get("COLUMNS", [])
-                for column in columns_to_show:
-                    self.generalLog.setColumnHidden(self.get_column(column), False)
-                    self.focusedLog.setColumnHidden(self.get_column(column), False)
-
 
 def load_fonts_from_dir(directory: str) -> set:
     """
@@ -708,7 +707,6 @@ def load_fonts_from_dir(directory: str) -> set:
 
 def main():
     """main entry"""
-    timer.start(1000)
     sys.exit(app.exec())
 
 
@@ -729,14 +727,10 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Fusion")
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
-# window.setWindowTitle("Log Display")
 window.show()
-timer = QtCore.QTimer()
-timer.timeout.connect(window.check_udp_traffic)
 
 if __name__ == "__main__":
     main()

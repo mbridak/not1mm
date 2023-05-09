@@ -637,7 +637,7 @@ else:
 app = QtWidgets.QApplication(sys.argv)
 
 
-app.setStyle("Fusion")
+# app.setStyle("Fusion")
 window = MainWindow()
 window.show()
 if __name__ == "__main__":
