@@ -48,8 +48,8 @@
     - [The Main Window](#the-main-window)
       - [Keyboard commands](#keyboard-commands)
     - [Log Display](#log-display)
+      - [Editing a contact](#editing-a-contact)
     - [Bandmap](#bandmap)
-  - [Editing a contact](#editing-a-contact)
   - [Recalulate Mults](#recalulate-mults)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
@@ -397,17 +397,7 @@ The Log display gets updated automatically when a contact is entered. The top ha
 
 The bottom half of the log displays contacts sorted by what's currently in the call entry field. The columns displayed in the log window are dependant on what contests is currently active.
 
-### Bandmap
-
-`Window`>`Bandmap`
-
-Put your callsign in the top and press the connect button.
-
-The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth. Clicked on spots now tune the radio and set the callsign field.
-
-![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
-
-## Editing a contact
+#### Editing a contact
 
 ![Editing a cell](https://github.com/mbridak/not1mm/raw/master/pic/edit_cell.png)
 
@@ -418,6 +408,16 @@ You can also Right-Click on a cell to bring up the edit dialog.
 ![right click edit dialog](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
 
 You can not directly edit the multiplier status of a contact. Instead see the next section on recalculating mults. If you change the callsign make sure the `WPX` field is still valid.
+
+### Bandmap
+
+`Window`>`Bandmap`
+
+Put your callsign in the top and press the connect button.
+
+The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth. Clicked on spots now tune the radio and set the callsign field.
+
+![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 
 ## Recalulate Mults
 
