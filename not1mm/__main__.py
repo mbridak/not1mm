@@ -157,11 +157,11 @@ class MainWindow(QtWidgets.QMainWindow):
         "cloudlogapi": "",
         "cloudlogurl": "",
         "CAT_ip": "127.0.0.1",
-        "userigctld": True,
+        "userigctld": False,
         "useflrig": False,
         "cwip": "127.0.0.1",
         "cwport": 6789,
-        "cwtype": 1,
+        "cwtype": 0,
         "useserver": False,
         "CAT_port": 4532,
         "cluster_server": "dxc.nc7j.com",
@@ -1243,9 +1243,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def ptt_off(self):
         """turn off ptt"""
-        self.leftdot.setPixmap(self.reddot)
-        app.processEvents()
-        self.rig_control.ptt_off()
+        if self.rig_control:
+            self.leftdot.setPixmap(self.reddot)
+            app.processEvents()
+            self.rig_control.ptt_off()
 
     def sendf1(self):
         """stub"""
