@@ -299,6 +299,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if (
                 packet.get("cmd", "") == "NEXTSPOT"
                 and packet.get("station", "") == platform.node()
+                and self.rx_freq
             ):
                 spot = self.spots.get_next_spot(
                     self.rx_freq + 0.000001, self.currentBand.end
@@ -318,6 +319,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if (
                 packet.get("cmd", "") == "PREVSPOT"
                 and packet.get("station", "") == platform.node()
+                and self.rx_freq
             ):
                 spot = self.spots.get_prev_spot(
                     self.rx_freq - 0.000001, self.currentBand.start
