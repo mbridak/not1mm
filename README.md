@@ -15,7 +15,10 @@
   - [Installing from PyPi](#installing-from-pypi)
     - [Python and pip](#python-and-pip)
     - [Installing with pip](#installing-with-pip)
-    - [Updating with pip](#updating-with-pip)
+      - [Ubuntu 22.04 LTS, From a fresh install](#ubuntu-2204-lts-from-a-fresh-install)
+      - [Ubuntu 23.04, From a fresh install](#ubuntu-2304-from-a-fresh-install)
+    - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
+    - [Updating with pip/pipx](#updating-with-pippipx)
   - [Other Libraries](#other-libraries)
   - [Running on Ubuntu LTS 22.04](#running-on-ubuntu-lts-2204)
   - [Running from source](#running-from-source)
@@ -177,11 +180,41 @@ This software is a Python package hosted on PyPi, and installable with the pip c
 
 ### Installing with pip
 
-But just try `pip install not1mm` in your terminal. Once it's installed just type `not1mm` in the same terminal. On the first run, the program will install a launchable icon, which you can then click on to run like a normal program.
+But just try `pip install not1mm` in your terminal, you may have everything you need. Once it's installed just type `not1mm` in the same terminal. On the first run, the program will install a launchable icon, which you can then click on to run like a normal program. I'll start including more detailed install for popular distros.
 
-### Updating with pip
+#### Ubuntu 22.04 LTS, From a fresh install
 
-I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm`.
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy
+pip install -U not1mm
+```
+
+#### Ubuntu 23.04, From a fresh install
+
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install -y libportaudio2 adwaita-qt pipx
+pipx install not1mm
+pipx ensurepath
+```
+
+Open a new terminal and type `not1mm`
+
+### You may or may not get a warning message like
+
+```text
+WARNING: The script not1mm is installed in '/home/mbridak/.local/bin' which is not on PATH.
+Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+```
+
+If you do, just logout and back in, or reboot.
+
+### Updating with pip/pipx
+
+I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm` or if installed with pipx `pipx upgrade not1mm`.
 
 ## Other Libraries
 
