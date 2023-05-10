@@ -736,13 +736,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     return
         if event.key() == Qt.Key.Key_PageUp and modifier == Qt.ControlModifier:
             cmd = {}
-            cmd["cmd"] = "NEXTSPOT"
+            cmd["cmd"] = "PREVSPOT"
             cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             return
         if event.key() == Qt.Key.Key_PageDown and modifier == Qt.ControlModifier:
             cmd = {}
-            cmd["cmd"] = "PREVSPOT"
+            cmd["cmd"] = "NEXTSPOT"
             cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             return
