@@ -4,4 +4,4 @@
 - SO2R
 - Multi-Op
 - ~~Make bandmap drop focus after clicking spot~~ (Wayland prevents this...)
-- Finish ARRL Sweepstakes.
+-"The only thing that would be super cool is auto fill from call history files and the ability to load different call history files for different contests. KJ5T"
