@@ -417,6 +417,8 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 ### The Main Window
 
+![Main screen with callouts](https://github.com/mbridak/not1mm/raw/master/pic/mainwithcallouts.png)
+
 #### Keyboard commands
 
 - [Esc] Clears the input fields of any text.
