@@ -35,7 +35,7 @@
     - [Changing station information](#changing-station-information)
   - [Adding a contest to the current dababase](#adding-a-contest-to-the-current-dababase)
   - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
-  - [Editing an existing contest parameters](#editing-an-existing-contest-parameters)
+  - [Editing existing contest parameters](#editing-existing-contest-parameters)
   - [Configuration Settings](#configuration-settings)
     - [Lookup](#lookup)
     - [Soundcard](#soundcard)
@@ -53,8 +53,8 @@
       - [Keyboard commands](#keyboard-commands)
     - [Log Display](#log-display)
       - [Editing a contact](#editing-a-contact)
-    - [Bandmap](#bandmap)
   - [Recalulate Mults](#recalulate-mults)
+    - [Bandmap](#bandmap)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -328,7 +328,7 @@ Select `File` > `Open Contest`
 
 ![Open an existing contest](https://github.com/mbridak/not1mm/raw/master/pic/select_contest.png)
 
-## Editing an existing contest parameters
+## Editing existing contest parameters
 
 You can edit the parameters of a previously defined contest by selecting it as the current contest. Then select `File` > `Edit Current Contest`. Click `OK` to save the new values and reload the contest. `Cancel` to keep the existing parameters.
 
@@ -423,8 +423,8 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 - [CTRL-Esc] Stops cwdaemon from sending Morse.
 - [PgUp] Increases the cwdaemon sending speed.
 - [PgDown] Decreases the cwdaemon sending speed.
-- [CTRL-PgUp] Jump to the next spot above the current VFO cursor in the bamdmap window.
-- [CTRL-PgDown] Jump to the next spot below the current VFO cursor in the bamdmap window.
+- [CTRL-PgUp] Jump to the next spot above the current VFO cursor in the bandmap window.
+- [CTRL-PgDown] Jump to the next spot below the current VFO cursor in the bandmap window.
 - [TAB] Move cursor to the right one field.
 - [Shift-Tab] Move cursor left One field.
 - [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
@@ -453,6 +453,10 @@ You can also Right-Click on a cell to bring up the edit dialog.
 
 You can not directly edit the multiplier status of a contact. Instead see the next section on recalculating mults. If you change the callsign make sure the `WPX` field is still valid.
 
+## Recalulate Mults
+
+After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
+
 ### Bandmap
 
 `Window`>`Bandmap`
@@ -462,10 +466,6 @@ Put your callsign in the top and press the connect button.
 The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth. Clicked on spots now tune the radio and set the callsign field.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
-
-## Recalulate Mults
-
-After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
 
 ## Cabrillo
 
