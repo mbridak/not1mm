@@ -720,6 +720,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw.servertype == 1:
             self.cw.speed = self.cw_speed.value()
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        if self.cw.servertype == 2:
+            self.cw.set_winkeyer_speed(self.cw_speed.value())
 
     def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This overrides Qt key event."""
@@ -1477,6 +1479,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 int(self.pref.get("cwport", 6789)),
             )
             self.cw.speed = 20
+            if self.cw.servertype == 2:
+                self.cw.set_winkeyer_speed(20)
 
         self.dark_mode()
         self.show_command_buttons()
