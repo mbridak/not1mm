@@ -1656,6 +1656,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clearinputs()
                 if self.rig_control:
                     self.rig_control.set_vfo(vfo)
+                    return
+                cmd = {}
+                cmd["cmd"] = "RADIO_STATE"
+                cmd["station"] = platform.node()
+                cmd["band"] = band
+                cmd["vfoa"] = vfo
+                self.multicast_interface.send_as_json(cmd)
                 return
 
             self.check_callsign(stripped_text)

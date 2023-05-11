@@ -15,8 +15,9 @@
   - [Installing from PyPi](#installing-from-pypi)
     - [Python and pip](#python-and-pip)
     - [Installing with pip](#installing-with-pip)
-      - [Ubuntu 22.04 LTS, From a fresh install](#ubuntu-2204-lts-from-a-fresh-install)
-      - [Ubuntu 23.04, From a fresh install](#ubuntu-2304-from-a-fresh-install)
+      - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
+      - [Ubuntu 23.04](#ubuntu-2304)
+      - [Fedora 38](#fedora-38)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Updating with pip/pipx](#updating-with-pippipx)
   - [Other Libraries](#other-libraries)
@@ -102,6 +103,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap.
 - [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions. I hate Ubuntu/Wayland.
 - [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother. Add CTRL-PgUp and CTRL-PgDown keys to jump to the next/prev spots in the bandmap. Fix: Voice not keying on LSB. Fix: calling pttoff when no CAT interface. Fix: Voice not keying on LSB
 - [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
@@ -177,13 +179,13 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ### Python and pip
 
-This software is a Python package hosted on PyPi, and installable with the pip command. If this is your first exposure to pip you can get all the details from [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/). In short, most linux distros come with Python pre installed. And pip usually comes with Python as a standard module. If pip is not installed by default, you can usually load it through your package manager. For example `sudo apt install python3-pip` or `sudo dnf install python3-pip`.
+This software is a Python package hosted on PyPi, and installable with the pip or pipx command. If this is your first exposure to pip you can get all the details from [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/). In short, most linux distros come with Python pre installed. If pip is not installed by default, you can usually load it through your package manager. For example `sudo apt install python3-pip` or `sudo dnf install python3-pip`.
 
 ### Installing with pip
 
-But just try `pip install not1mm` in your terminal, you may have everything you need. Once it's installed just type `not1mm` in the same terminal. On the first run, the program will install a launchable icon, which you can then click on to run like a normal program. I'll start including more detailed install for popular distros.
+I've included what installation steps I took to install on fresh images of Ubuntu and Fedora below. YMMV.
 
-#### Ubuntu 22.04 LTS, From a fresh install
+#### Ubuntu 22.04 LTS
 
 ```bash
 sudo apt update
@@ -192,7 +194,7 @@ sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy
 pip install -U not1mm
 ```
 
-#### Ubuntu 23.04, From a fresh install
+#### Ubuntu 23.04
 
 ```bash
 sudo apt update
@@ -203,6 +205,14 @@ pipx ensurepath
 ```
 
 Open a new terminal and type `not1mm`
+
+#### Fedora 38
+
+```bash
+sudo dnf upgrade --refresh
+sudo dnf install python3-pip portaudio
+pip install not1mm
+```
 
 ### You may or may not get a warning message like
 
