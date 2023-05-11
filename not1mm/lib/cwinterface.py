@@ -22,6 +22,23 @@ class CW:
         self.host = host
         self.port = port
         self.speed = 20
+        self.winkeyer_functions = []
+        if self.servertype == 2:
+            with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
+                try:
+                    self.winkeyer_functions = proxy.system.listMethods()
+                    logger.debug("%s", f"{self.winkeyer_functions}")
+                except Error as exception:
+                    logger.info(
+                        "http://%s:%s, xmlrpc error: %s",
+                        self.host,
+                        self.port,
+                        exception,
+                    )
+                except ConnectionRefusedError:
+                    logger.info(
+                        "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
+                    )
 
     def sendcw(self, texttosend):
         """sends cw to k1el"""
@@ -53,3 +70,18 @@ class CW:
         # bufferSize          = 1024
         udp_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         udp_client_socket.sendto(bytes(texttosend, "utf-8"), server_address_port)
+
+    def set_winkeyer_speed(self, speed):
+        """doc"""
+        with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
+            try:
+                if "setspeed" in self.winkeyer_functions:
+                    proxy.setspeed(speed)
+            except Error as exception:
+                logger.info(
+                    "http://%s:%s, xmlrpc error: %s", self.host, self.port, exception
+                )
+            except ConnectionRefusedError:
+                logger.info(
+                    "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
+                )
