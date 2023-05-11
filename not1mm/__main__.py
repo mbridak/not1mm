@@ -1611,6 +1611,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control:
                     if self.rig_control.online:
                         self.rig_control.set_mode("CW")
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
                 self.set_window_title()
                 self.clearinputs()
                 self.read_cw_macros()
@@ -1622,6 +1624,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.rig_control.set_mode("RTTY")
                     else:
                         self.radio_state["mode"] = "RTTY"
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
                 self.set_window_title()
                 self.clearinputs()
                 return
@@ -1631,6 +1635,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.radio_state["mode"] = "USB"
                 else:
                     self.radio_state["mode"] = "LSB"
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
                 self.set_window_title()
                 if self.rig_control:
                     self.rig_control.set_mode(self.radio_state.get("mode"))
