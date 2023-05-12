@@ -515,7 +515,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 min_y = text_y + text.boundingRect().height() / 2
 
-                # textColor = Data::statusToColor(lower.value().status, qApp->palette().color(QPalette::Text));
+                # textColor = Data::statusToColor(lower.value().status,
+                # qApp->palette().color(QPalette::Text));
                 # text->setDefaultTextColor(textColor);
                 self.textItemList.append(text)
 
