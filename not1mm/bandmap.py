@@ -118,28 +118,26 @@ class Database:
 
     def addspot(self, spot):
         """doc"""
-        try:
-            delete_call = (
-                f"delete from spots where callsign = '{spot.get('callsign')}';"
-            )
-            self.cursor.execute(delete_call)
-            self.db.commit()
+        # try:
+        delete_call = f"delete from spots where callsign = '{spot.get('callsign')}';"
+        self.cursor.execute(delete_call)
+        self.db.commit()
 
-            pre = "INSERT INTO spots("
-            values = []
-            columns = ""
-            placeholders = ""
-            for key in spot.keys():
-                columns += f"{key},"
-                values.append(spot[key])
-                placeholders += "?,"
-            post = f") VALUES({placeholders[:-1]});"
+        pre = "INSERT INTO spots("
+        values = []
+        columns = ""
+        placeholders = ""
+        for key in spot.keys():
+            columns += f"{key},"
+            values.append(spot[key])
+            placeholders += "?,"
+        post = f") VALUES({placeholders[:-1]});"
 
-            sql = f"{pre}{columns[:-1]}{post}"
-            self.cursor.execute(sql, tuple(values))
-            self.db.commit()
-        except:
-            ...
+        sql = f"{pre}{columns[:-1]}{post}"
+        self.cursor.execute(sql, tuple(values))
+        self.db.commit()
+        # except:
+        #     ...
 
     def getspots(self) -> list:
         """returns a list of dicts."""
@@ -432,7 +430,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # anim.setEndValue(int(freq_pos - (self.height() / 2) + 80))
         # anim.start(QtCore.QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
-    def drawfreqmark(self, freq, step, color, currentPolygon):
+    def drawfreqmark(self, freq, _step, color, currentPolygon):
         """doc"""
 
         self.clear_freq_mark(currentPolygon)
@@ -451,7 +449,7 @@ class MainWindow(QtWidgets.QMainWindow):
         brush = QtGui.QBrush(color)
         currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
 
-    def draw_bandwidth(self, freq, step, color, currentPolygon):
+    def draw_bandwidth(self, freq, _step, color, currentPolygon):
         """bandwidth"""
         logger.debug("%s", f"mark:{currentPolygon} f:{freq} b:{self.bandwidth}")
         self.clear_freq_mark(currentPolygon)

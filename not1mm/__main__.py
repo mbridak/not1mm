@@ -9,7 +9,6 @@ import logging
 import os
 import pkgutil
 import platform
-import queue
 import re
 import socket
 import subprocess
@@ -22,7 +21,8 @@ from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 from pathlib import Path
 from shutil import copyfile
-from xmlrpc.client import Error, ServerProxy
+
+# from xmlrpc.client import Error, ServerProxy
 
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
@@ -192,7 +192,6 @@ class MainWindow(QtWidgets.QMainWindow):
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
     rig_control = None
-    server_udp = None
     multicast_group = None
     multicast_port = None
     interface_ip = None
@@ -201,8 +200,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-        self._udpwatch = None
-        self.udp_fifo = queue.Queue()
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
         self.leftdot.hide()
@@ -311,7 +308,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.read_cw_macros()
         self.clearinputs()
-        # self.launch_log_window()
 
         self.band_indicators_cw = {
             "160": self.cw_band_160,
@@ -345,12 +341,6 @@ class MainWindow(QtWidgets.QMainWindow):
             "SSB": self.band_indicators_ssb,
             "RTTY": self.band_indicators_rtty,
         }
-        if self._udpwatch is None:
-            self._udpwatch = threading.Thread(
-                target=self.watch_udp,
-                daemon=True,
-            )
-            self._udpwatch.start()
 
     @staticmethod
     def check_process(name: str) -> bool:
@@ -643,7 +633,6 @@ class MainWindow(QtWidgets.QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         options |= QFileDialog.DontConfirmOverwrite
-        # picker = QFileDialog(self)
         if action == "new":
             file, _ = QFileDialog.getSaveFileName(
                 self,
@@ -1446,6 +1435,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface = Multicast(
             multicast_group, multicast_port, interface_ip
         )
+        self.multicast_interface.ready_read_connect(self.watch_udp)
 
         self.rig_control = None
 
@@ -1489,58 +1479,51 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
-        while True:
-            try:
-                datagram = self.multicast_interface.server_udp.recv(1500)
-                logger.debug(datagram.decode())
-            except socket.timeout:
-                time.sleep(0.1)
-                continue
+        while self.multicast_interface.server_udp.hasPendingDatagrams():
+            bundle = self.multicast_interface.server_udp.readDatagram(
+                self.multicast_interface.server_udp.pendingDatagramSize()
+            )
+            datagram, _, _ = bundle
+            logger.debug(datagram.decode())
             if datagram:
-                self.udp_fifo.put(datagram)
-
-    def check_udp_traffic(self):
-        """Checks UDP Traffic"""
-        while not self.udp_fifo.empty():
-            datagram = self.udp_fifo.get()
-            try:
-                debug_info = f"{datagram.decode()}"
-                logger.debug(debug_info)
-                json_data = loads(datagram.decode())
-            except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            if (
-                json_data.get("cmd", "") == "GETCOLUMNS"
-                and json_data.get("station", "") == platform.node()
-            ):
-                if hasattr(self.contest, "columns"):
-                    cmd = {}
-                    cmd["cmd"] = "SHOWCOLUMNS"
-                    cmd["station"] = platform.node()
-                    cmd["COLUMNS"] = self.contest.columns
-                    self.multicast_interface.send_as_json(cmd)
-            if (
-                json_data.get("cmd", "") == "TUNE"
-                and json_data.get("station", "") == platform.node()
-            ):
-                # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
-                vfo = json_data.get("freq")
-                vfo = float(vfo) * 1000000
-                self.radio_state["vfoa"] = int(vfo)
-                if self.rig_control:
-                    self.rig_control.set_vfo(int(vfo))
-                spot = json_data.get("spot", "")
-                self.callsign.setText(spot)
-                self.callsign_changed()
-                self.callsign.setFocus()
-                self.callsign.activateWindow()
-                window.raise_()
+                try:
+                    debug_info = f"{datagram.decode()}"
+                    logger.debug(debug_info)
+                    json_data = loads(datagram.decode())
+                except UnicodeDecodeError as err:
+                    the_error = f"Not Unicode: {err}\n{datagram}"
+                    logger.debug(the_error)
+                    continue
+                except JSONDecodeError as err:
+                    the_error = f"Not JSON: {err}\n{datagram}"
+                    logger.debug(the_error)
+                    continue
+                if (
+                    json_data.get("cmd", "") == "GETCOLUMNS"
+                    and json_data.get("station", "") == platform.node()
+                ):
+                    if hasattr(self.contest, "columns"):
+                        cmd = {}
+                        cmd["cmd"] = "SHOWCOLUMNS"
+                        cmd["station"] = platform.node()
+                        cmd["COLUMNS"] = self.contest.columns
+                        self.multicast_interface.send_as_json(cmd)
+                if (
+                    json_data.get("cmd", "") == "TUNE"
+                    and json_data.get("station", "") == platform.node()
+                ):
+                    # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                    vfo = json_data.get("freq")
+                    vfo = float(vfo) * 1000000
+                    self.radio_state["vfoa"] = int(vfo)
+                    if self.rig_control:
+                        self.rig_control.set_vfo(int(vfo))
+                    spot = json_data.get("spot", "")
+                    self.callsign.setText(spot)
+                    self.callsign_changed()
+                    self.callsign.setFocus()
+                    self.callsign.activateWindow()
+                    window.raise_()
 
     def dark_mode_state_change(self):
         """darkmode dropdown checkmark changed"""
@@ -1987,11 +1970,8 @@ def run():
     """
     Main Entry
     """
-
     install_icons()
     timer.start(100)
-    timer2.start(250)
-
     sys.exit(app.exec())
 
 
@@ -2022,13 +2002,10 @@ width = window.pref.get("window_width", 700)
 x = window.pref.get("window_x", -1)
 y = window.pref.get("window_y", -1)
 window.setGeometry(x, y, width, height)
-# window.setWindowTitle(f"Not1MM v{__version__}")
 window.callsign.setFocus()
 window.show()
 timer = QtCore.QTimer()
 timer.timeout.connect(window.poll_radio)
-timer2 = QtCore.QTimer()
-timer2.timeout.connect(window.check_udp_traffic)
 
 if __name__ == "__main__":
     run()
