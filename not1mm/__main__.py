@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
 from PyQt5.QtCore import QDir, QRect, QSize, Qt
 from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
+
 import sounddevice as sd
 import soundfile as sf
 
@@ -739,18 +740,22 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if event.key() == Qt.Key.Key_PageUp and modifier != Qt.ControlModifier:
             if self.cw is not None:
+                self.cw.speed += 1
+                self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
-                    self.cw.speed += 1
-                    self.cw_speed.setValue(self.cw.speed)
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
-                    return
+                if self.cw.servertype == 2:
+                    self.cw.set_winkeyer_speed(self.cw_speed.value())
+            return
         if event.key() == Qt.Key.Key_PageDown and modifier != Qt.ControlModifier:
             if self.cw is not None:
+                self.cw.speed -= 1
+                self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
-                    self.cw.speed -= 1
-                    self.cw_speed.setValue(self.cw.speed)
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
-                    return
+                if self.cw.servertype == 2:
+                    self.cw.set_winkeyer_speed(self.cw_speed.value())
+            return
         # if event.key() == Qt.Key.Key_Enter:
         #     self.save_contact()
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
