@@ -118,26 +118,28 @@ class Database:
 
     def addspot(self, spot):
         """doc"""
-        # try:
-        delete_call = f"delete from spots where callsign = '{spot.get('callsign')}';"
-        self.cursor.execute(delete_call)
-        self.db.commit()
+        try:
+            delete_call = (
+                f"delete from spots where callsign = '{spot.get('callsign')}';"
+            )
+            self.cursor.execute(delete_call)
+            self.db.commit()
 
-        pre = "INSERT INTO spots("
-        values = []
-        columns = ""
-        placeholders = ""
-        for key in spot.keys():
-            columns += f"{key},"
-            values.append(spot[key])
-            placeholders += "?,"
-        post = f") VALUES({placeholders[:-1]});"
+            pre = "INSERT INTO spots("
+            values = []
+            columns = ""
+            placeholders = ""
+            for key in spot.keys():
+                columns += f"{key},"
+                values.append(spot[key])
+                placeholders += "?,"
+            post = f") VALUES({placeholders[:-1]});"
 
-        sql = f"{pre}{columns[:-1]}{post}"
-        self.cursor.execute(sql, tuple(values))
-        self.db.commit()
-        # except:
-        #     ...
+            sql = f"{pre}{columns[:-1]}{post}"
+            self.cursor.execute(sql, tuple(values))
+            self.db.commit()
+        except sqlite3.IntegrityError:
+            ...
 
     def getspots(self) -> list:
         """returns a list of dicts."""
