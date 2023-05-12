@@ -22,6 +22,7 @@
     - [Updating with pip/pipx](#updating-with-pippipx)
   - [Other Libraries](#other-libraries)
   - [Running on Ubuntu LTS 22.04](#running-on-ubuntu-lts-2204)
+    - [Dark mode on Ubuntu](#dark-mode-on-ubuntu)
   - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
@@ -105,7 +106,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 - [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
 - [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap. Added K1EL speed change via xmlrpc. One would need to update the pywinkeyerserial client.
-- [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions. I hate Ubuntu/Wayland.
+- [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions.
 - [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother. Add CTRL-PgUp and CTRL-PgDown keys to jump to the next/prev spots in the bandmap. Fix: Voice not keying on LSB. Fix: calling pttoff when no CAT interface. Fix: Voice not keying on LSB
 - [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
 - [23-5-7] Added bandwidth marker to the bandmap.
@@ -245,6 +246,10 @@ To avoid this you can export an environment variable and launch the app like thi
 `mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
 
 For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
+
+### Dark mode on Ubuntu
+
+For some reason PyQt apps on Ubuntu Gnome don't respect the Dark/Light appearance settings. Fedora Gnome does. I haven't been able to figure out what secret sauce Fedora is using to make this happen. So you can go to `View`>`Force Dark Mode` to load in a dark stylesheet. I personally think it looks like ass, but ass is in the eye of the beholder.
 
 ## Running from source
 
@@ -424,8 +429,8 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 - [Esc] Clears the input fields of any text.
 - [CTRL-Esc] Stops cwdaemon from sending Morse.
-- [PgUp] Increases the cwdaemon sending speed.
-- [PgDown] Decreases the cwdaemon sending speed.
+- [PgUp] Increases the cw sending speed.
+- [PgDown] Decreases the cw sending speed.
 - [CTRL-PgUp] Jump to the next spot above the current VFO cursor in the bandmap window.
 - [CTRL-PgDown] Jump to the next spot below the current VFO cursor in the bandmap window.
 - [TAB] Move cursor to the right one field.
