@@ -671,6 +671,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
+                indicator.setStyleSheet("font-family: JetBrains Mono;")
 
     def set_band_indicator(self, band: str) -> None:
         """Set the band indicator"""
@@ -680,6 +681,7 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Box)
+                indicator.setStyleSheet("font-family: JetBrains Mono; color: green;")
 
     def closeEvent(self, _event):
         """
@@ -716,6 +718,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This overrides Qt key event."""
         modifier = event.modifiers()
+        if event.key() == Qt.Key_S and modifier == Qt.ControlModifier:
+            freq = self.radio_state.get("vfoa")
+            dx = self.callsign.text()
+            if freq and dx:
+                cmd = {}
+                cmd["cmd"] = "SPOTDX"
+                cmd["station"] = platform.node()
+                cmd["dx"] = dx
+                cmd["freq"] = float(int(freq) / 1000)
+                self.multicast_interface.send_as_json(cmd)
+            return
         if (
             event.key() == Qt.Key.Key_Escape and modifier != Qt.ControlModifier
         ):  # pylint: disable=no-member

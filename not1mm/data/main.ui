@@ -1029,6 +1029,7 @@
     <property name="font">
      <font>
       <family>JetBrains Mono</family>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="title">
@@ -1426,6 +1427,11 @@
   <action name="actionEdit_Current_Contest">
    <property name="text">
     <string>Edit Current Contest</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
   </action>
   <action name="actionBandmap">

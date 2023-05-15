@@ -319,6 +319,14 @@ class MainWindow(QtWidgets.QMainWindow):
                         packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                     )
                 continue
+            if (
+                packet.get("cmd", "") == "SPOTDX"
+                and packet.get("station", "") == platform.node()
+            ):
+                dx = packet.get("dx", "")
+                freq = packet.get("freq", 0.0)
+                spotdx = f"dx {dx} {freq}"
+                self.send_command(spotdx)
 
     def spot_clicked(self):
         """dunno"""

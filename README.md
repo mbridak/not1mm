@@ -104,6 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-15] CTRL-S in the main window will send a spot to the cluster.
 - [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
 - [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap. Added K1EL speed change via xmlrpc. One would need to update the pywinkeyerserial client.
 - [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions.
@@ -438,6 +439,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 - [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
 - [Enter] Submits the fields to the log.
 - [F1-F12] Send (CW or Voice) macros.
+- [CTRL-S] Spot Callsign to the cluster.
 
 ### Log Display
 
