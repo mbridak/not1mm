@@ -729,6 +729,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["freq"] = float(int(freq) / 1000)
                 self.multicast_interface.send_as_json(cmd)
             return
+        if event.key() == Qt.Key_G and modifier == Qt.ControlModifier:
+            dx = self.callsign.text()
+            if dx:
+                cmd = {}
+                cmd["cmd"] = "FINDDX"
+                cmd["station"] = platform.node()
+                cmd["dx"] = dx
+                self.multicast_interface.send_as_json(cmd)
+            return
         if (
             event.key() == Qt.Key.Key_Escape and modifier != Qt.ControlModifier
         ):  # pylint: disable=no-member

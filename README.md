@@ -104,6 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this.
 - [23-5-15] CTRL-S in the main window will send a spot to the cluster.
 - [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
 - [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap. Added K1EL speed change via xmlrpc. One would need to update the pywinkeyerserial client.
@@ -440,6 +441,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 - [Enter] Submits the fields to the log.
 - [F1-F12] Send (CW or Voice) macros.
 - [CTRL-S] Spot Callsign to the cluster.
+- [CTRL-G] Tune to a spot matching partial text in the callsign entry field.
 
 ### Log Display
 
