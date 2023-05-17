@@ -304,9 +304,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         self.current_op = self.station.get("Call", "")
         self.make_op_dir()
-        if self.pref.get("contest"):
-            self.load_contest()
-
         self.read_cw_macros()
         self.clearinputs()
 
@@ -342,6 +339,9 @@ class MainWindow(QtWidgets.QMainWindow):
             "SSB": self.band_indicators_ssb,
             "RTTY": self.band_indicators_rtty,
         }
+
+        if self.pref.get("contest"):
+            self.load_contest()
 
     @staticmethod
     def check_process(name: str) -> bool:
@@ -582,8 +582,30 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.set_window_title()
                     self.contest.init_contest(self)
                     self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
+                    logger.debug("%s", f"{self.contest_settings}")
+                    if self.contest_settings.get("ModeCategory", "") == "CW":
+                        self.setmode("CW")
+                        self.radio_state["mode"] = "CW"
+                        if self.rig_control:
+                            if self.rig_control.online:
+                                self.rig_control.set_mode("CW")
+                        band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                        self.set_band_indicator(band)
+                        self.set_window_title()
+                    if self.contest_settings.get("ModeCategory", "") == "SSB":
+                        self.setmode("SSB")
+                        if int(self.radio_state.get("vfoa", 0)) > 10000000:
+                            self.radio_state["mode"] = "USB"
+                        else:
+                            self.radio_state["mode"] = "LSB"
+                        band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                        self.set_band_indicator(band)
+                        self.set_window_title()
+                        if self.rig_control:
+                            self.rig_control.set_mode(self.radio_state.get("mode"))
 
                 if hasattr(self.contest, "mode"):
+                    logger.debug("%s", f"  ****  {self.contest}")
                     if self.contest.mode in ["CW", "BOTH"]:
                         self.cw_speed.show()
                     else:
