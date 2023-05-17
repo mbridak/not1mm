@@ -282,11 +282,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 and packet.get("station", "") == platform.node()
             ):
                 self.set_band(packet.get("band") + "m", False)
-                self.rx_freq = float(packet.get("vfoa")) / 1000000
-                self.tx_freq = self.rx_freq
+                if self.rx_freq != float(packet.get("vfoa")) / 1000000:
+                    self.rx_freq = float(packet.get("vfoa")) / 1000000
+                    self.tx_freq = self.rx_freq
+                    self.center_on_rxfreq()
                 self.bandwidth = int(packet.get("bw", "0"))
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
+                continue
+
             if (
                 packet.get("cmd", "") == "NEXTSPOT"
                 and packet.get("station", "") == platform.node()
@@ -454,6 +458,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def center_on_rxfreq(self):
         """doc"""
         freq_pos = self.Freq2ScenePos(self.rx_freq).y()
+        # self.graphicsView.verticalScrollBar().setSliderPosition(
+        #     int(freq_pos - (self.height() / 2) + 80)
+        # )
         self.scrollArea.verticalScrollBar().setValue(
             int(freq_pos - (self.height() / 2) + 80)
         )
