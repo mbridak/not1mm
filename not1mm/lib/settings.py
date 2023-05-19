@@ -67,6 +67,13 @@ class Settings(QtWidgets.QDialog):
         self.n1mm_contactport.setText(str(self.preference.get("n1mm_contactport", "")))
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
         self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
+        self.send_n1mm_radio.setChecked(bool(self.preference.get("send_n1mm_radio")))
+        self.send_n1mm_contact.setChecked(
+            bool(self.preference.get("send_n1mm_contact"))
+        )
+        self.send_n1mm_lookup.setChecked(bool(self.preference.get("send_n1mm_lookup")))
+        self.send_n1mm_score.setChecked(bool(self.preference.get("send_n1mm_score")))
+
         self.cluster_server_field.setText(
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
@@ -110,6 +117,12 @@ class Settings(QtWidgets.QDialog):
         self.preference["interface_ip"] = self.interface_ip.text()
 
         self.preference["send_n1mm_packets"] = self.send_n1mm_packets.isChecked()
+
+        self.preference["send_n1mm_radio"] = self.send_n1mm_radio.isChecked()
+        self.preference["send_n1mm_contact"] = self.send_n1mm_contact.isChecked()
+        self.preference["send_n1mm_lookup"] = self.send_n1mm_lookup.isChecked()
+        self.preference["send_n1mm_score"] = self.send_n1mm_score.isChecked()
+
         self.preference["n1mm_station_name"] = self.n1mm_station_name.text()
         self.preference["n1mm_operator"] = self.n1mm_operator.text()
         self.preference["n1mm_ip"] = self.n1mm_ip.text()
