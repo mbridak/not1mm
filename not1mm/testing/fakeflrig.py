@@ -53,7 +53,7 @@ def set_mode(mode):
 
 def get_bw():
     """return bandwidth"""
-    return radio_state["bw"]
+    return [radio_state["bw"], ""]
 
 
 def set_bw(bandwidth):

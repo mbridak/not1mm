@@ -80,11 +80,11 @@ class CAT:
         except ConnectionRefusedError as exception:
             self.rigctrlsocket = None
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         except TimeoutError as exception:
             self.rigctrlsocket = None
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
 
     def reinit(self):
         """reinitialise rigctl"""
@@ -109,10 +109,10 @@ class CAT:
             return self.server.rig.get_vfo()
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("getvfo_flrig: %s", exception)
+            logger.debug("getvfo_flrig: %s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("getvfo_flrig: %s", exception)
+            logger.debug("getvfo_flrig: %s", f"{exception}")
         return ""
 
     def __getvfo_rigctld(self) -> str:
@@ -124,7 +124,7 @@ class CAT:
                 return self.rigctrlsocket.recv(1024).decode().strip()
             except socket.error as exception:
                 self.online = False
-                logger.debug("getvfo_rigctld: %s", exception)
+                logger.debug("getvfo_rigctld: %s", f"{exception}")
                 self.rigctrlsocket = None
             return ""
 
@@ -147,10 +147,10 @@ class CAT:
             return self.server.rig.get_mode()
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         return ""
 
     def __getmode_rigctld(self) -> str:
@@ -164,10 +164,10 @@ class CAT:
                 logger.debug("%s", mode)
                 return mode
             except IndexError as exception:
-                logger.debug("%s", exception)
+                logger.debug("%s", f"{exception}")
             except socket.error as exception:
                 self.online = False
-                logger.debug("%s", exception)
+                logger.debug("%s", f"{exception}")
                 self.rigctrlsocket = None
             return ""
         self.__initialize_rigctrld()
@@ -182,21 +182,22 @@ class CAT:
         return False
 
     def __getbw_flrig(self):
-        """ccc"""
+        """return bandwidth"""
         try:
             self.online = True
-            return self.server.rig.get_bw()
+            bandwidth = self.server.rig.get_bw()
+            return bandwidth[0]
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("getbw_flrig: %s", exception)
+            logger.debug("getbw_flrig: %s", f"{exception}")
             return ""
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("getbw_flrig: %s", exception)
+            logger.debug("getbw_flrig: %s", f"{exception}")
             return ""
 
     def __getbw_rigctld(self):
-        """ccc"""
+        """return bandwidth"""
         if self.rigctrlsocket:
             try:
                 self.online = True
@@ -206,10 +207,10 @@ class CAT:
                 logger.debug("%s", mode)
                 return mode
             except IndexError as exception:
-                logger.debug("%s", exception)
+                logger.debug("%s", f"{exception}")
             except socket.error as exception:
                 self.online = False
-                logger.debug("%s", exception)
+                logger.debug("%s", f"{exception}")
                 self.rigctrlsocket = None
             return ""
         self.__initialize_rigctrld()
@@ -229,11 +230,11 @@ class CAT:
             return self.server.rig.get_power()
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("getpower_flrig: %s", exception)
+            logger.debug("getpower_flrig: %s", f"{exception}")
             return ""
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("getpower_flrig: %s", exception)
+            logger.debug("getpower_flrig: %s", f"{exception}")
             return ""
 
     def __getpower_rigctld(self):
@@ -244,7 +245,7 @@ class CAT:
                 return int(float(self.rigctrlsocket.recv(1024).decode().strip()) * 100)
             except socket.error as exception:
                 self.online = False
-                logger.debug("getpower_rigctld: %s", exception)
+                logger.debug("getpower_rigctld: %s", f"{exception}")
                 self.rigctrlsocket = None
             return ""
 
@@ -263,10 +264,10 @@ class CAT:
             return self.server.rig.get_ptt()
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         return "0"
 
     def __getptt_rigctld(self):
@@ -281,7 +282,7 @@ class CAT:
                 return ptt
             except socket.error as exception:
                 self.online = False
-                logger.debug("%s", exception)
+                logger.debug("%s", f"{exception}")
                 self.rigctrlsocket = None
         return "0"
 
@@ -300,10 +301,10 @@ class CAT:
             return self.server.rig.set_frequency(float(freq))
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("setvfo_flrig: %s", exception)
+            logger.debug("setvfo_flrig: %s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("setvfo_flrig: %s", exception)
+            logger.debug("setvfo_flrig: %s", f"{exception}")
         return False
 
     def __setvfo_rigctld(self, freq: str) -> bool:
@@ -316,7 +317,7 @@ class CAT:
                 return True
             except socket.error as exception:
                 self.online = False
-                logger.debug("setvfo_rigctld: %s", exception)
+                logger.debug("setvfo_rigctld: %s", f"{exception}")
                 self.rigctrlsocket = None
                 return False
         self.__initialize_rigctrld()
@@ -337,10 +338,10 @@ class CAT:
             return self.server.rig.set_mode(mode)
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("setmode_flrig: %s", exception)
+            logger.debug("setmode_flrig: %s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("setmode_flrig: %s", exception)
+            logger.debug("setmode_flrig: %s", f"{exception}")
         return False
 
     def __setmode_rigctld(self, mode: str) -> bool:
@@ -353,7 +354,7 @@ class CAT:
                 return True
             except socket.error as exception:
                 self.online = False
-                logger.debug("setmode_rigctld: %s", exception)
+                logger.debug("setmode_rigctld: %s", f"{exception}")
                 self.rigctrlsocket = None
                 return False
         self.__initialize_rigctrld()
@@ -373,11 +374,11 @@ class CAT:
             return self.server.rig.set_power(power)
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("setpower_flrig: %s", exception)
+            logger.debug("setpower_flrig: %s", f"{exception}")
             return False
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("setpower_flrig: %s", exception)
+            logger.debug("setpower_flrig: %s", f"{exception}")
             return False
 
     def __setpower_rigctld(self, power):
@@ -427,10 +428,10 @@ class CAT:
             return self.server.rig.set_ptt(1)
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         return "0"
 
     def ptt_off(self):
@@ -460,8 +461,8 @@ class CAT:
             return self.server.rig.set_ptt(0)
         except ConnectionRefusedError as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         except xmlrpc.client.Fault as exception:
             self.online = False
-            logger.debug("%s", exception)
+            logger.debug("%s", f"{exception}")
         return "0"
