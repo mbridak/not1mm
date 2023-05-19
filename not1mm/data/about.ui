@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>345</width>
-    <height>176</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,21 +33,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font>
-       <family>JetBrains Mono</family>
-      </font>
-     </property>
-     <property name="text">
-      <string>You're Welcome</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
@@ -60,6 +45,9 @@
       <bool>true</bool>
      </property>
     </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTextBrowser" name="donors"/>
    </item>
   </layout>
  </widget>
