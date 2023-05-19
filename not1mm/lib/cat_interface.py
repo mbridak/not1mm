@@ -61,6 +61,10 @@ class CAT:
             logger.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
             self.online = True
+            try:
+                _ = self.server.main.get_version()
+            except ConnectionRefusedError:
+                self.online = False
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
 
@@ -79,6 +83,11 @@ class CAT:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", exception)
+
+    def reinit(self):
+        """reinitialise rigctl"""
+        if self.interface == "rigctld":
+            self.__initialize_rigctrld()
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""

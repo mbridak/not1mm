@@ -365,6 +365,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.about_dialog = About(WORKING_PATH)
         if self.pref.get("dark_mode"):
             self.about_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.about_dialog.donors.setSource(
+            QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
+        )
         self.about_dialog.open()
 
     def edit_configuration_settings(self):
@@ -1861,6 +1864,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def poll_radio(self):
         """stub"""
         if self.rig_control:
+            if self.rig_control.online is False:
+                self.rig_control.reinit()
             if self.rig_control.online:
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
