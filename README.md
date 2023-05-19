@@ -104,6 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-18] ReInit rigctld CAT when it goes offline and back.
 - [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this. Bandmap centers on the VFO after frequency change. Set mode on startup based on the mode category set for the contest.
 - [23-5-15] CTRL-S in the main window will send a spot to the cluster.
 - [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
