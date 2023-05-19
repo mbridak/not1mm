@@ -123,6 +123,10 @@ class N1MM:
         self.contact_port = contactport
         self.lookup_port = lookupport
         self.score_port = scoreport
+        self.send_radio_packets = False
+        self.send_contact_packets = False
+        self.send_lookup_packets = False
+        self.send_score_packets = False
         self.radio_socket = None
         self.radio_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.contact_info["NetBiosName"] = socket.gethostname()
