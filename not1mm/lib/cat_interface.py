@@ -65,7 +65,7 @@ class CAT:
                 _ = self.server.main.get_version()
             except ConnectionRefusedError:
                 self.online = False
-            except xmlrpc.client.Fault as exception:
+            except xmlrpc.client.Fault:
                 self.online = False
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
