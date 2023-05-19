@@ -58,6 +58,7 @@ from not1mm.lib.multicast import Multicast
 from not1mm.lib.new_contest import NewContest
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.version import __version__
+from not1mm.lib.versiontest import VersionTest
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 # os.environ["QT_STYLE_OVERRIDE"] = "adwaita"
@@ -149,9 +150,9 @@ class MainWindow(QtWidgets.QMainWindow):
         "n1mm_operator": "Bernie",
         "n1mm_ip": "127.0.0.1",
         "n1mm_radioport": 12060,
-        "n1mm_contactport": 12061,
+        "n1mm_contactport": 12060,
         "n1mm_lookupport": 12060,
-        "n1mm_scoreport": 12062,
+        "n1mm_scoreport": 12060,
         "usehamdb": False,
         "usehamqth": False,
         "cloudlog": False,
@@ -342,6 +343,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.pref.get("contest"):
             self.load_contest()
+
+        if VersionTest(__version__).test():
+            self.show_message_box(
+                "There is a newer version of not1mm available.\n"
+                "You can udate to the current version by using:\npip install -U not1mm"
+            )
 
     @staticmethod
     def check_process(name: str) -> bool:
@@ -1524,6 +1531,23 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.set_winkeyer_speed(20)
 
+        self.n1mm = False
+        if self.pref.get("send_n1mm_packets", False):
+            try:
+                self.n1mm = N1MM(
+                    self.pref.get("n1mm_ip", "0.0.0.0"),
+                    int(self.pref.get("radioport", 12060)),
+                    int(self.pref.get("contactport", 12060)),
+                    int(self.pref.get("lookupport", 12060)),
+                    int(self.pref.get("scoreport", 12060)),
+                )
+            except ValueError:
+                ...
+            self.n1mm.send_radio_packets = self.pref.get("send_n1mm_radio", False)
+            self.n1mm.send_contact_packets = self.pref.get("send_n1mm_contact", False)
+            self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
+            self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
+
         self.dark_mode()
         self.show_command_buttons()
         self.show_CW_macros()
@@ -1898,6 +1922,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["mode"] = mode
                 cmd["bw"] = bw
                 self.multicast_interface.send_as_json(cmd)
+                # FIXME
+                if self.n1mm:
+                    if self.n1mm.send_radio_packets:
+                        self.n1mm.radio_info["Freq"] = vfo
+                        self.n1mm.radio_info["TXFreq"] = vfo
+                        self.n1mm.radio_info["Mode"] = mode
+                        self.n1mm.send_radio()
 
     def edit_cw_macros(self) -> None:
         """
