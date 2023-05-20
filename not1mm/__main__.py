@@ -1301,6 +1301,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf1(self):
         """stub"""
         logger.debug("F1 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F1.toolTip()))
             return
@@ -1312,6 +1314,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf2(self):
         """stub"""
         logger.debug("F2 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F2.toolTip()))
             return
@@ -1321,6 +1325,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf3(self):
         """stub"""
         logger.debug("F3 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F3.toolTip()))
             return
@@ -1330,6 +1336,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf4(self):
         """stub"""
         logger.debug("F4 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F4.toolTip()))
             return
@@ -1339,6 +1347,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf5(self):
         """stub"""
         logger.debug("F5 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F5.toolTip()))
             return
@@ -1348,6 +1358,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf6(self):
         """stub"""
         logger.debug("F6 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F6.toolTip()))
             return
@@ -1357,6 +1369,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf7(self):
         """stub"""
         logger.debug("F7 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F7.toolTip()))
             return
@@ -1366,6 +1380,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf8(self):
         """stub"""
         logger.debug("F8 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F8.toolTip()))
             return
@@ -1375,6 +1391,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf9(self):
         """stub"""
         logger.debug("F9 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F9.toolTip()))
             return
@@ -1384,6 +1402,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf10(self):
         """stub"""
         logger.debug("F10 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F10.toolTip()))
             return
@@ -1393,6 +1413,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf11(self):
         """stub"""
         logger.debug("F11 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F11.toolTip()))
             return
@@ -1402,6 +1424,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def sendf12(self):
         """stub"""
         logger.debug("F12 Clicked")
+        if self.n1mm:
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F12.toolTip()))
             return
@@ -1547,6 +1571,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.send_contact_packets = self.pref.get("send_n1mm_contact", False)
             self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
             self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
+            self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
 
         self.dark_mode()
         self.show_command_buttons()
@@ -1925,9 +1950,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 # FIXME
                 if self.n1mm:
                     if self.n1mm.send_radio_packets:
-                        self.n1mm.radio_info["Freq"] = vfo
-                        self.n1mm.radio_info["TXFreq"] = vfo
+                        self.n1mm.radio_info["Freq"] = vfo[:-1]
+                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
                         self.n1mm.radio_info["Mode"] = mode
+                        self.n1mm.radio_info["OpCall"] = self.current_op
+                        self.n1mm.radio_info["IsRunning"] = str(
+                            self.pref.get("run_state", False)
+                        )
                         self.n1mm.send_radio()
 
     def edit_cw_macros(self) -> None:
