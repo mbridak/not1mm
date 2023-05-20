@@ -780,13 +780,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 1:
                     self.cw.sendcw("\x1b4")
                     return
-        if event.key() == Qt.Key.Key_PageUp and modifier == Qt.ControlModifier:
+        if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
             cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             return
-        if event.key() == Qt.Key.Key_PageDown and modifier == Qt.ControlModifier:
+        if event.key() == Qt.Key.Key_Down:
             cmd = {}
             cmd["cmd"] = "NEXTSPOT"
             cmd["station"] = platform.node()

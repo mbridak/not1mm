@@ -104,7 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
-- [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth.
+- [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
 - [23-5-18] ReInit rigctld CAT when it goes offline and back.
 - [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this. Bandmap centers on the VFO after frequency change. Set mode on startup based on the mode category set for the contest.
 - [23-5-15] CTRL-S in the main window will send a spot to the cluster.
@@ -435,8 +435,8 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 - [CTRL-Esc] Stops cwdaemon from sending Morse.
 - [PgUp] Increases the cw sending speed.
 - [PgDown] Decreases the cw sending speed.
-- [CTRL-PgUp] Jump to the next spot above the current VFO cursor in the bandmap window.
-- [CTRL-PgDown] Jump to the next spot below the current VFO cursor in the bandmap window.
+- [Arrow-Up] Jump to the next spot above the current VFO cursor in the bandmap window.
+- [Arrow-Down] Jump to the next spot below the current VFO cursor in the bandmap window.
 - [TAB] Move cursor to the right one field.
 - [Shift-Tab] Move cursor left One field.
 - [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
