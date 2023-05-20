@@ -4,10 +4,13 @@ Email: michael.bridak@gmail.com
 GPL V3
 """
 
+import logging
 import socket
 
 # pip3 install -U dicttoxml
 from dicttoxml import dicttoxml
+
+logger = logging.getLogger("__main__")
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -19,7 +22,6 @@ class N1MM:
     radio_info = {
         "app": "NOT1MM",
         "StationName": "",
-        "uNICORNbLOOD": "1",
         "RadioNr": "1",
         "Freq": "",
         "TXFreq": "",
@@ -164,7 +166,10 @@ class N1MM:
     def _send(self, port, payload, package_name):
         """Send XML data"""
         bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
-        self.radio_socket.sendto(
-            bytes_to_send,
-            (self.ip_address, int(port)),
-        )
+        try:
+            self.radio_socket.sendto(
+                bytes_to_send,
+                (self.ip_address, int(port)),
+            )
+        except PermissionError as exception:
+            logger.critical("%s", f"{exception}")
