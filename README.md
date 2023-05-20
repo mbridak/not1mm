@@ -104,6 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-20] Got n1mm RadioInfo posting.
 - [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
 - [23-5-18] ReInit rigctld CAT when it goes offline and back.
 - [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this. Bandmap centers on the VFO after frequency change. Set mode on startup based on the mode category set for the contest.
