@@ -990,8 +990,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Points"] = self.contest.points(self)
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
+        if self.n1mm:
+            if self.n1mm.send_contact_packets:
+                # self.n1mm.contact_info['timestamp']
+                # self.n1mm.contact_info['call']
+                # self.n1mm.contact_info['rxfreq']
+                # self.n1mm.contact_info['txfreq']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                # self.n1mm.contact_info['']
+                self.n1mm.send_contact_info()
+        # FIXME
         self.database.log_contact(self.contact)
-        self.n1mm.send_contact_info()
+
         self.clearinputs()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
@@ -1947,7 +1965,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["mode"] = mode
                 cmd["bw"] = bw
                 self.multicast_interface.send_as_json(cmd)
-                # FIXME
                 if self.n1mm:
                     if self.n1mm.send_radio_packets:
                         self.n1mm.radio_info["Freq"] = vfo[:-1]
