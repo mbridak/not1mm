@@ -161,7 +161,7 @@ class CAT:
                 self.rigctrlsocket.send(b"m\n")
                 mode = self.rigctrlsocket.recv(1024).decode()
                 mode = mode.strip().split()[0]
-                logger.debug("%s", mode)
+                # logger.debug("%s", mode)
                 return mode
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
@@ -204,7 +204,7 @@ class CAT:
                 self.rigctrlsocket.send(b"m\n")
                 mode = self.rigctrlsocket.recv(1024).decode()
                 mode = mode.strip().split()[1]
-                logger.debug("%s", mode)
+                # logger.debug("%s", mode)
                 return mode
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
