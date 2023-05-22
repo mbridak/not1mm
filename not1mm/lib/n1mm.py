@@ -6,6 +6,7 @@ GPL V3
 
 import logging
 import socket
+from xml.dom.minidom import parseString
 
 # pip3 install -U dicttoxml
 from dicttoxml import dicttoxml
@@ -90,6 +91,7 @@ class N1MM:
         "StationName": "",
         "ID": "",
         "IsClaimedQso": 1,
+        "oldcall": "",
     }
 
     contactdelete = {
@@ -165,11 +167,20 @@ class N1MM:
 
     def _send(self, port, payload, package_name):
         """Send XML data"""
-        logger.debug("********* %s", f"{package_name} {payload}")
-        bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
+        bytes_to_send = dicttoxml(
+            payload,
+            custom_root=package_name,
+            attr_type=False,
+            return_bytes=False,
+            encoding="UTF-8",
+        )
+        # bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
+        dom = parseString(bytes_to_send)
+        output = dom.toprettyxml(indent="\t", newl="\r\n").encode()
+        logger.debug("********* %s", f"{package_name} {output}")
         try:
             self.radio_socket.sendto(
-                bytes_to_send,
+                output,
                 (self.ip_address, int(port)),
             )
         except PermissionError as exception:
