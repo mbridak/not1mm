@@ -16,6 +16,7 @@ import sys
 import threading
 import time
 import uuid
+import datetime as dt
 
 from datetime import datetime
 from json import dumps, loads, JSONDecodeError
@@ -95,6 +96,8 @@ DARK_STYLESHEET = ""
 
 with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
     DARK_STYLESHEET = stylefile.read()
+
+poll_time = datetime.now()
 
 
 def check_process(name: str) -> bool:
@@ -707,7 +710,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_band_indicator(self, band: str) -> None:
         """Set the band indicator"""
-        logger.debug("%s", f"band:{band} mode: {self.current_mode}")
+        # logger.debug("%s", f"band:{band} mode: {self.current_mode}")
         if band and self.current_mode:
             self.clear_band_indicators()
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
@@ -927,7 +930,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"OP:{self.current_op} {contest_name} "
             f"- Not1MM v{__version__}"
         )
-        logger.debug("%s", line)
+        # logger.debug("%s", line)
         self.setWindowTitle(line)
 
     def clearinputs(self):
@@ -996,9 +999,12 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
                 self.n1mm.contact_info["timestamp"] = self.contact["TS"]
-                self.n1mm.contact_info["call"] = self.contact["Call"]
-                self.n1mm.contact_info["rxfreq"] = self.n1mm.radio_info["Freq"]
-                self.n1mm.contact_info["txfreq"] = self.n1mm.radio_info["Freq"]
+                self.n1mm.contact_info["oldcall"] = self.n1mm.contact_info[
+                    "call"
+                ] = self.contact["Call"]
+                self.n1mm.contact_info["txfreq"] = self.n1mm.contact_info[
+                    "rxfreq"
+                ] = self.n1mm.radio_info["Freq"]
                 self.n1mm.contact_info["mode"] = self.contact["Mode"]
                 self.n1mm.contact_info["contestname"] = self.contact["ContestName"]
                 self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
@@ -1007,7 +1013,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["IsRunQSO"] = self.contact["IsRunQSO"]
                 self.n1mm.contact_info["operator"] = self.contact["Operator"]
                 self.n1mm.contact_info["mycall"] = self.contact["Operator"]
-                self.n1mm.contact_info["NetBiosName"] = self.contact["NetBiosName"]
+                self.n1mm.contact_info["StationName"] = self.n1mm.contact_info[
+                    "NetBiosName"
+                ] = self.contact["NetBiosName"]
                 self.n1mm.contact_info["IsOriginal"] = self.contact["IsOriginal"]
                 self.n1mm.contact_info["ID"] = self.contact["ID"]
                 self.n1mm.contact_info["points"] = self.contact["Points"]
@@ -1015,10 +1023,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["rcv"] = self.contact["RCV"]
                 self.n1mm.contact_info["sntnr"] = self.contact["SentNr"]
                 self.n1mm.contact_info["rcvnr"] = self.contact["NR"]
-                self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
-                self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
+                self.n1mm.contact_info["ismultiplier1"] = self.contact.get(
+                    "IsMultiplier1", 0
+                )
+                self.n1mm.contact_info["ismultiplier2"] = self.contact.get(
+                    "IsMultiplier2", 0
+                )
                 self.n1mm.contact_info["ismultiplier3"] = self.contact.get(
-                    "IsMultiplier3", ""
+                    "IsMultiplier3", "0"
                 )
                 self.n1mm.contact_info["section"] = self.contact["Sect"]
                 self.n1mm.contact_info["prec"] = self.contact["Prec"]
@@ -1961,47 +1973,57 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control.online is False:
                 self.rig_control.reinit()
             if self.rig_control.online:
+                info_dirty = False
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
                 bw = self.rig_control.get_bw()
                 # self.radio_state["ptt"] = self.rig_control.get_ptt()
-                # if self.radio_state.get("ptt", 0) == 1:
-                #     self.leftdot.setPixmap(self.greendot)
-                # else:
-                #     self.leftdot.setPixmap(self.reddot)
+
                 if mode == "CW":
                     self.setmode(mode)
                 if mode == "LSB" or mode == "USB":
                     self.setmode("SSB")
                 if mode == "RTTY":
                     self.setmode("RTTY")
-                self.radio_state["vfoa"] = vfo
+
+                if self.radio_state.get("vfoa") != vfo:
+                    info_dirty = True
+                    self.radio_state["vfoa"] = vfo
                 band = getband(str(vfo))
                 self.radio_state["band"] = band
                 self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_band_indicator(band)
-                self.radio_state["mode"] = mode
-                self.radio_state["bw"] = bw
-                logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
-                self.set_window_title()
-                cmd = {}
-                cmd["cmd"] = "RADIO_STATE"
-                cmd["station"] = platform.node()
-                cmd["band"] = band
-                cmd["vfoa"] = vfo
-                cmd["mode"] = mode
-                cmd["bw"] = bw
-                self.multicast_interface.send_as_json(cmd)
-                if self.n1mm:
-                    if self.n1mm.send_radio_packets:
-                        self.n1mm.radio_info["Freq"] = vfo[:-1]
-                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                        self.n1mm.radio_info["Mode"] = mode
-                        self.n1mm.radio_info["OpCall"] = self.current_op
-                        self.n1mm.radio_info["IsRunning"] = str(
-                            self.pref.get("run_state", False)
-                        )
-                        self.n1mm.send_radio()
+
+                if self.radio_state.get("mode") != mode:
+                    info_dirty = True
+                    self.radio_state["mode"] = mode
+
+                if self.radio_state.get("bw") != bw:
+                    info_dirty = True
+                    self.radio_state["bw"] = bw
+
+                if datetime.now() > globals()["poll_time"] or info_dirty:
+                    logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
+                    self.set_window_title()
+                    cmd = {}
+                    cmd["cmd"] = "RADIO_STATE"
+                    cmd["station"] = platform.node()
+                    cmd["band"] = band
+                    cmd["vfoa"] = vfo
+                    cmd["mode"] = mode
+                    cmd["bw"] = bw
+                    self.multicast_interface.send_as_json(cmd)
+                    if self.n1mm:
+                        if self.n1mm.send_radio_packets:
+                            self.n1mm.radio_info["Freq"] = vfo[:-1]
+                            self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                            self.n1mm.radio_info["Mode"] = mode
+                            self.n1mm.radio_info["OpCall"] = self.current_op
+                            self.n1mm.radio_info["IsRunning"] = str(
+                                self.pref.get("run_state", False)
+                            )
+                            self.n1mm.send_radio()
+                    globals()["poll_time"] = datetime.now() + dt.timedelta(seconds=10)
 
     def edit_cw_macros(self) -> None:
         """
