@@ -82,14 +82,14 @@ class N1MM:
         "RoverLocation": "",
         "RadioInterfaced": "0",
         "NetworkedCompNr": "0",
-        "IsOriginal": "True",
+        "IsOriginal": 1,
         "NetBiosName": "",
-        "IsRunQSO": "0",
+        "IsRunQSO": 0,
         "Run1Run2": "",
         "ContactType": "",
         "StationName": "",
         "ID": "",
-        "IsClaimedQso": "True",
+        "IsClaimedQso": 1,
     }
 
     contactdelete = {
@@ -165,6 +165,7 @@ class N1MM:
 
     def _send(self, port, payload, package_name):
         """Send XML data"""
+        logger.debug("********* %s", f"{package_name} {payload}")
         bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
         try:
             self.radio_socket.sendto(

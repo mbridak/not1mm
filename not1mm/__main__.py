@@ -990,22 +990,49 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Points"] = self.contest.points(self)
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
+        # FIXME
+        logger.debug("%s", f"{self.n1mm}")
         if self.n1mm:
+            logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
-                # self.n1mm.contact_info['timestamp']
-                # self.n1mm.contact_info['call']
-                # self.n1mm.contact_info['rxfreq']
-                # self.n1mm.contact_info['txfreq']
+                self.n1mm.contact_info["timestamp"] = self.contact["TS"]
+                self.n1mm.contact_info["call"] = self.contact["Call"]
+                self.n1mm.contact_info["rxfreq"] = self.n1mm.radio_info["Freq"]
+                self.n1mm.contact_info["txfreq"] = self.n1mm.radio_info["Freq"]
+                self.n1mm.contact_info["mode"] = self.contact["Mode"]
+                self.n1mm.contact_info["contestname"] = self.contact["ContestName"]
+                self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
+                self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
+                self.n1mm.contact_info["wpxprefix"] = self.contact["WPXPrefix"]
+                self.n1mm.contact_info["IsRunQSO"] = self.contact["IsRunQSO"]
+                self.n1mm.contact_info["operator"] = self.contact["Operator"]
+                self.n1mm.contact_info["mycall"] = self.contact["Operator"]
+                self.n1mm.contact_info["NetBiosName"] = self.contact["NetBiosName"]
+                self.n1mm.contact_info["IsOriginal"] = self.contact["IsOriginal"]
+                self.n1mm.contact_info["ID"] = self.contact["ID"]
+                self.n1mm.contact_info["points"] = self.contact["Points"]
+                self.n1mm.contact_info["snt"] = self.contact["SNT"]
+                self.n1mm.contact_info["rcv"] = self.contact["RCV"]
+                self.n1mm.contact_info["sntnr"] = self.contact["SentNr"]
+                self.n1mm.contact_info["rcvnr"] = self.contact["NR"]
+                self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
+                self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
+                self.n1mm.contact_info["ismultiplier3"] = self.contact.get(
+                    "IsMultiplier3", ""
+                )
+                self.n1mm.contact_info["section"] = self.contact["Sect"]
+                self.n1mm.contact_info["prec"] = self.contact["Prec"]
+                self.n1mm.contact_info["ck"] = self.contact["CK"]
+                self.n1mm.contact_info["zn"] = self.contact["ZN"]
+                self.n1mm.contact_info["power"] = self.contact["Power"]
+                self.n1mm.contact_info["band"] = self.contact["Band"]
                 # self.n1mm.contact_info['']
                 # self.n1mm.contact_info['']
                 # self.n1mm.contact_info['']
                 # self.n1mm.contact_info['']
                 # self.n1mm.contact_info['']
                 # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
+                logger.debug("%s", f"{self.n1mm.contact_info}")
                 self.n1mm.send_contact_info()
         # FIXME
         self.database.log_contact(self.contact)
@@ -1603,19 +1630,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.multicast_interface.server_udp.pendingDatagramSize()
             )
             datagram, _, _ = bundle
-            logger.debug(datagram.decode())
+            # logger.debug(datagram.decode())
             if datagram:
                 try:
                     debug_info = f"{datagram.decode()}"
-                    logger.debug(debug_info)
+                    # logger.debug(debug_info)
                     json_data = loads(datagram.decode())
                 except UnicodeDecodeError as err:
                     the_error = f"Not Unicode: {err}\n{datagram}"
-                    logger.debug(the_error)
+                    # logger.debug(the_error)
                     continue
                 except JSONDecodeError as err:
                     the_error = f"Not JSON: {err}\n{datagram}"
-                    logger.debug(the_error)
+                    # logger.debug(the_error)
                     continue
                 if (
                     json_data.get("cmd", "") == "GETCOLUMNS"

@@ -140,7 +140,7 @@ class DataBase:
                     "RadioInterfaced INTEGER, "
                     "NetworkedCompNr INTEGER, NetBiosName varchar (255), "
                     "IsOriginal Boolean, "
-                    "ID TEXT(16) NOT NULL DEFAULT '0000000000000000', "
+                    "ID TEXT(32) NOT NULL DEFAULT '00000000000000000000000000000000', "
                     "CLAIMEDQSO INTEGER DEFAULT 1,"
                     "PRIMARY KEY (`TS`, `Call`) );"
                 )
