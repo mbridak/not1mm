@@ -104,6 +104,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
 - [23-5-20] Got n1mm RadioInfo posting.
 - [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
 - [23-5-18] ReInit rigctld CAT when it goes offline and back.
