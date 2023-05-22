@@ -1006,7 +1006,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     "rxfreq"
                 ] = self.n1mm.radio_info["Freq"]
                 self.n1mm.contact_info["mode"] = self.contact["Mode"]
-                self.n1mm.contact_info["contestname"] = self.contact["ContestName"]
+                self.n1mm.contact_info["contestname"] = self.contact[
+                    "ContestName"
+                ].replace("-", "")
                 self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
                 self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
                 self.n1mm.contact_info["wpxprefix"] = self.contact["WPXPrefix"]
