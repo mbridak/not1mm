@@ -43,6 +43,7 @@
     - [CAT](#cat)
     - [CW Keyer interface](#cw-keyer-interface)
     - [Cluster](#cluster)
+    - [N1MM Packets](#n1mm-packets)
   - [Hiding screen elements](#hiding-screen-elements)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -104,6 +105,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
 - [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
 - [23-5-20] Got n1mm RadioInfo posting.
 - [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
@@ -373,6 +375,10 @@ Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP 
 ![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
 
   Under the `Cluster` TAB you can change the default AR Cluster server, port and filter settings used for the bandmap window.
+
+### N1MM Packets
+
+![N1MM Packet Configuration Screen](https://github.com/mbridak/not1mm/blob/master/pic/n1mm_packet_config.png?raw=true)
 
 ## Hiding screen elements
 
