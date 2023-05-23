@@ -62,7 +62,7 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("n1mm_station_name", ""))
         )
         self.n1mm_operator.setText(str(self.preference.get("n1mm_operator", "")))
-        self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
+        # self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
         self.n1mm_radioport.setText(str(self.preference.get("n1mm_radioport", "")))
         self.n1mm_contactport.setText(str(self.preference.get("n1mm_contactport", "")))
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
@@ -125,7 +125,7 @@ class Settings(QtWidgets.QDialog):
 
         self.preference["n1mm_station_name"] = self.n1mm_station_name.text()
         self.preference["n1mm_operator"] = self.n1mm_operator.text()
-        self.preference["n1mm_ip"] = self.n1mm_ip.text()
+        # self.preference["n1mm_ip"] = self.n1mm_ip.text()
         self.preference["n1mm_radioport"] = self.n1mm_radioport.text()
         self.preference["n1mm_contactport"] = self.n1mm_contactport.text()
         self.preference["n1mm_lookupport"] = self.n1mm_lookupport.text()
