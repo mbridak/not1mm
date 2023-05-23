@@ -1012,25 +1012,8 @@
        <string>N1MM</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_8">
-       <item row="0" column="0" colspan="7" alignment="Qt::AlignHCenter">
-        <widget class="QCheckBox" name="send_n1mm_packets">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Send N1MM packets</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4" colspan="3">
-        <widget class="QLineEdit" name="n1mm_ip">
+       <item row="1" column="5">
+        <widget class="QLabel" name="label_14">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -1039,10 +1022,7 @@
           </font>
          </property>
          <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string/>
+          <string>Operator Name:</string>
          </property>
         </widget>
        </item>
@@ -1060,8 +1040,8 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="3" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_17">
+       <item row="0" column="0" colspan="7" alignment="Qt::AlignHCenter">
+        <widget class="QCheckBox" name="send_n1mm_packets">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -1069,76 +1049,11 @@
            <strikeout>false</strikeout>
           </font>
          </property>
-         <property name="text">
-          <string>Contact Port:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="4" colspan="3">
-        <widget class="QLineEdit" name="n1mm_lookupport">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhDigitsOnly</set>
+         <property name="styleSheet">
+          <string notr="true"/>
          </property>
          <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLabel" name="label_14">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Operator Name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_19">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Score Port:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="4" colspan="3">
-        <widget class="QLineEdit" name="n1mm_scoreport">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhDigitsOnly</set>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string/>
+          <string>Send N1MM packets</string>
          </property>
         </widget>
        </item>
@@ -1156,7 +1071,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2" colspan="3">
+       <item row="1" column="1" colspan="4">
         <widget class="QLineEdit" name="n1mm_station_name">
          <property name="font">
           <font>
@@ -1170,7 +1085,114 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="3">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Radio:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_17">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Contact:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_18">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Lookup:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_19">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Score:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="send_n1mm_radio">
+         <property name="maximumSize">
+          <size>
+           <width>22</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="send_n1mm_contact">
+         <property name="maximumSize">
+          <size>
+           <width>22</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="send_n1mm_lookup">
+         <property name="maximumSize">
+          <size>
+           <width>22</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
         <widget class="QCheckBox" name="send_n1mm_score">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1189,7 +1211,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="4" colspan="3">
+       <item row="2" column="2" colspan="5">
         <widget class="QLineEdit" name="n1mm_radioport">
          <property name="font">
           <font>
@@ -1209,35 +1231,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="3" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_15">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Destination Adderess:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_18">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Lookup Port:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="4" colspan="3">
+       <item row="3" column="2" colspan="5">
         <widget class="QLineEdit" name="n1mm_contactport">
          <property name="font">
           <font>
@@ -1257,8 +1251,8 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="3" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="label_16">
+       <item row="6" column="2" colspan="5">
+        <widget class="QLineEdit" name="n1mm_lookupport">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -1266,46 +1260,33 @@
            <strikeout>false</strikeout>
           </font>
          </property>
-         <property name="text">
-          <string>Radio Port:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <widget class="QCheckBox" name="send_n1mm_lookup">
-         <property name="maximumSize">
-          <size>
-           <width>22</width>
-           <height>16777215</height>
-          </size>
+         <property name="inputMethodHints">
+          <set>Qt::ImhDigitsOnly</set>
          </property>
          <property name="text">
           <string/>
          </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QCheckBox" name="send_n1mm_contact">
-         <property name="maximumSize">
-          <size>
-           <width>22</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
+         <property name="placeholderText">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QCheckBox" name="send_n1mm_radio">
-         <property name="maximumSize">
-          <size>
-           <width>22</width>
-           <height>16777215</height>
-          </size>
+       <item row="7" column="2" colspan="5">
+        <widget class="QLineEdit" name="n1mm_scoreport">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhDigitsOnly</set>
          </property>
          <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
           <string/>
          </property>
         </widget>
@@ -1341,7 +1322,6 @@
   <tabstop>n1mm_station_name</tabstop>
   <tabstop>n1mm_operator</tabstop>
   <tabstop>send_n1mm_packets</tabstop>
-  <tabstop>n1mm_ip</tabstop>
   <tabstop>n1mm_radioport</tabstop>
   <tabstop>n1mm_contactport</tabstop>
   <tabstop>n1mm_lookupport</tabstop>
