@@ -151,11 +151,10 @@ class MainWindow(QtWidgets.QMainWindow):
         "send_n1mm_packets": False,
         "n1mm_station_name": "20M CW Tent",
         "n1mm_operator": "Bernie",
-        "n1mm_ip": "127.0.0.1",
-        "n1mm_radioport": 12060,
-        "n1mm_contactport": 12060,
-        "n1mm_lookupport": 12060,
-        "n1mm_scoreport": 12060,
+        "n1mm_radioport": "127.0.0.1:12060",
+        "n1mm_contactport": "127.0.0.1:12060",
+        "n1mm_lookupport": "127.0.0.1:12060",
+        "n1mm_scoreport": "127.0.0.1:12060",
         "usehamdb": False,
         "usehamqth": False,
         "cloudlog": False,
@@ -250,6 +249,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_1.returnPressed.connect(self.save_contact)
         self.other_2.returnPressed.connect(self.save_contact)
         self.other_2.textEdited.connect(self.other_2_changed)
+
         self.sent.setText("59")
         self.receive.setText("59")
         icon_path = WORKING_PATH + "/data/"
@@ -386,7 +386,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("dark_mode"):
             self.configuration_dialog.setStyleSheet(DARK_STYLESHEET)
         self.configuration_dialog.usehamdb_radioButton.hide()
-        # self.configuration_dialog.n1mm_tab.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
 
@@ -994,7 +993,6 @@ class MainWindow(QtWidgets.QMainWindow):
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
         # FIXME
-        logger.debug("%s", f"{self.n1mm}")
         if self.n1mm:
             logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
@@ -1614,18 +1612,17 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.set_winkeyer_speed(20)
 
-        self.n1mm = False
+        self.n1mm = None
         if self.pref.get("send_n1mm_packets", False):
             try:
                 self.n1mm = N1MM(
-                    self.pref.get("n1mm_ip", "0.0.0.0"),
-                    int(self.pref.get("radioport", 12060)),
-                    int(self.pref.get("contactport", 12060)),
-                    int(self.pref.get("lookupport", 12060)),
-                    int(self.pref.get("scoreport", 12060)),
+                    self.pref.get("n1mm_radioport", "127.0.0.1:12060"),
+                    self.pref.get("n1mm_contactport", "127.0.0.1:12061"),
+                    self.pref.get("n1mm_lookupport", "127.0.0.1:12060"),
+                    self.pref.get("n1mm_scoreport", "127.0.0.1:12060"),
                 )
             except ValueError:
-                ...
+                logger.debug("%s", f"{ValueError}")
             self.n1mm.send_radio_packets = self.pref.get("send_n1mm_radio", False)
             self.n1mm.send_contact_packets = self.pref.get("send_n1mm_contact", False)
             self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
@@ -1647,16 +1644,16 @@ class MainWindow(QtWidgets.QMainWindow):
             # logger.debug(datagram.decode())
             if datagram:
                 try:
-                    debug_info = f"{datagram.decode()}"
+                    # debug_info = f"{datagram.decode()}"
                     # logger.debug(debug_info)
                     json_data = loads(datagram.decode())
                 except UnicodeDecodeError as err:
                     the_error = f"Not Unicode: {err}\n{datagram}"
-                    # logger.debug(the_error)
+                    logger.debug(the_error)
                     continue
                 except JSONDecodeError as err:
                     the_error = f"Not JSON: {err}\n{datagram}"
-                    # logger.debug(the_error)
+                    logger.debug(the_error)
                     continue
                 if (
                     json_data.get("cmd", "") == "GETCOLUMNS"
@@ -2165,6 +2162,10 @@ formatter = logging.Formatter(
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+BETA_TEST = False
+if Path("./betatest").exists():
+    BETA_TEST = True
 
 if Path("./debug").exists():
     logger.setLevel(logging.DEBUG)

@@ -105,24 +105,21 @@ class N1MM:
 
     def __init__(
         self,
-        ip_address="127.0.0.1",
-        radioport=12060,
-        contactport=12060,
-        lookupport=12060,
-        scoreport=12060,
+        radioport="127.0.0.1:12060",
+        contactport="127.0.0.1:12060",
+        lookupport="127.0.0.1:12060",
+        scoreport="127.0.0.1:12060",
     ):
         """
         Initialize the N1MM interface.
 
         Optional arguments are:
 
-        - ip_address, The IP of the device you're sending too.
         - radioport, Where radio status messages go.
         - contactport, Where Add, Update, Delete messages go.
         - lookupport, Where callsign queries go.
         - scoreport, Where to send scores to.
         """
-        self.ip_address = ip_address
         self.radio_port = radioport
         self.contact_port = contactport
         self.lookup_port = lookupport
@@ -131,8 +128,6 @@ class N1MM:
         self.send_contact_packets = False
         self.send_lookup_packets = False
         self.send_score_packets = False
-        self.radio_socket = None
-        self.radio_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.contact_info["NetBiosName"] = socket.gethostname()
 
     def set_station_name(self, name):
@@ -165,7 +160,7 @@ class N1MM:
         """Send lookup request"""
         self._send(self.lookup_port, self.contact_info, "lookupinfo")
 
-    def _send(self, port, payload, package_name):
+    def _send(self, port_list, payload, package_name):
         """Send XML data"""
         bytes_to_send = dicttoxml(
             payload,
@@ -177,11 +172,26 @@ class N1MM:
         # bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
         dom = parseString(bytes_to_send)
         output = dom.toprettyxml(indent="\t", newl="\r\n").encode()
-        logger.debug("********* %s", f"{package_name} {output}")
-        try:
-            self.radio_socket.sendto(
-                output,
-                (self.ip_address, int(port)),
-            )
-        except PermissionError as exception:
-            logger.critical("%s", f"{exception}")
+        logger.debug("********* %s", f"{package_name} {port_list} {output}")
+        for connection in port_list.split():
+            try:
+                ip_address, port = connection.split(":")
+                port = int(port)
+            except ValueError as returned_error:
+                logger.debug(
+                    "%s", f"Bad IP:Port combination {connection} {returned_error}"
+                )
+                continue
+            try:
+                radio_socket = None
+                radio_socket = socket.socket(
+                    family=socket.AF_INET, type=socket.SOCK_DGRAM
+                )
+                radio_socket.sendto(
+                    output,
+                    (ip_address, int(port)),
+                )
+            except PermissionError as exception:
+                logger.critical("%s", f"{exception}")
+            except socket.gaierror as exception:
+                logger.critical("%s", f"{exception}")
