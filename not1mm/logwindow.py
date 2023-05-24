@@ -27,8 +27,7 @@ from PyQt5.QtGui import QFontDatabase
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.edit_contact import EditContact
-
-# from not1mm.lib.n1mm import N1MM
+from not1mm.lib.n1mm import N1MM
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
@@ -55,10 +54,6 @@ with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
 INTERFACE_IP = "0.0.0.0"
-# NODE_RED_SERVER_IP = "127.0.0.1"
-# NODE_RED_SERVER_PORT = 12062
-
-# n1mm_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -66,7 +61,6 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
-    # dbname = DATA_PATH + "/ham.db"
     dbname = None
     edit_contact_dialog = None
     pref = {}
@@ -98,6 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
+        self.n1mm = None
         self.load_pref()
         if self.pref.get("dark_mode"):
             self.setStyleSheet(DARK_STYLESHEET)
@@ -168,11 +163,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udpsocket.writeDatagram(
             packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
         )
-        # self.n1mm = N1MM(
-        #     ip_address=self.preference.get("n1mm_ip"),
-        #     radioport=self.preference.get("n1mm_radioport"),
-        #     contactport=self.preference.get("n1mm_contactport"),
-        # )
 
     def get_column(self, name: str) -> int:
         """returns the column number of the given column name."""
@@ -194,6 +184,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
         except IOError as exception:
             logger.critical("Error: %s", exception)
+
+        try:
+            self.n1mm = N1MM(
+                self.pref.get("n1mm_radioport", "127.0.0.1:12060"),
+                self.pref.get("n1mm_contactport", "127.0.0.1:12061"),
+                self.pref.get("n1mm_lookupport", "127.0.0.1:12060"),
+                self.pref.get("n1mm_scoreport", "127.0.0.1:12060"),
+            )
+        except ValueError:
+            logger.warning("%s", f"{ValueError}")
+        self.n1mm.send_radio_packets = self.pref.get("send_n1mm_radio", False)
+        self.n1mm.send_contact_packets = self.pref.get("send_n1mm_contact", False)
+        self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
+        self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
+        self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
 
     def load_new_db(self):
         """if db changes reload it."""
@@ -372,6 +377,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def delete_contact(self):
         """Delete Contact"""
         self.database.delete_contact(self.contact.get("ID", ""))
+        if self.n1mm:
+            if self.n1mm.send_contact_packets:
+                self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
+                self.n1mm.contactdelete["call"] = self.contact.get("Call", "")
+                self.n1mm.contactdelete["contestnr"] = self.contact.get("ContestNR", 1)
+                self.n1mm.contactdelete["StationName"] = self.pref.get(
+                    "n1mm_station_name"
+                )
+                self.n1mm.contactdelete["ID"] = self.contact.get("ID", "")
+                self.n1mm.send_contact_delete()
         self.edit_contact_dialog.close()
         self.get_log()
         self.show_like_calls(self.contact.get("Call", ""))
