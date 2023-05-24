@@ -105,6 +105,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-24] Added contactdelete n1mm packets.
 - [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
 - [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
 - [23-5-20] Got n1mm RadioInfo posting.
