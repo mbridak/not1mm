@@ -104,10 +104,10 @@ class DataBase:
                     "Call VARCHAR(15) NOT NULL, "
                     "Freq DOUBLE NULL, "
                     "QSXFreq DOUBLE NULL DEFAULT 0, "
-                    "Mode VARCHAR(6), "
+                    "Mode VARCHAR(6) DEFAULT '', "
                     "ContestName VARCHAR(10) DEFAULT 'NORMAL', "
-                    "SNT VARCHAR(10), "
-                    "RCV VARCHAR(15), "
+                    "SNT VARCHAR(10) DEFAULT '', "
+                    "RCV VARCHAR(15) DEFAULT '', "
                     "CountryPrefix VARCHAR(8) DEFAULT '', "
                     "StationPrefix VARCHAR(15) DEFAULT '', "
                     "QTH VARCHAR(25) DEFAULT '', "
@@ -122,21 +122,21 @@ class DataBase:
                     "Points INTEGER DEFAULT 0, "
                     "IsMultiplier1 TINYINT DEFAULT 0, "
                     "IsMultiplier2 INTEGER DEFAULT 0, "
-                    "Power VARCHAR(8), "
+                    "Power VARCHAR(8) DEFAULT '', "
                     "Band FLOAT NULL DEFAULT 0, "
-                    "WPXPrefix VARCHAR(8), "
-                    "Exchange1 VARCHAR(20), "
+                    "WPXPrefix VARCHAR(8) DEFAULT '', "
+                    "Exchange1 VARCHAR(20) DEFAULT '', "
                     "RadioNR TINYINT DEFAULT 1, "
                     "ContestNR INTEGER, "
-                    "isMultiplier3 INTEGER, "
-                    "MiscText VARCHAR(20), "
+                    "isMultiplier3 INTEGER DEFAULT 0, "
+                    "MiscText VARCHAR(20) DEFAULT '', "
                     "IsRunQSO TINYINT(1) DEFAULT 0, "
-                    "ContactType VARCHAR(1), "
+                    "ContactType VARCHAR(1) DEFAULT '', "
                     "Run1Run2 TINYINT NOT NULL, "
-                    "GridSquare VARCHAR(6), "
-                    "Operator VARCHAR(20), "
-                    "Continent VARCHAR(2), "
-                    "RoverLocation VARCHAR(10), "
+                    "GridSquare VARCHAR(6) DEFAULT '', "
+                    "Operator VARCHAR(20) DEFAULT '', "
+                    "Continent VARCHAR(2) DEFAULT '', "
+                    "RoverLocation VARCHAR(10) DEFAULT '', "
                     "RadioInterfaced INTEGER, "
                     "NetworkedCompNr INTEGER, NetBiosName varchar (255), "
                     "IsOriginal Boolean, "
@@ -431,12 +431,12 @@ class DataBase:
 
         try:
             with sqlite3.connect(self.database) as conn:
-                logger.info("%s\n%s", sql, qso)
+                logger.debug("%s\n%s", sql, qso)
                 cur = conn.cursor()
                 cur.execute(sql)
                 conn.commit()
         except sqlite3.Error as exception:
-            logger.info("DataBase change_contact: %s", exception)
+            logger.critical("DataBase change_contact: %s", exception)
 
     def delete_contact(self, unique_id: str) -> None:
         """Deletes a contact from the db."""

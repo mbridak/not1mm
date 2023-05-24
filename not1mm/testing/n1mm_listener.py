@@ -5,8 +5,9 @@ import socket
 import time
 import threading
 import queue
+import xmltodict
 
-multicast_port = 12060
+multicast_port = 12061
 multicast_group = "127.0.0.1"
 interface_ip = "0.0.0.0"
 
@@ -42,5 +43,5 @@ while 1:
     # print("Waiting...")
     while not fifo.empty():
         timestamp = time.strftime("%H:%M:%S", time.gmtime())
-        print(f"[{timestamp}] {fifo.get()}\n")
+        print(f"[{timestamp}] {xmltodict.parse(fifo.get())}\n")
     time.sleep(1)
