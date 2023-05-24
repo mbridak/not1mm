@@ -6,7 +6,6 @@ GPL V3
 
 import logging
 import socket
-from xml.dom.minidom import parseString
 
 # pip3 install -U dicttoxml
 from dicttoxml import dicttoxml
@@ -31,7 +30,7 @@ class N1MM:
         "IsRunning": "False",
         "FocusEntry": "0",
         "EntryWindowHwnd": "0",
-        "Antenna": "",
+        "Antenna": "1",
         "Rotors": "",
         "FocusRadioNr": "1",
         "IsStereo": "False",
@@ -39,7 +38,7 @@ class N1MM:
         "ActiveRadioNr": "1",
         "IsTransmitting": "False",
         "FunctionKeyCaption": "",
-        "RadioName": "Little Todd",
+        "RadioName": "Brad",
         "AuxAntSelected": "-1",
         "AuxAntSelectedName": "",
     }
@@ -162,17 +161,17 @@ class N1MM:
 
     def _send(self, port_list, payload, package_name):
         """Send XML data"""
-        bytes_to_send = dicttoxml(
-            payload,
-            custom_root=package_name,
-            attr_type=False,
-            return_bytes=False,
-            encoding="UTF-8",
-        )
-        # bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
-        dom = parseString(bytes_to_send)
-        output = dom.toprettyxml(indent="\t", newl="\r\n").encode()
-        logger.debug("********* %s", f"{package_name} {port_list} {output}")
+        # bytes_to_send = dicttoxml(
+        #     payload,
+        #     custom_root=package_name,
+        #     attr_type=False,
+        #     return_bytes=False,
+        #     encoding="UTF-8",
+        # )
+        bytes_to_send = dicttoxml(payload, custom_root=package_name, attr_type=False)
+        # dom = parseString(bytes_to_send)
+        # output = dom.toprettyxml(indent="\t", newl="\r\n").encode()
+        logger.debug("********* %s", f"{package_name} {port_list}")
         for connection in port_list.split():
             try:
                 ip_address, port = connection.split(":")
@@ -187,8 +186,11 @@ class N1MM:
                 radio_socket = socket.socket(
                     family=socket.AF_INET, type=socket.SOCK_DGRAM
                 )
+                logger.debug(
+                    "********* %s", f"{ip_address} {int(port)} {bytes_to_send}"
+                )
                 radio_socket.sendto(
-                    output,
+                    bytes_to_send,
                     (ip_address, int(port)),
                 )
             except PermissionError as exception:
