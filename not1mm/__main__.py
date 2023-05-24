@@ -929,7 +929,6 @@ class MainWindow(QtWidgets.QMainWindow):
             f"OP:{self.current_op} {contest_name} "
             f"- Not1MM v{__version__}"
         )
-        # logger.debug("%s", line)
         self.setWindowTitle(line)
 
     def clearinputs(self):
@@ -992,7 +991,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Points"] = self.contest.points(self)
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
-        # FIXME
+
         if self.n1mm:
             logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
@@ -1046,9 +1045,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 # self.n1mm.contact_info['']
                 logger.debug("%s", f"{self.n1mm.contact_info}")
                 self.n1mm.send_contact_info()
-        # FIXME
-        self.database.log_contact(self.contact)
 
+        self.database.log_contact(self.contact)
         self.clearinputs()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
@@ -1319,7 +1317,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     _status = sd.wait()
                     # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
                 except sd.PortAudioError as err:
-                    logger.debug("%s", f"{err}")
+                    logger.warning("%s", f"{err}")
 
                 self.ptt_off()
             return
@@ -1338,7 +1336,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         sd.play(data)
                         logger.debug("%s", f"{sd.wait()}")
                     except sd.PortAudioError as err:
-                        logger.debug("%s", f"{err}")
+                        logger.warning("%s", f"{err}")
         self.ptt_off()
 
     def ptt_on(self):
@@ -1359,20 +1357,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F1 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F1.toolTip()))
             return
         if self.cw:
-            # if self.preference.get("send_n1mm_packets"):
-            #     self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
             self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
     def sendf2(self):
         """stub"""
         logger.debug("F2 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F2.toolTip()))
             return
@@ -1383,7 +1379,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F3 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F3.toolTip()))
             return
@@ -1394,7 +1390,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F4 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F4.toolTip()))
             return
@@ -1405,7 +1401,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F5 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F5.toolTip()))
             return
@@ -1416,7 +1412,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F6 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F6.toolTip()))
             return
@@ -1427,7 +1423,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F7 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F7.toolTip()))
             return
@@ -1438,7 +1434,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F8 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F8.toolTip()))
             return
@@ -1449,7 +1445,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F9 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F9.toolTip()))
             return
@@ -1460,7 +1456,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F10 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F10.toolTip()))
             return
@@ -1471,7 +1467,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F11 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F11.toolTip()))
             return
@@ -1482,7 +1478,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """stub"""
         logger.debug("F12 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.tooltip()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
             self.voice_string(self.process_macro(self.F12.toolTip()))
             return
@@ -1622,7 +1618,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.pref.get("n1mm_scoreport", "127.0.0.1:12060"),
                 )
             except ValueError:
-                logger.debug("%s", f"{ValueError}")
+                logger.warning("%s", f"{ValueError}")
             self.n1mm.send_radio_packets = self.pref.get("send_n1mm_radio", False)
             self.n1mm.send_contact_packets = self.pref.get("send_n1mm_contact", False)
             self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
@@ -1649,11 +1645,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     json_data = loads(datagram.decode())
                 except UnicodeDecodeError as err:
                     the_error = f"Not Unicode: {err}\n{datagram}"
-                    logger.debug(the_error)
+                    logger.warning(the_error)
                     continue
                 except JSONDecodeError as err:
                     the_error = f"Not JSON: {err}\n{datagram}"
-                    logger.debug(the_error)
+                    logger.warning(the_error)
                     continue
                 if (
                     json_data.get("cmd", "") == "GETCOLUMNS"
