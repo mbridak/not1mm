@@ -90,6 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.table_loading = True
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
         self.n1mm = None
@@ -220,8 +221,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def cell_changed(self, row, column):
         """Slot for changed cell"""
-        if self.table_loading:
-            return
+        logger.debug("Cell Changed")
+        self.contact = self.database.fetch_contact_by_uuid(
+            self.generalLog.item(row, self.get_column("UUID")).text()
+        )
         db_record = {
             "TS": self.generalLog.item(
                 row, self.get_column("YYYY-MM-DD HH:MM:SS")
@@ -250,6 +253,50 @@ class MainWindow(QtWidgets.QMainWindow):
             "ID": self.generalLog.item(row, self.get_column("UUID")).text(),
         }
         self.database.change_contact(db_record)
+
+        if self.n1mm.send_contact_packets:
+            self.n1mm.contact_info["timestamp"] = db_record["TS"]
+            self.n1mm.contact_info["contestname"] = self.contact["ContestName"].replace(
+                "-", ""
+            )
+            self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
+            self.n1mm.contact_info["operator"] = self.contact["Operator"]
+            self.n1mm.contact_info["mycall"] = self.contact["Operator"]
+            # self.n1mm.contact_info[""] = self.contact[""]
+            self.n1mm.contact_info["band"] = self.contact["Band"]
+            self.n1mm.contact_info["mode"] = self.contact["Mode"]
+            self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
+            self.n1mm.contact_info["continent"] = self.contact["Continent"]
+            self.n1mm.contact_info["gridsquare"] = self.contact["GridSquare"]
+            self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
+            self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
+
+            self.n1mm.contact_info["call"] = db_record["Call"]
+            self.n1mm.contact_info["oldcall"] = self.contact["Call"]
+
+            self.n1mm.contact_info["rxfreq"] = self.n1mm.contact_info["txfreq"] = str(
+                int(float(db_record["Freq"]) * 100)
+            )
+            self.n1mm.contact_info["snt"] = db_record["SNT"]
+            self.n1mm.contact_info["rcv"] = db_record["RCV"]
+            self.n1mm.contact_info["sntnr"] = db_record["SentNr"]
+            self.n1mm.contact_info["rcvnr"] = db_record["NR"]
+            self.n1mm.contact_info["exchange1"] = db_record.get("Exchange1", "")
+            self.n1mm.contact_info["ck"] = db_record["CK"]
+            self.n1mm.contact_info["prec"] = db_record["Prec"]
+            self.n1mm.contact_info["section"] = db_record["Sect"]
+            self.n1mm.contact_info["wpxprefix"] = db_record["WPXPrefix"]
+            self.n1mm.contact_info["power"] = db_record["Power"]
+
+            self.n1mm.contact_info["zone"] = db_record["ZN"]
+
+            self.n1mm.contact_info["countryprefix"] = db_record["CountryPrefix"]
+            self.n1mm.contact_info["points"] = db_record["Points"]
+            self.n1mm.contact_info["name"] = db_record["Name"]
+            self.n1mm.contact_info["misctext"] = db_record["Comment"]
+            self.n1mm.contact_info["ID"] = db_record["ID"]
+            self.n1mm.send_contactreplace()
+
         self.get_log()
         self.generalLog.scrollToItem(self.generalLog.item(row, column))
 
@@ -410,8 +457,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Qt::AlignVCenter	0x0080	Centers vertically in the available space.
         # Qt::AlignBaseline	0x0100	Aligns with the baseline.
 
-        self.generalLog.cellChanged.connect(self.dummy)
-        self.table_loading = True
+        logger.debug("Getting Log")
+        self.generalLog.blockSignals(True)
         current_log = self.database.fetch_all_contacts_asc()
         self.generalLog.setRowCount(0)
         for log_item in current_log:
@@ -534,8 +581,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
-        self.table_loading = False
-        self.generalLog.cellChanged.connect(self.cell_changed)
+        self.generalLog.blockSignals(False)
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
