@@ -19,9 +19,9 @@
       - [Ubuntu 23.04](#ubuntu-2304)
       - [Fedora 38](#fedora-38)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
+    - [Or this fan favorite](#or-this-fan-favorite)
     - [Updating with pip/pipx](#updating-with-pippipx)
   - [Other Libraries](#other-libraries)
-  - [Running on Ubuntu LTS 22.04](#running-on-ubuntu-lts-2204)
     - [Dark mode on Ubuntu](#dark-mode-on-ubuntu)
   - [Wayland Compositor](#wayland-compositor)
   - [Running from source](#running-from-source)
@@ -235,6 +235,20 @@ Consider adding this directory to PATH or, if you prefer to suppress this warnin
 
 If you do, just logout and back in, or reboot.
 
+### Or this fan favorite
+
+```text
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+```
+
+To avoid this you can export an environment variable and launch the app like this:
+
+`mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
+
+For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
+
 ### Updating with pip/pipx
 
 I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm` or if installed with pipx `pipx upgrade not1mm`.
@@ -242,20 +256,6 @@ I've been posting updates just about everyday. Sometimes multiple times a day. I
 ## Other Libraries
 
 The audio library used, uses pipewire/portaudio. You may need to install portaudio. Ubuntu: `sudo apt install libportaudio2`
-
-## Running on Ubuntu LTS 22.04
-
-Seems Ubuntu LTS is not a big fan of wayland. When launching from the command line you'll see a message:
-
-`Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
-qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
-This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.`
-
-To avoid this you can export an environment variable and launch the app like this:
-
-`mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
-
-For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
 
 ### Dark mode on Ubuntu
 
