@@ -23,6 +23,7 @@
   - [Other Libraries](#other-libraries)
   - [Running on Ubuntu LTS 22.04](#running-on-ubuntu-lts-2204)
     - [Dark mode on Ubuntu](#dark-mode-on-ubuntu)
+  - [Wayland Compositor](#wayland-compositor)
   - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
@@ -260,6 +261,10 @@ For a more permanent solution you can place the line `export QT_QPA_PLATFORM=way
 
 For some reason PyQt apps on Ubuntu Gnome don't respect the Dark/Light appearance settings. Fedora Gnome does. I haven't been able to figure out what secret sauce Fedora is using to make this happen. So you can go to `View`>`Force Dark Mode` to load in a dark stylesheet. I personally think it looks like ass, but ass is in the eye of the beholder.
 
+## Wayland Compositor
+
+One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I'm aware of this, but i can not change it.
+
 ## Running from source
 
 Since this is packaged for PyPi, if you want to work on your own source branch, after cloning from github you would:
@@ -379,7 +384,11 @@ Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP 
 
 ### N1MM Packets
 
+Work has started on N1MM udp packets. So far just RadioInfo, contactinfo, contactreplace and contactdelete.
+
 ![N1MM Packet Configuration Screen](https://github.com/mbridak/not1mm/blob/master/pic/n1mm_packet_config.png?raw=true)
+
+When entering IP and Ports, enter them with a colon ':' between them. You can enter multiple pairs on the same line if separated by a space ' '.
 
 ## Hiding screen elements
 
