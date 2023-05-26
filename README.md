@@ -106,6 +106,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-26] Fixed Dark Mode on Ubuntu. Removed the crappy dark css theme and the code to load it.
 - [23-5-24] Added contact delete and change n1mm packets.
 - [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
 - [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
@@ -202,7 +203,7 @@ I've included what installation steps I took to install on fresh images of Ubunt
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy
+sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy adwaita-qt
 pip install -U not1mm
 ```
 
@@ -259,7 +260,7 @@ The audio library used, uses pipewire/portaudio. You may need to install portaud
 
 ### Dark mode on Ubuntu
 
-For some reason PyQt apps on Ubuntu Gnome don't respect the Dark/Light appearance settings. Fedora Gnome does. I haven't been able to figure out what secret sauce Fedora is using to make this happen. So you can go to `View`>`Force Dark Mode` to load in a dark stylesheet. I personally think it looks like ass, but ass is in the eye of the beholder.
+I believe I figured out dark mode in Ubuntu and have it working on my shack PC that runs Ubuntu 22.04. The secret sauce seems to be installing adwaita-qt with apt, and setting an environment variable `QT_STYLE_OVERRIDE` to `Adwaita-Dark`. I set the environment variable in the start of the program if running on a Gnome platform. So you don't need to do that part.
 
 ## Wayland Compositor
 
