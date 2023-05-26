@@ -61,27 +61,27 @@ from not1mm.lib.n1mm import N1MM
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-# os.environ["QT_STYLE_OVERRIDE"] = "adwaita"
+# gsettings get org.gnome.desktop.interface color-scheme
+# os.environ["QT_QPA_PLATFORM"] = "wayland"
+
+if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
+    os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+    os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
+DATA_PATH = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
 DATA_PATH += "/not1mm"
+
 try:
     os.mkdir(DATA_PATH)
 except FileExistsError:
     ...
 
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
+CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
 CONFIG_PATH += "/not1mm"
+
 try:
     os.mkdir(CONFIG_PATH)
 except FileExistsError:
@@ -91,11 +91,6 @@ CTYFILE = {}
 
 with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as c_file:
     CTYFILE = loads(c_file.read())
-
-DARK_STYLESHEET = ""
-
-with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
-    DARK_STYLESHEET = stylefile.read()
 
 poll_time = datetime.now()
 
@@ -135,7 +130,6 @@ class MainWindow(QtWidgets.QMainWindow):
         "lookupusername": "username",
         "lookuppassword": "password",
         "run_state": True,
-        "dark_mode": False,
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
@@ -215,7 +209,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
-        self.actionDark_Mode.triggered.connect(self.dark_mode_state_change)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
@@ -373,8 +366,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def show_about_dialog(self):
         """Show about dialog"""
         self.about_dialog = About(WORKING_PATH)
-        if self.pref.get("dark_mode"):
-            self.about_dialog.setStyleSheet(DARK_STYLESHEET)
         self.about_dialog.donors.setSource(
             QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
         )
@@ -383,8 +374,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_configuration_settings(self):
         """Configuration Settings was clicked"""
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
-        if self.pref.get("dark_mode"):
-            self.configuration_dialog.setStyleSheet(DARK_STYLESHEET)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
@@ -452,8 +441,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if contests:
             self.contest_dialog = SelectContest(WORKING_PATH)
-            if self.pref.get("dark_mode"):
-                self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
             self.contest_dialog.contest_list.setRowCount(0)
             self.contest_dialog.contest_list.setColumnCount(4)
             self.contest_dialog.contest_list.verticalHeader().setVisible(False)
@@ -511,14 +498,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest_settings is None:
             return
         self.contest_dialog = NewContest(WORKING_PATH)
-        if self.pref.get("dark_mode"):
-            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
-        if self.pref.get("dark_mode"):
-            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
-
         value = self.contest_settings.get("ContestName").upper().replace("_", " ")
         if value == "GENERAL LOGGING":
             value = "General Logging"
@@ -1090,8 +1072,6 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("New contest Dialog")
         self.contest_dialog = NewContest(WORKING_PATH)
         self.contest_dialog.accepted.connect(self.save_contest)
-        if self.pref.get("dark_mode"):
-            self.contest_dialog.setStyleSheet(DARK_STYLESHEET)
         self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
         self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime(0, 0))
@@ -1134,12 +1114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show settings dialog"""
         logger.debug("Station Settings selected")
         self.settings_dialog = EditStation(WORKING_PATH)
-        if self.pref.get("dark_mode"):
-            self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
         self.settings_dialog.accepted.connect(self.save_settings)
-        # if self.pref.get("dark_mode"):
-        #     self.settings_dialog.setStyleSheet(DARK_STYLESHEET)
-
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
         self.settings_dialog.Address1.setText(self.station.get("Street1", ""))
@@ -1205,8 +1180,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """Show edit macro dialog"""
         self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
-        if self.pref.get("dark_mode"):
-            self.edit_macro_dialog.setStyleSheet(DARK_STYLESHEET)
         self.edit_macro_dialog.open()
 
     def edited_macro(self):
@@ -1545,11 +1518,6 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.radioButton_sp.setChecked(True)
 
-        if self.pref.get("dark_mode"):
-            self.actionDark_Mode.setChecked(True)
-        else:
-            self.actionDark_Mode.setChecked(False)
-
         if self.pref.get("command_buttons"):
             self.actionCommand_Buttons.setChecked(True)
         else:
@@ -1625,7 +1593,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
             self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
 
-        self.dark_mode()
         self.show_command_buttons()
         self.show_CW_macros()
         # self.show_band_mode()
@@ -1677,19 +1644,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.callsign.setFocus()
                     self.callsign.activateWindow()
                     window.raise_()
-
-    def dark_mode_state_change(self):
-        """darkmode dropdown checkmark changed"""
-        self.pref["dark_mode"] = self.actionDark_Mode.isChecked()
-        self.write_preference()
-        self.dark_mode()
-
-    def dark_mode(self):
-        """change display mode"""
-        if self.pref.get("dark_mode"):
-            self.setStyleSheet(DARK_STYLESHEET)
-        else:
-            self.setStyleSheet("")
 
     def cw_macros_state_changed(self):
         """Menu item to show/hide macro buttons"""
