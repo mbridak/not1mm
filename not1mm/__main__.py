@@ -63,10 +63,10 @@ from not1mm.lib.versiontest import VersionTest
 
 # gsettings get org.gnome.desktop.interface color-scheme
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
-
-if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
-    os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-    os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
+# cd = os.environ.get("XDG_CURRENT_DESKTOP", False)
+# if "GNOME" in cd or "Unity" in cd:
+#     os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+#     os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
@@ -2125,7 +2125,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-# app.setStyle("Fusion")
+app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
