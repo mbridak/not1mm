@@ -106,6 +106,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-27] Fixed frequency in the ADIF output.
 - [23-5-26] Fixed Dark Mode on Ubuntu. Removed the crappy dark css theme and the code to load it. OOPS. Fixed some stuff.
 - [23-5-24] Added contact delete and change n1mm packets.
 - [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
