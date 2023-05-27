@@ -132,16 +132,24 @@ def points(self):
         for item in result.items():
             entity = item[1].get("entity", "")
             continent = item[1].get("continent", "")
-            if mycountry.upper() == entity.upper():
-                return 1
-            if mycontinent and continent == "NA":
+
+            # If both are in North America
+            if mycontinent == "NA" and continent == "NA":
                 if band in [28, 21, 14]:
                     return 2
                 return 4
+
+            # Not NA, Both in same country
+            if mycountry.upper() == entity.upper():
+                return 1
+
+            # Same Continent
             if mycontinent == continent:
                 if band in [28, 21, 14]:
                     return 1
                 return 2
+
+            # Different Continent
             if band in [28, 21, 14]:
                 return 3
             return 6
