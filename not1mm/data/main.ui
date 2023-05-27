@@ -1060,9 +1060,7 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionCommand_Buttons"/>
     <addaction name="actionCW_Macros"/>
-    <addaction name="actionDark_Mode"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">

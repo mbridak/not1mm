@@ -48,8 +48,6 @@ CONFIG_PATH += "/not1mm"
 
 DARK_STYLESHEET = ""
 
-with open(WORKING_PATH + "/data/Combinear.qss", encoding="utf-8") as stylefile:
-    DARK_STYLESHEET = stylefile.read()
 
 MULTICAST_PORT = 2239
 MULTICAST_GROUP = "224.1.1.1"
