@@ -851,6 +851,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.callsign.hasFocus():
                 logger.debug("From callsign")
+                self.check_callsign(self.callsign.text())
+                if self.check_dupe(self.callsign.text()):
+                    self.dupe_indicator.show()
+                else:
+                    self.dupe_indicator.hide()
                 if modifier == Qt.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.callsign)
                     prev_tab.setFocus()
