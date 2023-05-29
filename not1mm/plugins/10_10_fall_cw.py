@@ -332,11 +332,12 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
-            print(
-                f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
-            )
+            if self.contest_settings.get("OverlayCategory", "") != "N/A":
+                print(
+                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory','')}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
             print(
                 f"GRID-LOCATOR: {self.station.get('GridSquare','')}",
                 end="\r\n",
