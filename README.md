@@ -106,6 +106,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ## Changes of note
 
+- [23-5-29] Hide CATEGORY-OVERLAY in Cabrillo file if set to N/A.
 - [23-5-28] Fixed Dupe check on TAB.
 - [23-5-27] Fixed frequency in the ADIF output. Corrected WPX contact points.
 - [23-5-26] Fixed Dark Mode on Ubuntu. Removed the crappy dark css theme and the code to load it. OOPS. Fixed some stuff.
