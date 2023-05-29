@@ -10,6 +10,9 @@
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [Current state](#current-state)
+  - [Thanks to the Contributors](#thanks-to-the-contributors)
+    - [:moneybag: Monitarily](#moneybag-monitarily)
+    - [:cockroach: Bug reports and Feature suggestions](#cockroach-bug-reports-and-feature-suggestions)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Changes of note](#changes-of-note)
   - [Installing from PyPi](#installing-from-pypi)
@@ -84,6 +87,18 @@ While I'm not watching TV, Right vs Left political 'News' programs, mind numbing
 The current state is "**BETA**". I've used it for A few contests, and was able to work contacts and submit a cabrillo at the end. I'm not a "Contester". So I'll add contests as/if I work them. I'm only one guy, so if you see a bug let me know. I don't do much of any Data or RTTY operating. This is why you don't see RTTY in the list of working contests. The Lord helps those who burn people at the... I mean who help themselves. Feel free to fill in that hole with a pull request.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
+
+## Thanks to the Contributors
+
+I wish to thank those who've contributed to the project.
+
+### :moneybag: Monitarily
+
+Brian KB3ORR
+
+### :cockroach: Bug reports and Feature suggestions
+
+Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR
 
 ## List of should be working contests
 
