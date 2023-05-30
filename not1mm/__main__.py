@@ -139,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "window_y": 120,
         "current_database": "ham.db",
         "contest": "",
-        "multicast_group": "224.1.1.1",
+        "multicast_group": "239.1.1.1",
         "multicast_port": 2239,
         "interface_ip": "0.0.0.0",
         "send_n1mm_packets": False,
@@ -1538,7 +1538,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actionMode_and_Bands.setChecked(False)
 
-        multicast_group = self.pref.get("multicast_group", "224.1.1.1")
+        multicast_group = self.pref.get("multicast_group", "239.1.1.1")
         multicast_port = self.pref.get("multicast_port", 2239)
         interface_ip = self.pref.get("interface_ip", "0.0.0.0")
         self.multicast_interface = Multicast(
