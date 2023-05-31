@@ -2,16 +2,19 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1731</width>
-    <height>358</height>
+    <width>866</width>
+    <height>366</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -26,9 +29,12 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>NOT1MM</string>
+   <string>Not1MM</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="focusPolicy">
     <enum>Qt::NoFocus</enum>
    </property>
@@ -645,6 +651,7 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>20</pointsize>
+                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -1018,8 +1025,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1731</width>
-     <height>30</height>
+     <width>866</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
