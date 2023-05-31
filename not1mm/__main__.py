@@ -28,9 +28,9 @@ from shutil import copyfile
 import psutil
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtCore import QPoint  # pylint: disable=no-name-in-module
+from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QDir, QRect, QSize, Qt
-from PyQt5.QtGui import QFontDatabase  # pylint: disable=no-name-in-module
+from PyQt5.QtGui import QFontDatabase
 
 import sounddevice as sd
 import soundfile as sf
@@ -1603,7 +1603,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.show_band_mode()
 
     def watch_udp(self):
-        """Puts UDP datagrams in a FIFO queue"""
+        """Process UDP datagrams."""
         while self.multicast_interface.server_udp.hasPendingDatagrams():
             bundle = self.multicast_interface.server_udp.readDatagram(
                 self.multicast_interface.server_udp.pendingDatagramSize()
@@ -2105,7 +2105,7 @@ def run():
     Main Entry
     """
     install_icons()
-    timer.start(100)
+    timer.start(250)
     sys.exit(app.exec())
 
 
