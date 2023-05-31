@@ -4,6 +4,7 @@ NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 
+import datetime as dt
 import importlib
 import logging
 import os
@@ -16,24 +17,19 @@ import sys
 import threading
 import time
 import uuid
-import datetime as dt
-
 from datetime import datetime
-from json import dumps, loads, JSONDecodeError
+from json import JSONDecodeError, dumps, loads
 from pathlib import Path
 from shutil import copyfile
 
-# from xmlrpc.client import Error, ServerProxy
-
+import ctyparser
 import psutil
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtCore import QPoint
-from PyQt5.QtCore import QDir, QRect, QSize, Qt
-from PyQt5.QtGui import QFontDatabase
-
 import sounddevice as sd
 import soundfile as sf
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QDir, QPoint, QRect, QSize, Qt
+from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtWidgets import QFileDialog
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
@@ -42,8 +38,6 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
-from not1mm.lib.select_contest import SelectContest
-from not1mm.lib.settings import Settings
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -54,12 +48,17 @@ from not1mm.lib.ham_utility import (
     getband,
     reciprocol,
 )
-from not1mm.lib.lookup import QRZlookup, HamDBlookup, HamQTH
+from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
-from not1mm.lib.new_contest import NewContest
 from not1mm.lib.n1mm import N1MM
+from not1mm.lib.new_contest import NewContest
+from not1mm.lib.select_contest import SelectContest
+from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
+
+# from xmlrpc.client import Error, ServerProxy
+
 
 # gsettings get org.gnome.desktop.interface color-scheme
 # os.environ["QT_QPA_PLATFORM"] = "wayland"
@@ -86,6 +85,15 @@ try:
     os.mkdir(CONFIG_PATH)
 except FileExistsError:
     ...
+
+#
+cty = ctyparser.BigCty(WORKING_PATH + "/data/cty.json")
+print("checking cty file")
+updated = cty.update()
+if updated:
+    print("Updated cty file")
+    cty.dump(WORKING_PATH + "/data/cty.json")
+cty = None  # free up the memory
 
 CTYFILE = {}
 
