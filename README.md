@@ -121,6 +121,7 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR
 
 ## Changes of note
 
+- [23-5-31] updated cty.json ( I need to automate this )
 - [23-5-30] Changed the default multicast group from 224.1.1.1 to 239.1.1.1 This restricts broadcast traffic to the local subnet.
 - [23-5-29] Hide CATEGORY-OVERLAY in Cabrillo file if set to N/A.
 - [23-5-28] Fixed Dupe check on TAB.
