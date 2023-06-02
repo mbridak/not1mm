@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "23.5.31"
+version = "23.6.2"
 description = "NOT1MM Logger"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,7 +20,7 @@ dependencies = [
     "sounddevice",
     "soundfile",
     "numpy",
-    "ctyparser",
+    "notctyparser",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

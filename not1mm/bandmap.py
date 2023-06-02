@@ -8,6 +8,7 @@ GPL V3
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
 from datetime import datetime
+from decimal import Decimal
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
 
@@ -66,7 +67,9 @@ class Band:
         "40m": (7.0, 7.3),
         "30m": (10.1, 10.15),
         "20m": (14.0, 14.35),
+        "17m": (18.069, 18.168),
         "15m": (21.0, 21.45),
+        "12m": (24.89, 25.0),
         "10m": (28.0, 29.7),
         "6m": (50.0, 54.0),
         "4m": (70.0, 71.0),
@@ -448,7 +451,12 @@ class MainWindow(QtWidgets.QMainWindow):
             return QtCore.QPointF()
         step, _digits = self.determine_step_digits()
         ret = QtCore.QPointF(
-            0, ((freq - self.currentBand.start) / step) * PIXELSPERSTEP
+            0,
+            (
+                (Decimal(str(freq)) - Decimal(str(self.currentBand.start)))
+                / Decimal(str(step))
+            )
+            * PIXELSPERSTEP,
         )
         return ret
 
@@ -497,8 +505,10 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if freq and self.bandwidth:
             # color = QtGui.QColor(30, 30, 180)
-            bw_start = freq - ((self.bandwidth / 2) / 1000000)
-            bw_end = freq + ((self.bandwidth / 2) / 1000000)
+            bw_start = Decimal(str(freq)) - (
+                (Decimal(str(self.bandwidth)) / 2) / 1000000
+            )
+            bw_end = Decimal(str(freq)) + ((Decimal(str(self.bandwidth)) / 2) / 1000000)
             logger.debug("%s", f"s:{bw_start} e:{bw_end}")
             Yposition_neg = self.Freq2ScenePos(bw_start).y()
             Yposition_pos = self.Freq2ScenePos(bw_end).y()

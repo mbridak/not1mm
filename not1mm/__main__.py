@@ -22,7 +22,7 @@ from json import JSONDecodeError, dumps, loads
 from pathlib import Path
 from shutil import copyfile
 
-import ctyparser
+import notctyparser
 import psutil
 import sounddevice as sd
 import soundfile as sf
@@ -86,14 +86,6 @@ try:
 except FileExistsError:
     ...
 
-#
-cty = ctyparser.BigCty(WORKING_PATH + "/data/cty.json")
-print("checking cty file")
-updated = cty.update()
-if updated:
-    print("Updated cty file")
-    cty.dump(WORKING_PATH + "/data/cty.json")
-cty = None  # free up the memory
 
 CTYFILE = {}
 
@@ -353,6 +345,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+        self.check_for_new_cty()
 
     @staticmethod
     def check_process(name: str) -> bool:
@@ -623,6 +617,39 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["COLUMNS"] = self.contest.columns
                     self.multicast_interface.send_as_json(cmd)
+
+    def check_for_new_cty(self):
+        """
+        Checks for a new cty.dat file.
+        Loads it if available.
+        """
+        try:
+            cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
+            update_available = cty.check_update()
+        except Exception as the_error:
+            cty = None  # free up the memory
+            logger.debug("cty parser returned an error: %s", the_error)
+            return
+        logger.debug("Newer cty file available %s", str(update_available))
+
+        if update_available:
+            self.show_message_box("Updating cty file..")
+            try:
+                updated = cty.update()
+            except Exception as the_error:
+                logger.debug("cty parser returned an error: %s", the_error)
+                cty = None  # free up the memory
+                return
+            if updated:
+                cty.dump(WORKING_PATH + "/data/cty.json")
+                self.show_message_box("cty file updated.")
+                with open(
+                    WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8"
+                ) as c_file:
+                    globals()["CTYFILE"] = loads(c_file.read())
+            else:
+                self.show_message_box("An Error occured updating file.")
+        cty = None  # free up the memory
 
     def hide_band_mode(self, the_mode: str) -> None:
         """hide"""
@@ -1657,6 +1684,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.callsign.setFocus()
                     self.callsign.activateWindow()
                     window.raise_()
+                    # fg = window.frameGeometry().topLeft
+                    # # _width = self.size().width()
+                    # # _height = self.size().height()
+                    # # _x = self.pos().x()
+                    # # _y = self.pos().y()
+                    # # print(f"**************************** x {_x} y {_y}")
+                    # # window.hide()
+                    # # window.show()
+                    # # window.setGeometry(0, 0, _width, _height)
+                    # window.show()
+                    # window.geometry().setX(100)
+                    # window.geometry().setY(100)
 
     def cw_macros_state_changed(self):
         """Menu item to show/hide macro buttons"""

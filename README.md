@@ -121,6 +121,12 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR
 
 ## Changes of note
 
+- [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
+
+<details>
+
+<summary>May 2023</summary>
+
 - [23-5-31] updated cty.json ( I need to automate this )
 - [23-5-30] Changed the default multicast group from 224.1.1.1 to 239.1.1.1 This restricts broadcast traffic to the local subnet.
 - [23-5-29] Hide CATEGORY-OVERLAY in Cabrillo file if set to N/A.
@@ -146,6 +152,8 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR
 - [23-5-4] Fixed 'Operators' line in WPX cabrillo file. Fix window title not updating if no CAT control.
 - [23-5-3] Added '#' macro.
 - [23-5-1] Added 10 10 CW and Phone contests. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
+
+</details>
 
 <details>
 
