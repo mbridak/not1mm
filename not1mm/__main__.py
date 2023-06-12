@@ -232,6 +232,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
 
+        self.actionQuit.triggered.connect(self.quit_app)
+
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
@@ -347,6 +349,10 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
         self.check_for_new_cty()
+
+    def quit_app(self):
+        """doc"""
+        app.quit()
 
     @staticmethod
     def check_process(name: str) -> bool:
