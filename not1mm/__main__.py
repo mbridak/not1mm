@@ -503,6 +503,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_contest(self):
         """Edit the current contest"""
         logger.debug("Edit contest Dialog")
+        if self.contest is None:
+            self.show_message_box("You have no contest defined.")
+            return
         if self.contest_settings is None:
             return
         self.contest_dialog = NewContest(WORKING_PATH)
@@ -766,6 +769,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def cwspeed_spinbox_changed(self):
         """triggered when value of CW speed in the spinbox changes."""
+        if self.cw is None:
+            return
         if self.cw.servertype == 1:
             self.cw.speed = self.cw_speed.value()
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
@@ -992,6 +997,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def save_contact(self):
         """Save to db"""
         logger.debug("saving contact")
+        if self.contest is None:
+            self.show_message_box("You have no contest defined.")
+            return
         if len(self.callsign.text()) < 3:
             return
         if not any(char.isdigit() for char in self.callsign.text()):
@@ -1903,6 +1911,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
+        if self.contest is None:
+            self.show_message_box("You have no contest loaded.")
+            return False
         self.contest.predupe(self)
         band = float(get_logged_band(str(self.radio_state.get("vfoa", 0.0))))
         mode = self.radio_state.get("mode", "")
