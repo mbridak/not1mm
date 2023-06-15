@@ -231,6 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionEdit_Macros.triggered.connect(self.edit_cw_macros)
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
+        self.actionHotKeys.triggered.connect(self.show_key_help)
 
         self.actionQuit.triggered.connect(self.quit_app)
 
@@ -685,6 +686,28 @@ class MainWindow(QtWidgets.QMainWindow):
         if frames:
             for frame in frames:
                 frame.show()
+
+    def show_key_help(self) -> None:
+        """Show help box for hotkeys"""
+        self.show_message_box(
+            "[Esc]\tClears the input fields of any text.\n"
+            "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
+            "[PgUp]\tIncreases the cw sending speed.\n"
+            "[PgDown]\tDecreases the cw sending speed.\n"
+            "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
+            "\tin the bandmap window (CAT Required).\n"
+            "[Arrow-Down] Jump to the next spot below the current\n"
+            "\tVFO cursor in the bandmap window (CAT Required).\n"
+            "[TAB]\tMove cursor to the right one field.\n"
+            "[Shift-Tab]\tMove cursor left One field.\n"
+            "[SPACE]\tWhen in the callsign field, will move the input to the\n"
+            "\tfirst field needed for the exchange.\n"
+            "[Enter]\tSubmits the fields to the log.\n"
+            "[F1-F12]\tSend (CW or Voice) macros.\n"
+            "[CTRL-S]\tSpot Callsign to the cluster.\n"
+            "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
+            "\tentry field (CAT Required).\n"
+        )
 
     def filepicker(self, action: str) -> str:
         """
@@ -1808,7 +1831,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clearinputs()
                 return
             if stripped_text == "TEST":
-                self.show_message_box("This is a test")
+                self.show_message_box(
+                    "[Esc]\tClears the input fields of any text.\n"
+                    "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
+                    "[PgUp]\tIncreases the cw sending speed.\n"
+                    "[PgDown]\tDecreases the cw sending speed.\n"
+                    "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
+                    "\tin the bandmap window (CAT Required).\n"
+                    "[Arrow-Down] Jump to the next spot below the current\n"
+                    "\tVFO cursor in the bandmap window (CAT Required).\n"
+                    "[TAB]\tMove cursor to the right one field.\n"
+                    "[Shift-Tab]\tMove cursor left One field.\n"
+                    "[SPACE]\tWhen in the callsign field, will move the input to the\n"
+                    "\tfirst field needed for the exchange.\n"
+                    "[Enter]\tSubmits the fields to the log.\n"
+                    "[F1-F12]\tSend (CW or Voice) macros.\n"
+                    "[CTRL-S]\tSpot Callsign to the cluster.\n"
+                    "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
+                    "\tentry field (CAT Required).\n"
+                )
                 self.clearinputs()
                 return
             if self.is_floatable(stripped_text):
