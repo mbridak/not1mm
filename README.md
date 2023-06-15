@@ -37,9 +37,9 @@
     - [The first one](#the-first-one)
     - [Why limit yourself](#why-limit-yourself)
     - [Revisiting an old friend](#revisiting-an-old-friend)
-  - [Station Settings dialog](#station-settings-dialog)
+  - [Station Settings dialog (REQUIRED)](#station-settings-dialog-required)
     - [Changing station information](#changing-station-information)
-  - [Adding a contest to the current dababase](#adding-a-contest-to-the-current-dababase)
+  - [Adding a contest to the current dababase (REQUIRED)](#adding-a-contest-to-the-current-dababase-required)
   - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
   - [Editing existing contest parameters](#editing-existing-contest-parameters)
   - [Configuration Settings](#configuration-settings)
@@ -352,7 +352,7 @@ You can create a new database by selecting `File` > `New Database` from the main
 
 You can select a previously created databases for use by selecting `File` > `Open Database`.
 
-## Station Settings dialog
+## Station Settings dialog (REQUIRED)
 
 After initial run of the program or creating a new database you will need to fill out the Station Settings dialog that will pop up.
 
@@ -368,7 +368,7 @@ You can fill. You can fill. Everyone look at your keys.
 
 Station information can be changed any time by going to `File` > `Station Settings` and editing the information.
 
-## Adding a contest to the current dababase
+## Adding a contest to the current dababase (REQUIRED)
 
 Select `File` > `New Contest`
 
@@ -394,7 +394,7 @@ The tabs for groups and n1mm are disabled and are for future expansion.
 
 ### Lookup
 
-For callsign lookup, several services are supported. QRZ, HamQTH and HamDB. If your service of choice requires a username and password, Enter it here.
+For callsign lookup, Two services are supported. QRZ and HamQTH. They require a username and password, Enter it here.
 
 ### Soundcard
 
@@ -485,15 +485,15 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 - [CTRL-Esc] Stops cwdaemon from sending Morse.
 - [PgUp] Increases the cw sending speed.
 - [PgDown] Decreases the cw sending speed.
-- [Arrow-Up] Jump to the next spot above the current VFO cursor in the bandmap window.
-- [Arrow-Down] Jump to the next spot below the current VFO cursor in the bandmap window.
+- [Arrow-Up] Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required).
+- [Arrow-Down] Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required).
 - [TAB] Move cursor to the right one field.
 - [Shift-Tab] Move cursor left One field.
 - [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
 - [Enter] Submits the fields to the log.
 - [F1-F12] Send (CW or Voice) macros.
 - [CTRL-S] Spot Callsign to the cluster.
-- [CTRL-G] Tune to a spot matching partial text in the callsign entry field.
+- [CTRL-G] Tune to a spot matching partial text in the callsign entry field (CAT Required).
 
 ### Log Display
 
