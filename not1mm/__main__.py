@@ -24,6 +24,7 @@ from shutil import copyfile
 
 import notctyparser
 import psutil
+import requests
 import sounddevice as sd
 import soundfile as sf
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
@@ -69,6 +70,8 @@ from not1mm.lib.versiontest import VersionTest
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
+
+MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 
 DATA_PATH = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
 DATA_PATH += "/not1mm"
@@ -232,7 +235,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
         self.actionHotKeys.triggered.connect(self.show_key_help)
-
+        self.actionHelp.triggered.connect(self.show_help_dialog)
+        self.actionUpdate_MASTER_SCP.triggered.connect(self.update_masterscp)
         self.actionQuit.triggered.connect(self.quit_app)
 
         self.radioButton_run.clicked.connect(self.run_sp_buttons_clicked)
@@ -379,6 +383,30 @@ class MainWindow(QtWidgets.QMainWindow):
             QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
         )
         self.about_dialog.open()
+
+    def show_help_dialog(self):
+        """Show about dialog"""
+        self.about_dialog = About(WORKING_PATH)
+        self.about_dialog.setWindowTitle("Help")
+        self.about_dialog.setGeometry(0, 0, 800, 600)
+        self.about_dialog.donors.setSource(
+            QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/not1mm.html")
+        )
+        self.about_dialog.open()
+
+    def update_masterscp(self) -> None:
+        """Update the MASTER.SCP file.
+        - Returns True if successful
+        - Otherwise False
+        """
+        with requests.Session() as session:
+            the_request = session.get(MASTER_SCP_URL)
+            if the_request.status_code == 200:
+                with open(WORKING_PATH + "/data/MASTER.SCP", "wb+") as file:
+                    file.write(the_request.content)
+                self.show_message_box("MASTER.SCP file updated.")
+                return
+        self.show_message_box("MASTER.SCP could not be updated.")
 
     def edit_configuration_settings(self):
         """Configuration Settings was clicked"""
@@ -636,7 +664,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
             update_available = cty.check_update()
-        except Exception as the_error:
+        except AttributeError as the_error:
             cty = None  # free up the memory
             logger.debug("cty parser returned an error: %s", the_error)
             return
@@ -646,7 +674,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.show_message_box("Updating cty file..")
             try:
                 updated = cty.update()
-            except Exception as the_error:
+            except ResourceWarning as the_error:
                 logger.debug("cty parser returned an error: %s", the_error)
                 cty = None  # free up the memory
                 return
@@ -655,8 +683,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.show_message_box("cty file updated.")
                 with open(
                     WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8"
-                ) as c_file:
-                    globals()["CTYFILE"] = loads(c_file.read())
+                ) as ctyfile:
+                    globals()["CTYFILE"] = loads(ctyfile.read())
             else:
                 self.show_message_box("An Error occured updating file.")
         cty = None  # free up the memory
@@ -1828,6 +1856,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if stripped_text == "OPON":
                 self.get_opon()
+                self.clearinputs()
+                return
+            if stripped_text == "HELP":
+                self.show_help_dialog()
                 self.clearinputs()
                 return
             if stripped_text == "TEST":
