@@ -122,7 +122,8 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR
 
 ## Changes of note
 
-- [23-6-15] Add help menu for hotkeys.
+- [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
+- [23-6-15] Add `Help->HotKeys`.
 - [23-6-14] Added check to see if your Russ and want to operate a contest thats not defined.
 - [23-6-12] Add `File->Quit` because Russ can't click an 'x' to quit program.
 - [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
