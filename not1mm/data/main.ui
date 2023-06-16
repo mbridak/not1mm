@@ -651,7 +651,6 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>20</pointsize>
-                <weight>75</weight>
                 <bold>true</bold>
                </font>
               </property>
@@ -1026,7 +1025,7 @@
      <x>0</x>
      <y>0</y>
      <width>866</width>
-     <height>31</height>
+     <height>30</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -1049,15 +1048,18 @@
     <addaction name="actionOpen_Contest"/>
     <addaction name="actionEdit_Current_Contest"/>
     <addaction name="separator"/>
-    <addaction name="actionGenerate_Cabrillo"/>
-    <addaction name="actionGenerate_ADIF"/>
-    <addaction name="separator"/>
     <addaction name="actionConfiguration_Settings"/>
     <addaction name="actionStationSettings"/>
     <addaction name="separator"/>
+    <addaction name="actionGenerate_ADIF"/>
+    <addaction name="actionGenerate_Cabrillo"/>
+    <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
+    <addaction name="actionUpdate_MASTER_SCP"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1065,6 +1067,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionHotKeys"/>
+    <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1460,6 +1463,16 @@
   <action name="actionHotKeys">
    <property name="text">
     <string>HotKeys</string>
+   </property>
+  </action>
+  <action name="actionUpdate_MASTER_SCP">
+   <property name="text">
+    <string>Update MASTER.SCP</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
    </property>
   </action>
  </widget>
