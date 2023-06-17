@@ -68,6 +68,11 @@ from not1mm.lib.versiontest import VersionTest
 #     os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 #     os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
 
+
+# print(f"LANG: {os.environ.get('LANG')}")
+# print(f"LC_TIME: {os.environ.get('LC_TIME')}")
+
+
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
@@ -684,6 +689,11 @@ class MainWindow(QtWidgets.QMainWindow):
             update_available = cty.check_update()
         except AttributeError as the_error:
             cty = None  # free up the memory
+            logger.debug("cty parser returned an error: %s", the_error)
+            return
+        except ValueError as the_error:
+            cty = None  # free up the memory
+            print("cty parser returned an error: %s", the_error)
             logger.debug("cty parser returned an error: %s", the_error)
             return
         logger.debug("Newer cty file available %s", str(update_available))
@@ -1953,7 +1963,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_callsign(self, callsign):
         """Check call as entered"""
-        result = cty_lookup(callsign)
+        result = self.cty_lookup(callsign)
         debug_result = f"{result}"
         logger.debug("%s", debug_result)
         if result:
