@@ -122,6 +122,7 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR, rolnas
 
 ## Changes of note
 
+- [23-6-18] Pinned lib notctyparser to >= 26.6.18
 - [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
 - [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
 - [23-6-15] Add `Help->HotKeys`.
