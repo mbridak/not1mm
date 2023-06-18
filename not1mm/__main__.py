@@ -202,6 +202,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_op = ""
     current_mode = ""
     current_band = ""
+    default_rst = "59"
     cw = None
     look_up = None
     run_state = False
@@ -2046,23 +2047,27 @@ class MainWindow(QtWidgets.QMainWindow):
     def setmode(self, mode: str) -> None:
         """stub for when the mode changes."""
         if mode == "CW":
-            self.current_mode = "CW"
-            # self.mode.setText("CW")
-            self.sent.setText("599")
-            self.receive.setText("599")
-            self.read_cw_macros()
+            if self.current_mode != "CW":
+                self.current_mode = "CW"
+                # self.mode.setText("CW")
+                self.sent.setText("599")
+                self.receive.setText("599")
+                self.read_cw_macros()
             return
         if mode == "SSB":
-            self.current_mode = "SSB"
-            # self.mode.setText("SSB")
-            self.sent.setText("59")
-            self.receive.setText("59")
-            self.read_cw_macros()
+            if self.current_mode != "SSB":
+                self.current_mode = "SSB"
+                # self.mode.setText("SSB")
+                self.sent.setText("59")
+                self.receive.setText("59")
+                self.read_cw_macros()
+            return
         if mode == "RTTY":
-            self.current_mode = "RTTY"
-            # self.mode.setText("RTTY")
-            self.sent.setText("59")
-            self.receive.setText("59")
+            if self.current_mode != "RTTY":
+                self.current_mode = "RTTY"
+                # self.mode.setText("RTTY")
+                self.sent.setText("59")
+                self.receive.setText("59")
 
     def get_opon(self):
         """Ctrl+O or OPON dialog"""
