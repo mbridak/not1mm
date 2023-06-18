@@ -1,0 +1,74 @@
+# Changelog
+
+- [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
+- [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
+- [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
+- [23-6-15] Add `Help->HotKeys`.
+- [23-6-14] Added check to see if your Russ and want to operate a contest thats not defined.
+- [23-6-12] Add `File->Quit` because Russ can't click an 'x' to quit program.
+- [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
+- [23-5-31] updated cty.json ( I need to automate this )
+- [23-5-30] Changed the default multicast group from 224.1.1.1 to 239.1.1.1 This restricts broadcast traffic to the local subnet.
+- [23-5-29] Hide CATEGORY-OVERLAY in Cabrillo file if set to N/A.
+- [23-5-28] Fixed Dupe check on TAB.
+- [23-5-27] Fixed frequency in the ADIF output. Corrected WPX contact points.
+- [23-5-26] Fixed Dark Mode on Ubuntu. Removed the crappy dark css theme and the code to load it. OOPS. Fixed some stuff.
+- [23-5-24] Added contact delete and change n1mm packets.
+- [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
+- [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
+- [23-5-20] Got n1mm RadioInfo posting.
+- [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
+- [23-5-18] ReInit rigctld CAT when it goes offline and back.
+- [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this. Bandmap centers on the VFO after frequency change. Set mode on startup based on the mode category set for the contest.
+- [23-5-15] CTRL-S in the main window will send a spot to the cluster.
+- [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
+- [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap. Added K1EL speed change via xmlrpc. One would need to update the pywinkeyerserial client.
+- [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions.
+- [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother. Add CTRL-PgUp and CTRL-PgDown keys to jump to the next/prev spots in the bandmap. Fix: Voice not keying on LSB. Fix: calling pttoff when no CAT interface. Fix: Voice not keying on LSB
+- [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
+- [23-5-7] Added bandwidth marker to the bandmap.
+- [23-5-6] Added AR Cluster filter options for the bandmap. Added a station ID to the multicast packets. This will prevent erratic bevahiour if 2 stations are on the same network.
+- [23-5-5] Re-wrote most of the log window code. Added ARRL Sweepstakes.
+- [23-5-4] Fixed 'Operators' line in WPX cabrillo file. Fix window title not updating if no CAT control.
+- [23-5-3] Added '#' macro.
+- [23-5-1] Added 10 10 CW and Phone contests. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
+- [23-4-29] Added callsign and connect button to the bandmap. Fixed rxmarker not updateing.
+- [23-4-28] Added a bandmap window (WIP) to track spots. Clicked spots now tune radio and sets callsign.
+- [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
+- [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
+- [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT. Added Select sound device. Reworked Configuration Settings dialog. Rerecorded phonetics.
+- [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest. Added edit existing contest dialog.
+- [23-4-18] Added voice keying. Fixed a bunch of crashes. Added PTT to rigctld.
+- [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
+- [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
+- [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill.
+- [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
+- [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
+- [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
+- [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
+- [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging contest type. Added other Cabrillo tags.
+- [23-3-31] Now saving station settings in the contest database.
+- [23-3-30] Added Open new and Open existing database
+- [23-3-29] Added a new contest dialog.
+- [23-3-27] Add menu item to recalculate mults.
+- [23-3-27] Fix cursor behaviour when editing text in callsign field.
+- [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
+- [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
+- [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
+- [23-3-22] Add prefill of serial nr. set OP call on startup. Set IsMultiplier1 new unique wpx. Add OP and contest name to window title. and stuff.
+- [23-3-21] Worked on CQ WPX SSB plugin.
+- [23-3-20] Added a contact edit dialog. RightClick to edit contact. Changed placeholder text color in settings dialog. Hooked up CW speedchange widget. PgUp/PgDn to change speed.
+- [23-3-17] Added multicast UDP messages to update the log window when new contact made. You can now edit existing contacts in the log window. You can't delete them yet. Got rid of watchdog. Isolated common multicast code to it's own class.
+- [23-3-15] Added a rudimentary log view window.
+- [23-3-10] Started work on saving contacts to the DB. Added a claculate_wpx_prefix routine.
+- [23-3-9] Placed network call lookup in a thread. Display freq/mode for non CAT radios. Hooked up the CW macros to cwdaemon.
+- [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
+- [23-3-7] Changed dxlog table column names.
+- [23-3-1] Add shift tab for field movement.
+- [23-2-23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
+- [23-2-22] Added cty.dat file.
+- [23-2-21] Added edit macro dialog.
+- [23-2-20] Save view states. fixed debug messages. Started coding plugins/stubs.
+- [23-2-15] Added qss stylesheet. Connected Run and S&P radio buttons. Reads in cwmacros.
+- [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
+- [23-2-9] Initial post and name squatting.
