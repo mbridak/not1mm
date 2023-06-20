@@ -95,7 +95,7 @@ I wish to thank those who've contributed to the project.
 
 ### :moneybag: Monitarily
 
-Brian KB3ORR
+Brian KB3ORR, Connor KD9LSV
 
 ### :cockroach: Bug reports and Feature suggestions
 
