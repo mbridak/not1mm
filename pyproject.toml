@@ -20,7 +20,7 @@ dependencies = [
     "sounddevice",
     "soundfile",
     "numpy",
-    "notctyparser >= 23.6.18",
+    "notctyparser >= 23.6.21",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

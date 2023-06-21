@@ -689,28 +689,23 @@ class MainWindow(QtWidgets.QMainWindow):
             cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
             update_available = cty.check_update()
         except AttributeError as the_error:
-            cty = None  # free up the memory
             logger.debug("cty parser returned an error: %s", the_error)
             return
         except ValueError as the_error:
-            cty = None  # free up the memory
             print("cty parser returned an error: %s", the_error)
             logger.debug("cty parser returned an error: %s", the_error)
             return
         except locale.Error as the_error:
-            cty = None  # free up the memory
             print("cty parser returned an error: %s", the_error)
             logger.debug("cty parser returned an error: %s", the_error)
             return
         logger.debug("Newer cty file available %s", str(update_available))
 
         if update_available:
-            self.show_message_box("Updating cty file..")
             try:
                 updated = cty.update()
             except ResourceWarning as the_error:
                 logger.debug("cty parser returned an error: %s", the_error)
-                cty = None  # free up the memory
                 return
             if updated:
                 cty.dump(WORKING_PATH + "/data/cty.json")
@@ -721,7 +716,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     globals()["CTYFILE"] = loads(ctyfile.read())
             else:
                 self.show_message_box("An Error occured updating file.")
-        cty = None  # free up the memory
+        else:
+            self.show_message_box("CTY file is up to date.")
 
     def hide_band_mode(self, the_mode: str) -> None:
         """hide"""
