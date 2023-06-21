@@ -1056,6 +1056,7 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
+    <addaction name="actionUpdate_CTY"/>
     <addaction name="actionUpdate_MASTER_SCP"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -1473,6 +1474,11 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+  </action>
+  <action name="actionUpdate_CTY">
+   <property name="text">
+    <string>Update CTY</string>
    </property>
   </action>
  </widget>

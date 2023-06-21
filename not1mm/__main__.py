@@ -19,6 +19,7 @@ import time
 import uuid
 from datetime import datetime
 from json import JSONDecodeError, dumps, loads
+import locale
 from pathlib import Path
 from shutil import copyfile
 
@@ -260,6 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionAbout.triggered.connect(self.show_about_dialog)
         self.actionHotKeys.triggered.connect(self.show_key_help)
         self.actionHelp.triggered.connect(self.show_help_dialog)
+        self.actionUpdate_CTY.triggered.connect(self.check_for_new_cty)
         self.actionUpdate_MASTER_SCP.triggered.connect(self.update_masterscp)
         self.actionQuit.triggered.connect(self.quit_app)
 
@@ -376,8 +378,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
-
-        self.check_for_new_cty()
 
     def quit_app(self):
         """doc"""
@@ -693,6 +693,11 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("cty parser returned an error: %s", the_error)
             return
         except ValueError as the_error:
+            cty = None  # free up the memory
+            print("cty parser returned an error: %s", the_error)
+            logger.debug("cty parser returned an error: %s", the_error)
+            return
+        except locale.Error as the_error:
             cty = None  # free up the memory
             print("cty parser returned an error: %s", the_error)
             logger.debug("cty parser returned an error: %s", the_error)
