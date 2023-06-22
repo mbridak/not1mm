@@ -6,6 +6,7 @@ NOT1MM Logger
 
 import datetime as dt
 import importlib
+import locale
 import logging
 import os
 import pkgutil
@@ -19,7 +20,6 @@ import time
 import uuid
 from datetime import datetime
 from json import JSONDecodeError, dumps, loads
-import locale
 from pathlib import Path
 from shutil import copyfile
 
@@ -40,16 +40,10 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
-from not1mm.lib.ham_utility import (
-    bearing,
-    bearing_with_latlon,
-    calculate_wpx_prefix,
-    distance,
-    distance_with_latlon,
-    get_logged_band,
-    getband,
-    reciprocol,
-)
+from not1mm.lib.ham_utility import (bearing, bearing_with_latlon,
+                                    calculate_wpx_prefix, distance,
+                                    distance_with_latlon, get_logged_band,
+                                    getband, reciprocol)
 from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
