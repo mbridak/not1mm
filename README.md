@@ -122,6 +122,7 @@ Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR, rolnas
 
 ## Recent Changes
 
+- [23-6-28] bandmap now displays callsigns in red if they have been worked before.
 - [23-6-21] cty updater needs work changed to ondemand.
 - [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
 - [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
