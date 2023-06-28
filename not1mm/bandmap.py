@@ -76,9 +76,26 @@ class Band:
         "2m": (144.0, 148.0),
     }
 
+    othername = {
+        "160m": 1.8,
+        "80m": 3.5,
+        "60m": 5.1,
+        "40m": 7.0,
+        "30m": 10.0,
+        "20m": 14.0,
+        "17m": 18.0,
+        "15m": 21.0,
+        "12m": 24.0,
+        "10m": 28.0,
+        "6m": 50.0,
+        "4m": 70.0,
+        "2m": 144.0,
+    }
+
     def __init__(self, band: str) -> None:
         self.start, self.end = self.bands.get(band, (0.0, 1.0))
         self.name = band
+        self.altname = self.othername.get(band, 0.0)
 
 
 class Database:
@@ -201,6 +218,7 @@ class MainWindow(QtWidgets.QMainWindow):
     connected = False
     bandwidth = 0
     bandwidth_mark = []
+    worked_list = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -256,6 +274,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 globals()["PREF"] = loads(_file_descriptor.read())
         server = PREF.get("cluster_server", "dxc.nc7j.com")
         port = PREF.get("cluster_port", 7373)
+        logger.debug("%s", f"{server} {port}")
         self.socket.connectToHost(server, port)
         self.connectButton.setStyleSheet("color: white;")
         self.connectButton.setText("Connecting")
@@ -357,6 +376,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.udpsocket.writeDatagram(
                         packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                     )
+            if (
+                packet.get("cmd", "") == "WORKED"
+                and packet.get("station", "") == platform.node()
+            ):
+                self.worked_list = packet.get("worked", {})
 
     def spot_clicked(self):
         """dunno"""
@@ -537,13 +561,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 # if lookup:
                 #     for a in lookup.items():
                 #         entity = a[1].get("entity", "")
+                pen_color = QtGui.QColor(192, 192, 192)
+                if items.get("callsign") in self.worked_list:
+                    call_bandlist = self.worked_list.get(items.get("callsign"))
+                    if self.currentBand.altname in call_bandlist:
+                        pen_color = QtGui.QColor(192, 25, 25)
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
                 text_y = max(min_y + 5, freq_y)
                 self.lineitemlist.append(
                     self.bandmap_scene.addLine(
-                        22, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
+                        22, freq_y, 55, text_y, QtGui.QPen(pen_color)
                     )
                 )
                 text = self.bandmap_scene.addText(
@@ -562,7 +591,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 text.setProperty("freq", items.get("freq"))
                 text.setToolTip(items.get("comment"))
-
+                text.setDefaultTextColor(pen_color)
                 min_y = text_y + text.boundingRect().height() / 2
 
                 # textColor = Data::statusToColor(lower.value().status,
