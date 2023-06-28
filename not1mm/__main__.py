@@ -40,10 +40,16 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
-from not1mm.lib.ham_utility import (bearing, bearing_with_latlon,
-                                    calculate_wpx_prefix, distance,
-                                    distance_with_latlon, get_logged_band,
-                                    getband, reciprocol)
+from not1mm.lib.ham_utility import (
+    bearing,
+    bearing_with_latlon,
+    calculate_wpx_prefix,
+    distance,
+    distance_with_latlon,
+    get_logged_band,
+    getband,
+    reciprocol,
+)
 from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
@@ -1172,6 +1178,14 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
+
+        result = self.database.get_calls_and_bands()
+        cmd = {}
+        cmd["cmd"] = "WORKED"
+        cmd["station"] = platform.node()
+        cmd["worked"] = result
+        self.multicast_interface.send_as_json(cmd)
+
         # self.contact["ContestName"] = self.contest.name
         # self.contact["SNT"] = self.sent.text()
         # self.contact["RCV"] = self.receive.text()
@@ -1896,25 +1910,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clearinputs()
                 return
             if stripped_text == "TEST":
-                self.show_message_box(
-                    "[Esc]\tClears the input fields of any text.\n"
-                    "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
-                    "[PgUp]\tIncreases the cw sending speed.\n"
-                    "[PgDown]\tDecreases the cw sending speed.\n"
-                    "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
-                    "\tin the bandmap window (CAT Required).\n"
-                    "[Arrow-Down] Jump to the next spot below the current\n"
-                    "\tVFO cursor in the bandmap window (CAT Required).\n"
-                    "[TAB]\tMove cursor to the right one field.\n"
-                    "[Shift-Tab]\tMove cursor left One field.\n"
-                    "[SPACE]\tWhen in the callsign field, will move the input to the\n"
-                    "\tfirst field needed for the exchange.\n"
-                    "[Enter]\tSubmits the fields to the log.\n"
-                    "[F1-F12]\tSend (CW or Voice) macros.\n"
-                    "[CTRL-S]\tSpot Callsign to the cluster.\n"
-                    "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
-                    "\tentry field (CAT Required).\n"
-                )
+                result = self.database.get_calls_and_bands()
+                cmd = {}
+                cmd["cmd"] = "WORKED"
+                cmd["station"] = platform.node()
+                cmd["worked"] = result
+                self.multicast_interface.send_as_json(cmd)
                 self.clearinputs()
                 return
             if self.is_floatable(stripped_text):
