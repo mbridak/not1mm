@@ -11,9 +11,7 @@
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [Current state](#current-state)
-  - [Thanks to the Contributors](#thanks-to-the-contributors)
-    - [:moneybag: Monitarily](#moneybag-monitarily)
-    - [:cockroach: Bug reports and Feature suggestions](#cockroach-bug-reports-and-feature-suggestions)
+  - [Our Contributors ✨](#our-contributors-)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
   - [Installing from PyPi](#installing-from-pypi)
@@ -89,17 +87,13 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
-## Thanks to the Contributors
+## Our Contributors ✨
 
 I wish to thank those who've contributed to the project.
 
-### :moneybag: Monitarily
-
-Brian KB3ORR, Connor KD9LSV
-
-### :cockroach: Bug reports and Feature suggestions
-
-Simon G0FCU, Brian KB3ORR, Onno VK6FLAB, Martin OK1RR, rolnas
+<a href="https://github.com/mbridak/not1mm/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=mbridak/not1mm" />
+</a>
 
 ## List of should be working contests
 
@@ -353,12 +347,14 @@ After editing and saving the macro file. You can force the logger to reload the 
 
 You can include a limited set of substitution instructions.
 
-- {MYCALL} Sends the station call.
-- {HISCALL} Send what's in the callsign field.
-- {SNT} Sends 5nn (cw) or 599 (ssb)
-- {SENTNR} Sends whats in the SentNR field.
-- {EXCH} Sends what's in the Sent Exchange field when contest is defined.
-- '#' Sends serial number.
+|Macro|Substitution|
+|---|---|
+| {MYCALL} | Sends the station call. |
+| {HISCALL} | Send what's in the callsign field. |
+| {SNT} | Sends 5nn (cw) or 599 (ssb) |
+| {SENTNR} | Sends whats in the SentNR field. |
+| {EXCH} | Sends what's in the Sent Exchange field when contest is defined. |
+| '#' | Sends serial number. |
 
 ### Macro use with voice
 
@@ -394,19 +390,21 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 #### Keyboard commands
 
-- [Esc] Clears the input fields of any text.
-- [CTRL-Esc] Stops cwdaemon from sending Morse.
-- [PgUp] Increases the cw sending speed.
-- [PgDown] Decreases the cw sending speed.
-- [Arrow-Up] Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required).
-- [Arrow-Down] Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required).
-- [TAB] Move cursor to the right one field.
-- [Shift-Tab] Move cursor left One field.
-- [SPACE] When in the callsign field, will move the input to the first field needed for the exchange.
-- [Enter] Submits the fields to the log.
-- [F1-F12] Send (CW or Voice) macros.
-- [CTRL-S] Spot Callsign to the cluster.
-- [CTRL-G] Tune to a spot matching partial text in the callsign entry field (CAT Required).
+| Key | Result |
+| --- | --- |
+| [Esc] | Clears the input fields of any text. |
+| [CTRL-Esc] | Stops cwdaemon from sending Morse. |
+| [PgUp] | Increases the cw sending speed. |
+| [PgDown] | Decreases the cw sending speed. |
+| [Arrow-Up] | Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). |
+| [Arrow-Down] | Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required). |
+| [TAB] | Move cursor to the right one field. |
+| [Shift-Tab] | Move cursor left One field. |
+| [SPACE] | When in the callsign field, will move the input to the first field needed for the exchange. |
+| [Enter] | Submits the fields to the log. |
+| [F1-F12] | Send (CW or Voice) macros. |
+| [CTRL-S] | Spot Callsign to the cluster. |
+| [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 
 ### Log Display
 
