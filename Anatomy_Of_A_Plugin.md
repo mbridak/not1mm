@@ -18,9 +18,11 @@ This file will give a brief overview as to what methods/functions are in a plugi
 
 `next_field` holds the value of the field to jump to when the user presses the space bar while in the callsign field.
 
+`self.contact.get("Call", "")` holds the contacts callsign.
+
 ## Some interface background
 
-There are 5 text entry boxes on the main screen. These are paired with a text label above them. Each entry box and text label are held in a "field" container. The first field, we'll call field0 is always displayed. It contains the callsign entry. `field1` holds the RST sent. `field2` holds the RST received. `field3` and `field4` hold `other_1` and `other_2` The purpose of these varies with each contest.
+There are 5 text entry boxes on the main screen. These are paired with a text label above them. Each entry box and text label are held in a "field" container. The first field, we'll call `field0` is always displayed. It contains the callsign entry. `field1` holds the RST sent. `field2` holds the RST received. `field3` and `field4` hold `other_1` and `other_2` The purpose of these varies with each contest.
 
 ## The functions or methods
 
@@ -32,7 +34,7 @@ There are 5 text entry boxes on the main screen. These are paired with a text la
 
 `predupe()` is called once the user leaves the callsign entry field. The CWT plugin uses this to look in the DB for the callsign to see if it can prefill the contact Name and CWOp #/State/DX fields from previous CWT contacts.
 
-`prefill()` is called as the user enters text in the callsign field and there is enough characters to be a possible call. 
+`prefill()` is called as the user enters text in the callsign field and there is enough characters to be a possible call.
 
 `points()` returns the amount of points this current contact should be logged as. Often this can get complex as some contests base points on if a contact is in the same/different continent or country and the band/power the contacts occurred on.
 
