@@ -208,6 +208,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CANADA DAY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CQ WPX CW</string>
       </property>
      </item>
@@ -252,7 +257,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>16</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
