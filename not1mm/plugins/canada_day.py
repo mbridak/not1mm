@@ -76,8 +76,10 @@ def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
+    self.field3.show()
     self.field4.show()
+    label = self.field3.findChild(QtWidgets.QLabel)
+    label.setText("SentNR")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Prov/territory or SN")
 
@@ -93,10 +95,12 @@ def set_tab_next(self):
         self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+            QtWidgets.QLineEdit
+        ),
         self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
     }
 
@@ -112,7 +116,7 @@ def set_tab_prev(self):
         self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
     }
@@ -128,7 +132,7 @@ def set_contact_vars(self):
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    self.contact["SentNr"] = self.other_1.text()
     exchange = self.other_2.text().upper().split()
     if len(exchange) == 3:
         self.contact["Name"] = exchange[0]
@@ -145,7 +149,18 @@ def prefill(self):
     """Fill sentnr"""
     # if len(self.other_2.text()) == 0:
     #     self.other_2.setText(str(self.contact.get("ZN", "")))
-    self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
+
+    result = self.database.get_serial()
+    serial_nr = str(result.get("serial_nr", "1"))
+    if serial_nr == "None":
+        serial_nr = "1"
+
+    exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
+    field = self.field3.findChild(QtWidgets.QLineEdit)
+    if len(field.text()) == 0:
+        field.setText(exchange)
+
+    # self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
 def points(self):
