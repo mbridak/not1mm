@@ -133,12 +133,6 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
-    exchange = self.other_2.text().upper().split()
-    if len(exchange) == 3:
-        self.contact["Name"] = exchange[0]
-        self.contact["Comment"] = name
-    if validate(self) is False:
-        self.show_message_box("The exchange was invalid.")
 
 
 def predupe(self):
@@ -182,6 +176,11 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
+
+    sql = "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where typeof(NR) = 'text';"
+    result = self.database.exec_sql(sql)
+    if result:
+        return result.get("mult_count", 0)
     return 0
 
 
