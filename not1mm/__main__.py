@@ -1925,6 +1925,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band_indicator(band)
                 # self.contact["Band"] = get_logged_band(str(self.radio_state.get("vfoa", 0.0)))
                 self.radio_state["vfoa"] = vfo
+                self.radio_state["band"] = band
+                self.contact["Band"] = get_logged_band(str(vfo))
                 self.set_window_title()
                 self.clearinputs()
                 if self.rig_control:
