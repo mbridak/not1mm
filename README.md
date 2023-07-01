@@ -113,9 +113,11 @@ I wish to thank those who've contributed to the project.
 - CWOps CWT
 - Japan International DX CW
 - Japan International DX SSB
+- RAC Canada Day
 
 ## Recent Changes
 
+- [23-6-30] Added RAC Canada Day.
 - [23-6-28] bandmap now displays callsigns in red if they have been worked before.
 - [23-6-21] cty updater needs work changed to ondemand.
 - [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
