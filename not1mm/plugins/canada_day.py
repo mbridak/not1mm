@@ -202,11 +202,15 @@ def get_points(self):
 
 def calc_score(self):
     """Return calculated score"""
+    mults = show_mults(self)
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
         if score is None:
             score = "0"
+        if int(mults) > 0:
+            contest_points = int(score) * int(mults)
+            return contest_points
         contest_points = int(score)
         return contest_points
     return 0
