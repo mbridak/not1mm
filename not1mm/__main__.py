@@ -1796,18 +1796,17 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.callsign.setFocus()
                     self.callsign.activateWindow()
                     window.raise_()
-                    # fg = window.frameGeometry().topLeft
-                    # # _width = self.size().width()
-                    # # _height = self.size().height()
-                    # # _x = self.pos().x()
-                    # # _y = self.pos().y()
-                    # # print(f"**************************** x {_x} y {_y}")
-                    # # window.hide()
-                    # # window.show()
-                    # # window.setGeometry(0, 0, _width, _height)
-                    # window.show()
-                    # window.geometry().setX(100)
-                    # window.geometry().setY(100)
+
+                if (
+                    json_data.get("cmd", "") == "GETWORKEDLIST"
+                    and json_data.get("station", "") == platform.node()
+                ):
+                    result = self.database.get_calls_and_bands()
+                    cmd = {}
+                    cmd["cmd"] = "WORKED"
+                    cmd["station"] = platform.node()
+                    cmd["worked"] = result
+                    self.multicast_interface.send_as_json(cmd)
 
     def cw_macros_state_changed(self):
         """Menu item to show/hide macro buttons"""
