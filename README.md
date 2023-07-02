@@ -59,7 +59,7 @@
     - [Log Display](#log-display)
       - [Editing a contact](#editing-a-contact)
   - [Recalulate Mults](#recalulate-mults)
-    - [Bandmap](#bandmap)
+  - [Bandmap](#bandmap)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -434,15 +434,21 @@ You can not directly edit the multiplier status of a contact. Instead see the ne
 
 After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
 
-### Bandmap
+## Bandmap
 
 `Window`>`Bandmap`
 
 Put your callsign in the top and press the connect button.
 
-The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO. VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth. Clicked on spots now tune the radio and set the callsign field.
+The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
+
+VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth.
+
+![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
+
+Clicked on spots now tune the radio and set the callsign field. Previously worked calls are displayed in red.
 
 ## Cabrillo
 
