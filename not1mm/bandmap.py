@@ -565,7 +565,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:
-                        pen_color = QtGui.QColor(192, 25, 25)
+                        pen_color = QtGui.QColor(255, 47, 47)
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
