@@ -117,16 +117,9 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-6-30] Added RAC Canada Day.
-- [23-6-28] bandmap now displays callsigns in red if they have been worked before.
-- [23-6-21] cty updater needs work changed to ondemand.
-- [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
-- [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
-- [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
-- [23-6-15] Add `Help->HotKeys`.
-- [23-6-14] Added check to see if your Russ and want to operate a contest thats not defined.
-- [23-6-12] Add `File->Quit` because Russ can't click an 'x' to quit program.
-- [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
+- [23-7-2] bandmap now requests worked list at startup.
+
+See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Installing from PyPi
 
