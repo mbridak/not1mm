@@ -97,7 +97,7 @@ I wish to thank those who've contributed to the project.
 
 ## List of should be working contests
 
-- General Logging
+- General Logging (There are better general loggers like QLog, KLog, CQRLog)
 - 10 10 Fall CW
 - 10 10 Spring CW
 - 10 10 Summer Phone
