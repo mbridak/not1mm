@@ -104,6 +104,7 @@ I wish to thank those who've contributed to the project.
 - 10 10 Winter Phone
 - ARRL DX CW
 - ARRL DX SSB
+- ARRL Field Day
 - ARRL Sweepstakes CW
 - ARRL Sweepstakes SSB
 - CQ WPX CW
@@ -117,7 +118,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-7-2] bandmap now requests worked list at startup.
+- [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
