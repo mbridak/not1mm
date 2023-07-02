@@ -240,7 +240,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.socket.connected.connect(self.maybeconnected)
         self.socket.disconnected.connect(self.disconnected)
         self.socket.errorOccurred.connect(self.socket_error)
-        # self.socket.connectToHost("hamqth.com", 7300)
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
         self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
@@ -258,6 +257,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
         self.udpsocket.readyRead.connect(self.watch_udp)
+        self.request_workedlist()
 
     def connect(self):
         """doc"""
@@ -396,6 +396,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.udpsocket.writeDatagram(
                     packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                 )
+
+    def request_workedlist(self):
+        """Request worked call list from logger"""
+        cmd = {}
+        cmd["cmd"] = "GETWORKEDLIST"
+        cmd["station"] = platform.node()
+        packet = bytes(dumps(cmd), encoding="ascii")
+        self.udpsocket.writeDatagram(
+            packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
+        )
 
     def update_station_timer(self):
         """doc"""
@@ -557,10 +567,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if result:
             min_y = 0.0
             for items in result:
-                # lookup = cty_lookup(items.get("callsign"))
-                # if lookup:
-                #     for a in lookup.items():
-                #         entity = a[1].get("entity", "")
                 pen_color = QtGui.QColor(192, 192, 192)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
@@ -593,10 +599,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 text.setToolTip(items.get("comment"))
                 text.setDefaultTextColor(pen_color)
                 min_y = text_y + text.boundingRect().height() / 2
-
-                # textColor = Data::statusToColor(lower.value().status,
-                # qApp->palette().color(QPalette::Text));
-                # text->setDefaultTextColor(textColor);
                 self.textItemList.append(text)
 
     def determine_step_digits(self):
