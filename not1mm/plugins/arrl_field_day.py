@@ -19,23 +19,9 @@ columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
     "Exchange1",
-    "CK",
-    "Prec",
     "Sect",
-    "WPX",
-    "Power",
-    "M1",
-    "ZN",
-    "M2",
-    "PFX",
     "PTS",
-    "Name",
-    "Comment",
 ]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
@@ -175,7 +161,7 @@ def adif(self):
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
-                sentnr = self.contest_settings.get("SentExchange", "")
+                sentnr = self.contest_settings.get("SentExchange", "").upper()
                 rcvnr = f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
                 grid = contact.get("GridSquare", "")
                 comment = contact.get("ContestName", "")
@@ -398,7 +384,7 @@ def cabrillo(self):
                 print(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{self.contest_settings.get('SentExchange', '').ljust(9)}"
+                    f"{self.contest_settings.get('SentExchange', '').ljust(9).upper()}"
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('Exchange1', '')).ljust(3)} "
                     f"{str(contact.get('Sect', '')).ljust(6)}",
