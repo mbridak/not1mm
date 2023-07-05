@@ -11,23 +11,9 @@ columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
     "Exchange1",
-    "CK",
-    "Prec",
     "Sect",
-    "WPX",
-    "Power",
-    "M1",
-    "ZN",
-    "M2",
-    "PFX",
     "PTS",
-    "Name",
-    "Comment",
 ]
 dupe_type = 4
 
