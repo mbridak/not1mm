@@ -376,6 +376,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.udpsocket.writeDatagram(
                         packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                     )
+                continue
             if (
                 packet.get("cmd", "") == "WORKED"
                 and packet.get("station", "") == platform.node()
