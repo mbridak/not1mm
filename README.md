@@ -118,6 +118,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-7-5] Fix coredump in bandmap after CTRL-G.
 - [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
