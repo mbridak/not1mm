@@ -382,6 +382,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 and packet.get("station", "") == platform.node()
             ):
                 self.worked_list = packet.get("worked", {})
+                logger.debug("%s", f"{self.worked_list}")
 
     def spot_clicked(self):
         """dunno"""
