@@ -66,24 +66,25 @@ class MainWindow(QtWidgets.QMainWindow):
         0: "YYYY-MM-DD HH:MM:SS",
         1: "Call",
         2: "Freq",
-        3: "Snt",
-        4: "Rcv",
-        5: "SentNr",
-        6: "RcvNr",
-        7: "Exchange1",
-        8: "CK",
-        9: "Prec",
-        10: "Sect",
-        11: "WPX",
-        12: "Power",
-        13: "M1",
-        14: "ZN",
-        15: "M2",
-        16: "PFX",
-        17: "PTS",
-        18: "Name",
-        19: "Comment",
-        20: "UUID",
+        3: "Mode",
+        4: "Snt",
+        5: "Rcv",
+        6: "SentNr",
+        7: "RcvNr",
+        8: "Exchange1",
+        9: "CK",
+        10: "Prec",
+        11: "Sect",
+        12: "WPX",
+        13: "Power",
+        14: "M1",
+        15: "ZN",
+        16: "M2",
+        17: "PFX",
+        18: "PTS",
+        19: "Name",
+        20: "Comment",
+        21: "UUID",
     }
 
     def __init__(self, *args, **kwargs):
@@ -229,6 +230,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ).text(),
             "Call": self.generalLog.item(row, self.get_column("Call")).text().upper(),
             "Freq": self.generalLog.item(row, self.get_column("Freq")).text(),
+            "Mode": self.generalLog.item(row, self.get_column("Mode")).text(),
             "SNT": self.generalLog.item(row, self.get_column("Snt")).text(),
             "RCV": self.generalLog.item(row, self.get_column("Rcv")).text(),
             "SentNr": self.generalLog.item(row, self.get_column("SentNr")).text(),
@@ -485,6 +487,11 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.generalLog.setItem(
                 number_of_rows,
+                self.get_column("Mode"),
+                QtWidgets.QTableWidgetItem(str(log_item.get("Mode", ""))),
+            )
+            self.generalLog.setItem(
+                number_of_rows,
                 self.get_column("Snt"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("SNT", ""))),
             )
@@ -653,6 +660,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 number_of_rows,
                 self.get_column("Freq"),
                 QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
+            )
+            self.focusedLog.setItem(
+                number_of_rows,
+                self.get_column("Mode"),
+                QtWidgets.QTableWidgetItem(str(log_item.get("Mode", ""))),
             )
             self.focusedLog.setItem(
                 number_of_rows,
