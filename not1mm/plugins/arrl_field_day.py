@@ -102,7 +102,7 @@ def prefill(self):
 def points(self):
     """Calc point"""
     _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB":
+    if _mode in "SSB, USB, LSB, FM, AM":
         return 1
     if _mode in "CW, RTTY":
         return 2
