@@ -2,8 +2,9 @@
 
 [![PyPI](https://img.shields.io/pypi/v/not1mm)](https://pypi.org/project/not1mm/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python: 3.10+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
+[![Code Maturity:Snot Nosed](https://img.shields.io/badge/Code%20Maturity-Snot%20Nosed-red)](https://xkcd.com/1695/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/not1mm)](https://pypi.org/project/not1mm/)
 
 ![logo](https://github.com/mbridak/not1mm/raw/master/not1mm/data/k6gte.not1mm.svg)
@@ -118,6 +119,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap.
 - [23-7-5] Fix coredump in bandmap after CTRL-G.
 - [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
 
@@ -199,7 +201,7 @@ I believe I figured out dark mode in Ubuntu and have it working on my shack PC t
 
 ## Wayland Compositor
 
-One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I'm aware of this, but i can not change it.
+One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I'm aware of this, but I can not change it.
 
 ## Running from source
 
@@ -388,7 +390,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 #### Keyboard commands
 
 | Key | Result |
-| --- | --- |
+| -------------- | --- |
 | [Esc] | Clears the input fields of any text. |
 | [CTRL-Esc] | Stops cwdaemon from sending Morse. |
 | [PgUp] | Increases the cw sending speed. |
