@@ -222,6 +222,7 @@ class MainWindow(QtWidgets.QMainWindow):
     multicast_port = None
     interface_ip = None
     rig_control = None
+    worked_list = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -547,6 +548,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         logger.debug("Selected contest: %s", f"{contest}")
         self.load_contest()
+        self.worked_list = self.database.get_calls_and_bands()
+        self.send_worked_list()
 
     def refill_dropdown(self, target, source):
         """Refill QCombobox widget with value."""
@@ -1054,6 +1057,15 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.setWindowTitle(line)
 
+    def send_worked_list(self) -> None:
+        """Send message containing worked contacts and bands"""
+        cmd = {}
+        cmd["cmd"] = "WORKED"
+        cmd["station"] = platform.node()
+        cmd["worked"] = self.worked_list
+        logger.debug("%s", f"{cmd}")
+        self.multicast_interface.send_as_json(cmd)
+
     def clearinputs(self):
         """Clears the text input fields and sets focus to callsign field."""
         self.dupe_indicator.hide()
@@ -1173,17 +1185,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        self.worked_list = self.database.get_calls_and_bands()
+        self.send_worked_list()
         self.clearinputs()
+
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
-
-        result = self.database.get_calls_and_bands()
-        cmd = {}
-        cmd["cmd"] = "WORKED"
-        cmd["station"] = platform.node()
-        cmd["worked"] = result
         self.multicast_interface.send_as_json(cmd)
 
         # self.contact["ContestName"] = self.contest.name
