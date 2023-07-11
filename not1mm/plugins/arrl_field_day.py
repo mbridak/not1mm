@@ -19,6 +19,7 @@ columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
+    "Mode",
     "Exchange1",
     "Sect",
     "PTS",
