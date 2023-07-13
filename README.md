@@ -113,12 +113,14 @@ I wish to thank those who've contributed to the project.
 - CQ World Wide CW
 - CQ World Wide SSB
 - CWOps CWT
+- IARU HF
 - Japan International DX CW
 - Japan International DX SSB
 - RAC Canada Day
 
 ## Recent Changes
 
+- [23-7-13] Add IARU HF contest.
 - [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap. Add FM and AM to Field Day, since I guess it's still a thing.
 - [23-7-5] Fix coredump in bandmap after CTRL-G.
 - [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
