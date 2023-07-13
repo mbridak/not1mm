@@ -517,7 +517,7 @@ class DataBase:
 
     def fetch_zn_band_count(self) -> dict:
         """
-        returns dict with count of unique NR.
+        returns dict with count of unique ZN and Band.
         {nr_count: count}
         """
         try:
@@ -526,6 +526,23 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(DISTINCT(ZN || ':' || Band)) as zb_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_zn_band_mode_count(self) -> dict:
+        """
+        returns dict with count of unique ZN, Band and Mode.
+        {nr_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(ZN || ':' || Band || ':' || Mode)) as zbm_count from dxlog where ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
