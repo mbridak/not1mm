@@ -238,6 +238,11 @@
      </item>
      <item>
       <property name="text">
+       <string>IARU HF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>JIDX CW</string>
       </property>
      </item>
@@ -257,7 +262,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>8</hour>
+       <hour>16</hour>
        <minute>0</minute>
        <second>0</second>
       </time>

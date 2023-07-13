@@ -1992,6 +1992,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 self.contact["CountryPrefix"] = primary_pfx
                 self.contact["ZN"] = int(cq)
+                if self.contest:
+                    if self.contest.name == "IARU HF":
+                        self.contact["ZN"] = int(itu)
                 self.contact["Continent"] = continent
                 self.dx_entity.setText(
                     f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
