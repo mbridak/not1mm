@@ -2,6 +2,7 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable
 import logging
+from decimal import Decimal
 from pathlib import Path
 
 from PyQt5 import QtWidgets
@@ -151,7 +152,7 @@ def adif(self):
                 the_date_and_time = contact.get("TS")
                 # band = contact.get("Band")
                 themode = contact.get("Mode")
-                frequency = str(contact.get("Freq", 0) / 1000)
+                frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
                 sentnr = str(contact.get("SentNr", "0"))
