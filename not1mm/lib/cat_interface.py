@@ -7,6 +7,8 @@ GPL V3
 import logging
 import socket
 import xmlrpc.client
+import Hamlib
+import ham_utility
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -17,14 +19,14 @@ logger = logging.getLogger("__main__")
 class CAT:
     """CAT control rigctld or flrig"""
 
-    def __init__(self, interface: str, host: str, port: int) -> None:
+    def __init__(self, interface: str, host: str, port: int, hamlib_configuration: dict) -> None:
         """
         Computer Aided Tranceiver abstraction class.
         Offers a normalized rigctld or flrig interface.
 
         Takes 3 inputs to setup the class.
 
-        A string defining the type of interface, either 'flrig' or 'rigctld'.
+        A string defining the type of interface, either 'flrig' or 'rigctld' or 'Hamlib'.
 
         A string defining the host, example: 'localhost' or '127.0.0.1'
 
@@ -55,7 +57,9 @@ class CAT:
         self.interface = interface.lower()
         self.host = host
         self.port = port
+        self.rig = None
         self.online = False
+        
         if self.interface == "flrig":
             target = f"http://{host}:{port}"
             logger.debug("%s", target)
@@ -69,6 +73,12 @@ class CAT:
                 self.online = False
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
+        if self.interface == 'hamlib':
+            self.rigpath = hamlib_configuration['hamlib_device']
+            self.baudrate = hamlib_configuration['hamlib_baud']
+            self.rigmodel = hamlib_configuration['hamlib_radio']
+            self.__initialize_hamlib()
+            
 
     def __initialize_rigctrld(self):
         try:
@@ -86,6 +96,21 @@ class CAT:
             self.online = False
             logger.debug("%s", f"{exception}")
 
+    def __initialize_hamlib(self):
+        try:
+            Hamlib.rig_set_debug(Hamlib.RIG_DEBUG_NONE)
+            rig = Hamlib.Rig(
+                Hamlib.__dict__[self.hamlib_configuration['rig_model']]
+            )  # Look up the model's numerical index in Hamlib's symbol dictionary.
+            rig.set_conf("rig_pathname", self.hamlib_configuration['rig_pathname'])
+            rig.open()
+            self.online = True
+        except:
+            self.online = False
+            logging.error(
+                "Could not open a communication channel to the rig via Hamlib!"
+            )
+    
     def reinit(self):
         """reinitialise rigctl"""
         if self.interface == "rigctld":
@@ -93,14 +118,16 @@ class CAT:
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
-        vfo = ""
         if self.interface == "flrig":
-            vfo = self.__getvfo_flrig()
+            return self.__getvfo_flrig()
         if self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
             if "RPRT -" in vfo:
-                vfo = ""
-        return vfo
+                return ""
+            else:
+                return vfo
+        if self.interface == "hamlib":
+            return self.__getfreq_hamlib()
 
     def __getvfo_flrig(self) -> str:
         """Poll the radio using flrig"""
@@ -131,6 +158,18 @@ class CAT:
         self.__initialize_rigctrld()
         return ""
 
+    def __getfreq_hamlib(self) -> str:
+        """Returns VFO freq returned from hamlib"""
+        try:
+            self.online = True
+            frequency = self.rig.get_freq()/1.0e6  # Converting to MHz here.
+            return ("",f"{frequency:.6f}")
+        except:
+            self.online = False
+            logger.debug("Failed to get vfo frequency. Hamlib failed.")
+        return ""
+
+
     def get_mode(self) -> str:
         """Returns the current mode filter width of the radio"""
         mode = ""
@@ -138,6 +177,8 @@ class CAT:
             mode = self.__getmode_flrig()
         if self.interface == "rigctld":
             mode = self.__getmode_rigctld()
+        if self.interface == "hamlib":
+            mode = self.__getmode_hamlib()
         return mode
 
     def __getmode_flrig(self) -> str:
@@ -173,12 +214,25 @@ class CAT:
         self.__initialize_rigctrld()
         return ""
 
+    def __getmode_hamlib(self) -> str:
+        """Returns mode via hamlib"""
+        try:
+            self.online = True
+            (mode, width) = self.rig.get_mode()
+            return Hamlib.rig_strrmode(mode).upper()
+        except:
+            self.online = False
+            logger.debug("Failed to get rig mode. Hamlib failed.")
+        return ""
+    
     def get_bw(self):
         """Get current vfo bandwidth"""
         if self.interface == "flrig":
             return self.__getbw_flrig()
         if self.interface == "rigctld":
             return self.__getbw_rigctld()
+        if self.interface == "hamlib":
+            return self.__getbw_hamlib()
         return False
 
     def __getbw_flrig(self):
@@ -216,12 +270,24 @@ class CAT:
         self.__initialize_rigctrld()
         return ""
 
+    def __getbw_hamlib(self):
+        """ return bandwith"""
+        try:
+            self.online = True
+            (mode, width) = self.rig.get_mode()
+            return width
+        except:
+            self.online = False
+            logger.debug("Failed to get bandwith. Hamlib failed.")
+
     def get_power(self):
         """Get power level from rig"""
         if self.interface == "flrig":
             return self.__getpower_flrig()
         if self.interface == "rigctld":
             return self.__getpower_rigctld()
+        if self.interface == "hamlib":
+            return self.__getpower_hamlib()
         return False
 
     def __getpower_flrig(self):
@@ -249,12 +315,24 @@ class CAT:
                 self.rigctrlsocket = None
             return ""
 
+    def __getpower_hamlib(self):
+        try:
+            self.online = True
+            power = self.rig.get_level_f(Hamlib.RIG_LEVEL_RFPOWER) * 100
+            return ("", f"{power:.1f}")
+        except:
+            self.online = False
+            logger.debug("Failed to get RF power level from rig. Hamlib failed.")
+        return ""
+
     def get_ptt(self):
         """Get PTT state"""
         if self.interface == "flrig":
             return self.__getptt_flrig()
         if self.interface == "rigctld":
             return self.__getptt_rigctld()
+        if self.interface == "hamlib":
+            return self.__getptt_hamlib()
         return False
 
     def __getptt_flrig(self):
@@ -286,12 +364,24 @@ class CAT:
                 self.rigctrlsocket = None
         return "0"
 
+    def __getptt_hamlib(self):
+        """ Get PTT status from rig 
+        """
+        try:
+            self.online = True
+            return self.rig.get_ptt(Hamlib.RIG_VFO_CURR)
+        except:
+            self.online = False
+            logger.debug("Failed to get PTT state. Hamlib failed.")
+
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
         if self.interface == "flrig":
             return self.__setvfo_flrig(freq)
         if self.interface == "rigctld":
             return self.__setvfo_rigctld(freq)
+        if self.interface == "hamlib":
+            return self.__setvfo_hamlib(freq)
         return False
 
     def __setvfo_flrig(self, freq: str) -> bool:
@@ -323,12 +413,23 @@ class CAT:
         self.__initialize_rigctrld()
         return False
 
+    def __setvfo_hamlib(self, freq: str) -> bool:
+        """sets the radio vfo frequency"""
+        try:
+            self.online = True
+            self.rig.set_freq(Hamlib.RIG_VFO_CURR, freq)
+        except:
+            self.online = False
+            logger.debug("Failed to set VFO frequency. Hamlib failed.")
+
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
         if self.interface == "flrig":
             return self.__setmode_flrig(mode)
         if self.interface == "rigctld":
             return self.__setmode_rigctld(mode)
+        if self.interface == "hamlib":
+            return self.__setmode_hamlib(mode)
         return False
 
     def __setmode_flrig(self, mode: str) -> bool:
@@ -360,12 +461,23 @@ class CAT:
         self.__initialize_rigctrld()
         return False
 
+    def __setmode_hamlib(self, mode: str) -> bool:
+        """sets the radios mode"""
+        try:
+            self.online = True
+            self.rig.set_mode(ham_utility.map_mode(mode))
+        except:
+            self.online = False
+            logger.debug("Failed to set VFO mode. Hamlib failed.")
+
     def set_power(self, power):
         """Sets the radios power"""
         if self.interface == "flrig":
             return self.__setpower_flrig(power)
         if self.interface == "rigctld":
             return self.__setpower_rigctld(power)
+        if self.interface == "hamlib":
+            return self.__setpower_hamlib(power)
         return False
 
     def __setpower_flrig(self, power):
@@ -392,12 +504,19 @@ class CAT:
                 self.online = False
                 self.rigctrlsocket = None
 
+    def __setpower_hamlib(self, power) -> bool:
+        """sets the radios rf power"""
+        logger.debug("Not supported operation.")
+        return False
+
     def ptt_on(self):
         """turn ptt on/off"""
         if self.interface == "flrig":
             return self.__ptt_on_flrig()
         if self.interface == "rigctld":
             return self.__ptt_on_rigctld()
+        if self.interface == "hamlib":
+            return self.__ptt_on_hamlib()
         return False
 
     def __ptt_on_rigctld(self):
@@ -434,12 +553,22 @@ class CAT:
             logger.debug("%s", f"{exception}")
         return "0"
 
+    def __ptt_on_hamlib(self):
+        try:
+            self.online = True
+            self.rig.set_ptt(Hamlib.RIG_VFO_CURR, 1)
+        except:
+            self.online = False
+            logger.debug("Failed to set ptt on. Hamlib failed.")
+
     def ptt_off(self):
         """turn ptt on/off"""
         if self.interface == "flrig":
             return self.__ptt_off_flrig()
         if self.interface == "rigctld":
             return self.__ptt_off_rigctld()
+        if self.interface == "hamlib":
+            return self.__ptt_off_hamlib()
         return False
 
     def __ptt_off_rigctld(self):
@@ -466,3 +595,11 @@ class CAT:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
+
+    def __ptt_off_hamlib(self):
+        try:
+            self.online = True
+            self.rig.set_ptt(Hamlib.RIG_VFO_CURR, 0)
+        except:
+            self.online = False
+            logger.debug("Failed to set ptt off. Hamlib failed.")

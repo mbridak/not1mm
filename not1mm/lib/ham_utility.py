@@ -289,3 +289,28 @@ def distance_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
     logger.debug("lat1:%d lon1:%d lat2:%d lon2:%d", lat1, lon1, lat2, lon2)
     # lat2, lon2 = gridtolatlon(grid2)
     return round(haversine(lon1, lat1, lon2, lat2))
+
+def map_mode(mode: str) -> str:
+    """
+    Maps mode as FM, SSB etc to Hamlib.RIG_MODE_*
+    Limited to few most popular modes listed in Hamlib
+    """
+
+    if "SSB" in mode.toUpper():
+        return "Hamlib.RIG_MODE_SSB"
+    if "CW" in mode.toUpper():
+        return "Hamlib.RIG_MODE_CW"
+    if "AM" in mode.toUpper():
+        return "Hamlib.RIG_MODE_AM"
+    if "USB" in mode.toUpper():
+        return "Hamlib.RIG_MODE_USB"
+    if "LSB" in mode.toUpper():
+        return "Hamlib.RIG_MODE_LSB"
+    if "RTTY" in mode.toUpper():
+        return "Hamlib.RIG_MODE_RTTY"
+    if "FM" in mode.toUpper():
+        return "Hamlib.RIG_MODE_FM"
+    if "PSK" in mode.toUpper():
+        return "Hamlib.RIG_MODE_PSK"
+    else:
+        return "Hamlib.RIG_MODE_NONE"
