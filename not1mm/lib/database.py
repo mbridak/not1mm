@@ -704,6 +704,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_sect_band_exists(self, sect, band) -> dict:
+        """returns a dict key of sect_count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as sect_count from dxlog where Sect = '{sect}' and Band = '{band}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_sect_exists(self, sect) -> dict:
         """returns a dict key of sect_count"""
         try:
@@ -726,6 +740,41 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(*) as sect_count from dxlog where  TS < '{time_stamp}' and Sect = '{sec}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_section_band_count(self) -> dict:
+        """
+        returns dict with count of unique Section/Band.
+        {sb_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(Sect || ':' || Band)) as sb_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_section_band_count_nodx(self) -> dict:
+        """
+        returns dict with count of unique Section/Band.
+        {sb_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    "select count(DISTINCT(Sect || ':' || Band)) as sb_count from dxlog "
+                    f"where ContestNR = {self.current_contest} and Sect != 'DX';"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
