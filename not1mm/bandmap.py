@@ -305,7 +305,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rx_freq = float(packet.get("vfoa")) / 1000000
                     self.tx_freq = self.rx_freq
                     self.center_on_rxfreq()
-                self.bandwidth = int(packet.get("bw", "0"))
+                bw_returned = packet.get("bw", "0")
+                if not bw_returned.isdigit():
+                    bw_returned = "0"
+                self.bandwidth = int(bw_returned)
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
                 continue
