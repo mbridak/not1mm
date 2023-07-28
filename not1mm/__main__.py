@@ -274,6 +274,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sent.returnPressed.connect(self.save_contact)
         self.receive.returnPressed.connect(self.save_contact)
         self.other_1.returnPressed.connect(self.save_contact)
+        self.other_1.textEdited.connect(self.other_1_changed)
         self.other_2.returnPressed.connect(self.save_contact)
         self.other_2.textEdited.connect(self.other_2_changed)
 
@@ -1854,11 +1855,42 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
+    def other_1_changed(self):
+        """Called when... you know."""
+        if self.contest:
+            if hasattr(self.contest, "advance_on_space"):
+                if self.contest.advance_on_space[3]:
+                    text = self.other_1.text()
+                    text = text.upper()
+                    # position = self.other_1.cursorPosition()
+                    stripped_text = text.strip().replace(" ", "")
+                    self.other_1.setText(stripped_text)
+                    # self.other_1.setCursorPosition(position)
+                    if " " in text:
+                        next_tab = self.tab_next.get(self.other_1)
+                        next_tab.setFocus()
+                        next_tab.deselect()
+                        next_tab.end(False)
+
     def other_2_changed(self):
         """Called when we need to parse SS exchange."""
         if self.contest:
             if "ARRL Sweepstakes" in self.contest.name:
                 self.contest.parse_exchange(self)
+                return
+            if hasattr(self.contest, "advance_on_space"):
+                if self.contest.advance_on_space[3]:
+                    text = self.other_2.text()
+                    text = text.upper()
+                    # position = self.other_2.cursorPosition()
+                    stripped_text = text.strip().replace(" ", "")
+                    self.other_2.setText(stripped_text)
+                    # self.other_2.setCursorPosition(position)
+                    if " " in text:
+                        next_tab = self.tab_next.get(self.other_2)
+                        next_tab.setFocus()
+                        next_tab.deselect()
+                        next_tab.end(False)
 
     def callsign_changed(self):
         """Called when text in the callsign field has changed"""
