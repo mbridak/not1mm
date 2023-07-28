@@ -12,7 +12,7 @@
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
   - [Current state](#current-state)
-  - [Our Contributors ✨](#our-contributors-)
+  - [Our Code Contributors ✨](#our-code-contributors-)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
   - [Installing from PyPi](#installing-from-pypi)
@@ -88,7 +88,7 @@ The current state is "**BETA**". I've used it for A few contests, and was able t
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
-## Our Contributors ✨
+## Our Code Contributors ✨
 
 I wish to thank those who've contributed to the project.
 
