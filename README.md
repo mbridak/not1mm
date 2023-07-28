@@ -120,6 +120,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-7-27] Check if bandwidth returned is not a number.
 - [23-7-13] Add IARU HF contest.
 - [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap. Add FM and AM to Field Day, since I guess it's still a thing.
 - [23-7-5] Fix coredump in bandmap after CTRL-G.
