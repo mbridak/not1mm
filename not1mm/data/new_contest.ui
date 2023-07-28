@@ -253,6 +253,16 @@
      </item>
      <item>
       <property name="text">
+       <string>NAQP CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NAQP SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>Winter Field Day</string>
       </property>
      </item>
@@ -262,7 +272,7 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit">
      <property name="time">
       <time>
-       <hour>16</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
