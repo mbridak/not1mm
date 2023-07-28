@@ -800,6 +800,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def recalculate_mults(self):
         """Recalculate Multipliers"""
         self.contest.recalculate_mults(self)
+        self.clearinputs()
 
     def launch_log_window(self):
         """launch the Log Window"""
