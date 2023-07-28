@@ -116,10 +116,13 @@ I wish to thank those who've contributed to the project.
 - IARU HF
 - Japan International DX CW
 - Japan International DX SSB
+- NAQP CW
+- NAQP SSB
 - RAC Canada Day
 
 ## Recent Changes
 
+- [23-7-28] Added NAQP SSB and CW. Added optional move to next field with spacebar.
 - [23-7-27] Check if bandwidth returned is not a number.
 - [23-7-13] Add IARU HF contest.
 - [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap. Add FM and AM to Field Day, since I guess it's still a thing.
