@@ -122,6 +122,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-7-29] Add YOUTH and YL overlay categories.
 - [23-7-28] Added NAQP SSB and CW. Added optional move to next field with spacebar.
 - [23-7-27] Check if bandwidth returned is not a number.
 - [23-7-13] Add IARU HF contest.
