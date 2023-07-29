@@ -15,6 +15,9 @@ columns = [
     "Sect",
     "PTS",
 ]
+
+advance_on_space = [True, True, True, True, True]
+
 dupe_type = 4
 
 
