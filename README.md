@@ -161,8 +161,6 @@ pipx install not1mm
 pipx ensurepath
 ```
 
-Open a new terminal and type `not1mm`
-
 #### Fedora 38
 
 ```bash
@@ -170,6 +168,9 @@ sudo dnf upgrade --refresh
 sudo dnf install python3-pip portaudio
 pip install not1mm
 ```
+
+You can now open a new terminal and type `not1mm`. On it's first run, it may or may not install a lovely non AI generated
+icon, which you can later click on to launch the application.
 
 ### You may or may not get a warning message like
 
