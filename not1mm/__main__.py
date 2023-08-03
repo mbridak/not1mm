@@ -3,6 +3,7 @@
 NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
+# pylint: disable=logging-fstring-interpolation
 
 import datetime as dt
 import importlib
@@ -54,6 +55,7 @@ from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
+from not1mm.lib.super_check_partial import SCP
 from not1mm.lib.select_contest import SelectContest
 from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
@@ -76,8 +78,6 @@ from not1mm.lib.versiontest import VersionTest
 
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
-
-MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 
 DATA_PATH = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
 DATA_PATH += "/not1mm"
@@ -232,6 +232,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
+        self.mscp = SCP(WORKING_PATH)
         self.next_field = self.other_2
         self.dupe_indicator.hide()
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
@@ -421,17 +422,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.about_dialog.open()
 
     def update_masterscp(self) -> None:
-        """Update the MASTER.SCP file.
-        - Returns True if successful
-        - Otherwise False
-        """
-        with requests.Session() as session:
-            the_request = session.get(MASTER_SCP_URL)
-            if the_request.status_code == 200:
-                with open(WORKING_PATH + "/data/MASTER.SCP", "wb+") as file:
-                    file.write(the_request.content)
-                self.show_message_box("MASTER.SCP file updated.")
-                return
+        """Update the MASTER.SCP file."""
+        if self.mscp.update_masterscp():
+            self.show_message_box("MASTER.SCP file updated.")
+            return
         self.show_message_box("MASTER.SCP could not be updated.")
 
     def edit_configuration_settings(self):
@@ -1901,6 +1895,8 @@ class MainWindow(QtWidgets.QMainWindow):
         stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
+        results = self.mscp.super_check(stripped_text)
+        logger.debug(f"{results}")
 
         if " " in text:
             if stripped_text == "CW":
