@@ -17,7 +17,6 @@ import socket
 import subprocess
 import sys
 import threading
-import time
 import uuid
 from datetime import datetime
 from json import JSONDecodeError, dumps, loads
@@ -26,7 +25,6 @@ from shutil import copyfile
 
 import notctyparser
 import psutil
-import requests
 import sounddevice as sd
 import soundfile as sf
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
