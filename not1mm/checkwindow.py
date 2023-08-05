@@ -67,6 +67,9 @@ class MainWindow(QMainWindow):
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
+        self.logList.hide()
+        self.telnetList.hide()
+        self.callhistoryList.hide()
         self.mscp = SCP(WORKING_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -126,7 +129,10 @@ class MainWindow(QMainWindow):
 
     def clear_lists(self) -> None:
         """Clear match lists"""
+        self.logList.clear()
         self.masterList.clear()
+        self.telnetList.clear()
+        self.callhistoryList.clear()
 
     def master_list(self, call: str) -> None:
         """Get MASTER.SCP matches to call"""
