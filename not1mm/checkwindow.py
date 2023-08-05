@@ -116,14 +116,17 @@ class MainWindow(QMainWindow):
             if json_data.get("station", "") != platform.node():
                 continue
             if json_data.get("cmd", "") == "UPDATELOG":
-                logger.debug("External refresh command.")
-                self.get_log()
+                self.clear_lists()
             if json_data.get("cmd", "") == "CALLCHANGED":
                 call = json_data.get("call", "")
                 self.master_list(call)
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
+
+    def clear_lists(self) -> None:
+        """Clear match lists"""
+        self.masterList.clear()
 
     def master_list(self, call: str) -> None:
         """Get MASTER.SCP matches to call"""
