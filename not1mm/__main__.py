@@ -383,6 +383,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def quit_app(self):
         """doc"""
+        cmd = {}
+        cmd["cmd"] = "HALT"
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
         app.quit()
 
     @staticmethod
