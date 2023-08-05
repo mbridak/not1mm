@@ -831,6 +831,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Write window size and position to config file
         """
+        cmd = {}
+        cmd["cmd"] = "HALT"
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
         self.pref["window_width"] = self.size().width()
         self.pref["window_height"] = self.size().height()
         self.pref["window_x"] = self.pos().x()
