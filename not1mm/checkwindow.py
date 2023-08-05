@@ -82,6 +82,10 @@ class MainWindow(QMainWindow):
         self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
         self.udpsocket.readyRead.connect(self.watch_udp)
 
+    def quit_app(self):
+        """doc"""
+        app.quit()
+
     def load_pref(self):
         """Load preference file to get current db filename."""
         try:
@@ -126,6 +130,8 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
+            if json_data.get("cmd", "") == "HALT":
+                self.quit_app()
 
     def clear_lists(self) -> None:
         """Clear match lists"""

@@ -259,6 +259,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udpsocket.readyRead.connect(self.watch_udp)
         self.request_workedlist()
 
+    def quit_app(self):
+        """doc"""
+        app.quit()
+
     def connect(self):
         """doc"""
         if self.connected is True:
@@ -386,6 +390,12 @@ class MainWindow(QtWidgets.QMainWindow):
             ):
                 self.worked_list = packet.get("worked", {})
                 logger.debug("%s", f"{self.worked_list}")
+                continue
+            if (
+                packet.get("cmd", "") == "HALT"
+                and packet.get("station", "") == platform.node()
+            ):
+                self.quit_app()
 
     def spot_clicked(self):
         """dunno"""
