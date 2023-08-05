@@ -11,10 +11,7 @@ import os
 import pkgutil
 import platform
 import queue
-import socket
 import sys
-import time
-import threading
 
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path

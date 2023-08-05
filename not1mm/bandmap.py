@@ -19,11 +19,9 @@ import platform
 import sys
 import sqlite3
 
-from PyQt5 import QtCore, QtGui, Qt
+from PyQt5 import QtCore, QtGui
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
-
-from not1mm.lib.multicast import Multicast
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
