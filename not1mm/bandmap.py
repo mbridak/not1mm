@@ -19,11 +19,9 @@ import platform
 import sys
 import sqlite3
 
-from PyQt5 import QtCore, QtGui, Qt
+from PyQt5 import QtCore, QtGui
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
-
-from not1mm.lib.multicast import Multicast
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
@@ -259,6 +257,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udpsocket.readyRead.connect(self.watch_udp)
         self.request_workedlist()
 
+    def quit_app(self):
+        """doc"""
+        app.quit()
+
     def connect(self):
         """doc"""
         if self.connected is True:
@@ -386,6 +388,12 @@ class MainWindow(QtWidgets.QMainWindow):
             ):
                 self.worked_list = packet.get("worked", {})
                 logger.debug("%s", f"{self.worked_list}")
+                continue
+            if (
+                packet.get("cmd", "") == "HALT"
+                and packet.get("station", "") == platform.node()
+            ):
+                self.quit_app()
 
     def spot_clicked(self):
         """dunno"""

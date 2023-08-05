@@ -11,10 +11,7 @@ import os
 import pkgutil
 import platform
 import queue
-import socket
 import sys
-import time
-import threading
 
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
@@ -163,6 +160,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udpsocket.writeDatagram(
             packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
         )
+
+    def quit_app(self):
+        """doc"""
+        app.quit()
 
     def get_column(self, name: str) -> int:
         """returns the column number of the given column name."""
@@ -625,6 +626,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 for column in columns_to_show:
                     self.generalLog.setColumnHidden(self.get_column(column), False)
                     self.focusedLog.setColumnHidden(self.get_column(column), False)
+            if json_data.get("cmd", "") == "HALT":
+                self.quit_app()
 
     def show_like_calls(self, call):
         """Show like calls"""

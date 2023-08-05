@@ -1,5 +1,12 @@
 # Changelog
 
+- [23-7-29] Add YOUTH and YL overlay categories.
+- [23-7-28] Added NAQP SSB and CW. Added optional move to next field with spacebar.
+- [23-7-27] Check if bandwidth returned is not a number.
+- [23-7-13] Add IARU HF contest.
+- [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap. Add FM and AM to Field Day, since I guess it's still a thing.
+- [23-7-5] Fix coredump in bandmap after CTRL-G.
+- [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
 - [23-6-30] Added RAC Canada Day.
 - [23-6-28] bandmap now displays callsigns in red if they have been worked before.
 - [23-6-21] cty updater needs work changed to ondemand.
