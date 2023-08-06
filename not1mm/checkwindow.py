@@ -2,7 +2,7 @@
 """
 Check Window
 """
-# pylint: disable=no-name-in-module, unused-import, no-member
+# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name
 
 import logging
 import pkgutil
@@ -67,9 +67,11 @@ class MainWindow(QMainWindow):
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
-        self.logList.hide()
+        # self.logList.hide()
         self.telnetList.hide()
+        self.telnetListLabel.hide()
         self.callhistoryList.hide()
+        self.callhistoryListLabel.hide()
         self.mscp = SCP(WORKING_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -127,6 +129,7 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "CALLCHANGED":
                 call = json_data.get("call", "")
                 self.master_list(call)
+                self.log_list(call)
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
@@ -148,6 +151,16 @@ class MainWindow(QMainWindow):
             listItem = QListWidgetItem(item)
             self.masterList.addItem(listItem)
             self.masterList.show()
+
+    def log_list(self, call: str) -> None:
+        """Parse calls in log for matches"""
+        self.logList.clear()
+        if call:
+            result = self.database.get_like_calls_and_bands(call)
+            for calls in result:
+                listItem = QListWidgetItem(calls)
+                self.logList.addItem(listItem)
+                self.logList.show()
 
 
 def load_fonts_from_dir(directory: str) -> set:
