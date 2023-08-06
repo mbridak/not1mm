@@ -139,6 +139,8 @@ class MainWindow(QMainWindow):
                     self.old_pico = result
                     if self.rig_control:
                         self.rig_control.set_vfo(result)
+                        self.lcdNumber.display(result)
+                        app.processEvents()
         except OSError:
             ...
 
