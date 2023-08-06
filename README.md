@@ -61,6 +61,7 @@
       - [Editing a contact](#editing-a-contact)
   - [Recalulate Mults](#recalulate-mults)
   - [Bandmap](#bandmap)
+  - [Check Window](#check-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -122,6 +123,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-8-6] Add parsing of local log to check window.
 - [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
@@ -448,6 +450,14 @@ VFO indicator now displays as small triangle in the frequency tickmarks. A small
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
 Clicked on spots now tune the radio and set the callsign field. Previously worked calls are displayed in red.
+
+## Check Window
+
+`Window`>`Check Window`
+
+As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, or your local log. The MASTER.SCP column will show results for strings of 3 or more matching from the start of the call string. The local log column will show matches of any length appearing anywhere in the string.
+
+![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
 
 ## Cabrillo
 
