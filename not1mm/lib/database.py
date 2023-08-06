@@ -920,6 +920,43 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def get_like_calls_and_bands(self, call: str) -> dict:
+        """
+        Returns a dict like:
+        {'K5TUX': [14.0, 21.0], 'N2CQR': [14.0], 'NE4RD': [14.0]}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select call, band from DXLOG where call like '%{call}%' and ContestNR = {self.current_contest};"
+                )
+                result = cursor.fetchall()
+                worked_list = {}
+                # This converts a list of dicts like:
+                # [
+                #     {"Call": "K5TUX", "Band": 14.0},
+                #     {"Call": "K5TUX", "Band": 21.0},
+                #     {"Call": "N2CQR", "Band": 14.0},
+                #     {"Call": "NE4RD", "Band": 14.0},
+                # ]
+                #
+                # To:
+                # {'K5TUX': [14.0, 21.0], 'N2CQR': [14.0], 'NE4RD': [14.0]}
+                for worked_dict in result:
+                    call = worked_dict.get("Call")
+                    if call in worked_list:
+                        bandlist = worked_list[call]
+                        bandlist.append(worked_dict["Band"])
+                        worked_list[call] = bandlist
+                        continue
+                    worked_list[call] = [worked_dict["Band"]]
+                return worked_list
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def get_unique_band_and_mode(self) -> dict:
         """get count of unique band and mode as {mult: x}"""
         try:
