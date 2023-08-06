@@ -7,25 +7,23 @@ VFO Window
 # 115200 pico default speed
 
 import logging
-import pkgutil
-import platform
-import queue
+
+# import platform
+# import queue
 import os
+import pkgutil
 import sys
-import serial
-from serial.tools.list_ports import comports
-
-
-from json import JSONDecodeError, loads, dumps
+from json import loads
 from pathlib import Path
 
-from PyQt5 import uic, QtCore
+import serial
+from PyQt5 import QtCore, QtNetwork, uic
 from PyQt5.QtCore import QDir, Qt, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5 import QtNetwork
+from serial.tools.list_ports import comports
 
-from not1mm.lib.multicast import Multicast
 from not1mm.lib.cat_interface import CAT
+from not1mm.lib.multicast import Multicast
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
@@ -66,7 +64,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("VFO Window")
         self.lcdNumber.display(0)
         self.pico = serial.Serial("/dev/ttyACM0", 115200)
-        self.pico.timeout = 0
+        self.pico.timeout = 1
         self.pico.close()
         self.pico.open()
         self.timer = QTimer()
@@ -114,28 +112,29 @@ class MainWindow(QMainWindow):
                 self.rig_control.reinit()
             if self.rig_control.online:
                 vfo = self.rig_control.get_vfo()
+                try:
+                    vfo = int(vfo)
+                except ValueError:
+                    return
                 if vfo != self.old_vfo:
                     self.old_vfo = vfo
+                    logger.debug(f"{vfo}")
                     self.lcdNumber.display(vfo)
                     cmd = f"F {vfo}\r"
                     self.pico.write(cmd.encode())
 
     def getwaiting(self):
         """
-        Checks to see the keyer has data to send to us.
-        Could be a status change.
-        Could be the user has twisted that turney bit thingy with the knob on it.
-        It could also be an echo of the last character it has sent or is sending.
+        get freq
         """
         try:
             self.pico.write(b"f\r")
             while self.pico.in_waiting:
                 result = self.pico.read(self.pico.in_waiting)
-                print(result.decode().strip())
                 if self.rig_control:
                     self.rig_control.set_vfo(result.decode().strip())
-        except OSError as err:
-            print(f"{err}")
+        except OSError:
+            ...
 
 
 def main():
