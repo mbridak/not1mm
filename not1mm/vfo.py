@@ -2,7 +2,7 @@
 """
 VFO Window
 """
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name
+# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation
 
 # 115200 pico default speed
 
@@ -54,10 +54,13 @@ class MainWindow(QMainWindow):
 
     pref = {}
     old_vfo = ""
+    old_pico = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.rig_control = None
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
         data_path = WORKING_PATH + "/data/vfo.ui"
         uic.loadUi(data_path, self)
@@ -67,9 +70,6 @@ class MainWindow(QMainWindow):
         self.pico.timeout = 1
         self.pico.close()
         self.pico.open()
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.getwaiting)
-        self.timer.start(100)
 
     def load_pref(self):
         """Load preference file"""
@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
+            self.timer.start(100)
         if self.pref.get("userigctld", False):
             logger.debug(
                 "Using rigctld: %s",
@@ -104,6 +105,7 @@ class MainWindow(QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
+            self.timer.start(100)
 
     def poll_radio(self):
         """Poll radio"""
@@ -120,6 +122,7 @@ class MainWindow(QMainWindow):
                     self.old_vfo = vfo
                     logger.debug(f"{vfo}")
                     self.lcdNumber.display(vfo)
+                    app.processEvents()
                     cmd = f"F {vfo}\r"
                     self.pico.write(cmd.encode())
 
@@ -131,8 +134,11 @@ class MainWindow(QMainWindow):
             self.pico.write(b"f\r")
             while self.pico.in_waiting:
                 result = self.pico.read(self.pico.in_waiting)
-                if self.rig_control:
-                    self.rig_control.set_vfo(result.decode().strip())
+                result = result.decode().strip()
+                if self.old_pico != result:
+                    self.old_pico = result
+                    if self.rig_control:
+                        self.rig_control.set_vfo(result)
         except OSError:
             ...
 
