@@ -1057,7 +1057,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """Set window title"""
         vfoa = self.radio_state.get("vfoa", "")
         if vfoa:
-            vfoa = int(vfoa) / 1000
+            try:
+                vfoa = int(vfoa) / 1000
+            except ValueError:
+                vfoa = 0.0
         else:
             vfoa = 0.0
         contest_name = ""
