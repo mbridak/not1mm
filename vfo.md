@@ -51,4 +51,4 @@ while True:
             inputstring = ""
 ```
 
-Reading and setting the frequency from the serial device is pretty simple. To set the frequency you send it for example 'F 14032000\r'. To get the current frequency from the device just send it `f\r`. It will report back just the frequency '14032000'.
+Reading and setting the frequency from the serial device is pretty simple. To set the frequency you send it for example 'F 14032000\r'. To get the current frequency from the device just send it 'f\r'. It will report back just the frequency '14032000'.
