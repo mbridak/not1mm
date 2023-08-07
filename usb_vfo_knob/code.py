@@ -1,8 +1,11 @@
 import rotaryio
 import time
 from board import *
+import digitalio
 import usb_cdc
 
+led = digitalio.DigitalInOut(LED)
+led.direction = digitalio.Direction.OUTPUT
 serial = usb_cdc.console
 
 enc = rotaryio.IncrementalEncoder(GP22, GP21,3)
@@ -15,6 +18,7 @@ def out(data):
     
 while True:
     if usb_cdc.console.in_waiting:
+    	led.value = True
         incomming = usb_cdc.console.read(usb_cdc.console.in_waiting)
         inputstring = inputstring + incomming.decode()
         if inputstring[-1] == "\r":
@@ -26,5 +30,5 @@ while True:
                 if freq.isdigit():
                     enc.position = int(freq)
             inputstring = ""
+        led.value = False
 
-    
