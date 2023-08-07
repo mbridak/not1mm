@@ -62,6 +62,7 @@
   - [Recalulate Mults](#recalulate-mults)
   - [Bandmap](#bandmap)
   - [Check Window](#check-window)
+  - [VFO](#vfo)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -459,6 +460,15 @@ Clicked on spots now tune the radio and set the callsign field. Previously worke
 As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, or your local log. The MASTER.SCP column will show results for strings of 3 or more matching from the start of the call string. The local log column will show matches of any length appearing anywhere in the string.
 
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
+
+## VFO
+
+You can control the VFO on a remote rig by:
+
+1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
+2. Then... `Window`>`VFO`
+
+![VFO](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo.gif)
 
 ## Cabrillo
 
