@@ -10,8 +10,6 @@ VFO Window
 
 import logging
 
-# import platform
-# import queue
 import os
 import pkgutil
 import platform
@@ -21,13 +19,11 @@ from json import loads, JSONDecodeError
 from pathlib import Path
 
 import serial
-from PyQt5 import QtCore, QtNetwork, uic
-from PyQt5.QtCore import QDir, Qt, QTimer
+from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from serial.tools.list_ports import comports
 
 from not1mm.lib.cat_interface import CAT
-from not1mm.lib.multicast import Multicast
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
@@ -59,37 +55,19 @@ class MainWindow(QMainWindow):
     pref = {}
     old_vfo = ""
     old_pico = ""
+    message_shown = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        data_path = WORKING_PATH + "/data/vfo.ui"
+        uic.loadUi(data_path, self)
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
-        data_path = WORKING_PATH + "/data/vfo.ui"
-        uic.loadUi(data_path, self)
         self.setWindowTitle("VFO Window")
         self.lcdNumber.display(0)
-        self.show()
         self.pico = None
-        while True:
-            device = self.discover_device()
-            if device:
-                try:
-                    self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
-                    self.pico.timeout = 1
-                    self.pico.close()
-                    self.pico.open()
-                    self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
-                    break
-                except OSError:
-                    logger.critical("Unable to open serial device.")
-                    self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-                    self.quit_app()
-            else:
-                logger.critical("Unable to open serial device.")
-                self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
         self.udpsocket = QtNetwork.QUdpSocket(self)
@@ -143,17 +121,13 @@ class MainWindow(QMainWindow):
 
     def discover_device(self):
         """Poll all serial devices looking for correct one."""
-        # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
-        # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
         devices = None
         data = None
+        app.processEvents()
         try:
             devices = os.listdir("/dev/serial/by-id")
         except FileNotFoundError:
-            logger.critical("Unable to open serial device.")
-            self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-            self.quit_app()
             return None
 
         for device in devices:
@@ -167,6 +141,31 @@ class MainWindow(QMainWindow):
                     return None
                 if "vfoknob" in data.decode().strip():
                     return device
+
+    def setup_serial(self) -> None:
+        """Setup device returned by discover_device"""
+        while True:
+            device = self.discover_device()
+            if device:
+                try:
+                    self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
+                    self.pico.timeout = 100
+                    self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
+                    break
+                except OSError:
+                    if self.message_shown is False:
+                        self.message_shown = True
+                        self.show_message_box(
+                            "Unable to locate or open the VFO knob serial device."
+                        )
+                    self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+            else:
+                if self.message_shown is False:
+                    self.message_shown = True
+                    self.show_message_box(
+                        "Unable to locate or open the VFO knob serial device."
+                    )
+                self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
@@ -239,10 +238,26 @@ class MainWindow(QMainWindow):
             logger.critical("Unable to write to serial device.")
         except AttributeError:
             logger.critical("Unable to write to serial device.")
+        app.processEvents()
+
+    def show_message_box(self, message: str) -> None:
+        """doc"""
+        message_box = QtWidgets.QMessageBox()
+        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setText(message)
+        message_box.setWindowTitle("Information")
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        _ = message_box.exec_()
 
 
 def main():
     """main entry"""
+    window.show()
+    window.setup_serial()
+    app.processEvents()
+    timer = QtCore.QTimer()
+    timer.timeout.connect(window.poll_radio)
+    timer.start(250)
     sys.exit(app.exec())
 
 
@@ -265,10 +280,7 @@ else:
 app = QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
 window = MainWindow()
-window.show()
-timer = QtCore.QTimer()
-timer.timeout.connect(window.poll_radio)
-timer.start(250)
+
 
 if __name__ == "__main__":
     main()
