@@ -14,8 +14,10 @@ import logging
 # import queue
 import os
 import pkgutil
+import platform
+import queue
 import sys
-from json import loads
+from json import loads, JSONDecodeError
 from pathlib import Path
 
 import serial
@@ -68,15 +70,40 @@ class MainWindow(QMainWindow):
         uic.loadUi(data_path, self)
         self.setWindowTitle("VFO Window")
         self.lcdNumber.display(0)
+        self.show()
         self.pico = None
-        try:
-            self.pico = serial.Serial("/dev/ttyACM0", 115200)
-            self.pico.timeout = 1
-            self.pico.close()
-            self.pico.open()
-        except OSError:
-            logger.critical("Unable to open serial device.")
-            app.quit()
+        while True:
+            device = self.discover_device()
+            if device:
+                try:
+                    self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
+                    self.pico.timeout = 1
+                    self.pico.close()
+                    self.pico.open()
+                    self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
+                    break
+                except OSError:
+                    logger.critical("Unable to open serial device.")
+                    self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+                    self.quit_app()
+            else:
+                logger.critical("Unable to open serial device.")
+                self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+
+        self._udpwatch = None
+        self.udp_fifo = queue.Queue()
+        self.udpsocket = QtNetwork.QUdpSocket(self)
+        self.udpsocket.bind(
+            QtNetwork.QHostAddress.AnyIPv4,
+            MULTICAST_PORT,
+            QtNetwork.QUdpSocket.ShareAddress,
+        )
+        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
+        self.udpsocket.readyRead.connect(self.watch_udp)
+
+    def quit_app(self):
+        """doc"""
+        app.quit()
 
     def load_pref(self):
         """Load preference file"""
@@ -114,6 +141,57 @@ class MainWindow(QMainWindow):
             )
             self.timer.start(100)
 
+    def discover_device(self):
+        """Poll all serial devices looking for correct one."""
+        # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
+        # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
+
+        devices = None
+        data = None
+        try:
+            devices = os.listdir("/dev/serial/by-id")
+        except FileNotFoundError:
+            logger.critical("Unable to open serial device.")
+            self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+            self.quit_app()
+            return None
+
+        for device in devices:
+            if "usb-Raspberry_Pi_Pico" in device:
+                try:
+                    with serial.Serial("/dev/serial/by-id/" + device, 115200) as ser:
+                        ser.timeout = 1000
+                        ser.write(b"whatareyou\r")
+                        data = ser.readline()
+                except serial.serialutil.SerialException:
+                    return None
+                if "vfoknob" in data.decode().strip():
+                    return device
+
+    def watch_udp(self):
+        """Puts UDP datagrams in a FIFO queue"""
+        while self.udpsocket.hasPendingDatagrams():
+            datagram, _, _ = self.udpsocket.readDatagram(
+                self.udpsocket.pendingDatagramSize()
+            )
+
+            try:
+                debug_info = f"{datagram.decode()}"
+                logger.debug(debug_info)
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logger.debug(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logger.debug(the_error)
+                continue
+            if json_data.get("station", "") != platform.node():
+                continue
+            if json_data.get("cmd", "") == "HALT":
+                self.quit_app()
+
     def poll_radio(self):
         """Poll radio"""
         if self.rig_control:
@@ -134,7 +212,8 @@ class MainWindow(QMainWindow):
                     app.processEvents()
                     cmd = f"F {vfo}\r"
                     try:
-                        self.pico.write(cmd.encode())
+                        if self.pico:
+                            self.pico.write(cmd.encode())
                     except OSError:
                         logger.critical("Unable to write to serial device.")
                     except AttributeError:
@@ -145,16 +224,17 @@ class MainWindow(QMainWindow):
         get freq
         """
         try:
-            self.pico.write(b"f\r")
-            while self.pico.in_waiting:
-                result = self.pico.read(self.pico.in_waiting)
-                result = result.decode().strip()
-                if self.old_pico != result:
-                    self.old_pico = result
-                    if self.rig_control:
-                        self.rig_control.set_vfo(result)
-                        self.lcdNumber.display(result)
-                        app.processEvents()
+            if self.pico:
+                self.pico.write(b"f\r")
+                while self.pico.in_waiting:
+                    result = self.pico.read(self.pico.in_waiting)
+                    result = result.decode().strip()
+                    if self.old_pico != result:
+                        self.old_pico = result
+                        if self.rig_control:
+                            self.rig_control.set_vfo(result)
+                            self.lcdNumber.display(result)
+                            app.processEvents()
         except OSError:
             logger.critical("Unable to write to serial device.")
         except AttributeError:
