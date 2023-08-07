@@ -29,6 +29,8 @@ while True:
                 freq = inputstring.strip().split()[1]
                 if freq.isdigit():
                     enc.position = int(freq)
+            if inputstring.strip() == 'whatareyou':
+                out("vfoknob\r\n")
             inputstring = ""
         led.value = False
 
