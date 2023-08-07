@@ -5,6 +5,8 @@ VFO Window
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation
 
 # 115200 pico default speed
+# usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
+# usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
 import logging
 
@@ -66,10 +68,15 @@ class MainWindow(QMainWindow):
         uic.loadUi(data_path, self)
         self.setWindowTitle("VFO Window")
         self.lcdNumber.display(0)
-        self.pico = serial.Serial("/dev/ttyACM0", 115200)
-        self.pico.timeout = 1
-        self.pico.close()
-        self.pico.open()
+        self.pico = None
+        try:
+            self.pico = serial.Serial("/dev/ttyACM0", 115200)
+            self.pico.timeout = 1
+            self.pico.close()
+            self.pico.open()
+        except OSError:
+            logger.critical("Unable to open serial device.")
+            app.quit()
 
     def load_pref(self):
         """Load preference file"""
@@ -118,13 +125,20 @@ class MainWindow(QMainWindow):
                     vfo = int(vfo)
                 except ValueError:
                     return
+                if vfo < 1700000 or vfo > 60000000:
+                    return
                 if vfo != self.old_vfo:
                     self.old_vfo = vfo
                     logger.debug(f"{vfo}")
                     self.lcdNumber.display(vfo)
                     app.processEvents()
                     cmd = f"F {vfo}\r"
-                    self.pico.write(cmd.encode())
+                    try:
+                        self.pico.write(cmd.encode())
+                    except OSError:
+                        logger.critical("Unable to write to serial device.")
+                    except AttributeError:
+                        logger.critical("Unable to write to serial device.")
 
     def getwaiting(self):
         """
@@ -142,7 +156,9 @@ class MainWindow(QMainWindow):
                         self.lcdNumber.display(result)
                         app.processEvents()
         except OSError:
-            ...
+            logger.critical("Unable to write to serial device.")
+        except AttributeError:
+            logger.critical("Unable to write to serial device.")
 
 
 def main():
