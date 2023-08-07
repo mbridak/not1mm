@@ -1083,6 +1083,7 @@
     <addaction name="actionLog_Window"/>
     <addaction name="actionBandmap"/>
     <addaction name="actionCheck_Window"/>
+    <addaction name="actionVFO"/>
    </widget>
    <widget class="QMenu" name="menuOther">
     <property name="title">
@@ -1485,6 +1486,11 @@
   <action name="actionCheck_Window">
    <property name="text">
     <string>Check Window</string>
+   </property>
+  </action>
+  <action name="actionVFO">
+   <property name="text">
+    <string>VFO</string>
    </property>
   </action>
  </widget>

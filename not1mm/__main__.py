@@ -240,6 +240,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
+        self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
 
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
@@ -814,6 +815,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if not check_process("checkwindow.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/checkwindow.py"])
 
+    def launch_vfo(self):
+        """launch the Log Window"""
+        if not check_process("vfo.py"):
+            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/vfo.py"])
+
     def clear_band_indicators(self):
         """Clear the indicators"""
         for _, indicators in self.all_mode_indicators.items():
@@ -1051,7 +1057,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """Set window title"""
         vfoa = self.radio_state.get("vfoa", "")
         if vfoa:
-            vfoa = int(vfoa) / 1000
+            try:
+                vfoa = int(vfoa) / 1000
+            except ValueError:
+                vfoa = 0.0
         else:
             vfoa = 0.0
         contest_name = ""
