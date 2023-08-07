@@ -123,6 +123,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
 - [23-8-6] Add parsing of local log to check window.
 - [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
 
