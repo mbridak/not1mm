@@ -468,7 +468,7 @@ You can control the VFO on a remote rig by:
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`
 
-![VFO](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo.webm)
+![VFO](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo.gif)
 
 ## Cabrillo
 
