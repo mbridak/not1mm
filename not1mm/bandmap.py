@@ -138,7 +138,7 @@ class Database:
         """
         try:
             self.cursor.execute(
-                f"select distinct callsign from spots where callsign like '%{call}%';"
+                f"select distinct callsign from spots where callsign like '%{call}%' ORDER by callsign ASC;"
             )
             result = self.cursor.fetchall()
             print(f"{result}")
