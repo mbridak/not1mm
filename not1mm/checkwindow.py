@@ -68,8 +68,8 @@ class MainWindow(QMainWindow):
         self.telnetList.clear()
         self.callhistoryList.clear()
         # self.logList.hide()
-        self.telnetList.hide()
-        self.telnetListLabel.hide()
+        # self.telnetList.hide()
+        # self.telnetListLabel.hide()
         self.callhistoryList.hide()
         self.callhistoryListLabel.hide()
         self.mscp = SCP(WORKING_PATH)
@@ -130,6 +130,11 @@ class MainWindow(QMainWindow):
                 call = json_data.get("call", "")
                 self.master_list(call)
                 self.log_list(call)
+                continue
+            if json_data.get("cmd", "") == "CHECKSPOTS":
+                spots = json_data.get("spots", "")
+                self.telnet_list(spots)
+                continue
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
@@ -161,6 +166,16 @@ class MainWindow(QMainWindow):
                 listItem = QListWidgetItem(calls)
                 self.logList.addItem(listItem)
                 self.logList.show()
+
+    def telnet_list(self, spots: list) -> None:
+        """Parse matching calls from telnet cluster"""
+        self.telnetList.clear()
+        if spots:
+            for calls in spots:
+                call = calls.get("callsign", "")
+                listItem = QListWidgetItem(call)
+                self.telnetList.addItem(listItem)
+                self.telnetList.show()
 
 
 def load_fonts_from_dir(directory: str) -> set:

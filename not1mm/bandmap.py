@@ -131,6 +131,23 @@ class Database:
             )
         }
 
+    def get_like_calls(self, call: str) -> dict:
+        """
+        Returns a dict like:
+        {'K5TUX': [14.0, 21.0], 'N2CQR': [14.0], 'NE4RD': [14.0]}
+        """
+        try:
+            self.cursor.execute(
+                f"select distinct callsign from spots where callsign like '%{call}%';"
+            )
+            result = self.cursor.fetchall()
+            print(f"{result}")
+
+            return result
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def addspot(self, spot):
         """doc"""
         try:
@@ -298,10 +315,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 the_error = f"Not JSON: {err}\n{bundle}"
                 logger.debug(the_error)
                 continue
-            if (
-                packet.get("cmd", "") == "RADIO_STATE"
-                and packet.get("station", "") == platform.node()
-            ):
+            if packet.get("station", "") != platform.node():
+                continue
+            if packet.get("cmd", "") == "RADIO_STATE":
                 self.set_band(packet.get("band") + "m", False)
                 if self.rx_freq != float(packet.get("vfoa")) / 1000000:
                     self.rx_freq = float(packet.get("vfoa")) / 1000000
@@ -315,11 +331,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.drawTXRXMarks(step)
                 continue
 
-            if (
-                packet.get("cmd", "") == "NEXTSPOT"
-                and packet.get("station", "") == platform.node()
-                and self.rx_freq
-            ):
+            if packet.get("cmd", "") == "NEXTSPOT" and self.rx_freq:
                 spot = self.spots.get_next_spot(
                     self.rx_freq + 0.000001, self.currentBand.end
                 )
@@ -335,11 +347,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                 continue
 
-            if (
-                packet.get("cmd", "") == "PREVSPOT"
-                and packet.get("station", "") == platform.node()
-                and self.rx_freq
-            ):
+            if packet.get("cmd", "") == "PREVSPOT" and self.rx_freq:
                 spot = self.spots.get_prev_spot(
                     self.rx_freq - 0.000001, self.currentBand.start
                 )
@@ -354,19 +362,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                     )
                 continue
-            if (
-                packet.get("cmd", "") == "SPOTDX"
-                and packet.get("station", "") == platform.node()
-            ):
+            if packet.get("cmd", "") == "SPOTDX":
                 dx = packet.get("dx", "")
                 freq = packet.get("freq", 0.0)
                 spotdx = f"dx {dx} {freq}"
                 self.send_command(spotdx)
                 continue
-            if (
-                packet.get("cmd", "") == "FINDDX"
-                and packet.get("station", "") == platform.node()
-            ):
+            if packet.get("cmd", "") == "FINDDX":
                 dx = packet.get("dx", "")
                 spot = self.spots.get_matching_spot(
                     dx, self.currentBand.start, self.currentBand.end
@@ -382,17 +384,38 @@ class MainWindow(QtWidgets.QMainWindow):
                         packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
                     )
                 continue
-            if (
-                packet.get("cmd", "") == "WORKED"
-                and packet.get("station", "") == platform.node()
-            ):
+            if packet.get("cmd", "") == "WORKED":
                 self.worked_list = packet.get("worked", {})
                 logger.debug("%s", f"{self.worked_list}")
                 continue
-            if (
-                packet.get("cmd", "") == "HALT"
-                and packet.get("station", "") == platform.node()
-            ):
+            if packet.get("cmd", "") == "CALLCHANGED":
+                call = packet.get("call", "")
+                if call:
+                    result = self.spots.get_like_calls(call)
+                    if result:
+                        cmd = {}
+                        cmd["cmd"] = "CHECKSPOTS"
+                        cmd["station"] = platform.node()
+                        cmd["spots"] = result
+                        packet = bytes(dumps(cmd), encoding="ascii")
+                        self.udpsocket.writeDatagram(
+                            packet,
+                            QtNetwork.QHostAddress(MULTICAST_GROUP),
+                            MULTICAST_PORT,
+                        )
+                    continue
+                cmd = {}
+                cmd["cmd"] = "CHECKSPOTS"
+                cmd["station"] = platform.node()
+                cmd["spots"] = {}
+                packet = bytes(dumps(cmd), encoding="ascii")
+                self.udpsocket.writeDatagram(
+                    packet,
+                    QtNetwork.QHostAddress(MULTICAST_GROUP),
+                    MULTICAST_PORT,
+                )
+                continue
+            if packet.get("cmd", "") == "HALT":
                 self.quit_app()
 
     def spot_clicked(self):
