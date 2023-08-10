@@ -62,7 +62,7 @@
   - [Recalulate Mults](#recalulate-mults)
   - [Bandmap](#bandmap)
   - [Check Window](#check-window)
-  - [VFO](#vfo)
+  - [Remote VFO](#remote-vfo)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Dupe checking](#dupe-checking)
@@ -124,6 +124,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-8-9] Add telnet matches to Check Window.
 - [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
 - [23-8-6] Add parsing of local log to check window.
 - [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
@@ -447,7 +448,7 @@ The bandmap window is, as with everything, a work in progress. The bandmap now f
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 
-VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth.
+VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth if one is reported.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
@@ -457,18 +458,18 @@ Clicked on spots now tune the radio and set the callsign field. Previously worke
 
 `Window`>`Check Window`
 
-As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, or your local log. The MASTER.SCP column will show results for strings of 3 or more matching from the start of the call string. The local log column will show matches of any length appearing anywhere in the string.
+As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, your local log or the recent telnet spots. The MASTER.SCP column will show results for strings of 3 or more matching characters from the start of the call string. The local log and telnet columns will show matches of any length appearing anywhere in the string.
 
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
 
-## VFO
+## Remote VFO
 
-You can control the VFO on a remote rig by:
+You can control the VFO on a remote rig by following the directions listed in the link below. It's a small hardware project with a BOM of under $20, and consisting of two parts.
 
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`
 
-![VFO](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo.gif)
+![VFO](https://github.com/mbridak/not1mm/raw/master/pic/vfo.png)
 
 ## Cabrillo
 
