@@ -141,8 +141,6 @@ class Database:
                 f"select distinct callsign from spots where callsign like '%{call}%' ORDER by callsign ASC;"
             )
             result = self.cursor.fetchall()
-            print(f"{result}")
-
             return result
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -403,11 +401,11 @@ class MainWindow(QtWidgets.QMainWindow):
                             QtNetwork.QHostAddress(MULTICAST_GROUP),
                             MULTICAST_PORT,
                         )
-                    continue
+                        continue
                 cmd = {}
                 cmd["cmd"] = "CHECKSPOTS"
                 cmd["station"] = platform.node()
-                cmd["spots"] = {}
+                cmd["spots"] = []
                 packet = bytes(dumps(cmd), encoding="ascii")
                 self.udpsocket.writeDatagram(
                     packet,

@@ -132,7 +132,8 @@ class MainWindow(QMainWindow):
                 self.log_list(call)
                 continue
             if json_data.get("cmd", "") == "CHECKSPOTS":
-                spots = json_data.get("spots", "")
+                self.telnetList.clear()
+                spots = json_data.get("spots", [])
                 self.telnet_list(spots)
                 continue
             if json_data.get("cmd", "") == "NEWDB":
