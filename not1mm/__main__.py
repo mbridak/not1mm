@@ -1463,8 +1463,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     sd.default.device = self.pref.get("sounddevice", "default")
                     sd.default.samplerate = 44100.0
-                    sd.play(data)
-                    _status = sd.wait()
+                    sd.play(data, blocking=False)
+                    # _status = sd.wait()
                     # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
                 except sd.PortAudioError as err:
                     logger.warning("%s", f"{err}")
@@ -1483,7 +1483,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     try:
                         sd.default.device = self.pref.get("sounddevice", "default")
                         sd.default.samplerate = 44100.0
-                        sd.play(data)
+                        sd.play(data, blocking=False)
                         logger.debug("%s", f"{sd.wait()}")
                     except sd.PortAudioError as err:
                         logger.warning("%s", f"{err}")

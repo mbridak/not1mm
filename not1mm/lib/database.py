@@ -73,6 +73,7 @@ class DataBase:
         }
         self.database = database
         self.create_dxlog_table()
+        self.update_dxlog_table()
         self.create_contest_table()
         self.create_contest_instance_table()
         self.create_station_table()
@@ -142,8 +143,21 @@ class DataBase:
                     "IsOriginal Boolean, "
                     "ID TEXT(32) NOT NULL DEFAULT '00000000000000000000000000000000', "
                     "CLAIMEDQSO INTEGER DEFAULT 1,"
+                    "Dirty INTEGER DEFAULT 1,"
                     "PRIMARY KEY (`TS`, `Call`) );"
                 )
+                cursor.execute(sql_command)
+                conn.commit()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+
+    def update_dxlog_table(self) -> None:
+        """update missing columns"""
+        logger.debug("Updating DXLOG Table")
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cursor = conn.cursor()
+                sql_command = "ALTER TABLE DXLOG ADD dirty INTEGER DEFAULT 1;"
                 cursor.execute(sql_command)
                 conn.commit()
         except sqlite3.OperationalError as exception:
