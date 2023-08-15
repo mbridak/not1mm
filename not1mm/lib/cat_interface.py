@@ -81,7 +81,13 @@ class CAT:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", f"{exception}")
+            return
         except TimeoutError as exception:
+            self.rigctrlsocket = None
+            self.online = False
+            logger.debug("%s", f"{exception}")
+            return
+        except OSError as exception:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -120,7 +126,7 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"\nf\n")
+                self.rigctrlsocket.send(b"f\n")
                 return self.rigctrlsocket.recv(1024).decode().strip()
             except socket.error as exception:
                 self.online = False
