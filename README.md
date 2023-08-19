@@ -73,12 +73,12 @@
 
 ## What and why is Not1MM
 
-Not1MM's interface is a blantent ripoff of N1MM.
+Not1MM's interface is a blantant ripoff of N1MM.
 It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
 
-If you use Windows(tm) you should run away from this and use someother program.
+If you use Windows(tm), you should run away from this and use someother program.
 
-I personally don't. While it may be possible to get N1MM working under Wine, I haven't checked, I'd rather not have to jump thru the hoops.
+I personally don't use Windows(tm). While it may be possible to get N1MM working under Wine, I haven't checked. I'd rather not have to jump thru the hoops.
 
 **Currently this exists for my own personal amusement**.
 Something to do in my free time.
