@@ -48,6 +48,7 @@ from not1mm.lib.ham_utility import (
     get_logged_band,
     getband,
     reciprocol,
+    fakefreq,
 )
 from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
@@ -324,6 +325,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.customContextMenuRequested.connect(self.edit_F12)
         self.F12.clicked.connect(self.sendf12)
 
+        self.cw_band_160.mousePressEvent = self.click_160_cw
+        self.cw_band_80.mousePressEvent = self.click_80_cw
+        self.cw_band_40.mousePressEvent = self.click_40_cw
+        self.cw_band_20.mousePressEvent = self.click_20_cw
+        self.cw_band_15.mousePressEvent = self.click_15_cw
+        self.cw_band_10.mousePressEvent = self.click_10_cw
+
+        self.ssb_band_160.mousePressEvent = self.click_160_ssb
+        self.ssb_band_80.mousePressEvent = self.click_80_ssb
+        self.ssb_band_40.mousePressEvent = self.click_40_ssb
+        self.ssb_band_20.mousePressEvent = self.click_20_ssb
+        self.ssb_band_15.mousePressEvent = self.click_15_ssb
+        self.ssb_band_10.mousePressEvent = self.click_10_ssb
+
+        self.rtty_band_160.mousePressEvent = self.click_160_rtty
+        self.rtty_band_80.mousePressEvent = self.click_80_rtty
+        self.rtty_band_40.mousePressEvent = self.click_40_rtty
+        self.rtty_band_20.mousePressEvent = self.click_20_rtty
+        self.rtty_band_15.mousePressEvent = self.click_15_rtty
+        self.rtty_band_10.mousePressEvent = self.click_10_rtty
+
         self.readpreferences()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
@@ -381,6 +403,85 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+    def click_160_cw(self, _event):
+        """Handle clicked on label"""
+        self.change_to_band_and_mode(160, "CW")
+
+    def click_80_cw(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(80, "CW")
+
+    def click_40_cw(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(40, "CW")
+
+    def click_20_cw(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(20, "CW")
+
+    def click_15_cw(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(15, "CW")
+
+    def click_10_cw(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(10, "CW")
+
+    def click_160_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(160, "SSB")
+
+    def click_80_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(80, "SSB")
+
+    def click_40_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(40, "SSB")
+
+    def click_20_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(20, "SSB")
+
+    def click_15_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(15, "SSB")
+
+    def click_10_ssb(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(10, "SSB")
+
+    def click_160_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(160, "RTTY")
+
+    def click_80_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(80, "RTTY")
+
+    def click_40_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(40, "RTTY")
+
+    def click_20_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(20, "RTTY")
+
+    def click_15_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(15, "RTTY")
+
+    def click_10_rtty(self, _event):
+        """doc"""
+        self.change_to_band_and_mode(10, "RTTY")
+
+    def change_to_band_and_mode(self, band, mode):
+        """doc"""
+        if mode in ["CW", "SSB", "RTTY"]:
+            freq = fakefreq(str(band), mode)
+            self.change_freq(freq)
+            self.change_mode(mode)
 
     def quit_app(self):
         """doc"""
@@ -1921,42 +2022,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if " " in text:
             if stripped_text == "CW":
-                self.setmode("CW")
-                self.radio_state["mode"] = "CW"
-                if self.rig_control:
-                    if self.rig_control.online:
-                        self.rig_control.set_mode("CW")
-                band = getband(str(self.radio_state.get("vfoa", "0.0")))
-                self.set_band_indicator(band)
-                self.set_window_title()
-                self.clearinputs()
-                self.read_cw_macros()
+                self.change_mode(stripped_text)
                 return
             if stripped_text == "RTTY":
-                self.setmode("RTTY")
-                if self.rig_control:
-                    if self.rig_control.online:
-                        self.rig_control.set_mode("RTTY")
-                    else:
-                        self.radio_state["mode"] = "RTTY"
-                band = getband(str(self.radio_state.get("vfoa", "0.0")))
-                self.set_band_indicator(band)
-                self.set_window_title()
-                self.clearinputs()
+                self.change_mode(stripped_text)
                 return
             if stripped_text == "SSB":
-                self.setmode("SSB")
-                if int(self.radio_state.get("vfoa", 0)) > 10000000:
-                    self.radio_state["mode"] = "USB"
-                else:
-                    self.radio_state["mode"] = "LSB"
-                band = getband(str(self.radio_state.get("vfoa", "0.0")))
-                self.set_band_indicator(band)
-                self.set_window_title()
-                if self.rig_control:
-                    self.rig_control.set_mode(self.radio_state.get("mode"))
-                self.clearinputs()
-                self.read_cw_macros()
+                self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
                 self.get_opon()
@@ -1976,25 +2048,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clearinputs()
                 return
             if self.is_floatable(stripped_text):
-                vfo = float(stripped_text)
-                vfo = int(vfo * 1000)
-                band = getband(str(vfo))
-                self.set_band_indicator(band)
-                # self.contact["Band"] = get_logged_band(str(self.radio_state.get("vfoa", 0.0)))
-                self.radio_state["vfoa"] = vfo
-                self.radio_state["band"] = band
-                self.contact["Band"] = get_logged_band(str(vfo))
-                self.set_window_title()
-                self.clearinputs()
-                if self.rig_control:
-                    self.rig_control.set_vfo(vfo)
-                    return
-                cmd = {}
-                cmd["cmd"] = "RADIO_STATE"
-                cmd["station"] = platform.node()
-                cmd["band"] = band
-                cmd["vfoa"] = vfo
-                self.multicast_interface.send_as_json(cmd)
+                self.change_freq(stripped_text)
                 return
 
             self.check_callsign(stripped_text)
@@ -2016,6 +2070,68 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["call"] = stripped_text
         self.multicast_interface.send_as_json(cmd)
         self.check_callsign(stripped_text)
+
+    def change_freq(self, stripped_text: str) -> None:
+        """Change VFO to given frequency in Khz"""
+        vfo = float(stripped_text)
+        vfo = int(vfo * 1000)
+        band = getband(str(vfo))
+        self.set_band_indicator(band)
+        # self.contact["Band"] = get_logged_band(str(self.radio_state.get("vfoa", 0.0)))
+        self.radio_state["vfoa"] = vfo
+        self.radio_state["band"] = band
+        self.contact["Band"] = get_logged_band(str(vfo))
+        self.set_window_title()
+        self.clearinputs()
+        if self.rig_control:
+            self.rig_control.set_vfo(vfo)
+            return
+        cmd = {}
+        cmd["cmd"] = "RADIO_STATE"
+        cmd["station"] = platform.node()
+        cmd["band"] = band
+        cmd["vfoa"] = vfo
+        self.multicast_interface.send_as_json(cmd)
+
+    def change_mode(self, mode: str) -> None:
+        """Change mode"""
+        if mode == "CW":
+            self.setmode("CW")
+            self.radio_state["mode"] = "CW"
+            if self.rig_control:
+                if self.rig_control.online:
+                    self.rig_control.set_mode("CW")
+            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+            self.set_band_indicator(band)
+            self.set_window_title()
+            self.clearinputs()
+            self.read_cw_macros()
+            return
+        if mode == "RTTY":
+            self.setmode("RTTY")
+            if self.rig_control:
+                if self.rig_control.online:
+                    self.rig_control.set_mode("RTTY")
+                else:
+                    self.radio_state["mode"] = "RTTY"
+            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+            self.set_band_indicator(band)
+            self.set_window_title()
+            self.clearinputs()
+            return
+        if mode == "SSB":
+            self.setmode("SSB")
+            if int(self.radio_state.get("vfoa", 0)) > 10000000:
+                self.radio_state["mode"] = "USB"
+            else:
+                self.radio_state["mode"] = "LSB"
+            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+            self.set_band_indicator(band)
+            self.set_window_title()
+            if self.rig_control:
+                self.rig_control.set_mode(self.radio_state.get("mode"))
+            self.clearinputs()
+            self.read_cw_macros()
 
     def check_callsign(self, callsign):
         """Check call as entered"""
