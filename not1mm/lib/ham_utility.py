@@ -147,14 +147,14 @@ def get_logged_band(freq: str) -> str:
     return "0"
 
 
-def fakefreq(band, mode):
+def fakefreq(band: str, mode: str) -> str:
     """
     If unable to obtain a frequency from the rig,
     This will return a sane value for a frequency mainly for the cabrillo and adif log.
     Takes a band and mode as input and returns freq in khz.
     """
     # logger.info("fakefreq: band:%s mode:%s", band, mode)
-    modes = {"CW": 0, "DG": 1, "PH": 2, "FT8": 1, "SSB": 2}
+    modes = {"CW": 0, "RTTY": 1, "DG": 1, "PH": 2, "FT8": 1, "SSB": 2}
     fakefreqs = {
         "160": ["1830", "1805", "1840"],
         "80": ["3530", "3559", "3970"],
