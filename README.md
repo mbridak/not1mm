@@ -48,7 +48,6 @@
     - [CW Keyer interface](#cw-keyer-interface)
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
-  - [Hiding screen elements](#hiding-screen-elements)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
     - [Macro use with voice](#macro-use-with-voice)
@@ -124,6 +123,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-8-21] You can now click on the band/mode indicators to change to that band/mode.
 - [23-8-9] Add telnet matches to Check Window.
 - [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
 - [23-8-6] Add parsing of local log to check window.
@@ -334,14 +334,6 @@ Work has started on N1MM udp packets. So far just RadioInfo, contactinfo, contac
 ![N1MM Packet Configuration Screen](https://github.com/mbridak/not1mm/blob/master/pic/n1mm_packet_config.png?raw=true)
 
 When entering IP and Ports, enter them with a colon ':' between them. You can enter multiple pairs on the same line if separated by a space ' '.
-
-## Hiding screen elements
-
-You can show or hide certain buttons/indicators by checking and unchecking their boxes under the view menu. You can then resize the screen to make it more compact.
-
-![View Menu](https://github.com/mbridak/not1mm/raw/master/pic/view_menu.png)
-
-The your choices will be remembered when you relaunch the program.
 
 ## Editing macro keys
 
