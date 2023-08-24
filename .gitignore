@@ -12,4 +12,3 @@ debug
 /testing
 .markdownlint.json
 betatest
-update_version.sh
