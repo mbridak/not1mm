@@ -79,11 +79,11 @@ class MainWindow(QMainWindow):
         self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
         self.udpsocket.readyRead.connect(self.watch_udp)
 
-    def quit_app(self):
-        """doc"""
+    def quit_app(self) -> None:
+        """Shutdown the app."""
         app.quit()
 
-    def load_pref(self):
+    def load_pref(self) -> None:
         """
         Load preference file.
         Get CAT interface.
@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
             )
             self.timer.start(100)
 
-    def discover_device(self):
+    def discover_device(self) -> str:
         """
         Poll all serial devices looking for correct one.
 
@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
                     )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
-    def watch_udp(self):
+    def watch_udp(self) -> None:
         """
         Watch for a 'HALT' UPD packet from not1mm.
         Exit app if found.
@@ -206,7 +206,7 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
 
-    def poll_radio(self):
+    def poll_radio(self) -> None:
         """
         Poll radio via CAT asking for VFO state.
         If it's with in the HAM bands set the vfo knob to match the radio.
@@ -236,7 +236,7 @@ class MainWindow(QMainWindow):
                     except AttributeError:
                         logger.critical("Unable to write to serial device.")
 
-    def getwaiting(self):
+    def getwaiting(self) -> None:
         """
         Get the USB VFO knob state.
         Set the radio's VFO to match if it has changed.
