@@ -62,4 +62,10 @@ while True:
 
 ## Misc
 
-I've also included an STL file to 3D print a knob for it I made.
+I've also included an STL file to 3D print a knob and enclosure and a DXF file for a faceplate.
+
+Located in the usb_vfo_knob folder.
+
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_1.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_2.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_3.jpg)
