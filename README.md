@@ -123,6 +123,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-8-24] Add timestamp to log filenames.
 - [23-8-21] You can now click on the band/mode indicators to change to that band/mode.
 - [23-8-9] Add telnet matches to Check Window.
 - [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
