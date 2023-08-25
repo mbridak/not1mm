@@ -2,6 +2,7 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable
 
+import datetime
 from PyQt5 import QtWidgets
 
 name = "ARRL RTTY Round Up"

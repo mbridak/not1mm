@@ -1,6 +1,8 @@
 """CQ WPX CW plugin"""
 
 # pylint: disable=invalid-name, unused-variable
+
+import datetime
 import logging
 from pathlib import Path
 
@@ -179,10 +181,12 @@ def adif(self):
     """
     Creates an ADIF file of the contacts made.
     """
+    now = datetime.datetime.now()
+    date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}.adi"
+        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.adi"
     )
     log = self.database.fetch_all_contacts_asc()
     try:
@@ -281,10 +285,12 @@ def cabrillo(self):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
+    now = datetime.datetime.now()
+    date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}.log"
+        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     result = self.cty_lookup(self.station.get("Call", ""))

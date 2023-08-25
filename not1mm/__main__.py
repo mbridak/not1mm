@@ -60,21 +60,6 @@ from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 
-# from xmlrpc.client import Error, ServerProxy
-
-
-# gsettings get org.gnome.desktop.interface color-scheme
-# os.environ["QT_QPA_PLATFORM"] = "wayland"
-# cd = os.environ.get("XDG_CURRENT_DESKTOP", False)
-# if "GNOME" in cd or "Unity" in cd:
-#     os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-#     os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
-
-
-# print(f"LANG: {os.environ.get('LANG')}")
-# print(f"LC_TIME: {os.environ.get('LC_TIME')}")
-
-
 loader = pkgutil.get_loader("not1mm")
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
@@ -119,30 +104,6 @@ def check_process(name: str) -> bool:
             if name in proc.cmdline()[1]:
                 return True
     return False
-
-
-# def cty_lookup(callsign: str):
-#     """Lookup callsign in cty.dat file.
-
-#     Parameters
-#     ----------
-#     callsign : str
-
-#     Returns
-#     -------
-#     result: list
-#     """
-#     callsign = callsign.upper()
-#     for count in reversed(range(len(callsign))):
-#         searchitem = callsign[: count + 1]
-#         result = {key: val for key, val in CTYFILE.items() if key == searchitem}
-#         if not result:
-#             continue
-#         if result.get(searchitem).get("exact_match"):
-#             if searchitem == callsign:
-#                 return result
-#             continue
-#         return result
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -1048,8 +1009,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 2:
                     self.cw.set_winkeyer_speed(self.cw_speed.value())
             return
-        # if event.key() == Qt.Key.Key_Enter:
-        #     self.save_contact()
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
@@ -2077,7 +2036,6 @@ class MainWindow(QtWidgets.QMainWindow):
         vfo = int(vfo * 1000)
         band = getband(str(vfo))
         self.set_band_indicator(band)
-        # self.contact["Band"] = get_logged_band(str(self.radio_state.get("vfoa", 0.0)))
         self.radio_state["vfoa"] = vfo
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))
@@ -2190,9 +2148,6 @@ class MainWindow(QtWidgets.QMainWindow):
                             f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / "
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                         )
-                    # self.dx_entity.setText(f"{theircountry}")
-                # else:
-                # self.heading_distance.setText("Lookup failed.")
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
@@ -2284,7 +2239,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
                 bw = self.rig_control.get_bw()
-                # self.radio_state["ptt"] = self.rig_control.get_ptt()
 
                 if mode == "CW":
                     self.setmode(mode)
