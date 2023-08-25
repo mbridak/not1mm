@@ -84,7 +84,10 @@ class MainWindow(QMainWindow):
         app.quit()
 
     def load_pref(self):
-        """Load preference file"""
+        """
+        Load preference file.
+        Get CAT interface.
+        """
         try:
             if os.path.exists(CONFIG_PATH + "/not1mm.json"):
                 with open(
@@ -120,7 +123,13 @@ class MainWindow(QMainWindow):
             self.timer.start(100)
 
     def discover_device(self):
-        """Poll all serial devices looking for correct one."""
+        """
+        Poll all serial devices looking for correct one.
+
+        Rummage thru /dev/serial/by-id/ looking for Raspberry Picos
+        Ask each if it's a vfoknob.
+        Return the device ID if it is, or None if not found.
+        """
 
         devices = None
         data = None
@@ -143,7 +152,10 @@ class MainWindow(QMainWindow):
                     return device
 
     def setup_serial(self) -> None:
-        """Setup device returned by discover_device"""
+        """
+        Setup the device returned by discover_device()
+        Or display message saying we didn't find one.
+        """
         while True:
             device = self.discover_device()
             if device:
@@ -168,7 +180,10 @@ class MainWindow(QMainWindow):
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
     def watch_udp(self):
-        """Puts UDP datagrams in a FIFO queue"""
+        """
+        Watch for a 'HALT' UPD packet from not1mm.
+        Exit app if found.
+        """
         while self.udpsocket.hasPendingDatagrams():
             datagram, _, _ = self.udpsocket.readDatagram(
                 self.udpsocket.pendingDatagramSize()
@@ -192,7 +207,10 @@ class MainWindow(QMainWindow):
                 self.quit_app()
 
     def poll_radio(self):
-        """Poll radio"""
+        """
+        Poll radio via CAT asking for VFO state.
+        If it's with in the HAM bands set the vfo knob to match the radio.
+        """
         if self.rig_control:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
@@ -220,7 +238,8 @@ class MainWindow(QMainWindow):
 
     def getwaiting(self):
         """
-        get freq
+        Get the USB VFO knob state.
+        Set the radio's VFO to match if it has changed.
         """
         try:
             if self.pico:
@@ -241,7 +260,9 @@ class MainWindow(QMainWindow):
         app.processEvents()
 
     def show_message_box(self, message: str) -> None:
-        """doc"""
+        """
+        Display an alert box with the supplied message.
+        """
         message_box = QtWidgets.QMessageBox()
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
