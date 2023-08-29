@@ -89,7 +89,8 @@ poll_time = datetime.now()
 
 
 def check_process(name: str) -> bool:
-    """Checks to see if the name of the program is in the active process list.
+    """
+    Checks to see if the name of the program is in the active process list.
 
     Parameters
     ----------
@@ -365,86 +366,86 @@ class MainWindow(QtWidgets.QMainWindow):
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
 
-    def click_160_cw(self, _event):
+    def click_160_cw(self, _event) -> None:
         """Handle clicked on label"""
         self.change_to_band_and_mode(160, "CW")
 
-    def click_80_cw(self, _event):
+    def click_80_cw(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(80, "CW")
 
-    def click_40_cw(self, _event):
+    def click_40_cw(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(40, "CW")
 
-    def click_20_cw(self, _event):
+    def click_20_cw(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(20, "CW")
 
-    def click_15_cw(self, _event):
+    def click_15_cw(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(15, "CW")
 
-    def click_10_cw(self, _event):
+    def click_10_cw(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(10, "CW")
 
-    def click_160_ssb(self, _event):
+    def click_160_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(160, "SSB")
 
-    def click_80_ssb(self, _event):
+    def click_80_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(80, "SSB")
 
-    def click_40_ssb(self, _event):
+    def click_40_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(40, "SSB")
 
-    def click_20_ssb(self, _event):
+    def click_20_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(20, "SSB")
 
-    def click_15_ssb(self, _event):
+    def click_15_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(15, "SSB")
 
-    def click_10_ssb(self, _event):
+    def click_10_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(10, "SSB")
 
-    def click_160_rtty(self, _event):
+    def click_160_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(160, "RTTY")
 
-    def click_80_rtty(self, _event):
+    def click_80_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(80, "RTTY")
 
-    def click_40_rtty(self, _event):
+    def click_40_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(40, "RTTY")
 
-    def click_20_rtty(self, _event):
+    def click_20_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(20, "RTTY")
 
-    def click_15_rtty(self, _event):
+    def click_15_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(15, "RTTY")
 
-    def click_10_rtty(self, _event):
+    def click_10_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(10, "RTTY")
 
-    def change_to_band_and_mode(self, band, mode):
+    def change_to_band_and_mode(self, band, mode) -> None:
         """doc"""
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(str(band), mode)
             self.change_freq(freq)
             self.change_mode(mode)
 
-    def quit_app(self):
+    def quit_app(self) -> None:
         """doc"""
         cmd = {}
         cmd["cmd"] = "HALT"
@@ -454,14 +455,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @staticmethod
     def check_process(name: str) -> bool:
-        """checks to see if program of name is in the active process list"""
+        """
+        Checks to see if program is in the active process list.
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        Bool
+        """
         for proc in psutil.process_iter():
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
 
     def show_message_box(self, message: str) -> None:
-        """doc"""
+        """
+        Displays a dialog box with a message.
+
+        Paramters
+        ---------
+        message : str
+
+        Returns
+        -------
+        None
+        """
         message_box = QtWidgets.QMessageBox()
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
@@ -469,8 +490,18 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
 
-    def show_about_dialog(self):
-        """Show about dialog"""
+    def show_about_dialog(self) -> None:
+        """
+        Show the About dialog when the menu item is clicked.
+
+        Parameters
+        ----------
+        Takes no parameters.
+
+        Returns
+        -------
+        None
+        """
         self.about_dialog = About(WORKING_PATH)
         self.about_dialog.donors.setSource(
             QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
@@ -478,7 +509,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.about_dialog.open()
 
     def show_help_dialog(self):
-        """Show about dialog"""
+        """
+        Show the Help dialog when the menu item is clicked.
+
+        Parameters
+        ----------
+        Takes no parameters.
+
+        Returns
+        -------
+        None
+        """
         self.about_dialog = About(WORKING_PATH)
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
@@ -488,27 +529,39 @@ class MainWindow(QtWidgets.QMainWindow):
         self.about_dialog.open()
 
     def update_masterscp(self) -> None:
-        """Update the MASTER.SCP file."""
+        """
+        Tries to update the MASTER.SCP file when the menu item is clicked.
+
+        Displays a dialog advising if it was updated.
+
+        Parameters
+        ----------
+        Takes no parameters.
+
+        Returns
+        -------
+        None
+        """
         if self.mscp.update_masterscp():
             self.show_message_box("MASTER.SCP file updated.")
             return
         self.show_message_box("MASTER.SCP could not be updated.")
 
-    def edit_configuration_settings(self):
+    def edit_configuration_settings(self) -> None:
         """Configuration Settings was clicked"""
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
 
-    def edit_configuration_return(self):
+    def edit_configuration_return(self) -> None:
         """Returns here when configuration dialog closed with okay."""
         self.configuration_dialog.save_changes()
         self.write_preference()
         logger.debug("%s", f"{self.pref}")
         self.readpreferences()
 
-    def new_database(self):
+    def new_database(self) -> None:
         """Create new database."""
         filename = self.filepicker("new")
         if filename:
@@ -531,7 +584,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.edit_station_settings()
 
-    def open_database(self):
+    def open_database(self) -> None:
         """Open existing database."""
         filename = self.filepicker("open")
         if filename:
@@ -553,10 +606,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.multicast_interface.send_as_json(cmd)
             self.clearinputs()
 
-    def new_contest(self):
+    def new_contest(self) -> None:
         """Create new contest in existing database."""
 
-    def open_contest(self):
+    def open_contest(self) -> None:
         """Switch to a different existing contest in existing database."""
         logger.debug("Open Contest selected")
         contests = self.database.fetch_all_contests()
@@ -601,7 +654,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
         self.contest_dialog.show()
 
-    def open_contest_return(self):
+    def open_contest_return(self) -> None:
         """Called by open_contest"""
         selected_row = self.contest_dialog.contest_list.currentRow()
         contest = self.contest_dialog.contest_list.item(selected_row, 0).text()
@@ -612,12 +665,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
 
-    def refill_dropdown(self, target, source):
+    def refill_dropdown(self, target, source) -> None:
         """Refill QCombobox widget with value."""
         index = target.findText(source)
         target.setCurrentIndex(index)
 
-    def edit_contest(self):
+    def edit_contest(self) -> None:
         """Edit the current contest"""
         logger.debug("Edit contest Dialog")
         if self.contest is None:
@@ -663,7 +716,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contest_dialog.open()
 
-    def save_edited_contest(self):
+    def save_edited_contest(self) -> None:
         """Save the edited contest"""
         contest = {}
         contest["ContestName"] = (
@@ -690,7 +743,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         self.load_contest()
 
-    def load_contest(self):
+    def load_contest(self) -> None:
         """load a contest"""
         if self.pref.get("contest"):
             self.contest_settings = self.database.fetch_contest_by_id(
@@ -744,7 +797,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["COLUMNS"] = self.contest.columns
                     self.multicast_interface.send_as_json(cmd)
 
-    def check_for_new_cty(self):
+    def check_for_new_cty(self) -> None:
         """
         Checks for a new cty.dat file.
         Loads it if available.
@@ -857,32 +910,32 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         return file
 
-    def recalculate_mults(self):
+    def recalculate_mults(self) -> None:
         """Recalculate Multipliers"""
         self.contest.recalculate_mults(self)
         self.clearinputs()
 
-    def launch_log_window(self):
+    def launch_log_window(self) -> None:
         """launch the Log Window"""
         if not check_process("logwindow.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
 
-    def launch_bandmap_window(self):
+    def launch_bandmap_window(self) -> None:
         """launch the Log Window"""
         if not check_process("bandmap.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/bandmap.py"])
 
-    def launch_check_window(self):
+    def launch_check_window(self) -> None:
         """launch the Log Window"""
         if not check_process("checkwindow.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/checkwindow.py"])
 
-    def launch_vfo(self):
+    def launch_vfo(self) -> None:
         """launch the Log Window"""
         if not check_process("vfo.py"):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/vfo.py"])
 
-    def clear_band_indicators(self):
+    def clear_band_indicators(self) -> None:
         """Clear the indicators"""
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
@@ -899,7 +952,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Box)
                 indicator.setStyleSheet("font-family: JetBrains Mono; color: green;")
 
-    def closeEvent(self, _event):
+    def closeEvent(self, _event) -> None:
         """
         Write window size and position to config file
         """
@@ -936,7 +989,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             return result
 
-    def cwspeed_spinbox_changed(self):
+    def cwspeed_spinbox_changed(self) -> None:
         """triggered when value of CW speed in the spinbox changes."""
         if self.cw is None:
             return
@@ -946,7 +999,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw_speed.value())
 
-    def keyPressEvent(self, event):  # pylint: disable=invalid-name
+    def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """This overrides Qt key event."""
         modifier = event.modifiers()
         if event.key() == Qt.Key_S and modifier == Qt.ControlModifier:
@@ -1113,7 +1166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key_F12:
             self.sendf12()
 
-    def set_window_title(self):
+    def set_window_title(self) -> None:
         """Set window title"""
         vfoa = self.radio_state.get("vfoa", "")
         if vfoa:
@@ -1143,7 +1196,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("%s", f"{cmd}")
         self.multicast_interface.send_as_json(cmd)
 
-    def clearinputs(self):
+    def clearinputs(self) -> None:
         """Clears the text input fields and sets focus to callsign field."""
         self.dupe_indicator.hide()
         self.contact = self.database.empty_contact
@@ -1173,7 +1226,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["call"] = ""
         self.multicast_interface.send_as_json(cmd)
 
-    def save_contact(self):
+    def save_contact(self) -> None:
         """Save to db"""
         logger.debug("saving contact")
         if self.contest is None:
@@ -1304,7 +1357,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.contact["NetworkedCompNr"]
         # self.contact["CLAIMEDQSO"]
 
-    def new_contest_dialog(self):
+    def new_contest_dialog(self) -> None:
         """Show new contest dialog"""
         logger.debug("New contest Dialog")
         self.contest_dialog = NewContest(WORKING_PATH)
@@ -1316,7 +1369,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.station.setCurrentText("FIXED")
         self.contest_dialog.open()
 
-    def save_contest(self):
+    def save_contest(self) -> None:
         """Save Contest"""
         next_number = self.database.get_next_contest_nr()
         contest = {}
@@ -1347,7 +1400,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         self.load_contest()
 
-    def edit_station_settings(self):
+    def edit_station_settings(self) -> None:
         """Show settings dialog"""
         logger.debug("Station Settings selected")
         self.settings_dialog = EditStation(WORKING_PATH)
@@ -1377,7 +1430,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.Email.setText(self.station.get("Email", ""))
         self.settings_dialog.open()
 
-    def save_settings(self):
+    def save_settings(self) -> None:
         """Save settings"""
         cs = self.settings_dialog.Call.text()
         self.station = {}
@@ -1413,13 +1466,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(contest_count) == 0:
             self.new_contest_dialog()
 
-    def edit_macro(self, function_key):
+    def edit_macro(self, function_key) -> None:
         """Show edit macro dialog"""
         self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         self.edit_macro_dialog.open()
 
-    def edited_macro(self):
+    def edited_macro(self) -> None:
         """Save edited macro"""
         self.edit_macro_dialog.function_key.setText(
             self.edit_macro_dialog.macro_label.text()
@@ -1429,62 +1482,62 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.edit_macro_dialog.close()
 
-    def edit_F1(self):
+    def edit_F1(self) -> None:
         """stub"""
         logger.debug("F1 Right Clicked.")
         self.edit_macro(self.F1)
 
-    def edit_F2(self):
+    def edit_F2(self) -> None:
         """stub"""
         logger.debug("F2 Right Clicked.")
         self.edit_macro(self.F2)
 
-    def edit_F3(self):
+    def edit_F3(self) -> None:
         """stub"""
         logger.debug("F3 Right Clicked.")
         self.edit_macro(self.F3)
 
-    def edit_F4(self):
+    def edit_F4(self) -> None:
         """stub"""
         logger.debug("F4 Right Clicked.")
         self.edit_macro(self.F4)
 
-    def edit_F5(self):
+    def edit_F5(self) -> None:
         """stub"""
         logger.debug("F5 Right Clicked.")
         self.edit_macro(self.F5)
 
-    def edit_F6(self):
+    def edit_F6(self) -> None:
         """stub"""
         logger.debug("F6 Right Clicked.")
         self.edit_macro(self.F6)
 
-    def edit_F7(self):
+    def edit_F7(self) -> None:
         """stub"""
         logger.debug("F7 Right Clicked.")
         self.edit_macro(self.F7)
 
-    def edit_F8(self):
+    def edit_F8(self) -> None:
         """stub"""
         logger.debug("F8 Right Clicked.")
         self.edit_macro(self.F8)
 
-    def edit_F9(self):
+    def edit_F9(self) -> None:
         """stub"""
         logger.debug("F9 Right Clicked.")
         self.edit_macro(self.F9)
 
-    def edit_F10(self):
+    def edit_F10(self) -> None:
         """stub"""
         logger.debug("F10 Right Clicked.")
         self.edit_macro(self.F10)
 
-    def edit_F11(self):
+    def edit_F11(self) -> None:
         """stub"""
         logger.debug("F11 Right Clicked.")
         self.edit_macro(self.F11)
 
-    def edit_F12(self):
+    def edit_F12(self) -> None:
         """stub"""
         logger.debug("F12 Right Clicked.")
         self.edit_macro(self.F12)
@@ -1549,21 +1602,21 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.warning("%s", f"{err}")
         self.ptt_off()
 
-    def ptt_on(self):
+    def ptt_on(self) -> None:
         """turn on ptt"""
         if self.rig_control:
             self.leftdot.setPixmap(self.greendot)
             app.processEvents()
             self.rig_control.ptt_on()
 
-    def ptt_off(self):
+    def ptt_off(self) -> None:
         """turn off ptt"""
         if self.rig_control:
             self.leftdot.setPixmap(self.reddot)
             app.processEvents()
             self.rig_control.ptt_off()
 
-    def sendf1(self):
+    def sendf1(self) -> None:
         """stub"""
         logger.debug("F1 Clicked")
         if self.n1mm:
@@ -1574,7 +1627,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F1.toolTip()))
 
-    def sendf2(self):
+    def sendf2(self) -> None:
         """stub"""
         logger.debug("F2 Clicked")
         if self.n1mm:
@@ -1585,7 +1638,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F2.toolTip()))
 
-    def sendf3(self):
+    def sendf3(self) -> None:
         """stub"""
         logger.debug("F3 Clicked")
         if self.n1mm:
@@ -1596,7 +1649,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F3.toolTip()))
 
-    def sendf4(self):
+    def sendf4(self) -> None:
         """stub"""
         logger.debug("F4 Clicked")
         if self.n1mm:
@@ -1607,7 +1660,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F4.toolTip()))
 
-    def sendf5(self):
+    def sendf5(self) -> None:
         """stub"""
         logger.debug("F5 Clicked")
         if self.n1mm:
@@ -1618,7 +1671,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F5.toolTip()))
 
-    def sendf6(self):
+    def sendf6(self) -> None:
         """stub"""
         logger.debug("F6 Clicked")
         if self.n1mm:
@@ -1629,7 +1682,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F6.toolTip()))
 
-    def sendf7(self):
+    def sendf7(self) -> None:
         """stub"""
         logger.debug("F7 Clicked")
         if self.n1mm:
@@ -1640,7 +1693,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F7.toolTip()))
 
-    def sendf8(self):
+    def sendf8(self) -> None:
         """stub"""
         logger.debug("F8 Clicked")
         if self.n1mm:
@@ -1651,7 +1704,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F8.toolTip()))
 
-    def sendf9(self):
+    def sendf9(self) -> None:
         """stub"""
         logger.debug("F9 Clicked")
         if self.n1mm:
@@ -1662,7 +1715,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F9.toolTip()))
 
-    def sendf10(self):
+    def sendf10(self) -> None:
         """stub"""
         logger.debug("F10 Clicked")
         if self.n1mm:
@@ -1673,7 +1726,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F10.toolTip()))
 
-    def sendf11(self):
+    def sendf11(self) -> None:
         """stub"""
         logger.debug("F11 Clicked")
         if self.n1mm:
@@ -1684,7 +1737,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F11.toolTip()))
 
-    def sendf12(self):
+    def sendf12(self) -> None:
         """stub"""
         logger.debug("F12 Clicked")
         if self.n1mm:
@@ -1695,13 +1748,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
-    def run_sp_buttons_clicked(self):
+    def run_sp_buttons_clicked(self) -> None:
         """Handle run/s&p mode"""
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
         self.read_cw_macros()
 
-    def write_preference(self):
+    def write_preference(self) -> None:
         """
         Write preferences to json file.
         """
@@ -1714,7 +1767,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except IOError as exception:
             logger.critical("writepreferences: %s", exception)
 
-    def readpreferences(self):
+    def readpreferences(self) -> None:
         """
         Restore preferences if they exist, otherwise create some sane defaults.
         """
@@ -1834,7 +1887,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_CW_macros()
         # self.show_band_mode()
 
-    def watch_udp(self):
+    def watch_udp(self) -> None:
         """Process UDP datagrams."""
         while self.multicast_interface.server_udp.hasPendingDatagrams():
             bundle = self.multicast_interface.server_udp.readDatagram(
@@ -1893,13 +1946,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["worked"] = result
                     self.multicast_interface.send_as_json(cmd)
 
-    def cw_macros_state_changed(self):
+    def cw_macros_state_changed(self) -> None:
         """Menu item to show/hide macro buttons"""
         self.pref["cw_macros"] = self.actionCW_Macros.isChecked()
         self.write_preference()
         self.show_CW_macros()
 
-    def show_CW_macros(self):
+    def show_CW_macros(self) -> None:
         """macro button state change"""
         if self.pref.get("cw_macros"):
             self.Button_Row1.show()
@@ -1908,13 +1961,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.Button_Row1.hide()
             self.Button_Row2.hide()
 
-    def command_buttons_state_change(self):
+    def command_buttons_state_change(self) -> None:
         """Menu item to show/hide command buttons"""
         self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
         self.write_preference()
         self.show_command_buttons()
 
-    def show_command_buttons(self):
+    def show_command_buttons(self) -> None:
         """command button state change"""
         if self.pref.get("command_buttons"):
             self.Command_Buttons.show()
@@ -1931,7 +1984,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def other_1_changed(self):
+    def other_1_changed(self) -> None:
         """Called when... you know."""
         if self.contest:
             if hasattr(self.contest, "advance_on_space"):
@@ -1948,7 +2001,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         next_tab.deselect()
                         next_tab.end(False)
 
-    def other_2_changed(self):
+    def other_2_changed(self) -> None:
         """Called when we need to parse SS exchange."""
         if self.contest:
             if "ARRL Sweepstakes" in self.contest.name:
@@ -1968,7 +2021,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         next_tab.deselect()
                         next_tab.end(False)
 
-    def callsign_changed(self):
+    def callsign_changed(self) -> None:
         """Called when text in the callsign field has changed"""
         text = self.callsign.text()
         text = text.upper()
@@ -2091,7 +2144,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.read_cw_macros()
 
-    def check_callsign(self, callsign):
+    def check_callsign(self, callsign) -> None:
         """Check call as entered"""
         result = self.cty_lookup(callsign)
         debug_result = f"{result}"
@@ -2127,7 +2180,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.contest:
                         self.contest.prefill(self)
 
-    def check_callsign2(self, callsign):
+    def check_callsign2(self, callsign) -> None:
         """Check call once entered"""
         callsign = callsign.strip()
         debug_lookup = f"{self.look_up}"
@@ -2198,13 +2251,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.sent.setText("59")
                 self.receive.setText("59")
 
-    def get_opon(self):
+    def get_opon(self) -> None:
         """Ctrl+O or OPON dialog"""
         self.opon_dialog = OpOn(WORKING_PATH)
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
-    def new_op(self):
+    def new_op(self) -> None:
         """Save new OP"""
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text().upper()
@@ -2212,7 +2265,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()
 
-    def make_op_dir(self):
+    def make_op_dir(self) -> None:
         """Create OP directory if it does not exist."""
         if self.current_op:
             op_path = Path(DATA_PATH) / self.current_op
@@ -2229,7 +2282,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Destination: %s", str(destination_file))
                         destination_file.write_bytes(child.read_bytes())
 
-    def poll_radio(self):
+    def poll_radio(self) -> None:
         """stub"""
         if self.rig_control:
             if self.rig_control.online is False:
@@ -2362,12 +2415,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
 
-    def generate_adif(self):
+    def generate_adif(self) -> None:
         """Generate ADIF"""
         logger.debug("******ADIF*****")
         self.contest.adif(self)
 
-    def generate_cabrillo(self):
+    def generate_cabrillo(self) -> None:
         """Generates Cabrillo file. Maybe."""
         # https://www.cqwpx.com/cabrillo.htm
         logger.debug("******Cabrillo*****")
@@ -2385,7 +2438,7 @@ def load_fonts_from_dir(directory: str) -> set:
     return font_families
 
 
-def install_icons():
+def install_icons() -> None:
     """Install icons"""
     os.system(
         "xdg-icon-resource install --size 32 --context apps --mode user "
@@ -2402,12 +2455,12 @@ def install_icons():
     os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
 
 
-def doimp(modname):
+def doimp(modname) -> object:
     """return module path"""
     return importlib.import_module(f"not1mm.plugins.{modname}")
 
 
-def run():
+def run() -> None:
     """
     Main Entry
     """
