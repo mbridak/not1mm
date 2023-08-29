@@ -9,4 +9,3 @@
 - Add Macros to send hex codes to radio. Icom Voice memories etc.
 - Autopopulate exchange based on previous contact on a different band.
 - Change sort order of log window.
-- Add time/date to adi/log filename.
