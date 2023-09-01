@@ -97,7 +97,9 @@ class Band:
 
 
 class Database:
-    """spot database"""
+    """
+    An in memory Database class to hold spots.
+    """
 
     def __init__(self) -> None:
         self.db = sqlite3.connect(":memory:")
@@ -133,7 +135,16 @@ class Database:
 
     def get_like_calls(self, call: str) -> dict:
         """
-        Returns a dict like:
+        Returns spots where the spotted callsigns contain the supplied string.
+
+        Parameters
+        ----------
+        call : str
+
+        Returns
+        -------
+        a dict like:
+
         {'K5TUX': [14.0, 21.0], 'N2CQR': [14.0], 'NE4RD': [14.0]}
         """
         try:
@@ -146,8 +157,18 @@ class Database:
             logger.debug("%s", exception)
             return {}
 
-    def addspot(self, spot):
-        """doc"""
+    def addspot(self, spot: dict) -> None:
+        """
+        Add spot to database, replacing any previous spots with the same call.
+
+        Parameters
+        ----------
+        spot: Dict
+
+        Returns
+        -------
+        Nothing.
+        """
         try:
             delete_call = (
                 f"delete from spots where callsign = '{spot.get('callsign')}';"
@@ -172,7 +193,17 @@ class Database:
             ...
 
     def getspots(self) -> list:
-        """returns a list of dicts."""
+        """
+        Return a list of spots, sorted by the ascending frequency of the spot.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        a list of dicts.
+        """
         try:
             self.cursor.execute("select * from spots order by freq ASC;")
             return self.cursor.fetchall()
@@ -180,14 +211,22 @@ class Database:
             return ()
 
     def getspotsinband(self, start: float, end: float) -> list:
-        """ "return a list of dict where freq range is defined"""
+        """
+        Returns spots in a list of dicts where the spotted frequency is in the range defined, in ascending order.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        """
         self.cursor.execute(
             f"select * from spots where freq >= {start} and freq <= {end} order by freq ASC;"
         )
         return self.cursor.fetchall()
 
     def get_next_spot(self, current: float, limit: float) -> dict:
-        """ "return a list of dict where freq range is defined"""
+        """return a list of dict where freq range is defined"""
         self.cursor.execute(
             f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
         )
@@ -201,7 +240,7 @@ class Database:
         return self.cursor.fetchone()
 
     def get_prev_spot(self, current: float, limit: float) -> dict:
-        """ "return a list of dict where freq range is defined"""
+        """return a list of dict where freq range is defined"""
         self.cursor.execute(
             f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
         )
