@@ -125,6 +125,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.focusedLog.customContextMenuRequested.connect(
             self.edit_focused_contact_selected
         )
+        self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
+        self.focusedLog.cellChanged.connect(self.focused_cell_changed)
+
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
             log.setColumnWidth(self.get_column("Snt"), 50)
@@ -225,6 +228,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.fetch_contact_by_uuid(
             self.generalLog.item(row, self.get_column("UUID")).text()
         )
+        try:
+            _ = float(self.generalLog.item(row, self.get_column("Freq (Khz)")).text())
+        except ValueError:
+            self.show_message_box("An invalid value has been entered for frequency.")
+            self.get_log()
+            self.generalLog.scrollToItem(self.generalLog.item(row, column))
+            return
         db_record = {
             "TS": self.generalLog.item(
                 row, self.get_column("YYYY-MM-DD HH:MM:SS")
@@ -274,9 +284,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.n1mm.contact_info["call"] = db_record["Call"]
             self.n1mm.contact_info["oldcall"] = self.contact["Call"]
-
+            try:
+                floatable = float(db_record["Freq"])
+            except ValueError:
+                floatable = 0.0
             self.n1mm.contact_info["rxfreq"] = self.n1mm.contact_info["txfreq"] = str(
-                int(float(db_record["Freq"]) * 100)
+                int(floatable * 100)
             )
             self.n1mm.contact_info["snt"] = db_record["SNT"]
             self.n1mm.contact_info["rcv"] = db_record["RCV"]
@@ -300,6 +313,100 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.get_log()
         self.generalLog.scrollToItem(self.generalLog.item(row, column))
+
+    def focused_cell_changed(self, row, column):
+        """Slot for changed cell"""
+        logger.debug("Cell Changed")
+        if self.focusedLog.item(row, self.get_column("UUID")) is None:
+            return
+        self.contact = self.database.fetch_contact_by_uuid(
+            self.focusedLog.item(row, self.get_column("UUID")).text()
+        )
+        try:
+            _ = float(self.focusedLog.item(row, self.get_column("Freq (Khz)")).text())
+        except ValueError:
+            self.show_message_box("An invalid value has been entered for frequency.")
+            self.get_log()
+            self.focusedLog.scrollToItem(self.focusedLog.item(row, column))
+            return
+        db_record = {
+            "TS": self.focusedLog.item(
+                row, self.get_column("YYYY-MM-DD HH:MM:SS")
+            ).text(),
+            "Call": self.focusedLog.item(row, self.get_column("Call")).text().upper(),
+            "Freq": self.focusedLog.item(row, self.get_column("Freq (Khz)")).text(),
+            "Mode": self.focusedLog.item(row, self.get_column("Mode")).text(),
+            "SNT": self.focusedLog.item(row, self.get_column("Snt")).text(),
+            "RCV": self.focusedLog.item(row, self.get_column("Rcv")).text(),
+            "SentNr": self.focusedLog.item(row, self.get_column("SentNr")).text(),
+            "NR": self.focusedLog.item(row, self.get_column("RcvNr")).text(),
+            "Exchange1": self.focusedLog.item(row, self.get_column("Exchange1")).text(),
+            "CK": self.focusedLog.item(row, self.get_column("CK")).text(),
+            "Prec": self.focusedLog.item(row, self.get_column("Prec")).text(),
+            "Sect": self.focusedLog.item(row, self.get_column("Sect")).text(),
+            "WPXPrefix": self.focusedLog.item(row, self.get_column("WPX")).text(),
+            "Power": self.focusedLog.item(row, self.get_column("Power")).text(),
+            "IsMultiplier1": self.focusedLog.item(row, self.get_column("M1")).text(),
+            "ZN": self.focusedLog.item(row, self.get_column("ZN")).text(),
+            "IsMultiplier2": self.focusedLog.item(row, self.get_column("M2"))
+            .text()
+            .upper(),
+            "CountryPrefix": self.focusedLog.item(row, self.get_column("PFX")).text(),
+            "Points": self.focusedLog.item(row, self.get_column("PTS")).text(),
+            "Name": self.focusedLog.item(row, self.get_column("Name")).text(),
+            "Comment": self.focusedLog.item(row, self.get_column("Comment")).text(),
+            "ID": self.focusedLog.item(row, self.get_column("UUID")).text(),
+        }
+        self.database.change_contact(db_record)
+
+        if self.n1mm.send_contact_packets:
+            self.n1mm.contact_info["timestamp"] = db_record["TS"]
+            self.n1mm.contact_info["contestname"] = self.contact["ContestName"].replace(
+                "-", ""
+            )
+            self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
+            self.n1mm.contact_info["operator"] = self.contact["Operator"]
+            self.n1mm.contact_info["mycall"] = self.contact["Operator"]
+            # self.n1mm.contact_info[""] = self.contact[""]
+            self.n1mm.contact_info["band"] = self.contact["Band"]
+            self.n1mm.contact_info["mode"] = self.contact["Mode"]
+            self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
+            self.n1mm.contact_info["continent"] = self.contact["Continent"]
+            self.n1mm.contact_info["gridsquare"] = self.contact["GridSquare"]
+            self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
+            self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
+
+            self.n1mm.contact_info["call"] = db_record["Call"]
+            self.n1mm.contact_info["oldcall"] = self.contact["Call"]
+            try:
+                floatable = float(db_record["Freq"])
+            except ValueError:
+                floatable = 0.0
+            self.n1mm.contact_info["rxfreq"] = self.n1mm.contact_info["txfreq"] = str(
+                int(floatable * 100)
+            )
+            self.n1mm.contact_info["snt"] = db_record["SNT"]
+            self.n1mm.contact_info["rcv"] = db_record["RCV"]
+            self.n1mm.contact_info["sntnr"] = db_record["SentNr"]
+            self.n1mm.contact_info["rcvnr"] = db_record["NR"]
+            self.n1mm.contact_info["exchange1"] = db_record.get("Exchange1", "")
+            self.n1mm.contact_info["ck"] = db_record["CK"]
+            self.n1mm.contact_info["prec"] = db_record["Prec"]
+            self.n1mm.contact_info["section"] = db_record["Sect"]
+            self.n1mm.contact_info["wpxprefix"] = db_record["WPXPrefix"]
+            self.n1mm.contact_info["power"] = db_record["Power"]
+
+            self.n1mm.contact_info["zone"] = db_record["ZN"]
+
+            self.n1mm.contact_info["countryprefix"] = db_record["CountryPrefix"]
+            self.n1mm.contact_info["points"] = db_record["Points"]
+            self.n1mm.contact_info["name"] = db_record["Name"]
+            self.n1mm.contact_info["misctext"] = db_record["Comment"]
+            self.n1mm.contact_info["ID"] = db_record["ID"]
+            self.n1mm.send_contactreplace()
+
+        self.get_log()
+        self.focusedLog.scrollToItem(self.focusedLog.item(row, column))
 
     def dummy(self):
         """the dummy"""
@@ -460,6 +567,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("Getting Log")
         self.generalLog.blockSignals(True)
+        self.focusedLog.blockSignals(True)
         current_log = self.database.fetch_all_contacts_asc()
         self.generalLog.setRowCount(0)
         for log_item in current_log:
@@ -481,10 +589,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QTableWidgetItem(str(log_item.get("Call", ""))),
             )
             freq = log_item.get("Freq", "")
+            try:
+                widget = QtWidgets.QTableWidgetItem(str(round(float(freq), 2)))
+            except ValueError:
+                widget = QtWidgets.QTableWidgetItem(str(round(0.0, 2)))
             self.generalLog.setItem(
                 number_of_rows,
                 self.get_column("Freq (Khz)"),
-                QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
+                widget,
             )
             self.generalLog.setItem(
                 number_of_rows,
@@ -588,6 +700,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
         self.generalLog.blockSignals(False)
+        self.focusedLog.blockSignals(False)
 
     def watch_udp(self):
         """Puts UDP datagrams in a FIFO queue"""
@@ -661,10 +774,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QTableWidgetItem(str(log_item.get("Call", ""))),
             )
             freq = log_item.get("Freq", "")
+            try:
+                widget = QtWidgets.QTableWidgetItem(str(round(float(freq), 2)))
+            except ValueError:
+                widget = QtWidgets.QTableWidgetItem(str(round(0.0, 2)))
             self.focusedLog.setItem(
                 number_of_rows,
                 self.get_column("Freq (Khz)"),
-                QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
+                widget,
             )
             self.focusedLog.setItem(
                 number_of_rows,
@@ -768,6 +885,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
+
+    def show_message_box(self, message: str) -> None:
+        """
+        Displays a dialog box with a message.
+
+        Paramters
+        ---------
+        message : str
+
+        Returns
+        -------
+        None
+        """
+        message_box = QtWidgets.QMessageBox()
+        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setText(message)
+        message_box.setWindowTitle("Information")
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        _ = message_box.exec_()
 
 
 def load_fonts_from_dir(directory: str) -> set:
