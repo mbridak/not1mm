@@ -124,6 +124,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-9-3] Added some accessibility stuff for screen readers.
 - [23-9-2] CTRL+SHIFT+K to open CW text entry field.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
