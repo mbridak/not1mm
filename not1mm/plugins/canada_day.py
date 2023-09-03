@@ -83,8 +83,10 @@ def interface(self):
     self.field4.show()
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("SentNR")
+    self.field3.setAccessibleName("Sent Number")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Prov/territory or SN")
+    self.field4.setAccessibleName("Province Territory or Serial Number")
 
 
 def reset_label(self):

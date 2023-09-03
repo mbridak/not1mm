@@ -49,6 +49,7 @@ def interface(self):
     self.field4.show()
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Power")
+    self.field4.setAccessibleName("Power")
 
 
 def reset_label(self):

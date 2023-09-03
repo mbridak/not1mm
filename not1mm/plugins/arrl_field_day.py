@@ -48,8 +48,10 @@ def interface(self):
     self.field4.show()
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("Class")
+    self.field3.setAccessibleName("Class")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("Section")
+    self.field4.setAccessibleName("Section")
 
 
 def reset_label(self):

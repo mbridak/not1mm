@@ -50,8 +50,10 @@ def interface(self):
     self.field4.show()
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("Name")
+    self.field3.setAccessibleName("Name")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("ST/DX/#")
+    self.field4.setAccessibleName("State D X or Number")
 
 
 def reset_label(self):

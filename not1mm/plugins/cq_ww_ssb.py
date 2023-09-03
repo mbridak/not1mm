@@ -49,6 +49,7 @@ def interface(self):
     self.field4.show()
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("CQ Zone")
+    self.field4.setAccessibleName("C Q Zone")
 
 
 def reset_label(self):

@@ -50,11 +50,13 @@ def interface(self):
     self.field4.show()
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("SentNR")
+    self.field3.setAccessibleName("Sent Number")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("RcvNR")
+    self.field4.setAccessibleName("Received Number")
 
 
-def reset_label(self):
+def reset_label(self):  # pylint: disable=unused-argument
     """reset label after field cleared"""
 
 
@@ -106,7 +108,7 @@ def set_contact_vars(self):
             self.contact["IsMultiplier1"] = 1
 
 
-def predupe(self):
+def predupe(self):  # pylint: disable=unused-argument
     """called after callsign entered"""
 
 

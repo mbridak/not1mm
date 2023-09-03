@@ -88,6 +88,9 @@
            </item>
            <item>
             <widget class="QLabel" name="cw_band_160">
+             <property name="accessibleName">
+              <string>160 c w</string>
+             </property>
              <property name="text">
               <string>160</string>
              </property>
@@ -413,6 +416,12 @@
                  <property name="focusPolicy">
                   <enum>Qt::ClickFocus</enum>
                  </property>
+                 <property name="accessibleName">
+                  <string>callsign</string>
+                 </property>
+                 <property name="accessibleDescription">
+                  <string>enter callsign here</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
                  </property>
@@ -445,6 +454,9 @@
                  <property name="focusPolicy">
                   <enum>Qt::ClickFocus</enum>
                  </property>
+                 <property name="accessibleName">
+                  <string>RST Sent</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
                  </property>
@@ -476,6 +488,9 @@
                  </property>
                  <property name="focusPolicy">
                   <enum>Qt::ClickFocus</enum>
+                 </property>
+                 <property name="accessibleName">
+                  <string>RST Received</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
@@ -587,6 +602,9 @@
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
+              <property name="accessibleName">
+               <string>Run Mode</string>
+              </property>
               <property name="text">
                <string>Run</string>
               </property>
@@ -596,6 +614,9 @@
              <widget class="QRadioButton" name="radioButton_sp">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="accessibleName">
+               <string>Search and Pounce</string>
               </property>
               <property name="text">
                <string>S&amp;&amp;P</string>
@@ -700,6 +721,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F1</string>
+               </property>
                <property name="text">
                 <string>F1:</string>
                </property>
@@ -709,6 +733,9 @@
               <widget class="QPushButton" name="F2">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F2</string>
                </property>
                <property name="text">
                 <string>F2:</string>
@@ -720,6 +747,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F3</string>
+               </property>
                <property name="text">
                 <string>F3:</string>
                </property>
@@ -729,6 +759,9 @@
               <widget class="QPushButton" name="F4">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F4</string>
                </property>
                <property name="text">
                 <string>F4:</string>
@@ -740,6 +773,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F5</string>
+               </property>
                <property name="text">
                 <string>F5:</string>
                </property>
@@ -749,6 +785,9 @@
               <widget class="QPushButton" name="F6">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F6</string>
                </property>
                <property name="text">
                 <string>F6:</string>
@@ -781,6 +820,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F7</string>
+               </property>
                <property name="text">
                 <string>F7:</string>
                </property>
@@ -790,6 +832,9 @@
               <widget class="QPushButton" name="F8">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F8</string>
                </property>
                <property name="text">
                 <string>F8:</string>
@@ -801,6 +846,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F9</string>
+               </property>
                <property name="text">
                 <string>F9:</string>
                </property>
@@ -810,6 +858,9 @@
               <widget class="QPushButton" name="F10">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F10</string>
                </property>
                <property name="text">
                 <string>F10:</string>
@@ -821,6 +872,9 @@
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
                </property>
+               <property name="accessibleName">
+                <string>F11</string>
+               </property>
                <property name="text">
                 <string>F11:</string>
                </property>
@@ -830,6 +884,9 @@
               <widget class="QPushButton" name="F12">
                <property name="focusPolicy">
                 <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="accessibleName">
+                <string>F12</string>
                </property>
                <property name="text">
                 <string>F12:</string>
