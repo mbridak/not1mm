@@ -51,7 +51,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="0" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
@@ -70,7 +70,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -355,7 +355,112 @@
        <string>CAT</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="1" column="1">
+       <item row="1" column="4">
+        <widget class="QLabel" name="label_7">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Port:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="hamlib_baud">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>300</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4800</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>9600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>19200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>38400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>57600</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>115200</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>230400</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>460800</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="label_6">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Rig Control IP:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
         <widget class="QLineEdit" name="rigcontrolip_field">
          <property name="font">
           <font>
@@ -370,7 +475,68 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="4">
+       <item row="0" column="4">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="8" column="0" colspan="7">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="0" colspan="7">
+        <widget class="Line" name="line">
+         <property name="lineWidth">
+          <number>4</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5" colspan="2">
+        <widget class="QLineEdit" name="rigcontrolport_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhDigitsOnly</set>
+         </property>
+         <property name="text">
+          <string>4532</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="text">
+          <string>Device:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="7">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
@@ -436,6 +602,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QRadioButton" name="usehamlib_radioButton">
+           <property name="text">
+            <string>HamLib</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QRadioButton" name="radioButton">
            <property name="font">
             <font>
@@ -467,97 +640,50 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="1" colspan="3">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_23">
          <property name="text">
-          <string>Rig Control IP:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <string>Radio:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_7">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_22">
          <property name="text">
-          <string>Port:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>Baud:</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="4">
-        <spacer name="verticalSpacer_3">
+       <item row="6" column="0" colspan="7">
+        <widget class="Line" name="line_2">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="rigcontrolport_field">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhDigitsOnly</set>
-         </property>
+       <item row="5" column="1" colspan="3">
+        <widget class="QComboBox" name="hamlib_radio">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="6">
+        <widget class="QPushButton" name="update_devices">
          <property name="text">
-          <string>4532</string>
+          <string>Update</string>
          </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="5">
+        <widget class="QComboBox" name="hamlib_device">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
