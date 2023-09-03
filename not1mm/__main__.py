@@ -911,9 +911,10 @@ class MainWindow(QtWidgets.QMainWindow):
             "\tfirst field needed for the exchange.\n"
             "[Enter]\tSubmits the fields to the log.\n"
             "[F1-F12]\tSend (CW or Voice) macros.\n"
-            "[CTRL-S]\tSpot Callsign to the cluster.\n"
             "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
             "\tentry field (CAT Required).\n"
+            "[CTRL-SHIFT-K] Open CW text input field.\n"
+            "[CTRL-S]\tSpot Callsign to the cluster.\n"
         )
 
     def filepicker(self, action: str) -> str:
