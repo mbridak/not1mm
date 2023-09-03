@@ -184,12 +184,16 @@ class MainWindow(QtWidgets.QMainWindow):
     interface_ip = None
     rig_control = None
     worked_list = {}
+    cw_entry_visible = False
+    last_focus = None
+    oldtext = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
@@ -197,6 +201,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.next_field = self.other_2
         self.dupe_indicator.hide()
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
+
+        self.cw_entry.textChanged.connect(self.handle_text_change)
+        self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
@@ -365,6 +372,31 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+    def toggle_cw_entry(self) -> None:
+        """Toggle the CW entry field on and off."""
+        self.cw_entry_visible = not self.cw_entry_visible
+        if self.cw_entry_visible:
+            self.last_focus = app.focusWidget()
+            self.cw_entry.clear()
+            self.cw_entry.show()
+            self.cw_entry.setFocus()
+            return
+        self.cw_entry.hide()
+        self.cw_entry.clearFocus()
+        if self.last_focus:
+            self.last_focus.setFocus()
+
+    def handle_text_change(self):
+        """..."""
+        newtext = self.cw_entry.text()
+        if len(newtext) < len(self.oldtext):
+            # self.send_backspace()
+            self.oldtext = newtext
+            return
+        if self.cw is not None:
+            self.cw.sendcw(newtext[len(self.oldtext) :])
+        self.oldtext = newtext
 
     def click_160_cw(self, _event) -> None:
         """Handle clicked on label"""
@@ -1002,6 +1034,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """This overrides Qt key event."""
         modifier = event.modifiers()
+        if event.key() == Qt.Key.Key_K:
+            self.toggle_cw_entry()
+            return
         if event.key() == Qt.Key_S and modifier == Qt.ControlModifier:
             freq = self.radio_state.get("vfoa")
             dx = self.callsign.text()
