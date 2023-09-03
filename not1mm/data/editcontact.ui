@@ -51,7 +51,14 @@
          </widget>
         </item>
         <item row="0" column="5">
-         <widget class="QLineEdit" name="time_stamp"/>
+         <widget class="QLineEdit" name="time_stamp">
+          <property name="accessibleName">
+           <string>timestamp</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>timestamp</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_5">
@@ -64,7 +71,14 @@
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QLineEdit" name="rx_freq"/>
+         <widget class="QLineEdit" name="rx_freq">
+          <property name="accessibleName">
+           <string>r x frequency</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>received frequency</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="4">
          <widget class="QLabel" name="label_6">
@@ -77,7 +91,14 @@
          </widget>
         </item>
         <item row="1" column="5">
-         <widget class="QLineEdit" name="tx_freq"/>
+         <widget class="QLineEdit" name="tx_freq">
+          <property name="accessibleName">
+           <string>t x frequency</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>transmitter frequency</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_7">
@@ -90,7 +111,14 @@
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLineEdit" name="mode"/>
+         <widget class="QLineEdit" name="mode">
+          <property name="accessibleName">
+           <string>mode</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>mode used.</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="4">
          <widget class="QLabel" name="label_8">
@@ -104,6 +132,12 @@
         </item>
         <item row="2" column="5">
          <widget class="QLineEdit" name="contest">
+          <property name="accessibleName">
+           <string>contest</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>cabrillo name of the contest.</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -120,7 +154,14 @@
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLineEdit" name="rst_sent"/>
+         <widget class="QLineEdit" name="rst_sent">
+          <property name="accessibleName">
+           <string>r s t sent</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>r s t sent</string>
+          </property>
+         </widget>
         </item>
         <item row="3" column="4">
          <widget class="QLabel" name="label_10">
@@ -133,7 +174,14 @@
          </widget>
         </item>
         <item row="3" column="5">
-         <widget class="QLineEdit" name="rst_rcv"/>
+         <widget class="QLineEdit" name="rst_rcv">
+          <property name="accessibleName">
+           <string>r s t received</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>r s t received</string>
+          </property>
+         </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_11">
@@ -146,7 +194,14 @@
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QLineEdit" name="country"/>
+         <widget class="QLineEdit" name="country">
+          <property name="accessibleName">
+           <string>country</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>country of contact.</string>
+          </property>
+         </widget>
         </item>
         <item row="4" column="3" colspan="2">
          <widget class="QLabel" name="label_12">
@@ -159,7 +214,14 @@
          </widget>
         </item>
         <item row="4" column="5">
-         <widget class="QLineEdit" name="station_call"/>
+         <widget class="QLineEdit" name="station_call">
+          <property name="accessibleName">
+           <string>station call</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>callsign of the station.</string>
+          </property>
+         </widget>
         </item>
         <item row="5" column="0" colspan="2">
          <widget class="QLabel" name="label_13">
@@ -172,7 +234,14 @@
          </widget>
         </item>
         <item row="5" column="2">
-         <widget class="QLineEdit" name="name"/>
+         <widget class="QLineEdit" name="name">
+          <property name="accessibleName">
+           <string>name</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>name of contact</string>
+          </property>
+         </widget>
         </item>
         <item row="5" column="3" colspan="2">
          <widget class="QLabel" name="label_14">
@@ -185,7 +254,14 @@
          </widget>
         </item>
         <item row="5" column="5">
-         <widget class="QLineEdit" name="qth"/>
+         <widget class="QLineEdit" name="qth">
+          <property name="accessibleName">
+           <string>q t h</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>q t h of contact.</string>
+          </property>
+         </widget>
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="label_15">
@@ -198,10 +274,24 @@
          </widget>
         </item>
         <item row="6" column="2" colspan="4">
-         <widget class="QLineEdit" name="comment"/>
+         <widget class="QLineEdit" name="comment">
+          <property name="accessibleName">
+           <string>comment</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged comment.</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QLineEdit" name="call"/>
+         <widget class="QLineEdit" name="call">
+          <property name="accessibleName">
+           <string>call</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>callsign of contact.</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -216,10 +306,24 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="1">
-         <widget class="QLineEdit" name="nr"/>
+         <widget class="QLineEdit" name="nr">
+          <property name="accessibleName">
+           <string>number</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>number received.</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="check"/>
+         <widget class="QLineEdit" name="check">
+          <property name="accessibleName">
+           <string>check field</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged check.</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="4">
          <widget class="QLabel" name="label_20">
@@ -236,13 +340,26 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="accessibleName">
+           <string>mult 3</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>multiplier three not editable.</string>
+          </property>
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item row="1" column="3">
-         <widget class="QLineEdit" name="section"/>
+         <widget class="QLineEdit" name="section">
+          <property name="accessibleName">
+           <string>section</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged section</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="2">
          <widget class="QLabel" name="label_16">
@@ -259,19 +376,46 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="accessibleName">
+           <string>mult 1</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>multiplier one not editable.</string>
+          </property>
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QLineEdit" name="run_12"/>
+         <widget class="QLineEdit" name="run_12">
+          <property name="accessibleName">
+           <string>run 1/2</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>run 1/2</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QLineEdit" name="nr_sent"/>
+         <widget class="QLineEdit" name="nr_sent">
+          <property name="accessibleName">
+           <string>number sent</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>number sent</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QLineEdit" name="prec"/>
+         <widget class="QLineEdit" name="prec">
+          <property name="accessibleName">
+           <string>precidence</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged precidence.</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="4">
          <widget class="QLabel" name="label_3">
@@ -284,10 +428,24 @@
          </widget>
         </item>
         <item row="4" column="3" colspan="2">
-         <widget class="QLineEdit" name="op"/>
+         <widget class="QLineEdit" name="op">
+          <property name="accessibleName">
+           <string>op</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logging operators callsign.</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="7">
-         <widget class="QLineEdit" name="power"/>
+         <widget class="QLineEdit" name="power">
+          <property name="accessibleName">
+           <string>power</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged power.</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="4">
          <widget class="QLabel" name="label_24">
@@ -320,7 +478,14 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLineEdit" name="grid"/>
+         <widget class="QLineEdit" name="grid">
+          <property name="accessibleName">
+           <string>grid</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged grid square.</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="6">
          <widget class="QLabel" name="label_21">
@@ -353,13 +518,34 @@
          </widget>
         </item>
         <item row="1" column="7">
-         <widget class="QLineEdit" name="band"/>
+         <widget class="QLineEdit" name="band">
+          <property name="accessibleName">
+           <string>band</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged band.</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="5">
-         <widget class="QLineEdit" name="points"/>
+         <widget class="QLineEdit" name="points">
+          <property name="accessibleName">
+           <string>points</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>points for contact.</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="zone"/>
+         <widget class="QLineEdit" name="zone">
+          <property name="accessibleName">
+           <string>zone</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged zone.</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_18">
@@ -372,7 +558,14 @@
          </widget>
         </item>
         <item row="3" column="7">
-         <widget class="QLineEdit" name="radio"/>
+         <widget class="QLineEdit" name="radio">
+          <property name="accessibleName">
+           <string>radio</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>radio</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="6">
          <widget class="QLabel" name="label_4">
@@ -388,6 +581,12 @@
          <widget class="QCheckBox" name="mult_2">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="accessibleName">
+           <string>mult 2</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>multiplier two not editable.</string>
           </property>
           <property name="text">
            <string/>
@@ -405,10 +604,24 @@
          </widget>
         </item>
         <item row="4" column="6" colspan="2">
-         <widget class="QLineEdit" name="misc"/>
+         <widget class="QLineEdit" name="misc">
+          <property name="accessibleName">
+           <string>misc</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>miscellaneous</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="7">
-         <widget class="QLineEdit" name="wpx"/>
+         <widget class="QLineEdit" name="wpx">
+          <property name="accessibleName">
+           <string>w p x</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged w p x.</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_17">
@@ -461,7 +674,14 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="exchange"/>
+         <widget class="QLineEdit" name="exchange">
+          <property name="accessibleName">
+           <string>exchange</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>logged exchanged.</string>
+          </property>
+         </widget>
         </item>
         <item row="3" column="6">
          <widget class="QLabel" name="label_29">
@@ -491,7 +711,14 @@
          </widget>
         </item>
         <item row="5" column="1" colspan="2">
-         <widget class="QLineEdit" name="rover_qth"/>
+         <widget class="QLineEdit" name="rover_qth">
+          <property name="accessibleName">
+           <string>rover q t h</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>rover q t h</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -518,6 +745,12 @@
            <family>JetBrains Mono</family>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>delete</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>delete contact.</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">color: rgb(255, 120, 0);</string>
          </property>
@@ -541,6 +774,12 @@
           <font>
            <family>JetBrains Mono</family>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string/>
+         </property>
+         <property name="accessibleDescription">
+          <string/>
          </property>
          <property name="styleSheet">
           <string notr="true"/>

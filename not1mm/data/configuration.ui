@@ -63,6 +63,12 @@
        <strikeout>false</strikeout>
       </font>
      </property>
+     <property name="accessibleName">
+      <string/>
+     </property>
+     <property name="accessibleDescription">
+      <string/>
+     </property>
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
      </property>
@@ -108,6 +114,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>use ham q t h</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use ham q t h</string>
+         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -128,6 +140,12 @@
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>use q r z</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use q r z</string>
          </property>
          <property name="autoFillBackground">
           <bool>false</bool>
@@ -152,6 +170,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>none</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>none</string>
+         </property>
          <property name="text">
           <string>None</string>
          </property>
@@ -169,6 +193,12 @@
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>user name</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>user name for look up service.</string>
          </property>
          <property name="text">
           <string/>
@@ -189,6 +219,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>use ham d b</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use ham d b</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -246,6 +282,12 @@
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>password</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>lookup service password.</string>
          </property>
          <property name="text">
           <string/>
@@ -326,6 +368,12 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="accessibleName">
+          <string>output sound device</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>available output sound devices.</string>
+         </property>
         </widget>
        </item>
        <item row="0" column="0">
@@ -364,6 +412,12 @@
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>cat control i p address</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>i p address of rig control d or f l rig.</string>
          </property>
          <property name="text">
           <string>127.0.0.1</string>
@@ -404,6 +458,12 @@
              <strikeout>false</strikeout>
             </font>
            </property>
+           <property name="accessibleName">
+            <string>rig control d</string>
+           </property>
+           <property name="accessibleDescription">
+            <string>use rig control d</string>
+           </property>
            <property name="styleSheet">
             <string notr="true"/>
            </property>
@@ -424,6 +484,12 @@
              <strikeout>false</strikeout>
             </font>
            </property>
+           <property name="accessibleName">
+            <string>f l rig</string>
+           </property>
+           <property name="accessibleDescription">
+            <string>use f l rig</string>
+           </property>
            <property name="styleSheet">
             <string notr="true"/>
            </property>
@@ -443,6 +509,12 @@
              <pointsize>12</pointsize>
              <strikeout>false</strikeout>
             </font>
+           </property>
+           <property name="accessibleName">
+            <string>none</string>
+           </property>
+           <property name="accessibleDescription">
+            <string>none.</string>
            </property>
            <property name="text">
             <string>None</string>
@@ -552,6 +624,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>port number</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>port number of rig control d or f l rig.</string>
+         </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
          </property>
@@ -582,6 +660,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>c w port number</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>port number of c w keyer.</string>
          </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
@@ -630,6 +714,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>pywinkeyer</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use pie win keyer.</string>
+         </property>
          <property name="text">
           <string>PyWinkeyer</string>
          </property>
@@ -643,6 +733,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>none</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>none</string>
          </property>
          <property name="text">
           <string>None</string>
@@ -658,6 +754,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>c w address</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>i p address or hostname of c w keyer.</string>
+         </property>
          <property name="text">
           <string>localhost</string>
          </property>
@@ -671,6 +773,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>cwdaemon</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use c w daemon</string>
          </property>
          <property name="text">
           <string>cwdaemon</string>
@@ -846,13 +954,33 @@
         </widget>
        </item>
        <item row="1" column="1" colspan="5">
-        <widget class="QLineEdit" name="cluster_server_field"/>
+        <widget class="QLineEdit" name="cluster_server_field">
+         <property name="accessibleName">
+          <string>server</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>address of d x cluster server.</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="1" colspan="5">
-        <widget class="QLineEdit" name="cluster_filter"/>
+        <widget class="QLineEdit" name="cluster_filter">
+         <property name="accessibleName">
+          <string>filter</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>cluster filter.</string>
+         </property>
+        </widget>
        </item>
        <item row="4" column="1" colspan="2">
         <widget class="QComboBox" name="cluster_mode">
+         <property name="accessibleName">
+          <string>mode</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>cluster mode.</string>
+         </property>
          <item>
           <property name="text">
            <string>OPEN</string>
@@ -866,7 +994,14 @@
         </widget>
        </item>
        <item row="2" column="1" colspan="2">
-        <widget class="QLineEdit" name="cluster_port_field"/>
+        <widget class="QLineEdit" name="cluster_port_field">
+         <property name="accessibleName">
+          <string>port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>network port of the d x cluster server.</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -1035,6 +1170,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>operator name</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>n 1 m m operator name</string>
+         </property>
          <property name="placeholderText">
           <string/>
          </property>
@@ -1048,6 +1189,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>send n 1 m m packets.</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send n 1 m m packets</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -1079,6 +1226,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>station name</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>n 1 m m station name</string>
          </property>
          <property name="placeholderText">
           <string/>
@@ -1161,6 +1314,12 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="accessibleName">
+          <string>send radio packets</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send n 1 m m radio packets.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1174,6 +1333,12 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="accessibleName">
+          <string>send contact packets</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send n 1 m m contact packets.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1186,6 +1351,12 @@
            <width>22</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="accessibleName">
+          <string>send lookup packets</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send n 1 m m lookup packets.</string>
          </property>
          <property name="text">
           <string/>
@@ -1206,6 +1377,12 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="accessibleName">
+          <string>send score packets</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send n 1 m m score packets.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -1219,6 +1396,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>radio packet address and port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>radio packet address and port</string>
          </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
@@ -1240,6 +1423,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>contact packet address and port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>contact packet address and port</string>
+         </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
          </property>
@@ -1260,6 +1449,12 @@
            <strikeout>false</strikeout>
           </font>
          </property>
+         <property name="accessibleName">
+          <string>lookup packet address and port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>lookup packet address and port</string>
+         </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
          </property>
@@ -1279,6 +1474,12 @@
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
+         </property>
+         <property name="accessibleName">
+          <string>score packet address and port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>score packet address and port</string>
          </property>
          <property name="inputMethodHints">
           <set>Qt::ImhDigitsOnly</set>
@@ -1380,7 +1581,7 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

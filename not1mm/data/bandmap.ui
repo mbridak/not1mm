@@ -46,6 +46,12 @@
       </item>
       <item>
        <widget class="QLineEdit" name="callsignField">
+        <property name="accessibleName">
+         <string>callsign</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>callsign used to sign in to d x cluster.</string>
+        </property>
         <property name="styleSheet">
          <string notr="true">text-transform: uppercase;</string>
         </property>
@@ -53,6 +59,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="connectButton">
+        <property name="accessibleName">
+         <string>connect</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>connect to d x cluster.</string>
+        </property>
         <property name="text">
          <string>Connect</string>
         </property>
@@ -98,6 +110,12 @@
           <property name="focusPolicy">
            <enum>Qt::NoFocus</enum>
           </property>
+          <property name="accessibleName">
+           <string>spots</string>
+          </property>
+          <property name="accessibleDescription">
+           <string>spots from cluster.</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -120,6 +138,12 @@
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="accessibleName">
+         <string>clear all</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>clear spots</string>
+        </property>
         <property name="text">
          <string>Clear All</string>
         </property>
@@ -130,6 +154,12 @@
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="accessibleName">
+         <string>zoom in</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>zoom in</string>
+        </property>
         <property name="text">
          <string>Zoom In</string>
         </property>
@@ -139,6 +169,12 @@
        <widget class="QPushButton" name="zoomoutButton">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="accessibleName">
+         <string>zoom out</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>zoom out</string>
         </property>
         <property name="text">
          <string>Zoom Out</string>
@@ -176,6 +212,12 @@
       </item>
       <item>
        <widget class="QSpinBox" name="clear_spot_olderSpinBox">
+        <property name="accessibleName">
+         <string>clear spots older than</string>
+        </property>
+        <property name="accessibleDescription">
+         <string>removes spots older than x amount of minutes ago.</string>
+        </property>
         <property name="specialValueText">
          <string>Never</string>
         </property>

@@ -78,6 +78,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>Name</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Name of the person submitting the cabrillo.</string>
+     </property>
      <property name="placeholderText">
       <string>Hiram Percy Maxim</string>
      </property>
@@ -121,6 +127,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>rover q t h</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>rover q t h</string>
      </property>
     </widget>
    </item>
@@ -203,6 +215,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>license</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>license class of the station.</string>
+     </property>
      <property name="placeholderText">
       <string>Extra</string>
      </property>
@@ -246,6 +264,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>Address line 2</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Optional second address line.</string>
      </property>
     </widget>
    </item>
@@ -298,6 +322,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>Country</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Country of the station.</string>
+     </property>
      <property name="placeholderText">
       <string>United States</string>
      </property>
@@ -341,6 +371,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>Grid Square</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>4 to 6 character maidenhead grid square.</string>
      </property>
      <property name="placeholderText">
       <string>DM13at</string>
@@ -386,6 +422,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>City</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>City of the station.</string>
+     </property>
      <property name="placeholderText">
       <string>Newington</string>
      </property>
@@ -430,6 +472,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>longitude</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>station longitude.</string>
+     </property>
     </widget>
    </item>
    <item row="14" column="4">
@@ -471,6 +519,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>power</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>station power</string>
+     </property>
     </widget>
    </item>
    <item row="15" column="1" colspan="2">
@@ -511,6 +565,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>antenna</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>antenna</string>
      </property>
     </widget>
    </item>
@@ -583,6 +643,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>station t x. r x.</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>station t x. r x.</string>
+     </property>
     </widget>
    </item>
    <item row="15" column="0">
@@ -654,6 +720,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>State</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>State of the station.</string>
+     </property>
      <property name="placeholderText">
       <string>CT</string>
      </property>
@@ -707,6 +779,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>Street Address</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Street Address of the station.</string>
      </property>
      <property name="placeholderText">
       <string>225 Main Street</string>
@@ -772,6 +850,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>antenna height</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>antenna height</string>
+     </property>
     </widget>
    </item>
    <item row="16" column="1" colspan="2">
@@ -812,6 +896,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>a r r l section</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>a r r l section</string>
      </property>
      <property name="placeholderText">
       <string>CT</string>
@@ -877,6 +967,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>Station callsign.</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Station callsign.</string>
+     </property>
      <property name="placeholderText">
       <string>W1AW</string>
      </property>
@@ -931,6 +1027,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>i t u zone</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>i t u zone</string>
+     </property>
     </widget>
    </item>
    <item row="19" column="1" colspan="6">
@@ -971,6 +1073,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>email</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>email address of log submitter.</string>
      </property>
      <property name="placeholderText">
       <string>Hiram.P.Maxim@ARRL.NET</string>
@@ -1015,6 +1123,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>Zip Code</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Zip code portion of the address.</string>
      </property>
      <property name="placeholderText">
       <string>06111</string>
@@ -1080,6 +1194,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>club</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>club name</string>
+     </property>
      <property name="placeholderText">
       <string>Americal Radio Relay League</string>
      </property>
@@ -1137,6 +1257,12 @@
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
+     <property name="accessibleName">
+      <string>c q zone</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>c q zone</string>
+     </property>
     </widget>
    </item>
    <item row="13" column="3">
@@ -1188,6 +1314,12 @@
        </disabled>
       </palette>
      </property>
+     <property name="accessibleName">
+      <string>latitude</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>station latitude</string>
+     </property>
     </widget>
    </item>
    <item row="15" column="6">
@@ -1228,6 +1360,12 @@
         </colorrole>
        </disabled>
       </palette>
+     </property>
+     <property name="accessibleName">
+      <string>a s l</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>a s l</string>
      </property>
     </widget>
    </item>

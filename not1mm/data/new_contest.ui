@@ -20,7 +20,14 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="15" column="2" colspan="2">
-    <widget class="QPlainTextEdit" name="soapbox"/>
+    <widget class="QPlainTextEdit" name="soapbox">
+     <property name="accessibleName">
+      <string>Soap Box</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>The soap box</string>
+     </property>
+    </widget>
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="label_5">
@@ -54,6 +61,12 @@
    </item>
    <item row="10" column="2" colspan="2">
     <widget class="QComboBox" name="assisted">
+     <property name="accessibleName">
+      <string>Assisted</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Assisted category.</string>
+     </property>
      <item>
       <property name="text">
        <string>ASSISTED</string>
@@ -68,6 +81,12 @@
    </item>
    <item row="12" column="2" rowspan="2">
     <widget class="QLineEdit" name="exchange">
+     <property name="accessibleName">
+      <string>Sent exchange</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>sent exchange, excluding r s t.</string>
+     </property>
      <property name="styleSheet">
       <string notr="true">text-transform: uppercase;</string>
      </property>
@@ -75,6 +94,12 @@
    </item>
    <item row="7" column="2" colspan="2">
     <widget class="QComboBox" name="mode">
+     <property name="accessibleName">
+      <string>Operating mode</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Mode category</string>
+     </property>
      <item>
       <property name="text">
        <string>CW</string>
@@ -156,6 +181,12 @@
    </item>
    <item row="1" column="2" colspan="2">
     <widget class="QComboBox" name="contest">
+     <property name="accessibleName">
+      <string>Contest Selector</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Contest or log type.</string>
+     </property>
      <item>
       <property name="text">
        <string>General Logging</string>
@@ -270,6 +301,9 @@
    </item>
    <item row="2" column="2">
     <widget class="QDateTimeEdit" name="dateTimeEdit">
+     <property name="accessibleName">
+      <string>Start of contest Date and U T C Time</string>
+     </property>
      <property name="time">
       <time>
        <hour>16</hour>
@@ -353,6 +387,12 @@
    </item>
    <item row="4" column="2" colspan="2">
     <widget class="QComboBox" name="operator_class">
+     <property name="accessibleName">
+      <string>Operator Category</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Operator category.</string>
+     </property>
      <item>
       <property name="text">
        <string>SINGLE-OP</string>
@@ -372,6 +412,12 @@
    </item>
    <item row="6" column="2" colspan="2">
     <widget class="QComboBox" name="power">
+     <property name="accessibleName">
+      <string>Power Category</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Power category</string>
+     </property>
      <item>
       <property name="text">
        <string>HIGH</string>
@@ -421,6 +467,12 @@
    </item>
    <item row="11" column="2" colspan="2">
     <widget class="QComboBox" name="transmitter">
+     <property name="accessibleName">
+      <string>Transmitter</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Transmitter category.</string>
+     </property>
      <item>
       <property name="text">
        <string>ONE</string>
@@ -429,11 +481,6 @@
      <item>
       <property name="text">
        <string>TWO</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>New Item</string>
       </property>
      </item>
      <item>
@@ -455,6 +502,12 @@
    </item>
    <item row="5" column="2" colspan="2">
     <widget class="QComboBox" name="band">
+     <property name="accessibleName">
+      <string>Band Category</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Band category.</string>
+     </property>
      <item>
       <property name="text">
        <string>ALL</string>
@@ -596,6 +649,12 @@
    </item>
    <item row="8" column="2" colspan="2">
     <widget class="QComboBox" name="overlay">
+     <property name="accessibleName">
+      <string>Overlay category</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Overlay category</string>
+     </property>
      <item>
       <property name="text">
        <string>N/A</string>
@@ -640,6 +699,12 @@
    </item>
    <item row="14" column="2" colspan="2">
     <widget class="QLineEdit" name="operators">
+     <property name="accessibleName">
+      <string>Operators</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>operators in contest.</string>
+     </property>
      <property name="styleSheet">
       <string notr="true">text-transform: uppercase;</string>
      </property>
@@ -657,6 +722,12 @@
    </item>
    <item row="9" column="2" colspan="2">
     <widget class="QComboBox" name="station">
+     <property name="accessibleName">
+      <string>Station type</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Station type.</string>
+     </property>
      <item>
       <property name="text">
        <string>DISTRIBUTED</string>
