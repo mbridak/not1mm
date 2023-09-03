@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>866</width>
-    <height>366</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -48,8 +48,8 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
       <item>
        <layout class="QHBoxLayout" name="mainsection">
         <item>
@@ -1014,6 +1014,13 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="cw_entry">
+        <property name="placeholderText">
+         <string>Type here to send CW, press Enter to close.</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
