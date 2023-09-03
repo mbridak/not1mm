@@ -62,7 +62,7 @@ class MainWindow(QtWidgets.QMainWindow):
     columns = {
         0: "YYYY-MM-DD HH:MM:SS",
         1: "Call",
-        2: "Freq",
+        2: "Freq (Khz)",
         3: "Mode",
         4: "Snt",
         5: "Rcv",
@@ -230,7 +230,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 row, self.get_column("YYYY-MM-DD HH:MM:SS")
             ).text(),
             "Call": self.generalLog.item(row, self.get_column("Call")).text().upper(),
-            "Freq": self.generalLog.item(row, self.get_column("Freq")).text(),
+            "Freq": self.generalLog.item(row, self.get_column("Freq (Khz)")).text(),
             "Mode": self.generalLog.item(row, self.get_column("Mode")).text(),
             "SNT": self.generalLog.item(row, self.get_column("Snt")).text(),
             "RCV": self.generalLog.item(row, self.get_column("Rcv")).text(),
@@ -483,7 +483,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = log_item.get("Freq", "")
             self.generalLog.setItem(
                 number_of_rows,
-                self.get_column("Freq"),
+                self.get_column("Freq (Khz)"),
                 QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
             )
             self.generalLog.setItem(
@@ -624,6 +624,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.focusedLog.setColumnHidden(column, True)
                 columns_to_show = json_data.get("COLUMNS", [])
                 for column in columns_to_show:
+                    if column == "Freq":
+                        column = "Freq (Khz)"
                     self.generalLog.setColumnHidden(self.get_column(column), False)
                     self.focusedLog.setColumnHidden(self.get_column(column), False)
             if json_data.get("cmd", "") == "HALT":
@@ -661,7 +663,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = log_item.get("Freq", "")
             self.focusedLog.setItem(
                 number_of_rows,
-                self.get_column("Freq"),
+                self.get_column("Freq (Khz)"),
                 QtWidgets.QTableWidgetItem(str(round(float(freq), 2))),
             )
             self.focusedLog.setItem(
