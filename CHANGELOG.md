@@ -1,5 +1,11 @@
 # Changelog
 
+- [23-8-24] Add timestamp to log filenames.
+- [23-8-21] You can now click on the band/mode indicators to change to that band/mode.
+- [23-8-9] Add telnet matches to Check Window.
+- [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
+- [23-8-6] Add parsing of local log to check window.
+- [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
 - [23-7-29] Add YOUTH and YL overlay categories.
 - [23-7-28] Added NAQP SSB and CW. Added optional move to next field with spacebar.
 - [23-7-27] Check if bandwidth returned is not a number.

@@ -48,6 +48,7 @@
     - [CW Keyer interface](#cw-keyer-interface)
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
+  - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
     - [Macro use with voice](#macro-use-with-voice)
@@ -123,12 +124,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-8-24] Add timestamp to log filenames.
-- [23-8-21] You can now click on the band/mode indicators to change to that band/mode.
-- [23-8-9] Add telnet matches to Check Window.
-- [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
-- [23-8-6] Add parsing of local log to check window.
-- [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
+- [23-9-2] CTRL+SHIFT+K to open CW text entry field.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -336,6 +332,10 @@ Work has started on N1MM udp packets. So far just RadioInfo, contactinfo, contac
 
 When entering IP and Ports, enter them with a colon ':' between them. You can enter multiple pairs on the same line if separated by a space ' '.
 
+## Sending CW
+
+Other than sending CW by hand, you can also send predefined CW text messages by pressing F1 - F12. See next section on Editing macro keys. If you need to send something freeform, you can press CTRL-SHIFT-K, this will expose an entry field at the bottom of the window which you can type directly into. When you're done you can either press CTRL-SHIFT-K again, or press the Enter Key to close the field.
+
 ## Editing macro keys
 
 To edit the macros, choose `File` > `Edit Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit, CW or SSB, will be determined by your current operating mode.
@@ -404,6 +404,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 | [F1-F12] | Send (CW or Voice) macros. |
 | [CTRL-S] | Spot Callsign to the cluster. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
+| [CTRL-SHIFT-K] | Open CW text input field. |
 
 ### Log Display
 
@@ -430,6 +431,7 @@ You can not directly edit the multiplier status of a contact. Instead see the ne
 ## Recalulate Mults
 
 After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
+Add timestamp to log filenames
 
 ## Bandmap
 
