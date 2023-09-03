@@ -124,7 +124,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-9-3] Added some accessibility stuff for screen readers.
+- [23-9-3] Added some accessibility stuff for screen readers. Fixed crash when entering invalid frequency in log window. You can now edit cells in the focused half of the log window.
 - [23-9-2] CTRL+SHIFT+K to open CW text entry field.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
