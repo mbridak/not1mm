@@ -51,6 +51,31 @@ MULTICAST_GROUP = "239.1.1.1"
 INTERFACE_IP = "0.0.0.0"
 
 
+def safe_float(input: any, default=0.0) -> float:
+    """
+    Convert a string or int to a float.
+
+    Parameters
+    ----------
+    input: any
+    default: float, defaults to 0.0
+
+    Returns
+    -------
+    float(input)
+    or
+    default value if error
+    """
+    if input:
+        try:
+            return float(input)
+        except ValueError:
+            return default
+        except TypeError:
+            return default
+    return default
+
+
 class MainWindow(QtWidgets.QMainWindow):
     """
     The main window
