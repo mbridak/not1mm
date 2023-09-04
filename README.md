@@ -473,11 +473,15 @@ Click on `File` > `Generate Cabrillo`
 
 The file will be placed in your home directory. The name will be in the format of:
 
-`StationCall`_`ContestName`.log
+`StationCall`\_`ContestName`\_`CurrentDate`\_`CurrentTime`.log
 
-So for me it would be:
+So for me it would look like:
 
-K6GTE_CQ-WPX-SSB.log
+K6GTE_CANADA-DAY_2023-09-04_07-47-05.log
+
+Look a log [eh](https://www.youtube.com/watch?v=El41sHXck-E)?.
+
+[This](https://www.youtube.com/watch?v=oMI23JJUpGE) outlines some differences between ARRL Field Day and Canada Day.
 
 ## ADIF
 
@@ -485,7 +489,7 @@ K6GTE_CQ-WPX-SSB.log
 
 Boom... ADIF
 
-`StationCall`_`ContestName`.adi
+`StationCall`\_`ContestName`\_`Date`\_`Time`.adi
 
 ## Dupe checking
 
