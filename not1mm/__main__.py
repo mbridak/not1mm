@@ -1262,8 +1262,29 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["call"] = ""
         self.multicast_interface.send_as_json(cmd)
 
+    def process_special_entries(self) -> bool:
+        """Perform action when it is not a call that is entered."""
+        text = self.callsign.text()
+        if text in ["CW", "SSB", "USB", "LSB", "RTTY"]:
+            self.change_mode(text)
+            return True
+        if text and all(char.isdigit() for char in text):
+            freq = int(text)
+            orig_freq = int(self.radio_state.get("vfoa", "0.0")) / 1000
+            if freq < 100 and len(text) < 3:
+                new_freq = int(orig_freq / 100) * 100 + freq
+            elif freq < 1000:
+                new_freq = int(orig_freq / 1000) * 1000 + freq
+            else:
+                new_freq = freq
+            self.change_freq(str(new_freq))
+            return True
+        return False
+
     def save_contact(self) -> None:
         """Save to db"""
+        if self.process_special_entries():
+            return
         logger.debug("saving contact")
         if self.contest is None:
             self.show_message_box("You have no contest defined.")
@@ -2166,12 +2187,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_window_title()
             self.clearinputs()
             return
+        new_ssb_mode = None
         if mode == "SSB":
-            self.setmode("SSB")
             if int(self.radio_state.get("vfoa", 0)) > 10000000:
-                self.radio_state["mode"] = "USB"
+                new_ssb_mode = "USB"
             else:
-                self.radio_state["mode"] = "LSB"
+                new_ssb_mode = "LSB"
+        elif mode == "USB":
+            new_ssb_mode = "USB"
+        elif mode == "LSB":
+            new_ssb_mode = "LSB"
+        if new_ssb_mode:
+            self.setmode("SSB")
+            self.radio_state["mode"] = new_ssb_mode
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
