@@ -910,6 +910,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "[SPACE]\tWhen in the callsign field, will move the input to the\n"
             "\tfirst field needed for the exchange.\n"
             "[Enter]\tSubmits the fields to the log.\n"
+            "\tUnless the callsign field contains a command.\n"
             "[F1-F12]\tSend (CW or Voice) macros.\n"
             "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
             "\tentry field (CAT Required).\n"
