@@ -1,6 +1,6 @@
 # Not1MM
 
-The worlds #1 unfinnished contest logger <sup>*According to my daughter Corinna.<sup>
+The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<sup>
 
 [![PyPI](https://img.shields.io/pypi/v/not1mm)](https://pypi.org/project/not1mm/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
