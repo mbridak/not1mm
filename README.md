@@ -1,5 +1,7 @@
 # Not1MM
 
+The worlds #1 unfinnished contest logger <sup>*According to my daughter Corinna.<sup>
+
 [![PyPI](https://img.shields.io/pypi/v/not1mm)](https://pypi.org/project/not1mm/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python: 3.10+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
@@ -124,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-10-22] Where've I been? Sorry, I've been caring for a family member. Be back soon.
 - [23-9-3] Added some accessibility stuff for screen readers. Fixed crash when entering invalid frequency in log window. You can now edit cells in the focused half of the log window.
 - [23-9-2] CTRL+SHIFT+K to open CW text entry field.
 
