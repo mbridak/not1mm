@@ -101,9 +101,14 @@ def check_process(name: str) -> bool:
     Bool
     """
     for proc in psutil.process_iter():
-        if len(proc.cmdline()) == 2:
-            if name in proc.cmdline()[1]:
-                return True
+        try:
+            if len(proc.cmdline()) == 2:
+                if name in proc.cmdline()[1]:
+                    return True
+        except psutil.NoSuchProcess:
+            continue
+        except psutil.ZombieProcess:
+            continue
     return False
 
 
