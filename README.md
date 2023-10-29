@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-10-28] Merged PR from #qsantos, fixing crash related to zombie processes.
 - [23-10-22] Where've I been? Sorry, I've been caring for a family member. Be back soon.
 - [23-9-3] Added some accessibility stuff for screen readers. Fixed crash when entering invalid frequency in log window. You can now edit cells in the focused half of the log window.
 - [23-9-2] CTRL+SHIFT+K to open CW text entry field.
