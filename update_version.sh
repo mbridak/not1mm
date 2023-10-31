@@ -1,7 +1,7 @@
 #!/bin/bash
 
 today=$(date +'%y.%m.%d')
-today_no_leading_zeros=$(echo "$today" | sed 's/.0/./g')
+today_no_leading_zeros=$(echo "$today" | sed 's/\.0/./g')
 
 tnlz=$(echo version = \"$today_no_leading_zeros\")
 str=$(cat pyproject.toml | grep version)
