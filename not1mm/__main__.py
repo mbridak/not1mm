@@ -260,6 +260,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
 
+        self.radio_grey = QtGui.QPixmap(icon_path + "radio_grey.png")
+        self.radio_red = QtGui.QPixmap(icon_path + "radio_red.png")
+        self.radio_green = QtGui.QPixmap(icon_path + "radio_green.png")
+        self.radio_icon.setPixmap(self.radio_grey)
+
         self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(self.edit_F1)
         self.F1.clicked.connect(self.sendf1)
@@ -375,6 +380,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+    def set_radio_icon(self, state: int) -> None:
+        """change CAT icon state"""
+        displaystate = [self.radio_grey, self.radio_red, self.radio_green]
+        try:
+            self.radio_icon.setPixmap(displaystate[state])
+        except (IndexError, TypeError) as err:
+            logger.debug(err)
 
     def toggle_cw_entry(self) -> None:
         """Toggle the CW entry field on and off."""
@@ -840,15 +853,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
             update_available = cty.check_update()
-        except AttributeError as the_error:
-            logger.debug("cty parser returned an error: %s", the_error)
-            return
-        except ValueError as the_error:
-            print("cty parser returned an error: %s", the_error)
-            logger.debug("cty parser returned an error: %s", the_error)
-            return
-        except locale.Error as the_error:
-            print("cty parser returned an error: %s", the_error)
+        except (AttributeError, ValueError, locale.Error) as the_error:
             logger.debug("cty parser returned an error: %s", the_error)
             return
         logger.debug("Newer cty file available %s", str(update_available))
@@ -1882,6 +1887,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
+
         if self.pref.get("userigctld", False):
             logger.debug(
                 "Using rigctld: %s",
@@ -2323,10 +2329,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def poll_radio(self) -> None:
         """stub"""
+        self.set_radio_icon(0)
         if self.rig_control:
             if self.rig_control.online is False:
+                self.set_radio_icon(1)
                 self.rig_control.reinit()
             if self.rig_control.online:
+                self.set_radio_icon(2)
                 info_dirty = False
                 vfo = self.rig_control.get_vfo()
                 mode = self.rig_control.get_mode()
