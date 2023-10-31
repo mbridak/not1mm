@@ -598,6 +598,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="radio_icon">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QRadioButton" name="radioButton_run">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
@@ -1089,7 +1099,7 @@
      <x>0</x>
      <y>0</y>
      <width>866</width>
-     <height>30</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
