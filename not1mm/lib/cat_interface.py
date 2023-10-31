@@ -7,6 +7,7 @@ GPL V3
 import logging
 import socket
 import xmlrpc.client
+import http
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -63,9 +64,11 @@ class CAT:
             self.online = True
             try:
                 _ = self.server.main.get_version()
-            except ConnectionRefusedError:
-                self.online = False
-            except xmlrpc.client.Fault:
+            except (
+                ConnectionRefusedError,
+                xmlrpc.client.Fault,
+                http.client.BadStatusLine,
+            ):
                 self.online = False
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
@@ -73,21 +76,11 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.5)
+            self.rigctrlsocket.settimeout(0.1)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
-        except ConnectionRefusedError as exception:
-            self.rigctrlsocket = None
-            self.online = False
-            logger.debug("%s", f"{exception}")
-            return
-        except TimeoutError as exception:
-            self.rigctrlsocket = None
-            self.online = False
-            logger.debug("%s", f"{exception}")
-            return
-        except OSError as exception:
+        except (ConnectionRefusedError, TimeoutError, OSError) as exception:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -113,10 +106,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.get_vfo()
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("getvfo_flrig: %s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("getvfo_flrig: %s", f"{exception}")
         return ""
@@ -151,10 +145,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.get_mode()
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("%s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
         return ""
@@ -193,11 +188,11 @@ class CAT:
             self.online = True
             bandwidth = self.server.rig.get_bw()
             return bandwidth[0]
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("getbw_flrig: %s", f"{exception}")
-            return ""
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("getbw_flrig: %s", f"{exception}")
             return ""
@@ -234,11 +229,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.get_power()
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("getpower_flrig: %s", f"{exception}")
-            return ""
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("getpower_flrig: %s", f"{exception}")
             return ""
@@ -268,10 +263,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.get_ptt()
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("%s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
@@ -305,10 +301,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.set_frequency(float(freq))
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("setvfo_flrig: %s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("setvfo_flrig: %s", f"{exception}")
         return False
@@ -342,10 +339,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.set_mode(mode)
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("setmode_flrig: %s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("setmode_flrig: %s", f"{exception}")
         return False
@@ -378,11 +376,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.set_power(power)
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("setpower_flrig: %s", f"{exception}")
-            return False
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("setpower_flrig: %s", f"{exception}")
             return False
@@ -432,10 +430,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.set_ptt(1)
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("%s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
@@ -465,10 +464,11 @@ class CAT:
         try:
             self.online = True
             return self.server.rig.set_ptt(0)
-        except ConnectionRefusedError as exception:
-            self.online = False
-            logger.debug("%s", f"{exception}")
-        except xmlrpc.client.Fault as exception:
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+        ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
