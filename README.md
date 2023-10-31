@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-10-31] Fix crash if flrig wasn't running. Add CAT status icon.
 - [23-10-28] Merged PR from #qsantos and #bseidenberg, fixing crash related to zombie processes.
 - [23-10-22] Where've I been? Sorry, I've been caring for a family member. Be back soon.
 - [23-9-3] Added some accessibility stuff for screen readers. Fixed crash when entering invalid frequency in log window. You can now edit cells in the focused half of the log window.
@@ -317,7 +318,7 @@ Choose the sound output device for the voice keyer.
 
 ### CAT
 
-Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really?
+Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really? There's an onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
 ### CW Keyer interface
 
