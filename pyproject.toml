@@ -17,6 +17,7 @@ dependencies = [
     "dicttoxml",
     "xmltodict",
     "psutil",
+    "pyserial",
     "sounddevice",
     "soundfile",
     "numpy",
