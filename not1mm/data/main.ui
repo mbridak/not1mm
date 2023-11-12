@@ -1232,7 +1232,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>CW Macros</string>
+    <string>Macros</string>
    </property>
    <property name="font">
     <font>
