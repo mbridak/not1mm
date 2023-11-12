@@ -224,30 +224,44 @@ def adif(self):
                     end="\r\n",
                     file=file_descriptor,
                 )
-                print(
-                    f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"<CALL:{len(hiscall)}>{hiscall.upper()}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                if len(hisname):
+
+                try:
                     print(
-                        f"<NAME:{len(hisname)}>{hisname.title()}",
+                        f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
                         end="\r\n",
                         file=file_descriptor,
                     )
-                print(
-                    f"<MODE:{len(themode)}>{themode}", end="\r\n", file=file_descriptor
-                )
-                # print(
-                #     f"<BAND:{len(band + 'M')}>{band + 'M'}",
-                #     end="\r\n",
-                #     file=file_descriptor,
-                # )
+                except TypeError:
+                    ...
+
+                try:
+                    print(
+                        f"<CALL:{len(hiscall)}>{hiscall.upper()}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                except TypeError:
+                    ...
+
+                try:
+                    if len(hisname):
+                        print(
+                            f"<NAME:{len(hisname)}>{hisname.title()}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    print(
+                        f"<MODE:{len(themode)}>{themode}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                except TypeError:
+                    ...
+
                 try:
                     print(
                         f"<FREQ:{len(frequency)}>{frequency}",
@@ -255,42 +269,66 @@ def adif(self):
                         file=file_descriptor,
                     )
                 except TypeError:
-                    pass  # This is bad form... I can't remember why this is in a try block
+                    ...
 
-                print(
-                    f"<RST_SENT:{len(sentrst)}>{sentrst}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                print(
-                    f"<RST_RCVD:{len(rcvrst)}>{rcvrst}",
-                    end="\r\n",
-                    file=file_descriptor,
-                )
-                if sentnr != "0":
+                try:
                     print(
-                        f"<STX_STRING:{len(sentnr)}>{sentnr}",
+                        f"<RST_SENT:{len(sentrst)}>{sentrst}",
                         end="\r\n",
                         file=file_descriptor,
                     )
-                if rcvnr != "0":
+                except TypeError:
+                    ...
+
+                try:
                     print(
-                        f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
+                        f"<RST_RCVD:{len(rcvrst)}>{rcvrst}",
                         end="\r\n",
                         file=file_descriptor,
                     )
-                if len(grid) > 1:
-                    print(
-                        f"<GRIDSQUARE:{len(grid)}>{grid}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
-                if len(comment):
-                    print(
-                        f"<COMMENT:{len(comment)}>{comment}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
+                except TypeError:
+                    ...
+
+                try:
+                    if sentnr != "0":
+                        print(
+                            f"<STX_STRING:{len(sentnr)}>{sentnr}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    if rcvnr != "0":
+                        print(
+                            f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    if len(grid) > 1:
+                        print(
+                            f"<GRIDSQUARE:{len(grid)}>{grid}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    if len(comment):
+                        print(
+                            f"<COMMENT:{len(comment)}>{comment}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
                 print("<EOR>", end="\r\n", file=file_descriptor)
                 print("", end="\r\n", file=file_descriptor)
     except IOError:
