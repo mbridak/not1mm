@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-11-12] Fix crash in ADIF exporter where the grid was of None type.
 - [23-11-2] Add missing dependency for pyserial.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
