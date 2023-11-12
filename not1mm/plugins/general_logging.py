@@ -204,7 +204,9 @@ def adif(self):
 
                 try:
                     print(
-                        f"<MODE:{len(themode)}>{themode}", end="\r\n", file=file_descriptor
+                        f"<MODE:{len(themode)}>{themode}",
+                        end="\r\n",
+                        file=file_descriptor,
                     )
                 except TypeError:
                     ...
@@ -274,7 +276,7 @@ def adif(self):
                             file=file_descriptor,
                         )
                 except TypeError:
-                ...
+                    ...
 
                 print("<EOR>", end="\r\n", file=file_descriptor)
                 print("", end="\r\n", file=file_descriptor)
