@@ -50,7 +50,7 @@ from not1mm.lib.ham_utility import (
     reciprocol,
     fakefreq,
 )
-from not1mm.lib.lookup import HamDBlookup, HamQTH, QRZlookup
+from not1mm.lib.lookup import HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
@@ -1839,8 +1839,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("lookupusername"),
                 self.pref.get("lookuppassword"),
             )
-        # if self.pref.get("usehamdb"):
-        #     self.look_up = HamDBlookup()
+
         if self.pref.get("usehamqth"):
             self.look_up = HamQTH(
                 self.pref.get("lookupusername"),
