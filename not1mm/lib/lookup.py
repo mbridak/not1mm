@@ -200,8 +200,6 @@ class QRZlookup:
                     )
                     baseroot = xmltodict.parse(query_result.text)
                     root = baseroot.get("QRZDatabase")
-            # grid, name, nickname, error_text = self.parse_lookup(query_result)
-        # logger.info("%s %s %s %s", grid, name, nickname, error_text)
         return root.get("Callsign")
 
     def parse_lookup(self, query_result):
@@ -334,14 +332,19 @@ class HamQTH:
         """
         Lookup a call on HamQTH
         """
-        grid, name, nickname, error_text = False, False, False, False
+        the_result = {
+            "grid": False,
+            "name": False,
+            "nickname": False,
+            "error_text": False,
+        }
         if self.session:
             payload = {"id": self.session, "callsign": call, "prg": "wfdlogger"}
             try:
                 query_result = requests.get(self.url, params=payload, timeout=10.0)
-            except requests.exceptions.Timeout as exception:
+            except requests.exceptions.Timeout:
                 self.error = True
-                return grid, name, nickname, exception
+                return the_result
             logger.info("resultcode: %s", query_result.status_code)
             baseroot = xmltodict.parse(query_result.text)
             root = baseroot.get("HamQTH")
@@ -351,36 +354,40 @@ class HamQTH:
                 if session:
                     if session.get("error"):
                         if session.get("error") == "Callsign not found":
-                            error_text = session.get("error")
-                            return grid, name, nickname, error_text
+                            the_result["error_text"] = session.get("error")
+                            return the_result
                         if session.get("error") == "Session does not exist or expired":
                             self.getsession()
                             query_result = requests.get(
                                 self.url, params=payload, timeout=10.0
                             )
-            grid, name, nickname, error_text = self.parse_lookup(root)
-        logger.info("%s %s %s %s", grid, name, nickname, error_text)
-        return grid, name, nickname, error_text
+            the_result = self.parse_lookup(root)
+        return the_result
 
-    def parse_lookup(self, root) -> tuple:
+    def parse_lookup(self, root) -> dict:
         """
-        Returns gridsquare and name for a callsign looked up by qrz or hamdb.
+        Returns gridsquare and name for a callsign
         Or False for both if none found or error.
         """
-        grid, name, nickname, error_text = False, False, False, False
+        the_result = {
+            "grid": False,
+            "name": False,
+            "nickname": False,
+            "error_text": False,
+        }
         session = root.get("session")
         search = root.get("search")
         if session:
             if session.get("error"):
-                error_text = session.get("error")
+                the_result["error_text"] = session.get("error")
         if search:
             if search.get("grid"):
-                grid = search.get("grid")
+                the_result["grid"] = search.get("grid")
             if search.get("nick"):
-                nickname = search.get("nick")
+                the_result["nickname"] = search.get("nick")
             if search.get("adr_name"):
-                name = search.get("adr_name")
-        return grid, name, nickname, error_text
+                the_result["name"] = search.get("adr_name")
+        return the_result
 
 
 def main():
