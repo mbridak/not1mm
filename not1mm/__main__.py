@@ -105,7 +105,7 @@ def check_process(name: str) -> bool:
             if len(proc.cmdline()) == 2:
                 if name in proc.cmdline()[1] and "python" in proc.cmdline()[0]:
                     return True
-        except (psutil.NoSuchProcess, psutil.ZombieProcess):
+        except (psutil.NoSuchProcess, psutil.ZombieProcess, psutil.AccessDenied):
             continue
     return False
 
