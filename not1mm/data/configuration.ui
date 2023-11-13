@@ -292,8 +292,11 @@
          <property name="text">
           <string/>
          </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
          <property name="placeholderText">
-          <string>Your Password</string>
+          </string>
          </property>
         </widget>
        </item>
