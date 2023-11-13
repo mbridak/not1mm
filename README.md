@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-11-13] Changed check_process() to only return True if python opened source file. Allows emacs to edit source file.
 - [23-11-12.1] HamQTH lookup now returns a dict not a tuple.
 - [23-11-12] Fix crash in ADIF exporter where the grid was of None type.
 - [23-11-2] Add missing dependency for pyserial.
