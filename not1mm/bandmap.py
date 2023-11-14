@@ -14,7 +14,8 @@ from pathlib import Path
 
 import logging
 import os
-import pkgutil
+
+# import pkgutil
 import platform
 import sys
 import sqlite3
@@ -28,8 +29,10 @@ os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
 
-loader = pkgutil.get_loader("not1mm")
-WORKING_PATH = os.path.dirname(loader.get_filename())
+# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
+# loader = pkgutil.get_loader("not1mm")
+# WORKING_PATH = os.path.dirname(loader.get_filename())
+WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 if "XDG_DATA_HOME" in os.environ:
     DATA_PATH = os.environ.get("XDG_DATA_HOME")

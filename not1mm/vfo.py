@@ -2,7 +2,7 @@
 """
 VFO Window
 """
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation
+# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation, c-extension-no-member
 
 # 115200 pico default speed
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
@@ -11,7 +11,8 @@ VFO Window
 import logging
 
 import os
-import pkgutil
+
+# import pkgutil
 import platform
 import queue
 import sys
@@ -27,8 +28,10 @@ from not1mm.lib.cat_interface import CAT
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-loader = pkgutil.get_loader("not1mm")
-WORKING_PATH = os.path.dirname(loader.get_filename())
+# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
+# loader = pkgutil.get_loader("not1mm")
+# WORKING_PATH = os.path.dirname(loader.get_filename())
+WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 if "XDG_DATA_HOME" in os.environ:
     DATA_PATH = os.environ.get("XDG_DATA_HOME")

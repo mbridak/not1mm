@@ -10,7 +10,8 @@ import importlib
 import locale
 import logging
 import os
-import pkgutil
+
+# import pkgutil
 import platform
 import re
 import socket
@@ -60,8 +61,10 @@ from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 
-loader = pkgutil.get_loader("not1mm")
-WORKING_PATH = os.path.dirname(loader.get_filename())
+# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
+# loader = pkgutil.get_loader("not1mm")
+# WORKING_PATH = os.path.dirname(loader.get_filename())
+WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 DATA_PATH = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
 DATA_PATH += "/not1mm"
