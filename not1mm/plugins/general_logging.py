@@ -1,6 +1,6 @@
 """General Logging plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
 import datetime
 import logging

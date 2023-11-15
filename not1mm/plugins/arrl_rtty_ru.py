@@ -1,10 +1,11 @@
 """ARRL plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
+import datetime
 from decimal import Decimal
 from pathlib import Path
-import datetime
+
 from PyQt5 import QtWidgets
 
 name = "ARRL RTTY Round Up"

@@ -1,6 +1,6 @@
 """Winter Field Day plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
 from PyQt5 import QtWidgets
 

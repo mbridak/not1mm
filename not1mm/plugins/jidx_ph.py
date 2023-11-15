@@ -1,6 +1,6 @@
 """CQ WPX CW plugin"""
 
-# pylint: disable=invalid-name, unused-variable
+# pylint: disable=invalid-name, unused-variable, c-extension-no-member
 
 import datetime
 import logging

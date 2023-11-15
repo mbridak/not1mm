@@ -1,6 +1,6 @@
 """CQ World Wide DX CW plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
 import datetime
 import logging
@@ -8,6 +8,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from PyQt5 import QtWidgets
+
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger("__main__")

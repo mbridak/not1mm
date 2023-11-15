@@ -1,14 +1,15 @@
 """10 10 winter phone plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
 import datetime
 import logging
-from pathlib import Path
 from decimal import Decimal
-from PyQt5 import QtWidgets
-from not1mm.lib.version import __version__
+from pathlib import Path
 
+from PyQt5 import QtWidgets
+
+from not1mm.lib.version import __version__
 
 logger = logging.getLogger("__main__")
 
