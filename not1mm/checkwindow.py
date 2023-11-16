@@ -6,7 +6,7 @@ Check Window
 
 import logging
 
-import pkgutil
+# import pkgutil
 import platform
 import queue
 import os
@@ -28,9 +28,9 @@ from not1mm.lib.super_check_partial import SCP
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 # DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-loader = pkgutil.get_loader("not1mm")
-WORKING_PATH = os.path.dirname(loader.get_filename())
-# WORKING_PATH = os.path.dirname(__loader__.get_filename())
+# loader = pkgutil.get_loader("not1mm")
+# WORKING_PATH = os.path.dirname(loader.get_filename())
+WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 if "XDG_DATA_HOME" in os.environ:
     DATA_PATH = os.environ.get("XDG_DATA_HOME")
