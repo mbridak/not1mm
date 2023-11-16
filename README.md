@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-11-15.1] Replacing the depricated function turned out to be a poor decision.
 - [23-11-15] Started working on Winter Field Day. (It doesn't work yet)
 - [23-11-14] Removed depricated pkgutil.get_loader, Lets see what breaks.
 - [23-11-13] Changed check_process() to only return True if python opened source file. Allows emacs to edit source file.
