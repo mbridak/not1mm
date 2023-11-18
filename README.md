@@ -75,10 +75,10 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
 
 ## What and why is Not1MM
 
-Not1MM's interface is a blantant ripoff of N1MM.
+Not1MM's interface is a blatant ripoff of N1MM.
 It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
 
-If you use Windows(tm), you should run away from this and use someother program.
+If you use Windows(tm), you should run away from Not1MM and use someother program.
 
 I personally don't use Windows(tm). While it may be possible to get N1MM working under Wine, I haven't checked. I'd rather not have to jump thru the hoops.
 
