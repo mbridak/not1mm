@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-11-30.1] Add seconds to ADIF timeon tag. Add ADIF CONTEST_ID tags. Fixed 40m band tag. Fixed SSB mode and submode tags.
 - [23-11-30] Moved common plugin ADIF export code into importable function.
 - [23-11-29] Added BAND to adif export.
 - [23-11-16] Corrected xml tag mismatch in configuration.ui
