@@ -6,7 +6,7 @@ from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
 
 
-def gen_adif(self, cabrillo_name: str):
+def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
     """
@@ -29,7 +29,6 @@ def gen_adif(self, cabrillo_name: str):
                 themode = contact.get("Mode")
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
-                # band = getband(str(int(float(frequency) * 1000000)))
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
                 sentnr = str(contact.get("SentNr", "0"))
@@ -74,11 +73,18 @@ def gen_adif(self, cabrillo_name: str):
                     ...
 
                 try:
-                    print(
-                        f"<MODE:{len(themode)}>{themode}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
+                    if themode in ("USB", "LSB"):
+                        print(
+                            f"<MODE:3>SSB\r\n<SUBMODE:{len(themode)}>{themode}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                    else:
+                        print(
+                            f"<MODE:{len(themode)}>{themode}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
                 except TypeError:
                     ...
 
@@ -142,6 +148,16 @@ def gen_adif(self, cabrillo_name: str):
                     if len(grid) > 1:
                         print(
                             f"<GRIDSQUARE:{len(grid)}>{grid}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    if len(contest_id) > 1:
+                        print(
+                            f"<CONTEST_ID:{len(contest_id)}>{contest_id}",
                             end="\r\n",
                             file=file_descriptor,
                         )
