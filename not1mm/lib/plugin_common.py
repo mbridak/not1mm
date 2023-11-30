@@ -36,7 +36,11 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 grid = contact.get("GridSquare", "")
                 comment = contact.get("Comment", "")
                 loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+                loggedtime = (
+                    the_date_and_time[11:13]
+                    + the_date_and_time[14:16]
+                    + the_date_and_time[17:20]
+                )
                 print(
                     f"<QSO_DATE:{len(''.join(loggeddate.split('-')))}:d>"
                     f"{''.join(loggeddate.split('-'))}",
