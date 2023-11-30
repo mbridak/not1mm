@@ -10,6 +10,7 @@ from pathlib import Path
 
 from PyQt5 import QtWidgets
 
+from not1mm.lib.ham_utility import get_adif_band
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger("__main__")
@@ -185,9 +186,10 @@ def adif(self):
                 hiscall = contact.get("Call", "")
                 hisname = contact.get("Name", "")
                 the_date_and_time = contact.get("TS")
-                # band = contact.get("Band")
                 themode = contact.get("Mode")
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
+                band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
+                # band = getband(str(int(float(frequency) * 1000000)))
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
                 sentnr = str(contact.get("SentNr", "0"))
@@ -234,6 +236,15 @@ def adif(self):
                 try:
                     print(
                         f"<MODE:{len(themode)}>{themode}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                except TypeError:
+                    ...
+
+                try:
+                    print(
+                        f"<BAND:{len(band)}>{band}",
                         end="\r\n",
                         file=file_descriptor,
                     )
