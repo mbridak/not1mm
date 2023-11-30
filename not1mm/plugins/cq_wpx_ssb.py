@@ -203,7 +203,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name)
+    gen_adif(self, cabrillo_name, "CQ-WPX-SSB")
 
 
 def cabrillo(self):
