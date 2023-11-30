@@ -202,7 +202,7 @@ def get_adif_band(freq: Decimal) -> str:
         return "20m"
     if 10.15 > freq > 10.1:
         return "30m"
-    if 7.0 > freq > 7.3:
+    if 7.3 > freq > 7.0:
         return "40m"
     if 5.45 > freq > 5.06:
         return "60m"
