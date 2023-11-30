@@ -126,6 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-11-29] Added BAND to adif export.
 - [23-11-16] Corrected xml tag mismatch in configuration.ui
 - [23-11-15.1] Replacing the depricated function turned out to be a poor decision.
 - [23-11-15] Started working on Winter Field Day. (It doesn't work yet)
