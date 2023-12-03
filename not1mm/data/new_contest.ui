@@ -224,7 +224,7 @@
      </item>
      <item>
       <property name="text">
-       <string>ARRL Field Day</string>
+       <string>ARRL FIELD DAY</string>
       </property>
      </item>
      <item>
@@ -294,7 +294,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Winter Field Day</string>
+       <string>WINTER FIELD DAY</string>
       </property>
      </item>
     </widget>
@@ -306,7 +306,7 @@
      </property>
      <property name="time">
       <time>
-       <hour>16</hour>
+       <hour>0</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
