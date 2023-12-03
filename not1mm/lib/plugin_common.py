@@ -129,7 +129,15 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if sentnr != "0":
+                    if cabrillo_name in ("WFD", "ARRL-FD"):
+                        sent = self.contest_settings.get("SentExchange", "")
+                        if sent:
+                            print(
+                                f"<STX_STRING:{len(sent)}>{sent.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+                    elif sentnr != "0":
                         print(
                             f"<STX_STRING:{len(sentnr)}>{sentnr}",
                             end="\r\n",
@@ -139,7 +147,17 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if rcvnr != "0":
+                    if cabrillo_name in ("WFD", "ARRL-FD"):
+                        rcv = (
+                            f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
+                        )
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+                    elif rcvnr != "0":
                         print(
                             f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
                             end="\r\n",
