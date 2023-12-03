@@ -142,7 +142,10 @@ def calc_score(self):
     """Return calculated score"""
     _points = get_points(self)
     _mults = show_mults(self)
-    return _points * _mults
+    _power_mult = 1
+    if self.contest_settings.get("PowerCategory", "") == "QRP":
+        _power_mult = 2
+    return _points * _power_mult * _mults
 
 
 def adif(self):
