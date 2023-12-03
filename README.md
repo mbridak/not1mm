@@ -126,17 +126,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-11-30.1] Add seconds to ADIF timeon tag. Add ADIF CONTEST_ID tags. Fixed 40m band tag. Fixed SSB mode and submode tags.
-- [23-11-30] Moved common plugin ADIF export code into importable function.
-- [23-11-29] Added BAND to adif export.
-- [23-11-16] Corrected xml tag mismatch in configuration.ui
-- [23-11-15.1] Replacing the depricated function turned out to be a poor decision.
-- [23-11-15] Started working on Winter Field Day. (It doesn't work yet)
-- [23-11-14] Removed depricated pkgutil.get_loader, Lets see what breaks.
-- [23-11-13] Changed check_process() to only return True if python opened source file. Allows emacs to edit source file.
-- [23-11-12.1] HamQTH lookup now returns a dict not a tuple.
-- [23-11-12] Fix crash in ADIF exporter where the grid was of None type.
-- [23-11-2] Add missing dependency for pyserial.
+- [23-12-3] Initial WFD plugin.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
