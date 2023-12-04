@@ -123,6 +123,7 @@ I wish to thank those who've contributed to the project.
 - NAQP CW
 - NAQP SSB
 - RAC Canada Day
+- Winter Field Day
 
 ## Recent Changes
 
