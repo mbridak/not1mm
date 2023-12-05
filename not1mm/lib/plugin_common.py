@@ -6,6 +6,15 @@ from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
 
 
+def get_points(self):
+    """Return raw points before mults"""
+    result = self.database.fetch_points()
+    if result:
+        if result.get("Points", 0) is not None:
+            return int(result.get("Points", 0))
+    return 0
+
+
 def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
