@@ -127,6 +127,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-12-4] Moved get_points to plugin_common, fixing crash.
 - [23-12-3] Initial WFD plugin.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
@@ -205,6 +206,8 @@ The audio library used, uses pipewire/portaudio. You may need to install portaud
 ### Dark mode on Ubuntu
 
 I believe I figured out dark mode in Ubuntu and have it working on my shack PC that runs Ubuntu 22.04. The secret sauce seems to be installing adwaita-qt with apt, and setting an environment variable `QT_STYLE_OVERRIDE` to `Adwaita-Dark`. I set the environment variable in the start of the program if running on a Gnome platform. So you don't need to do that part.
+
+Or see this discussion [darkmode](https://github.com/mbridak/not1mm/discussions/60).
 
 ## Wayland Compositor
 
