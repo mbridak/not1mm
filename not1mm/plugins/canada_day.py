@@ -9,7 +9,7 @@ from pathlib import Path
 
 from PyQt5 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif
+from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger("__main__")
@@ -195,14 +195,6 @@ def show_qso(self):
     result = self.database.fetch_qso_count()
     if result:
         return int(result.get("qsos", 0))
-    return 0
-
-
-def get_points(self):
-    """Return raw points before mults"""
-    result = self.database.fetch_points()
-    if result:
-        return int(result.get("Points", 0))
     return 0
 
 
