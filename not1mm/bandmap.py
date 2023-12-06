@@ -7,7 +7,7 @@ GPL V3
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
@@ -152,7 +152,8 @@ class Database:
         """
         try:
             self.cursor.execute(
-                f"select distinct callsign from spots where callsign like '%{call}%' ORDER by callsign ASC;"
+                "select distinct callsign from spots where callsign like ",
+                f"'%{call}%' ORDER by callsign ASC;",
             )
             result = self.cursor.fetchall()
             return result
@@ -215,7 +216,8 @@ class Database:
 
     def getspotsinband(self, start: float, end: float) -> list:
         """
-        Returns spots in a list of dicts where the spotted frequency is in the range defined, in ascending order.
+        Returns spots in a list of dicts where the spotted frequency
+        is in the range defined, in ascending order.
 
         Parameters
         ----------
@@ -238,7 +240,8 @@ class Database:
     def get_matching_spot(self, dx: str, start: float, end: float) -> dict:
         """Return the first spot matching supplied dx partial call"""
         self.cursor.execute(
-            f"select * from spots where freq >= {start} and freq <= {end} and callsign like '%{dx}%';"
+            f"select * from spots where freq >= {start} ",
+            f"and freq <= {end} and callsign like '%{dx}%';",
         )
         return self.cursor.fetchone()
 
@@ -755,7 +758,7 @@ class MainWindow(QtWidgets.QMainWindow):
             comment = " ".join(parts[5:-1])
             # spot = DxSpot()
             spot = {}
-            spot["ts"] = datetime.utcnow().isoformat(" ")[:19]
+            spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
             spot["callsign"] = dx
             spot["spotter"] = spotter
             spot["comment"] = comment
