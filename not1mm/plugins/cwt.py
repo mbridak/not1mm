@@ -1,6 +1,6 @@
 """CWT plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging
@@ -115,7 +115,10 @@ def predupe(self):
     """prefill his exchange with last known values"""
     if self.other_1.text() == "" and self.other_2.text() == "":
         call = self.callsign.text().upper()
-        query = f"select NR from dxlog where Call = '{call}' and ContestName = 'CWOPS-CWT' order by ts desc;"
+        query = (
+            f"select NR from dxlog where Call = '{call}' ",
+            "and ContestName = 'CWOPS-CWT' order by ts desc;",
+        )
         logger.debug(query)
         result = self.database.exec_sql(query)
         logger.debug("%s", f"{result}")

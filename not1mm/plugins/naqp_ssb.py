@@ -1,6 +1,6 @@
 """NAQP SSB plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging
@@ -299,7 +299,6 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             for contact in log:
-                # QSO: 28048 CW 2014-01-11 1804 N5KO            TREY       CA  K8JQ            STEVE      WV
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":

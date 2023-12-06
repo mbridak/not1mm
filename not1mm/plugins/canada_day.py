@@ -1,6 +1,6 @@
 """rac canada day"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging
@@ -183,7 +183,10 @@ def points(self):
 def show_mults(self):
     """Return display string for mults"""
 
-    sql = "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where typeof(NR) = 'text';"
+    sql = (
+        "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) ",
+        "as mult_count from dxlog where typeof(NR) = 'text';",
+    )
     result = self.database.exec_sql(sql)
     if result:
         return result.get("mult_count", 0)

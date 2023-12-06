@@ -137,7 +137,10 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    sql = f"select count(DISTINCT(Sect)) as mults from dxlog where ContestNR = {self.database.current_contest};"
+    sql = (
+        "select count(DISTINCT(Sect)) as mults from dxlog ",
+        f"where ContestNR = {self.database.current_contest};",
+    )
     result = self.database.exec_sql(sql)
     return int(result.get("mults", 0))
 

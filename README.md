@@ -22,7 +22,7 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
     - [Installing with pip](#installing-with-pip)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
-      - [Fedora 38](#fedora-38)
+      - [Fedora 38 \& 39](#fedora-38--39)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
     - [Updating with pip/pipx](#updating-with-pippipx)
@@ -162,7 +162,7 @@ pipx install not1mm
 pipx ensurepath
 ```
 
-#### Fedora 38
+#### Fedora 38 & 39
 
 ```bash
 sudo dnf upgrade --refresh

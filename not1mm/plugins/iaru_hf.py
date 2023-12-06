@@ -14,7 +14,7 @@ Multipliers:    Each ITU zone once per band
                 Each IARU HQ and each IARU official once per band
 """
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging

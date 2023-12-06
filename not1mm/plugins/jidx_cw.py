@@ -279,7 +279,8 @@ def cabrillo(self):
                 file=file_descriptor,
             )
             print(
-                f"ADDRESS: {self.station.get('City', '')}, {self.station.get('State', '')} {self.station.get('Zip', '')}",
+                f"ADDRESS: {self.station.get('City', '')}, {self.station.get('State', '')} ",
+                f"{self.station.get('Zip', '')}",
                 end="\r\n",
                 file=file_descriptor,
             )

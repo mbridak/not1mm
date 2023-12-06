@@ -1,6 +1,6 @@
 """10 10 fall cw plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging

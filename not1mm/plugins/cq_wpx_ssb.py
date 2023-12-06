@@ -1,6 +1,6 @@
 """CQ WPX SSB plugin"""
 
-# pylint: disable=invalid-name, c-extension-no-member
+# pylint: disable=invalid-name, c-extension-no-member, unused-import
 
 import datetime
 import logging
