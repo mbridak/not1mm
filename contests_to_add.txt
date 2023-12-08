@@ -67,3 +67,145 @@ non-French DXCC countries once per band (available only to French stations)
  	Cabrillo name:	REF-CW
  	Cabrillo name aliases:	REF
  	
+------------------------------------------
+
+ARRL January VHF Contest
+ 	Status:	Active
+ 	Geographic Focus:	United States/Canada
+ 	Participation:	Worldwide
+ 	Mode:	Any
+ 	Bands:	50 MHz and up
+ 	Classes:	Single Op All Band (All Modes/Analog Modes)(Low/High)
+Single Op Portable (All Modes/Analog Modes)
+Single Op 3-Band (All Modes/Analog Modes)
+Single Op FM
+Rover
+Limited Rover
+Unlimited Rover
+Multi-Op
+Limited Multi-Op
+ 	Max power:	(see rules)
+ 	Exchange:	4-character grid square
+ 	Work stations:	Once per band
+ 	QSO Points:	1 point per 50 or 144 MHz QSO
+2 points per 222 or 432 MHz QSO
+4 points per 902 or 1296 MHz QSO
+8 points per 2.3 GHz or higher QSO
+ 	Multipliers:	Grid squares once per band
+Rovers: grid squares operated from once regardless of band
+ 	Score Calculation:	Total score = total QSO points x total mults
+ 	E-mail logs to:	(none)
+ 	Upload log at:	http://contest-log-submission.arrl.org
+ 	Mail logs to:	January VHF
+ARRL
+225 Main St.
+Newington, CT 06111
+USA
+ 	Find rules at:	http://www.arrl.org/january-vhf
+ 	Cabrillo name:	ARRL-VHF-JAN
+
+
+------------------------------------------
+
+ARRL September VHF Contest
+ 	Status:	Active
+ 	Geographic Focus:	United States/Canada
+ 	Participation:	Worldwide
+ 	Mode:	All
+ 	Bands:	50 MHz and up
+ 	Classes:	Single Op All Band (All Modes/Analog Modes)(Low/High)
+Single Op Portable (All Modes/Analog Modes)
+Single Op 3-Band (All Modes/Analog Modes)
+Single Op FM
+Rover
+Limited Rover
+Unlimited Rover
+Unlimited Multi-Op
+Limited Multi-Op
+ 	Max power:	(see rules)
+ 	Exchange:	4-character grid square
+ 	Work stations:	Once per band per grid square
+ 	QSO Points:	1 point per 50- or 144-MHz QSO
+2 points per 222- or 432-MHz QSO
+3 points per 906- or 1296-MHz QSO
+4 points per 2.3 GHz (or higher) QSO
+ 	Multipliers:	Each grid square once per band
+ 	Score Calculation:	Total score = total QSO points x total mults
+ 	E-mail logs to:	(none)
+ 	Upload log at:	http://contest-log-submission.arrl.org
+ 	Mail logs to:	September VHF
+ARRL
+225 Main St.
+Newington, CT 06111
+USA
+ 	Find rules at:	http://www.arrl.org/september-vhf
+ 	Cabrillo name:	ARRL-VHF-SEP
+
+---------------------------------------------------
+
+
+ARRL June VHF Contest
+ 	Status:	Active
+ 	Geographic Focus:	United States/Canada
+ 	Participation:	Worldwide
+ 	Mode:	All
+ 	Bands:	50 MHz and up
+ 	Classes:	Single Op All Band (All Modes/Analog Modes)(Low/High)
+Single Op Portable (All Modes/Analog Modes)
+Single Op 3-Band (All Modes/Analog Modes)
+Single Op FM
+Rover
+Limited Rover
+Unlimited Rover
+Unlimited Multi-Op
+Limited Multi-Op
+ 	Max power:	(see rules)
+ 	Exchange:	4-character grid square
+ 	Work stations:	Once per band per grid square
+ 	QSO Points:	1 point per 50- or 144-MHz QSO
+2 points per 222- or 432-MHz QSO
+3 points per 906- or 1296-MHz QSO
+4 points per 2.3 GHz (or higher) QSO
+ 	Multipliers:	Each grid square once per band
+ 	Score Calculation:	Total score = total QSO points x total mults
+ 	E-mail logs to:	(none)
+ 	Upload log at:	http://contest-log-submission.arrl.org
+ 	Mail logs to:	June VHF
+ARRL
+225 Main St.
+Newington, CT 06111
+USA
+ 	Find rules at:	http://www.arrl.org/june-vhf
+ 	Cabrillo name:	ARRL-VHF-JUN
+
+------------------------------------------
+
+
+ARRL 10-Meter Contest
+Status: Active
+Geographic Focus: Worldwide
+Participation: Worldwide
+Mode: CW, Phone
+Bands: 10m Only
+Classes: Single Op (QRP/Low/High)(CW/Phone/Mixed)
+Single Op Unlimited (QRP/Low/High)(CW/Phone/Mixed)
+Single Op Overlay: (Limited Antennas)
+Multi-Single (Low/High)
+Max operating hours: 36 hours
+Max power: HP: 1500 watts
+LP: 100 watts
+QRP: 5 watts
+Exchange: W/VE: RST + State/Province
+XE: RST + State
+DX: RST + Serial No.
+MM: RST + ITU Region
+QSO Points: 2 points per Phone QSO
+4 points per CW QSO
+Multipliers: Each US State + DC once per mode
+Each VE Province/Territory once per mode
+Each XE State once per mode
+Each DXCC Country once per mode
+Each ITU Region (MM only) once per mode
+Score Calculation: Total score = total QSO points x total mults
+Find rules at: <http://www.arrl.org/10-meter>
+Cabrillo name: ARRL-10
