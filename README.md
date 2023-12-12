@@ -73,6 +73,8 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
       - [The exchange parser](#the-exchange-parser)
       - [The exchange](#the-exchange)
 
+[Visit the Wiki](https://github.com/mbridak/not1mm/wiki/Not1MM)
+
 ## What and why is Not1MM
 
 Not1MM's interface is a blatant ripoff of N1MM.
