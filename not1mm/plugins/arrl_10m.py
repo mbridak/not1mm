@@ -135,16 +135,6 @@ def validate(self):
 
 def set_contact_vars(self):
     """Contest Specific"""
-    # self.contact["SNT"] = self.sent.text()
-    # self.contact["RCV"] = self.receive.text()
-    # self.contact["NR"] = self.other_2.text().upper()
-    # self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
-    # exchange = self.other_2.text().upper().split()
-    # if len(exchange) == 3:
-    #     self.contact["Name"] = exchange[0]
-    #     self.contact["Comment"] = name
-    # if validate(self) is False:
-    #     self.show_message_box("The exchange was invalid.")
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
@@ -157,8 +147,6 @@ def predupe(self):
 
 def prefill(self):
     """Fill sentnr"""
-    # if len(self.other_2.text()) == 0:
-    #     self.other_2.setText(str(self.contact.get("ZN", "")))
     result = self.database.get_serial()
     serial_nr = str(result.get("serial_nr", "1"))
     if serial_nr == "None":
@@ -182,6 +170,13 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
+    sql = (
+        "select count(DISTINCT(NR || ':' || Mode)) ",
+        "as mult_count from dxlog where typeof(NR) = 'text';",
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        return result.get("mult_count", 0)
     return 0
 
 
