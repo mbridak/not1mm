@@ -178,34 +178,3 @@ USA
  	Find rules at:	http://www.arrl.org/june-vhf
  	Cabrillo name:	ARRL-VHF-JUN
 
-------------------------------------------
-
-
-ARRL 10-Meter Contest
-Status: Active
-Geographic Focus: Worldwide
-Participation: Worldwide
-Mode: CW, Phone
-Bands: 10m Only
-Classes: Single Op (QRP/Low/High)(CW/Phone/Mixed)
-Single Op Unlimited (QRP/Low/High)(CW/Phone/Mixed)
-Single Op Overlay: (Limited Antennas)
-Multi-Single (Low/High)
-Max operating hours: 36 hours
-Max power: HP: 1500 watts
-LP: 100 watts
-QRP: 5 watts
-Exchange: W/VE: RST + State/Province
-XE: RST + State
-DX: RST + Serial No.
-MM: RST + ITU Region
-QSO Points: 2 points per Phone QSO
-4 points per CW QSO
-Multipliers: Each US State + DC once per mode
-Each VE Province/Territory once per mode
-Each XE State once per mode
-Each DXCC Country once per mode
-Each ITU Region (MM only) once per mode
-Score Calculation: Total score = total QSO points x total mults
-Find rules at: <http://www.arrl.org/10-meter>
-Cabrillo name: ARRL-10
