@@ -184,8 +184,8 @@ def show_mults(self):
     """Return display string for mults"""
 
     sql = (
-        "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) ",
-        "as mult_count from dxlog where typeof(NR) = 'text';",
+        "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog "
+        "where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
     )
     result = self.database.exec_sql(sql)
     if result:

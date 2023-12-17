@@ -170,10 +170,12 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
+    # CountryPrefix
     sql = (
-        "select count(DISTINCT(NR || ':' || Mode)) ",
-        "as mult_count from dxlog where typeof(NR) = 'text';",
+        "select count(DISTINCT(NR || ':' || Mode)) as mult_count "
+        "from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
     )
+    print(sql)
     result = self.database.exec_sql(sql)
     if result:
         return result.get("mult_count", 0)
