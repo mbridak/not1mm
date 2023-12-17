@@ -99,7 +99,7 @@ The current state is "**BETA**". I've used it for a few contests, and was able t
 I wish to thank those who've contributed to the project.
 
 <a href="https://github.com/mbridak/not1mm/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=mbridak/not1mm" />
+  <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
 ## List of should be working contests
