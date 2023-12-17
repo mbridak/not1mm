@@ -109,6 +109,7 @@ I wish to thank those who've contributed to the project.
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- ARRL 10M
 - ARRL DX CW
 - ARRL DX SSB
 - ARRL Field Day
@@ -129,6 +130,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
 - [23-12-5] Removed deprecated datetime.utcnow()
 - [23-12-4] Moved get_points to plugin_common, fixing crash.
 - [23-12-3] Initial WFD plugin.
