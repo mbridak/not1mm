@@ -27,6 +27,21 @@ Each ITU Region (MM only) once per mode
 Score Calculation: Total score = total QSO points x total mults
 Find rules at: <http://www.arrl.org/10-meter>
 Cabrillo name: ARRL-10
+
+
+Scoring: Each phone contact counts for two (2) QSO points. Each CW contact counts for four (4) QSO
+points. To calculate your final score, multiply the total QSO points by the number of US states (plus the
+District of Columbia), Canadian Provinces and Territories, Mexican states, DXCC entities, and ITU
+regions you contacted. Each multiplier counts once on phone and once on CW
+
+Scoring Example: KA1RWY makes 2235 contacts including 1305 phone QSOs, and 930 CW QSOs, for
+a total of 6330 QSO points. On phone, she works 49 states, 10 Canadian provinces, 3 Mexican states, 20
+DXCC entities and a maritime mobile station in Region 2 for a total of 49+10+3+20+1 = 83 phone
+multipliers. On CW she works 30 states, 8 Canadian provinces, 1 Mexican state, and 18 DXCC entities
+for a total of 30+8+1+18 = 57 CW multipliers. Her final score = 6330 QSO points x (83+57) multipliers =
+6330 x 140 = 886,200 points.
+
+
 """
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
@@ -170,16 +185,43 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    # CountryPrefix
+    # CountryPrefix, integer
+
+    us_ve_mx = 0
+    mm = 0
+    dx = 0
+
     sql = (
         "select count(DISTINCT(NR || ':' || Mode)) as mult_count "
-        "from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+        f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
     )
-    print(sql)
     result = self.database.exec_sql(sql)
     if result:
-        return result.get("mult_count", 0)
-    return 0
+        us_ve_mx = result.get("mult_count", 0)
+
+    # MM
+    sql = (
+        "select count(DISTINCT(NR || ':' || Mode)) as mult_count "
+        f"from dxlog where ContestNR = {self.database.current_contest} "
+        "and typeof(NR) = 'integer' "
+        "and call like '%/MM';"
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        mm = result.get("mult_count", 0)
+
+    # DX
+    sql = (
+        "select count(DISTINCT(CountryPrefix || ':' || Mode)) as mult_count "
+        f"from dxlog where ContestNR = {self.database.current_contest} "
+        "and typeof(NR) = 'integer' "
+        "and call not like '%/MM';"
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        dx = result.get("mult_count", 0)
+
+    return us_ve_mx + mm + dx
 
 
 def show_qso(self):
