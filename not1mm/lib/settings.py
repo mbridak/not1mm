@@ -83,6 +83,20 @@ class Settings(QtWidgets.QDialog):
         index = self.cluster_mode.findText(value)
         if index != -1:
             self.cluster_mode.setCurrentIndex(index)
+        self.activate_160m.setChecked(bool("160m" in self.preference.get("bands", [])))
+        self.activate_80m.setChecked(bool("80m" in self.preference.get("bands", [])))
+        self.activate_40m.setChecked(bool("40m" in self.preference.get("bands", [])))
+        self.activate_20m.setChecked(bool("20m" in self.preference.get("bands", [])))
+        self.activate_15m.setChecked(bool("15m" in self.preference.get("bands", [])))
+        self.activate_10m.setChecked(bool("10m" in self.preference.get("bands", [])))
+        self.activate_6m.setChecked(bool("6m" in self.preference.get("bands", [])))
+        self.activate_2m.setChecked(bool("2m" in self.preference.get("bands", [])))
+        self.activate_1dot25.setChecked(
+            bool("1.25m" in self.preference.get("bands", []))
+        )
+        self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
+        self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
+        self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))
 
     def save_changes(self):
         """
@@ -134,3 +148,29 @@ class Settings(QtWidgets.QDialog):
         self.preference["cluster_port"] = int(self.cluster_port_field.text())
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
+        bandlist = list()
+        if self.activate_160m.isChecked():
+            bandlist.append("160m")
+        if self.activate_80m.isChecked():
+            bandlist.append("80m")
+        if self.activate_40m.isChecked():
+            bandlist.append("40m")
+        if self.activate_20m.isChecked():
+            bandlist.append("20m")
+        if self.activate_15m.isChecked():
+            bandlist.append("15m")
+        if self.activate_10m.isChecked():
+            bandlist.append("10m")
+        if self.activate_6m.isChecked():
+            bandlist.append("6m")
+        if self.activate_2m.isChecked():
+            bandlist.append("2m")
+        if self.activate_1dot25.isChecked():
+            bandlist.append("1.25m")
+        if self.activate_70cm.isChecked():
+            bandlist.append("70cm")
+        if self.activate_33cm.isChecked():
+            bandlist.append("33cm")
+        if self.activate_23cm.isChecked():
+            bandlist.append("23cm")
+        self.preference["bands"] = bandlist
