@@ -127,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
+        "bands": ["160m", "80m", "40m", "20m", "15m", "10m"],
         "window_height": 200,
         "window_width": 600,
         "window_x": 120,
@@ -311,6 +312,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_band_20.mousePressEvent = self.click_20_cw
         self.cw_band_15.mousePressEvent = self.click_15_cw
         self.cw_band_10.mousePressEvent = self.click_10_cw
+        self.cw_band_6.mousePressEvent = self.click_6_cw
+        self.cw_band_2.mousePressEvent = self.click_2_cw
+        self.cw_band_125.mousePressEvent = self.click_125_cw
+        self.cw_band_70cm.mousePressEvent = self.click_70cm_cw
+        self.cw_band_33cm.mousePressEvent = self.click_33cm_cw
+        self.cw_band_23cm.mousePressEvent = self.click_23cm_cw
 
         self.ssb_band_160.mousePressEvent = self.click_160_ssb
         self.ssb_band_80.mousePressEvent = self.click_80_ssb
@@ -318,6 +325,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ssb_band_20.mousePressEvent = self.click_20_ssb
         self.ssb_band_15.mousePressEvent = self.click_15_ssb
         self.ssb_band_10.mousePressEvent = self.click_10_ssb
+        self.ssb_band_6.mousePressEvent = self.click_6_ssb
+        self.ssb_band_2.mousePressEvent = self.click_2_ssb
+        self.ssb_band_125.mousePressEvent = self.click_125_ssb
+        self.ssb_band_70cm.mousePressEvent = self.click_70cm_ssb
+        self.ssb_band_33cm.mousePressEvent = self.click_33cm_ssb
+        self.ssb_band_23cm.mousePressEvent = self.click_23cm_ssb
 
         self.rtty_band_160.mousePressEvent = self.click_160_rtty
         self.rtty_band_80.mousePressEvent = self.click_80_rtty
@@ -325,6 +338,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rtty_band_20.mousePressEvent = self.click_20_rtty
         self.rtty_band_15.mousePressEvent = self.click_15_rtty
         self.rtty_band_10.mousePressEvent = self.click_10_rtty
+        self.rtty_band_6.mousePressEvent = self.click_6_rtty
+        self.rtty_band_2.mousePressEvent = self.click_2_rtty
+        self.rtty_band_125.mousePressEvent = self.click_125_rtty
+        self.rtty_band_70cm.mousePressEvent = self.click_70cm_rtty
+        self.rtty_band_33cm.mousePressEvent = self.click_33cm_rtty
+        self.rtty_band_23cm.mousePressEvent = self.click_23cm_rtty
 
         self.readpreferences()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
@@ -349,6 +368,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "20": self.cw_band_20,
             "15": self.cw_band_15,
             "10": self.cw_band_10,
+            "6": self.cw_band_6,
+            "2": self.cw_band_2,
+            "1.25": self.cw_band_125,
+            "70cm": self.cw_band_70cm,
+            "33cm": self.cw_band_33cm,
+            "23cm": self.cw_band_23cm,
         }
 
         self.band_indicators_ssb = {
@@ -358,6 +383,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "20": self.ssb_band_20,
             "15": self.ssb_band_15,
             "10": self.ssb_band_10,
+            "6": self.ssb_band_6,
+            "2": self.ssb_band_2,
+            "125": self.ssb_band_125,
+            "70cm": self.ssb_band_70cm,
+            "33cm": self.ssb_band_33cm,
+            "23cm": self.ssb_band_23cm,
         }
 
         self.band_indicators_rtty = {
@@ -367,6 +398,12 @@ class MainWindow(QtWidgets.QMainWindow):
             "20": self.rtty_band_20,
             "15": self.rtty_band_15,
             "10": self.rtty_band_10,
+            "6": self.rtty_band_6,
+            "2": self.rtty_band_2,
+            "125": self.rtty_band_125,
+            "70cm": self.rtty_band_70cm,
+            "33cm": self.rtty_band_33cm,
+            "23cm": self.rtty_band_23cm,
         }
 
         self.all_mode_indicators = {
@@ -441,6 +478,30 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
         self.change_to_band_and_mode(10, "CW")
 
+    def click_6_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(6, "CW")
+
+    def click_2_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(2, "CW")
+
+    def click_125_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(222, "CW")
+
+    def click_70cm_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(432, "CW")
+
+    def click_33cm_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(902, "CW")
+
+    def click_23cm_cw(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(1240, "CW")
+
     def click_160_ssb(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(160, "SSB")
@@ -465,6 +526,30 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
         self.change_to_band_and_mode(10, "SSB")
 
+    def click_6_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(6, "SSB")
+
+    def click_2_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(2, "SSB")
+
+    def click_125_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(222, "SSB")
+
+    def click_70cm_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(432, "SSB")
+
+    def click_33cm_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(902, "SSB")
+
+    def click_23cm_ssb(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(1240, "SSB")
+
     def click_160_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(160, "RTTY")
@@ -488,6 +573,30 @@ class MainWindow(QtWidgets.QMainWindow):
     def click_10_rtty(self, _event) -> None:
         """doc"""
         self.change_to_band_and_mode(10, "RTTY")
+
+    def click_6_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(6, "RTTY")
+
+    def click_2_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(2, "RTTY")
+
+    def click_125_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(222, "RTTY")
+
+    def click_70cm_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(432, "RTTY")
+
+    def click_33cm_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(902, "RTTY")
+
+    def click_23cm_rtty(self, _event) -> None:
+        """doc"""
+        self.change_to_band_and_mode(1240, "RTTY")
 
     def change_to_band_and_mode(self, band, mode) -> None:
         """doc"""

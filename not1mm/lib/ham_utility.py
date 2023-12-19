@@ -102,9 +102,13 @@ def getband(freq: str) -> str:
         if 148000000 > frequency > 144000000:
             return "2"
         if 225000000 > frequency > 222000000:
-            return "222"
+            return "1.25"
         if 450000000 > frequency > 420000000:
-            return "432"
+            return "70cm"
+        if 928000000 > frequency > 902000000:
+            return "33cm"
+        if 1300000000 > frequency > 1240000000:
+            return "23cm"
     return "0"
 
 
@@ -179,7 +183,7 @@ def get_adif_band(freq: Decimal) -> str:
     if 450 > freq > 420:
         return "70cm"
     if 225 > freq > 222:
-        return "1.25mm"
+        return "1.25m"
     if 148 > freq > 144:
         return "2m"
     if 71 > freq > 70:
@@ -242,6 +246,8 @@ def fakefreq(band: str, mode: str) -> str:
         "2": ["144030", "144144", "144250"],
         "222": ["222100", "222070", "222100"],
         "432": ["432070", "432200", "432100"],
+        "902": ["902100", "902100", "902100"],
+        "1240": ["1241000", "1241000", "1241000"],
         "SAT": ["144144", "144144", "144144"],
     }
     freqtoreturn = fakefreqs[band][modes[mode]]
