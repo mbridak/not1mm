@@ -345,22 +345,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rtty_band_33cm.mousePressEvent = self.click_33cm_rtty
         self.rtty_band_23cm.mousePressEvent = self.click_23cm_rtty
 
-        self.readpreferences()
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
-        self.station = self.database.fetch_station()
-        if self.station is None:
-            self.station = {}
-            self.edit_station_settings()
-            self.station = self.database.fetch_station()
-            if self.station is None:
-                self.station = {}
-        self.contact = self.database.empty_contact
-        self.current_op = self.station.get("Call", "")
-        self.make_op_dir()
-        self.read_cw_macros()
-        self.clearinputs()
-
         self.band_indicators_cw = {
             "160": self.cw_band_160,
             "80": self.cw_band_80,
@@ -411,6 +395,22 @@ class MainWindow(QtWidgets.QMainWindow):
             "SSB": self.band_indicators_ssb,
             "RTTY": self.band_indicators_rtty,
         }
+
+        self.readpreferences()
+        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.station = self.database.fetch_station()
+        if self.station is None:
+            self.station = {}
+            self.edit_station_settings()
+            self.station = self.database.fetch_station()
+            if self.station is None:
+                self.station = {}
+        self.contact = self.database.empty_contact
+        self.current_op = self.station.get("Call", "")
+        self.make_op_dir()
+        self.read_cw_macros()
+        self.clearinputs()
 
         if self.pref.get("contest"):
             self.load_contest()
@@ -2041,6 +2041,21 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show_command_buttons()
         self.show_CW_macros()
+
+        if self.pref.get("bands", []) == []:
+            self.pref["bands"] = ["160", "80", "40", "20", "15", "10"]
+        for _indicator in [
+            self.band_indicators_cw,
+            self.band_indicators_ssb,
+            self.band_indicators_rtty,
+        ]:
+            ...
+            print(f"{_indicator}")
+            for _bandind in _indicator.values():
+                _bandind.hide()
+            for band_to_show in self.pref.get("bands", []):
+                if band_to_show in _indicator:
+                    _indicator[band_to_show].show()
         # self.show_band_mode()
 
     def watch_udp(self) -> None:

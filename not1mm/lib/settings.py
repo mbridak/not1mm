@@ -83,16 +83,16 @@ class Settings(QtWidgets.QDialog):
         index = self.cluster_mode.findText(value)
         if index != -1:
             self.cluster_mode.setCurrentIndex(index)
-        self.activate_160m.setChecked(bool("160m" in self.preference.get("bands", [])))
-        self.activate_80m.setChecked(bool("80m" in self.preference.get("bands", [])))
-        self.activate_40m.setChecked(bool("40m" in self.preference.get("bands", [])))
-        self.activate_20m.setChecked(bool("20m" in self.preference.get("bands", [])))
-        self.activate_15m.setChecked(bool("15m" in self.preference.get("bands", [])))
-        self.activate_10m.setChecked(bool("10m" in self.preference.get("bands", [])))
-        self.activate_6m.setChecked(bool("6m" in self.preference.get("bands", [])))
-        self.activate_2m.setChecked(bool("2m" in self.preference.get("bands", [])))
+        self.activate_160m.setChecked(bool("160" in self.preference.get("bands", [])))
+        self.activate_80m.setChecked(bool("80" in self.preference.get("bands", [])))
+        self.activate_40m.setChecked(bool("40" in self.preference.get("bands", [])))
+        self.activate_20m.setChecked(bool("20" in self.preference.get("bands", [])))
+        self.activate_15m.setChecked(bool("15" in self.preference.get("bands", [])))
+        self.activate_10m.setChecked(bool("10" in self.preference.get("bands", [])))
+        self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
+        self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
         self.activate_1dot25.setChecked(
-            bool("1.25m" in self.preference.get("bands", []))
+            bool("1.25" in self.preference.get("bands", []))
         )
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
@@ -150,23 +150,23 @@ class Settings(QtWidgets.QDialog):
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
         bandlist = list()
         if self.activate_160m.isChecked():
-            bandlist.append("160m")
+            bandlist.append("160")
         if self.activate_80m.isChecked():
-            bandlist.append("80m")
+            bandlist.append("80")
         if self.activate_40m.isChecked():
-            bandlist.append("40m")
+            bandlist.append("40")
         if self.activate_20m.isChecked():
-            bandlist.append("20m")
+            bandlist.append("20")
         if self.activate_15m.isChecked():
-            bandlist.append("15m")
+            bandlist.append("15")
         if self.activate_10m.isChecked():
-            bandlist.append("10m")
+            bandlist.append("10")
         if self.activate_6m.isChecked():
-            bandlist.append("6m")
+            bandlist.append("6")
         if self.activate_2m.isChecked():
-            bandlist.append("2m")
+            bandlist.append("2")
         if self.activate_1dot25.isChecked():
-            bandlist.append("1.25m")
+            bandlist.append("1.25")
         if self.activate_70cm.isChecked():
             bandlist.append("70cm")
         if self.activate_33cm.isChecked():
