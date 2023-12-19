@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
+    <width>703</width>
     <height>395</height>
    </rect>
   </property>
@@ -1494,6 +1494,97 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="bands_tab">
+      <attribute name="title">
+       <string>Bands</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="activate_2m">
+         <property name="text">
+          <string>2M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="activate_1dot25">
+         <property name="text">
+          <string>1.25M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="activate_40m">
+         <property name="text">
+          <string>40M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="activate_80m">
+         <property name="text">
+          <string>80M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="activate_160m">
+         <property name="text">
+          <string>160M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="activate_6m">
+         <property name="text">
+          <string>6M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="activate_20m">
+         <property name="text">
+          <string>20M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="activate_15m">
+         <property name="text">
+          <string>15M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QCheckBox" name="activate_10m">
+         <property name="text">
+          <string>10M</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="activate_70cm">
+         <property name="text">
+          <string>70cm</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="activate_33cm">
+         <property name="text">
+          <string>33cm</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QCheckBox" name="activate_23cm">
+         <property name="text">
+          <string>23cm</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -1581,7 +1672,7 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
