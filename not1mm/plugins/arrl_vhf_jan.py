@@ -194,7 +194,7 @@ def show_mults(self):
     dx = 0
 
     sql = (
-        "select count(DISTINCT(NR || ':' || Mode)) as mult_count "
+        "select count(DISTINCT(NR || ':' || Band)) as mult_count "
         f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
     )
     result = self.database.exec_sql(sql)
