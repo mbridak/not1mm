@@ -50,6 +50,7 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
     - [CW Keyer interface](#cw-keyer-interface)
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
+    - [Bands](#bands)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -115,6 +116,7 @@ I wish to thank those who've contributed to the project.
 - ARRL Field Day
 - ARRL Sweepstakes CW
 - ARRL Sweepstakes SSB
+- ARRL VHF January
 - CQ WPX CW
 - CQ WPX SSB
 - CQ World Wide CW
@@ -130,7 +132,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [23-12-19] Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed. Started working on ARRL VHF contests.
+- [23-12-19] Add ARRL VHF contest. Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed.
 - [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
 - [23-12-5] Removed deprecated datetime.utcnow()
 - [23-12-4] Moved get_points to plugin_common, fixing crash.
@@ -343,6 +345,12 @@ Work has started on N1MM udp packets. So far just RadioInfo, contactinfo, contac
 ![N1MM Packet Configuration Screen](https://github.com/mbridak/not1mm/blob/master/pic/n1mm_packet_config.png?raw=true)
 
 When entering IP and Ports, enter them with a colon ':' between them. You can enter multiple pairs on the same line if separated by a space ' '.
+
+### Bands
+
+You can define which bands appear in the main window. Those with checkmarks will appear. Those without will not.
+
+![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
 ## Sending CW
 
