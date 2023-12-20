@@ -130,6 +130,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-12-19] Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed. Started working on ARRL VHF contests.
 - [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
 - [23-12-5] Removed deprecated datetime.utcnow()
 - [23-12-4] Moved get_points to plugin_common, fixing crash.
