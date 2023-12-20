@@ -2042,15 +2042,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_command_buttons()
         self.show_CW_macros()
 
+        # If bands list is empty fill it with HF.
         if self.pref.get("bands", []) == []:
             self.pref["bands"] = ["160", "80", "40", "20", "15", "10"]
+
+        # Hide all the bands and then show only the wanted bands.
         for _indicator in [
             self.band_indicators_cw,
             self.band_indicators_ssb,
             self.band_indicators_rtty,
         ]:
-            ...
-            print(f"{_indicator}")
             for _bandind in _indicator.values():
                 _bandind.hide()
             for band_to_show in self.pref.get("bands", []):
