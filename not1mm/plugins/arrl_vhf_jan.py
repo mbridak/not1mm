@@ -57,8 +57,6 @@ columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
-    "Snt",
-    "Rcv",
     "SentNr",
     "RcvNr",
     "PTS",
@@ -67,7 +65,7 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 3
+dupe_type = 2
 
 
 def init_contest(self):
@@ -150,8 +148,6 @@ def set_contact_vars(self):
 
 def predupe(self):
     """called after callsign entered"""
-    print(f"{self.contact}")
-    print(f"{self.radio_state}")
 
 
 def prefill(self):
