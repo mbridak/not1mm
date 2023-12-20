@@ -150,6 +150,8 @@ def set_contact_vars(self):
 
 def predupe(self):
     """called after callsign entered"""
+    print(f"{self.contact}")
+    print(f"{self.radio_state}")
 
 
 def prefill(self):
@@ -173,11 +175,15 @@ def points(self):
     # 4 points per 902 or 1296 MHz QSO
     # 8 points per 2.3 GHz or higher QSO
 
-    # _mode = self.contact.get("Mode", "")
-    # if _mode in "SSB, USB, LSB, FM, AM":
-    #     return 2
-    # if _mode in "CW":
-    #     return 4
+    _band = self.contact.get("Band", "")
+    if _band in ["50", "144"]:
+        return 1
+    if _band in ["222", "432"]:
+        return 2
+    if _band in ["902", "1296"]:
+        return 4
+    if _band in ["2300+"]:
+        return 8
     return 0
 
 

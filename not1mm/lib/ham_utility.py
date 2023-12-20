@@ -148,7 +148,13 @@ def get_logged_band(freq: str) -> str:
         if 225000000 > frequency > 222000000:
             return "222"
         if 450000000 > frequency > 420000000:
-            return "430"
+            return "432"
+        if 928000000 > frequency > 902000000:
+            return "902"
+        if 1300000000 > frequency > 1240000000:
+            return "1296"
+        if 10500000000 > freq > 2300000000:
+            return "2300+"
     return "0"
 
 
