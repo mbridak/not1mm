@@ -249,6 +249,16 @@
      </item>
      <item>
       <property name="text">
+       <string>ARRL VHF JUN</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ARRL VHF SEP</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CANADA DAY</string>
       </property>
      </item>
@@ -316,7 +326,7 @@
      </property>
      <property name="time">
       <time>
-       <hour>16</hour>
+       <hour>0</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
