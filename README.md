@@ -117,6 +117,8 @@ I wish to thank those who've contributed to the project.
 - ARRL Sweepstakes CW
 - ARRL Sweepstakes SSB
 - ARRL VHF January
+- ARRL VHF June
+- ARRL VHF September
 - CQ WPX CW
 - CQ WPX SSB
 - CQ World Wide CW
