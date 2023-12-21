@@ -1,9 +1,0 @@
-6 meters: 50 MHz E,A,G,T
-2 meters: 144 MHz - 148 MHz
-1.25 meters: 222 MHz - 225 MHz
-70 centimeters: 420 MHz - 450 MHz
-33 centimeters: 902 MHz - 928 MHz
-23 centimeters: 1240 MHz - 1300 MHz
-10 meters: 28.0 MHz - 29.7 MHz
-
-
