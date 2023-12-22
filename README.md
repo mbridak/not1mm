@@ -134,6 +134,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [23-12-22] Refactored a bunch of code.
 - [23-12-20] Add ARRL VHF Jun and Sep.
 - [23-12-19] Add ARRL VHF contest. Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed.
 - [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
