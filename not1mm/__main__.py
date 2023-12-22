@@ -270,80 +270,80 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_icon.setPixmap(self.radio_grey)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F1.customContextMenuRequested.connect(self.edit_F1)
-        self.F1.clicked.connect(self.sendf1)
+        self.F1.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F1))
+        self.F1.clicked.connect(lambda x:self.process_function_key(self.F1))
         self.F2.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F2.customContextMenuRequested.connect(self.edit_F2)
-        self.F2.clicked.connect(self.sendf2)
+        self.F2.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F2))
+        self.F2.clicked.connect(lambda x:self.process_function_key(self.F2))
         self.F3.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F3.customContextMenuRequested.connect(self.edit_F3)
-        self.F3.clicked.connect(self.sendf3)
+        self.F3.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F3))
+        self.F3.clicked.connect(lambda x:self.process_function_key(self.F3))
         self.F4.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F4.customContextMenuRequested.connect(self.edit_F4)
-        self.F4.clicked.connect(self.sendf4)
+        self.F4.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F4))
+        self.F4.clicked.connect(lambda x:self.process_function_key(self.F4))
         self.F5.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F5.customContextMenuRequested.connect(self.edit_F5)
-        self.F5.clicked.connect(self.sendf5)
+        self.F5.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F5))
+        self.F5.clicked.connect(lambda x:self.process_function_key(self.F5))
         self.F6.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F6.customContextMenuRequested.connect(self.edit_F6)
-        self.F6.clicked.connect(self.sendf6)
+        self.F6.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F6))
+        self.F6.clicked.connect(lambda x:self.process_function_key(self.F6))
         self.F7.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F7.customContextMenuRequested.connect(self.edit_F7)
-        self.F7.clicked.connect(self.sendf7)
+        self.F7.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F7))
+        self.F7.clicked.connect(lambda x:self.process_function_key(self.F7))
         self.F8.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F8.customContextMenuRequested.connect(self.edit_F8)
-        self.F8.clicked.connect(self.sendf8)
+        self.F8.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F8))
+        self.F8.clicked.connect(lambda x:self.process_function_key(self.F8))
         self.F9.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F9.customContextMenuRequested.connect(self.edit_F9)
-        self.F9.clicked.connect(self.sendf9)
+        self.F9.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F9))
+        self.F9.clicked.connect(lambda x:self.process_function_key(self.F9))
         self.F10.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F10.customContextMenuRequested.connect(self.edit_F10)
-        self.F10.clicked.connect(self.sendf10)
+        self.F10.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F10))
+        self.F10.clicked.connect(lambda x:self.process_function_key(self.F10))
         self.F11.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F11.customContextMenuRequested.connect(self.edit_F11)
-        self.F11.clicked.connect(self.sendf11)
+        self.F11.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F11))
+        self.F11.clicked.connect(lambda x:self.process_function_key(self.F11))
         self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F12.customContextMenuRequested.connect(self.edit_F12)
-        self.F12.clicked.connect(self.sendf12)
+        self.F12.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F12))
+        self.F12.clicked.connect(lambda x:self.process_function_key(self.F12))
 
-        self.cw_band_160.mousePressEvent = self.click_160_cw
-        self.cw_band_80.mousePressEvent = self.click_80_cw
-        self.cw_band_40.mousePressEvent = self.click_40_cw
-        self.cw_band_20.mousePressEvent = self.click_20_cw
-        self.cw_band_15.mousePressEvent = self.click_15_cw
-        self.cw_band_10.mousePressEvent = self.click_10_cw
-        self.cw_band_6.mousePressEvent = self.click_6_cw
-        self.cw_band_2.mousePressEvent = self.click_2_cw
-        self.cw_band_125.mousePressEvent = self.click_125_cw
-        self.cw_band_70cm.mousePressEvent = self.click_70cm_cw
-        self.cw_band_33cm.mousePressEvent = self.click_33cm_cw
-        self.cw_band_23cm.mousePressEvent = self.click_23cm_cw
+        self.cw_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "CW")
+        self.cw_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "CW")
+        self.cw_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "CW")
+        self.cw_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "CW")
+        self.cw_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "CW")
+        self.cw_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "CW")
+        self.cw_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "CW")
+        self.cw_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "CW")
+        self.cw_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "CW")
+        self.cw_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "CW")
+        self.cw_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "CW")
+        self.cw_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "CW")
 
-        self.ssb_band_160.mousePressEvent = self.click_160_ssb
-        self.ssb_band_80.mousePressEvent = self.click_80_ssb
-        self.ssb_band_40.mousePressEvent = self.click_40_ssb
-        self.ssb_band_20.mousePressEvent = self.click_20_ssb
-        self.ssb_band_15.mousePressEvent = self.click_15_ssb
-        self.ssb_band_10.mousePressEvent = self.click_10_ssb
-        self.ssb_band_6.mousePressEvent = self.click_6_ssb
-        self.ssb_band_2.mousePressEvent = self.click_2_ssb
-        self.ssb_band_125.mousePressEvent = self.click_125_ssb
-        self.ssb_band_70cm.mousePressEvent = self.click_70cm_ssb
-        self.ssb_band_33cm.mousePressEvent = self.click_33cm_ssb
-        self.ssb_band_23cm.mousePressEvent = self.click_23cm_ssb
+        self.ssb_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "SSB")
+        self.ssb_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "SSB")
+        self.ssb_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "SSB")
+        self.ssb_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "SSB")
+        self.ssb_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "SSB")
+        self.ssb_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "SSB")
+        self.ssb_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "SSB")
+        self.ssb_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "SSB")
+        self.ssb_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "SSB")
+        self.ssb_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "SSB")
+        self.ssb_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "SSB")
+        self.ssb_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "SSB")
 
-        self.rtty_band_160.mousePressEvent = self.click_160_rtty
-        self.rtty_band_80.mousePressEvent = self.click_80_rtty
-        self.rtty_band_40.mousePressEvent = self.click_40_rtty
-        self.rtty_band_20.mousePressEvent = self.click_20_rtty
-        self.rtty_band_15.mousePressEvent = self.click_15_rtty
-        self.rtty_band_10.mousePressEvent = self.click_10_rtty
-        self.rtty_band_6.mousePressEvent = self.click_6_rtty
-        self.rtty_band_2.mousePressEvent = self.click_2_rtty
-        self.rtty_band_125.mousePressEvent = self.click_125_rtty
-        self.rtty_band_70cm.mousePressEvent = self.click_70cm_rtty
-        self.rtty_band_33cm.mousePressEvent = self.click_33cm_rtty
-        self.rtty_band_23cm.mousePressEvent = self.click_23cm_rtty
+        self.rtty_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "RTTY")
+        self.rtty_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "RTTY")
+        self.rtty_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "RTTY")
+        self.rtty_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "RTTY")
+        self.rtty_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "RTTY")
+        self.rtty_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "RTTY")
+        self.rtty_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "RTTY")
+        self.rtty_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "RTTY")
+        self.rtty_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "RTTY")
+        self.rtty_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "RTTY")
+        self.rtty_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "RTTY")
+        self.rtty_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "RTTY")
 
         self.band_indicators_cw = {
             "160": self.cw_band_160,
@@ -454,159 +454,27 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(newtext[len(self.oldtext) :])
         self.oldtext = newtext
 
-    def click_160_cw(self, _event) -> None:
-        """Handle clicked on label"""
-        self.change_to_band_and_mode(160, "CW")
+    def change_to_band_and_mode(self, band: int, mode: str) -> None:
+        """
+        Gets a sane frequency for the chosen band and mode.
+        Then changes to that,
 
-    def click_80_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(80, "CW")
+        Parameters
+        ----------
+        band : int
+        mode : str
 
-    def click_40_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(40, "CW")
-
-    def click_20_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(20, "CW")
-
-    def click_15_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(15, "CW")
-
-    def click_10_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(10, "CW")
-
-    def click_6_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(6, "CW")
-
-    def click_2_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(2, "CW")
-
-    def click_125_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(222, "CW")
-
-    def click_70cm_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(432, "CW")
-
-    def click_33cm_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(902, "CW")
-
-    def click_23cm_cw(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(1240, "CW")
-
-    def click_160_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(160, "SSB")
-
-    def click_80_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(80, "SSB")
-
-    def click_40_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(40, "SSB")
-
-    def click_20_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(20, "SSB")
-
-    def click_15_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(15, "SSB")
-
-    def click_10_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(10, "SSB")
-
-    def click_6_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(6, "SSB")
-
-    def click_2_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(2, "SSB")
-
-    def click_125_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(222, "SSB")
-
-    def click_70cm_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(432, "SSB")
-
-    def click_33cm_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(902, "SSB")
-
-    def click_23cm_ssb(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(1240, "SSB")
-
-    def click_160_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(160, "RTTY")
-
-    def click_80_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(80, "RTTY")
-
-    def click_40_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(40, "RTTY")
-
-    def click_20_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(20, "RTTY")
-
-    def click_15_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(15, "RTTY")
-
-    def click_10_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(10, "RTTY")
-
-    def click_6_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(6, "RTTY")
-
-    def click_2_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(2, "RTTY")
-
-    def click_125_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(222, "RTTY")
-
-    def click_70cm_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(432, "RTTY")
-
-    def click_33cm_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(902, "RTTY")
-
-    def click_23cm_rtty(self, _event) -> None:
-        """doc"""
-        self.change_to_band_and_mode(1240, "RTTY")
-
-    def change_to_band_and_mode(self, band, mode) -> None:
-        """doc"""
+        Returns
+        -------
+        Nothing
+        """
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(str(band), mode)
             self.change_freq(freq)
             self.change_mode(mode)
 
     def quit_app(self) -> None:
-        """doc"""
+        """Send multicast quit message, then quit the program."""
         cmd = {}
         cmd["cmd"] = "HALT"
         cmd["station"] = platform.node()
@@ -1298,29 +1166,29 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.end(False)
                 return
         if event.key() == Qt.Key_F1:
-            self.sendf1()
+            self.process_function_key(self.F1)
         if event.key() == Qt.Key_F2:
-            self.sendf2()
+            self.process_function_key(self.F2)
         if event.key() == Qt.Key_F3:
-            self.sendf3()
+            self.process_function_key(self.F3)
         if event.key() == Qt.Key_F4:
-            self.sendf4()
+            self.process_function_key(self.F4)
         if event.key() == Qt.Key_F5:
-            self.sendf5()
+            self.process_function_key(self.F5)
         if event.key() == Qt.Key_F6:
-            self.sendf6()
+            self.process_function_key(self.F6)
         if event.key() == Qt.Key_F7:
-            self.sendf7()
+            self.process_function_key(self.F7)
         if event.key() == Qt.Key_F8:
-            self.sendf8()
+            self.process_function_key(self.F8)
         if event.key() == Qt.Key_F9:
-            self.sendf9()
+            self.process_function_key(self.F9)
         if event.key() == Qt.Key_F10:
-            self.sendf10()
+            self.process_function_key(self.F10)
         if event.key() == Qt.Key_F11:
-            self.sendf11()
+            self.process_function_key(self.F11)
         if event.key() == Qt.Key_F12:
-            self.sendf12()
+            self.process_function_key(self.F12)
 
     def set_window_title(self) -> None:
         """Set window title"""
@@ -1461,12 +1329,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["zn"] = self.contact["ZN"]
                 self.n1mm.contact_info["power"] = self.contact["Power"]
                 self.n1mm.contact_info["band"] = self.contact["Band"]
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
-                # self.n1mm.contact_info['']
                 logger.debug("%s", f"{self.n1mm.contact_info}")
                 self.n1mm.send_contact_info()
 
@@ -1479,39 +1341,6 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
-
-        # self.contact["ContestName"] = self.contest.name
-        # self.contact["SNT"] = self.sent.text()
-        # self.contact["RCV"] = self.receive.text()
-        # self.contact["CountryPrefix"]
-        # self.contact["StationPrefix"] = self.pref.get("callsign", "")
-        # self.contact["QTH"]
-        # self.contact["Name"] = self.other_1.text()
-        # self.contact["Comment"] = self.other_2.text()
-        # self.contact["NR"]
-        # self.contact["Sect"]
-        # self.contact["Prec"]
-        # self.contact["CK"]
-        # self.contact["ZN"]
-        # self.contact["SentNr"]
-        # self.contact["Points"]
-        # self.contact["IsMultiplier1"]
-        # self.contact["IsMultiplier2"]
-        # self.contact["Power"]
-        # self.contact["Band"]
-        # self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
-        # self.contact["Exchange1"]
-        # self.contact["RadioNR"]
-        # self.contact["isMultiplier3"]
-        # self.contact["MiscText"]
-        # self.contact["ContactType"]
-        # self.contact["Run1Run2"]
-        # self.contact["GridSquare"]
-        # self.contact["Continent"]
-        # self.contact["RoverLocation"]
-        # self.contact["RadioInterfaced"]
-        # self.contact["NetworkedCompNr"]
-        # self.contact["CLAIMEDQSO"]
 
     def new_contest_dialog(self) -> None:
         """Show new contest dialog"""
@@ -1638,65 +1467,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.edit_macro_dialog.close()
 
-    def edit_F1(self) -> None:
-        """stub"""
-        logger.debug("F1 Right Clicked.")
-        self.edit_macro(self.F1)
-
-    def edit_F2(self) -> None:
-        """stub"""
-        logger.debug("F2 Right Clicked.")
-        self.edit_macro(self.F2)
-
-    def edit_F3(self) -> None:
-        """stub"""
-        logger.debug("F3 Right Clicked.")
-        self.edit_macro(self.F3)
-
-    def edit_F4(self) -> None:
-        """stub"""
-        logger.debug("F4 Right Clicked.")
-        self.edit_macro(self.F4)
-
-    def edit_F5(self) -> None:
-        """stub"""
-        logger.debug("F5 Right Clicked.")
-        self.edit_macro(self.F5)
-
-    def edit_F6(self) -> None:
-        """stub"""
-        logger.debug("F6 Right Clicked.")
-        self.edit_macro(self.F6)
-
-    def edit_F7(self) -> None:
-        """stub"""
-        logger.debug("F7 Right Clicked.")
-        self.edit_macro(self.F7)
-
-    def edit_F8(self) -> None:
-        """stub"""
-        logger.debug("F8 Right Clicked.")
-        self.edit_macro(self.F8)
-
-    def edit_F9(self) -> None:
-        """stub"""
-        logger.debug("F9 Right Clicked.")
-        self.edit_macro(self.F9)
-
-    def edit_F10(self) -> None:
-        """stub"""
-        logger.debug("F10 Right Clicked.")
-        self.edit_macro(self.F10)
-
-    def edit_F11(self) -> None:
-        """stub"""
-        logger.debug("F11 Right Clicked.")
-        self.edit_macro(self.F11)
-
-    def edit_F12(self) -> None:
-        """stub"""
-        logger.debug("F12 Right Clicked.")
-        self.edit_macro(self.F12)
 
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
@@ -1772,137 +1542,17 @@ class MainWindow(QtWidgets.QMainWindow):
             app.processEvents()
             self.rig_control.ptt_off()
 
-    def sendf1(self) -> None:
-        """stub"""
+    def process_function_key(self, function_key) -> None:
+        """Called when a function key is clicked."""
         logger.debug("F1 Clicked")
         if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F1.text()
+            self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F1.toolTip()))
+            self.voice_string(self.process_macro(function_key.toolTip()))
             return
         if self.cw:
-            self.cw.sendcw(self.process_macro(self.F1.toolTip()))
+            self.cw.sendcw(self.process_macro(function_key.toolTip()))
 
-    def sendf2(self) -> None:
-        """stub"""
-        logger.debug("F2 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F2.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F2.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F2.toolTip()))
-
-    def sendf3(self) -> None:
-        """stub"""
-        logger.debug("F3 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F3.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F3.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F3.toolTip()))
-
-    def sendf4(self) -> None:
-        """stub"""
-        logger.debug("F4 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F4.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F4.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F4.toolTip()))
-
-    def sendf5(self) -> None:
-        """stub"""
-        logger.debug("F5 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F5.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F5.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F5.toolTip()))
-
-    def sendf6(self) -> None:
-        """stub"""
-        logger.debug("F6 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F6.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F6.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F6.toolTip()))
-
-    def sendf7(self) -> None:
-        """stub"""
-        logger.debug("F7 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F7.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F7.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F7.toolTip()))
-
-    def sendf8(self) -> None:
-        """stub"""
-        logger.debug("F8 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F8.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F8.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F8.toolTip()))
-
-    def sendf9(self) -> None:
-        """stub"""
-        logger.debug("F9 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F9.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F9.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F9.toolTip()))
-
-    def sendf10(self) -> None:
-        """stub"""
-        logger.debug("F10 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F10.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F10.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F10.toolTip()))
-
-    def sendf11(self) -> None:
-        """stub"""
-        logger.debug("F11 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F11.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F11.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F11.toolTip()))
-
-    def sendf12(self) -> None:
-        """stub"""
-        logger.debug("F12 Clicked")
-        if self.n1mm:
-            self.n1mm.radio_info["FunctionKeyCaption"] = self.F12.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(self.F12.toolTip()))
-            return
-        if self.cw:
-            self.cw.sendcw(self.process_macro(self.F12.toolTip()))
 
     def run_sp_buttons_clicked(self) -> None:
         """Handle run/s&p mode"""
@@ -2399,7 +2049,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return result.get("isdupe", False)
 
     def setmode(self, mode: str) -> None:
-        """stub for when the mode changes."""
+        """Call when the mode changes."""
         if mode == "CW":
             if self.current_mode != "CW":
                 self.current_mode = "CW"
@@ -2455,7 +2105,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         destination_file.write_bytes(child.read_bytes())
 
     def poll_radio(self) -> None:
-        """stub"""
+        """
+        Poll radio for VFO, mode, bandwidth.
+        Send state via multicast.
+        """
         self.set_radio_icon(0)
         if self.rig_control:
             if self.rig_control.online is False:
