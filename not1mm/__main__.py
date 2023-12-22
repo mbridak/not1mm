@@ -270,80 +270,148 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_icon.setPixmap(self.radio_grey)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F1.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F1))
-        self.F1.clicked.connect(lambda x:self.process_function_key(self.F1))
+        self.F1.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F1))
+        self.F1.clicked.connect(lambda x: self.process_function_key(self.F1))
         self.F2.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F2.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F2))
-        self.F2.clicked.connect(lambda x:self.process_function_key(self.F2))
+        self.F2.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F2))
+        self.F2.clicked.connect(lambda x: self.process_function_key(self.F2))
         self.F3.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F3.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F3))
-        self.F3.clicked.connect(lambda x:self.process_function_key(self.F3))
+        self.F3.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F3))
+        self.F3.clicked.connect(lambda x: self.process_function_key(self.F3))
         self.F4.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F4.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F4))
-        self.F4.clicked.connect(lambda x:self.process_function_key(self.F4))
+        self.F4.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F4))
+        self.F4.clicked.connect(lambda x: self.process_function_key(self.F4))
         self.F5.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F5.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F5))
-        self.F5.clicked.connect(lambda x:self.process_function_key(self.F5))
+        self.F5.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F5))
+        self.F5.clicked.connect(lambda x: self.process_function_key(self.F5))
         self.F6.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F6.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F6))
-        self.F6.clicked.connect(lambda x:self.process_function_key(self.F6))
+        self.F6.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F6))
+        self.F6.clicked.connect(lambda x: self.process_function_key(self.F6))
         self.F7.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F7.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F7))
-        self.F7.clicked.connect(lambda x:self.process_function_key(self.F7))
+        self.F7.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F7))
+        self.F7.clicked.connect(lambda x: self.process_function_key(self.F7))
         self.F8.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F8.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F8))
-        self.F8.clicked.connect(lambda x:self.process_function_key(self.F8))
+        self.F8.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F8))
+        self.F8.clicked.connect(lambda x: self.process_function_key(self.F8))
         self.F9.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F9.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F9))
-        self.F9.clicked.connect(lambda x:self.process_function_key(self.F9))
+        self.F9.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F9))
+        self.F9.clicked.connect(lambda x: self.process_function_key(self.F9))
         self.F10.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F10.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F10))
-        self.F10.clicked.connect(lambda x:self.process_function_key(self.F10))
+        self.F10.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F10))
+        self.F10.clicked.connect(lambda x: self.process_function_key(self.F10))
         self.F11.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F11.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F11))
-        self.F11.clicked.connect(lambda x:self.process_function_key(self.F11))
+        self.F11.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F11))
+        self.F11.clicked.connect(lambda x: self.process_function_key(self.F11))
         self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.F12.customContextMenuRequested.connect(lambda x:self.edit_macro(self.F12))
-        self.F12.clicked.connect(lambda x:self.process_function_key(self.F12))
+        self.F12.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F12))
+        self.F12.clicked.connect(lambda x: self.process_function_key(self.F12))
 
-        self.cw_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "CW")
-        self.cw_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "CW")
-        self.cw_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "CW")
-        self.cw_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "CW")
-        self.cw_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "CW")
-        self.cw_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "CW")
-        self.cw_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "CW")
-        self.cw_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "CW")
-        self.cw_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "CW")
-        self.cw_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "CW")
-        self.cw_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "CW")
-        self.cw_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "CW")
+        self.cw_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            160, "CW"
+        )
+        self.cw_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            80, "CW"
+        )
+        self.cw_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            40, "CW"
+        )
+        self.cw_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            20, "CW"
+        )
+        self.cw_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            15, "CW"
+        )
+        self.cw_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            10, "CW"
+        )
+        self.cw_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "CW")
+        self.cw_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "CW")
+        self.cw_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            222, "CW"
+        )
+        self.cw_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            432, "CW"
+        )
+        self.cw_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            902, "CW"
+        )
+        self.cw_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            1240, "CW"
+        )
 
-        self.ssb_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "SSB")
-        self.ssb_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "SSB")
-        self.ssb_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "SSB")
-        self.ssb_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "SSB")
-        self.ssb_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "SSB")
-        self.ssb_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "SSB")
-        self.ssb_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "SSB")
-        self.ssb_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "SSB")
-        self.ssb_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "SSB")
-        self.ssb_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "SSB")
-        self.ssb_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "SSB")
-        self.ssb_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "SSB")
+        self.ssb_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            160, "SSB"
+        )
+        self.ssb_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            80, "SSB"
+        )
+        self.ssb_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            40, "SSB"
+        )
+        self.ssb_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            20, "SSB"
+        )
+        self.ssb_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            15, "SSB"
+        )
+        self.ssb_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            10, "SSB"
+        )
+        self.ssb_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            6, "SSB"
+        )
+        self.ssb_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            2, "SSB"
+        )
+        self.ssb_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            222, "SSB"
+        )
+        self.ssb_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            432, "SSB"
+        )
+        self.ssb_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            902, "SSB"
+        )
+        self.ssb_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            1240, "SSB"
+        )
 
-        self.rtty_band_160.mousePressEvent = lambda x:self.change_to_band_and_mode(160, "RTTY")
-        self.rtty_band_80.mousePressEvent = lambda x:self.change_to_band_and_mode(80, "RTTY")
-        self.rtty_band_40.mousePressEvent = lambda x:self.change_to_band_and_mode(40, "RTTY")
-        self.rtty_band_20.mousePressEvent = lambda x:self.change_to_band_and_mode(20, "RTTY")
-        self.rtty_band_15.mousePressEvent = lambda x:self.change_to_band_and_mode(15, "RTTY")
-        self.rtty_band_10.mousePressEvent = lambda x:self.change_to_band_and_mode(10, "RTTY")
-        self.rtty_band_6.mousePressEvent = lambda x:self.change_to_band_and_mode(6, "RTTY")
-        self.rtty_band_2.mousePressEvent = lambda x:self.change_to_band_and_mode(2, "RTTY")
-        self.rtty_band_125.mousePressEvent = lambda x:self.change_to_band_and_mode(222, "RTTY")
-        self.rtty_band_70cm.mousePressEvent = lambda x:self.change_to_band_and_mode(432, "RTTY")
-        self.rtty_band_33cm.mousePressEvent = lambda x:self.change_to_band_and_mode(902, "RTTY")
-        self.rtty_band_23cm.mousePressEvent = lambda x:self.change_to_band_and_mode(1240, "RTTY")
+        self.rtty_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            160, "RTTY"
+        )
+        self.rtty_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            80, "RTTY"
+        )
+        self.rtty_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            40, "RTTY"
+        )
+        self.rtty_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            20, "RTTY"
+        )
+        self.rtty_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            15, "RTTY"
+        )
+        self.rtty_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            10, "RTTY"
+        )
+        self.rtty_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            6, "RTTY"
+        )
+        self.rtty_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            2, "RTTY"
+        )
+        self.rtty_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            222, "RTTY"
+        )
+        self.rtty_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            432, "RTTY"
+        )
+        self.rtty_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            902, "RTTY"
+        )
+        self.rtty_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            1240, "RTTY"
+        )
 
         self.band_indicators_cw = {
             "160": self.cw_band_160,
@@ -1467,7 +1535,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.edit_macro_dialog.close()
 
-
     def process_macro(self, macro: str) -> str:
         """Process CW macro substitutions"""
         result = self.database.get_serial()
@@ -1552,7 +1619,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.cw:
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
-
 
     def run_sp_buttons_clicked(self) -> None:
         """Handle run/s&p mode"""
