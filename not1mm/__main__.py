@@ -127,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
-        "bands": ["160m", "80m", "40m", "20m", "15m", "10m"],
+        "bands": ["160", "80", "40", "20", "15", "10"],
         "window_height": 200,
         "window_width": 600,
         "window_x": 120,
