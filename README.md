@@ -129,19 +129,13 @@ I wish to thank those who've contributed to the project.
 - Japan International DX SSB
 - NAQP CW
 - NAQP SSB
+- Phone Weekly Test
 - RAC Canada Day
 - Winter Field Day
 
 ## Recent Changes
 
-- [23-12-24] Fixed bug where no bands showed onscreen during initial launch.
-- [23-12-22] Refactored a bunch of code.
-- [23-12-20] Add ARRL VHF Jun and Sep.
-- [23-12-19] Add ARRL VHF contest. Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed.
-- [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
-- [23-12-5] Removed deprecated datetime.utcnow()
-- [23-12-4] Moved get_points to plugin_common, fixing crash.
-- [23-12-3] Initial WFD plugin.
+- [24-1-15] Added the Phone Weekly Test.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
