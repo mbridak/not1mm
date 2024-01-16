@@ -24,7 +24,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.adi"
+        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.adi"
     )
     log = self.database.fetch_all_contacts_asc()
     try:
@@ -34,8 +34,8 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
             for contact in log:
                 hiscall = contact.get("Call", "")
                 hisname = contact.get("Name", "")
-                the_date_and_time = contact.get("TS")
-                themode = contact.get("Mode")
+                the_date_and_time = contact.get("TS", "")
+                themode = contact.get("Mode", "")
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
                 sentrst = contact.get("SNT", "")
