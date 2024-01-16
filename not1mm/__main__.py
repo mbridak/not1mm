@@ -846,34 +846,40 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("contest")
             )
             if self.contest_settings:
-                self.database.current_contest = self.pref.get("contest")
-                if self.contest_settings.get("ContestName"):
-                    self.contest = doimp(self.contest_settings.get("ContestName"))
-                    logger.debug("Loaded Contest Name = %s", self.contest.name)
-                    self.set_window_title()
-                    self.contest.init_contest(self)
-                    self.hide_band_mode(self.contest_settings.get("ModeCategory", ""))
-                    logger.debug("%s", f"{self.contest_settings}")
-                    if self.contest_settings.get("ModeCategory", "") == "CW":
-                        self.setmode("CW")
-                        self.radio_state["mode"] = "CW"
-                        if self.rig_control:
-                            if self.rig_control.online:
-                                self.rig_control.set_mode("CW")
-                        band = getband(str(self.radio_state.get("vfoa", "0.0")))
-                        self.set_band_indicator(band)
+                try:
+                    self.database.current_contest = self.pref.get("contest")
+                    if self.contest_settings.get("ContestName"):
+                        self.contest = doimp(self.contest_settings.get("ContestName"))
+                        logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
-                    if self.contest_settings.get("ModeCategory", "") == "SSB":
-                        self.setmode("SSB")
-                        if int(self.radio_state.get("vfoa", 0)) > 10000000:
-                            self.radio_state["mode"] = "USB"
-                        else:
-                            self.radio_state["mode"] = "LSB"
-                        band = getband(str(self.radio_state.get("vfoa", "0.0")))
-                        self.set_band_indicator(band)
-                        self.set_window_title()
-                        if self.rig_control:
-                            self.rig_control.set_mode(self.radio_state.get("mode"))
+                        self.contest.init_contest(self)
+                        self.hide_band_mode(
+                            self.contest_settings.get("ModeCategory", "")
+                        )
+                        logger.debug("%s", f"{self.contest_settings}")
+                        if self.contest_settings.get("ModeCategory", "") == "CW":
+                            self.setmode("CW")
+                            self.radio_state["mode"] = "CW"
+                            if self.rig_control:
+                                if self.rig_control.online:
+                                    self.rig_control.set_mode("CW")
+                            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                            self.set_band_indicator(band)
+                            self.set_window_title()
+                        if self.contest_settings.get("ModeCategory", "") == "SSB":
+                            self.setmode("SSB")
+                            if int(self.radio_state.get("vfoa", 0)) > 10000000:
+                                self.radio_state["mode"] = "USB"
+                            else:
+                                self.radio_state["mode"] = "LSB"
+                            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                            self.set_band_indicator(band)
+                            self.set_window_title()
+                            if self.rig_control:
+                                self.rig_control.set_mode(self.radio_state.get("mode"))
+                except ModuleNotFoundError:
+                    self.pref["contest"] = 1
+                    self.show_message_box("Contest plugin not found")
 
                 if hasattr(self.contest, "mode"):
                     logger.debug("%s", f"  ****  {self.contest}")
