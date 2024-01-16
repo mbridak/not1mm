@@ -131,10 +131,12 @@ I wish to thank those who've contributed to the project.
 - NAQP SSB
 - Phone Weekly Test
 - RAC Canada Day
+- Stew Perry Topband
 - Winter Field Day
 
 ## Recent Changes
 
+- [24-1-16] Added Stew Perry Topband.
 - [24-1-15] Added the Phone Weekly Test.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
