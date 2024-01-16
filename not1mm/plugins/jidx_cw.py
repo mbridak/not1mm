@@ -102,9 +102,9 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
     self.contact["NR"] = self.other_2.text()
-    if self.contact.get("NR"):
+    if self.contact.get("NR", ""):
         result = self.database.fetch_nr_exists(self.contact.get("NR", ""))
-        if result.get("nr_count"):
+        if result.get("nr_count", ""):
             self.contact["IsMultiplier1"] = 0
         else:
             self.contact["IsMultiplier1"] = 1
@@ -139,7 +139,7 @@ def points(self):
         21: 1,
         28: 2,
     }
-    mhz = int(int(float(self.contact.get("Freq"))) / 1000)
+    mhz = int(int(float(self.contact.get("Freq", 0))) / 1000)
     return pts.get(mhz, 0)
 
 
@@ -189,7 +189,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     result = self.cty_lookup(self.station.get("Call", ""))
@@ -329,8 +329,8 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
-        time_stamp = contact.get("TS")
-        nr = contact.get("NR")
+        time_stamp = contact.get("TS", "")
+        nr = contact.get("NR", "")
         result = self.database.fetch_nr_exists_before_me(nr, time_stamp)
         nr_count = result.get("nr_count", 1)
         if nr_count == 0:

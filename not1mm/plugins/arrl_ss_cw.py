@@ -109,7 +109,7 @@ def set_contact_vars(self):
     self.contact["Sect"] = sec
     self.contact["Call"] = call
     result = self.database.fetch_sect_exists(sec)
-    if result.get("sect_count"):
+    if result.get("sect_count", ""):
         self.contact["IsMultiplier1"] = 0
     else:
         self.contact["IsMultiplier1"] = 1
@@ -188,7 +188,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -345,8 +345,8 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
-        time_stamp = contact.get("TS")
-        sec = contact.get("Sect")
+        time_stamp = contact.get("TS", "")
+        sec = contact.get("Sect", "")
         result = self.database.fetch_sect_exists_before_me(sec, time_stamp)
         sect_count = result.get("sect_count", 1)
         if sect_count == 0:

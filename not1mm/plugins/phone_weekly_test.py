@@ -113,11 +113,11 @@ def set_contact_vars(self):
     self.contact["Sect"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
-    if self.contact.get("Sect"):
+    if self.contact.get("Sect", ""):
         result = self.database.fetch_sect_band_exists(
             self.contact.get("Sect", ""), self.contact.get("Band", "")
         )
-        if result.get("sect_count"):
+        if result.get("sect_count", ""):
             self.contact["IsMultiplier1"] = 0
         else:
             self.contact["IsMultiplier1"] = 1
@@ -129,9 +129,6 @@ def predupe(self):
 
 def prefill(self):
     """Fill sentnr"""
-    # if len(self.other_2.text()) == 0:
-    #     self.other_2.setText(str(self.contact.get("ZN", "")))
-    # self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
 def points(self):
@@ -196,7 +193,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call','').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -350,7 +347,7 @@ def recalculate_mults(self):
 
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
-        time_stamp = contact.get("TS")
+        time_stamp = contact.get("TS", "")
         sect = contact.get("Sect", "")
         band = contact.get("Band", "")
         query = (

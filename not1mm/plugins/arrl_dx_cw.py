@@ -178,7 +178,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -333,8 +333,8 @@ def recalculate_mults(self):
 
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
-        time_stamp = contact.get("TS")
-        entity = contact.get("CountryPrefix")
+        time_stamp = contact.get("TS", "")
+        entity = contact.get("CountryPrefix", "")
         query = (
             f"select count(*) as prefix_count from dxlog where  TS < '{time_stamp}' "
             f"and CountryPrefix = '{entity}' "

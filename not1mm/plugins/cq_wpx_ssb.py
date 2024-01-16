@@ -103,9 +103,9 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
     self.contact["NR"] = self.other_2.text()
-    if self.contact.get("WPXPrefix"):
+    if self.contact.get("WPXPrefix", ""):
         result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
-        if result.get("wpx_count"):
+        if result.get("wpx_count", ""):
             self.contact["IsMultiplier1"] = 0
         else:
             self.contact["IsMultiplier1"] = 1
@@ -134,7 +134,7 @@ def points(self):
             mycountry = item[1].get("entity", "")
             mycontinent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    band = int(int(float(self.contact.get("Freq"))) / 1000)
+    band = int(int(float(self.contact.get("Freq", 0))) / 1000)
     if result:
         for item in result.items():
             entity = item[1].get("entity", "")
@@ -209,7 +209,7 @@ def cabrillo(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -363,8 +363,8 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
-        time_stamp = contact.get("TS")
-        wpx = contact.get("WPXPrefix")
+        time_stamp = contact.get("TS", "")
+        wpx = contact.get("WPXPrefix", "")
         result = self.database.fetch_wpx_exists_before_me(wpx, time_stamp)
         wpx_count = result.get("wpx_count", 1)
         if wpx_count == 0:
