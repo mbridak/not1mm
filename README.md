@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-1-16.1] Fix possible crash when cabrillo generated without a station call.
 - [24-1-16] Added Stew Perry Topband.
 - [24-1-15] Added the Phone Weekly Test.
 
