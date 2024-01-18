@@ -490,7 +490,19 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
     def set_radio_icon(self, state: int) -> None:
-        """change CAT icon state"""
+        """
+        Change CAT icon state
+
+        Parameters
+        ----------
+        state : int
+        The state of the CAT icon. 0 = grey, 1 = red, 2 = green
+
+        Returns
+        -------
+        None
+        """
+
         displaystate = [self.radio_grey, self.radio_red, self.radio_green]
         try:
             self.radio_icon.setPixmap(displaystate[state])
@@ -498,7 +510,18 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug(err)
 
     def toggle_cw_entry(self) -> None:
-        """Toggle the CW entry field on and off."""
+        """
+        Toggle the CW entry field on and off.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.cw_entry_visible = not self.cw_entry_visible
         if self.cw_entry_visible:
             self.last_focus = app.focusWidget()
@@ -511,8 +534,19 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.last_focus:
             self.last_focus.setFocus()
 
-    def handle_text_change(self):
-        """..."""
+    def handle_text_change(self) -> None:
+        """
+        ....
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         newtext = self.cw_entry.text()
         if len(newtext) < len(self.oldtext):
             # self.send_backspace()
@@ -542,7 +576,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.change_mode(mode)
 
     def quit_app(self) -> None:
-        """Send multicast quit message, then quit the program."""
+        """
+        Send multicast quit message, then quit the program.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         cmd = {}
         cmd["cmd"] = "HALT"
         cmd["station"] = platform.node()
@@ -562,6 +607,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         Bool
         """
+
         for proc in psutil.process_iter():
             if bool(re.match(name, proc.name().lower())):
                 return True
@@ -579,6 +625,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+
         message_box = QtWidgets.QMessageBox()
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
@@ -598,6 +645,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+
         self.about_dialog = About(WORKING_PATH)
         self.about_dialog.donors.setSource(
             QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
@@ -616,6 +664,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+
         self.about_dialog = About(WORKING_PATH)
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
@@ -638,27 +687,61 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+
         if self.mscp.update_masterscp():
             self.show_message_box("MASTER.SCP file updated.")
             return
         self.show_message_box("MASTER.SCP could not be updated.")
 
     def edit_configuration_settings(self) -> None:
-        """Configuration Settings was clicked"""
+        """
+        Configuration Settings was clicked
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
 
     def edit_configuration_return(self) -> None:
-        """Returns here when configuration dialog closed with okay."""
+        """
+        Returns here when configuration dialog closed with okay.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.configuration_dialog.save_changes()
         self.write_preference()
         logger.debug("%s", f"{self.pref}")
         self.readpreferences()
 
     def new_database(self) -> None:
-        """Create new database."""
+        """
+        Create new database file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         filename = self.filepicker("new")
         if filename:
             if filename[-3:] != ".db":
@@ -681,7 +764,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_station_settings()
 
     def open_database(self) -> None:
-        """Open existing database."""
+        """
+        Open existing database file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         filename = self.filepicker("open")
         if filename:
             self.pref["current_database"] = filename.split("/")[-1:][0]
@@ -706,7 +800,18 @@ class MainWindow(QtWidgets.QMainWindow):
         """Create new contest in existing database."""
 
     def open_contest(self) -> None:
-        """Switch to a different existing contest in existing database."""
+        """
+        Switch to a different existing contest in existing database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("Open Contest selected")
         contests = self.database.fetch_all_contests()
         logger.debug("%s", f"{contests}")
@@ -751,7 +856,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.show()
 
     def open_contest_return(self) -> None:
-        """Called by open_contest"""
+        """
+        Called by open_contest when contest selected.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         selected_row = self.contest_dialog.contest_list.currentRow()
         contest = self.contest_dialog.contest_list.item(selected_row, 0).text()
         self.pref["contest"] = contest
@@ -762,12 +878,37 @@ class MainWindow(QtWidgets.QMainWindow):
         self.send_worked_list()
 
     def refill_dropdown(self, target, source) -> None:
-        """Refill QCombobox widget with value."""
+        """
+        Refill QCombobox widget with value.
+
+        Parameters
+        ----------
+        target : QComboBox
+        The target widget to be refilled
+        source : str
+        The value to be used to fill the target widget
+
+        Returns
+        -------
+        None
+        """
+
         index = target.findText(source)
         target.setCurrentIndex(index)
 
     def edit_contest(self) -> None:
-        """Edit the current contest"""
+        """
+        Edit the current contest settings.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("Edit contest Dialog")
         if self.contest is None:
             self.show_message_box("You have no contest defined.")
@@ -813,7 +954,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.open()
 
     def save_edited_contest(self) -> None:
-        """Save the edited contest"""
+        """
+        Save the edited contest.
+        Called by edit_contest().
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         contest = {}
         contest["ContestName"] = (
             self.contest_dialog.contest.currentText().lower().replace(" ", "_")
@@ -840,7 +992,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_contest()
 
     def load_contest(self) -> None:
-        """load a contest"""
+        """
+        Loads the contest stored in the preference file.
+        If no contest is defined, a new contest is created.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.pref.get("contest"):
             self.contest_settings = self.database.fetch_contest_by_id(
                 self.pref.get("contest")
@@ -902,8 +1066,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_for_new_cty(self) -> None:
         """
         Checks for a new cty.dat file.
-        Loads it if available.
+        The following steps are performed:
+        - Check if the file exists
+        - Check if the file is newer than the one in the data folder
+        - If the file is newer, load it and show a message box
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
+
         try:
             cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
             update_available = cty.check_update()
@@ -931,7 +1107,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.show_message_box("CTY file is up to date.")
 
     def hide_band_mode(self, the_mode: str) -> None:
-        """hide"""
+        """
+        Hide the unused band and mode frames.
+        Show the used band and mode frames.
+
+        Parameters
+        ----------
+        the_mode : str
+        The mode to show.
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("%s", f"{the_mode}")
         self.Band_Mode_Frame_CW.hide()
         self.Band_Mode_Frame_SSB.hide()
@@ -957,7 +1146,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 frame.show()
 
     def show_key_help(self) -> None:
-        """Show help box for hotkeys"""
+        """
+        Show help box for hotkeys.
+        Provides a list of hotkeys and what they do.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.show_message_box(
             "[Esc]\tClears the input fields of any text.\n"
             "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
@@ -982,8 +1183,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def filepicker(self, action: str) -> str:
         """
         Get a filename
-        action: "new" or "open"
+
+        Parameters:
+        ----------
+        action: 'new' or 'open'
+
+        Returns:
+        -------
+        str: filename
         """
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         options |= QFileDialog.DontConfirmOverwrite
@@ -1031,15 +1240,36 @@ class MainWindow(QtWidgets.QMainWindow):
             _ = subprocess.Popen([sys.executable, WORKING_PATH + "/vfo.py"])
 
     def clear_band_indicators(self) -> None:
-        """Clear the indicators"""
+        """
+        Clear the indicators.
+
+        Parameters:
+        ----------
+        None
+
+        Returns:
+        -------
+        None
+        """
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
                 indicator.setStyleSheet("font-family: JetBrains Mono;")
 
     def set_band_indicator(self, band: str) -> None:
-        """Set the band indicator"""
-        # logger.debug("%s", f"band:{band} mode: {self.current_mode}")
+        """
+        Set the band indicator
+
+        Parameters:
+        ----------
+        band: str
+        band to set indicator for
+
+        Returns:
+        -------
+        None
+        """
+
         if band and self.current_mode:
             self.clear_band_indicators()
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
@@ -1049,8 +1279,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, _event) -> None:
         """
-        Write window size and position to config file
+        Write window size and position to config file.
+
+        Parameters:
+        ----------
+        _event: QCloseEvent
+
+        Returns:
+        -------
+        None
         """
+
         cmd = {}
         cmd["cmd"] = "HALT"
         cmd["station"] = platform.node()
@@ -1061,16 +1300,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
 
-    def cty_lookup(self, callsign: str):
+    def cty_lookup(self, callsign: str) -> list:
         """Lookup callsign in cty.dat file.
 
         Parameters
         ----------
         callsign : str
+        callsign to lookup
 
         Returns
         -------
-        return : list of dicts
+        return : list
+        list of dicts containing the callsign and the station.
         """
         callsign = callsign.upper()
         for count in reversed(range(len(callsign))):
@@ -1085,7 +1326,17 @@ class MainWindow(QtWidgets.QMainWindow):
             return result
 
     def cwspeed_spinbox_changed(self) -> None:
-        """triggered when value of CW speed in the spinbox changes."""
+        """
+        Triggered when value of CW speed in the spinbox changes.
+
+        Parameters:
+        ----------
+        None
+
+        Returns:
+        -------
+        None
+        """
         if self.cw is None:
             return
         if self.cw.servertype == 1:
@@ -1095,7 +1346,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.set_winkeyer_speed(self.cw_speed.value())
 
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
-        """This overrides Qt key event."""
+        """
+        This overrides Qt key event.
+
+        Parameters:
+        ----------
+        event: QKeyEvent
+        Qt key event
+
+        Returns:
+        -------
+        None
+        """
+
         modifier = event.modifiers()
         if event.key() == Qt.Key.Key_K:
             self.toggle_cw_entry()
@@ -1265,7 +1528,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.process_function_key(self.F12)
 
     def set_window_title(self) -> None:
-        """Set window title"""
+        """
+        Set window title based on current state.
+        """
+
         vfoa = self.radio_state.get("vfoa", "")
         if vfoa:
             try:
@@ -1286,7 +1552,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(line)
 
     def send_worked_list(self) -> None:
-        """Send message containing worked contacts and bands"""
+        """
+        Send message containing worked contacts and bands
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         cmd = {}
         cmd["cmd"] = "WORKED"
         cmd["station"] = platform.node()
@@ -1295,7 +1572,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface.send_as_json(cmd)
 
     def clearinputs(self) -> None:
-        """Clears the text input fields and sets focus to callsign field."""
+        """
+        Clears the text input fields and sets focus to callsign field.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.dupe_indicator.hide()
         self.contact = self.database.empty_contact
         self.heading_distance.setText("")
@@ -1325,7 +1613,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface.send_as_json(cmd)
 
     def save_contact(self) -> None:
-        """Save to db"""
+        """
+        Save contact to database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("saving contact")
         if self.contest is None:
             self.show_message_box("You have no contest defined.")
@@ -1417,7 +1716,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface.send_as_json(cmd)
 
     def new_contest_dialog(self) -> None:
-        """Show new contest dialog"""
+        """
+        Show new contest dialog.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("New contest Dialog")
         self.contest_dialog = NewContest(WORKING_PATH)
         self.contest_dialog.accepted.connect(self.save_contest)
@@ -1429,7 +1739,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.open()
 
     def save_contest(self) -> None:
-        """Save Contest"""
+        """
+        Save Contest to database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         next_number = self.database.get_next_contest_nr()
         contest = {}
         contest["ContestName"] = (
@@ -1460,7 +1781,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_contest()
 
     def edit_station_settings(self) -> None:
-        """Show settings dialog"""
+        """
+        Show settings dialog for station.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("Station Settings selected")
         self.settings_dialog = EditStation(WORKING_PATH)
         self.settings_dialog.accepted.connect(self.save_settings)
@@ -1490,7 +1822,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.open()
 
     def save_settings(self) -> None:
-        """Save settings"""
+        """
+        Save settings to database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         cs = self.settings_dialog.Call.text()
         self.station = {}
         self.station["Call"] = cs.upper()
@@ -1526,13 +1869,36 @@ class MainWindow(QtWidgets.QMainWindow):
             self.new_contest_dialog()
 
     def edit_macro(self, function_key) -> None:
-        """Show edit macro dialog"""
+        """
+        Show edit macro dialog for function key.
+
+        Parameters
+        ----------
+        function_key : str
+        Function key to edit.
+
+        Returns
+        -------
+        None
+        """
+
         self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         self.edit_macro_dialog.open()
 
     def edited_macro(self) -> None:
-        """Save edited macro"""
+        """
+        Save edited macro to database.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.edit_macro_dialog.function_key.setText(
             self.edit_macro_dialog.macro_label.text()
         )
@@ -1542,7 +1908,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.edit_macro_dialog.close()
 
     def process_macro(self, macro: str) -> str:
-        """Process CW macro substitutions"""
+        """
+        Process CW macro substitutions for contest.
+
+        Parameters
+        ----------
+        macro : str
+        Macro to process.
+
+        Returns
+        -------
+        str
+        Processed macro.
+        """
+
         result = self.database.get_serial()
         next_serial = str(result.get("serial_nr", "1"))
         if next_serial == "None":
@@ -1562,7 +1941,19 @@ class MainWindow(QtWidgets.QMainWindow):
         return macro
 
     def voice_string(self, the_string: str) -> None:
-        """voices string using nato phonetics"""
+        """
+        voices string using nato phonetics.
+
+        Parameters
+        ----------
+        the_string : str
+        String to voicify.
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("Voicing: %s", the_string)
         op_path = Path(DATA_PATH) / self.current_op
         if "[" in the_string:
@@ -1602,22 +1993,57 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ptt_off()
 
     def ptt_on(self) -> None:
-        """turn on ptt"""
+        """
+        Turn on ptt for rig.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        logger.debug("PTT On")
         if self.rig_control:
             self.leftdot.setPixmap(self.greendot)
             app.processEvents()
             self.rig_control.ptt_on()
 
     def ptt_off(self) -> None:
-        """turn off ptt"""
+        """
+        Turn off ptt for rig.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        logger.debug("PTT Off")
         if self.rig_control:
             self.leftdot.setPixmap(self.reddot)
             app.processEvents()
             self.rig_control.ptt_off()
 
     def process_function_key(self, function_key) -> None:
-        """Called when a function key is clicked."""
-        logger.debug("F1 Clicked")
+        """
+        Called when a function key is clicked.
+
+        Parameters
+        ----------
+        function_key : QPushButton
+        Function key to process.
+
+        Returns
+        -------
+        None
+        """
+
+        logger.debug("Function Key: %s", function_key.text())
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
@@ -1627,15 +2053,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
 
     def run_sp_buttons_clicked(self) -> None:
-        """Handle run/s&p mode"""
+        """
+        Handle Run/S&P mode changes.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
         self.read_cw_macros()
 
     def write_preference(self) -> None:
         """
-        Write preferences to json file.
+        Write preferences to file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
+
+        logger.debug("writepreferences")
         try:
             with open(
                 CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
@@ -1648,7 +2094,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def readpreferences(self) -> None:
         """
         Restore preferences if they exist, otherwise create some sane defaults.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
+
+        logger.debug("readpreferences")
         try:
             if os.path.exists(CONFIG_PATH + "/not1mm.json"):
                 with open(
@@ -1782,7 +2238,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.show_band_mode()
 
     def watch_udp(self) -> None:
-        """Process UDP datagrams."""
+        """
+        Watch the UDP socket for incoming data.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         while self.multicast_interface.server_udp.hasPendingDatagrams():
             bundle = self.multicast_interface.server_udp.readDatagram(
                 self.multicast_interface.server_udp.pendingDatagramSize()
@@ -1841,13 +2308,35 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.multicast_interface.send_as_json(cmd)
 
     def cw_macros_state_changed(self) -> None:
-        """Menu item to show/hide macro buttons"""
+        """
+        Menu item to show/hide macro buttons.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.pref["cw_macros"] = self.actionCW_Macros.isChecked()
         self.write_preference()
         self.show_CW_macros()
 
     def show_CW_macros(self) -> None:
-        """macro button state change"""
+        """
+        Show/Hide the macro buttons.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.pref.get("cw_macros"):
             self.Button_Row1.show()
             self.Button_Row2.show()
@@ -1856,20 +2345,55 @@ class MainWindow(QtWidgets.QMainWindow):
             self.Button_Row2.hide()
 
     def command_buttons_state_change(self) -> None:
-        """Menu item to show/hide command buttons"""
+        """
+        Menu item to show/hide command buttons
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
         self.write_preference()
         self.show_command_buttons()
 
     def show_command_buttons(self) -> None:
-        """command button state change"""
+        """
+        Show/Hide the command buttons depending on the preference.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+
+        """
+
         if self.pref.get("command_buttons"):
             self.Command_Buttons.show()
         else:
             self.Command_Buttons.hide()
 
     def is_floatable(self, item: str) -> bool:
-        """check to see if string can be a float"""
+        """
+        Check to see if string can be a float.
+
+        Parameters
+        ----------
+        item : str
+        The string to test.
+
+        Returns
+        -------
+        bool
+        True if string can be a float, False otherwise.
+        """
+
         if item.isnumeric():
             return True
         try:
@@ -1879,7 +2403,19 @@ class MainWindow(QtWidgets.QMainWindow):
         return True
 
     def other_1_changed(self) -> None:
-        """Called when... you know."""
+        """
+        The text in the other_1 field has changed.
+        Strip out any spaces and set the text.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.contest:
             if hasattr(self.contest, "advance_on_space"):
                 if self.contest.advance_on_space[3]:
@@ -1896,7 +2432,20 @@ class MainWindow(QtWidgets.QMainWindow):
                         next_tab.end(False)
 
     def other_2_changed(self) -> None:
-        """Called when we need to parse SS exchange."""
+        """
+        Text in other_2 has changed.
+        Strip out any spaces and set the text.
+        Parse the exchange if the contest is ARRL Sweepstakes.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.contest:
             if "ARRL Sweepstakes" in self.contest.name:
                 self.contest.parse_exchange(self)
@@ -1916,7 +2465,20 @@ class MainWindow(QtWidgets.QMainWindow):
                         next_tab.end(False)
 
     def callsign_changed(self) -> None:
-        """Called when text in the callsign field has changed"""
+        """
+        Called when text in the callsign field has changed.
+        Strip out any spaces and set the text.
+        Check if the field contains a command.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -1978,7 +2540,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.check_callsign(stripped_text)
 
     def change_freq(self, stripped_text: str) -> None:
-        """Change VFO to given frequency in Khz"""
+        """
+        Change VFO to given frequency in Khz and set the band indicator.
+        Send the new frequency to the rig control.
+
+        Parameters
+        ----------
+        stripped_text : str
+        Stripped of any spaces.
+
+        Returns
+        -------
+        None
+        """
+
         vfo = float(stripped_text)
         vfo = int(vfo * 1000)
         band = getband(str(vfo))
@@ -1999,7 +2574,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface.send_as_json(cmd)
 
     def change_mode(self, mode: str) -> None:
-        """Change mode"""
+        """
+        Change mode to given mode.
+        Send the new mode to the rig control.
+        Set the band indicator.
+        Set the window title.
+        Clear the inputs.
+        Read the CW macros.
+
+        Parameters
+        ----------
+        mode : str
+        Mode to change to.
+
+        Returns
+        -------
+        None
+        """
+
         if mode == "CW":
             self.setmode("CW")
             self.radio_state["mode"] = "CW"
@@ -2039,7 +2631,21 @@ class MainWindow(QtWidgets.QMainWindow):
             self.read_cw_macros()
 
     def check_callsign(self, callsign) -> None:
-        """Check call as entered"""
+        """
+        Check callsign as it's being entered in the big_cty index.
+        Get DX entity, CQ, ITU and continent.
+        Geographic information. Distance and Heading.
+
+        Parameters
+        ----------
+        callsign : str
+        Callsign to check.
+
+        Returns
+        -------
+        None
+        """
+
         result = self.cty_lookup(callsign)
         debug_result = f"{result}"
         logger.debug("%s", debug_result)
@@ -2075,7 +2681,21 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.contest.prefill(self)
 
     def check_callsign2(self, callsign) -> None:
-        """Check call once entered"""
+        """
+        Check the callsign after it has been entered.
+        Look up the callsign in the callsign database.
+        Get the grid square and calculate the distance and heading.
+
+        Parameters
+        ----------
+        callsign : str
+        Callsign to check.
+
+        Returns
+        -------
+        None
+        """
+
         callsign = callsign.strip()
         debug_lookup = f"{self.look_up}"
         logger.debug("%s, %s", callsign, debug_lookup)
@@ -2146,13 +2766,36 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.receive.setText("59")
 
     def get_opon(self) -> None:
-        """Ctrl+O or OPON dialog"""
+        """
+        Ctrl+O Open the OPON dialog.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.opon_dialog = OpOn(WORKING_PATH)
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
     def new_op(self) -> None:
-        """Save new OP"""
+        """
+        Called when the user clicks the OK button on the OPON dialog.
+        Create the new directory and copy the phonetic files.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text().upper()
         self.opon_dialog.close()
@@ -2160,7 +2803,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.make_op_dir()
 
     def make_op_dir(self) -> None:
-        """Create OP directory if it does not exist."""
+        """
+        Create OP directory if it does not exist.
+        Copy the phonetic files to the new directory.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         if self.current_op:
             op_path = Path(DATA_PATH) / self.current_op
             logger.debug("op_path: %s", str(op_path))
@@ -2180,7 +2835,16 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Poll radio for VFO, mode, bandwidth.
         Send state via multicast.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
+
         self.set_radio_icon(0)
         if self.rig_control:
             if self.rig_control.online is False:
@@ -2242,6 +2906,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def edit_cw_macros(self) -> None:
         """
         Calls the default text editor to edit the CW macro file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
         if self.radio_state.get("mode") == "CW":
             macro_file = "/cwmacros.txt"
@@ -2316,12 +2988,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setToolTip(self.fkeys["F12"][1])
 
     def generate_adif(self) -> None:
-        """Generate ADIF"""
+        """
+        Calls the contest ADIF file generator.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        # https://www.adif.org/315/ADIF_315.htm
         logger.debug("******ADIF*****")
         self.contest.adif(self)
 
     def generate_cabrillo(self) -> None:
-        """Generates Cabrillo file. Maybe."""
+        """
+        Calls the contest Cabrillo file generator. Maybe.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         # https://www.cqwpx.com/cabrillo.htm
         logger.debug("******Cabrillo*****")
         self.contest.cabrillo(self)
@@ -2330,6 +3025,16 @@ class MainWindow(QtWidgets.QMainWindow):
 def load_fonts_from_dir(directory: str) -> set:
     """
     Well it loads fonts from a directory...
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    A set of font families installed in the directory.
     """
     font_families = set()
     for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
@@ -2356,7 +3061,21 @@ def install_icons() -> None:
 
 
 def doimp(modname) -> object:
-    """return module path"""
+    """
+    Imports a module.
+
+    Parameters
+    ----------
+    modname : str
+    The name of the module to import.
+
+    Returns
+    -------
+    object
+    The module object.
+    """
+
+    logger.debug("doimp: %s", modname)
     return importlib.import_module(f"not1mm.plugins.{modname}")
 
 

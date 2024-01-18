@@ -6,7 +6,6 @@ Check Window
 
 import logging
 
-# import pkgutil
 import platform
 import queue
 import os
@@ -27,9 +26,6 @@ from not1mm.lib.super_check_partial import SCP
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-# loader = pkgutil.get_loader("not1mm")
-# WORKING_PATH = os.path.dirname(loader.get_filename())
 WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 if "XDG_DATA_HOME" in os.environ:
@@ -88,11 +84,31 @@ class MainWindow(QMainWindow):
         self.udpsocket.readyRead.connect(self.watch_udp)
 
     def quit_app(self):
-        """doc"""
+        """
+        Called when the user clicks the exit button.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         app.quit()
 
     def load_pref(self):
-        """Load preference file to get current db filename."""
+        """
+        Load preference file to get current db filename.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         try:
             if os.path.exists(CONFIG_PATH + "/not1mm.json"):
                 with open(
@@ -107,7 +123,17 @@ class MainWindow(QMainWindow):
             logger.critical("Error: %s", exception)
 
     def watch_udp(self):
-        """Puts UDP datagrams in a FIFO queue"""
+        """
+        Puts UDP datagrams in a FIFO queue.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         while self.udpsocket.hasPendingDatagrams():
             datagram, _, _ = self.udpsocket.readDatagram(
                 self.udpsocket.pendingDatagramSize()
@@ -146,14 +172,35 @@ class MainWindow(QMainWindow):
                 self.quit_app()
 
     def clear_lists(self) -> None:
-        """Clear match lists"""
+        """
+        Clear match lists.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.logList.clear()
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
 
     def master_list(self, call: str) -> None:
-        """Get MASTER.SCP matches to call"""
+        """
+        Get MASTER.SCP matches to call and display in list.
+
+        Parameters
+        ----------
+        call : str
+        Call to get matches for
+
+        Returns
+        -------
+        None
+        """
         results = self.mscp.super_check(call)
         self.masterList.clear()
         for item in results:
@@ -162,7 +209,18 @@ class MainWindow(QMainWindow):
             self.masterList.show()
 
     def log_list(self, call: str) -> None:
-        """Parse calls in log for matches"""
+        """
+        Get log matches to call and display in list.
+
+        Parameters
+        ----------
+        call : str
+        Call to get matches for
+
+        Returns
+        -------
+        None
+        """
         self.logList.clear()
         if call:
             result = self.database.get_like_calls_and_bands(call)
@@ -172,7 +230,18 @@ class MainWindow(QMainWindow):
                 self.logList.show()
 
     def telnet_list(self, spots: list) -> None:
-        """Parse matching calls from telnet cluster"""
+        """
+        Get telnet matches to call and display in list.
+
+        Parameters
+        ----------
+        spots : list
+        List of spots to get matches for
+
+        Returns
+        -------
+        None
+        """
         self.telnetList.clear()
         if spots:
             for calls in spots:
@@ -184,7 +253,17 @@ class MainWindow(QMainWindow):
 
 def load_fonts_from_dir(directory: str) -> set:
     """
-    Well it loads fonts from a directory...
+    Load fonts from directory.
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    The set of font families loaded.
     """
     font_families = set()
     for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):

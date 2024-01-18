@@ -143,6 +143,7 @@ class Database:
         Parameters
         ----------
         call : str
+        The callsign to search for.
 
         Returns
         -------
@@ -168,6 +169,8 @@ class Database:
         Parameters
         ----------
         spot: Dict
+        A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float, 'band': str,'mode': str,'spotter': str,
+        'comment': str}
 
         Returns
         -------
@@ -221,9 +224,14 @@ class Database:
 
         Parameters
         ----------
+        start : float
+        The start frequency.
+        end : float
+        The end frequency.
 
         Returns
         -------
+        A list of dicts.
         """
         self.cursor.execute(
             f"select * from spots where freq >= {start} and freq <= {end} order by freq ASC;"
@@ -231,14 +239,45 @@ class Database:
         return self.cursor.fetchall()
 
     def get_next_spot(self, current: float, limit: float) -> dict:
-        """return a list of dict where freq range is defined"""
+        """
+        Return a list of dict where freq range is defined by current and limit.
+        The list is sorted by the ascending frequency of the spot.
+
+        Parameters
+        ----------
+        current : float
+        The current frequency.
+        limit : float
+        The limit frequency.
+
+        Returns
+        -------
+        A dict of the spot.
+        """
+
         self.cursor.execute(
             f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
         )
         return self.cursor.fetchone()
 
     def get_matching_spot(self, dx: str, start: float, end: float) -> dict:
-        """Return the first spot matching supplied dx partial call"""
+        """
+        Return the first spot matching supplied dx partial callsign.
+
+        Parameters
+        ----------
+        dx : str
+        The dx partial callsign.
+        start : float
+        The start frequency.
+        end : float
+        The end frequency.
+
+        Returns
+        -------
+        A dict of the spot.
+        """
+
         self.cursor.execute(
             f"select * from spots where freq >= {start} ",
             f"and freq <= {end} and callsign like '%{dx}%';",
@@ -246,14 +285,38 @@ class Database:
         return self.cursor.fetchone()
 
     def get_prev_spot(self, current: float, limit: float) -> dict:
-        """return a list of dict where freq range is defined"""
+        """
+        Return a list of dict where freq range is defined in descending order.
+
+        Parameters
+        ----------
+        current : float
+        The current frequency.
+        limit : float
+        The limit frequency.
+
+        Returns
+        -------
+        A list of dicts.
+        """
         self.cursor.execute(
             f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
         )
         return self.cursor.fetchone()
 
-    def delete_spots(self, minutes: int):
-        """doc"""
+    def delete_spots(self, minutes: int) -> None:
+        """
+        Delete spots older than the specified number of minutes.
+
+        Parameters
+        ----------
+        minutes : int
+        The number of minutes to delete.
+
+        Returns
+        -------
+        None
+        """
         self.cursor.execute(
             f"delete from spots where ts < datetime('now', '-{minutes} minutes');"
         )

@@ -29,9 +29,6 @@ from not1mm.lib.n1mm import N1MM
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-# loader = pkgutil.get_loader("not1mm")
-# WORKING_PATH = os.path.dirname(loader.get_filename())
 WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
 if "XDG_DATA_HOME" in os.environ:
@@ -193,17 +190,41 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
     def quit_app(self):
-        """doc"""
+        """
+        Quit the application.
+        """
         app.quit()
 
     def get_column(self, name: str) -> int:
-        """returns the column number of the given column name."""
+        """
+        Returns the column number of the given column name.
+
+        Parameters
+        ----------
+        name: str
+        The column name
+
+        Returns
+        -------
+        int
+        The column number
+        """
         for key, value in self.columns.items():
             if value == name:
                 return key
 
-    def load_pref(self):
-        """Load preference file to get current db filename."""
+    def load_pref(self) -> None:
+        """
+        Loads the preferences from the config file into the self.pref dictionary.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         try:
             if os.path.exists(CONFIG_PATH + "/not1mm.json"):
                 with open(
@@ -232,8 +253,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
 
-    def load_new_db(self):
-        """if db changes reload it."""
+    def load_new_db(self) -> None:
+        """
+        If the database changes reload it.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.load_pref()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
@@ -244,14 +275,41 @@ class MainWindow(QtWidgets.QMainWindow):
             f"Log Display - {self.pref.get('current_database', 'ham.db')}"
         )
 
-    def double_clicked(self, _row, _column):
-        """Slot for doubleclick event"""
+    def double_clicked(self, _row, _column) -> None:
+        """
+        Slot for doubleclick event
+
+        Parameters
+        ----------
+        _row: int
+        The row number
+        _column: int
+        The column number
+
+        Returns
+        -------
+        None
+        """
         if self.table_loading:
             return
         logger.debug("DoubleClicked")
 
-    def cell_changed(self, row, column):
-        """Slot for changed cell"""
+    def cell_changed(self, row, column) -> None:
+        """
+        Slot for cell changed event.
+        If a cell is changed update the database record.
+
+        Parameters
+        ----------
+        row: int
+        The row number
+        column: int
+        The column number
+
+        Returns
+        -------
+        None
+        """
         logger.debug("Cell Changed")
         self.contact = self.database.fetch_contact_by_uuid(
             self.generalLog.item(row, self.get_column("UUID")).text()
@@ -342,8 +400,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.get_log()
         self.generalLog.scrollToItem(self.generalLog.item(row, column))
 
-    def focused_cell_changed(self, row, column):
-        """Slot for changed cell"""
+    def focused_cell_changed(self, row, column) -> None:
+        """
+        This function is called when a cell in the log table is changed.
+
+        Parameters:
+        ----------
+        row: int
+        The row of the cell that has changed.
+        column: int
+        The column of the cell that has changed.
+
+        Returns:
+        -------
+        None
+        """
         logger.debug("Cell Changed")
         if self.focusedLog.item(row, self.get_column("UUID")) is None:
             return
@@ -439,22 +510,56 @@ class MainWindow(QtWidgets.QMainWindow):
     def dummy(self):
         """the dummy"""
 
-    def edit_focused_contact_selected(self, clicked_cell):
-        """Show edit contact dialog"""
+    def edit_focused_contact_selected(self, clicked_cell) -> None:
+        """
+        Show edit contact dialog.
+
+        Parameters
+        ----------
+        clicked_cell: QTableWidgetItem
+        The cell that was clicked.
+
+        Returns
+        -------
+        None
+        """
+
         logger.debug("Opening EditContact dialog")
         item = self.focusedLog.itemAt(clicked_cell)
         uuid = self.focusedLog.item(item.row(), self.get_column("UUID")).text()
         self.edit_contact(uuid)
 
-    def edit_contact_selected(self, clicked_cell):
-        """Show edit contact dialog"""
+    def edit_contact_selected(self, clicked_cell) -> None:
+        """
+        Show edit contact dialog.
+
+        Parameters
+        ----------
+        clicked_cell: QTableWidgetItem
+        The cell that was clicked.
+
+        Returns
+        -------
+        None
+        """
         logger.debug("Opening EditContact dialog")
         item = self.generalLog.itemAt(clicked_cell)
         uuid = self.generalLog.item(item.row(), self.get_column("UUID")).text()
         self.edit_contact(uuid)
 
-    def edit_contact(self, uuid):
-        """Show edit contact dialog"""
+    def edit_contact(self, uuid) -> None:
+        """
+        Show edit contact dialog.
+
+        Parameters
+        ----------
+        uuid: str
+        The uuid of the contact to edit.
+
+        Returns
+        -------
+        None
+        """
         logger.debug("Edit: %s", uuid)
         self.edit_contact_dialog = EditContact(WORKING_PATH)
         if self.pref.get("dark_mode"):
@@ -520,7 +625,17 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug(debugline)
 
     def save_edited_contact(self):
-        """save the goods"""
+        """
+        Save edited contact.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.contact["Call"] = self.edit_contact_dialog.call.text()
         self.contact["TS"] = self.edit_contact_dialog.time_stamp.text()
         self.contact["Freq"] = self.edit_contact_dialog.rx_freq.text()
@@ -557,8 +672,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.get_log()
         self.show_like_calls(self.contact.get("Call", ""))
 
-    def delete_contact(self):
-        """Delete Contact"""
+    def delete_contact(self) -> None:
+        """
+        Delete contact.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.database.delete_contact(self.contact.get("ID", ""))
         if self.n1mm:
             if self.n1mm.send_contact_packets:
@@ -574,8 +699,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.get_log()
         self.show_like_calls(self.contact.get("Call", ""))
 
-    def get_log(self):
-        """Get Log, Show it."""
+    def get_log(self) -> None:
+        """
+        Get Log, Show it.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
 
         # The horizontal flags are:
 
@@ -730,8 +865,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.generalLog.blockSignals(False)
         self.focusedLog.blockSignals(False)
 
-    def watch_udp(self):
-        """Puts UDP datagrams in a FIFO queue"""
+    def watch_udp(self) -> None:
+        """
+        Watch for UDP datagrams.
+        Parse commands from our platform.node().
+        """
         while self.udpsocket.hasPendingDatagrams():
             datagram, _, _ = self.udpsocket.readDatagram(
                 self.udpsocket.pendingDatagramSize()
@@ -772,8 +910,19 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
 
-    def show_like_calls(self, call):
-        """Show like calls"""
+    def show_like_calls(self, call: str) -> None:
+        """
+        Show all log entries that match call.
+
+        Parameters
+        ----------
+        call : str
+        Call to match.
+
+        Returns
+        -------
+        None.
+        """
         if call == "":
             self.focusedLog.setRowCount(0)
             return
@@ -936,7 +1085,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def load_fonts_from_dir(directory: str) -> set:
     """
-    Well it loads fonts from a directory...
+    Loads all fonts from a directory.
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    The set of font families.
     """
     font_families = set()
     for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
