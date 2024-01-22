@@ -169,8 +169,8 @@ class Database:
         Parameters
         ----------
         spot: Dict
-        A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float, 'band': str,'mode': str,'spotter': str,
-        'comment': str}
+        A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float,
+        'band': str,'mode': str,'spotter': str, 'comment': str}
 
         Returns
         -------
@@ -279,8 +279,8 @@ class Database:
         """
 
         self.cursor.execute(
-            f"select * from spots where freq >= {start} ",
-            f"and freq <= {end} and callsign like '%{dx}%';",
+            f"select * from spots where freq >= {start} "
+            f"and freq <= {end} and callsign like '%{dx}%';"
         )
         return self.cursor.fetchone()
 
