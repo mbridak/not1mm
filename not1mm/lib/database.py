@@ -971,6 +971,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def get_ops(self) -> list:
+        """get dict of unique station operators for contest"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select DISTINCT(Operator) from DXLOG where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def get_unique_band_and_mode(self) -> dict:
         """get count of unique band and mode as {mult: x}"""
         try:
