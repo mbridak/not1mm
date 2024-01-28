@@ -262,8 +262,12 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
+            ops = f"@{self.station.get('Call','')}"
+            list_of_ops = self.database.get_ops()
+            for op in list_of_ops:
+                ops += f", {op.get('Operator', '')}"
             print(
-                "OPERATORS: ",
+                f"OPERATORS: {ops}",
                 end="\r\n",
                 file=file_descriptor,
             )
