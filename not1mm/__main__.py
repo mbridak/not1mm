@@ -5,6 +5,8 @@ NOT1MM Logger
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 # pylint: disable=logging-fstring-interpolation
 
+# alt cluster hamqth.com 7300
+
 import datetime as dt
 import importlib
 import locale
@@ -2864,6 +2866,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 if mode == "RTTY":
                     self.setmode("RTTY")
 
+                if vfo == "":
+                    return
                 if self.radio_state.get("vfoa") != vfo:
                     info_dirty = True
                     self.radio_state["vfoa"] = vfo
