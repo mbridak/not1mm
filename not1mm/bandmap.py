@@ -425,10 +425,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             if packet.get("cmd", "") == "RADIO_STATE":
                 self.set_band(packet.get("band") + "m", False)
-                if self.rx_freq != float(packet.get("vfoa")) / 1000000:
-                    self.rx_freq = float(packet.get("vfoa")) / 1000000
-                    self.tx_freq = self.rx_freq
-                    self.center_on_rxfreq()
+                try:
+                    if self.rx_freq != float(packet.get("vfoa")) / 1000000:
+                        self.rx_freq = float(packet.get("vfoa")) / 1000000
+                        self.tx_freq = self.rx_freq
+                        self.center_on_rxfreq()
+                except ValueError:
+                    logger.debug(f"vfo value error {packet.get("vfoa")}")
+                    continue
                 bw_returned = packet.get("bw", "0")
                 if not bw_returned.isdigit():
                     bw_returned = "0"
@@ -803,13 +807,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if "login:" in data:
             self.send_command(self.callsignField.text())
             self.send_command(PREF.get("cluster_filter", ""))
-            self.send_command("set dx extension Name CTY State Section")
+            self.send_command("set dx extension Section")
             self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
             return
         if "call:" in data or "callsign:" in data:
             self.send_command(self.callsignField.text())
             self.send_command(PREF.get("cluster_filter", ""))
-            self.send_command("set dx extension Name CTY State Section")
+            self.send_command("set dx extension Section")
             self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
             return
         if "DX de" in data:
