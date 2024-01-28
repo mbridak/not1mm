@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-1-28] Updated cabrillo 'Operators' line to include station call prefixed with an '@', and list all ops after that appear in the log for the contest.
 - [24-1-27] Fix return value in get_unique_band_and_mode(). fix bandmap crash.
 - [24-1-22] Fix crash in bandmap when processing CTRL-G.
 - [24-1-21] Fixed crash in get_logged_band when out of band.
