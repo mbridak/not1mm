@@ -978,7 +978,7 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select DISTINCT band, mode, count(*) as mult from dxlog where ContestNR = {self.current_contest};"
+                    f"select count(DISTINCT(band || ':' || mode)) as mult from dxlog where ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
