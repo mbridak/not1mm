@@ -2252,25 +2252,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        while self.multicast_interface.server_udp.hasPendingDatagrams():
-            bundle = self.multicast_interface.server_udp.readDatagram(
-                self.multicast_interface.server_udp.pendingDatagramSize()
-            )
-            datagram, _, _ = bundle
-            # logger.debug(datagram.decode())
-            if datagram:
-                try:
-                    # debug_info = f"{datagram.decode()}"
-                    # logger.debug(debug_info)
-                    json_data = loads(datagram.decode())
-                except UnicodeDecodeError as err:
-                    the_error = f"Not Unicode: {err}\n{datagram}"
-                    logger.warning(the_error)
-                    continue
-                except JSONDecodeError as err:
-                    the_error = f"Not JSON: {err}\n{datagram}"
-                    logger.warning(the_error)
-                    continue
+        while self.multicast_interface.has_pending_datagrams():
+            json_data = self.multicast_interface.read_datagram_as_json()
+            if json_data:
                 if (
                     json_data.get("cmd", "") == "GETCOLUMNS"
                     and json_data.get("station", "") == platform.node()

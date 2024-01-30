@@ -171,23 +171,16 @@ class MainWindow(QtWidgets.QMainWindow):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
-        self.udpsocket = QtNetwork.QUdpSocket(self)
-        self.udpsocket.bind(
-            QtNetwork.QHostAddress.AnyIPv4,
-            MULTICAST_PORT,
-            QtNetwork.QUdpSocket.ShareAddress,
+        self.udpsocket = Multicast(
+            self.multicast_group, self.multicast_port, self.interface_ip
         )
-        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
-        self.udpsocket.readyRead.connect(self.watch_udp)
+        self.udpsocket.ready_read_connect(self.watch_udp)
 
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
         cmd["station"] = platform.node()
 
-        packet = bytes(dumps(cmd), encoding="ascii")
-        self.udpsocket.writeDatagram(
-            packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-        )
+        self.udpsocket.send_as_json(cmd)
 
     def quit_app(self):
         """
@@ -252,6 +245,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
+
+        self.multicast_port = int(self.pref.get("multicast_port", MULTICAST_PORT))
+        self.multicast_group = self.pref.get("multicast_group", MULTICAST_GROUP)
+        self.interface_ip = self.pref.get("interface_ip", "0.0.0.0")
 
     def load_new_db(self) -> None:
         """
@@ -872,23 +869,9 @@ class MainWindow(QtWidgets.QMainWindow):
         Watch for UDP datagrams.
         Parse commands from our platform.node().
         """
-        while self.udpsocket.hasPendingDatagrams():
-            datagram, _, _ = self.udpsocket.readDatagram(
-                self.udpsocket.pendingDatagramSize()
-            )
+        while self.udpsocket.has_pending_datagrams():
+            json_data = self.udpsocket.read_datagram_as_json()
 
-            try:
-                debug_info = f"{datagram.decode()}"
-                logger.debug(debug_info)
-                json_data = loads(datagram.decode())
-            except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
             if json_data.get("station", "") != platform.node():
                 continue
             if json_data.get("cmd", "") == "UPDATELOG":

@@ -24,6 +24,8 @@ from PyQt5 import QtCore, QtGui
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
 
+from not1mm.lib.multicast import Multicast
+
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 PIXELSPERSTEP = 10
@@ -370,14 +372,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
         self.update()
-        self.udpsocket = QtNetwork.QUdpSocket(self)
-        self.udpsocket.bind(
-            QtNetwork.QHostAddress.AnyIPv4,
-            MULTICAST_PORT,
-            QtNetwork.QUdpSocket.ShareAddress,
+        self.multicast_port = int(PREF.get("multicast_port", MULTICAST_PORT))
+        self.multicast_group = PREF.get("multicast_group", MULTICAST_GROUP)
+        self.interface_ip = PREF.get("interface_ip", "0.0.0.0")
+        self.udpsocket = Multicast(
+            self.multicast_group, self.multicast_port, self.interface_ip
         )
-        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
-        self.udpsocket.readyRead.connect(self.watch_udp)
+        self.udpsocket.ready_read_connect(self.watch_udp)
         self.request_workedlist()
 
     def quit_app(self):
@@ -407,20 +408,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """doc"""
-        while self.udpsocket.hasPendingDatagrams():
-            datagram = self.udpsocket.readDatagram(self.udpsocket.pendingDatagramSize())
-            bundle, _, _ = datagram
-            logger.debug("%s", f"{bundle}")
-            try:
-                packet = loads(bundle.decode())
-            except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{bundle}"
-                logger.debug(the_error)
-                continue
-            except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{bundle}"
-                logger.debug(the_error)
-                continue
+        while self.udpsocket.has_pending_datagrams():
+            packet = self.udpsocket.read_datagram_as_json()
+
             if packet.get("station", "") != platform.node():
                 continue
             if packet.get("cmd", "") == "RADIO_STATE":
@@ -431,7 +421,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.tx_freq = self.rx_freq
                         self.center_on_rxfreq()
                 except ValueError:
-                    logger.debug(f"vfo value error {packet.get("vfoa")}")
+                    logger.debug(f"vfo value error {packet.get('vfoa')}")
                     continue
                 bw_returned = packet.get("bw", "0")
                 if not bw_returned.isdigit():
@@ -451,10 +441,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    packet = bytes(dumps(cmd), encoding="ascii")
-                    self.udpsocket.writeDatagram(
-                        packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-                    )
+                    self.udpsocket.send_as_json(cmd)
                 continue
 
             if packet.get("cmd", "") == "PREVSPOT" and self.rx_freq:
@@ -467,10 +454,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    packet = bytes(dumps(cmd), encoding="ascii")
-                    self.udpsocket.writeDatagram(
-                        packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-                    )
+                    self.udpsocket.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "SPOTDX":
                 dx = packet.get("dx", "")
@@ -489,10 +473,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    packet = bytes(dumps(cmd), encoding="ascii")
-                    self.udpsocket.writeDatagram(
-                        packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-                    )
+                    self.udpsocket.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "WORKED":
                 self.worked_list = packet.get("worked", {})
@@ -507,23 +488,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         cmd["cmd"] = "CHECKSPOTS"
                         cmd["station"] = platform.node()
                         cmd["spots"] = result
-                        packet = bytes(dumps(cmd), encoding="ascii")
-                        self.udpsocket.writeDatagram(
-                            packet,
-                            QtNetwork.QHostAddress(MULTICAST_GROUP),
-                            MULTICAST_PORT,
-                        )
+                        self.udpsocket.send_as_json(cmd)
                         continue
                 cmd = {}
                 cmd["cmd"] = "CHECKSPOTS"
                 cmd["station"] = platform.node()
                 cmd["spots"] = []
-                packet = bytes(dumps(cmd), encoding="ascii")
-                self.udpsocket.writeDatagram(
-                    packet,
-                    QtNetwork.QHostAddress(MULTICAST_GROUP),
-                    MULTICAST_PORT,
-                )
+                self.udpsocket.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "HALT":
                 self.quit_app()
@@ -538,20 +509,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["station"] = platform.node()
                 cmd["freq"] = items[0].property("freq")
                 cmd["spot"] = items[0].toPlainText().split()[0]
-                packet = bytes(dumps(cmd), encoding="ascii")
-                self.udpsocket.writeDatagram(
-                    packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-                )
+                self.udpsocket.send_as_json(cmd)
 
     def request_workedlist(self):
         """Request worked call list from logger"""
         cmd = {}
         cmd["cmd"] = "GETWORKEDLIST"
         cmd["station"] = platform.node()
-        packet = bytes(dumps(cmd), encoding="ascii")
-        self.udpsocket.writeDatagram(
-            packet, QtNetwork.QHostAddress(MULTICAST_GROUP), MULTICAST_PORT
-        )
+        self.udpsocket.send_as_json(cmd)
 
     def update_station_timer(self):
         """doc"""
