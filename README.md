@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-1-29] PR from @wvolz fixing a crash in the log window when right clicking a vacant cell.
 - [24-1-28] Updated cabrillo 'Operators' line to include station call prefixed with an '@', and list all ops after that appear in the log for the contest.
 - [24-1-27] Fix return value in get_unique_band_and_mode(). fix bandmap crash.
 - [24-1-22] Fix crash in bandmap when processing CTRL-G.
