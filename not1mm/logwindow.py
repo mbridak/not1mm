@@ -526,8 +526,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("Opening EditContact dialog")
         item = self.focusedLog.itemAt(clicked_cell)
-        uuid = self.focusedLog.item(item.row(), self.get_column("UUID")).text()
-        self.edit_contact(uuid)
+        if item:
+            uuid = self.focusedLog.item(item.row(), self.get_column("UUID")).text()
+            self.edit_contact(uuid)
 
     def edit_contact_selected(self, clicked_cell) -> None:
         """
@@ -544,8 +545,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         logger.debug("Opening EditContact dialog")
         item = self.generalLog.itemAt(clicked_cell)
-        uuid = self.generalLog.item(item.row(), self.get_column("UUID")).text()
-        self.edit_contact(uuid)
+        if item:
+            uuid = self.generalLog.item(item.row(), self.get_column("UUID")).text()
+            self.edit_contact(uuid)
 
     def edit_contact(self, uuid) -> None:
         """
