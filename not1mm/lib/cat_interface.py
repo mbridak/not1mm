@@ -76,7 +76,7 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.1)
+            self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
