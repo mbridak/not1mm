@@ -1,5 +1,13 @@
 # Changelog
 
+- [24-1-29] PR from @wvolz fixing a crash in the log window when right clicking a vacant cell.
+- [24-1-28] Updated cabrillo 'Operators' line to include station call prefixed with an '@', and list all ops after that appear in the log for the contest.
+- [24-1-27] Fix return value in get_unique_band_and_mode(). fix bandmap crash.
+- [24-1-22] Fix crash in bandmap when processing CTRL-G.
+- [24-1-21] Fixed crash in get_logged_band when out of band.
+- [24-1-16.1] Fix possible crash when cabrillo generated without a station call.
+- [24-1-16] Added Stew Perry Topband.
+- [24-1-15] Added the Phone Weekly Test.
 - [23-12-24] Fixed bug where no bands showed onscreen during initial launch.
 - [23-12-22] Refactored a bunch of code.
 - [23-12-20] Add ARRL VHF Jun and Sep.
