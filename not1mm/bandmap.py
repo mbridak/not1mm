@@ -431,7 +431,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.tx_freq = self.rx_freq
                         self.center_on_rxfreq()
                 except ValueError:
-                    logger.debug(f"vfo value error {packet.get("vfoa")}")
+                    logger.debug(f"vfo value error {packet.get('vfoa')}")
                     continue
                 bw_returned = packet.get("bw", "0")
                 if not bw_returned.isdigit():
