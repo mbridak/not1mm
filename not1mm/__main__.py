@@ -188,10 +188,6 @@ class MainWindow(QtWidgets.QMainWindow):
     dbname = DATA_PATH + "/ham.db"
     radio_state = {}
     rig_control = None
-    multicast_group = None
-    multicast_port = None
-    interface_ip = None
-    rig_control = None
     worked_list = {}
     cw_entry_visible = False
     last_focus = None
@@ -1663,12 +1659,12 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
                 self.n1mm.contact_info["timestamp"] = self.contact["TS"]
-                self.n1mm.contact_info["oldcall"] = self.n1mm.contact_info[
-                    "call"
-                ] = self.contact["Call"]
-                self.n1mm.contact_info["txfreq"] = self.n1mm.contact_info[
-                    "rxfreq"
-                ] = self.n1mm.radio_info["Freq"]
+                self.n1mm.contact_info["oldcall"] = self.n1mm.contact_info["call"] = (
+                    self.contact["Call"]
+                )
+                self.n1mm.contact_info["txfreq"] = self.n1mm.contact_info["rxfreq"] = (
+                    self.n1mm.radio_info["Freq"]
+                )
                 self.n1mm.contact_info["mode"] = self.contact["Mode"]
                 self.n1mm.contact_info["contestname"] = self.contact[
                     "ContestName"
@@ -2158,11 +2154,10 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actionMode_and_Bands.setChecked(False)
 
-        multicast_group = self.pref.get("multicast_group", "239.1.1.1")
-        multicast_port = self.pref.get("multicast_port", 2239)
-        interface_ip = self.pref.get("interface_ip", "0.0.0.0")
         self.multicast_interface = Multicast(
-            multicast_group, multicast_port, interface_ip
+            self.pref.get("multicast_group", "239.1.1.1"),
+            self.pref.get("multicast_port", 2239),
+            self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 

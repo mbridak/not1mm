@@ -40,16 +40,13 @@ else:
     CONFIG_PATH = str(Path.home() / ".config")
 CONFIG_PATH += "/not1mm"
 
-MULTICAST_PORT = 2239
-MULTICAST_GROUP = "239.1.1.1"
-INTERFACE_IP = "0.0.0.0"
-
 
 class MainWindow(QMainWindow):
     """
     The main window
     """
 
+    multicast_interface = None
     dbname = None
     pref = {}
 
@@ -74,10 +71,12 @@ class MainWindow(QMainWindow):
         self.mscp = SCP(WORKING_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
-        self.udpsocket = Multicast(
-            self.multicast_group, self.multicast_port, self.interface_ip
+        self.multicast_interface = Multicast(
+            self.pref.get("multicast_group", "239.1.1.1"),
+            self.pref.get("multicast_port", 2239),
+            self.pref.get("interface_ip", "0.0.0.0"),
         )
-        self.udpsocket.ready_read_connect(self.watch_udp)
+        self.multicast_interface.ready_read_connect(self.watch_udp)
 
     def quit_app(self):
         """
@@ -118,10 +117,6 @@ class MainWindow(QMainWindow):
         except IOError as exception:
             logger.critical("Error: %s", exception)
 
-        self.multicast_port = int(self.pref.get("multicast_port", MULTICAST_PORT))
-        self.multicast_group = self.pref.get("multicast_group", MULTICAST_GROUP)
-        self.interface_ip = self.pref.get("interface_ip", "0.0.0.0")
-
     def watch_udp(self):
         """
         Puts UDP datagrams in a FIFO queue.
@@ -134,8 +129,8 @@ class MainWindow(QMainWindow):
         -------
         None
         """
-        while self.udpsocket.has_pending_datagrams():
-            json_data = self.udpsocket.read_datagram_as_json()
+        while self.multicast_interface.server_udp.hasPendingDatagrams():
+            json_data = self.multicast_interface.read_datagram_as_json()
 
             if json_data.get("station", "") != platform.node():
                 continue

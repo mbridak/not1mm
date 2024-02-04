@@ -3,6 +3,7 @@
 Display current log
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
+# pylint: disable=logging-fstring-interpolation, too-many-lines
 # QTableWidget
 # focusedLog, generalLog
 import logging
@@ -46,11 +47,6 @@ CONFIG_PATH += "/not1mm"
 DARK_STYLESHEET = ""
 
 
-MULTICAST_PORT = 2239
-MULTICAST_GROUP = "239.1.1.1"
-INTERFACE_IP = "0.0.0.0"
-
-
 def safe_float(the_input: any, default=0.0) -> float:
     """
     Convert a string or int to a float.
@@ -81,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
+    multicast_interface = None
     dbname = None
     edit_contact_dialog = None
     pref = {}
@@ -171,16 +168,18 @@ class MainWindow(QtWidgets.QMainWindow):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
-        self.udpsocket = Multicast(
-            self.multicast_group, self.multicast_port, self.interface_ip
+        self.multicast_interface = Multicast(
+            self.pref.get("multicast_group", "239.1.1.1"),
+            self.pref.get("multicast_port", 2239),
+            self.pref.get("interface_ip", "0.0.0.0"),
         )
-        self.udpsocket.ready_read_connect(self.watch_udp)
+        self.multicast_interface.ready_read_connect(self.watch_udp)
 
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
         cmd["station"] = platform.node()
 
-        self.udpsocket.send_as_json(cmd)
+        self.multicast_interface.send_as_json(cmd)
 
     def quit_app(self):
         """
@@ -245,10 +244,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
-
-        self.multicast_port = int(self.pref.get("multicast_port", MULTICAST_PORT))
-        self.multicast_group = self.pref.get("multicast_group", MULTICAST_GROUP)
-        self.interface_ip = self.pref.get("interface_ip", "0.0.0.0")
 
     def load_new_db(self) -> None:
         """
@@ -869,8 +864,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Watch for UDP datagrams.
         Parse commands from our platform.node().
         """
-        while self.udpsocket.has_pending_datagrams():
-            json_data = self.udpsocket.read_datagram_as_json()
+        while self.multicast_interface.server_udp.hasPendingDatagrams():
+            json_data = self.multicast_interface.read_datagram_as_json()
 
             if json_data.get("station", "") != platform.node():
                 continue

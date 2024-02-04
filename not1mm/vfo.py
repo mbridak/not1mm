@@ -25,13 +25,14 @@ from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from not1mm.lib.cat_interface import CAT
+from not1mm.lib.multicast import Multicast
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-# loader = pkgutil.get_loader("not1mm")
-# WORKING_PATH = os.path.dirname(loader.get_filename())
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
+if __loader__:
+    WORKING_PATH = os.path.dirname(__loader__.get_filename())
+else:
+    WORKING_PATH = os.path.dirname(os.path.realpath(__file__))
 
 if "XDG_DATA_HOME" in os.environ:
     DATA_PATH = os.environ.get("XDG_DATA_HOME")
@@ -45,10 +46,6 @@ else:
     CONFIG_PATH = str(Path.home() / ".config")
 CONFIG_PATH += "/not1mm"
 
-MULTICAST_PORT = 2239
-MULTICAST_GROUP = "239.1.1.1"
-INTERFACE_IP = "0.0.0.0"
-
 
 class MainWindow(QMainWindow):
     """
@@ -59,6 +56,7 @@ class MainWindow(QMainWindow):
     old_vfo = ""
     old_pico = ""
     message_shown = False
+    multicast_interface = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,14 +71,12 @@ class MainWindow(QMainWindow):
         self.pico = None
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
-        self.udpsocket = QtNetwork.QUdpSocket(self)
-        self.udpsocket.bind(
-            QtNetwork.QHostAddress.AnyIPv4,
-            MULTICAST_PORT,
-            QtNetwork.QUdpSocket.ShareAddress,
+        self.multicast_interface = Multicast(
+            self.pref.get("multicast_group", "239.1.1.1"),
+            self.pref.get("multicast_port", 2239),
+            self.pref.get("interface_ip", "0.0.0.0"),
         )
-        self.udpsocket.joinMulticastGroup(QtNetwork.QHostAddress(MULTICAST_GROUP))
-        self.udpsocket.readyRead.connect(self.watch_udp)
+        self.multicast_interface.ready_read_connect(self.watch_udp)
 
     def quit_app(self) -> None:
         """Shutdown the app."""
@@ -181,21 +177,19 @@ class MainWindow(QMainWindow):
                         "Unable to locate or open the VFO knob serial device."
                     )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+            app.processEvents()
 
     def watch_udp(self) -> None:
         """
         Watch for a 'HALT' UPD packet from not1mm.
         Exit app if found.
         """
-        while self.udpsocket.hasPendingDatagrams():
-            datagram, _, _ = self.udpsocket.readDatagram(
-                self.udpsocket.pendingDatagramSize()
-            )
-
+        while self.multicast_interface.server_udp.hasPendingDatagrams():
+            datagram = self.multicast_interface.getpacket()
             try:
-                debug_info = f"{datagram.decode()}"
+                debug_info = f"{datagram}"
                 logger.debug(debug_info)
-                json_data = loads(datagram.decode())
+                json_data = loads(datagram)
             except UnicodeDecodeError as err:
                 the_error = f"Not Unicode: {err}\n{datagram}"
                 logger.debug(the_error)

@@ -6,6 +6,7 @@ GPL V3
 """
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
+# pylint: disable=logging-fstring-interpolation
 
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -49,10 +50,6 @@ else:
 CONFIG_PATH += "/not1mm"
 
 DARK_STYLESHEET = ""
-
-MULTICAST_PORT = 2239
-MULTICAST_GROUP = "239.1.1.1"
-INTERFACE_IP = "0.0.0.0"
 
 PREF = {}
 if os.path.exists(CONFIG_PATH + "/not1mm.json"):
@@ -342,6 +339,7 @@ class MainWindow(QtWidgets.QMainWindow):
     bandwidth = 0
     bandwidth_mark = []
     worked_list = {}
+    multicast_interface = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -372,13 +370,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
         self.update()
-        self.multicast_port = int(PREF.get("multicast_port", MULTICAST_PORT))
-        self.multicast_group = PREF.get("multicast_group", MULTICAST_GROUP)
-        self.interface_ip = PREF.get("interface_ip", "0.0.0.0")
-        self.udpsocket = Multicast(
-            self.multicast_group, self.multicast_port, self.interface_ip
+        self.multicast_interface = Multicast(
+            PREF.get("multicast_group", "239.1.1.1"),
+            PREF.get("multicast_port", 2239),
+            PREF.get("interface_ip", "0.0.0.0"),
         )
-        self.udpsocket.ready_read_connect(self.watch_udp)
+        self.multicast_interface.ready_read_connect(self.watch_udp)
         self.request_workedlist()
 
     def quit_app(self):
@@ -408,8 +405,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def watch_udp(self):
         """doc"""
-        while self.udpsocket.has_pending_datagrams():
-            packet = self.udpsocket.read_datagram_as_json()
+        while self.multicast_interface.server_udp.hasPendingDatagrams():
+            packet = self.multicast_interface.read_datagram_as_json()
 
             if packet.get("station", "") != platform.node():
                 continue
@@ -441,7 +438,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    self.udpsocket.send_as_json(cmd)
+                    self.multicast_interface.send_as_json(cmd)
                 continue
 
             if packet.get("cmd", "") == "PREVSPOT" and self.rx_freq:
@@ -454,7 +451,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    self.udpsocket.send_as_json(cmd)
+                    self.multicast_interface.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "SPOTDX":
                 dx = packet.get("dx", "")
@@ -473,7 +470,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["freq"] = spot.get("freq", self.rx_freq)
                     cmd["spot"] = spot.get("callsign", "")
-                    self.udpsocket.send_as_json(cmd)
+                    self.multicast_interface.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "WORKED":
                 self.worked_list = packet.get("worked", {})
@@ -488,13 +485,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         cmd["cmd"] = "CHECKSPOTS"
                         cmd["station"] = platform.node()
                         cmd["spots"] = result
-                        self.udpsocket.send_as_json(cmd)
+                        self.multicast_interface.send_as_json(cmd)
                         continue
                 cmd = {}
                 cmd["cmd"] = "CHECKSPOTS"
                 cmd["station"] = platform.node()
                 cmd["spots"] = []
-                self.udpsocket.send_as_json(cmd)
+                self.multicast_interface.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "HALT":
                 self.quit_app()
@@ -509,14 +506,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["station"] = platform.node()
                 cmd["freq"] = items[0].property("freq")
                 cmd["spot"] = items[0].toPlainText().split()[0]
-                self.udpsocket.send_as_json(cmd)
+                self.multicast_interface.send_as_json(cmd)
 
     def request_workedlist(self):
         """Request worked call list from logger"""
         cmd = {}
         cmd["cmd"] = "GETWORKEDLIST"
         cmd["station"] = platform.node()
-        self.udpsocket.send_as_json(cmd)
+        self.multicast_interface.send_as_json(cmd)
 
     def update_station_timer(self):
         """doc"""
