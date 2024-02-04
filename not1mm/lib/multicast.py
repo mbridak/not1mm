@@ -3,7 +3,8 @@ K6GTE, multicast broadcast interface
 Email: michael.bridak@gmail.com
 GPL V3
 """
-# pylint: disable=unused-import
+
+# pylint: disable=unused-import, c-extension-no-member
 import logging
 from json import JSONDecodeError, dumps, loads
 
@@ -33,16 +34,19 @@ class Multicast:
         self.server_udp.joinMulticastGroup(QtNetwork.QHostAddress(self.multicast_group))
 
     def has_pending_datagrams(self) -> bool:
+        """Check if there is a pending datagram"""
         return self.server_udp.hasPendingDatagrams()
 
     def read_datagram(self) -> bytes:
+        """Read datagram"""
         datagram, _, _ = self.server_udp.readDatagram(
-                self.server_udp.pendingDatagramSize()
+            self.server_udp.pendingDatagramSize()
         )
-        logger.debug("datagram {0}".format(datagram))
+        logger.debug("%s", f"datagram {datagram}")
         return datagram
 
     def read_datagram_as_json(self) -> dict:
+        """Read datagram as json"""
         datagram = self.read_datagram()
 
         json_dict = {}
@@ -77,3 +81,12 @@ class Multicast:
         self.server_udp.writeDatagram(
             packet, QtNetwork.QHostAddress(self.multicast_group), self.multicast_port
         )
+
+    def getpacket(self):
+        """return a packet"""
+        packet = (
+            self.server_udp.receiveDatagram(self.server_udp.pendingDatagramSize())
+            .data()
+            .data()
+        )
+        return packet
