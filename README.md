@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-2-4] Fixed Cabrillo name in 10 10 Winter Phone. Added missing Club tag in all the cabrillo contest files.
 - [24-2-3] Merge PR from @wvolz.
 - [24-2-1] Fix bug in bandmap, quotation mark mismatch. Changed CAT timeout back to 0.5 seconds.
 
