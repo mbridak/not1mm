@@ -15,7 +15,7 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger("__main__")
 
 name = "10 10 WINTER PHONE"
-cabrillo_name = "10-10-SPRING-PHONE"
+cabrillo_name = "10-10-WINTER-PHONE"
 mode = "SSB"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [
@@ -194,6 +194,12 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
+            if self.station.get("Club", ""):
+                print(
+                    f"CLUB: {self.station.get('Club', '').upper()}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
             print(
                 f"CALLSIGN: {self.station.get('Call','')}",
                 end="\r\n",
