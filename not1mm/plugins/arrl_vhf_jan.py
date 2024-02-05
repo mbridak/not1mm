@@ -1,6 +1,5 @@
 """ARRL Jan VHF"""
 
-
 # Status:	Active
 # Geographic Focus:	United States/Canada
 # Participation:	Worldwide
@@ -253,6 +252,12 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
+            if self.station.get("Club", ""):
+                print(
+                    f"CLUB: {self.station.get('Club', '').upper()}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
             print(
                 f"CALLSIGN: {self.station.get('Call','')}",
                 end="\r\n",

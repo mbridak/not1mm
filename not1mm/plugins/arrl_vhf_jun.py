@@ -1,6 +1,5 @@
 """ARRL Jun VHF"""
 
-
 # Cabrillo name:	ARRL-VHF-JUN
 # Cabrillo name aliases:	ARRL-VHF
 
@@ -221,6 +220,12 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
+            if self.station.get("Club", ""):
+                print(
+                    f"CLUB: {self.station.get('Club', '').upper()}",
+                    end="\r\n",
+                    file=file_descriptor,
+                )
             print(
                 f"CALLSIGN: {self.station.get('Call','')}",
                 end="\r\n",
