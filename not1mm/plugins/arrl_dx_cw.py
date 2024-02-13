@@ -1,6 +1,7 @@
 """ARRL plugin"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
+# pylint: disable=logging-fstring-interpolation
 
 import datetime
 import logging
@@ -116,12 +117,12 @@ def points(self):
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
-            mycountry = item[1].get("entity", "")
+            mycountry = item[1].get("primary_pfx", "")
             # mycontinent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
     if result:
         for item in result.items():
-            entity = item[1].get("entity", "")
+            entity = item[1].get("primary_pfx", "")
             # continent = item[1].get("continent", "")
             if mycountry in ["K", "VE"]:
                 if entity in ["K", "VE"]:
