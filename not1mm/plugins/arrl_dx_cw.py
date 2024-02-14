@@ -25,7 +25,7 @@ columns = [
     "Freq",
     "Snt",
     "Rcv",
-    "Power",
+    "RcvNr",
     "M1",
     "PFX",
     "PTS",
@@ -96,7 +96,7 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["Power"] = self.other_2.text().upper()
+    # self.contact["Power"] = self.other_2.text().upper()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
@@ -136,9 +136,18 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_arrldx_country_band_count()
-    if result:
-        return int(result.get("cb_count", 0))
+    location = self.cty_lookup(self.station.get("Call", ""))
+    if location:
+        for item in location.items():
+            mycountry = item[1].get("primary_pfx", "")
+            if mycountry in ["K", "VE"]:
+                result = self.database.fetch_arrldx_country_band_count()
+                if result:
+                    return int(result.get("cb_count", 0))
+            else:
+                result = self.database.fetch_arrldx_state_prov_count()
+                if result:
+                    return int(result.get("cb_count", 0))
     return 0
 
 

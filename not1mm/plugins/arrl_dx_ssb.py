@@ -115,13 +115,11 @@ def prefill(self):
 def points(self):
     """Calc point"""
     result = self.cty_lookup(self.station.get("Call", ""))
-    logger.debug(f"our lookup result: {result}")
     if result:
         for item in result.items():
             mycountry = item[1].get("primary_pfx", "")
             # mycontinent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    logger.debug(f"their lookup result: {result}")
     if result:
         for item in result.items():
             entity = item[1].get("primary_pfx", "")
@@ -138,9 +136,18 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_arrldx_country_band_count()
-    if result:
-        return int(result.get("cb_count", 0))
+    location = self.cty_lookup(self.station.get("Call", ""))
+    if location:
+        for item in location.items():
+            mycountry = item[1].get("primary_pfx", "")
+            if mycountry in ["K", "VE"]:
+                result = self.database.fetch_arrldx_country_band_count()
+                if result:
+                    return int(result.get("cb_count", 0))
+            else:
+                result = self.database.fetch_arrldx_state_prov_count()
+                if result:
+                    return int(result.get("cb_count", 0))
     return 0
 
 
