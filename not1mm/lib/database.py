@@ -3,6 +3,7 @@ K6GTE, Database class to store contacts
 Email: michael.bridak@gmail.com
 GPL V3
 """
+
 # pylint: disable=line-too-long
 
 # get Saturday plus 48 hours: select datetime('now', 'WEEKDAY 6','48 HOURS');
@@ -591,6 +592,23 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(DISTINCT(CountryPrefix || ':' || Band)) as cb_count from dxlog where ContestNR = {self.current_contest} and points = 3;"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_arrldx_state_prov_count(self) -> dict:
+        """
+        returns dict with count of unique NR.
+        {nr_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(NR || ':' || Band)) as cb_count from dxlog where ContestNR = {self.current_contest} and points = 3;"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
