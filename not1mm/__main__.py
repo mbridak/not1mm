@@ -1633,8 +1633,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not any(char.isalpha() for char in self.callsign.text()):
             return
-
-        self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
+        self.contact["TS"] = datetime.now(dt.UTC).isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
         self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
         self.contact["QSXFreq"] = round(
