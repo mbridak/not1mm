@@ -354,10 +354,10 @@ def recalculate_mults(self):
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
         time_stamp = contact.get("TS", "")
-        entity = contact.get("CountryPrefix", "")
+        entity = contact.get("NR", "")
         query = (
             f"select count(*) as prefix_count from dxlog where  TS < '{time_stamp}' "
-            f"and CountryPrefix = '{entity}' "
+            f"and NR = '{entity}' "
             f"and ContestNR = {self.pref.get('contest', '1')};"
         )
         result = self.database.exec_sql(query)
