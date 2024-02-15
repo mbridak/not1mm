@@ -330,11 +330,17 @@ class MainWindow(QtWidgets.QMainWindow):
             "Sect": self.generalLog.item(row, self.get_column("Sect")).text(),
             "WPXPrefix": self.generalLog.item(row, self.get_column("WPX")).text(),
             "Power": self.generalLog.item(row, self.get_column("Power")).text(),
-            "IsMultiplier1": self.generalLog.item(row, self.get_column("M1")).text(),
+            "IsMultiplier1": int(
+                not bool(
+                    self.generalLog.item(row, self.get_column("M1")).icon().isNull()
+                )
+            ),
             "ZN": self.generalLog.item(row, self.get_column("ZN")).text(),
-            "IsMultiplier2": self.generalLog.item(row, self.get_column("M2"))
-            .text()
-            .upper(),
+            "IsMultiplier2": int(
+                not bool(
+                    self.generalLog.item(row, self.get_column("M2")).icon().isNull()
+                )
+            ),
             "CountryPrefix": self.generalLog.item(row, self.get_column("PFX")).text(),
             "Points": self.generalLog.item(row, self.get_column("PTS")).text(),
             "Name": self.generalLog.item(row, self.get_column("Name")).text(),
@@ -437,11 +443,17 @@ class MainWindow(QtWidgets.QMainWindow):
             "Sect": self.focusedLog.item(row, self.get_column("Sect")).text(),
             "WPXPrefix": self.focusedLog.item(row, self.get_column("WPX")).text(),
             "Power": self.focusedLog.item(row, self.get_column("Power")).text(),
-            "IsMultiplier1": self.focusedLog.item(row, self.get_column("M1")).text(),
+            "IsMultiplier1": int(
+                not bool(
+                    self.focusedLog.item(row, self.get_column("M1")).icon().isNull()
+                )
+            ),
             "ZN": self.focusedLog.item(row, self.get_column("ZN")).text(),
-            "IsMultiplier2": self.focusedLog.item(row, self.get_column("M2"))
-            .text()
-            .upper(),
+            "IsMultiplier2": int(
+                not bool(
+                    self.focusedLog.item(row, self.get_column("M2")).icon().isNull()
+                )
+            ),
             "CountryPrefix": self.focusedLog.item(row, self.get_column("PFX")).text(),
             "Points": self.focusedLog.item(row, self.get_column("PTS")).text(),
             "Name": self.focusedLog.item(row, self.get_column("Name")).text(),
@@ -903,8 +915,10 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None.
         """
+        self.focusedLog.blockSignals(True)
         if call == "":
             self.focusedLog.setRowCount(0)
+            self.focusedLog.blockSignals(False)
             return
         lines = self.database.fetch_like_calls(call)
         debug_line = f"{lines}"
@@ -1042,6 +1056,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
+        self.focusedLog.blockSignals(False)
 
     def show_message_box(self, message: str) -> None:
         """
