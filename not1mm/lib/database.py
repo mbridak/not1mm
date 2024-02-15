@@ -56,7 +56,7 @@ class DataBase:
             "Exchange1": "",
             "RadioNR": "",
             "ContestNR": "",
-            "isMultiplier3": "",
+            "isMultiplier3": 0,
             "MiscText": "",
             "IsRunQSO": "",
             "ContactType": "",
