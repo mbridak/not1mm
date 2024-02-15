@@ -1691,7 +1691,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "IsMultiplier2", 0
                 )
                 self.n1mm.contact_info["ismultiplier3"] = self.contact.get(
-                    "IsMultiplier3", "0"
+                    "IsMultiplier3", 0
                 )
                 self.n1mm.contact_info["section"] = self.contact["Sect"]
                 self.n1mm.contact_info["prec"] = self.contact["Prec"]
