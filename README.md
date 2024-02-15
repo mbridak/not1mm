@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-2-15] Fixed a bunch of stuff related to ARRL DX mults.
 - [24-2-14] Fixed point/mult calculation if you're not in W/VE.
 - [24-2-13] Fixed no points being assigned in ARRL DX, reported by NC8R.
 - [24-2-4] Fixed Cabrillo name in 10 10 Winter Phone. Added missing Club tag in all the cabrillo contest files.
