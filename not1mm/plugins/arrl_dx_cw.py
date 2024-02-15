@@ -96,7 +96,6 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    # self.contact["Power"] = self.other_2.text().upper()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
@@ -111,6 +110,22 @@ def prefill(self):
     #     self.other_2.setText(str(self.contact.get("ZN", "")))
     self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
+    location = self.cty_lookup(self.station.get("Call", ""))
+    if location:
+        for item in location.items():
+            mycountry = item[1].get("primary_pfx", "")
+            if mycountry in ["K", "VE"]:
+                query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and CountryPrefix='{self.contact.get('CountryPrefix','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+            else:
+                query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and NR='{self.contact.get('NR','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+
+    result = self.database.exec_sql(query)
+    count = result.get("prefix_count", 0)
+    if count == 0:
+        self.contact["IsMultiplier1"] = 1
+    else:
+        self.contact["IsMultiplier1"] = 0
+
 
 def points(self):
     """Calc point"""
@@ -118,12 +133,10 @@ def points(self):
     if result:
         for item in result.items():
             mycountry = item[1].get("primary_pfx", "")
-            # mycontinent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
     if result:
         for item in result.items():
             entity = item[1].get("primary_pfx", "")
-            # continent = item[1].get("continent", "")
             if mycountry in ["K", "VE"]:
                 if entity in ["K", "VE"]:
                     return 0
@@ -352,16 +365,31 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+
     for contact in all_contacts:
         time_stamp = contact.get("TS", "")
-        entity = contact.get("NR", "")
-        query = (
-            f"select count(*) as prefix_count from dxlog where  TS < '{time_stamp}' "
-            f"and NR = '{entity}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
+        entity = contact.get("CountryPrefix", "")
+        location = self.cty_lookup(self.station.get("Call", ""))
+        if location:
+            for item in location.items():
+                mycountry = item[1].get("primary_pfx", "")
+                if mycountry in ["K", "VE"]:
+                    query = (
+                        f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
+                        f"and CountryPrefix='{contact.get('CountryPrefix','')}' "
+                        f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+                    )
+                else:
+                    query = (
+                        f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
+                        f"and NR='{contact.get('NR','')}' "
+                        f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+                    )
         result = self.database.exec_sql(query)
-        count = result.get("prefix_count", 1)
+        logger.debug("contact: %s", contact)
+        logger.debug("query: %s", query)
+        logger.debug("result: %s", result)
+        count = int(result.get("prefix_count", 1))
         if count == 0 and contact.get("Points", 0) == 3:
             contact["IsMultiplier1"] = 1
         else:
