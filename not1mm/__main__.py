@@ -7,7 +7,7 @@ NOT1MM Logger
 
 # alt cluster hamqth.com 7300
 
-import datetime as dt
+import datetime
 import importlib
 import locale
 import logging
@@ -21,7 +21,7 @@ import subprocess
 import sys
 import threading
 import uuid
-from datetime import datetime
+
 from json import JSONDecodeError, dumps, loads
 from pathlib import Path
 from shutil import copyfile
@@ -90,7 +90,7 @@ CTYFILE = {}
 with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as c_file:
     CTYFILE = loads(c_file.read())
 
-poll_time = datetime.now()
+poll_time = datetime.datetime.now()
 
 
 def check_process(name: str) -> bool:
@@ -1633,7 +1633,9 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not any(char.isalpha() for char in self.callsign.text()):
             return
-        self.contact["TS"] = datetime.utcnow().isoformat(" ")[:19]
+        self.contact["TS"] = datetime.datetime.now(datetime.timezone.utc).isoformat(
+            " "
+        )[:19]
         self.contact["Call"] = self.callsign.text()
         self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
         self.contact["QSXFreq"] = round(
@@ -2862,7 +2864,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     info_dirty = True
                     self.radio_state["bw"] = bw
 
-                if datetime.now() > globals()["poll_time"] or info_dirty:
+                if datetime.datetime.now() > globals()["poll_time"] or info_dirty:
                     logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
                     self.set_window_title()
                     cmd = {}
@@ -2883,7 +2885,9 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.pref.get("run_state", False)
                             )
                             self.n1mm.send_radio()
-                    globals()["poll_time"] = datetime.now() + dt.timedelta(seconds=10)
+                    globals()[
+                        "poll_time"
+                    ] = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
     def edit_cw_macros(self) -> None:
         """
