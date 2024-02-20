@@ -203,6 +203,14 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
 
+    def showNumber(self, the_number) -> None:
+        """Display vfo value with dots"""
+        dvfo = str(the_number)
+        if len(dvfo) > 6:
+            dnum = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
+            self.lcdNumber.display(dnum)
+            app.processEvents()
+
     def poll_radio(self) -> None:
         """
         Poll radio via CAT asking for VFO state.
@@ -222,7 +230,8 @@ class MainWindow(QMainWindow):
                 if vfo != self.old_vfo:
                     self.old_vfo = vfo
                     logger.debug(f"{vfo}")
-                    self.lcdNumber.display(vfo)
+                    self.showNumber(vfo)
+                    # self.lcdNumber.display(dnum)
                     app.processEvents()
                     cmd = f"F {vfo}\r"
                     try:
@@ -248,7 +257,8 @@ class MainWindow(QMainWindow):
                         self.old_pico = result
                         if self.rig_control:
                             self.rig_control.set_vfo(result)
-                            self.lcdNumber.display(result)
+                            self.showNumber(result)
+                            # self.lcdNumber.display(result)
                             app.processEvents()
         except OSError:
             logger.critical("Unable to write to serial device.")
