@@ -13,7 +13,6 @@ import locale
 import logging
 import os
 
-# import pkgutil
 import platform
 import re
 import socket
@@ -3092,7 +3091,7 @@ if Path("./debug").exists():
     logger.debug("debugging on")
 else:
     logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
+    # logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
