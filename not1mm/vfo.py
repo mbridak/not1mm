@@ -12,7 +12,6 @@ import logging
 
 import os
 
-# import pkgutil
 import platform
 import queue
 import sys
@@ -200,8 +199,21 @@ class MainWindow(QMainWindow):
                 continue
             if json_data.get("station", "") != platform.node():
                 continue
+            logger.debug(f"{json_data=}")
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
+            if json_data.get("cmd", "") == "TUNE":
+                # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                vfo = json_data.get("freq")
+                vfo = float(vfo) * 1000000
+                changefreq = f"F {int(vfo)}\r"
+                try:
+                    if self.pico:
+                        self.pico.write(changefreq.encode())
+                except OSError:
+                    logger.critical("Unable to write to serial device.")
+                except AttributeError:
+                    logger.critical("Unable to write to serial device.")
 
     def showNumber(self, the_number) -> None:
         """Display vfo value with dots"""
