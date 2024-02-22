@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-2-21] Have the remote vfo monitor for TUNE packets from the bandmap app.
 - [24-2-20] Improved the VFO display.
 - [24-2-19] Re-Removed the depricated code. Replaced with code tested against Python 3.9
 - [24-2-16] Replaced the removed depricated code.
