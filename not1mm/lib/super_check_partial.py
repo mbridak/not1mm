@@ -4,6 +4,9 @@ import logging
 
 import requests
 
+from thefuzz import fuzz
+from thefuzz import process
+
 MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 
 if __name__ == "__main__":
@@ -51,6 +54,6 @@ class SCP:
         """
         Performs a supercheck partial on the callsign entered in the field.
         """
-        if len(acall) > 2:
-            return list(filter(lambda x: x.startswith(acall), self.scp))
+        if len(acall) > 1:
+            return list([ x[0] for x in process.extract(acall, self.scp, scorer=fuzz.partial_ratio, limit=25)])
         return []
