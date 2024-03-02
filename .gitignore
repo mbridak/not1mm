@@ -12,3 +12,5 @@ debug
 /testing
 .markdownlint.json
 betatest
+not1mm/testing/server_preferences.json
+not1mm/testing/server_database.db
