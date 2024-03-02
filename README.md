@@ -136,16 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [24-2-21] Have the remote vfo monitor for TUNE packets from the bandmap app.
-- [24-2-20] Improved the VFO display.
-- [24-2-19] Re-Removed the depricated code. Replaced with code tested against Python 3.9
-- [24-2-16] Replaced the removed depricated code.
-- [24-2-15] Fixed a bunch of stuff related to ARRL DX mults.
-- [24-2-14] Fixed point/mult calculation if you're not in W/VE.
-- [24-2-13] Fixed no points being assigned in ARRL DX, reported by NC8R.
-- [24-2-4] Fixed Cabrillo name in 10 10 Winter Phone. Added missing Club tag in all the cabrillo contest files.
-- [24-2-3] Merge PR from @wvolz.
-- [24-2-1] Fix bug in bandmap, quotation mark mismatch. Changed CAT timeout back to 0.5 seconds.
+- [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
