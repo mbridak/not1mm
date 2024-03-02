@@ -55,5 +55,12 @@ class SCP:
         Performs a supercheck partial on the callsign entered in the field.
         """
         if len(acall) > 1:
-            return list([ x[0] for x in process.extract(acall, self.scp, scorer=fuzz.partial_ratio, limit=25)])
+            return list(
+                [
+                    x[0]
+                    for x in process.extract(
+                        acall, self.scp, scorer=fuzz.partial_ratio, limit=25
+                    )
+                ]
+            )
         return []
