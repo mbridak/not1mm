@@ -21,7 +21,7 @@ import sys
 import threading
 import uuid
 
-from json import JSONDecodeError, dumps, loads
+from json import dumps, loads
 from pathlib import Path
 from shutil import copyfile
 
@@ -30,7 +30,7 @@ import psutil
 import sounddevice as sd
 import soundfile as sf
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QDir, QPoint, QRect, QSize, Qt
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QFileDialog
 
