@@ -6,11 +6,11 @@ GPL V3
 """
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation
+# pylint: disable=logging-fstring-interpolation, line-too-long
 
 from datetime import datetime, timezone
 from decimal import Decimal
-from json import JSONDecodeError, loads, dumps
+from json import loads
 from pathlib import Path
 
 import logging
@@ -152,8 +152,7 @@ class Database:
         """
         try:
             self.cursor.execute(
-                "select distinct callsign from spots where callsign like ",
-                f"'%{call}%' ORDER by callsign ASC;",
+                f"select distinct callsign from spots where callsign like '%{call}%' ORDER by callsign ASC;"
             )
             result = self.cursor.fetchall()
             return result
