@@ -63,9 +63,6 @@ class MainWindow(QMainWindow):
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
-        # self.logList.hide()
-        # self.telnetList.hide()
-        # self.telnetListLabel.hide()
         self.callhistoryList.hide()
         self.callhistoryListLabel.hide()
         self.mscp = SCP(WORKING_PATH)
@@ -185,6 +182,8 @@ class MainWindow(QMainWindow):
         results = self.mscp.super_check(call)
         self.masterList.clear()
         for item in results:
+            if "#" in item:
+                continue
             listItem = QListWidgetItem(item)
             self.masterList.addItem(listItem)
             self.masterList.show()
