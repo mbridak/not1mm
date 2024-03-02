@@ -451,7 +451,6 @@ You can not directly edit the multiplier status of a contact. Instead see the ne
 ## Recalulate Mults
 
 After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
-Add timestamp to log filenames
 
 ## Bandmap
 
@@ -498,7 +497,7 @@ So for me it would look like:
 
 K6GTE_CANADA-DAY_2023-09-04_07-47-05.log
 
-Look a log [eh](https://www.youtube.com/watch?v=El41sHXck-E)?.
+Look, a log [eh](https://www.youtube.com/watch?v=El41sHXck-E)?
 
 [This](https://www.youtube.com/watch?v=oMI23JJUpGE) outlines some differences between ARRL Field Day and Canada Day.
 
