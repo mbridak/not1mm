@@ -22,6 +22,7 @@ dependencies = [
     "soundfile",
     "numpy",
     "notctyparser >= 23.6.21",
+    "thefuzz",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
