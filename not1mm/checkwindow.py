@@ -11,13 +11,12 @@ import queue
 import os
 import sys
 
-from json import JSONDecodeError, loads, dumps
+from json import loads
 from pathlib import Path
 
 from PyQt5 import uic
-from PyQt5.QtCore import QDir, Qt
-from PyQt5.QtWidgets import QApplication, QListWidget, QListWidgetItem, QMainWindow
-from PyQt5 import QtNetwork
+from PyQt5.QtCore import QDir
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.database import DataBase
