@@ -3030,19 +3030,21 @@ def load_fonts_from_dir(directory: str) -> set:
 
 def install_icons() -> None:
     """Install icons"""
-    os.system(
-        "xdg-icon-resource install --size 32 --context apps --mode user "
-        f"{WORKING_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
-    )
-    os.system(
-        "xdg-icon-resource install --size 64 --context apps --mode user "
-        f"{WORKING_PATH}/data/k6gte.not1mm-64.png k6gte-not1mm"
-    )
-    os.system(
-        "xdg-icon-resource install --size 128 --context apps --mode user "
-        f"{WORKING_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
-    )
-    os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
+
+    if sys.platform == "linux":
+        os.system(
+            "xdg-icon-resource install --size 32 --context apps --mode user "
+            f"{WORKING_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
+        )
+        os.system(
+            "xdg-icon-resource install --size 64 --context apps --mode user "
+            f"{WORKING_PATH}/data/k6gte.not1mm-64.png k6gte-not1mm"
+        )
+        os.system(
+            "xdg-icon-resource install --size 128 --context apps --mode user "
+            f"{WORKING_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
+        )
+        os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
 
 
 def doimp(modname) -> object:
