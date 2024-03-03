@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.
 - [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
@@ -423,6 +424,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 | [Enter] | Submits the fields to the log. |
 | [F1-F12] | Send (CW or Voice) macros. |
 | [CTRL-S] | Spot Callsign to the cluster. |
+| [CTRL-M] | Mark Callsign to the bandmap window to work later. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
 
