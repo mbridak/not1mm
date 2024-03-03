@@ -1371,6 +1371,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["freq"] = float(int(freq) / 1000)
                 self.multicast_interface.send_as_json(cmd)
             return
+        if event.key() == Qt.Key_M and modifier == Qt.ControlModifier:
+            freq = self.radio_state.get("vfoa")
+            dx = self.callsign.text()
+            if freq and dx:
+                cmd = {}
+                cmd["cmd"] = "MARKDX"
+                cmd["station"] = platform.node()
+                cmd["dx"] = dx
+                cmd["freq"] = float(int(freq) / 1000)
+                self.multicast_interface.send_as_json(cmd)
+            return
         if event.key() == Qt.Key_G and modifier == Qt.ControlModifier:
             dx = self.callsign.text()
             if dx:
