@@ -4,8 +4,8 @@ import logging
 
 import requests
 
-from thefuzz import fuzz
-from thefuzz import process
+from rapidfuzz import fuzz
+from rapidfuzz import process
 
 MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 
@@ -14,6 +14,11 @@ if __name__ == "__main__":
 
 logger = logging.getLogger("__main__")
 
+def prefer_prefix_score(query: str, candidate: str, **kwargs) -> int:
+    score = 0.5 * fuzz.ratio(query, candidate) + 0.5 * fuzz.partial_ratio(query, candidate)
+    if not candidate.startswith(query):
+        score = 0.8 * score
+    return int(round(score))
 
 class SCP:
     """Super check partial"""
@@ -59,7 +64,7 @@ class SCP:
                 [
                     x[0]
                     for x in process.extract(
-                        acall, self.scp, scorer=fuzz.partial_ratio, limit=25
+                        acall, self.scp, scorer=prefer_prefix_score, limit=25
                     )
                 ]
             )
