@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.
 - [24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.
 - [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
 
