@@ -14,11 +14,16 @@ if __name__ == "__main__":
 
 logger = logging.getLogger("__main__")
 
+
 def prefer_prefix_score(query: str, candidate: str, **kwargs) -> int:
-    score = 0.5 * fuzz.ratio(query, candidate) + 0.5 * fuzz.partial_ratio(query, candidate)
+    """Return a score based on the quality of the match."""
+    score = 0.5 * fuzz.ratio(query, candidate) + 0.5 * fuzz.partial_ratio(
+        query, candidate
+    )
     if not candidate.startswith(query):
         score = 0.8 * score
     return int(round(score))
+
 
 class SCP:
     """Super check partial"""
