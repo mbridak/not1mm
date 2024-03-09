@@ -1173,8 +1173,9 @@ class MainWindow(QtWidgets.QMainWindow):
             "[F1-F12]\tSend (CW or Voice) macros.\n"
             "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
             "\tentry field (CAT Required).\n"
-            "[CTRL-SHIFT-K] Open CW text input field.\n"
+            "[CTRL-M]\tMark Callsign to the bandmap window to work later."
             "[CTRL-S]\tSpot Callsign to the cluster.\n"
+            "[CTRL-SHIFT-K] Open CW text input field.\n"
         )
 
     def filepicker(self, action: str) -> str:
