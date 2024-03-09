@@ -160,7 +160,7 @@ class Database:
             logger.debug("%s", exception)
             return {}
 
-    def addspot(self, spot: dict) -> None:
+    def addspot(self, spot: dict, erase=True) -> None:
         """
         Add spot to database, replacing any previous spots with the same call.
 
@@ -170,48 +170,24 @@ class Database:
         A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float,
         'band': str,'mode': str,'spotter': str, 'comment': str}
 
-        Returns
-        -------
-        Nothing.
-        """
-        try:
-            delete_call = (
-                f"delete from spots where callsign = '{spot.get('callsign')}';"
-            )
-            self.cursor.execute(delete_call)
-            self.db.commit()
+        erase: bool
+        If True, delete any previous spots with the same callsign.
+        If False, do not delete any previous spots with the same callsign.
+        Default is True.
 
-            pre = "INSERT INTO spots("
-            values = []
-            columns = ""
-            placeholders = ""
-            for key in spot.keys():
-                columns += f"{key},"
-                values.append(spot[key])
-                placeholders += "?,"
-            post = f") VALUES({placeholders[:-1]});"
-
-            sql = f"{pre}{columns[:-1]}{post}"
-            self.cursor.execute(sql, tuple(values))
-            self.db.commit()
-        except sqlite3.IntegrityError:
-            ...
-
-    def addmark(self, spot: dict) -> None:
-        """
-        Add spot to database, replacing any previous spots with the same call.
-
-        Parameters
-        ----------
-        spot: Dict
-        A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float,
-        'band': str,'mode': str,'spotter': str, 'comment': str}
 
         Returns
         -------
         Nothing.
         """
         try:
+            if erase:
+                delete_call = (
+                    f"delete from spots where callsign = '{spot.get('callsign')}';"
+                )
+                self.cursor.execute(delete_call)
+                self.db.commit()
+
             pre = "INSERT INTO spots("
             values = []
             columns = ""
@@ -501,7 +477,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "spotter": platform.node(),
                     "comment": "DX",
                 }
-                self.spots.addmark(spot)
+                self.spots.addspot(spot, erase=False)
                 self.update_stations()
                 continue
             if packet.get("cmd", "") == "FINDDX":
