@@ -475,7 +475,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "band": self.currentBand.name,
                     "mode": "DX",
                     "spotter": platform.node(),
-                    "comment": "DX",
+                    "comment": "MARKED",
                 }
                 self.spots.addspot(spot, erase=False)
                 self.update_stations()
@@ -697,6 +697,8 @@ class MainWindow(QtWidgets.QMainWindow):
             min_y = 0.0
             for items in result:
                 pen_color = QtGui.QColor(192, 192, 192)
+                if items.get("comment") == "MARKED":
+                    pen_color = QtGui.QColor(47, 47, 255)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:
