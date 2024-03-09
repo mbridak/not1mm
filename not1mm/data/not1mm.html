@@ -152,23 +152,24 @@ figure figcaption {
 <div class="header"></div><div class="inner">
 <h2 id="toc_1">Not1MM</h2>
 
+<p>The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<sup></p>
 
 <h3 id="toc_1.1">What and why is Not1MM</h3>
 
-<p>Not1MM&#39;s interface is a blantent ripoff of N1MM.
+<p>Not1MM&#39;s interface is a blatant ripoff of N1MM.
 It is NOT N1MM and any problem you have with this software should in no way reflect on their software.</p>
 
-<p>If you use Windows(tm) you should run away from this and use someother program.</p>
+<p>If you use Windows(tm), you should run away from Not1MM and use someother program.</p>
 
-<p>I personally don&#39;t. While it may be possible to get N1MM working under Wine, I haven&#39;t checked, I&#39;d rather not have to jump thru the hoops.</p>
+<p>I personally don&#39;t use Windows(tm). While it may be possible to get N1MM working under Wine, I haven&#39;t checked. I&#39;d rather not have to jump thru the hoops.</p>
 
 <p><strong>Currently this exists for my own personal amusement</strong>.
 Something to do in my free time.
-While I&#39;m not watching TV, Right vs Left political &#39;News&#39; programs, mind numbing &#39;Reality&#39; TV etc...</p>
+While I&#39;m not watching TV, Right vs Left political &#39;News&#39; programs, mind numbing &#39;Reality&#39; shows etc...</p>
 
 <h3 id="toc_1.2">Current state</h3>
 
-<p>The current state is <q><strong>BETA</strong></q>. I&#39;ve used it for A few contests, and was able to work contacts and submit a cabrillo at the end. I&#39;m not a <q>Contester</q>. So I&#39;ll add contests as/if I work them. I&#39;m only one guy, so if you see a bug let me know. I don&#39;t do much of any Data or RTTY operating. This is why you don&#39;t see RTTY in the list of working contests. The Lord helps those who burn people at the... I mean who help themselves. Feel free to fill in that hole with a pull request.</p>
+<p>The current state is <q><strong>BETA</strong></q>. I&#39;ve used it for a few contests, and was able to work contacts and submit a cabrillo at the end. I&#39;m not a <q>Contester</q>. So I&#39;ll add contests as/if I work them. I&#39;m only one guy, so if you see a bug let me know. I don&#39;t do much of any Data or RTTY operating. This is why you don&#39;t see RTTY in the list of working contests. The Lord helps those who burn people at the... I mean who help themselves. Feel free to fill in that hole with a pull request.</p>
 
 <h3 id="toc_1.4">List of should be working contests</h3>
 
@@ -178,11 +179,15 @@ While I&#39;m not watching TV, Right vs Left political &#39;News&#39; programs, 
 <li>10 10 Spring CW</li>
 <li>10 10 Summer Phone</li>
 <li>10 10 Winter Phone</li>
+<li>ARRL 10M</li>
 <li>ARRL DX CW</li>
 <li>ARRL DX SSB</li>
 <li>ARRL Field Day</li>
 <li>ARRL Sweepstakes CW</li>
 <li>ARRL Sweepstakes SSB</li>
+<li>ARRL VHF January</li>
+<li>ARRL VHF June</li>
+<li>ARRL VHF September</li>
 <li>CQ WPX CW</li>
 <li>CQ WPX SSB</li>
 <li>CQ World Wide CW</li>
@@ -193,77 +198,22 @@ While I&#39;m not watching TV, Right vs Left political &#39;News&#39; programs, 
 <li>Japan International DX SSB</li>
 <li>NAQP CW</li>
 <li>NAQP SSB</li>
+<li>Phone Weekly Test</li>
 <li>RAC Canada Day</li>
+<li>Stew Perry Topband</li>
+<li>Winter Field Day</li>
 </ul>
 
 <h3 id="toc_1.5">Recent Changes</h3>
 
 <ul dir="auto">
-<li>[23-8-9] Add telnet matches to Check Window.</li>
-<li>[23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.</li>
-<li>[23-8-6] Add parsing of local log to check window.</li>
-<li>[23-8-5] Add Check Window. Moved MASTER.SCP stuff to it&#39;s own class. Close sub windows when main app closes.</li>
+<li>[24-3-9] Marked calls in the bandmap window colored Blue, until worked.</li>
+<li>[24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.</li>
+<li>[24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.</li>
+<li>[24-3-2] Merged PR from @arodland for fuzzy SCP lookup.</li>
 </ul>
 
-<h3 id="toc_1.6">Installing from PyPi</h3>
-
-<h4 id="toc_1.6.1">Python and pip</h4>
-
-<p>This software is a Python package hosted on PyPi, and installable with the pip or pipx command. If this is your first exposure to pip you can get all the details from <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">The PyPA</a>. In short, most linux distros come with Python pre installed. If pip is not installed by default, you can usually load it through your package manager. For example <code>sudo apt install python3-pip</code> or <code>sudo dnf install python3-pip</code>.</p>
-
-<h4 id="toc_1.6.2">Installing with pip</h4>
-
-<p>I&#39;ve included what installation steps I took to install on fresh images of Ubuntu and Fedora below. YMMV.</p>
-
-<h5 id="toc_1.6.2.4">Ubuntu 22.04 LTS</h5>
-
-<pre><code class="language-bash">sudo apt update
-sudo apt upgrade
-sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy adwaita-qt
-pip install -U not1mm
-</code></pre>
-
-<h5 id="toc_1.6.2.4">Ubuntu 23.04</h5>
-
-<pre><code class="language-bash">sudo apt update
-sudo apt upgrade
-sudo apt install -y libportaudio2 adwaita-qt pipx
-pipx install not1mm
-pipx ensurepath
-</code></pre>
-
-<h5 id="toc_1.6.2.4">Fedora 38</h5>
-
-<pre><code class="language-bash">sudo dnf upgrade --refresh
-sudo dnf install python3-pip portaudio
-pip install not1mm
-</code></pre>
-
-<p>You can now open a new terminal and type <code>not1mm</code>. On it&#39;s first run, it may or may not install a lovely non AI generated
-icon, which you can later click on to launch the application.</p>
-
-<h4 id="toc_1.6.3">You may or may not get a warning message like</h4>
-
-<pre><code class="language-text">WARNING: The script not1mm is installed in &#39;/home/mbridak/.local/bin&#39; which is not on PATH.
-Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
-</code></pre>
-
-<p>If you do, just logout and back in, or reboot.</p>
-
-<h4 id="toc_1.6.4">Or this fan favorite</h4>
-
-<pre><code class="language-text">Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
-qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
-This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
-</code></pre>
-
-<p>To avoid this you can export an environment variable and launch the app like this:</p>
-
-<p><code>mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm</code></p>
-
-<p>For a more permanent solution you can place the line <code>export QT_QPA_PLATFORM=wayland</code> in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.</p>
-
-<h4 id="toc_1.6.5">Updating with pip/pipx</h4>
+<h3 id="toc_1.6.5">Updating with pip/pipx</h3>
 
 <p>I&#39;ve been posting updates just about everyday. Sometimes multiple times a day. It&#39;s early days, so there is much to do. You can check for and install updates with <code>pip install -U not1mm</code> or if installed with pipx <code>pipx upgrade not1mm</code>.</p>
 
@@ -271,37 +221,13 @@ This application failed to start because no Qt platform plugin could be initiali
 
 <p>The audio library used, uses pipewire/portaudio. You may need to install portaudio. Ubuntu: <code>sudo apt install libportaudio2</code></p>
 
-<h4 id="toc_1.7.1">Dark mode on Ubuntu</h4>
+<h3 id="toc_1.7.1">Dark mode on Ubuntu</h3>
 
 <p>I believe I figured out dark mode in Ubuntu and have it working on my shack PC that runs Ubuntu 22.04. The secret sauce seems to be installing adwaita-qt with apt, and setting an environment variable <code>QT_STYLE_OVERRIDE</code> to <code>Adwaita-Dark</code>. I set the environment variable in the start of the program if running on a Gnome platform. So you don&#39;t need to do that part.</p>
 
 <h3 id="toc_1.8">Wayland Compositor</h3>
 
 <p>One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I&#39;m aware of this, but I can not change it.</p>
-
-<h3 id="toc_1.9">Running from source</h3>
-
-<p>Since this is packaged for PyPi, if you want to work on your own source branch, after cloning from github you would:</p>
-
-<pre><code class="language-bash">pip install --upgrade pip
-pip install setuptools
-pip install build
-source rebuild.sh
-</code></pre>
-
-<p>from the root directory. This installs a build chain and a local editable copy of not1mm.</p>
-
-<p>There&#39;s two ways to launch the program from the local editable copy.</p>
-
-<p>You can either be in the root of the source directory and type:</p>
-
-<pre><code class="language-bash">python not1mm
-</code></pre>
-
-<p>or be in some other directory and just type:</p>
-
-<pre><code class="language-bash">not1mm
-</code></pre>
 
 <h3 id="toc_1.10">Various data file locations</h3>
 
@@ -335,12 +261,6 @@ source rebuild.sh
 
 <p>After initial run of the program or creating a new database you will need to fill out the Station Settings dialog that will pop up.</p>
 
-<p>You can fill it out if you want to. You can leave our friends behind. &#39;Cause your friends don&#39;t fill, and if they don&#39;t fill. Well, they&#39;re no friends of mine.</p>
-
-<p>You can fill. You can fill. Everyone look at your keys.</p>
-
-<p><a href="https://www.youtube.com/watch?v=nM4okRvCg2g"><strong>I forgot my hat today</strong></a>.</p>
-
 <h4 id="toc_1.12.1">Changing station information</h4>
 
 <p>Station information can be changed any time by going to <code>File</code> &gt; <code>Station Settings</code> and editing the information.</p>
@@ -363,7 +283,7 @@ source rebuild.sh
 
 <p>The tabs for groups and n1mm are disabled and are for future expansion.</p>
 
-<h4 id="toc_1.16.1">Lookup</h4>
+<<h4 id="toc_1.16.1">Lookup</h4>
 
 <p>For callsign lookup, Two services are supported. QRZ and HamQTH. They require a username and password, Enter it here.</p>
 
@@ -373,7 +293,7 @@ source rebuild.sh
 
 <h4 id="toc_1.16.3">CAT</h4>
 
-<p>Under the <code>CAT</code> TAB, you can choose either <code>rigctld</code> normally with an IP of <code>127.0.0.1</code> and a port of <code>4532</code>. Or <code>flrig</code>, IP normally of <code>127.0.0.1</code> and a port of <code>12345</code>. <code>None</code> is always an option, but is it really?</p>
+<p>Under the <code>CAT</code> TAB, you can choose either <code>rigctld</code> normally with an IP of <code>127.0.0.1</code> and a port of <code>4532</code>. Or <code>flrig</code>, IP normally of <code>127.0.0.1</code> and a port of <code>12345</code>. <code>None</code> is always an option, but is it really? There&#39;s an onscreen icon for CAT status. Green good, Red bad, Grey neither.</p>
 
 <h4 id="toc_1.16.4">CW Keyer interface</h4>
 
@@ -389,11 +309,13 @@ source rebuild.sh
 
 <p>When entering IP and Ports, enter them with a colon &#39;:&#39; between them. You can enter multiple pairs on the same line if separated by a space &#39; &#39;.</p>
 
-<h3 id="toc_1.17">Hiding screen elements</h3>
+<h4 id="toc_1.16.7">Bands</h4>
 
-<p>You can show or hide certain buttons/indicators by checking and unchecking their boxes under the view menu. You can then resize the screen to make it more compact.</p>
+<p>You can define which bands appear in the main window. Those with checkmarks will appear. Those without will not.</p>
 
-<p>The your choices will be remembered when you relaunch the program.</p>
+<h3 id="toc_1.17">Sending CW</h3>
+
+<p>Other than sending CW by hand, you can also send predefined CW text messages by pressing F1 - F12. See next section on Editing macro keys. If you need to send something freeform, you can press CTRL-SHIFT-K, this will expose an entry field at the bottom of the window which you can type directly into. When you&#39;re done you can either press CTRL-SHIFT-K again, or press the Enter Key to close the field.</p>
 
 <h3 id="toc_1.18">Editing macro keys</h3>
 
@@ -529,8 +451,16 @@ source rebuild.sh
 <td>Spot Callsign to the cluster.</td>
 </tr>
 <tr>
+<td>[CTRL-M]</td>
+<td>Mark Callsign to the bandmap window to work later.</td>
+</tr>
+<tr>
 <td>[CTRL-G]</td>
 <td>Tune to a spot matching partial text in the callsign entry field (CAT Required).</td>
+</tr>
+<tr>
+<td>[CTRL-SHIFT-K]</td>
+<td>Open CW text input field.</td>
 </tr>
 </tbody>
 </table>
@@ -582,17 +512,23 @@ source rebuild.sh
 <li>Then... <code>Window</code>&gt;<code>VFO</code></li>
 </ol>
 
+<p><img src="https://github.com/mbridak/not1mm/raw/master/pic/vfo.png" alt="VFO"></p>
+
 <h3 id="toc_1.26">Cabrillo</h3>
 
 <p>Click on <code>File</code> &gt; <code>Generate Cabrillo</code></p>
 
 <p>The file will be placed in your home directory. The name will be in the format of:</p>
 
-<p><code>StationCall</code>_<code>ContestName</code>.log</p>
+<p><code>StationCall</code>_<code>ContestName</code>_<code>CurrentDate</code>_<code>CurrentTime</code>.log</p>
 
-<p>So for me it would be:</p>
+<p>So for me it would look like:</p>
 
-<p>K6GTE_CQ-WPX-SSB.log</p>
+<p>K6GTE_CANADA-DAY_2023-09-04_07-47-05.log</p>
+
+<p>Look, a log <a href="https://www.youtube.com/watch?v=El41sHXck-E">eh</a>?</p>
+
+<p><a href="https://www.youtube.com/watch?v=oMI23JJUpGE">This</a> outlines some differences between ARRL Field Day and Canada Day.</p>
 
 <h3 id="toc_1.27">ADIF</h3>
 
@@ -600,7 +536,7 @@ source rebuild.sh
 
 <p>Boom... ADIF</p>
 
-<p><code>StationCall</code>_<code>ContestName</code>.adi</p>
+<p><code>StationCall</code>_<code>ContestName</code>_<code>Date</code>_<code>Time</code>.adi</p>
 
 <h3 id="toc_1.28">Dupe checking</h3>
 
@@ -615,6 +551,8 @@ source rebuild.sh
 <h5 id="toc_1.29.1.4">The exchange parser</h5>
 
 <p>This was a pain in the tukus. There are so many elements to the exchange, and one input field aside from the callsign field. So I had to write sort of a &#39;parser&#39;. The parser moves over your input string following some basic rules and is re-evaluated with each keypress and the parsed result will be displayed in the label over the field. The exchange looks like <code>124 A K6GTE 17 ORG</code>, a Serial number, Precidence, Callsign, Year Licenced and Section. even though the callsign is given as part of the exchange, the callsign does not have to be entered and is pulled from the callsign field. If the exchange was entered as <code>124 A 17 ORG</code> you would see:</p>
+
+<p><img src="https://github.com/mbridak/not1mm/raw/master/pic/ss_parser_1.png" alt="SS Parser Result"></p>
 
 <p>You can enter the serial number and precidence, or the year and section as pairs. For instance <code>124A 17ORG</code>. This would ensure the values get parsed correctly.</p>
 
