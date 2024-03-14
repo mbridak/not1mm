@@ -119,6 +119,8 @@ I wish to thank those who've contributed to the project.
 - ARRL VHF January
 - ARRL VHF June
 - ARRL VHF September
+- CQ 160 CW
+- CQ 160 SSB
 - CQ WPX CW
 - CQ WPX SSB
 - CQ World Wide CW
@@ -136,6 +138,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-13] Added CQ 160 CW and SSB
 - [24-3-9] Marked calls in the bandmap window colored Blue, until worked.
 - [24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.
 - [24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.
