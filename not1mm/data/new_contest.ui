@@ -264,6 +264,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CQ 160 CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CQ WPX CW</string>
       </property>
      </item>
@@ -336,7 +341,7 @@
      </property>
      <property name="time">
       <time>
-       <hour>0</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
