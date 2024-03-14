@@ -3014,7 +3014,6 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        # https://www.cqwpx.com/cabrillo.htm
         logger.debug("******Cabrillo*****")
         self.contest.cabrillo(self)
 
