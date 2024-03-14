@@ -869,6 +869,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_mult1_count(self) -> dict:
+        """return QSO count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as count from dxlog where IsMultiplier1 = 1 and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_qso_count(self) -> dict:
         """return QSO count"""
         try:
