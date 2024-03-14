@@ -43,6 +43,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 sentnr = str(contact.get("SentNr", "0"))
                 rcvnr = str(contact.get("NR", "0"))
                 grid = contact.get("GridSquare", "")
+                pfx = contact.get("CountryPrefix", "")
                 comment = contact.get("Comment", "")
                 loggeddate = the_date_and_time[:10]
                 loggedtime = (
@@ -175,10 +176,33 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 except TypeError:
                     ...
 
+                # cabrillo_name = "CQ-160-CW"
+                try:
+                    if cabrillo_name in ("CQ-160-CW", "CQ-160-SSB"):
+                        rcv = f"{contact.get('Exchange1', '')}"
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+                except TypeError:
+                    ...
+
                 try:
                     if len(grid) > 1:
                         print(
                             f"<GRIDSQUARE:{len(grid)}>{grid}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                try:
+                    if len(pfx) > 0:
+                        print(
+                            f"<PFX:{len(pfx)}>{pfx}",
                             end="\r\n",
                             file=file_descriptor,
                         )
