@@ -67,3 +67,75 @@ non-French DXCC countries once per band (available only to French stations)
  	Cabrillo name:	REF-CW
  	Cabrillo name aliases:	REF
  	
+----------------------------------------
+
+
+NC8R
+
+Hi Mike,
+
+Just wondering if you would consider adding the Russian DX Contest (this weekend) to Not1MM  https://www.rdxc.org/rules_eng I have no need for it to calculate my score, if that's too complicated. Just something to properly record the exchange and make a cabrillo would be nice.
+
+Thanks.
+
+73
+Dan 
+NC8R
+
+Russian DX Contest: 1200Z, Mar 16 to 1200Z, Mar 17
+ 	Geographic Focus:	Worldwide
+ 	Participation:	Worldwide
+ 	Awards:	Worldwide
+ 	Mode:	CW, SSB
+ 	Bands:	160, 80, 40, 20, 15, 10m
+ 	Classes:	Single Op All Band Mixed (QRP/Low/High)
+Single Op All Band CW (Low/High)
+Single Op All Band SSB (Low/High)
+Single Op Single Band Mixed
+Multi-Single
+Multi-Two
+Multi-Multi
+SWL
+ 	Max power:	HP: >100 watts
+LP: 100 watts
+QRP: 5 watts
+ 	Exchange:	Ru: RS(T) + 2-character oblast
+non-Ru: RS(T) + Serial No.
+ 	Work stations:	Once per band per mode
+ 	QSO Points:	Ru Stations: 2 points per QSO with same country same continent
+Ru Stations: 5 points per QSO with same country different continent
+Ru Stations: 3 points per QSO with different country same continent
+Ru Stations: 5 points per QSO with different continent
+non-Ru Stations: 10 points per QSO with Ru station
+non-Ru Stations: 2 points per QSO with same country
+non-Ru Stations: 3 points per QSO with different country same continent
+non-Ru Stations: 5 points per QSO with different continent
+5 points per QSO with /MM
+ 	Multipliers:	Each oblast once per band
+Each country once per band
+ 	Score Calculation:	Total score = total QSO points x total mults
+ 	Submit logs by:	2359Z March 31, 2024
+ 	E-mail logs to:	(none)
+ 	Upload log at:	https://ua9qcq.com/hf-logs.php
+ 	Mail logs to:	(none)
+ 	Find rules at:	https://www.rdxc.org/rules_eng
+
+
+
+---------------------------------------
+
+
+
+Hi Michael,
+I am Slav EI6KW and SP3RXO.
+I know you are busy and time is short, but any chance to add contest
+rules for SP DX Contest?
+
+Link for SP DX Contest rules in english:
+https://spdxcontest.pzk.org.pl/2024/rules.php
+
+--
+73!
+de EI6KW, Slav
+   SP3RXO, Sławek
+
