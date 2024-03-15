@@ -36,6 +36,8 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 hisname = contact.get("Name", "")
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode == "CWR":
+                    themode = "CW"
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
                 sentrst = contact.get("SNT", "")

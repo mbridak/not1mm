@@ -138,6 +138,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-15] Change 'CWR' to 'CW' in the ADIF output.
 - [24-3-13] Added CQ 160 CW and SSB
 - [24-3-9] Marked calls in the bandmap window colored Blue, until worked.
 - [24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.
