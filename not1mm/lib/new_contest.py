@@ -8,7 +8,7 @@ class NewContest(QtWidgets.QDialog):
 
     def __init__(self, WORKING_PATH):
         super().__init__(None)
-        uic.loadUi(WORKING_PATH + "/data/new_contest.ui", self)
+        uic.loadUi(WORKING_PATH / "data" / "new_contest.ui", self)
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):

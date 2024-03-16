@@ -24,6 +24,7 @@ import sqlite3
 from PyQt5 import QtCore, QtGui
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
+from appdata import AppDataPaths
 
 from not1mm.lib.multicast import Multicast
 
@@ -35,25 +36,19 @@ UPDATE_INTERVAL = 2000
 # DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
 # loader = pkgutil.get_loader("not1mm")
 # WORKING_PATH = os.path.dirname(loader.get_filename())
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
+WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
-DATA_PATH += "/not1mm"
+app_paths = AppDataPaths(name='not1mm')
+app_paths.setup()
+DATA_PATH = Path(app_paths.app_data_path)
 
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
-CONFIG_PATH += "/not1mm"
+CONFIG_PATH = DATA_PATH
 
 DARK_STYLESHEET = ""
 
 PREF = {}
-if os.path.exists(CONFIG_PATH + "/not1mm.json"):
-    with open(CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8") as file_descriptor:
+if os.path.exists(CONFIG_PATH / "not1mm.json"):
+    with open(CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8") as file_descriptor:
         PREF = loads(file_descriptor.read())
 
 
@@ -350,7 +345,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
-        data_path = WORKING_PATH + "/data/bandmap.ui"
+        data_path = WORKING_PATH / "data" / "bandmap.ui"
         uic.loadUi(data_path, self)
         if PREF.get("dark_mode"):
             self.setStyleSheet(DARK_STYLESHEET)
@@ -396,9 +391,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.connectButton.setStyleSheet("color: red;")
             self.connectButton.setText("Closed")
             return
-        if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+        if os.path.exists(CONFIG_PATH / "not1mm.json"):
             with open(
-                CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
             ) as _file_descriptor:
                 globals()["PREF"] = loads(_file_descriptor.read())
         server = PREF.get("cluster_server", "dxc.nc7j.com")
@@ -866,7 +861,7 @@ def run():
     sys.exit(app.exec())
 
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger(bandmap")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",

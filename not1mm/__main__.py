@@ -11,6 +11,7 @@ import datetime
 import importlib
 import locale
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 
 import platform
@@ -33,6 +34,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QFileDialog
+from appdata import AppDataPaths
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
@@ -65,28 +67,18 @@ from not1mm.lib.versiontest import VersionTest
 # DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
 # loader = pkgutil.get_loader("not1mm")
 # WORKING_PATH = os.path.dirname(loader.get_filename())
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
+WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 
-DATA_PATH = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
-DATA_PATH += "/not1mm"
+app_paths = AppDataPaths(name='not1mm')
+app_paths.setup()
+DATA_PATH = Path(app_paths.app_data_path)
 
-try:
-    os.mkdir(DATA_PATH)
-except FileExistsError:
-    ...
-
-CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
-CONFIG_PATH += "/not1mm"
-
-try:
-    os.mkdir(CONFIG_PATH)
-except FileExistsError:
-    ...
+CONFIG_PATH = DATA_PATH
 
 
 CTYFILE = {}
 
-with open(WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8") as c_file:
+with open(WORKING_PATH / "data" / "cty.json", "rt", encoding="utf-8") as c_file:
     CTYFILE = loads(c_file.read())
 
 poll_time = datetime.datetime.now()
@@ -137,7 +129,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "contest": "",
         "multicast_group": "239.1.1.1",
         "multicast_port": 2239,
-        "interface_ip": "0.0.0.0",
+        "interface_ip": "127.0.0.1",
         "send_n1mm_packets": False,
         "n1mm_station_name": "20M CW Tent",
         "n1mm_operator": "Bernie",
@@ -184,7 +176,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contest_dialog = None
     configuration_dialog = None
     opon_dialog = None
-    dbname = DATA_PATH + "/ham.db"
+    dbname = DATA_PATH, "/ham.db"
     radio_state = {}
     rig_control = None
     worked_list = {}
@@ -195,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-        data_path = WORKING_PATH + "/data/main.ui"
+        data_path = WORKING_PATH / "data" / "main.ui"
         uic.loadUi(data_path, self)
         self.cw_entry.hide()
         self.leftdot.hide()
@@ -255,15 +247,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.sent.setText("59")
         self.receive.setText("59")
-        icon_path = WORKING_PATH + "/data/"
-        self.greendot = QtGui.QPixmap(icon_path + "greendot.png")
-        self.reddot = QtGui.QPixmap(icon_path + "reddot.png")
+        icon_path = WORKING_PATH / "data"
+        self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
+        self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
 
-        self.radio_grey = QtGui.QPixmap(icon_path + "radio_grey.png")
-        self.radio_red = QtGui.QPixmap(icon_path + "radio_red.png")
-        self.radio_green = QtGui.QPixmap(icon_path + "radio_green.png")
+        self.radio_grey = QtGui.QPixmap(str(icon_path / "radio_grey.png"))
+        self.radio_red = QtGui.QPixmap(str(icon_path / "radio_red.png"))
+        self.radio_green = QtGui.QPixmap(str(icon_path / "radio_green.png"))
         self.radio_icon.setPixmap(self.radio_grey)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -462,7 +454,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         self.readpreferences()
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.station = self.database.fetch_station()
         if self.station is None:
@@ -645,7 +637,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.about_dialog = About(WORKING_PATH)
         self.about_dialog.donors.setSource(
-            QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
+            QtCore.QUrl.fromLocalFile(WORKING_PATH / "data" / "donors.html")
         )
         self.about_dialog.open()
 
@@ -666,7 +658,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
         self.about_dialog.donors.setSource(
-            QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/not1mm.html")
+            QtCore.QUrl.fromLocalFile(WORKING_PATH / "data" / "not1mm.html")
         )
         self.about_dialog.open()
 
@@ -743,9 +735,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if filename:
             if filename[-3:] != ".db":
                 filename += ".db"
-            self.pref["current_database"] = filename.split("/")[-1:][0]
+            self.pref["current_database"] = os.path.basename(filename.split("/"))
             self.write_preference()
-            self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+            self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
             self.database = DataBase(self.dbname, WORKING_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
@@ -775,9 +767,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         filename = self.filepicker("open")
         if filename:
-            self.pref["current_database"] = filename.split("/")[-1:][0]
+            self.pref["current_database"] = os.path.basename(filename)
             self.write_preference()
-            self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+            self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
             self.database = DataBase(self.dbname, WORKING_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
@@ -1078,7 +1070,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         try:
-            cty = notctyparser.BigCty(WORKING_PATH + "/data/cty.json")
+            cty = notctyparser.BigCty(WORKING_PATH / "data" / "cty.json")
             update_available = cty.check_update()
         except (AttributeError, ValueError, locale.Error) as the_error:
             logger.debug("cty parser returned an error: %s", the_error)
@@ -1092,10 +1084,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("cty parser returned an error: %s", the_error)
                 return
             if updated:
-                cty.dump(WORKING_PATH + "/data/cty.json")
+                cty.dump(WORKING_PATH / "data" / "cty.json")
                 self.show_message_box("cty file updated.")
                 with open(
-                    WORKING_PATH + "/data/cty.json", "rt", encoding="utf-8"
+                    WORKING_PATH / "data" / "cty.json", "rt", encoding="utf-8"
                 ) as ctyfile:
                     globals()["CTYFILE"] = loads(ctyfile.read())
             else:
@@ -1220,22 +1212,22 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_log_window(self) -> None:
         """launch the Log Window"""
         if not check_process("logwindow.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/logwindow.py"])
+            _ = subprocess.Popen([sys.executable, WORKING_PATH / "logwindow.py"])
 
     def launch_bandmap_window(self) -> None:
         """launch the Log Window"""
         if not check_process("bandmap.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/bandmap.py"])
+            _ = subprocess.Popen([sys.executable, WORKING_PATH / "bandmap.py"])
 
     def launch_check_window(self) -> None:
         """launch the Log Window"""
         if not check_process("checkwindow.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/checkwindow.py"])
+            _ = subprocess.Popen([sys.executable, WORKING_PATH / "checkwindow.py"])
 
     def launch_vfo(self) -> None:
         """launch the Log Window"""
         if not check_process("vfo.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH + "/vfo.py"])
+            _ = subprocess.Popen([sys.executable, WORKING_PATH / "vfo.py"])
 
     def clear_band_indicators(self) -> None:
         """
@@ -2094,7 +2086,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("writepreferences")
         try:
             with open(
-                CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
+                Path(CONFIG_PATH) / "not1mm.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.pref, indent=4))
                 logger.info("writing: %s", self.pref)
@@ -2116,16 +2108,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("readpreferences")
         try:
-            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+            if os.path.exists(Path(CONFIG_PATH) / "not1mm.json"):
                 with open(
-                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                    Path(CONFIG_PATH) / "not1mm.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
             else:
                 logger.info("No preference file. Writing preference.")
                 with open(
-                    CONFIG_PATH + "/not1mm.json", "wt", encoding="utf-8"
+                    Path(CONFIG_PATH) / "not1mm.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = self.pref_ref.copy()
                     file_descriptor.write(dumps(self.pref, indent=4))
@@ -2810,13 +2802,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if self.current_op:
-            op_path = Path(DATA_PATH) / self.current_op
+            op_path = DATA_PATH / self.current_op
             logger.debug("op_path: %s", str(op_path))
             if op_path.is_dir() is False:
                 logger.debug("Creating Op Directory: %s", str(op_path))
                 os.mkdir(str(op_path))
             if op_path.is_dir():
-                source_path = Path(WORKING_PATH) / "data" / "phonetics"
+                source_path = WORKING_PATH / "data" / "phonetics"
                 logger.debug("source_path: %s", str(source_path))
                 for child in source_path.iterdir():
                     destination_file = op_path / child.name
@@ -2913,13 +2905,13 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         if self.radio_state.get("mode") == "CW":
-            macro_file = "/cwmacros.txt"
+            macro_file = "cwmacros.txt"
         else:
-            macro_file = "/ssbmacros.txt"
-        if not Path(DATA_PATH + macro_file).exists():
+            macro_file = "ssbmacros.txt"
+        if not (DATA_PATH / macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH + "/data" + macro_file, DATA_PATH + macro_file)
-        os.system(f"xdg-open {DATA_PATH}{macro_file}")
+            copyfile(WORKING_PATH / "data" / macro_file, DATA_PATH / macro_file)
+        os.system(f"xdg-open {DATA_PATH / macro_file}")
 
     def read_cw_macros(self) -> None:
         """
@@ -2929,14 +2921,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if self.radio_state.get("mode") == "CW":
-            macro_file = "/cwmacros.txt"
+            macro_file = "cwmacros.txt"
         else:
-            macro_file = "/ssbmacros.txt"
+            macro_file = "ssbmacros.txt"
 
-        if not Path(DATA_PATH + macro_file).exists():
+        if not (DATA_PATH / macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH + "/data" + macro_file, DATA_PATH + macro_file)
-        with open(DATA_PATH + macro_file, "r", encoding="utf-8") as file_descriptor:
+            copyfile(WORKING_PATH / "data" / macro_file, DATA_PATH / macro_file)
+        with open(DATA_PATH / macro_file, "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
                     mode, fkey, buttonname, cwtext = line.split("|")
@@ -3094,6 +3086,7 @@ formatter = logging.Formatter(
 )
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+logger.addHandler(RotatingFileHandler(app_paths.get_log_file_path(name='appplication.log'), maxBytes=10490000, backupCount=20))
 
 BETA_TEST = False
 if Path("./betatest").exists():
@@ -3108,7 +3101,7 @@ else:
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH + "/data"
+font_path = WORKING_PATH / "data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
 window = MainWindow()

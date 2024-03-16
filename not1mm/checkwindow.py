@@ -18,6 +18,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 from PyQt5.QtGui import QFontDatabase
+from appdata import AppDataPaths
 
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
@@ -25,19 +26,13 @@ from not1mm.lib.super_check_partial import SCP
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
+WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
-DATA_PATH += "/not1mm"
+app_paths = AppDataPaths(name='not1mm')
+app_paths.setup()
+DATA_PATH = Path(app_paths.app_data_path)
 
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
-CONFIG_PATH += "/not1mm"
+CONFIG_PATH = DATA_PATH
 
 
 class MainWindow(QMainWindow):
@@ -52,10 +47,10 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_pref()
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        data_path = WORKING_PATH + "/data/checkwindow.ui"
+        data_path = WORKING_PATH / "data" / "checkwindow.ui"
         uic.loadUi(data_path, self)
         self.setWindowTitle("CheckWindow")
         self.logList.clear()
@@ -70,7 +65,7 @@ class MainWindow(QMainWindow):
         self.multicast_interface = Multicast(
             self.pref.get("multicast_group", "239.1.1.1"),
             self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
+            self.pref.get("interface_ip", "127.0.0.1"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
@@ -101,9 +96,9 @@ class MainWindow(QMainWindow):
         None
         """
         try:
-            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+            if os.path.exists(CONFIG_PATH / "not1mm.json"):
                 with open(
-                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
@@ -126,6 +121,7 @@ class MainWindow(QMainWindow):
         None
         """
         while self.multicast_interface.server_udp.hasPendingDatagrams():
+            logger.error("Got multicast ")
             json_data = self.multicast_interface.read_datagram_as_json()
 
             if json_data.get("station", "") != platform.node():
@@ -256,7 +252,7 @@ def main():
     sys.exit(app.exec())
 
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("checkwindow")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",
@@ -274,7 +270,7 @@ else:
 
 app = QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH + "/data"
+font_path = WORKING_PATH / "data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
 window.show()

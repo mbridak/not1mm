@@ -15,7 +15,7 @@ import sqlite3
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("database")
 
 
 class DataBase:
@@ -198,7 +198,7 @@ class DataBase:
                 result = cursor.fetchall()
                 if len(result) == 0:
                     with open(
-                        self.working_path + "/data/contests.sql", encoding="utf-8"
+                        self.working_path  / "data" / "contests.sql", encoding="utf-8"
                     ) as data:
                         for line in data.readlines():
                             cursor.execute(line)

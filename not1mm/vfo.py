@@ -22,6 +22,7 @@ import serial
 from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from appdata import AppDataPaths
 
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
@@ -29,21 +30,16 @@ from not1mm.lib.multicast import Multicast
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 if __loader__:
-    WORKING_PATH = os.path.dirname(__loader__.get_filename())
+    WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 else:
-    WORKING_PATH = os.path.dirname(os.path.realpath(__file__))
+    WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
-DATA_PATH += "/not1mm"
 
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
-CONFIG_PATH += "/not1mm"
+app_paths = AppDataPaths(name='not1mm')
+app_paths.setup()
+DATA_PATH = Path(app_paths.app_data_path)
+
+CONFIG_PATH = DATA_PATH
 
 
 class MainWindow(QMainWindow):
@@ -59,7 +55,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        data_path = WORKING_PATH + "/data/vfo.ui"
+        data_path = WORKING_PATH / "data" / "vfo.ui"
         uic.loadUi(data_path, self)
         self.rig_control = None
         self.timer = QTimer()
@@ -87,9 +83,9 @@ class MainWindow(QMainWindow):
         Get CAT interface.
         """
         try:
-            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+            if os.path.exists(CONFIG_PATH / "not1mm.json"):
                 with open(
-                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
@@ -301,7 +297,7 @@ def main():
     sys.exit(app.exec())
 
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("vfo")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",

@@ -10,7 +10,7 @@ import socket
 # pip3 install -U dicttoxml
 from dicttoxml import dicttoxml
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("n1mmlib")
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")

@@ -11,9 +11,9 @@ class Settings(QtWidgets.QDialog):
     def __init__(self, WORKING_PATH, CONFIG_PATH, pref, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.logger = logging.getLogger("__main__")
+        self.logger = logging.getLogger("settings")
         self.config_path = CONFIG_PATH
-        uic.loadUi(WORKING_PATH + "/data/configuration.ui", self)
+        uic.loadUi(WORKING_PATH / "data" / "configuration.ui", self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = pref
         self.devices = sd.query_devices()

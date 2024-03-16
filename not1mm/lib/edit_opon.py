@@ -8,7 +8,7 @@ class OpOn(QtWidgets.QDialog):
 
     def __init__(self, WORKING_PATH, parent=None):
         super().__init__(parent)
-        uic.loadUi(WORKING_PATH + "/data/opon.ui", self)
+        uic.loadUi(WORKING_PATH / "data" / "opon.ui", self)
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):

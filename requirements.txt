@@ -1,0 +1,12 @@
+PyQt5
+requests
+dicttoxml
+xmltodict
+psutil
+pyserial
+sounddevice
+soundfile
+numpy
+notctyparser >= 23.6.21
+rapidfuzz
+appdata

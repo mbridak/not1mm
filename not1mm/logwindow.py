@@ -17,6 +17,7 @@ import sys
 
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
+from appdata import AppDataPaths
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
 from PyQt5.QtCore import QDir, QItemSelectionModel
@@ -30,19 +31,13 @@ from not1mm.lib.n1mm import N1MM
 
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
+WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
 
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
-DATA_PATH += "/not1mm"
+app_paths = AppDataPaths(name='not1mm')
+app_paths.setup()
+DATA_PATH = Path(app_paths.app_data_path)
 
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
-CONFIG_PATH += "/not1mm"
+CONFIG_PATH = DATA_PATH
 
 DARK_STYLESHEET = ""
 
@@ -115,19 +110,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_pref()
         if self.pref.get("dark_mode"):
             self.setStyleSheet(DARK_STYLESHEET)
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
-        data_path = WORKING_PATH + "/data/logwindow.ui"
+        data_path = WORKING_PATH / "data" / "logwindow.ui"
         uic.loadUi(data_path, self)
         self.setWindowTitle(
             f"Log Display - {self.pref.get('current_database', 'ham.db')}"
         )
         self.generalLog.setColumnCount(len(self.columns))
         self.focusedLog.setColumnCount(len(self.columns))
-        icon_path = WORKING_PATH + "/data/"
-        self.checkmark = QtGui.QPixmap(icon_path + "check.png")
+        icon_path = WORKING_PATH / "data"
+        self.checkmark = QtGui.QPixmap(str(icon_path / "check.png"))
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
         self.generalLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -218,9 +213,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         try:
-            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
+            if os.path.exists(CONFIG_PATH / "not1mm.json"):
                 with open(
-                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
+                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
@@ -258,7 +253,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         self.load_pref()
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
+        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
@@ -1104,7 +1099,7 @@ def main():
     sys.exit(app.exec())
 
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("logwindow")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
     datefmt="%H:%M:%S",
@@ -1122,7 +1117,7 @@ else:
 
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH + "/data"
+font_path = WORKING_PATH / "data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
 window.show()
