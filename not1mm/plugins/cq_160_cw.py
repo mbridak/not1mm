@@ -1,6 +1,6 @@
 """CQ 160 CW plugin"""
 
-# pylint: disable=invalid-name, c-extension-no-member, unused-import
+# pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
 
 import datetime
 import logging
@@ -363,8 +363,10 @@ def cabrillo(self):
                     file=file_descriptor,
                 )
             print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+        self.show_message_box(f"Cabrillo saved to: {filename}")
     except IOError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
+        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
 
 
