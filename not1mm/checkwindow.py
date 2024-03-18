@@ -4,6 +4,7 @@ Check Window
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 
+import darkdetect
 import logging
 
 import platform
@@ -23,7 +24,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+os.environ["QQTimerT_QPA_PLATFORMTHEME"] = "gnome"
 
 WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
@@ -57,7 +58,8 @@ class MainWindow(QMainWindow):
         self.database.current_contest = self.pref.get("contest", 0)
         data_path = WORKING_PATH + "/data/checkwindow.ui"
         uic.loadUi(data_path, self)
-        self.setDarkMode()
+        if darkdetect.isDark():
+            self.setDarkMode()
         self.setWindowTitle("CheckWindow")
         self.logList.clear()
         self.masterList.clear()

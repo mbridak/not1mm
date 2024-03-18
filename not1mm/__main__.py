@@ -7,6 +7,7 @@ NOT1MM Logger
 
 # alt cluster hamqth.com 7300
 
+import darkdetect
 import datetime
 import importlib
 import locale
@@ -197,7 +198,8 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info("MainWindow: __init__")
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
-        self.setDarkMode()
+        if darkdetect.isDark():
+            self.setDarkMode()
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()

@@ -8,13 +8,13 @@ VFO Window
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
+import darkdetect
 import logging
-
 import os
-
 import platform
 import queue
 import sys
+
 from json import loads, JSONDecodeError
 from pathlib import Path
 
@@ -28,7 +28,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 if __loader__:
     WORKING_PATH = os.path.dirname(__loader__.get_filename())
@@ -63,7 +63,8 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/vfo.ui"
         uic.loadUi(data_path, self)
-        self.setDarkMode()
+        if darkdetect.isDark():
+            self.setDarkMode()
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
@@ -333,6 +334,27 @@ def main():
     sys.exit(app.exec())
 
 
+def load_fonts_from_dir(directory: str) -> set:
+    """
+    Well it loads fonts from a directory...
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    A set of font families installed in the directory.
+    """
+    font_families = set()
+    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+    return font_families
+
+
 logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
@@ -351,6 +373,9 @@ else:
 
 app = QApplication(sys.argv)
 # app.setStyle("Adwaita-Dark")
+font_path = WORKING_PATH + "/data"
+families = load_fonts_from_dir(os.fspath(font_path))
+logger.info(families)
 window = MainWindow()
 
 

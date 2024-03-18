@@ -13,6 +13,7 @@ from decimal import Decimal
 from json import loads
 from pathlib import Path
 
+import darkdetect
 import logging
 import os
 
@@ -27,7 +28,7 @@ from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.multicast import Multicast
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
@@ -352,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._udpwatch = None
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
-        if PREF.get("dark_mode"):
+        if darkdetect.isDark():
             self.setDarkMode()
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
@@ -890,6 +891,27 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
 
 
+def load_fonts_from_dir(directory: str) -> set:
+    """
+    Well it loads fonts from a directory...
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    A set of font families installed in the directory.
+    """
+    font_families = set()
+    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+    return font_families
+
+
 def run():
     """doc"""
     sys.exit(app.exec())
@@ -914,7 +936,10 @@ else:
 app = QtWidgets.QApplication(sys.argv)
 
 
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
+font_path = WORKING_PATH + "/data"
+families = load_fonts_from_dir(os.fspath(font_path))
+logger.info(families)
 window = MainWindow()
 window.show()
 if __name__ == "__main__":

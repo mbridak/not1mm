@@ -6,6 +6,8 @@ Display current log
 # pylint: disable=logging-fstring-interpolation, too-many-lines
 # QTableWidget
 # focusedLog, generalLog
+
+import darkdetect
 import logging
 import math
 import os
@@ -29,7 +31,7 @@ from not1mm.lib.multicast import Multicast
 from not1mm.lib.edit_contact import EditContact
 from not1mm.lib.n1mm import N1MM
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
@@ -114,7 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
-        if self.pref.get("dark_mode"):
+        if darkdetect.isDark():
             self.setDarkMode()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
@@ -1151,7 +1153,7 @@ else:
     logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
