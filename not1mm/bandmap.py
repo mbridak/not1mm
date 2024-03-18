@@ -13,7 +13,6 @@ from decimal import Decimal
 from json import loads
 from pathlib import Path
 
-import darkdetect
 import logging
 import os
 
@@ -353,8 +352,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._udpwatch = None
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
-        if darkdetect.isDark():
-            self.setDarkMode()
+        self.setDarkMode(PREF.get("darkmode", False))
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -385,34 +383,38 @@ class MainWindow(QtWidgets.QMainWindow):
         self.multicast_interface.ready_read_connect(self.watch_udp)
         self.request_workedlist()
 
-    def setDarkMode(self):
+    def setDarkMode(self, setdarkmode=False):
         """testing"""
 
-        darkPalette = QtGui.QPalette()
-        darkColor = QtGui.QColor(45, 45, 45)
-        disabledColor = QtGui.QColor(127, 127, 127)
-        darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-        darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-        darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
-        darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-        darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
-        )
-        darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-        darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
-        )
-        darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-        darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-        darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-        darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
-        )
+        if setdarkmode:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
 
-        self.setPalette(darkPalette)
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
 
     def quit_app(self):
         """doc"""
@@ -546,6 +548,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             if packet.get("cmd", "") == "HALT":
                 self.quit_app()
+            if packet.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(packet.get("state", False))
 
     def spot_clicked(self):
         """dunno"""
@@ -942,5 +946,6 @@ families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
 window = MainWindow()
 window.show()
+
 if __name__ == "__main__":
     run()

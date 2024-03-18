@@ -116,8 +116,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
-        if darkdetect.isDark():
-            self.setDarkMode()
+        # if darkdetect.isDark():
+        #     self.setDarkMode()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
@@ -190,34 +190,38 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         app.quit()
 
-    def setDarkMode(self):
+    def setDarkMode(self, dark: bool):
         """testing"""
 
-        darkPalette = QtGui.QPalette()
-        darkColor = QtGui.QColor(45, 45, 45)
-        disabledColor = QtGui.QColor(127, 127, 127)
-        darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-        darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-        darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
-        darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-        darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
-        )
-        darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-        darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
-        )
-        darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-        darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-        darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-        darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
-        darkPalette.setColor(
-            QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
-        )
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
 
-        self.setPalette(darkPalette)
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
 
     def get_column(self, name: str) -> int:
         """
@@ -276,6 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
+        self.setDarkMode(self.pref.get("darkmode", False))
 
     def load_new_db(self) -> None:
         """
@@ -933,6 +938,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.focusedLog.setColumnHidden(self.get_column(column), False)
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
 
     def show_like_calls(self, call: str) -> None:
         """
