@@ -18,10 +18,11 @@ import sys
 from json import JSONDecodeError, loads, dumps
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
-from PyQt5.QtCore import QDir, QItemSelectionModel
-from PyQt5 import QtNetwork
+
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import QDir, Qt, QItemSelectionModel
 from PyQt5.QtGui import QFontDatabase
+
 
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast

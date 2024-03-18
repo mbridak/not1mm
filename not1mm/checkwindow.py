@@ -14,10 +14,10 @@ import sys
 from json import loads
 from pathlib import Path
 
-from PyQt5 import uic
-from PyQt5.QtCore import QDir, QtGui, Qt
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast

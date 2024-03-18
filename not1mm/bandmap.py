@@ -21,9 +21,9 @@ import platform
 import sys
 import sqlite3
 
-from PyQt5 import QtCore, QtGui, Qt
-from PyQt5 import QtNetwork
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.multicast import Multicast
 

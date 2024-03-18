@@ -19,8 +19,10 @@ from json import loads, JSONDecodeError
 from pathlib import Path
 
 import serial
-from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
-from PyQt5.QtCore import QTimer, QtGui, Qt
+
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QDir, Qt, QTimer
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from not1mm.lib.cat_interface import CAT
