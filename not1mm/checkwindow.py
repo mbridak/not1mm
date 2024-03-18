@@ -57,6 +57,7 @@ class MainWindow(QMainWindow):
         self.database.current_contest = self.pref.get("contest", 0)
         data_path = WORKING_PATH + "/data/checkwindow.ui"
         uic.loadUi(data_path, self)
+        self.setDarkMode()
         self.setWindowTitle("CheckWindow")
         self.logList.clear()
         self.masterList.clear()
@@ -73,6 +74,35 @@ class MainWindow(QMainWindow):
             self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
+
+    def setDarkMode(self):
+        """testing"""
+
+        darkPalette = QtGui.QPalette()
+        darkColor = QtGui.QColor(45, 45, 45)
+        disabledColor = QtGui.QColor(127, 127, 127)
+        darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+        darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+        darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+        darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+        darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+        )
+        darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+        darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+        )
+        darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+        darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+        darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+        darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+        )
+
+        self.setPalette(darkPalette)
 
     def quit_app(self):
         """
@@ -273,7 +303,7 @@ else:
     logger.warning("debugging off")
 
 app = QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
