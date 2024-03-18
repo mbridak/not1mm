@@ -15,7 +15,7 @@ from json import loads
 from pathlib import Path
 
 from PyQt5 import uic
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, QtGui, Qt
 from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 from PyQt5.QtGui import QFontDatabase
 
