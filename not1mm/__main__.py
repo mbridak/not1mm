@@ -197,6 +197,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info("MainWindow: __init__")
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
+        self.setDarkMode()
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
@@ -485,6 +486,35 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+    def setDarkMode(self):
+        """testing"""
+
+        darkPalette = QtGui.QPalette()
+        darkColor = QtGui.QColor(45, 45, 45)
+        disabledColor = QtGui.QColor(127, 127, 127)
+        darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+        darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+        darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+        darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+        darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+        )
+        darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+        darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+        )
+        darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+        darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+        darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+        darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+        darkPalette.setColor(
+            QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+        )
+
+        self.setPalette(darkPalette)
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -3107,7 +3137,7 @@ else:
     # logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)
