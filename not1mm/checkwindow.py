@@ -57,8 +57,6 @@ class MainWindow(QMainWindow):
         self.database.current_contest = self.pref.get("contest", 0)
         data_path = WORKING_PATH + "/data/checkwindow.ui"
         uic.loadUi(data_path, self)
-        # if darkdetect.isDark():
-        #     self.setDarkMode()
         self.setWindowTitle("CheckWindow")
         self.logList.clear()
         self.masterList.clear()
