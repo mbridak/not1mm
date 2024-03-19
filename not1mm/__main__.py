@@ -528,7 +528,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setPalette(darkPalette)
         else:
             palette = self.style().standardPalette()
-            print(f"{palette=}")
             self.setPalette(palette)
 
     def set_radio_icon(self, state: int) -> None:
