@@ -346,13 +346,13 @@ class MainWindow(QtWidgets.QMainWindow):
     bandwidth_mark = []
     worked_list = {}
     multicast_interface = None
+    text_color = QtGui.QColor(45, 45, 45)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
-        self.setDarkMode(PREF.get("darkmode", False))
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -374,6 +374,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
+        self.setDarkMode(PREF.get("darkmode", False))
         self.update()
         self.multicast_interface = Multicast(
             PREF.get("multicast_group", "239.1.1.1"),
@@ -389,6 +390,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if setdarkmode:
             darkPalette = QtGui.QPalette()
             darkColor = QtGui.QColor(45, 45, 45)
+            self.text_color = Qt.white
             disabledColor = QtGui.QColor(127, 127, 127)
             darkPalette.setColor(QtGui.QPalette.Window, darkColor)
             darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
@@ -412,9 +414,12 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
             self.setPalette(darkPalette)
+            self.update()
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
+            self.text_color = Qt.black
+            self.update()
 
     def quit_app(self):
         """doc"""
@@ -576,7 +581,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update(self):
         """doc"""
-        self.update_timer.setInterval(UPDATE_INTERVAL)
+        try:
+            self.update_timer.setInterval(UPDATE_INTERVAL)
+        except AttributeError:
+            ...
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -596,13 +604,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 i * PIXELSPERSTEP,
                 length + 10,
                 i * PIXELSPERSTEP,
-                QtGui.QPen(QtGui.QColor(192, 192, 192)),
+                QtGui.QPen(self.text_color),
             )
             if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
-                self.something.setDefaultTextColor(QtGui.QColor(192, 192, 192))
+                self.something.setDefaultTextColor(self.text_color)
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
                     i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
@@ -731,7 +739,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if result:
             min_y = 0.0
             for items in result:
-                pen_color = QtGui.QColor(192, 192, 192)
+                pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QtGui.QColor(47, 47, 255)
                 if items.get("callsign") in self.worked_list:
