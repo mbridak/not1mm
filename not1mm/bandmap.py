@@ -602,6 +602,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
+                self.something.setDefaultTextColor(QtGui.QColor(192, 192, 192))
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
                     i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
