@@ -8,7 +8,6 @@ VFO Window
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
-import darkdetect
 import logging
 import os
 import platform
@@ -27,8 +26,6 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
-
-# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 if __loader__:
     WORKING_PATH = os.path.dirname(__loader__.get_filename())
@@ -63,8 +60,6 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
         data_path = WORKING_PATH + "/data/vfo.ui"
         uic.loadUi(data_path, self)
-        # if darkdetect.isDark():
-        #     self.setDarkMode()
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)

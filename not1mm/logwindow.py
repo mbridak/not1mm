@@ -7,7 +7,6 @@ Display current log
 # QTableWidget
 # focusedLog, generalLog
 
-import darkdetect
 import logging
 import math
 import os
@@ -116,8 +115,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
-        # if darkdetect.isDark():
-        #     self.setDarkMode()
         self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
         self.database = DataBase(self.dbname, WORKING_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
