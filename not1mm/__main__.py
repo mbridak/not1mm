@@ -492,7 +492,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def setDarkMode(self, dark):
         """testing"""
 
-        logger.critical(f"Dark mode set to: {dark}")
+        logger.debug(f"Dark mode set to: {dark}")
 
         cmd = {}
         cmd["cmd"] = "DARKMODE"
@@ -524,7 +524,6 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette.setColor(
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
-
             self.setPalette(darkPalette)
         else:
             palette = self.style().standardPalette()
