@@ -298,7 +298,7 @@ class Database:
         )
 
 
-class BandMapWindow(QtWidgets.QWidget):
+class BandMapWindow(QtWidgets.QDockWidget):
 
     zoom = 5
     currentBand = Band("20m")

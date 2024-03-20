@@ -1312,9 +1312,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def launch_bandmap_window(self) -> None:
         if not self.bandmap_window:
-            bandmap_widget = BandMapWindow()
-            self.bandmap_window = QDockWidget(bandmap_widget.property("windowTitle"), self)
-            self.bandmap_window.setWidget(bandmap_widget)
+            self.bandmap_window = BandMapWindow()
             self.addDockWidget(Qt.RightDockWidgetArea, self.bandmap_window)
         self.bandmap_window.show()
 
