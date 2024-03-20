@@ -8,49 +8,25 @@ GPL V3
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 # pylint: disable=logging-fstring-interpolation, line-too-long
 
+import logging
+import os
+import platform
+import sqlite3
 from datetime import datetime, timezone
 from decimal import Decimal
 from json import loads
-from pathlib import Path
-
-import logging
-import os
-
-# import pkgutil
-import platform
-import sys
-import sqlite3
 
 from PyQt5 import QtCore, QtGui
 from PyQt5 import QtNetwork
 from PyQt5 import QtWidgets, uic
-from appdata import AppDataPaths
 
+import not1mm.fsutils as fsutils
 from not1mm.lib.multicast import Multicast
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+logger = logging.getLogger(__name__)
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
-
-# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-# loader = pkgutil.get_loader("not1mm")
-# WORKING_PATH = os.path.dirname(loader.get_filename())
-WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
-
-app_paths = AppDataPaths(name='not1mm')
-app_paths.setup()
-DATA_PATH = Path(app_paths.app_data_path)
-
-CONFIG_PATH = DATA_PATH
-
-DARK_STYLESHEET = ""
-
-PREF = {}
-if os.path.exists(CONFIG_PATH / "not1mm.json"):
-    with open(CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8") as file_descriptor:
-        PREF = loads(file_descriptor.read())
-
 
 class Band:
     """the band"""
@@ -93,6 +69,8 @@ class Band:
         self.altname = self.othername.get(band, 0.0)
 
 
+
+
 class Database:
     """
     An in memory Database class to hold spots.
@@ -103,17 +81,23 @@ class Database:
         self.db.row_factory = self.row_factory
         self.cursor = self.db.cursor()
         sql_command = (
-            "create table spots("
-            "ts DATETIME NOT NULL, "
+            "create table spots ("
             "callsign VARCHAR(15) NOT NULL, "
+            "ts DATETIME NOT NULL, "
             "freq DOUBLE NOT NULL, "
-            "band VARCHAR(6), "
             "mode VARCHAR(6), "
             "spotter VARCHAR(15) NOT NULL, "
             "comment VARCHAR(45));"
         )
         self.cursor.execute(sql_command)
+
+        self.cursor.execute('CREATE INDEX spot_call_index ON spots (callsign);')
+        self.cursor.execute('CREATE INDEX spot_freq_index ON spots (freq);')
+        self.cursor.execute('CREATE INDEX spot_ts_index ON spots (ts);')
+
         self.db.commit()
+
+
 
     @staticmethod
     def row_factory(cursor, row):
@@ -170,31 +154,19 @@ class Database:
         If False, do not delete any previous spots with the same callsign.
         Default is True.
 
-
         Returns
         -------
         Nothing.
         """
         try:
             if erase:
-                delete_call = (
-                    f"delete from spots where callsign = '{spot.get('callsign')}';"
-                )
-                self.cursor.execute(delete_call)
+                delete_call = ("delete from spots where callsign = ?;")
+                self.cursor.execute(delete_call, (spot.get('callsign'),))
                 self.db.commit()
 
-            pre = "INSERT INTO spots("
-            values = []
-            columns = ""
-            placeholders = ""
-            for key in spot.keys():
-                columns += f"{key},"
-                values.append(spot[key])
-                placeholders += "?,"
-            post = f") VALUES({placeholders[:-1]});"
-
-            sql = f"{pre}{columns[:-1]}{post}"
-            self.cursor.execute(sql, tuple(values))
+            self.cursor.execute(
+                "INSERT INTO spots(callsign, ts, freq, mode, spotter, comment) VALUES(?, ?, ?, ?, ?, ?)",
+                (spot['callsign'], spot['ts'], spot['freq'], spot.get('mode', None), spot['spotter'], spot.get('comment', None)))
             self.db.commit()
         except sqlite3.IntegrityError:
             ...
@@ -234,7 +206,8 @@ class Database:
         A list of dicts.
         """
         self.cursor.execute(
-            f"select * from spots where freq >= {start} and freq <= {end} order by freq ASC;"
+            "select * from spots where freq >= ? and freq <= ? order by freq ASC;",
+            (start, end)
         )
         return self.cursor.fetchall()
 
@@ -256,7 +229,9 @@ class Database:
         """
 
         self.cursor.execute(
-            f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
+            "select * from spots where freq > ? and freq <= ? order by freq ASC;",
+            ({current}, limit)
+
         )
         return self.cursor.fetchone()
 
@@ -279,8 +254,8 @@ class Database:
         """
 
         self.cursor.execute(
-            f"select * from spots where freq >= {start} "
-            f"and freq <= {end} and callsign like '%{dx}%';"
+            "select * from spots where freq >= ? and freq <= ? and callsign like ?;",
+            (start, end, f'%{dx}%')
         )
         return self.cursor.fetchone()
 
@@ -300,7 +275,8 @@ class Database:
         A list of dicts.
         """
         self.cursor.execute(
-            f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
+            f"select * from spots where freq < ? and freq >= ? order by freq DESC;",
+            (current, limit)
         )
         return self.cursor.fetchone()
 
@@ -318,14 +294,12 @@ class Database:
         None
         """
         self.cursor.execute(
-            f"delete from spots where ts < datetime('now', '-{minutes} minutes');"
+            f"delete from spots where ts < datetime('now', ?);",
+            (f'-{minutes} minutes',)
         )
 
 
-class MainWindow(QtWidgets.QMainWindow):
-    """
-    The main window
-    """
+class BandMapWindow(QtWidgets.QWidget):
 
     zoom = 5
     currentBand = Band("20m")
@@ -345,10 +319,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
-        data_path = WORKING_PATH / "data" / "bandmap.ui"
-        uic.loadUi(data_path, self)
-        if PREF.get("dark_mode"):
-            self.setStyleSheet(DARK_STYLESHEET)
+
+        uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+
+        self.settings = self.get_settings()
+        if self.settings.get("dark_mode"):
+            self.setStyleSheet(fsutils.DARK_STYLESHEET)
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -372,33 +348,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer.start(UPDATE_INTERVAL)
         self.update()
         self.multicast_interface = Multicast(
-            PREF.get("multicast_group", "239.1.1.1"),
-            PREF.get("multicast_port", 2239),
-            PREF.get("interface_ip", "0.0.0.0"),
+            self.settings.get("multicast_group", "239.1.1.1"),
+            self.settings.get("multicast_port", 2239),
+            self.settings.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
         self.request_workedlist()
+        self.request_contest()
 
-    def quit_app(self):
-        """doc"""
-        app.quit()
+    def get_settings(self) -> dict:
+        if os.path.exists(fsutils.CONFIG_FILE):
+            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
+                return loads(file_descriptor.read())
 
     def connect(self):
-        """doc"""
-        if self.connected is True:
-            self.socket.close()
-            self.connected = False
-            self.connectButton.setStyleSheet("color: red;")
-            self.connectButton.setText("Closed")
+        if not self.callsignField.text():
+            self.callsignField.setFocus()
             return
-        if os.path.exists(CONFIG_PATH / "not1mm.json"):
-            with open(
-                CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
-            ) as _file_descriptor:
-                globals()["PREF"] = loads(_file_descriptor.read())
-        server = PREF.get("cluster_server", "dxc.nc7j.com")
-        port = PREF.get("cluster_port", 7373)
-        logger.debug("%s", f"{server} {port}")
+        if self.connected is True:
+            self.close_cluster()
+            return
+        # refresh settings
+        self.settings = self.get_settings()
+        server = self.settings.get("cluster_server", "dxc.nc7j.com")
+        port = self.settings.get("cluster_port", 7373)
+        logger.info(f"connecting to dx cluster {server} {port}")
         self.socket.connectToHost(server, port)
         self.connectButton.setStyleSheet("color: white;")
         self.connectButton.setText("Connecting")
@@ -510,7 +484,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.multicast_interface.send_as_json(cmd)
                 continue
             if packet.get("cmd", "") == "HALT":
-                self.quit_app()
+                self.close_cluster()
+
+            if packet.get("cmd", "") == "CONTESTSTATUS":
+                if not self.callsignField.text():
+                    self.callsignField.setText(packet.get("operator", "").upper())
+                    self.callsignField.selectAll()
+
 
     def spot_clicked(self):
         """dunno"""
@@ -528,6 +508,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """Request worked call list from logger"""
         cmd = {}
         cmd["cmd"] = "GETWORKEDLIST"
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
+
+    def request_contest(self):
+        """Request active contest from logger"""
+        cmd = {}
+        cmd["cmd"] = "GETCONTESTSTATUS"
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
 
@@ -605,7 +592,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def Freq2ScenePos(self, freq: float):
         """doc"""
-        if freq < self.currentBand.start or freq > self.currentBand.end:
+        if not freq or freq < self.currentBand.start or freq > self.currentBand.end:
             return QtCore.QPointF()
         step, _digits = self.determine_step_digits()
         ret = QtCore.QPointF(
@@ -682,11 +669,16 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_stations(self):
         """doc"""
         self.update_timer.setInterval(UPDATE_INTERVAL)
+        if not self.connected:
+            return
+
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
 
         result = self.spots.getspotsinband(self.currentBand.start, self.currentBand.end)
+        logger.debug(f"{len(result)} spots in range {self.currentBand.start} - {self.currentBand.end}")
+
         entity = ""
         if result:
             min_y = 0.0
@@ -781,44 +773,41 @@ class MainWindow(QtWidgets.QMainWindow):
         currentPolygon.clear()
 
     def receive(self):
-        """doc"""
-        data = self.socket.readAll()
-        data = str(data, "utf-8").strip()
-        if "login:" in data:
-            self.send_command(self.callsignField.text())
-            self.send_command(PREF.get("cluster_filter", ""))
-            self.send_command("set dx extension Section")
-            self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
-            return
-        if "call:" in data or "callsign:" in data:
-            self.send_command(self.callsignField.text())
-            self.send_command(PREF.get("cluster_filter", ""))
-            self.send_command("set dx extension Section")
-            self.send_command("set dx mode " + PREF.get("cluster_mode", "OPEN"))
-            return
-        if "DX de" in data:
-            parts = data.split()
-            spotter = parts[2]
-            freq = parts[3]
-            dx = parts[4]
-            _time = parts[-1]
-            comment = " ".join(parts[5:-1])
-            # spot = DxSpot()
-            spot = {}
-            spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
-            spot["callsign"] = dx
-            spot["spotter"] = spotter
-            spot["comment"] = comment
-            try:
-                spot["freq"] = float(freq) / 1000
-            except ValueError:
-                logger.debug("%s", f"{data}")
-            self.spots.addspot(spot)
-            return
-        if self.callsignField.text().upper() in data:
-            self.connectButton.setStyleSheet("color: green;")
-            self.connectButton.setText("Connected")
-            logger.debug("%s", f"{data}")
+        while self.socket.bytesAvailable():
+            data = self.socket.readLine(1000)
+            data = str(data, "utf-8").strip()
+            #logger.debug(f"cluster recv line: {data}")
+
+            if "login:" in data or "call:" in data or "callsign:" in data:
+                self.send_command(self.callsignField.text())
+                self.send_command(self.settings.get("cluster_filter", ""))
+                self.send_command("set dx extension Section")
+                self.send_command("set dx mode " + self.settings.get("cluster_mode", "OPEN"))
+                return
+            if "DX de" in data:
+                parts = data.split()
+                spotter = parts[2]
+                freq = parts[3]
+                dx = parts[4]
+                _time = parts[-1]
+                comment = " ".join(parts[5:-1])
+                # spot = DxSpot()
+                spot = {}
+                spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
+                spot["callsign"] = dx
+                spot["spotter"] = spotter
+                spot["comment"] = comment
+                logger.debug(f"{spot}")
+                try:
+                    spot["freq"] = float(freq) / 1000
+                    self.spots.addspot(spot)
+                except ValueError:
+                    logger.debug(f"couldn't parse freq from datablock {data}")
+                return
+            if self.callsignField.text().upper() in data:
+                self.connectButton.setStyleSheet("color: green;")
+                self.connectButton.setText("Connected")
+                logger.debug(f"callsign login acknowledged {data}")
 
     def maybeconnected(self):
         """doc"""
@@ -855,33 +844,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def showContextMenu(self):
         """doc"""
 
+    def close_cluster(self):
+        if self.socket and self.socket.isOpen():
+            logger.info("Closing dx cluster connection")
+            self.socket.close()
+            self.connected = False
+            self.connectButton.setStyleSheet("color: red;")
+            self.connectButton.setText("Closed")
 
-def run():
-    """doc"""
-    sys.exit(app.exec())
-
-
-logger = logging.getLogger(bandmap")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
-
-app = QtWidgets.QApplication(sys.argv)
-
-
-app.setStyle("Adwaita-Dark")
-window = MainWindow()
-window.show()
-if __name__ == "__main__":
-    run()
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        self.close_cluster()

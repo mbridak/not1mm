@@ -5,40 +5,23 @@ Check Window
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 
 import logging
-
+import os
 import platform
 import queue
-import os
-import sys
-
 from json import loads
-from pathlib import Path
 
 from PyQt5 import uic
-from PyQt5.QtCore import QDir
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
-from PyQt5.QtGui import QFontDatabase
-from appdata import AppDataPaths
+from PyQt5.QtWidgets import QListWidgetItem, QDockWidget, QWidget
 
+import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-
-WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
-
-app_paths = AppDataPaths(name='not1mm')
-app_paths.setup()
-DATA_PATH = Path(app_paths.app_data_path)
-
-CONFIG_PATH = DATA_PATH
+logger = logging.getLogger(__name__)
 
 
-class MainWindow(QMainWindow):
-    """
-    The main window
-    """
+class CheckWindow(QWidget):
 
     multicast_interface = None
     dbname = None
@@ -47,19 +30,19 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_pref()
-        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        data_path = WORKING_PATH / "data" / "checkwindow.ui"
-        uic.loadUi(data_path, self)
-        self.setWindowTitle("CheckWindow")
+
+        uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
+
         self.logList.clear()
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
         self.callhistoryList.hide()
         self.callhistoryListLabel.hide()
-        self.mscp = SCP(WORKING_PATH)
+        self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
         self.multicast_interface = Multicast(
@@ -69,19 +52,6 @@ class MainWindow(QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
-    def quit_app(self):
-        """
-        Called when the user clicks the exit button.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        app.quit()
 
     def load_pref(self):
         """
@@ -96,12 +66,10 @@ class MainWindow(QMainWindow):
         None
         """
         try:
-            if os.path.exists(CONFIG_PATH / "not1mm.json"):
-                with open(
-                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
-                ) as file_descriptor:
+            if os.path.exists(fsutils.CONFIG_FILE):
+                with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
                     self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
+                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
             else:
                 self.pref["current_database"] = "ham.db"
 
@@ -141,8 +109,6 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
-            if json_data.get("cmd", "") == "HALT":
-                self.quit_app()
 
     def clear_lists(self) -> None:
         """
@@ -226,54 +192,3 @@ class MainWindow(QMainWindow):
                 self.telnetList.show()
 
 
-def load_fonts_from_dir(directory: str) -> set:
-    """
-    Load fonts from directory.
-
-    Parameters
-    ----------
-    directory : str
-    The directory to load fonts from.
-
-    Returns
-    -------
-    set
-    The set of font families loaded.
-    """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
-
-
-def main():
-    """main entry"""
-    sys.exit(app.exec())
-
-
-logger = logging.getLogger("checkwindow")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
-
-app = QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH / "data"
-_families = load_fonts_from_dir(os.fspath(font_path))
-window = MainWindow()
-window.show()
-
-if __name__ == "__main__":
-    main()

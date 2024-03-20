@@ -13,7 +13,7 @@ from PyQt5 import QtWidgets
 from not1mm.lib.plugin_common import gen_adif
 from not1mm.lib.version import __version__
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger(__name__)
 
 name = "CQ 160 SSB"
 cabrillo_name = "CQ-160-SSB"

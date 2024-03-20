@@ -33,8 +33,7 @@ import soundfile as sf
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QFileDialog
-from appdata import AppDataPaths
+from PyQt5.QtWidgets import QFileDialog, QDockWidget
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
@@ -64,21 +63,15 @@ from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 
-# DeprecationWarning: 'pkgutil.get_loader' is deprecated and slated for removal in Python 3.14
-# loader = pkgutil.get_loader("not1mm")
-# WORKING_PATH = os.path.dirname(loader.get_filename())
-WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
-
-app_paths = AppDataPaths(name='not1mm')
-app_paths.setup()
-DATA_PATH = Path(app_paths.app_data_path)
-
-CONFIG_PATH = DATA_PATH
-
+import not1mm.fsutils as fsutils
+from not1mm.logwindow import LogWindow
+from not1mm.checkwindow import CheckWindow
+from not1mm.bandmap import BandMapWindow
+from not1mm.vfo import VfoWindow
 
 CTYFILE = {}
 
-with open(WORKING_PATH / "data" / "cty.json", "rt", encoding="utf-8") as c_file:
+with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
     CTYFILE = loads(c_file.read())
 
 poll_time = datetime.datetime.now()
@@ -176,7 +169,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contest_dialog = None
     configuration_dialog = None
     opon_dialog = None
-    dbname = DATA_PATH, "/ham.db"
+    dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state = {}
     rig_control = None
     worked_list = {}
@@ -184,16 +177,23 @@ class MainWindow(QtWidgets.QMainWindow):
     last_focus = None
     oldtext = ""
 
+    log_window = None
+    check_window = None
+    bandmap_window = None
+    vfo_window = None
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-        data_path = WORKING_PATH / "data" / "main.ui"
+        self.setCorner(Qt.TopRightCorner, Qt.RightDockWidgetArea)
+        self.setCorner(Qt.BottomRightCorner, Qt.RightDockWidgetArea)
+        data_path = fsutils.APP_DATA_PATH / "main.ui"
         uic.loadUi(data_path, self)
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
-        self.mscp = SCP(WORKING_PATH)
+        self.mscp = SCP(fsutils.APP_DATA_PATH)
         self.next_field = self.other_2
         self.dupe_indicator.hide()
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
@@ -247,7 +247,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.sent.setText("59")
         self.receive.setText("59")
-        icon_path = WORKING_PATH / "data"
+        icon_path = fsutils.APP_DATA_PATH
         self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
         self.leftdot.setPixmap(self.greendot)
@@ -453,9 +453,10 @@ class MainWindow(QtWidgets.QMainWindow):
             "RTTY": self.band_indicators_rtty,
         }
 
+        self.setWindowIcon(QtGui.QIcon(str(fsutils.APP_DATA_PATH / 'k6gte.not1mm-64.png')))
         self.readpreferences()
-        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
         self.station = self.database.fetch_station()
         if self.station is None:
             self.station = {}
@@ -472,11 +473,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("contest"):
             self.load_contest()
 
-        if VersionTest(__version__).test():
-            self.show_message_box(
-                "There is a newer version of not1mm available.\n"
-                "You can udate to the current version by using:\npip install -U not1mm"
-            )
+        if not DEBUG_ENABLED:
+            if VersionTest(__version__).test():
+                self.show_message_box(
+                    "There is a newer version of not1mm available.\n"
+                    "You can udate to the current version by using:\npip install -U not1mm"
+                )
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -635,9 +637,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.about_dialog = About(WORKING_PATH)
+        self.about_dialog = About(fsutils.MODULE_PATH)
         self.about_dialog.donors.setSource(
-            QtCore.QUrl.fromLocalFile(WORKING_PATH / "data" / "donors.html")
+            QtCore.QUrl.fromLocalFile(fsutils.APP_DATA_PATH / "donors.html")
         )
         self.about_dialog.open()
 
@@ -654,11 +656,11 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.about_dialog = About(WORKING_PATH)
+        self.about_dialog = About(fsutils.MODULE_PATH)
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
         self.about_dialog.donors.setSource(
-            QtCore.QUrl.fromLocalFile(WORKING_PATH / "data" / "not1mm.html")
+            QtCore.QUrl.fromLocalFile(str(fsutils.APP_DATA_PATH / "not1mm.html"))
         )
         self.about_dialog.open()
 
@@ -695,7 +697,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
+        self.configuration_dialog = Settings(fsutils.MODULE_PATH, fsutils.CONFIG_PATH, self.pref)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
@@ -715,7 +717,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.configuration_dialog.save_changes()
         self.write_preference()
-        logger.debug("%s", f"{self.pref}")
+        #logger.debug("%s", f"{self.pref}")
         self.readpreferences()
 
     def new_database(self) -> None:
@@ -737,8 +739,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 filename += ".db"
             self.pref["current_database"] = os.path.basename(filename.split("/"))
             self.write_preference()
-            self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-            self.database = DataBase(self.dbname, WORKING_PATH)
+            self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+            self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
             if self.station is None:
@@ -769,8 +771,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if filename:
             self.pref["current_database"] = os.path.basename(filename)
             self.write_preference()
-            self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-            self.database = DataBase(self.dbname, WORKING_PATH)
+            self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+            self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
             if self.station is None:
@@ -806,7 +808,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("%s", f"{contests}")
 
         if contests:
-            self.contest_dialog = SelectContest(WORKING_PATH)
+            self.contest_dialog = SelectContest(fsutils.MODULE_PATH)
             self.contest_dialog.contest_list.setRowCount(0)
             self.contest_dialog.contest_list.setColumnCount(4)
             self.contest_dialog.contest_list.verticalHeader().setVisible(False)
@@ -904,7 +906,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.contest_settings is None:
             return
-        self.contest_dialog = NewContest(WORKING_PATH)
+        self.contest_dialog = NewContest(fsutils.MODULE_PATH)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
@@ -1070,7 +1072,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         try:
-            cty = notctyparser.BigCty(WORKING_PATH / "data" / "cty.json")
+            cty = notctyparser.BigCty(fsutils.APP_DATA_PATH / "cty.json")
             update_available = cty.check_update()
         except (AttributeError, ValueError, locale.Error) as the_error:
             logger.debug("cty parser returned an error: %s", the_error)
@@ -1084,10 +1086,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug("cty parser returned an error: %s", the_error)
                 return
             if updated:
-                cty.dump(WORKING_PATH / "data" / "cty.json")
+                cty.dump(fsutils.APP_DATA_PATH / "cty.json")
                 self.show_message_box("cty file updated.")
                 with open(
-                    WORKING_PATH / "data" / "cty.json", "rt", encoding="utf-8"
+                    fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
                 ) as ctyfile:
                     globals()["CTYFILE"] = loads(ctyfile.read())
             else:
@@ -1190,7 +1192,7 @@ class MainWindow(QtWidgets.QMainWindow):
             file, _ = QFileDialog.getSaveFileName(
                 self,
                 "Choose a Database",
-                DATA_PATH,
+                str(fsutils.USER_DATA_PATH),
                 "Database (*.db)",
                 options=options,
             )
@@ -1198,7 +1200,7 @@ class MainWindow(QtWidgets.QMainWindow):
             file, _ = QFileDialog.getOpenFileName(
                 self,
                 "Choose a Database",
-                DATA_PATH,
+                str(fsutils.USER_DATA_PATH),
                 "Database (*.db)",
                 options=options,
             )
@@ -1210,24 +1212,38 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clearinputs()
 
     def launch_log_window(self) -> None:
-        """launch the Log Window"""
-        if not check_process("logwindow.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH / "logwindow.py"])
+        if not self.log_window:
+            log_widget = LogWindow()
+            self.log_window = QDockWidget(log_widget.property("windowTitle"), self)
+            self.log_window.setWidget(log_widget)
+            self.addDockWidget(Qt.BottomDockWidgetArea, self.log_window)
+        self.log_window.show()
 
     def launch_bandmap_window(self) -> None:
-        """launch the Log Window"""
-        if not check_process("bandmap.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH / "bandmap.py"])
+        if not self.bandmap_window:
+            bandmap_widget = BandMapWindow()
+            self.bandmap_window = QDockWidget(bandmap_widget.property("windowTitle"), self)
+            self.bandmap_window.setWidget(bandmap_widget)
+            self.addDockWidget(Qt.RightDockWidgetArea, self.bandmap_window)
+        self.bandmap_window.show()
 
     def launch_check_window(self) -> None:
-        """launch the Log Window"""
-        if not check_process("checkwindow.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH / "checkwindow.py"])
+        if not self.check_window:
+            check_widget = CheckWindow()
+            self.check_window = QDockWidget(check_widget.property("windowTitle"), self)
+            self.check_window.setWidget(check_widget)
+            self.addDockWidget(Qt.RightDockWidgetArea, self.check_window)
+        self.check_window.show()
 
     def launch_vfo(self) -> None:
-        """launch the Log Window"""
-        if not check_process("vfo.py"):
-            _ = subprocess.Popen([sys.executable, WORKING_PATH / "vfo.py"])
+
+        if not self.vfo_window:
+            vfo_widget = VfoWindow()
+            self.vfo_window = QDockWidget(vfo_widget.property("windowTitle"), self)
+            self.vfo_window.setWidget(vfo_widget)
+            self.addDockWidget(Qt.RightDockWidgetArea, self.vfo_window)
+        self.vfo_window.show()
+
 
     def clear_band_indicators(self) -> None:
         """
@@ -1289,6 +1305,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["window_x"] = self.pos().x()
         self.pref["window_y"] = self.pos().y()
         self.write_preference()
+
 
     def cty_lookup(self, callsign: str) -> list:
         """Lookup callsign in cty.dat file.
@@ -1731,7 +1748,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("New contest Dialog")
-        self.contest_dialog = NewContest(WORKING_PATH)
+        self.contest_dialog = NewContest(fsutils.MODULE_PATH)
         self.contest_dialog.accepted.connect(self.save_contest)
         self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
@@ -1796,7 +1813,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Station Settings selected")
-        self.settings_dialog = EditStation(WORKING_PATH)
+        self.settings_dialog = EditStation(fsutils.MODULE_PATH)
         self.settings_dialog.accepted.connect(self.save_settings)
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
@@ -1884,7 +1901,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
+        self.edit_macro_dialog = EditMacro(function_key, fsutils.MODULE_PATH)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         self.edit_macro_dialog.open()
 
@@ -1957,7 +1974,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Voicing: %s", the_string)
-        op_path = Path(DATA_PATH) / self.current_op
+        op_path = fsutils.USER_DATA_PATH / self.current_op
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()
             filename = f"{str(op_path)}/{sub_string}.wav"
@@ -2086,10 +2103,10 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("writepreferences")
         try:
             with open(
-                Path(CONFIG_PATH) / "not1mm.json", "wt", encoding="utf-8"
+                fsutils.CONFIG_FILE, "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.pref, indent=4))
-                logger.info("writing: %s", self.pref)
+                #logger.info("writing: %s", self.pref)
         except IOError as exception:
             logger.critical("writepreferences: %s", exception)
 
@@ -2108,16 +2125,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("readpreferences")
         try:
-            if os.path.exists(Path(CONFIG_PATH) / "not1mm.json"):
+            if os.path.exists(fsutils.CONFIG_FILE):
                 with open(
-                    Path(CONFIG_PATH) / "not1mm.json", "rt", encoding="utf-8"
+                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
             else:
                 logger.info("No preference file. Writing preference.")
                 with open(
-                    Path(CONFIG_PATH) / "not1mm.json", "wt", encoding="utf-8"
+                    fsutils.CONFIG_FILE, "wt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = self.pref_ref.copy()
                     file_descriptor.write(dumps(self.pref, indent=4))
@@ -2290,6 +2307,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["cmd"] = "WORKED"
                     cmd["station"] = platform.node()
                     cmd["worked"] = result
+                    self.multicast_interface.send_as_json(cmd)
+
+                if json_data.get("cmd", "") == "GETCONTESTSTATUS" and json_data.get("station", "") == platform.node():
+                    cmd = {
+                        "cmd": "CONTESTSTATUS",
+                        "station": platform.node(),
+                        "contest": self.contest_settings,
+                        "operator": self.current_op}
                     self.multicast_interface.send_as_json(cmd)
 
     def cw_macros_state_changed(self) -> None:
@@ -2763,7 +2788,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.opon_dialog = OpOn(WORKING_PATH)
+        self.opon_dialog = OpOn(fsutils.MODULE_PATH)
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
@@ -2802,13 +2827,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if self.current_op:
-            op_path = DATA_PATH / self.current_op
+            op_path = fsutils.USER_DATA_PATH / self.current_op
             logger.debug("op_path: %s", str(op_path))
             if op_path.is_dir() is False:
                 logger.debug("Creating Op Directory: %s", str(op_path))
                 os.mkdir(str(op_path))
             if op_path.is_dir():
-                source_path = WORKING_PATH / "data" / "phonetics"
+                source_path = fsutils.APP_DATA_PATH / "phonetics"
                 logger.debug("source_path: %s", str(source_path))
                 for child in source_path.iterdir():
                     destination_file = op_path / child.name
@@ -2908,10 +2933,13 @@ class MainWindow(QtWidgets.QMainWindow):
             macro_file = "cwmacros.txt"
         else:
             macro_file = "ssbmacros.txt"
-        if not (DATA_PATH / macro_file).exists():
+        if not (fsutils.USER_DATA_PATH / macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH / "data" / macro_file, DATA_PATH / macro_file)
-        os.system(f"xdg-open {DATA_PATH / macro_file}")
+            copyfile(fsutils.APP_DATA_PATH / macro_file, fsutils.USER_DATA_PATH / macro_file)
+        try:
+            fsutils.openFileWithOS(fsutils.USER_DATA_PATH / macro_file)
+        except:
+            logger.exception(f"Could not open file {fsutils.USER_DATA_PATH / macro_file}")
 
     def read_cw_macros(self) -> None:
         """
@@ -2925,10 +2953,10 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
 
-        if not (DATA_PATH / macro_file).exists():
+        if not (fsutils.USER_DATA_PATH / macro_file).exists():
             logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(WORKING_PATH / "data" / macro_file, DATA_PATH / macro_file)
-        with open(DATA_PATH / macro_file, "r", encoding="utf-8") as file_descriptor:
+            copyfile(fsutils.APP_DATA_PATH / macro_file, fsutils.USER_DATA_PATH / macro_file)
+        with open(fsutils.USER_DATA_PATH / macro_file, "r", encoding="utf-8") as file_descriptor:
             for line in file_descriptor:
                 try:
                     mode, fkey, buttonname, cwtext = line.split("|")
@@ -3037,17 +3065,17 @@ def install_icons() -> None:
     if sys.platform == "linux":
         os.system(
             "xdg-icon-resource install --size 32 --context apps --mode user "
-            f"{WORKING_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
+            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
         )
         os.system(
             "xdg-icon-resource install --size 64 --context apps --mode user "
-            f"{WORKING_PATH}/data/k6gte.not1mm-64.png k6gte-not1mm"
+            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-64.png k6gte-not1mm"
         )
         os.system(
             "xdg-icon-resource install --size 128 --context apps --mode user "
-            f"{WORKING_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
+            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
         )
-        os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-not1mm.desktop")
+        os.system(f"xdg-desktop-menu install {fsutils.MODULE_PATH}/data/k6gte-not1mm.desktop")
 
 
 def doimp(modname) -> object:
@@ -3073,36 +3101,31 @@ def run() -> None:
     """
     Main Entry
     """
+    logger.debug(f"Resolved OS file system paths: MODULE_PATH {fsutils.MODULE_PATH}, USER_DATA_PATH {fsutils.USER_DATA_PATH}, CONFIG_PATH {fsutils.CONFIG_PATH}")
     install_icons()
     timer.start(250)
     sys.exit(app.exec())
 
+DEBUG_ENABLED = False
+if Path("./debug").exists():
+    DEBUG_ENABLED = True
 
 logger = logging.getLogger("__main__")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d: %(message)s",
+
+logging.basicConfig(
+    level=logging.DEBUG if DEBUG_ENABLED else logging.INFO,
+    format="[%(asctime)s] %(levelname)s %(name)s - %(funcName)s Line %(lineno)d: %(message)s",
+    handlers=[
+        RotatingFileHandler(fsutils.LOG_FILE, maxBytes=10490000, backupCount=20),
+        logging.StreamHandler()
+    ]
 )
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.addHandler(RotatingFileHandler(app_paths.get_log_file_path(name='appplication.log'), maxBytes=10490000, backupCount=20))
-
-BETA_TEST = False
-if Path("./betatest").exists():
-    BETA_TEST = True
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    # logger.warning("debugging off")
-
+logging.getLogger('PyQt5.uic.uiparser').setLevel('INFO')
+logging.getLogger('PyQt5.uic.properties').setLevel('INFO')
+os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH / "data"
-families = load_fonts_from_dir(os.fspath(font_path))
+families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(families)
 window = MainWindow()
 height = window.pref.get("window_height", 300)

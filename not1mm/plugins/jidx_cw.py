@@ -12,7 +12,7 @@ from PyQt5 import QtWidgets
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger(__name__)
 
 name = "JIDX CW"
 cabrillo_name = "JIDX-CW"

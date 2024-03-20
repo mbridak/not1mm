@@ -14,3 +14,5 @@ debug
 betatest
 not1mm/testing/server_preferences.json
 not1mm/testing/server_database.db
+.idea
+venv

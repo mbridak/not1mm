@@ -23,10 +23,10 @@ class DataBase:
 
     current_contest = 1
 
-    def __init__(self, database: str, working_path: str):
+    def __init__(self, database: str, app_data_dir: str):
         """initializes DataBase instance"""
         logger.debug("Database: %s", database)
-        self.working_path = working_path
+        self.app_data_dir = app_data_dir
         self.empty_contact = {
             "TS": "",
             "Call": "",
@@ -198,7 +198,7 @@ class DataBase:
                 result = cursor.fetchall()
                 if len(result) == 0:
                     with open(
-                        self.working_path  / "data" / "contests.sql", encoding="utf-8"
+                        self.app_data_dir / "contests.sql", encoding="utf-8"
                     ) as data:
                         for line in data.readlines():
                             cursor.execute(line)

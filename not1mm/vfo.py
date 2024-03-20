@@ -21,31 +21,17 @@ from pathlib import Path
 import serial
 from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget
 from appdata import AppDataPaths
 
+from not1mm import fsutils
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
-if __loader__:
-    WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
-else:
-    WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
+logger = logging.getLogger(__name__)
 
-
-app_paths = AppDataPaths(name='not1mm')
-app_paths.setup()
-DATA_PATH = Path(app_paths.app_data_path)
-
-CONFIG_PATH = DATA_PATH
-
-
-class MainWindow(QMainWindow):
-    """
-    The main window
-    """
+class VfoWindow(QWidget):
 
     pref = {}
     old_vfo = ""
@@ -55,8 +41,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        data_path = WORKING_PATH / "data" / "vfo.ui"
-        uic.loadUi(data_path, self)
+        uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
@@ -65,7 +50,7 @@ class MainWindow(QMainWindow):
         self.lcdNumber.display(0)
         self.pico = None
         self._udpwatch = None
-        self.udp_fifo = queue.Queue()
+
         self.multicast_interface = Multicast(
             self.pref.get("multicast_group", "239.1.1.1"),
             self.pref.get("multicast_port", 2239),
@@ -73,9 +58,11 @@ class MainWindow(QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
-    def quit_app(self) -> None:
-        """Shutdown the app."""
-        app.quit()
+        self.setup_serial()
+        #app.processEvents()
+        self.poll_rig_timer = QtCore.QTimer()
+        self.poll_rig_timer.timeout.connect(self.poll_radio)
+        self.poll_rig_timer.start(500)
 
     def load_pref(self) -> None:
         """
@@ -83,9 +70,9 @@ class MainWindow(QMainWindow):
         Get CAT interface.
         """
         try:
-            if os.path.exists(CONFIG_PATH / "not1mm.json"):
+            if os.path.exists(fsutils.CONFIG_FILE):
                 with open(
-                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
+                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
@@ -127,7 +114,7 @@ class MainWindow(QMainWindow):
 
         devices = None
         data = None
-        app.processEvents()
+        #app.processEvents()
         try:
             devices = os.listdir("/dev/serial/by-id")
         except FileNotFoundError:
@@ -150,29 +137,28 @@ class MainWindow(QMainWindow):
         Setup the device returned by discover_device()
         Or display message saying we didn't find one.
         """
-        while True:
-            device = self.discover_device()
-            if device:
-                try:
-                    self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
-                    self.pico.timeout = 100
-                    self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
-                    break
-                except OSError:
-                    if self.message_shown is False:
-                        self.message_shown = True
-                        self.show_message_box(
-                            "Unable to locate or open the VFO knob serial device."
-                        )
-                    self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-            else:
+
+        device = self.discover_device()
+        if device:
+            try:
+                self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
+                self.pico.timeout = 100
+                self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
+            except OSError:
                 if self.message_shown is False:
                     self.message_shown = True
                     self.show_message_box(
                         "Unable to locate or open the VFO knob serial device."
                     )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-            app.processEvents()
+        else:
+            if self.message_shown is False:
+                self.message_shown = True
+                self.show_message_box(
+                    "Unable to locate or open the VFO knob serial device."
+                )
+            self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
+        #app.processEvents()
 
     def watch_udp(self) -> None:
         """
@@ -196,8 +182,7 @@ class MainWindow(QMainWindow):
             if json_data.get("station", "") != platform.node():
                 continue
             logger.debug(f"{json_data=}")
-            if json_data.get("cmd", "") == "HALT":
-                self.quit_app()
+
             if json_data.get("cmd", "") == "TUNE":
                 # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
                 vfo = json_data.get("freq")
@@ -217,7 +202,7 @@ class MainWindow(QMainWindow):
         if len(dvfo) > 6:
             dnum = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
-            app.processEvents()
+            #app.processEvents()
 
     def poll_radio(self) -> None:
         """
@@ -240,7 +225,7 @@ class MainWindow(QMainWindow):
                     logger.debug(f"{vfo}")
                     self.showNumber(vfo)
                     # self.lcdNumber.display(dnum)
-                    app.processEvents()
+                    #app.processEvents()
                     cmd = f"F {vfo}\r"
                     try:
                         if self.pico:
@@ -267,12 +252,12 @@ class MainWindow(QMainWindow):
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
                             # self.lcdNumber.display(result)
-                            app.processEvents()
+                            #app.processEvents()
         except OSError:
             logger.critical("Unable to write to serial device.")
         except AttributeError:
             logger.critical("Unable to write to serial device.")
-        app.processEvents()
+        #app.processEvents()
 
     def show_message_box(self, message: str) -> None:
         """
@@ -286,37 +271,4 @@ class MainWindow(QMainWindow):
         _ = message_box.exec_()
 
 
-def main():
-    """main entry"""
-    window.show()
-    window.setup_serial()
-    app.processEvents()
-    timer = QtCore.QTimer()
-    timer.timeout.connect(window.poll_radio)
-    timer.start(250)
-    sys.exit(app.exec())
 
-
-logger = logging.getLogger("vfo")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
-
-app = QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
-window = MainWindow()
-
-
-if __name__ == "__main__":
-    main()

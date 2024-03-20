@@ -92,3 +92,6 @@ class Multicast:
             .data()
         )
         return packet
+
+    def close(self):
+        self.server_udp.close()

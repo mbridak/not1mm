@@ -7,40 +7,22 @@ Display current log
 # QTableWidget
 # focusedLog, generalLog
 import logging
-import math
 import os
-
-# import pkgutil
 import platform
 import queue
-import sys
+from json import loads
 
-from json import JSONDecodeError, loads, dumps
-from pathlib import Path
-from appdata import AppDataPaths
+import math
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QItemSelectionModel
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic, Qt
-from PyQt5.QtCore import QDir, QItemSelectionModel
-from PyQt5 import QtNetwork
-from PyQt5.QtGui import QFontDatabase
-
+import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
-from not1mm.lib.multicast import Multicast
 from not1mm.lib.edit_contact import EditContact
+from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-
-WORKING_PATH = Path(os.path.dirname(__loader__.get_filename()))
-
-app_paths = AppDataPaths(name='not1mm')
-app_paths.setup()
-DATA_PATH = Path(app_paths.app_data_path)
-
-CONFIG_PATH = DATA_PATH
-
-DARK_STYLESHEET = ""
-
+logger = logging.getLogger(__name__)
 
 def safe_float(the_input: any, default=0.0) -> float:
     """
@@ -67,7 +49,7 @@ def safe_float(the_input: any, default=0.0) -> float:
     return default
 
 
-class MainWindow(QtWidgets.QMainWindow):
+class LogWindow(QtWidgets.QWidget):
     """
     The main window
     """
@@ -108,21 +90,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
-        if self.pref.get("dark_mode"):
-            self.setStyleSheet(DARK_STYLESHEET)
-        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
+
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, fsutils.USER_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
-        data_path = WORKING_PATH / "data" / "logwindow.ui"
-        uic.loadUi(data_path, self)
+        uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
         self.setWindowTitle(
-            f"Log Display - {self.pref.get('current_database', 'ham.db')}"
+            f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )
         self.generalLog.setColumnCount(len(self.columns))
         self.focusedLog.setColumnCount(len(self.columns))
-        icon_path = WORKING_PATH / "data"
-        self.checkmark = QtGui.QPixmap(str(icon_path / "check.png"))
+
+        self.checkmark = QtGui.QPixmap(str(fsutils.APP_DATA_PATH / "check.png"))
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
         self.generalLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -176,12 +156,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.multicast_interface.send_as_json(cmd)
 
-    def quit_app(self):
-        """
-        Quit the application.
-        """
-        app.quit()
-
     def get_column(self, name: str) -> int:
         """
         Returns the column number of the given column name.
@@ -213,9 +187,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         try:
-            if os.path.exists(CONFIG_PATH / "not1mm.json"):
+            if os.path.exists(fsutils.CONFIG_FILE):
                 with open(
-                    CONFIG_PATH / "not1mm.json", "rt", encoding="utf-8"
+                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
@@ -253,8 +227,8 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         self.load_pref()
-        self.dbname = DATA_PATH / self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
         self.get_log()
@@ -562,9 +536,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         logger.debug("Edit: %s", uuid)
-        self.edit_contact_dialog = EditContact(WORKING_PATH)
-        if self.pref.get("dark_mode"):
-            self.edit_contact_dialog.setStyleSheet(DARK_STYLESHEET)
+        self.edit_contact_dialog = EditContact(fsutils.APP_DATA_PATH)
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
         self.edit_contact_dialog.delete_2.clicked.connect(self.delete_contact)
@@ -894,8 +866,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         column = "Freq (Khz)"
                     self.generalLog.setColumnHidden(self.get_column(column), False)
                     self.focusedLog.setColumnHidden(self.get_column(column), False)
-            if json_data.get("cmd", "") == "HALT":
-                self.quit_app()
 
     def show_like_calls(self, call: str) -> None:
         """
@@ -1071,56 +1041,3 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
-
-
-def load_fonts_from_dir(directory: str) -> set:
-    """
-    Loads all fonts from a directory.
-
-    Parameters
-    ----------
-    directory : str
-    The directory to load fonts from.
-
-    Returns
-    -------
-    set
-    The set of font families.
-    """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
-
-
-def main():
-    """main entry"""
-    sys.exit(app.exec())
-
-
-logger = logging.getLogger("logwindow")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
-
-app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH / "data"
-_families = load_fonts_from_dir(os.fspath(font_path))
-window = MainWindow()
-window.show()
-
-if __name__ == "__main__":
-    main()
