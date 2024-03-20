@@ -191,14 +191,13 @@ class MainWindow(QtWidgets.QMainWindow):
     cw_entry_visible = False
     last_focus = None
     oldtext = ""
+    text_color = Qt.black
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
         data_path = WORKING_PATH + "/data/main.ui"
         uic.loadUi(data_path, self)
-        # if darkdetect.isDark():
-        #     self.setDarkMode()
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
@@ -503,6 +502,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if dark:
             darkPalette = QtGui.QPalette()
             darkColor = QtGui.QColor(45, 45, 45)
+
             disabledColor = QtGui.QColor(127, 127, 127)
             darkPalette.setColor(QtGui.QPalette.Window, darkColor)
             darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
@@ -525,9 +525,34 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
             self.setPalette(darkPalette)
+            self.text_color = Qt.white
+            self.menuFile.setPalette(darkPalette)
+            self.menuHelp.setPalette(darkPalette)
+            self.menuOther.setPalette(darkPalette)
+            self.menuView.setPalette(darkPalette)
+            self.menuWindow.setPalette(darkPalette)
+            self.callsign.setPalette(darkPalette)
+            self.sent.setPalette(darkPalette)
+            self.receive.setPalette(darkPalette)
+            self.other_1.setPalette(darkPalette)
+            self.other_2.setPalette(darkPalette)
+            self.cw_entry.setPalette(darkPalette)
+
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
+            self.menuFile.setPalette(palette)
+            self.menuHelp.setPalette(palette)
+            self.menuOther.setPalette(palette)
+            self.menuView.setPalette(palette)
+            self.menuWindow.setPalette(palette)
+            self.callsign.setPalette(palette)
+            self.sent.setPalette(palette)
+            self.receive.setPalette(palette)
+            self.other_1.setPalette(palette)
+            self.other_2.setPalette(palette)
+            self.cw_entry.setPalette(palette)
+            self.text_color = Qt.black
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -1295,7 +1320,12 @@ class MainWindow(QtWidgets.QMainWindow):
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
-                indicator.setStyleSheet("font-family: JetBrains Mono;")
+                if self.text_color == Qt.black:
+                    indicator.setStyleSheet(
+                        "font-family: JetBrains Mono; color: black;"
+                    )
+                else:
+                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2545,8 +2575,8 @@ class MainWindow(QtWidgets.QMainWindow):
         stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
-        results = self.mscp.super_check(stripped_text)
-        logger.debug(f"{results}")
+        # results = self.mscp.super_check(stripped_text)
+        # logger.debug(f"{results}")
 
         if " " in text:
             if stripped_text == "CW":
