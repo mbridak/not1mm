@@ -21,13 +21,13 @@ import platform
 import sys
 import sqlite3
 
-from PyQt5 import QtCore, QtGui
-from PyQt5 import QtNetwork
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtGui import QFontDatabase
 
 from not1mm.lib.multicast import Multicast
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
@@ -346,14 +346,13 @@ class MainWindow(QtWidgets.QMainWindow):
     bandwidth_mark = []
     worked_list = {}
     multicast_interface = None
+    text_color = QtGui.QColor(45, 45, 45)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
         data_path = WORKING_PATH + "/data/bandmap.ui"
         uic.loadUi(data_path, self)
-        if PREF.get("dark_mode"):
-            self.setStyleSheet(DARK_STYLESHEET)
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -375,6 +374,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
+        self.setDarkMode(PREF.get("darkmode", False))
         self.update()
         self.multicast_interface = Multicast(
             PREF.get("multicast_group", "239.1.1.1"),
@@ -383,6 +383,43 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
         self.request_workedlist()
+
+    def setDarkMode(self, setdarkmode=False):
+        """testing"""
+
+        if setdarkmode:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            self.text_color = Qt.white
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+
+            self.setPalette(darkPalette)
+            self.update()
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+            self.text_color = Qt.black
+            self.update()
 
     def quit_app(self):
         """doc"""
@@ -516,6 +553,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
             if packet.get("cmd", "") == "HALT":
                 self.quit_app()
+            if packet.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(packet.get("state", False))
 
     def spot_clicked(self):
         """dunno"""
@@ -542,7 +581,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update(self):
         """doc"""
-        self.update_timer.setInterval(UPDATE_INTERVAL)
+        try:
+            self.update_timer.setInterval(UPDATE_INTERVAL)
+        except AttributeError:
+            ...
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -562,12 +604,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 i * PIXELSPERSTEP,
                 length + 10,
                 i * PIXELSPERSTEP,
-                QtGui.QPen(QtGui.QColor(192, 192, 192)),
+                QtGui.QPen(self.text_color),
             )
             if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
+                self.something.setDefaultTextColor(self.text_color)
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
                     i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
@@ -696,7 +739,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if result:
             min_y = 0.0
             for items in result:
-                pen_color = QtGui.QColor(192, 192, 192)
+                pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QtGui.QColor(47, 47, 255)
                 if items.get("callsign") in self.worked_list:
@@ -861,6 +904,27 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
 
 
+def load_fonts_from_dir(directory: str) -> set:
+    """
+    Well it loads fonts from a directory...
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    A set of font families installed in the directory.
+    """
+    font_families = set()
+    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+    return font_families
+
+
 def run():
     """doc"""
     sys.exit(app.exec())
@@ -885,8 +949,12 @@ else:
 app = QtWidgets.QApplication(sys.argv)
 
 
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
+font_path = WORKING_PATH + "/data"
+families = load_fonts_from_dir(os.fspath(font_path))
+logger.info(families)
 window = MainWindow()
 window.show()
+
 if __name__ == "__main__":
     run()

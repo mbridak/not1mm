@@ -3,7 +3,7 @@
 NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
-# pylint: disable=logging-fstring-interpolation
+# pylint: disable=logging-fstring-interpolation, logging-not-lazy
 
 # alt cluster hamqth.com 7300
 
@@ -191,6 +191,7 @@ class MainWindow(QtWidgets.QMainWindow):
     cw_entry_visible = False
     last_focus = None
     oldtext = ""
+    text_color = Qt.black
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -210,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
+        self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
@@ -485,6 +487,72 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There is a newer version of not1mm available.\n"
                 "You can udate to the current version by using:\npip install -U not1mm"
             )
+
+    def setDarkMode(self, dark):
+        """testing"""
+
+        logger.debug(f"Dark mode set to: {dark}")
+
+        cmd = {}
+        cmd["cmd"] = "DARKMODE"
+        cmd["state"] = dark
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+            self.setPalette(darkPalette)
+            self.text_color = Qt.white
+            self.menuFile.setPalette(darkPalette)
+            self.menuHelp.setPalette(darkPalette)
+            self.menuOther.setPalette(darkPalette)
+            self.menuView.setPalette(darkPalette)
+            self.menuWindow.setPalette(darkPalette)
+            self.callsign.setPalette(darkPalette)
+            self.sent.setPalette(darkPalette)
+            self.receive.setPalette(darkPalette)
+            self.other_1.setPalette(darkPalette)
+            self.other_2.setPalette(darkPalette)
+            self.cw_entry.setPalette(darkPalette)
+
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+            self.menuFile.setPalette(palette)
+            self.menuHelp.setPalette(palette)
+            self.menuOther.setPalette(palette)
+            self.menuView.setPalette(palette)
+            self.menuWindow.setPalette(palette)
+            self.callsign.setPalette(palette)
+            self.sent.setPalette(palette)
+            self.receive.setPalette(palette)
+            self.other_1.setPalette(palette)
+            self.other_2.setPalette(palette)
+            self.cw_entry.setPalette(palette)
+            self.text_color = Qt.black
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -1252,7 +1320,12 @@ class MainWindow(QtWidgets.QMainWindow):
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
-                indicator.setStyleSheet("font-family: JetBrains Mono;")
+                if self.text_color == Qt.black:
+                    indicator.setStyleSheet(
+                        "font-family: JetBrains Mono; color: black;"
+                    )
+                else:
+                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2173,6 +2246,13 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
+        if self.pref.get("darkmode"):
+            self.actionDark_Mode_2.setChecked(True)
+            self.setDarkMode(True)
+        else:
+            self.setDarkMode(False)
+            self.actionDark_Mode_2.setChecked(False)
+
         self.rig_control = None
 
         if self.pref.get("useflrig", False):
@@ -2299,6 +2379,23 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["worked"] = result
                     self.multicast_interface.send_as_json(cmd)
+
+    def dark_mode_state_changed(self) -> None:
+        """
+        Menu item to show/hide macro buttons.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
+        self.write_preference()
+        self.setDarkMode(self.actionDark_Mode_2.isChecked())
 
     def cw_macros_state_changed(self) -> None:
         """
@@ -2478,6 +2575,7 @@ class MainWindow(QtWidgets.QMainWindow):
         stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
+
 
         if " " in text:
             if stripped_text == "CW":
@@ -3105,7 +3203,7 @@ else:
     # logger.warning("debugging off")
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_path))
 logger.info(families)

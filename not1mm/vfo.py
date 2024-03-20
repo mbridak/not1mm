@@ -9,24 +9,23 @@ VFO Window
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
 import logging
-
 import os
-
 import platform
 import queue
 import sys
+
 from json import loads, JSONDecodeError
 from pathlib import Path
 
 import serial
-from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
-from PyQt5.QtCore import QTimer
+
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import QDir, Qt, QTimer
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
-
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 if __loader__:
     WORKING_PATH = os.path.dirname(__loader__.get_filename())
@@ -81,6 +80,39 @@ class MainWindow(QMainWindow):
         """Shutdown the app."""
         app.quit()
 
+    def setDarkMode(self, dark: bool):
+        """testing"""
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+
     def load_pref(self) -> None:
         """
         Load preference file.
@@ -119,6 +151,7 @@ class MainWindow(QMainWindow):
                 int(self.pref.get("CAT_port", 4532)),
             )
             self.timer.start(100)
+        self.setDarkMode(self.pref.get("darkmode", False))
 
     def discover_device(self) -> str:
         """
@@ -214,6 +247,9 @@ class MainWindow(QMainWindow):
                     logger.critical("Unable to write to serial device.")
                 except AttributeError:
                     logger.critical("Unable to write to serial device.")
+                continue
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
 
     def showNumber(self, the_number) -> None:
         """Display vfo value with dots"""
@@ -301,6 +337,27 @@ def main():
     sys.exit(app.exec())
 
 
+def load_fonts_from_dir(directory: str) -> set:
+    """
+    Well it loads fonts from a directory...
+
+    Parameters
+    ----------
+    directory : str
+    The directory to load fonts from.
+
+    Returns
+    -------
+    set
+    A set of font families installed in the directory.
+    """
+    font_families = set()
+    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+    return font_families
+
+
 logger = logging.getLogger("__main__")
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
@@ -318,7 +375,10 @@ else:
     logger.warning("debugging off")
 
 app = QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
+font_path = WORKING_PATH + "/data"
+families = load_fonts_from_dir(os.fspath(font_path))
+logger.info(families)
 window = MainWindow()
 
 

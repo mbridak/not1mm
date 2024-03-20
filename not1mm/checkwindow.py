@@ -14,16 +14,16 @@ import sys
 from json import loads
 from pathlib import Path
 
-from PyQt5 import uic
-from PyQt5.QtCore import QDir
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
 
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+os.environ["QQTimerT_QPA_PLATFORMTHEME"] = "gnome"
 
 WORKING_PATH = os.path.dirname(__loader__.get_filename())
 
@@ -74,6 +74,39 @@ class MainWindow(QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
+    def setDarkMode(self, dark: bool):
+        """testing"""
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+
     def quit_app(self):
         """
         Called when the user clicks the exit button.
@@ -112,6 +145,7 @@ class MainWindow(QMainWindow):
 
         except IOError as exception:
             logger.critical("Error: %s", exception)
+        self.setDarkMode(self.pref.get("darkmode", False))
 
     def watch_udp(self):
         """
@@ -147,6 +181,8 @@ class MainWindow(QMainWindow):
                 # self.load_new_db()
             if json_data.get("cmd", "") == "HALT":
                 self.quit_app()
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
 
     def clear_lists(self) -> None:
         """
@@ -273,7 +309,7 @@ else:
     logger.warning("debugging off")
 
 app = QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+# app.setStyle("Adwaita-Dark")
 font_path = WORKING_PATH + "/data"
 _families = load_fonts_from_dir(os.fspath(font_path))
 window = MainWindow()
