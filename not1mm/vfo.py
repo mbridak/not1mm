@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
     old_pico = ""
     message_shown = False
     multicast_interface = None
+    current_palette = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -107,10 +108,11 @@ class MainWindow(QMainWindow):
             darkPalette.setColor(
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
-
+            self.current_palette = darkPalette
             self.setPalette(darkPalette)
         else:
             palette = self.style().standardPalette()
+            self.current_palette = palette
             self.setPalette(palette)
 
     def load_pref(self) -> None:
@@ -319,6 +321,7 @@ class MainWindow(QMainWindow):
         Display an alert box with the supplied message.
         """
         message_box = QtWidgets.QMessageBox()
+        message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")

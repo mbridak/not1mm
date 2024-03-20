@@ -998,6 +998,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contest_dialog.setPalette(self.current_palette)
             self.contest_dialog.exchange.setPalette(self.current_palette)
             self.contest_dialog.operators.setPalette(self.current_palette)
+            self.contest_dialog.contest.setPalette(self.current_palette)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)

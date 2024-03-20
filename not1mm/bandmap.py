@@ -414,10 +414,12 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
             self.setPalette(darkPalette)
+            self.callsignField.setPalette(darkPalette)
             self.update()
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
+            self.callsignField.setPalette(palette)
             self.text_color = Qt.black
             self.update()
 
