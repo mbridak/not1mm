@@ -3,7 +3,7 @@
 NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
-# pylint: disable=logging-fstring-interpolation
+# pylint: disable=logging-fstring-interpolation, logging-not-lazy
 
 # alt cluster hamqth.com 7300
 
@@ -176,6 +176,8 @@ class MainWindow(QtWidgets.QMainWindow):
     cw_entry_visible = False
     last_focus = None
     oldtext = ""
+    text_color = Qt.black
+    current_palette = None
 
     log_window = None
     check_window = None
@@ -202,6 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
+        self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
         self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
@@ -480,6 +483,74 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
+    def setDarkMode(self, dark):
+        """testing"""
+
+        logger.debug(f"Dark mode set to: {dark}")
+
+        cmd = {}
+        cmd["cmd"] = "DARKMODE"
+        cmd["state"] = dark
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+            self.current_palette = darkPalette
+            self.setPalette(darkPalette)
+            self.text_color = Qt.white
+            self.menuFile.setPalette(darkPalette)
+            self.menuHelp.setPalette(darkPalette)
+            self.menuOther.setPalette(darkPalette)
+            self.menuView.setPalette(darkPalette)
+            self.menuWindow.setPalette(darkPalette)
+            self.callsign.setPalette(darkPalette)
+            self.sent.setPalette(darkPalette)
+            self.receive.setPalette(darkPalette)
+            self.other_1.setPalette(darkPalette)
+            self.other_2.setPalette(darkPalette)
+            self.cw_entry.setPalette(darkPalette)
+
+        else:
+            palette = self.style().standardPalette()
+            self.current_palette = palette
+            self.setPalette(palette)
+            self.menuFile.setPalette(palette)
+            self.menuHelp.setPalette(palette)
+            self.menuOther.setPalette(palette)
+            self.menuView.setPalette(palette)
+            self.menuWindow.setPalette(palette)
+            self.callsign.setPalette(palette)
+            self.sent.setPalette(palette)
+            self.receive.setPalette(palette)
+            self.other_1.setPalette(palette)
+            self.other_2.setPalette(palette)
+            self.cw_entry.setPalette(palette)
+            self.text_color = Qt.black
+
     def set_radio_icon(self, state: int) -> None:
         """
         Change CAT icon state
@@ -618,6 +689,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         message_box = QtWidgets.QMessageBox()
+        if self.current_palette:
+            message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
@@ -637,7 +710,10 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.about_dialog = About(fsutils.MODULE_PATH)
+        self.about_dialog = About(fsutils.APP_DATA_PATH)
+        if self.current_palette:
+            self.about_dialog.setPalette(self.current_palette)
+
         self.about_dialog.donors.setSource(
             QtCore.QUrl.fromLocalFile(fsutils.APP_DATA_PATH / "donors.html")
         )
@@ -657,6 +733,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.about_dialog = About(fsutils.MODULE_PATH)
+        if self.current_palette:
+            self.about_dialog.setPalette(self.current_palette)
+
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
         self.about_dialog.donors.setSource(
@@ -697,7 +776,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.configuration_dialog = Settings(fsutils.MODULE_PATH, fsutils.CONFIG_PATH, self.pref)
+        self.configuration_dialog = Settings(fsutils.APP_DATA_PATH, self.pref)
+        if self.current_palette:
+            self.configuration_dialog.setPalette(self.current_palette)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
@@ -808,7 +889,10 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("%s", f"{contests}")
 
         if contests:
-            self.contest_dialog = SelectContest(fsutils.MODULE_PATH)
+            self.contest_dialog = SelectContest(fsutils.APP_DATA_PATH)
+            if self.current_palette:
+                self.contest_dialog.setPalette(self.current_palette)
+
             self.contest_dialog.contest_list.setRowCount(0)
             self.contest_dialog.contest_list.setColumnCount(4)
             self.contest_dialog.contest_list.verticalHeader().setVisible(False)
@@ -906,7 +990,14 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.contest_settings is None:
             return
-        self.contest_dialog = NewContest(fsutils.MODULE_PATH)
+
+        self.contest_dialog = NewContest(fsutils.APP_DATA_PATH)
+        if self.current_palette:
+            self.contest_dialog.setPalette(self.current_palette)
+            self.contest_dialog.exchange.setPalette(self.current_palette)
+            self.contest_dialog.operators.setPalette(self.current_palette)
+            self.contest_dialog.contest.setPalette(self.current_palette)
+
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
@@ -1260,7 +1351,12 @@ class MainWindow(QtWidgets.QMainWindow):
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
-                indicator.setStyleSheet("font-family: JetBrains Mono;")
+                if self.text_color == Qt.black:
+                    indicator.setStyleSheet(
+                        "font-family: JetBrains Mono; color: black;"
+                    )
+                else:
+                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -1748,7 +1844,13 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("New contest Dialog")
-        self.contest_dialog = NewContest(fsutils.MODULE_PATH)
+
+        self.contest_dialog = NewContest(fsutils.APP_DATA_PATH)
+        if self.current_palette:
+            self.contest_dialog.setPalette(self.current_palette)
+            self.contest_dialog.exchange.setPalette(self.current_palette)
+            self.contest_dialog.operators.setPalette(self.current_palette)
+
         self.contest_dialog.accepted.connect(self.save_contest)
         self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
@@ -1813,7 +1915,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Station Settings selected")
-        self.settings_dialog = EditStation(fsutils.MODULE_PATH)
+
+        self.settings_dialog = EditStation(fsutils.APP_DATA_PATH)
+        if self.current_palette:
+            self.settings_dialog.setPalette(self.current_palette)
+
         self.settings_dialog.accepted.connect(self.save_settings)
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
@@ -1901,7 +2007,11 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.edit_macro_dialog = EditMacro(function_key, fsutils.MODULE_PATH)
+        self.edit_macro_dialog = EditMacro(function_key, fsutils.APP_DATA_PATH)
+
+        if self.current_palette:
+            self.edit_macro_dialog.setPalette(self.current_palette)
+
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         self.edit_macro_dialog.open()
 
@@ -2182,6 +2292,13 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
+        if self.pref.get("darkmode"):
+            self.actionDark_Mode_2.setChecked(True)
+            self.setDarkMode(True)
+        else:
+            self.setDarkMode(False)
+            self.actionDark_Mode_2.setChecked(False)
+
         self.rig_control = None
 
         if self.pref.get("useflrig", False):
@@ -2316,6 +2433,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         "contest": self.contest_settings,
                         "operator": self.current_op}
                     self.multicast_interface.send_as_json(cmd)
+
+    def dark_mode_state_changed(self) -> None:
+        self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
+        self.write_preference()
+        self.setDarkMode(self.actionDark_Mode_2.isChecked())
 
     def cw_macros_state_changed(self) -> None:
         """
@@ -2495,8 +2617,6 @@ class MainWindow(QtWidgets.QMainWindow):
         stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
-        results = self.mscp.super_check(stripped_text)
-        logger.debug(f"{results}")
 
         if " " in text:
             if stripped_text == "CW":
@@ -2788,7 +2908,12 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.opon_dialog = OpOn(fsutils.MODULE_PATH)
+
+        self.opon_dialog = OpOn(fsutils.APP_DATA_PATH)
+
+        if self.current_palette:
+            self.opon_dialog.setPalette(self.current_palette)
+
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
@@ -3124,9 +3249,9 @@ logging.getLogger('PyQt5.uic.uiparser').setLevel('INFO')
 logging.getLogger('PyQt5.uic.properties').setLevel('INFO')
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Adwaita-Dark")
+
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-logger.info(families)
+logger.info(f"font families {families}")
 window = MainWindow()
 height = window.pref.get("window_height", 300)
 width = window.pref.get("window_width", 700)

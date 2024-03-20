@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>866</width>
-    <height>400</height>
+    <width>878</width>
+    <height>475</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1282,8 +1282,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>866</width>
-     <height>25</height>
+     <width>878</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -1333,6 +1333,7 @@
      <string>View</string>
     </property>
     <addaction name="actionCW_Macros"/>
+    <addaction name="actionDark_Mode_2"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -1749,6 +1750,14 @@
   <action name="actionVFO">
    <property name="text">
     <string>VFO</string>
+   </property>
+  </action>
+  <action name="actionDark_Mode_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark Mode</string>
    </property>
   </action>
  </widget>

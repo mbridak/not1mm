@@ -1,4 +1,5 @@
 /.vscode
+/.venv
 /dist
 /not1mm.egg-info
 /publish.sh

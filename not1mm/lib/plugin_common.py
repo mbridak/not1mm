@@ -233,5 +233,6 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 print("<EOR>", end="\r\n", file=file_descriptor)
                 print("", end="\r\n", file=file_descriptor)
-    except IOError:
-        ...
+            self.show_message_box(f"ADIF saved to: {filename}")
+    except IOError as error:
+        self.show_message_box(f"Error saving ADIF file: {error}")

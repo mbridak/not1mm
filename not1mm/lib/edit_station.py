@@ -11,14 +11,14 @@ class EditStation(QtWidgets.QDialog):
 
     cty_file = {}
 
-    def __init__(self, WORKING_PATH):
+    def __init__(self, app_data_path):
         super().__init__(None)
-        uic.loadUi(WORKING_PATH / "data" / "settings.ui", self)
+        uic.loadUi(app_data_path / "settings.ui", self)
         self.buttonBox.clicked.connect(self.store)
         self.GridSquare.textEdited.connect(self.gridchanged)
         self.Call.textEdited.connect(self.call_changed)
         with open(
-            WORKING_PATH / "data" / "cty.json", "rt", encoding="utf-8"
+            app_data_path / "cty.json", "rt", encoding="utf-8"
         ) as file_descriptor:
             self.cty_file = loads(file_descriptor.read())
 

@@ -9,25 +9,18 @@ VFO Window
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
 import logging
-
 import os
-
 import platform
-import queue
-import sys
 from json import loads, JSONDecodeError
-from pathlib import Path
 
 import serial
-from PyQt5 import QtCore, QtNetwork, uic, QtWidgets
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QWidget
-from appdata import AppDataPaths
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QWidget
 
 from not1mm import fsutils
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
-
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +31,7 @@ class VfoWindow(QWidget):
     old_pico = ""
     message_shown = False
     multicast_interface = None
+    current_palette = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,6 +57,40 @@ class VfoWindow(QWidget):
         self.poll_rig_timer = QtCore.QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
+
+    def setDarkMode(self, dark: bool):
+        """testing"""
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+            self.current_palette = darkPalette
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.current_palette = palette
+            self.setPalette(palette)
 
     def load_pref(self) -> None:
         """
@@ -102,6 +130,7 @@ class VfoWindow(QWidget):
                 int(self.pref.get("CAT_port", 4532)),
             )
             self.timer.start(100)
+        self.setDarkMode(self.pref.get("darkmode", False))
 
     def discover_device(self) -> str:
         """
@@ -195,6 +224,9 @@ class VfoWindow(QWidget):
                     logger.critical("Unable to write to serial device.")
                 except AttributeError:
                     logger.critical("Unable to write to serial device.")
+                continue
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
 
     def showNumber(self, the_number) -> None:
         """Display vfo value with dots"""
@@ -264,11 +296,10 @@ class VfoWindow(QWidget):
         Display an alert box with the supplied message.
         """
         message_box = QtWidgets.QMessageBox()
+        message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
-
-
 

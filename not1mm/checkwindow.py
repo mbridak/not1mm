@@ -10,8 +10,11 @@ import platform
 import queue
 from json import loads
 
-from PyQt5 import uic
-from PyQt5.QtWidgets import QListWidgetItem, QDockWidget, QWidget
+from PyQt5 import QtGui, uic
+from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtWidgets import QApplication, QListWidgetItem
+from PyQt5.QtWidgets import QWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -19,7 +22,6 @@ from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
-
 
 class CheckWindow(QWidget):
 
@@ -52,6 +54,38 @@ class CheckWindow(QWidget):
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
+    def setDarkMode(self, dark: bool):
+        """testing"""
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+
+            self.setPalette(darkPalette)
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
 
     def load_pref(self):
         """
@@ -75,6 +109,7 @@ class CheckWindow(QWidget):
 
         except IOError as exception:
             logger.critical("Error: %s", exception)
+        self.setDarkMode(self.pref.get("darkmode", False))
 
     def watch_udp(self):
         """
@@ -109,6 +144,9 @@ class CheckWindow(QWidget):
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
+
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
 
     def clear_lists(self) -> None:
         """
@@ -190,5 +228,4 @@ class CheckWindow(QWidget):
                 listItem = QListWidgetItem(call)
                 self.telnetList.addItem(listItem)
                 self.telnetList.show()
-
 

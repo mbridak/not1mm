@@ -16,9 +16,8 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from json import loads
 
-from PyQt5 import QtCore, QtGui
-from PyQt5 import QtNetwork
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5.QtCore import Qt
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.multicast import Multicast
@@ -315,16 +314,14 @@ class BandMapWindow(QtWidgets.QWidget):
     bandwidth_mark = []
     worked_list = {}
     multicast_interface = None
+    text_color = QtGui.QColor(45, 45, 45)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
-
         self.settings = self.get_settings()
-        if self.settings.get("dark_mode"):
-            self.setStyleSheet(fsutils.DARK_STYLESHEET)
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -346,6 +343,7 @@ class BandMapWindow(QtWidgets.QWidget):
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
+        self.setDarkMode(self.settings.get("darkmode", False))
         self.update()
         self.multicast_interface = Multicast(
             self.settings.get("multicast_group", "239.1.1.1"),
@@ -356,10 +354,50 @@ class BandMapWindow(QtWidgets.QWidget):
         self.request_workedlist()
         self.request_contest()
 
+
     def get_settings(self) -> dict:
         if os.path.exists(fsutils.CONFIG_FILE):
             with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
                 return loads(file_descriptor.read())
+
+    def setDarkMode(self, setdarkmode=False):
+        """testing"""
+
+        if setdarkmode:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(45, 45, 45)
+            self.text_color = Qt.white
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+
+            self.setPalette(darkPalette)
+            self.callsignField.setPalette(darkPalette)
+            self.update()
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+            self.callsignField.setPalette(palette)
+            self.text_color = Qt.black
+            self.update()
 
     def connect(self):
         if not self.callsignField.text():
@@ -483,14 +521,13 @@ class BandMapWindow(QtWidgets.QWidget):
                 cmd["spots"] = []
                 self.multicast_interface.send_as_json(cmd)
                 continue
-            if packet.get("cmd", "") == "HALT":
-                self.close_cluster()
-
             if packet.get("cmd", "") == "CONTESTSTATUS":
                 if not self.callsignField.text():
                     self.callsignField.setText(packet.get("operator", "").upper())
                     self.callsignField.selectAll()
-
+                continue
+            if packet.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(packet.get("state", False))
 
     def spot_clicked(self):
         """dunno"""
@@ -524,7 +561,10 @@ class BandMapWindow(QtWidgets.QWidget):
 
     def update(self):
         """doc"""
-        self.update_timer.setInterval(UPDATE_INTERVAL)
+        try:
+            self.update_timer.setInterval(UPDATE_INTERVAL)
+        except AttributeError:
+            ...
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -544,12 +584,13 @@ class BandMapWindow(QtWidgets.QWidget):
                 i * PIXELSPERSTEP,
                 length + 10,
                 i * PIXELSPERSTEP,
-                QtGui.QPen(QtGui.QColor(192, 192, 192)),
+                QtGui.QPen(self.text_color),
             )
             if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
+                self.something.setDefaultTextColor(self.text_color)
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
                     i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
@@ -683,7 +724,7 @@ class BandMapWindow(QtWidgets.QWidget):
         if result:
             min_y = 0.0
             for items in result:
-                pen_color = QtGui.QColor(192, 192, 192)
+                pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QtGui.QColor(47, 47, 255)
                 if items.get("callsign") in self.worked_list:

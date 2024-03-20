@@ -6,9 +6,9 @@ from PyQt5 import QtWidgets, uic
 class SelectContest(QtWidgets.QDialog):
     """Select Contest"""
 
-    def __init__(self, WORKING_PATH):
+    def __init__(self, app_data_path):
         super().__init__(None)
-        uic.loadUi(WORKING_PATH / "data" / "pickcontest.ui", self)
+        uic.loadUi(app_data_path / "pickcontest.ui", self)
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):

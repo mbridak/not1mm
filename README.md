@@ -138,6 +138,8 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-19] Removed some useless bloat causing slow interface on FreeBSD 13/14 and maybe others.
+- [24-3-16] Add Save/Fail confirmation dialogs when saving ADIF of Cabrillo files.
 - [24-3-15] Change 'CWR' to 'CW' in the ADIF output.
 - [24-3-13] Added CQ 160 CW and SSB
 - [24-3-9] Marked calls in the bandmap window colored Blue, until worked.
