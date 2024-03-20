@@ -192,6 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
     last_focus = None
     oldtext = ""
     text_color = Qt.black
+    current_palette = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -524,6 +525,7 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette.setColor(
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
+            self.current_palette = darkPalette
             self.setPalette(darkPalette)
             self.text_color = Qt.white
             self.menuFile.setPalette(darkPalette)
@@ -540,6 +542,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         else:
             palette = self.style().standardPalette()
+            self.current_palette = palette
             self.setPalette(palette)
             self.menuFile.setPalette(palette)
             self.menuHelp.setPalette(palette)
@@ -692,6 +695,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         message_box = QtWidgets.QMessageBox()
+        if self.current_palette:
+            message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
@@ -712,6 +717,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.about_dialog = About(WORKING_PATH)
+        if self.current_palette:
+            self.about_dialog.setPalette(self.current_palette)
         self.about_dialog.donors.setSource(
             QtCore.QUrl.fromLocalFile(WORKING_PATH + "/data/donors.html")
         )
@@ -731,6 +738,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.about_dialog = About(WORKING_PATH)
+        if self.current_palette:
+            self.about_dialog.setPalette(self.current_palette)
         self.about_dialog.setWindowTitle("Help")
         self.about_dialog.setGeometry(0, 0, 800, 600)
         self.about_dialog.donors.setSource(
@@ -772,6 +781,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.configuration_dialog = Settings(WORKING_PATH, CONFIG_PATH, self.pref)
+        if self.current_palette:
+            self.configuration_dialog.setPalette(self.current_palette)
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
@@ -883,6 +894,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if contests:
             self.contest_dialog = SelectContest(WORKING_PATH)
+            if self.current_palette:
+                self.contest_dialog.setPalette(self.current_palette)
             self.contest_dialog.contest_list.setRowCount(0)
             self.contest_dialog.contest_list.setColumnCount(4)
             self.contest_dialog.contest_list.verticalHeader().setVisible(False)
@@ -981,6 +994,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest_settings is None:
             return
         self.contest_dialog = NewContest(WORKING_PATH)
+        if self.current_palette:
+            self.contest_dialog.setPalette(self.current_palette)
+            self.contest_dialog.exchange.setPalette(self.current_palette)
+            self.contest_dialog.operators.setPalette(self.current_palette)
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
@@ -1813,6 +1830,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("New contest Dialog")
         self.contest_dialog = NewContest(WORKING_PATH)
+        if self.current_palette:
+            self.contest_dialog.setPalette(self.current_palette)
+            self.contest_dialog.exchange.setPalette(self.current_palette)
+            self.contest_dialog.operators.setPalette(self.current_palette)
         self.contest_dialog.accepted.connect(self.save_contest)
         self.contest_dialog.dateTimeEdit.setDate(QtCore.QDate.currentDate())
         self.contest_dialog.dateTimeEdit.setCalendarPopup(True)
@@ -1878,6 +1899,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("Station Settings selected")
         self.settings_dialog = EditStation(WORKING_PATH)
+        if self.current_palette:
+            self.settings_dialog.setPalette(self.current_palette)
         self.settings_dialog.accepted.connect(self.save_settings)
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
@@ -1966,6 +1989,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.edit_macro_dialog = EditMacro(function_key, WORKING_PATH)
+        if self.current_palette:
+            self.edit_macro_dialog.setPalette(self.current_palette)
         self.edit_macro_dialog.accepted.connect(self.edited_macro)
         self.edit_macro_dialog.open()
 
@@ -2576,7 +2601,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
 
-
         if " " in text:
             if stripped_text == "CW":
                 self.change_mode(stripped_text)
@@ -2868,6 +2892,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.opon_dialog = OpOn(WORKING_PATH)
+        if self.current_palette:
+            self.opon_dialog.setPalette(self.current_palette)
         self.opon_dialog.accepted.connect(self.new_op)
         self.opon_dialog.open()
 
