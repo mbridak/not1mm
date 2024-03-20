@@ -2478,8 +2478,6 @@ class MainWindow(QtWidgets.QMainWindow):
         stripped_text = text.strip().replace(" ", "")
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
-        results = self.mscp.super_check(stripped_text)
-        logger.debug(f"{results}")
 
         if " " in text:
             if stripped_text == "CW":
