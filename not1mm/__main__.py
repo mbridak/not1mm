@@ -3,7 +3,7 @@
 NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
-# pylint: disable=logging-fstring-interpolation, logging-not-lazy
+# pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long
 
 # alt cluster hamqth.com 7300
 
@@ -17,7 +17,8 @@ import os
 import platform
 import re
 import socket
-import subprocess
+
+# import subprocess
 import sys
 import threading
 import uuid
@@ -1311,6 +1312,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clearinputs()
 
     def launch_log_window(self) -> None:
+        """Launch the log window"""
         if not self.log_window:
             log_widget = LogWindow()
             self.log_window = QDockWidget(log_widget.property("windowTitle"), self)
@@ -1319,12 +1321,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log_window.show()
 
     def launch_bandmap_window(self) -> None:
+        """Launch the bandmap window"""
         if not self.bandmap_window:
             self.bandmap_window = BandMapWindow()
             self.addDockWidget(Qt.RightDockWidgetArea, self.bandmap_window)
         self.bandmap_window.show()
 
     def launch_check_window(self) -> None:
+        """Launch the check window"""
         if not self.check_window:
             check_widget = CheckWindow()
             self.check_window = QDockWidget(check_widget.property("windowTitle"), self)
@@ -1333,7 +1337,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.check_window.show()
 
     def launch_vfo(self) -> None:
-
+        """Launch the VFO window"""
         if not self.vfo_window:
             vfo_widget = VfoWindow()
             self.vfo_window = QDockWidget(vfo_widget.property("windowTitle"), self)
@@ -2441,6 +2445,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.multicast_interface.send_as_json(cmd)
 
     def dark_mode_state_changed(self) -> None:
+        """Called when the Dark Mode menu state is changed."""
         self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
         self.write_preference()
         self.setDarkMode(self.actionDark_Mode_2.isChecked())
