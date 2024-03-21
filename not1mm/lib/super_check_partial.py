@@ -3,6 +3,7 @@
 import logging
 
 import requests
+from pathlib import Path
 
 from rapidfuzz import fuzz
 from rapidfuzz import process
@@ -12,7 +13,7 @@ MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("super_check_partial")
 
 
 def prefer_prefix_score(query: str, candidate: str, **kwargs) -> int:
@@ -28,10 +29,10 @@ def prefer_prefix_score(query: str, candidate: str, **kwargs) -> int:
 class SCP:
     """Super check partial"""
 
-    def __init__(self, working_path):
+    def __init__(self, app_data_path):
         """initialize dialog"""
         self.scp = []
-        self.working_path = working_path
+        self.app_data_path = app_data_path
         self.read_scp()
 
     def update_masterscp(self) -> None:
@@ -42,7 +43,7 @@ class SCP:
         with requests.Session() as session:
             the_request = session.get(MASTER_SCP_URL)
             if the_request.status_code == 200:
-                with open(self.working_path + "/data/MASTER.SCP", "wb+") as file:
+                with open(Path(self.app_data_path) / "MASTER.SCP", "wb+") as file:
                     file.write(the_request.content)
                 return True
         return False
@@ -53,7 +54,7 @@ class SCP:
         """
         try:
             with open(
-                self.working_path + "/data/MASTER.SCP", "r", encoding="utf-8"
+                Path(self.app_data_path) / "MASTER.SCP", "r", encoding="utf-8"
             ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))

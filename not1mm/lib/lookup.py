@@ -9,7 +9,7 @@ import logging
 import xmltodict
 import requests
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("lookup")
 
 
 class HamDBlookup:

@@ -12,7 +12,7 @@ import http
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("cat_interface")
 
 
 class CAT:

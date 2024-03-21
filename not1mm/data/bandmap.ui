@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>BandMapWindow</class>
+ <widget class="QDockWidget" name="BandMapWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -18,7 +18,7 @@
   <property name="windowTitle">
    <string>BandMap</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
      <number>6</number>
@@ -50,7 +50,7 @@
          <string>callsign</string>
         </property>
         <property name="accessibleDescription">
-         <string>callsign used to sign in to d x cluster.</string>
+         <string>callsign used to sign in to dx cluster.</string>
         </property>
         <property name="styleSheet">
          <string notr="true">text-transform: uppercase;</string>

@@ -11,7 +11,7 @@ import logging
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("cwinterface")
 
 
 class CW:

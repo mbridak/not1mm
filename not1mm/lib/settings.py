@@ -8,12 +8,11 @@ import sounddevice as sd
 class Settings(QtWidgets.QDialog):
     """Settings dialog"""
 
-    def __init__(self, WORKING_PATH, CONFIG_PATH, pref, parent=None):
+    def __init__(self, app_data_path, pref, parent=None):
         """initialize dialog"""
         super().__init__(parent)
-        self.logger = logging.getLogger("__main__")
-        self.config_path = CONFIG_PATH
-        uic.loadUi(WORKING_PATH + "/data/configuration.ui", self)
+        self.logger = logging.getLogger("settings")
+        uic.loadUi(app_data_path / "configuration.ui", self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = pref
         self.devices = sd.query_devices()

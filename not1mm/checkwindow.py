@@ -5,45 +5,25 @@ Check Window
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 
 import logging
-
+import os
 import platform
 import queue
-import os
-import sys
-
 from json import loads
-from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets, uic, QtNetwork
+from PyQt5 import QtGui, uic
 from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QApplication, QListWidgetItem, QMainWindow
+from PyQt5.QtWidgets import QApplication, QListWidgetItem
+from PyQt5.QtWidgets import QWidget
 
+import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
-os.environ["QQTimerT_QPA_PLATFORMTHEME"] = "gnome"
+logger = logging.getLogger(__name__)
 
-WORKING_PATH = os.path.dirname(__loader__.get_filename())
-
-if "XDG_DATA_HOME" in os.environ:
-    DATA_PATH = os.environ.get("XDG_DATA_HOME")
-else:
-    DATA_PATH = str(Path.home() / ".local" / "share")
-DATA_PATH += "/not1mm"
-
-if "XDG_CONFIG_HOME" in os.environ:
-    CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME")
-else:
-    CONFIG_PATH = str(Path.home() / ".config")
-CONFIG_PATH += "/not1mm"
-
-
-class MainWindow(QMainWindow):
-    """
-    The main window
-    """
+class CheckWindow(QWidget):
 
     multicast_interface = None
     dbname = None
@@ -52,25 +32,25 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_pref()
-        self.dbname = DATA_PATH + "/" + self.pref.get("current_database", "ham.db")
-        self.database = DataBase(self.dbname, WORKING_PATH)
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        data_path = WORKING_PATH + "/data/checkwindow.ui"
-        uic.loadUi(data_path, self)
-        self.setWindowTitle("CheckWindow")
+
+        uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
+
         self.logList.clear()
         self.masterList.clear()
         self.telnetList.clear()
         self.callhistoryList.clear()
         self.callhistoryList.hide()
         self.callhistoryListLabel.hide()
-        self.mscp = SCP(WORKING_PATH)
+        self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
         self.multicast_interface = Multicast(
             self.pref.get("multicast_group", "239.1.1.1"),
             self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
+            self.pref.get("interface_ip", "127.0.0.1"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
@@ -107,20 +87,6 @@ class MainWindow(QMainWindow):
             palette = self.style().standardPalette()
             self.setPalette(palette)
 
-    def quit_app(self):
-        """
-        Called when the user clicks the exit button.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        app.quit()
-
     def load_pref(self):
         """
         Load preference file to get current db filename.
@@ -134,12 +100,10 @@ class MainWindow(QMainWindow):
         None
         """
         try:
-            if os.path.exists(CONFIG_PATH + "/not1mm.json"):
-                with open(
-                    CONFIG_PATH + "/not1mm.json", "rt", encoding="utf-8"
-                ) as file_descriptor:
+            if os.path.exists(fsutils.CONFIG_FILE):
+                with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
                     self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
+                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
             else:
                 self.pref["current_database"] = "ham.db"
 
@@ -160,6 +124,7 @@ class MainWindow(QMainWindow):
         None
         """
         while self.multicast_interface.server_udp.hasPendingDatagrams():
+            logger.error("Got multicast ")
             json_data = self.multicast_interface.read_datagram_as_json()
 
             if json_data.get("station", "") != platform.node():
@@ -179,8 +144,7 @@ class MainWindow(QMainWindow):
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
-            if json_data.get("cmd", "") == "HALT":
-                self.quit_app()
+
             if json_data.get("cmd", "") == "DARKMODE":
                 self.setDarkMode(json_data.get("state", False))
 
@@ -265,55 +229,3 @@ class MainWindow(QMainWindow):
                 self.telnetList.addItem(listItem)
                 self.telnetList.show()
 
-
-def load_fonts_from_dir(directory: str) -> set:
-    """
-    Load fonts from directory.
-
-    Parameters
-    ----------
-    directory : str
-    The directory to load fonts from.
-
-    Returns
-    -------
-    set
-    The set of font families loaded.
-    """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
-
-
-def main():
-    """main entry"""
-    sys.exit(app.exec())
-
-
-logger = logging.getLogger("__main__")
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    datefmt="%H:%M:%S",
-    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
-)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-
-if Path("./debug").exists():
-    logger.setLevel(logging.DEBUG)
-    logger.debug("debugging on")
-else:
-    logger.setLevel(logging.WARNING)
-    logger.warning("debugging off")
-
-app = QApplication(sys.argv)
-# app.setStyle("Adwaita-Dark")
-font_path = WORKING_PATH + "/data"
-_families = load_fonts_from_dir(os.fspath(font_path))
-window = MainWindow()
-window.show()
-
-if __name__ == "__main__":
-    main()

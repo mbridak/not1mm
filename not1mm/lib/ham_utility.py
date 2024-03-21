@@ -7,7 +7,7 @@ from datetime import datetime
 from math import asin, atan2, cos, pi, radians, sin, sqrt
 from decimal import Decimal
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("ham_utility")
 
 
 def calculate_wpx_prefix(the_call: str) -> str:

@@ -894,6 +894,7 @@
           <item>
            <widget class="QFrame" name="Button_Row1">
             <layout class="QHBoxLayout" name="ButtonRow1">
+
              <property name="sizeConstraint">
               <enum>QLayout::SetNoConstraint</enum>
              </property>
@@ -1543,7 +1544,7 @@
   </action>
   <action name="actionLog_Window">
    <property name="text">
-    <string>Log Window</string>
+    <string>QSO Log</string>
    </property>
    <property name="font">
     <font>
@@ -1743,7 +1744,7 @@
   </action>
   <action name="actionCheck_Window">
    <property name="text">
-    <string>Check Window</string>
+    <string>Check Partial</string>
    </property>
   </action>
   <action name="actionVFO">

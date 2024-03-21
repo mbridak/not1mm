@@ -12,7 +12,7 @@ from dicttoxml import dicttoxml
 
 from PyQt5 import QtNetwork
 
-logger = logging.getLogger("__main__")
+logger = logging.getLogger("multicast")
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -26,12 +26,14 @@ class Multicast:
         self.multicast_port = int(multicast_port)
         self.interface_ip = interface_ip
         self.server_udp = QtNetwork.QUdpSocket()
-        self.server_udp.bind(
+        b_result = self.server_udp.bind(
             QtNetwork.QHostAddress.AnyIPv4,
             int(self.multicast_port),
-            QtNetwork.QUdpSocket.ShareAddress,
+            QtNetwork.QUdpSocket.ReuseAddressHint
         )
-        self.server_udp.joinMulticastGroup(QtNetwork.QHostAddress(self.multicast_group))
+        logger.warn(f"multicast bind {b_result}")
+        join_result = self.server_udp.joinMulticastGroup(QtNetwork.QHostAddress(self.multicast_group))
+        logger.warn(f"joinMulticastGroup result {join_result}")
 
     def has_pending_datagrams(self) -> bool:
         """Check if there is a pending datagram"""
@@ -90,3 +92,6 @@ class Multicast:
             .data()
         )
         return packet
+
+    def close(self):
+        self.server_udp.close()

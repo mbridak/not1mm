@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>LogWindow</class>
+ <widget class="QWidget" name="LogWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,11 +11,18 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QSO Logs</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="bottomMargin"><number>2</number></property>
+   <property name="topMargin"><number>2</number></property>
+   <property name="leftMargin"><number>2</number></property>
+   <property name="rightMargin"><number>2</number></property>
+   <item>
+   <widget class="QSplitter" name="splitter">
+    <property name="orientation">
+       <enum>Qt::Vertical</enum>
+    </property>
      <widget class="QTableWidget" name="generalLog">
       <property name="font">
        <font>
@@ -23,8 +30,6 @@
        </font>
       </property>
      </widget>
-    </item>
-    <item row="1" column="0">
      <widget class="QTableWidget" name="focusedLog">
       <property name="font">
        <font>
@@ -32,9 +37,9 @@
        </font>
       </property>
      </widget>
-    </item>
-   </layout>
-  </widget>
+   </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

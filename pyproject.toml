@@ -23,6 +23,7 @@ dependencies = [
     "numpy",
     "notctyparser >= 23.6.21",
     "rapidfuzz",
+    "appdata"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
