@@ -736,7 +736,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.about_dialog = About(fsutils.MODULE_PATH)
+        self.about_dialog = About(fsutils.APP_DATA_PATH)
         if self.current_palette:
             self.about_dialog.setPalette(self.current_palette)
 
@@ -3256,7 +3256,7 @@ if Path("./debug").exists():
 logger = logging.getLogger("__main__")
 
 logging.basicConfig(
-    level=logging.DEBUG if DEBUG_ENABLED else logging.INFO,
+    level=logging.DEBUG if DEBUG_ENABLED else logging.CRITICAL,
     format="[%(asctime)s] %(levelname)s %(name)s - %(funcName)s Line %(lineno)d: %(message)s",
     handlers=[
         RotatingFileHandler(fsutils.LOG_FILE, maxBytes=10490000, backupCount=20),
