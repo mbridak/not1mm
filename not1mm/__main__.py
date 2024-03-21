@@ -463,7 +463,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
-        self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.station = self.database.fetch_station()
         if self.station is None:
             self.station = {}
@@ -827,7 +827,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
                 "current_database", "ham.db"
             )
-            self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
+            self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
             self.contact = self.database.empty_contact
             self.station = self.database.fetch_station()
             if self.station is None:
