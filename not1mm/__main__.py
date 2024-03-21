@@ -822,7 +822,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if filename:
             if filename[-3:] != ".db":
                 filename += ".db"
-            self.pref["current_database"] = os.path.basename(filename.split("/"))
+            self.pref["current_database"] = os.path.basename(filename)
             self.write_preference()
             self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
                 "current_database", "ham.db"
