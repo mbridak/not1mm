@@ -3,6 +3,7 @@
 Check Window
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
+# pylint: disable=logging-fstring-interpolation, line-too-long
 
 import logging
 import os
@@ -11,9 +12,8 @@ import queue
 from json import loads
 
 from PyQt5 import QtGui, uic
-from PyQt5.QtCore import QDir, Qt
-from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QApplication, QListWidgetItem
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QListWidgetItem
 from PyQt5.QtWidgets import QWidget
 
 import not1mm.fsutils as fsutils
@@ -23,7 +23,9 @@ from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
 
+
 class CheckWindow(QWidget):
+    """The check window. Shows list or probable stations."""
 
     multicast_interface = None
     dbname = None
@@ -32,7 +34,9 @@ class CheckWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.load_pref()
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
 
@@ -55,7 +59,7 @@ class CheckWindow(QWidget):
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
     def setDarkMode(self, dark: bool):
-        """testing"""
+        """Forces a darkmode palette."""
 
         if dark:
             darkPalette = QtGui.QPalette()
@@ -87,9 +91,9 @@ class CheckWindow(QWidget):
             palette = self.style().standardPalette()
             self.setPalette(palette)
 
-    def load_pref(self):
+    def load_pref(self) -> None:
         """
-        Load preference file to get current db filename.
+        Load preference file to get current db filename and sets the initial darkmode state.
 
         Parameters
         ----------
@@ -101,7 +105,9 @@ class CheckWindow(QWidget):
         """
         try:
             if os.path.exists(fsutils.CONFIG_FILE):
-                with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
+                with open(
+                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
+                ) as file_descriptor:
                     self.pref = loads(file_descriptor.read())
                     logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
             else:
@@ -228,4 +234,3 @@ class CheckWindow(QWidget):
                 listItem = QListWidgetItem(call)
                 self.telnetList.addItem(listItem)
                 self.telnetList.show()
-

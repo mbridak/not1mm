@@ -18,13 +18,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QWidget
 
-from not1mm import fsutils
+import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
 from not1mm.lib.multicast import Multicast
 
 logger = logging.getLogger(__name__)
 
+
 class VfoWindow(QWidget):
+    """The VFO window."""
 
     pref = {}
     old_vfo = ""
@@ -53,7 +55,7 @@ class VfoWindow(QWidget):
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
         self.setup_serial()
-        #app.processEvents()
+        # app.processEvents()
         self.poll_rig_timer = QtCore.QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
@@ -143,7 +145,7 @@ class VfoWindow(QWidget):
 
         devices = None
         data = None
-        #app.processEvents()
+        # app.processEvents()
         try:
             devices = os.listdir("/dev/serial/by-id")
         except FileNotFoundError:
@@ -187,7 +189,7 @@ class VfoWindow(QWidget):
                     "Unable to locate or open the VFO knob serial device."
                 )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-        #app.processEvents()
+        # app.processEvents()
 
     def watch_udp(self) -> None:
         """
@@ -234,7 +236,7 @@ class VfoWindow(QWidget):
         if len(dvfo) > 6:
             dnum = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
-            #app.processEvents()
+            # app.processEvents()
 
     def poll_radio(self) -> None:
         """
@@ -257,7 +259,7 @@ class VfoWindow(QWidget):
                     logger.debug(f"{vfo}")
                     self.showNumber(vfo)
                     # self.lcdNumber.display(dnum)
-                    #app.processEvents()
+                    # app.processEvents()
                     cmd = f"F {vfo}\r"
                     try:
                         if self.pico:
@@ -284,12 +286,12 @@ class VfoWindow(QWidget):
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
                             # self.lcdNumber.display(result)
-                            #app.processEvents()
+                            # app.processEvents()
         except OSError:
             logger.critical("Unable to write to serial device.")
         except AttributeError:
             logger.critical("Unable to write to serial device.")
-        #app.processEvents()
+        # app.processEvents()
 
     def show_message_box(self, message: str) -> None:
         """
@@ -302,4 +304,3 @@ class VfoWindow(QWidget):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
-

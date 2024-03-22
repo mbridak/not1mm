@@ -95,7 +95,9 @@ class LogWindow(QtWidgets.QWidget):
         self.n1mm = None
         self.load_pref()
 
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
         self.database = DataBase(self.dbname, fsutils.USER_DATA_PATH)
 
         self.database.current_contest = self.pref.get("contest", 0)
@@ -161,39 +163,38 @@ class LogWindow(QtWidgets.QWidget):
 
         self.multicast_interface.send_as_json(cmd)
 
-    def setDarkMode(self, dark: bool):
+    def set_dark_mode(self, dark: bool):
         """testing"""
 
         if dark:
-            darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(45, 45, 45)
-            disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
-            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            dark_palette = QtGui.QPalette()
+            dark_color = QtGui.QColor(45, 45, 45)
+            disabled_color = QtGui.QColor(127, 127, 127)
+            dark_palette.setColor(QtGui.QPalette.Window, dark_color)
+            dark_palette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
+            dark_palette.setColor(QtGui.QPalette.Text, Qt.white)
+            dark_palette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color
             )
-            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            dark_palette.setColor(QtGui.QPalette.Button, dark_color)
+            dark_palette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            dark_palette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabled_color
             )
-            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            dark_palette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            dark_palette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            dark_palette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabled_color
             )
 
-            self.setPalette(darkPalette)
+            self.setPalette(dark_palette)
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
-
 
     def get_column(self, name: str) -> int:
         """
@@ -252,7 +253,7 @@ class LogWindow(QtWidgets.QWidget):
         self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
-        self.setDarkMode(self.pref.get("darkmode", False))
+        self.set_dark_mode(self.pref.get("darkmode", False))
 
     def load_new_db(self) -> None:
         """
@@ -267,7 +268,9 @@ class LogWindow(QtWidgets.QWidget):
         None
         """
         self.load_pref()
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get("current_database", "ham.db")
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
@@ -907,8 +910,7 @@ class LogWindow(QtWidgets.QWidget):
                     self.generalLog.setColumnHidden(self.get_column(column), False)
                     self.focusedLog.setColumnHidden(self.get_column(column), False)
             if json_data.get("cmd", "") == "DARKMODE":
-                self.setDarkMode(json_data.get("state", False))
-
+                self.set_dark_mode(json_data.get("state", False))
 
     def show_like_calls(self, call: str) -> None:
         """
@@ -1084,4 +1086,3 @@ class LogWindow(QtWidgets.QWidget):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
-
