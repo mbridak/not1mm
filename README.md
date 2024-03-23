@@ -17,19 +17,16 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [Our Code Contributors ✨](#our-code-contributors-)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
-  - [Installing from PyPi](#installing-from-pypi)
-    - [Python and pip](#python-and-pip)
-    - [Installing with pip](#installing-with-pip)
-      - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
-      - [Ubuntu 23.04](#ubuntu-2304)
-      - [Fedora 38 \& 39](#fedora-38--39)
+  - [Installation](#installation)
+    - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
+    - [Bootstrapping pipx](#bootstrapping-pipx)
+    - [Installing with pipx](#installing-with-pipx)
+    - [Installing portaudio](#installing-portaudio)
+  - [After install](#after-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
-    - [Updating with pip/pipx](#updating-with-pippipx)
-  - [Other Libraries](#other-libraries)
-    - [Dark mode on Ubuntu](#dark-mode-on-ubuntu)
   - [Wayland Compositor](#wayland-compositor)
-  - [Running from source](#running-from-source)
+    - [Running from source](#running-from-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
@@ -40,13 +37,14 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
     - [Revisiting an old friend](#revisiting-an-old-friend)
   - [Station Settings dialog (REQUIRED)](#station-settings-dialog-required)
     - [Changing station information](#changing-station-information)
-  - [Adding a contest to the current dababase (REQUIRED)](#adding-a-contest-to-the-current-dababase-required)
-  - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
-  - [Editing existing contest parameters](#editing-existing-contest-parameters)
+  - [Selecting a contest (REQUIRED)](#selecting-a-contest-required)
+    - [Selecting a new contest](#selecting-a-new-contest)
+    - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
+    - [Editing existing contest parameters](#editing-existing-contest-parameters)
   - [Configuration Settings](#configuration-settings)
     - [Lookup](#lookup)
     - [Soundcard](#soundcard)
-    - [CAT](#cat)
+    - [CAT Control](#cat-control)
     - [CW Keyer interface](#cw-keyer-interface)
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
@@ -59,7 +57,7 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [Windows](#windows)
     - [The Main Window](#the-main-window)
-      - [Keyboard commands](#keyboard-commands)
+    - [Keyboard commands](#keyboard-commands)
     - [Log Display](#log-display)
       - [Editing a contact](#editing-a-contact)
   - [Recalulate Mults](#recalulate-mults)
@@ -150,42 +148,63 @@ I wish to thank those who've contributed to the project.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
-## Installing from PyPi
+## Installation
 
-### Python and pip
+### Python, PyPI, pip and pipx
 
-This software is a Python package hosted on PyPi, and installable with the pip or pipx command. If this is your first exposure to pip you can get all the details from [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/). In short, most linux distros come with Python pre installed. If pip is not installed by default, you can usually load it through your package manager. For example `sudo apt install python3-pip` or `sudo dnf install python3-pip`.
+This software is a Python package hosted on PyPI, and installable with the pip or pipx command. If this is your first exposure to Python packaging you can get all the details from:
 
-### Installing with pip
+- [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/)
+- [Install packages in a virtual environment using pip and venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
+- [Installing stand alone command line tools](https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/)
 
-I've included what installation steps I took to install on fresh images of Ubuntu and Fedora below. YMMV.
+In short, You should install stuff into a Python virtual environment. Newer Linux distros will make you do this unless you include a command line argument akin to '--break-my-system' when using pip. I'm not telling you to use pipx. But... **Use pipx**.
 
-#### Ubuntu 22.04 LTS
+### Bootstrapping pipx
+
+Assuming you have only Python installed, your path to pipx is:
 
 ```bash
-sudo apt update
-sudo apt upgrade
-sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy adwaita-qt
-pip install -U not1mm
+# First get pip installed. Either with apt or dnf, or the ensurepip command.
+python3 -m ensurepip
+
+# Update the pip that was just installed.
+python3 -m pip install --upgrade pip
+
+# Install pipx
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
 ```
 
-#### Ubuntu 23.04
+### Installing with pipx
+
+Then installing not1mm is as simple as:
 
 ```bash
-sudo apt update
-sudo apt upgrade
-sudo apt install -y libportaudio2 adwaita-qt pipx
+# Install not1mm
 pipx install not1mm
-pipx ensurepath
 ```
 
-#### Fedora 38 & 39
+If you need to later update not1mm, you can do so with:
 
 ```bash
-sudo dnf upgrade --refresh
-sudo dnf install python3-pip portaudio
-pip install not1mm
+# Update not1mm
+pipx upgrade not1mm
 ```
+
+### Installing portaudio
+
+not1mm uses portaudio to play audio. You can install it with:
+
+```bash
+# Ubuntu
+sudo apt install -y libportaudio2
+
+# Fedora
+sudo dnf install python3-pip portaudio
+```
+
+## After install
 
 You can now open a new terminal and type `not1mm`. On it's first run, it may or may not install a lovely non AI generated
 icon, which you can later click on to launch the application.
@@ -213,27 +232,13 @@ To avoid this you can export an environment variable and launch the app like thi
 
 For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
 
-### Updating with pip/pipx
-
-I've been posting updates just about everyday. Sometimes multiple times a day. It's early days, so there is much to do. You can check for and install updates with `pip install -U not1mm` or if installed with pipx `pipx upgrade not1mm`.
-
-## Other Libraries
-
-The audio library used, uses pipewire/portaudio. You may need to install portaudio. Ubuntu: `sudo apt install libportaudio2`
-
-### Dark mode on Ubuntu
-
-I believe I figured out dark mode in Ubuntu and have it working on my shack PC that runs Ubuntu 22.04. The secret sauce seems to be installing adwaita-qt with apt, and setting an environment variable `QT_STYLE_OVERRIDE` to `Adwaita-Dark`. I set the environment variable in the start of the program if running on a Gnome platform. So you don't need to do that part.
-
-Or see this discussion [darkmode](https://github.com/mbridak/not1mm/discussions/60).
-
 ## Wayland Compositor
 
 One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I'm aware of this, but I can not change it.
 
-## Running from source
+### Running from source
 
-Since this is packaged for PyPi, if you want to work on your own source branch, after cloning from github you would:
+Since this is packaged for PyPI, if you want to work on your own source branch, after cloning from github you would:
 
 ```bash
 pip install --upgrade pip
@@ -302,19 +307,21 @@ You can fill. You can fill. Everyone look at your keys.
 
 Station information can be changed any time by going to `File` > `Station Settings` and editing the information.
 
-## Adding a contest to the current dababase (REQUIRED)
+## Selecting a contest (REQUIRED)
+
+### Selecting a new contest
 
 Select `File` > `New Contest`
 
 ![New Contest Dialog](https://github.com/mbridak/not1mm/raw/master/pic/new_contest.png)
 
-## Selecting an existing contest as the current contest
+### Selecting an existing contest as the current contest
 
 Select `File` > `Open Contest`
 
 ![Open an existing contest](https://github.com/mbridak/not1mm/raw/master/pic/select_contest.png)
 
-## Editing existing contest parameters
+### Editing existing contest parameters
 
 You can edit the parameters of a previously defined contest by selecting it as the current contest. Then select `File` > `Edit Current Contest`. Click `OK` to save the new values and reload the contest. `Cancel` to keep the existing parameters.
 
@@ -334,7 +341,7 @@ For callsign lookup, Two services are supported. QRZ and HamQTH. They require a 
 
 Choose the sound output device for the voice keyer.
 
-### CAT
+### CAT Control
 
 Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really? There's an onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
@@ -417,7 +424,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 ![Main screen with callouts](https://github.com/mbridak/not1mm/raw/master/pic/mainwithcallouts.png)
 
-#### Keyboard commands
+### Keyboard commands
 
 | Key | Result |
 | -------------- | --- |
