@@ -1,9 +1,11 @@
 """Super Check Partial"""
 
+# pylint: disable=unused-argument
+
 import logging
 
-import requests
 from pathlib import Path
+import requests
 
 from rapidfuzz import fuzz
 from rapidfuzz import process
