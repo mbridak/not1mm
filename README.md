@@ -136,6 +136,8 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
+- [24-3-23] Yanked version 24-3-21, too many bugs for existing userbase.
 - [24-3-21] Merged PR from @kyleboyle for docking windows. MacOS and Windows support.
 - [24-3-19] Removed some useless bloat causing slow interface on FreeBSD 13/14 and maybe others.
 - [24-3-16] Add Save/Fail confirmation dialogs when saving ADIF of Cabrillo files.
