@@ -25,11 +25,11 @@
      inkscape:document-units="mm"
      inkscape:zoom="1.2861282"
      inkscape:cx="159.78189"
-     inkscape:cy="128.29203"
+     inkscape:cy="128.6808"
      inkscape:window-width="1600"
-     inkscape:window-height="772"
+     inkscape:window-height="831"
      inkscape:window-x="0"
-     inkscape:window-y="32"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -43,16 +43,18 @@
        id="g1"
        inkscape:export-filename="k6gte.not1mm-128.png"
        inkscape:export-xdpi="40.391186"
-       inkscape:export-ydpi="40.391186">
+       inkscape:export-ydpi="40.391186"
+       transform="matrix(0.31051264,0,0,0.31051264,43.315596,78.948834)"
+       style="stroke-width:1.0064">
       <circle
-         style="fill:#ff0000;stroke:#ffffff;stroke-width:3;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:#ff0000;stroke:#ffffff;stroke-width:3.0192;stroke-dasharray:none;stroke-opacity:1"
          id="path1"
          cx="103.06499"
          cy="154.74576"
          r="38.74641" />
       <path
          sodipodi:type="star"
-         style="fill:none;stroke:#ffff00;stroke-width:3.85325;stroke-dasharray:none"
+         style="fill:none;stroke:#ffff00;stroke-width:3.87791;stroke-dasharray:none"
          id="path2"
          inkscape:flatsided="true"
          sodipodi:sides="6"
@@ -68,17 +70,17 @@
          transform="matrix(0.69758447,-0.34513857,0.34474683,0.69837715,58.665214,104.33039)" />
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3;stroke-dasharray:none"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.0192;stroke-dasharray:none"
          x="102.85781"
          y="149.30919"
          id="text2"><tspan
            sodipodi:role="line"
            id="tspan2"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3;stroke-dasharray:none"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.0192;stroke-dasharray:none"
            x="102.85781"
            y="149.30919">!</tspan><tspan
            sodipodi:role="line"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3;stroke-dasharray:none"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:23.0205px;line-height:0.9;font-family:'JetBrains Mono';-inkscape-font-specification:'JetBrains Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.0192;stroke-dasharray:none"
            x="102.85781"
            y="170.02763"
            id="tspan3">1MM</tspan></text>
