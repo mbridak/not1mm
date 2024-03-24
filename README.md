@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down. 
 - [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
 - [24-3-23] Yanked version 24-3-21, too many bugs for existing userbase.
 - [24-3-21] Merged PR from @kyleboyle for docking windows. MacOS and Windows support.
