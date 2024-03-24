@@ -231,7 +231,6 @@ class Database:
         -------
         A dict of the spot.
         """
-        print(f"{current=} {limit=}")
         self.cursor.execute(
             "select * from spots where freq > ? and freq <= ? order by freq ASC;",
             (current, limit),
