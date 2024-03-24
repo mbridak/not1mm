@@ -231,10 +231,10 @@ class Database:
         -------
         A dict of the spot.
         """
-
+        print(f"{current=} {limit=}")
         self.cursor.execute(
             "select * from spots where freq > ? and freq <= ? order by freq ASC;",
-            ({current}, limit),
+            (current, limit),
         )
         return self.cursor.fetchone()
 
@@ -530,7 +530,7 @@ class BandMapWindow(QtWidgets.QDockWidget):
             if packet.get("cmd", "") == "CONTESTSTATUS":
                 if not self.callsignField.text():
                     self.callsignField.setText(packet.get("operator", "").upper())
-                    self.callsignField.selectAll()
+                    # self.callsignField.selectAll()
                 continue
             if packet.get("cmd", "") == "DARKMODE":
                 self.setDarkMode(packet.get("state", False))
