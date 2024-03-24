@@ -3,7 +3,7 @@
 NOT1MM Logger
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
-# pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long
+# pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long, bare-except
 
 # alt cluster hamqth.com 7300
 
@@ -123,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "contest": "",
         "multicast_group": "239.1.1.1",
         "multicast_port": 2239,
-        "interface_ip": "127.0.0.1",
+        "interface_ip": "0.0.0.0",
         "send_n1mm_packets": False,
         "n1mm_station_name": "20M CW Tent",
         "n1mm_operator": "Bernie",
