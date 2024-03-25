@@ -19,78 +19,101 @@
   <property name="windowTitle">
    <string>Check Partial</string>
   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <property name="bottomMargin"><number>2</number></property>
-    <property name="topMargin"><number>2</number></property>
-    <property name="leftMargin"><number>2</number></property>
-    <property name="rightMargin"><number>2</number></property>
-    <item row="1" column="1">
-     <widget class="QListWidget" name="masterList"/>
-    </item>
-    <item row="1" column="3">
-     <widget class="QListWidget" name="callhistoryList"/>
-    </item>
-    <item row="1" column="2">
-     <widget class="QListWidget" name="telnetList"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QListWidget" name="logList"/>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="logListLabel">
-      <property name="font">
-       <font>
-        <family>JetBrains Mono</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Log</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="masterListLabel">
-      <property name="font">
-       <font>
-        <family>JetBrains Mono</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Master</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="telnetListLabel">
-      <property name="font">
-       <font>
-        <family>JetBrains Mono</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Telnet</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QLabel" name="callhistoryListLabel">
-      <property name="font">
-       <font>
-        <family>JetBrains Mono</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Call</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <item row="1" column="1">
+    <widget class="QListWidget" name="masterList">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QListWidget" name="callhistoryList">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QListWidget" name="telnetList">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QListWidget" name="logList">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="logListLabel">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Log</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="masterListLabel">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Master</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="telnetListLabel">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Telnet</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="callhistoryListLabel">
+     <property name="font">
+      <font>
+       <family>JetBrains Mono</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Call</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
  <resources/>
  <connections/>
 </ui>
