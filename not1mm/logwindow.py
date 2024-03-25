@@ -59,6 +59,7 @@ class LogWindow(QtWidgets.QWidget):
     multicast_interface = None
     dbname = None
     edit_contact_dialog = None
+    current_palette = None
     pref = {}
     columns = {
         0: "YYYY-MM-DD HH:MM:SS",
@@ -190,9 +191,11 @@ class LogWindow(QtWidgets.QWidget):
             )
 
             self.setPalette(dark_palette)
+            self.current_palette = dark_palette
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
+            self.current_palette = palette
 
     def get_column(self, name: str) -> int:
         """
@@ -578,6 +581,8 @@ class LogWindow(QtWidgets.QWidget):
         """
         logger.debug("Edit: %s", uuid)
         self.edit_contact_dialog = EditContact(fsutils.APP_DATA_PATH)
+        if self.current_palette:
+            self.edit_contact_dialog.setPalette(self.current_palette)
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
         self.edit_contact_dialog.delete_2.clicked.connect(self.delete_contact)
