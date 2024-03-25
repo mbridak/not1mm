@@ -136,6 +136,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-3-25-1] Dark mode sorted out. Atleast for me...
 - [24-3-25] Yanked version 24-3-24-1. Fixed widget focus issues.
 - [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down. 
 - [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
