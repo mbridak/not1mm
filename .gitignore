@@ -18,3 +18,5 @@ not1mm/testing/server_database.db
 .idea
 venv
 manual.md
+flatpak-pip-generator
+not1mm.yaml
