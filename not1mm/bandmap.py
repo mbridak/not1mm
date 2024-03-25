@@ -369,12 +369,12 @@ class BandMapWindow(QtWidgets.QDockWidget):
 
         if setdarkmode:
             darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(45, 45, 45)
+            darkColor = QtGui.QColor(56, 56, 56)
             self.text_color = Qt.white
             disabledColor = QtGui.QColor(127, 127, 127)
             darkPalette.setColor(QtGui.QPalette.Window, darkColor)
             darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
             darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
             darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
             darkPalette.setColor(
@@ -396,12 +396,50 @@ class BandMapWindow(QtWidgets.QDockWidget):
             self.setPalette(darkPalette)
             self.callsignField.setPalette(darkPalette)
             self.update()
+            dark_button_style = (
+                "QPushButton {"
+                "background-color: rgb(56,56,56);"
+                "color: white;"
+                "border-style: outset;"
+                "border-width: 2px;"
+                "border-radius: 5px;"
+                "border-color: rgb(45,45,45);"
+                "padding: 6px;"
+                "}"
+                "QPushButton:pressed {"
+                "background-color: rgb(127, 127, 127);"
+                "border-style: inset;"
+                "}"
+            )
+            self.connectButton.setStyleSheet(dark_button_style)
+            self.clearButton.setStyleSheet(dark_button_style)
+            self.zoominButton.setStyleSheet(dark_button_style)
+            self.zoomoutButton.setStyleSheet(dark_button_style)
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
             self.callsignField.setPalette(palette)
             self.text_color = Qt.black
             self.update()
+            light_button_style = (
+                "QPushButton {"
+                "background-color: rgb(245,245,245);"
+                "color: rgb(52,52,52);"
+                "border-style: outset;"
+                "border-width: 2px;"
+                "border-radius: 5px;"
+                "border-color: rgb(150,150,150);"
+                "padding: 6px;"
+                "}"
+                "QPushButton:pressed {"
+                "background-color: rgb(127, 127, 127);"
+                "border-style: inset;"
+                "}"
+            )
+            self.connectButton.setStyleSheet(light_button_style)
+            self.clearButton.setStyleSheet(light_button_style)
+            self.zoominButton.setStyleSheet(light_button_style)
+            self.zoomoutButton.setStyleSheet(light_button_style)
 
     def connect(self):
         """Connect to the cluster."""
@@ -417,7 +455,7 @@ class BandMapWindow(QtWidgets.QDockWidget):
         port = self.settings.get("cluster_port", 7373)
         logger.info(f"connecting to dx cluster {server} {port}")
         self.socket.connectToHost(server, port)
-        self.connectButton.setStyleSheet("color: white;")
+        # self.connectButton.setStyleSheet("color: white;")
         self.connectButton.setText("Connecting")
         self.connected = True
 
@@ -854,13 +892,13 @@ class BandMapWindow(QtWidgets.QDockWidget):
                     logger.debug(f"couldn't parse freq from datablock {data}")
                 return
             if self.callsignField.text().upper() in data:
-                self.connectButton.setStyleSheet("color: green;")
+                # self.connectButton.setStyleSheet("color: green;")
                 self.connectButton.setText("Connected")
                 logger.debug(f"callsign login acknowledged {data}")
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
-        self.connectButton.setStyleSheet("color: yellow;")
+        # self.connectButton.setStyleSheet("color: yellow;")
         self.connectButton.setText("Connecting")
 
     def socket_error(self) -> None:
@@ -870,7 +908,7 @@ class BandMapWindow(QtWidgets.QDockWidget):
     def disconnected(self) -> None:
         """Called when socket is disconnected."""
         self.connected = False
-        self.connectButton.setStyleSheet("color: red;")
+        # self.connectButton.setStyleSheet("color: red;")
         self.connectButton.setText("Closed")
 
     def send_command(self, cmd: str) -> None:
@@ -899,7 +937,7 @@ class BandMapWindow(QtWidgets.QDockWidget):
             logger.info("Closing dx cluster connection")
             self.socket.close()
             self.connected = False
-            self.connectButton.setStyleSheet("color: red;")
+            # self.connectButton.setStyleSheet("color: red;")
             self.connectButton.setText("Closed")
 
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:

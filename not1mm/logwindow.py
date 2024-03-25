@@ -25,8 +25,6 @@ from not1mm.lib.n1mm import N1MM
 
 logger = logging.getLogger(__name__)
 
-# os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-
 
 def safe_float(the_input: any, default=0.0) -> float:
     """
@@ -168,11 +166,11 @@ class LogWindow(QtWidgets.QWidget):
 
         if dark:
             dark_palette = QtGui.QPalette()
-            dark_color = QtGui.QColor(45, 45, 45)
+            dark_color = QtGui.QColor(56, 56, 56)
             disabled_color = QtGui.QColor(127, 127, 127)
             dark_palette.setColor(QtGui.QPalette.Window, dark_color)
             dark_palette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
             dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
             dark_palette.setColor(QtGui.QPalette.Text, Qt.white)
             dark_palette.setColor(

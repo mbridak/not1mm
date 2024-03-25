@@ -63,11 +63,11 @@ class CheckWindow(QWidget):
 
         if dark:
             darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(45, 45, 45)
+            darkColor = QtGui.QColor(56, 56, 56)
             disabledColor = QtGui.QColor(127, 127, 127)
             darkPalette.setColor(QtGui.QPalette.Window, darkColor)
             darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
             darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
             darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
             darkPalette.setColor(

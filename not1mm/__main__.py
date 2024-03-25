@@ -501,12 +501,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if dark:
             darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(45, 45, 45)
-
+            darkColor = QtGui.QColor(56, 56, 56)
             disabledColor = QtGui.QColor(127, 127, 127)
             darkPalette.setColor(QtGui.QPalette.Window, darkColor)
             darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
             darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
             darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
             darkPalette.setColor(
@@ -524,6 +523,21 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette.setColor(
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
+            dark_button_style = (
+                "QPushButton {"
+                "background-color: rgb(56,56,56);"
+                "color: white;"
+                "border-style: outset;"
+                "border-width: 2px;"
+                "border-radius: 5px;"
+                "border-color: rgb(45,45,45);"
+                "padding: 6px;"
+                "}"
+                "QPushButton:pressed {"
+                "background-color: rgb(127, 127, 127);"
+                "border-style: inset;"
+                "}"
+            )
             self.current_palette = darkPalette
             self.setPalette(darkPalette)
             self.text_color = Qt.white
@@ -538,7 +552,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_1.setPalette(darkPalette)
             self.other_2.setPalette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
-
+            self.F1.setStyleSheet(dark_button_style)
+            self.F2.setStyleSheet(dark_button_style)
+            self.F3.setStyleSheet(dark_button_style)
+            self.F4.setStyleSheet(dark_button_style)
+            self.F5.setStyleSheet(dark_button_style)
+            self.F6.setStyleSheet(dark_button_style)
+            self.F7.setStyleSheet(dark_button_style)
+            self.F8.setStyleSheet(dark_button_style)
+            self.F9.setStyleSheet(dark_button_style)
+            self.F10.setStyleSheet(dark_button_style)
+            self.F11.setStyleSheet(dark_button_style)
+            self.F12.setStyleSheet(dark_button_style)
         else:
             palette = self.style().standardPalette()
             self.current_palette = palette
@@ -555,6 +580,33 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_2.setPalette(palette)
             self.cw_entry.setPalette(palette)
             self.text_color = Qt.black
+            light_button_style = (
+                "QPushButton {"
+                "background-color: rgb(245,245,245);"
+                "color: rgb(52,52,52);"
+                "border-style: outset;"
+                "border-width: 2px;"
+                "border-radius: 5px;"
+                "border-color: rgb(150,150,150);"
+                "padding: 6px;"
+                "}"
+                "QPushButton:pressed {"
+                "background-color: rgb(127, 127, 127);"
+                "border-style: inset;"
+                "}"
+            )
+            self.F1.setStyleSheet(light_button_style)
+            self.F2.setStyleSheet(light_button_style)
+            self.F3.setStyleSheet(light_button_style)
+            self.F4.setStyleSheet(light_button_style)
+            self.F5.setStyleSheet(light_button_style)
+            self.F6.setStyleSheet(light_button_style)
+            self.F7.setStyleSheet(light_button_style)
+            self.F8.setStyleSheet(light_button_style)
+            self.F9.setStyleSheet(light_button_style)
+            self.F10.setStyleSheet(light_button_style)
+            self.F11.setStyleSheet(light_button_style)
+            self.F12.setStyleSheet(light_button_style)
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -3270,9 +3322,7 @@ logging.basicConfig(
 )
 logging.getLogger("PyQt5.uic.uiparser").setLevel("INFO")
 logging.getLogger("PyQt5.uic.properties").setLevel("INFO")
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 app = QtWidgets.QApplication(sys.argv)
-
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(f"font families {families}")
 window = MainWindow()
