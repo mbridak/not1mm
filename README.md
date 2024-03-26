@@ -18,11 +18,15 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
   - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Common recipes for Ubuntu and Fedora](#common-recipes-for-ubuntu-and-fedora)
+      - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
+      - [Ubuntu 23.04](#ubuntu-2304)
+      - [Fedora 38 \& 39](#fedora-38--39)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
     - [Bootstrapping pipx](#bootstrapping-pipx)
     - [Installing with pipx](#installing-with-pipx)
-    - [Installing portaudio](#installing-portaudio)
-  - [After install](#after-install)
+  - [After the install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
   - [Wayland Compositor](#wayland-compositor)
@@ -155,6 +159,41 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Installation
 
+### Prerequisites
+
+not1mm requires PyQt5 and libportaudio2. You should install these through your distribution's package manager before continuing.
+
+### Common recipes for Ubuntu and Fedora
+
+#### Ubuntu 22.04 LTS
+
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy
+pip install -U not1mm
+```
+
+#### Ubuntu 23.04
+
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install -y libportaudio2 pipx
+pipx install not1mm
+pipx ensurepath
+```
+
+#### Fedora 38 & 39
+
+```bash
+sudo dnf upgrade --refresh
+sudo dnf install python3-pip portaudio
+pip install not1mm
+```
+
+You can now open a new terminal and type not1mm. On it's first run, it may or may not install a lovely non AI generated icon, which you can later click on to launch the application.
+
 ### Python, PyPI, pip and pipx
 
 This software is a Python package hosted on PyPI, and installable with the pip or pipx command. If this is your first exposure to Python packaging you can get all the details from:
@@ -197,19 +236,7 @@ If you need to later update not1mm, you can do so with:
 pipx upgrade not1mm
 ```
 
-### Installing portaudio
-
-not1mm uses portaudio to play audio. You can install it with:
-
-```bash
-# Ubuntu
-sudo apt install -y libportaudio2
-
-# Fedora
-sudo dnf install python3-pip portaudio
-```
-
-## After install
+## After the install
 
 You can now open a new terminal and type `not1mm`. On it's first run, it may or may not install a lovely non AI generated
 icon, which you can later click on to launch the application.
