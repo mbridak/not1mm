@@ -29,8 +29,8 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [After the install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
-  - [Wayland Compositor](#wayland-compositor)
     - [Running from source](#running-from-source)
+  - [Wayland Compositor](#wayland-compositor)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
@@ -80,20 +80,28 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
 
 ## What and why is Not1MM
 
-Not1MM's interface is a blatant ripoff of N1MM.
-It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
+Not1MM's interface is a blatant ripoff of N1MM. It is NOT N1MM and any problem
+you have with this software should in no way reflect on their software.
 
-If you use Windows(tm), you should run away from Not1MM and use someother program.
+If you use Windows(tm), you should run away from Not1MM and use someother
+program.
 
-I personally don't use Windows(tm). While it may be possible to get N1MM working under Wine, I haven't checked. I'd rather not have to jump thru the hoops.
+I personally don't use Windows(tm). While it may be possible to get N1MM working
+under Wine, I haven't checked. I'd rather not have to jump thru the hoops.
 
-**Currently this exists for my own personal amusement**.
-Something to do in my free time.
-While I'm not watching TV, Right vs Left political 'News' programs, mind numbing 'Reality' shows etc...
+**Currently this exists for my own personal amusement**. Something to do in my
+free time. While I'm not watching TV, Right vs Left political 'News' programs,
+mind numbing 'Reality' shows etc...
 
 ## Current state
 
-The current state is "**BETA**". I've used it for a few contests, and was able to work contacts and submit a cabrillo at the end. I'm not a "Contester". So I'll add contests as/if I work them. I'm only one guy, so if you see a bug let me know. I don't do much of any Data or RTTY operating. This is why you don't see RTTY in the list of working contests. The Lord helps those who burn people at the... I mean who help themselves. Feel free to fill in that hole with a pull request.
+The current state is "**BETA**". I've used it for a few contests, and was able
+to work contacts and submit a cabrillo at the end. I'm not a "Contester". So
+I'll add contests as/if I work them. I'm only one guy, so if you see a bug let
+me know. I don't do much of any Data or RTTY operating. This is why you don't
+see RTTY in the list of working contests. The Lord helps those who burn people
+at the... I mean who help themselves. Feel free to fill in that hole with a pull
+request.
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
@@ -161,7 +169,8 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ### Prerequisites
 
-not1mm requires Python 3.9+, PyQt5 and libportaudio2. You should install these through your distribution's package manager before continuing.
+not1mm requires Python 3.9+, PyQt5 and libportaudio2. You should install these
+through your distribution's package manager before continuing.
 
 ### Common recipes for Ubuntu and Fedora
 
@@ -192,17 +201,24 @@ sudo dnf install python3-pip portaudio
 pip install not1mm
 ```
 
-You can now open a new terminal and type not1mm. On it's first run, it may or may not install a lovely non AI generated icon, which you can later click on to launch the application.
+You can now open a new terminal and type not1mm. On it's first run, it may or
+may not install a lovely non AI generated icon, which you can later click on to
+launch the application.
 
 ### Python, PyPI, pip and pipx
 
-This software is a Python package hosted on PyPI, and installable with the pip or pipx command. If this is your first exposure to Python packaging you can get all the details from:
+This software is a Python package hosted on PyPI, and installable with the pip
+or pipx command. If this is your first exposure to Python packaging you can get
+all the details from:
 
 - [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/)
 - [Install packages in a virtual environment using pip and venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
 - [Installing stand alone command line tools](https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/)
 
-In short, You should install stuff into a Python virtual environment. Newer Linux distros will make you do this unless you include a command line argument akin to '--break-my-system' when using pip. I'm not telling you to use pipx. But... **Use pipx**.
+In short, You should install stuff into a Python virtual environment. Newer
+Linux distros will make you do this unless you include a command line argument
+akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
+But... **Use pipx**.
 
 ### Bootstrapping pipx
 
@@ -238,8 +254,9 @@ pipx upgrade not1mm
 
 ## After the install
 
-You can now open a new terminal and type `not1mm`. On it's first run, it may or may not install a lovely non AI generated
-icon, which you can later click on to launch the application.
+You can now open a new terminal and type `not1mm`. On it's first run, it may or
+may not install a lovely non AI generated icon, which you can later click on to
+launch the application.
 
 ### You may or may not get a warning message like
 
@@ -262,15 +279,14 @@ To avoid this you can export an environment variable and launch the app like thi
 
 `mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
 
-For a more permanent solution you can place the line `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
-
-## Wayland Compositor
-
-One side effect of Wayland is that we are not able to request for a window to regain or retain focus. So if you were to click on a spot in the bandmap window to tune to that spot, you would have to then click on the main window to continue entering contest data. I'm aware of this, but I can not change it.
+For a more permanent solution you can place the line
+`export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then
+after logging out and back in you should be able to launch it normally.
 
 ### Running from source
 
-Since this is packaged for PyPI, if you want to work on your own source branch, after cloning from github you would:
+Since this is packaged for PyPI, if you want to work on your own source branch,
+after cloning from github you would:
 
 ```bash
 pip install --upgrade pip
@@ -279,7 +295,8 @@ pip install build
 source rebuild.sh
 ```
 
-from the root directory. This installs a build chain and a local editable copy of not1mm.
+from the root directory. This installs a build chain and a local editable copy
+of not1mm.
 
 There's two ways to launch the program from the local editable copy.
 
@@ -295,41 +312,62 @@ or be in some other directory and just type:
 not1mm
 ```
 
+## Wayland Compositor
+
+One side effect of Wayland is that we are not able to request for a window to
+regain or retain focus. So if you were to click on a spot in the bandmap window
+to tune to that spot, you would have to then click on the main window to
+continue entering contest data. I'm aware of this, but I can not change it.
+
 ## Various data file locations
 
 ### Data
 
-If your system has an `XDG_DATA_HOME` environment variable set, the database and CW macro files can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
+If your system has an `XDG_DATA_HOME` environment variable set, the database and
+CW macro files can be found there. Otherwise they will be found at
+`yourhome/.local/share/not1mm`
 
 ### Config
 
-Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`. Otherwise they will be found at `yourhome/.config/not1mm`
+Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`.
+Otherwise they will be found at `yourhome/.config/not1mm`
 
 ## The database
 
 ### Why
 
-The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do You Boo.
+The database holds... wait for it... data... I know shocker right. A database
+can hold one or many contest logs. It also holds the station information,
+everything shown in the Station Settings dialog. You can have one database for
+the rest of your life. Filled with hundreds of contests you've logged. Or, you
+can create a new database to hold just one contest. You do You Boo.
 
 ### The first one
 
-On the initial running, a database is created for you called `ham.db`. This, and all future databases, are located in the data directory mentioned above.
+On the initial running, a database is created for you called `ham.db`. This, and
+all future databases, are located in the data directory mentioned above.
 
 ### Why limit yourself
 
-You can create a new database by selecting `File` > `New Database` from the main window, and give it a snazzy name. Why limit yourself. Hell, create one every day for all I care. You can manage your own digital disaster.
+You can create a new database by selecting `File` > `New Database` from the main
+window, and give it a snazzy name. Why limit yourself. Hell, create one every
+day for all I care. You can manage your own digital disaster.
 
 ### Revisiting an old friend
 
-You can select a previously created databases for use by selecting `File` > `Open Database`.
+You can select a previously created databases for use by selecting
+`File` > `Open Database`.
 
 ## Station Settings dialog (REQUIRED)
 
-After initial run of the program or creating a new database you will need to fill out the Station Settings dialog that will pop up.
+After initial run of the program or creating a new database you will need to
+fill out the Station Settings dialog that will pop up.
 
 ![settings screen](https://github.com/mbridak/not1mm/raw/master/pic/settings.png)
 
-You can fill it out if you want to. You can leave our friends behind. 'Cause your friends don't fill, and if they don't fill. Well, they're no friends of mine.
+You can fill it out if you want to. You can leave our friends behind.
+'Cause your friends don't fill, and if they don't fill. Well, they're no friends
+of mine.
 
 You can fill. You can fill. Everyone look at your keys.
 
@@ -337,7 +375,8 @@ You can fill. You can fill. Everyone look at your keys.
 
 ### Changing station information
 
-Station information can be changed any time by going to `File` > `Station Settings` and editing the information.
+Station information can be changed any time by going to
+`File` > `Station Settings` and editing the information.
 
 ## Selecting a contest (REQUIRED)
 
@@ -355,11 +394,15 @@ Select `File` > `Open Contest`
 
 ### Editing existing contest parameters
 
-You can edit the parameters of a previously defined contest by selecting it as the current contest. Then select `File` > `Edit Current Contest`. Click `OK` to save the new values and reload the contest. `Cancel` to keep the existing parameters.
+You can edit the parameters of a previously defined contest by selecting it as
+the current contest. Then select `File` > `Edit Current Contest`. Click `OK` to
+save the new values and reload the contest. `Cancel` to keep the existing
+parameters.
 
 ## Configuration Settings
 
-To setup your CAT control, CW keyer, Callsign lookups, select `File` > `Configuration Settings`
+To setup your CAT control, CW keyer, Callsign lookups, select
+`File` > `Configuration Settings`
 
 The tabs for groups and n1mm are disabled and are for future expansion.
 
@@ -367,7 +410,8 @@ The tabs for groups and n1mm are disabled and are for future expansion.
 
 ### Lookup
 
-For callsign lookup, Two services are supported. QRZ and HamQTH. They require a username and password, Enter it here.
+For callsign lookup, Two services are supported. QRZ and HamQTH. They require a
+username and password, Enter it here.
 
 ### Soundcard
 
@@ -375,41 +419,59 @@ Choose the sound output device for the voice keyer.
 
 ### CAT Control
 
-Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a port of `12345`. `None` is always an option, but is it really? There's an onscreen icon for CAT status. Green good, Red bad, Grey neither.
+Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of
+`127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a
+port of `12345`. `None` is always an option, but is it really? There's an
+onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
 ### CW Keyer interface
 
-Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP `127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and port `8000`. Or `None`, if you want to Morse it like it's 1899.
+Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP
+`127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and
+port `8000`. Or `None`, if you want to Morse it like it's 1899.
 
 ### Cluster
 
 ![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
 
-  Under the `Cluster` TAB you can change the default AR Cluster server, port and filter settings used for the bandmap window.
+Under the `Cluster` TAB you can change the default AR Cluster server, port and
+filter settings used for the bandmap window.
 
 ### N1MM Packets
 
-Work has started on N1MM udp packets. So far just RadioInfo, contactinfo, contactreplace and contactdelete.
+Work has started on N1MM udp packets. So far just RadioInfo, contactinfo,
+contactreplace and contactdelete.
 
 ![N1MM Packet Configuration Screen](https://github.com/mbridak/not1mm/blob/master/pic/n1mm_packet_config.png?raw=true)
 
-When entering IP and Ports, enter them with a colon ':' between them. You can enter multiple pairs on the same line if separated by a space ' '.
+When entering IP and Ports, enter them with a colon ':' between them. You can
+enter multiple pairs on the same line if separated by a space ' '.
 
 ### Bands
 
-You can define which bands appear in the main window. Those with checkmarks will appear. Those without will not.
+You can define which bands appear in the main window. Those with checkmarks will
+appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
 ## Sending CW
 
-Other than sending CW by hand, you can also send predefined CW text messages by pressing F1 - F12. See next section on Editing macro keys. If you need to send something freeform, you can press CTRL-SHIFT-K, this will expose an entry field at the bottom of the window which you can type directly into. When you're done you can either press CTRL-SHIFT-K again, or press the Enter Key to close the field.
+Other than sending CW by hand, you can also send predefined CW text messages by
+pressing F1 - F12. See next section on Editing macro keys. If you need to send
+something freeform, you can press CTRL-SHIFT-K, this will expose an entry field
+at the bottom of the window which you can type directly into. When you're done
+you can either press CTRL-SHIFT-K again, or press the Enter Key to close the
+field.
 
 ## Editing macro keys
 
-To edit the macros, choose `File` > `Edit Macros`. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit, CW or SSB, will be determined by your current operating mode.
+To edit the macros, choose `File` > `Edit Macros`. This will open your systems
+registered text editor with current macros loaded. When your done just save the
+file and close the editor. The file loaded to edit, CW or SSB, will be
+determined by your current operating mode.
 
-After editing and saving the macro file. You can force the logger to reload the macro file by toggeling between `Run` and `S&P` states.
+After editing and saving the macro file. You can force the logger to reload the
+macro file by toggeling between `Run` and `S&P` states.
 
 ### Macro substitutions
 
@@ -426,19 +488,37 @@ You can include a limited set of substitution instructions.
 
 ### Macro use with voice
 
-The macros when used with voice, will also accept filenames of WAV files to play, excluding the file extension. The filename must be enclosed by brackets. For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav files are stored in the operators personal data directory. The filenames must be in lowercase. See [Various data file locations](#various-data-file-locations) above for the location of your data files. For me, the macro `[cq]` will play `/home/mbridak/.local/share/not1mm/K6GTE/cq.wav`
+The macros when used with voice, will also accept filenames of WAV files to
+play, excluding the file extension. The filename must be enclosed by brackets.
+For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav
+files are stored in the operators personal data directory. The filenames must be
+in lowercase. See [Various data file locations](#various-data-file-locations)
+above for the location of your data files. For me, the macro `[cq]` will play
+`/home/mbridak/.local/share/not1mm/K6GTE/cq.wav`
 
-**The current wav files in place are not the ones you will want to use. They sound like an idiot.** You can use something like Audacity to record new wav files in your own voice.
+**The current wav files in place are not the ones you will want to use. They
+sound like an idiot.** You can use something like Audacity to record new wav
+files in your own voice.
 
-Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in an idiots voice.
+Aside from the `[filename]` wav files, there are also NATO phonetic wav files
+for each letter and number. So if your macro key holds
+`{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during
+CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3.
+Hopefully not in an idiots voice.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
-When a callsign is entered, a look up is first done in a cty.dat file to determin the country of origin, geographic center, cq zone and ITU region. Great circle calculations are done to determin the heading and distance from your gridsquare to the grographic center. This information then displayed at the bottom left.
+When a callsign is entered, a look up is first done in a cty.dat file to
+determin the country of origin, geographic center, cq zone and ITU region.
+Great circle calculations are done to determin the heading and distance from
+your gridsquare to the grographic center. This information then displayed at the
+bottom left.
 
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance.png)
 
-After this, a request is made to QRZ for the gridsquare of the callsign. If there is a response the information is recalculated and displayed. You'll know is this has happened, since the gridsquare will replace the word "Regional".
+After this, a request is made to QRZ for the gridsquare of the callsign. If
+there is a response the information is recalculated and displayed. You'll know
+is this has happened, since the gridsquare will replace the word "Regional".
 
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance_qrz.png)
 
@@ -480,11 +560,14 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 `Window`>`Log Window`
 
-The Log display gets updated automatically when a contact is entered. The top half is a list of all contacts.
+The Log display gets updated automatically when a contact is entered. The top
+half is a list of all contacts.
 
 ![Log Display Window](https://github.com/mbridak/not1mm/raw/master/pic/logdisplay.png)
 
-The bottom half of the log displays contacts sorted by what's currently in the call entry field. The columns displayed in the log window are dependant on what contests is currently active.
+The bottom half of the log displays contacts sorted by what's currently in the
+call entry field. The columns displayed in the log window are dependant on what
+contests is currently active.
 
 #### Editing a contact
 
@@ -500,7 +583,9 @@ You can not directly edit the multiplier status of a contact. Instead see the ne
 
 ## Recalulate Mults
 
-After editing a contact and before generating a Cabrillo file. There is a Misc menu option that will recalculate the multipliers incase an edit had caused a change.
+After editing a contact and before generating a Cabrillo file. There is a Misc
+menu option that will recalculate the multipliers incase an edit had caused a
+change.
 
 ## Bandmap
 
@@ -508,27 +593,36 @@ After editing a contact and before generating a Cabrillo file. There is a Misc m
 
 Put your callsign in the top and press the connect button.
 
-The bandmap window is, as with everything, a work in progress. The bandmap now follows the VFO.
+The bandmap window is, as with everything, a work in progress. The bandmap now
+follows the VFO.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/bandmap.png)
 
-VFO indicator now displays as small triangle in the frequency tickmarks. A small blue rectangle shows the receivers bandwidth if one is reported.
+VFO indicator now displays as small triangle in the frequency tickmarks. A small
+blue rectangle shows the receivers bandwidth if one is reported.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
-Clicked on spots now tune the radio and set the callsign field. Previously worked calls are displayed in red.
+Clicked on spots now tune the radio and set the callsign field. Previously
+worked calls are displayed in red.
 
 ## Check Window
 
 `Window`>`Check Window`
 
-As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, your local log or the recent telnet spots. The MASTER.SCP column will show results for strings of 3 or more matching characters from the start of the call string. The local log and telnet columns will show matches of any length appearing anywhere in the string.
+As you enter a callsign, the Check Window will show probable matches to calls
+either in the MASTER.SCP file, your local log or the recent telnet spots. The
+MASTER.SCP column will show results for strings of 3 or more matching characters
+from the start of the call string. The local log and telnet columns will show
+matches of any length appearing anywhere in the string.
 
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
 
 ## Remote VFO
 
-You can control the VFO on a remote rig by following the directions listed in the link below. It's a small hardware project with a BOM of under $20, and consisting of two parts.
+You can control the VFO on a remote rig by following the directions listed in
+the link below. It's a small hardware project with a BOM of under $20, and
+consisting of two parts.
 
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`
@@ -549,7 +643,8 @@ K6GTE_CANADA-DAY_2023-09-04_07-47-05.log
 
 Look, a log [eh](https://www.youtube.com/watch?v=El41sHXck-E)?
 
-[This](https://www.youtube.com/watch?v=oMI23JJUpGE) outlines some differences between ARRL Field Day and Canada Day.
+[This](https://www.youtube.com/watch?v=oMI23JJUpGE) outlines some differences
+between ARRL Field Day and Canada Day.
 
 ## ADIF
 
@@ -565,26 +660,43 @@ Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
 
 ## Contest specific notes
 
-I found it might be beneficial to have a section devoted to wierd quirky things about operating a specific contests.
+I found it might be beneficial to have a section devoted to wierd quirky things
+about operating a specific contests.
 
 ### ARRL Sweekstakes
 
 #### The exchange parser
 
-This was a pain in the tukus. There are so many elements to the exchange, and one input field aside from the callsign field. So I had to write sort of a 'parser'. The parser moves over your input string following some basic rules and is re-evaluated with each keypress and the parsed result will be displayed in the label over the field. The exchange looks like `124 A K6GTE 17 ORG`, a Serial number, Precidence, Callsign, Year Licenced and Section. even though the callsign is given as part of the exchange, the callsign does not have to be entered and is pulled from the callsign field. If the exchange was entered as `124 A 17 ORG` you would see:
+This was a pain in the tukus. There are so many elements to the exchange, and
+one input field aside from the callsign field. So I had to write sort of a
+'parser'. The parser moves over your input string following some basic rules and
+is re-evaluated with each keypress and the parsed result will be displayed in
+the label over the field. The exchange looks like `124 A K6GTE 17 ORG`, a Serial
+number, Precidence, Callsign, Year Licenced and Section. even though the
+callsign is given as part of the exchange, the callsign does not have to be
+entered and is pulled from the callsign field. If the exchange was entered as
+`124 A 17 ORG` you would see:
 
 ![SS Parser Result](https://github.com/mbridak/not1mm/raw/master/pic/ss_parser_1.png)
 
-You can enter the serial number and precidence, or the year and section as pairs. For instance `124A 17ORG`. This would ensure the values get parsed correctly.
+You can enter the serial number and precidence, or the year and section as
+pairs. For instance `124A 17ORG`. This would ensure the values get parsed
+correctly.
 
-You do not have to go back to correct typing. You can just tack the correct items to the end of the field and the older values will get overwritten. So if you entered `124A 17ORG Q`, the precidence will change from A to Q. If you need to change the serial number you must append the precidence to it, `125A`.
+You do not have to go back to correct typing. You can just tack the correct
+items to the end of the field and the older values will get overwritten. So if
+you entered `124A 17ORG Q`, the precidence will change from A to Q. If you need
+to change the serial number you must append the precidence to it, `125A`.
 
-If the callsign was entered wrong in the callsign field, you can put the correct callsign some where in the exchange. As long as it shows up in the parsed label above correctly your good.
+If the callsign was entered wrong in the callsign field, you can put the correct
+callsign some where in the exchange. As long as it shows up in the parsed label
+above correctly your good.
 
 The best thing you can do is play around with it to see how it behaves.
 
 #### The exchange
 
-In the `Sent Exchange` field of the New Contest dialog put in the Precidence, Call, Check and Section. Example: `A K6GTE 17 ORG`.
+In the `Sent Exchange` field of the New Contest dialog put in the Precidence,
+Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
 For the Run Exchange macro I'd put `{HISCALL} # A K6GTE 17 ORG`.
