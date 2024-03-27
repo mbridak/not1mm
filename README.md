@@ -161,7 +161,7 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ### Prerequisites
 
-not1mm requires PyQt5 and libportaudio2. You should install these through your distribution's package manager before continuing.
+not1mm requires Python 3.9+, PyQt5 and libportaudio2. You should install these through your distribution's package manager before continuing.
 
 ### Common recipes for Ubuntu and Fedora
 
