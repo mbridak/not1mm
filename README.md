@@ -617,6 +617,8 @@ MASTER.SCP column will show results for strings of 3 or more matching characters
 from the start of the call string. The local log and telnet columns will show
 matches of any length appearing anywhere in the string.
 
+Clicking on any of these items will change the callsign field.
+
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
 
 ## Remote VFO
