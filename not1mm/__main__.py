@@ -2456,6 +2456,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         cmd["station"] = platform.node()
                         cmd["COLUMNS"] = self.contest.columns
                         self.multicast_interface.send_as_json(cmd)
+                    continue
                 if (
                     json_data.get("cmd", "") == "TUNE"
                     and json_data.get("station", "") == platform.node()
@@ -2472,6 +2473,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.callsign.setFocus()
                     self.callsign.activateWindow()
                     window.raise_()
+                    continue
 
                 if (
                     json_data.get("cmd", "") == "GETWORKEDLIST"
@@ -2483,6 +2485,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["station"] = platform.node()
                     cmd["worked"] = result
                     self.multicast_interface.send_as_json(cmd)
+                    continue
 
                 if (
                     json_data.get("cmd", "") == "GETCONTESTSTATUS"
@@ -2495,6 +2498,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         "operator": self.current_op,
                     }
                     self.multicast_interface.send_as_json(cmd)
+                    continue
+
+                if (
+                    json_data.get("cmd", "") == "CHANGECALL"
+                    and json_data.get("station", "") == platform.node()
+                ):
+                    self.callsign.setText(json_data.get("call", ""))
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""

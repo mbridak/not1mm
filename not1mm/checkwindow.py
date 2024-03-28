@@ -43,8 +43,11 @@ class CheckWindow(QWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
 
         self.logList.clear()
+        self.logList.itemClicked.connect(self.item_clicked)
         self.masterList.clear()
+        self.masterList.itemClicked.connect(self.item_clicked)
         self.telnetList.clear()
+        self.telnetList.itemClicked.connect(self.item_clicked)
         self.callhistoryList.clear()
         self.callhistoryList.hide()
         self.callhistoryListLabel.hide()
@@ -54,9 +57,18 @@ class CheckWindow(QWidget):
         self.multicast_interface = Multicast(
             self.pref.get("multicast_group", "239.1.1.1"),
             self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "127.0.0.1"),
+            self.pref.get("interface_ip", "0,0,0,0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
+
+    def item_clicked(self, item):
+        """docstring for item_clicked"""
+        if item:
+            cmd = {}
+            cmd["cmd"] = "CHANGECALL"
+            cmd["station"] = platform.node()
+            cmd["call"] = item.text()
+            self.multicast_interface.send_as_json(cmd)
 
     def setDarkMode(self, dark: bool):
         """Forces a darkmode palette."""
