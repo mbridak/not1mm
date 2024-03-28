@@ -19,18 +19,17 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [Recent Changes](#recent-changes)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
-    - [Common recipes for Ubuntu and Fedora](#common-recipes-for-ubuntu-and-fedora)
+    - [Common installation recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
       - [Fedora 38 \& 39](#fedora-38--39)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
-    - [Bootstrapping pipx](#bootstrapping-pipx)
-    - [Installing with pipx](#installing-with-pipx)
+      - [Bootstrapping pipx](#bootstrapping-pipx)
+      - [Installing with pipx](#installing-with-pipx)
   - [After the install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
-    - [Running from source](#running-from-source)
-  - [Wayland Compositor](#wayland-compositor)
+    - [Installing from GitHub source](#installing-from-github-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
@@ -59,24 +58,21 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
     - [Macro use with voice](#macro-use-with-voice)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
-  - [Windows](#windows)
+  - [The Windows](#the-windows)
     - [The Main Window](#the-main-window)
-    - [Keyboard commands](#keyboard-commands)
-    - [Log Display](#log-display)
+      - [Keyboard commands](#keyboard-commands)
+    - [The Log Window](#the-log-window)
       - [Editing a contact](#editing-a-contact)
-  - [Recalulate Mults](#recalulate-mults)
-  - [Bandmap](#bandmap)
-  - [Check Window](#check-window)
-  - [Remote VFO](#remote-vfo)
+    - [The Bandmap Window](#the-bandmap-window)
+    - [The Check Window](#the-check-window)
+    - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
-  - [Dupe checking](#dupe-checking)
+  - [Recalulate Mults](#recalulate-mults)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
       - [The exchange](#the-exchange)
-
-[Visit the Wiki](https://github.com/mbridak/not1mm/wiki/Not1MM)
 
 ## What and why is Not1MM
 
@@ -173,7 +169,10 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 not1mm requires Python 3.9+, PyQt5 and libportaudio2. You should install these
 through your distribution's package manager before continuing.
 
-### Common recipes for Ubuntu and Fedora
+### Common installation recipes for Ubuntu and Fedora
+
+I've taken the time to install some common Linux distributions into a VM and
+noted the minimum steps needed to install not1mm.
 
 #### Ubuntu 22.04 LTS
 
@@ -221,7 +220,7 @@ Linux distros will make you do this unless you include a command line argument
 akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
 But... **Use pipx**.
 
-### Bootstrapping pipx
+#### Bootstrapping pipx
 
 Assuming you have only Python installed, your path to pipx is:
 
@@ -237,7 +236,7 @@ python3 -m pip install --user pipx
 python3 -m pipx ensurepath
 ```
 
-### Installing with pipx
+#### Installing with pipx
 
 Then installing not1mm is as simple as:
 
@@ -284,7 +283,7 @@ For a more permanent solution you can place the line
 `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then
 after logging out and back in you should be able to launch it normally.
 
-### Running from source
+### Installing from GitHub source
 
 Since this is packaged for PyPI, if you want to work on your own source branch,
 after cloning from github you would:
@@ -312,13 +311,6 @@ or be in some other directory and just type:
 ```bash
 not1mm
 ```
-
-## Wayland Compositor
-
-One side effect of Wayland is that we are not able to request for a window to
-regain or retain focus. So if you were to click on a spot in the bandmap window
-to tune to that spot, you would have to then click on the main window to
-continue entering contest data. I'm aware of this, but I can not change it.
 
 ## Various data file locations
 
@@ -531,13 +523,13 @@ is this has happened, since the gridsquare will replace the word "Regional".
 
 **You must press the SPACE bar after entering any of the above.**
 
-## Windows
+## The Windows
 
 ### The Main Window
 
 ![Main screen with callouts](https://github.com/mbridak/not1mm/raw/master/pic/mainwithcallouts.png)
 
-### Keyboard commands
+#### Keyboard commands
 
 | Key | Result |
 | -------------- | --- |
@@ -557,7 +549,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
 
-### Log Display
+### The Log Window
 
 `Window`>`Log Window`
 
@@ -584,13 +576,9 @@ You can not directly edit the multiplier status of a contact. Instead see the
 next section on recalculating mults. If you change the callsign make sure the
 `WPX` field is still valid.
 
-## Recalulate Mults
 
-After editing a contact and before generating a Cabrillo file. There is a Misc
-menu option that will recalculate the multipliers incase an edit had caused a
-change.
 
-## Bandmap
+### The Bandmap Window
 
 `Window`>`Bandmap`
 
@@ -609,7 +597,7 @@ blue rectangle shows the receivers bandwidth if one is reported.
 Clicked on spots now tune the radio and set the callsign field. Previously
 worked calls are displayed in red.
 
-## Check Window
+### The Check Window
 
 `Window`>`Check Window`
 
@@ -623,7 +611,7 @@ Clicking on any of these items will change the callsign field.
 
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
 
-## Remote VFO
+### The Remote VFO Window
 
 You can control the VFO on a remote rig by following the directions listed in
 the link below. It's a small hardware project with a BOM of under $20, and
@@ -659,9 +647,11 @@ Boom... ADIF
 
 `StationCall`\_`ContestName`\_`Date`\_`Time`.adi
 
-## Dupe checking
+## Recalulate Mults
 
-Added dupe checking. Big Red 'Dupe' will appear if it's a dupe...
+After editing a contact and before generating a Cabrillo file. There is a Misc
+menu option that will recalculate the multipliers incase an edit had caused a
+change.
 
 ## Contest specific notes
 
