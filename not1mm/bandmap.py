@@ -449,13 +449,11 @@ class BandMapWindow(QtWidgets.QDockWidget):
         if self.connected is True:
             self.close_cluster()
             return
-        # refresh settings
         self.settings = self.get_settings()
         server = self.settings.get("cluster_server", "dxc.nc7j.com")
         port = self.settings.get("cluster_port", 7373)
         logger.info(f"connecting to dx cluster {server} {port}")
         self.socket.connectToHost(server, port)
-        # self.connectButton.setStyleSheet("color: white;")
         self.connectButton.setText("Connecting")
         self.connected = True
 
@@ -567,7 +565,6 @@ class BandMapWindow(QtWidgets.QDockWidget):
             if packet.get("cmd", "") == "CONTESTSTATUS":
                 if not self.callsignField.text():
                     self.callsignField.setText(packet.get("operator", "").upper())
-                    # self.callsignField.selectAll()
                 continue
             if packet.get("cmd", "") == "DARKMODE":
                 self.setDarkMode(packet.get("state", False))
@@ -753,9 +750,6 @@ class BandMapWindow(QtWidgets.QDockWidget):
     def update_stations(self):
         """doc"""
         self.update_timer.setInterval(UPDATE_INTERVAL)
-        if not self.connected:
-            return
-
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
@@ -908,7 +902,6 @@ class BandMapWindow(QtWidgets.QDockWidget):
     def disconnected(self) -> None:
         """Called when socket is disconnected."""
         self.connected = False
-        # self.connectButton.setStyleSheet("color: red;")
         self.connectButton.setText("Closed")
 
     def send_command(self, cmd: str) -> None:
@@ -937,7 +930,6 @@ class BandMapWindow(QtWidgets.QDockWidget):
             logger.info("Closing dx cluster connection")
             self.socket.close()
             self.connected = False
-            # self.connectButton.setStyleSheet("color: red;")
             self.connectButton.setText("Closed")
 
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:

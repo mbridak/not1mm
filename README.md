@@ -148,7 +148,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [24-3-27] Made items in the checkwindow clickable.
+- [24-3-27] Made items in the checkwindow clickable. Removed connection check in bandmap preventing marked calls from appearing.
 - [24-3-25-1] Dark mode sorted out. Atleast for me...
 - [24-3-25] Yanked version 24-3-24-1. Fixed widget focus issues.
 - [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down. 
@@ -580,7 +580,9 @@ You can also Right-Click on a cell to bring up the edit dialog.
 
 ![right click edit dialog](https://github.com/mbridak/not1mm/raw/master/pic/edit_dialog.png)
 
-You can not directly edit the multiplier status of a contact. Instead see the next section on recalculating mults. If you change the callsign make sure the `WPX` field is still valid.
+You can not directly edit the multiplier status of a contact. Instead see the
+next section on recalculating mults. If you change the callsign make sure the
+`WPX` field is still valid.
 
 ## Recalulate Mults
 
