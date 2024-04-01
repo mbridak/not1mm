@@ -1,0 +1,34 @@
+id: com.github.mbridak.not1mm
+runtime: org.kde.Sdk
+runtime-version: '5.15-23.08'
+sdk: org.kde.Sdk
+base: com.riverbankcomputing.PyQt.BaseApp
+base-version: '5.15-23.08'
+command: not1mm
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+build-options:
+  env:
+    - BASEAPP_REMOVE_PYWEBENGINE=1
+finish-args:
+  - --talk-name=org.freedesktop.Flatpak
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --filesystem=host:rw
+  - --share=network
+  - --socket=cups
+  - --device=dri
+  - --share=ipc
+
+modules:
+  - python3-modules.yaml
+  
+  - name: not1mm
+    buildsystem: simple
+    build-commands:
+      - python ./install.py --yes --no-deps --prefix=$FLATPAK_DEST
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/44/1f/cbb099359418d48bf7f48941007ea678a35ade7f41c0f9b03a6fab94b740/not1mm-24.3.27.tar.gz
+        sha256: 97f89efd32281df95aa9745c03b48faf5f9b3256cdb318ac37320cf82a7f72b6
+
