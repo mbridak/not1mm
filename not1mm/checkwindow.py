@@ -14,7 +14,7 @@ import Levenshtein
 
 from PyQt5 import QtGui, uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
 from PyQt5.QtGui import QMouseEvent
 
 import not1mm.fsutils as fsutils
@@ -25,7 +25,7 @@ from not1mm.lib.super_check_partial import SCP
 logger = logging.getLogger(__name__)
 
 
-class CheckWindow(QWidget):
+class CheckWindow(QDockWidget):
     """The check window. Shows list or probable stations."""
 
     multicast_interface = None
@@ -100,6 +100,7 @@ class CheckWindow(QWidget):
             )
 
             self.setPalette(darkPalette)
+            # self.CheckPartialWindow.setPalette(darkPalette)
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)

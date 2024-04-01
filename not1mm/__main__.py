@@ -1382,18 +1382,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_check_window(self) -> None:
         """Launch the check window"""
         if not self.check_window:
-            check_widget = CheckWindow()
-            self.check_window = QDockWidget(check_widget.property("windowTitle"), self)
-            self.check_window.setWidget(check_widget)
+            self.check_window = CheckWindow()
             self.addDockWidget(Qt.RightDockWidgetArea, self.check_window)
         self.check_window.show()
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
         if not self.vfo_window:
-            vfo_widget = VfoWindow()
-            self.vfo_window = QDockWidget(vfo_widget.property("windowTitle"), self)
-            self.vfo_window.setWidget(vfo_widget)
+            self.vfo_window = VfoWindow()
             self.addDockWidget(Qt.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.show()
 

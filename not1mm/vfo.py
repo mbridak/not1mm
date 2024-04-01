@@ -16,7 +16,7 @@ from json import loads, JSONDecodeError
 import serial
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
@@ -25,7 +25,7 @@ from not1mm.lib.multicast import Multicast
 logger = logging.getLogger(__name__)
 
 
-class VfoWindow(QWidget):
+class VfoWindow(QDockWidget):
     """The VFO window."""
 
     pref = {}
