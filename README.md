@@ -17,6 +17,7 @@ The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<
   - [Our Code Contributors ✨](#our-code-contributors-)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
+  - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [Common installation recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
@@ -161,6 +162,13 @@ I wish to thank those who've contributed to the project.
 - [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
+
+## Flatpak
+
+I've tried for a couple days to get not1mm to build as a flatpak. I've failed.
+It keeps failing at building numpy. If you happen to be a flatpak savant, please
+feel free to look at com.github.mbridak.not1mm.yaml and python3-modules.yaml and
+clue me into the black magic needed to get it to work.
 
 ## Installation
 
