@@ -13,7 +13,6 @@ from json import loads
 
 from PyQt5 import QtGui, uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QListWidgetItem
 from PyQt5.QtWidgets import QWidget
 
 import not1mm.fsutils as fsutils
@@ -201,9 +200,8 @@ class CheckWindow(QWidget):
         for item in results:
             if "#" in item:
                 continue
-            listItem = QListWidgetItem(item)
-            self.masterList.addItem(listItem)
-            self.masterList.show()
+            self.masterList.addItem(item)
+        self.masterList.show()
 
     def log_list(self, call: str) -> None:
         """
@@ -221,10 +219,8 @@ class CheckWindow(QWidget):
         self.logList.clear()
         if call:
             result = self.database.get_like_calls_and_bands(call)
-            for calls in result:
-                listItem = QListWidgetItem(calls)
-                self.logList.addItem(listItem)
-                self.logList.show()
+            self.logList.addItems(result)
+            self.logList.show()
 
     def telnet_list(self, spots: list) -> None:
         """
@@ -243,6 +239,5 @@ class CheckWindow(QWidget):
         if spots:
             for calls in spots:
                 call = calls.get("callsign", "")
-                listItem = QListWidgetItem(call)
-                self.telnetList.addItem(listItem)
-                self.telnetList.show()
+                self.telnetList.addItem(call)
+            self.telnetList.show()
