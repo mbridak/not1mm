@@ -197,10 +197,7 @@ class CheckWindow(QWidget):
         """
         results = self.mscp.super_check(call)
         self.masterList.clear()
-        for item in results:
-            if "#" in item:
-                continue
-            self.masterList.addItem(item)
+        self.masterList.addItems(filter(lambda x: "#" not in x, results))
         self.masterList.show()
 
     def log_list(self, call: str) -> None:
