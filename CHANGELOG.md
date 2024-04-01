@@ -1,5 +1,20 @@
 # Changelog
 
+- [24-3-27] Made items in the checkwindow clickable. Removed connection check in bandmap preventing marked calls from appearing.
+- [24-3-25-1] Dark mode sorted out. Atleast for me...
+- [24-3-25] Yanked version 24-3-24-1. Fixed widget focus issues.
+- [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down. 
+- [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
+- [24-3-23] Yanked version 24-3-21, too many bugs for existing userbase.
+- [24-3-21] Merged PR from @kyleboyle for docking windows. MacOS and Windows support.
+- [24-3-19] Removed some useless bloat causing slow interface on FreeBSD 13/14 and maybe others.
+- [24-3-16] Add Save/Fail confirmation dialogs when saving ADIF of Cabrillo files.
+- [24-3-15] Change 'CWR' to 'CW' in the ADIF output.
+- [24-3-13] Added CQ 160 CW and SSB
+- [24-3-9] Marked calls in the bandmap window colored Blue, until worked.
+- [24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.
+- [24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.
+- [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
 - [24-2-21] Have the remote vfo monitor for TUNE packets from the bandmap app.
 - [24-2-20] Improved the VFO display.
 - [24-2-19] Re-Removed the depricated code. Replaced with code tested against Python 3.9
