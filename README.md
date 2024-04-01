@@ -570,8 +570,6 @@ You can not directly edit the multiplier status of a contact. Instead see the
 next section on recalculating mults. If you change the callsign make sure the
 `WPX` field is still valid.
 
-
-
 ### The Bandmap Window
 
 `Window`>`Bandmap`

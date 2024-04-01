@@ -3,7 +3,7 @@
 - [24-3-27] Made items in the checkwindow clickable. Removed connection check in bandmap preventing marked calls from appearing.
 - [24-3-25-1] Dark mode sorted out. Atleast for me...
 - [24-3-25] Yanked version 24-3-24-1. Fixed widget focus issues.
-- [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down. 
+- [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down.
 - [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
 - [24-3-23] Yanked version 24-3-21, too many bugs for existing userbase.
 - [24-3-21] Merged PR from @kyleboyle for docking windows. MacOS and Windows support.
