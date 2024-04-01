@@ -10,10 +10,12 @@ import os
 import platform
 import queue
 from json import loads
+import Levenshtein
 
 from PyQt5 import QtGui, uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PyQt5.QtGui import QMouseEvent
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -29,6 +31,15 @@ class CheckWindow(QWidget):
     multicast_interface = None
     dbname = None
     pref = {}
+    call = None
+    masterLayout: QVBoxLayout = None
+    dxcLayout: QVBoxLayout = None
+    qsoLayout: QVBoxLayout = None
+
+    character_remove_color = "#cc3333"
+    character_add_color = "#3333cc"
+
+    masterScrollWidget: QWidget = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -41,15 +52,6 @@ class CheckWindow(QWidget):
 
         uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
 
-        self.logList.clear()
-        self.logList.itemClicked.connect(self.item_clicked)
-        self.masterList.clear()
-        self.masterList.itemClicked.connect(self.item_clicked)
-        self.telnetList.clear()
-        self.telnetList.itemClicked.connect(self.item_clicked)
-        self.callhistoryList.clear()
-        self.callhistoryList.hide()
-        self.callhistoryListLabel.hide()
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -66,7 +68,7 @@ class CheckWindow(QWidget):
             cmd = {}
             cmd["cmd"] = "CHANGECALL"
             cmd["station"] = platform.node()
-            cmd["call"] = item.text()
+            cmd["call"] = item
             self.multicast_interface.send_as_json(cmd)
 
     def setDarkMode(self, dark: bool):
@@ -150,11 +152,12 @@ class CheckWindow(QWidget):
                 self.clear_lists()
             if json_data.get("cmd", "") == "CALLCHANGED":
                 call = json_data.get("call", "")
+                self.call = call
                 self.master_list(call)
                 self.log_list(call)
                 continue
             if json_data.get("cmd", "") == "CHECKSPOTS":
-                self.telnetList.clear()
+                self.populate_layout(self.dxcLayout, [])
                 spots = json_data.get("spots", [])
                 self.telnet_list(spots)
                 continue
@@ -177,10 +180,9 @@ class CheckWindow(QWidget):
         -------
         None
         """
-        self.logList.clear()
-        self.masterList.clear()
-        self.telnetList.clear()
-        self.callhistoryList.clear()
+        self.populate_layout(self.masterLayout, [])
+        self.populate_layout(self.qsoLayout, [])
+        self.populate_layout(self.dxcLayout, [])
 
     def master_list(self, call: str) -> None:
         """
@@ -195,10 +197,9 @@ class CheckWindow(QWidget):
         -------
         None
         """
+        self.populate_layout(self.masterLayout, [])
         results = self.mscp.super_check(call)
-        self.masterList.clear()
-        self.masterList.addItems(filter(lambda x: "#" not in x, results))
-        self.masterList.show()
+        self.populate_layout(self.masterLayout, filter(lambda x: "#" not in x, results))
 
     def log_list(self, call: str) -> None:
         """
@@ -213,11 +214,10 @@ class CheckWindow(QWidget):
         -------
         None
         """
-        self.logList.clear()
+        self.populate_layout(self.qsoLayout, [])
         if call:
             result = self.database.get_like_calls_and_bands(call)
-            self.logList.addItems(result)
-            self.logList.show()
+            self.populate_layout(self.qsoLayout, result)
 
     def telnet_list(self, spots: list) -> None:
         """
@@ -232,9 +232,62 @@ class CheckWindow(QWidget):
         -------
         None
         """
-        self.telnetList.clear()
+        self.populate_layout(self.dxcLayout, [])
         if spots:
-            for calls in spots:
-                call = calls.get("callsign", "")
-                self.telnetList.addItem(call)
-            self.telnetList.show()
+            self.populate_layout(
+                self.dxcLayout,
+                filter(lambda x: x, [x.get("callsign", None) for x in spots]),
+            )
+
+    def populate_layout(self, layout, call_list):
+        for i in reversed(range(layout.count())):
+            if layout.itemAt(i).widget():
+                layout.itemAt(i).widget().setParent(None)
+            else:
+                layout.removeItem(layout.itemAt(i))
+        labels = []
+        for call in call_list:
+            if call:
+                if self.call:
+                    label_text = ""
+                    for tag, i1, i2, j1, j2 in Levenshtein.opcodes(call, self.call):
+                        # logger.debug('{:7}   a[{}:{}] --> b[{}:{}] {!r:>8} --> {!r}'.format(
+                        #    tag, i1, i2, j1, j2, call[i1:i2], self.call[j1:j2]))
+                        if tag == "equal":
+                            label_text += call[i1:i2]
+                            continue
+                        elif tag == "replace":
+                            label_text += f"<span style='background-color: {self.character_remove_color};'>{call[i1:i2]}</span>"
+                        elif tag == "insert" or tag == "delete":
+                            label_text += f"<span style='background-color: {self.character_add_color};'>{call[i1:i2]}</span>"
+                    labels.append(
+                        (
+                            Levenshtein.hamming(call, self.call),
+                            CallLabel(
+                                label_text, call=call, callback=self.item_clicked
+                            ),
+                        )
+                    )
+
+        for _, label in sorted(labels, key=lambda x: x[0]):
+            layout.addWidget(label)
+        # top aligns
+        layout.addStretch(0)
+
+
+class CallLabel(QLabel):
+    call: str = None
+
+    def __init__(
+        self,
+        *args,
+        call=None,
+        callback=None,
+    ):
+        super().__init__(*args)
+        self.call = call
+        self.callback = callback
+
+    def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
+        if self.call and self.callback:
+            self.callback(self.call)

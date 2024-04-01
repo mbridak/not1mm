@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-1-1] Added color text indicators to the Check Partial window. Poached the code from @kyleboyle. Thanks!
 - [24-4-1] Removed some un-needed loops and widgets from the check window.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
