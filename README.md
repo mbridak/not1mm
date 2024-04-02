@@ -175,7 +175,7 @@ noted the minimum steps needed to install not1mm.
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y libportaudio2 python3-pip python3-pyqt5 python3-numpy
+sudo apt install -y libportaudio2 python3-pip python3-pyqt6 python3-numpy
 pip install -U not1mm
 ```
 
