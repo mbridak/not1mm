@@ -31,6 +31,12 @@
            <pointsize>25</pointsize>
           </font>
          </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
          <property name="digitCount">
           <number>11</number>
          </property>
