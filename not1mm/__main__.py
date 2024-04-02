@@ -190,6 +190,8 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info("MainWindow: __init__")
         self.setCorner(Qt.TopRightCorner, Qt.RightDockWidgetArea)
         self.setCorner(Qt.BottomRightCorner, Qt.RightDockWidgetArea)
+        self.setCorner(Qt.TopLeftCorner, Qt.LeftDockWidgetArea)
+        self.setCorner(Qt.BottomLeftCorner, Qt.LeftDockWidgetArea)
         data_path = fsutils.APP_DATA_PATH / "main.ui"
         uic.loadUi(data_path, self)
         self.cw_entry.hide()
@@ -2499,6 +2501,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     and json_data.get("station", "") == platform.node()
                 ):
                     self.callsign.setText(json_data.get("call", ""))
+                    self.callsign.setFocus()
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
