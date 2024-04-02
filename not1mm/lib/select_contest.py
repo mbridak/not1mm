@@ -1,6 +1,6 @@
 """Select Contest Dialog"""
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 
 class SelectContest(QtWidgets.QDialog):

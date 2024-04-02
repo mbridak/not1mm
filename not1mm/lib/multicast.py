@@ -10,7 +10,7 @@ from json import JSONDecodeError, dumps, loads
 
 from dicttoxml import dicttoxml
 
-from PyQt5 import QtNetwork
+from PyQt6 import QtNetwork
 
 logger = logging.getLogger("multicast")
 
@@ -27,12 +27,14 @@ class Multicast:
         self.interface_ip = interface_ip
         self.server_udp = QtNetwork.QUdpSocket()
         b_result = self.server_udp.bind(
-            QtNetwork.QHostAddress.AnyIPv4,
+            QtNetwork.QHostAddress.SpecialAddress.AnyIPv4,
             int(self.multicast_port),
-            QtNetwork.QUdpSocket.ReuseAddressHint
+            QtNetwork.QAbstractSocket.BindFlag.ReuseAddressHint,
         )
         logger.warn(f"multicast bind {b_result}")
-        join_result = self.server_udp.joinMulticastGroup(QtNetwork.QHostAddress(self.multicast_group))
+        join_result = self.server_udp.joinMulticastGroup(
+            QtNetwork.QHostAddress(self.multicast_group)
+        )
         logger.warn(f"joinMulticastGroup result {join_result}")
 
     def has_pending_datagrams(self) -> bool:

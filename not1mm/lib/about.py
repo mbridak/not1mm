@@ -2,7 +2,7 @@
 
 # pylint: disable=c-extension-no-member
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 
 class About(QtWidgets.QDialog):

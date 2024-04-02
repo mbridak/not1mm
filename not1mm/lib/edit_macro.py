@@ -1,6 +1,6 @@
 """edit the macro buttons"""
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 
 class EditMacro(QtWidgets.QDialog):

@@ -1,7 +1,8 @@
 """Edit Settings Dialog"""
+
 from json import loads
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 from not1mm.lib.ham_utility import gridtolatlon
 

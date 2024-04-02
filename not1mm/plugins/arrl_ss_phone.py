@@ -7,7 +7,7 @@ import logging
 
 from pathlib import Path
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif
 from not1mm.lib.version import __version__
@@ -138,8 +138,8 @@ def points(self):
 def show_mults(self):
     """Return display string for mults"""
     sql = (
-        "select count(DISTINCT(Sect)) as mults from dxlog ",
-        f"where ContestNR = {self.database.current_contest};",
+        "select count(DISTINCT(Sect)) as mults from dxlog "
+        f"where ContestNR = {self.database.current_contest};"
     )
     result = self.database.exec_sql(sql)
     return int(result.get("mults", 0))

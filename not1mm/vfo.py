@@ -14,9 +14,10 @@ import platform
 from json import loads, JSONDecodeError
 
 import serial
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QWidget, QDockWidget
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QWidget, QDockWidget
+from PyQt6.QtGui import QColorConstants
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
@@ -66,29 +67,51 @@ class VfoWindow(QDockWidget):
         if dark:
             darkPalette = QtGui.QPalette()
             darkColor = QtGui.QColor(56, 56, 56)
+            self.text_color = QColorConstants.White
             disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
-            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Window, darkColor)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+                QtGui.QPalette.ColorRole.WindowText, QColorConstants.White
             )
-            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
             )
-            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Text, QColorConstants.White)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.Text,
+                disabledColor,
             )
-            self.current_palette = darkPalette
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.ButtonText, QColorConstants.White
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.ButtonText,
+                disabledColor,
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.BrightText, QColorConstants.Red
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.HighlightedText, QColorConstants.Black
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.HighlightedText,
+                disabledColor,
+            )
+
             self.setPalette(darkPalette)
+            self.current_palette = darkPalette
         else:
             palette = self.style().standardPalette()
             self.current_palette = palette
@@ -299,8 +322,8 @@ class VfoWindow(QDockWidget):
         """
         message_box = QtWidgets.QMessageBox()
         message_box.setPalette(self.current_palette)
-        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
-        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        _ = message_box.exec_()
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        _ = message_box.exec()

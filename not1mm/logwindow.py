@@ -14,9 +14,9 @@ import queue
 from json import loads
 
 import math
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import Qt, QItemSelectionModel
-from PyQt5.QtWidgets import QDockWidget
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import Qt, QItemSelectionModel
+from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -112,7 +112,9 @@ class LogWindow(QDockWidget):
         self.checkmark = QtGui.QPixmap(str(fsutils.APP_DATA_PATH / "check.png"))
         self.checkicon = QtGui.QIcon()
         self.checkicon.addPixmap(self.checkmark)
-        self.generalLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.generalLog.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu
+        )
         self.generalLog.customContextMenuRequested.connect(self.edit_contact_selected)
         for column_number, column_name in self.columns.items():
             self.generalLog.setHorizontalHeaderItem(
@@ -125,7 +127,9 @@ class LogWindow(QDockWidget):
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
 
-        self.focusedLog.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.focusedLog.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu
+        )
         self.focusedLog.customContextMenuRequested.connect(
             self.edit_focused_contact_selected
         )
@@ -170,25 +174,47 @@ class LogWindow(QDockWidget):
             dark_palette = QtGui.QPalette()
             dark_color = QtGui.QColor(56, 56, 56)
             disabled_color = QtGui.QColor(127, 127, 127)
-            dark_palette.setColor(QtGui.QPalette.Window, dark_color)
-            dark_palette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
-            dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
-            dark_palette.setColor(QtGui.QPalette.Text, Qt.white)
+            dark_palette.setColor(QtGui.QPalette.ColorRole.Window, dark_color)
             dark_palette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color
+                QtGui.QPalette.ColorRole.WindowText, QtGui.QColorConstants.White
             )
-            dark_palette.setColor(QtGui.QPalette.Button, dark_color)
-            dark_palette.setColor(QtGui.QPalette.ButtonText, Qt.white)
             dark_palette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabled_color
+                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
             )
-            dark_palette.setColor(QtGui.QPalette.BrightText, Qt.red)
-            dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-            dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-            dark_palette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            dark_palette.setColor(QtGui.QPalette.ColorRole.AlternateBase, dark_color)
             dark_palette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabled_color
+                QtGui.QPalette.ColorRole.Text, QtGui.QColorConstants.White
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.Text,
+                disabled_color,
+            )
+            dark_palette.setColor(QtGui.QPalette.ColorRole.Button, dark_color)
+            dark_palette.setColor(
+                QtGui.QPalette.ColorRole.ButtonText, QtGui.QColorConstants.White
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.ButtonText,
+                disabled_color,
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorRole.BrightText, QtGui.QColorConstants.Red
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorRole.HighlightedText, QtGui.QColorConstants.Black
+            )
+            dark_palette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.HighlightedText,
+                disabled_color,
             )
 
             self.setPalette(dark_palette)
@@ -761,7 +787,9 @@ class LogWindow(QDockWidget):
             self.generalLog.setItem(
                 number_of_rows, self.get_column("YYYY-MM-DD HH:MM:SS"), first_item
             )
-            self.generalLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
+            self.generalLog.setCurrentItem(
+                first_item, QItemSelectionModel.SelectionFlag.NoUpdate
+            )
             self.generalLog.item(
                 number_of_rows, self.get_column("YYYY-MM-DD HH:MM:SS")
             ).setTextAlignment(0x0004 | 0x0080)
@@ -946,7 +974,9 @@ class LogWindow(QDockWidget):
             self.focusedLog.setItem(
                 number_of_rows, self.get_column("YYYY-MM-DD HH:MM:SS"), first_item
             )
-            self.focusedLog.setCurrentItem(first_item, QItemSelectionModel.NoUpdate)
+            self.focusedLog.setCurrentItem(
+                first_item, QItemSelectionModel.SelectionFlag.NoUpdate
+            )
             try:
                 self.focusedLog.item(
                     number_of_rows, self.get_column("YYYY-MM-DD HH:MM:SS")

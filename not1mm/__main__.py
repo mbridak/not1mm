@@ -31,10 +31,10 @@ import notctyparser
 import psutil
 import sounddevice as sd
 import soundfile as sf
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import QDir, Qt
-from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QFileDialog, QDockWidget
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import QDir, Qt
+from PyQt6.QtGui import QFontDatabase, QColorConstants
+from PyQt6.QtWidgets import QFileDialog, QDockWidget
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
@@ -177,7 +177,7 @@ class MainWindow(QtWidgets.QMainWindow):
     cw_entry_visible = False
     last_focus = None
     oldtext = ""
-    text_color = Qt.black
+    text_color = QColorConstants.Black
     current_palette = None
 
     log_window = None
@@ -188,10 +188,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         logger.info("MainWindow: __init__")
-        self.setCorner(Qt.TopRightCorner, Qt.RightDockWidgetArea)
-        self.setCorner(Qt.BottomRightCorner, Qt.RightDockWidgetArea)
-        self.setCorner(Qt.TopLeftCorner, Qt.LeftDockWidgetArea)
-        self.setCorner(Qt.BottomLeftCorner, Qt.LeftDockWidgetArea)
+        self.setCorner(Qt.Corner.TopRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
+        self.setCorner(
+            Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea
+        )
+        self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         data_path = fsutils.APP_DATA_PATH / "main.ui"
         uic.loadUi(data_path, self)
         self.cw_entry.hide()
@@ -264,40 +266,40 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_green = QtGui.QPixmap(str(icon_path / "radio_green.png"))
         self.radio_icon.setPixmap(self.radio_grey)
 
-        self.F1.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F1))
         self.F1.clicked.connect(lambda x: self.process_function_key(self.F1))
-        self.F2.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F2.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F2.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F2))
         self.F2.clicked.connect(lambda x: self.process_function_key(self.F2))
-        self.F3.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F3.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F3.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F3))
         self.F3.clicked.connect(lambda x: self.process_function_key(self.F3))
-        self.F4.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F4.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F4.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F4))
         self.F4.clicked.connect(lambda x: self.process_function_key(self.F4))
-        self.F5.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F5.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F5.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F5))
         self.F5.clicked.connect(lambda x: self.process_function_key(self.F5))
-        self.F6.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F6.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F6.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F6))
         self.F6.clicked.connect(lambda x: self.process_function_key(self.F6))
-        self.F7.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F7.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F7.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F7))
         self.F7.clicked.connect(lambda x: self.process_function_key(self.F7))
-        self.F8.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F8.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F8.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F8))
         self.F8.clicked.connect(lambda x: self.process_function_key(self.F8))
-        self.F9.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F9.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F9.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F9))
         self.F9.clicked.connect(lambda x: self.process_function_key(self.F9))
-        self.F10.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F10.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F10.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F10))
         self.F10.clicked.connect(lambda x: self.process_function_key(self.F10))
-        self.F11.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F11.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F11.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F11))
         self.F11.clicked.connect(lambda x: self.process_function_key(self.F11))
-        self.F12.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.F12.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F12.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F12))
         self.F12.clicked.connect(lambda x: self.process_function_key(self.F12))
 
@@ -505,25 +507,45 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette = QtGui.QPalette()
             darkColor = QtGui.QColor(56, 56, 56)
             disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
-            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Window, darkColor)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+                QtGui.QPalette.ColorRole.WindowText, QColorConstants.White
             )
-            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
             )
-            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Text, QColorConstants.White)
             darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.Text,
+                disabledColor,
+            )
+            darkPalette.setColor(QtGui.QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.ButtonText, QColorConstants.White
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.ButtonText,
+                disabledColor,
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.BrightText, QColorConstants.Red
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorRole.HighlightedText, QColorConstants.Black
+            )
+            darkPalette.setColor(
+                QtGui.QPalette.ColorGroup.Disabled,
+                QtGui.QPalette.ColorRole.HighlightedText,
+                disabledColor,
             )
             dark_button_style = (
                 "QPushButton {"
@@ -542,7 +564,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.current_palette = darkPalette
             self.setPalette(darkPalette)
-            self.text_color = Qt.white
+            self.text_color = QColorConstants.White
             self.menuFile.setPalette(darkPalette)
             self.menuHelp.setPalette(darkPalette)
             self.menuOther.setPalette(darkPalette)
@@ -581,7 +603,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_1.setPalette(palette)
             self.other_2.setPalette(palette)
             self.cw_entry.setPalette(palette)
-            self.text_color = Qt.black
+            self.text_color = QColorConstants.Black
             light_button_style = (
                 "QPushButton {"
                 "background-color: rgb(245,245,245);"
@@ -750,11 +772,11 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box = QtWidgets.QMessageBox()
         if self.current_palette:
             message_box.setPalette(self.current_palette)
-        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
-        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        _ = message_box.exec_()
+        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        _ = message_box.exec()
 
     def show_about_dialog(self) -> None:
         """
@@ -1339,9 +1361,10 @@ class MainWindow(QtWidgets.QMainWindow):
         str: filename
         """
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        options |= QFileDialog.DontConfirmOverwrite
+        options = (
+            QFileDialog.Option.DontUseNativeDialog
+            | QFileDialog.Option.DontConfirmOverwrite
+        )
         if action == "new":
             file, _ = QFileDialog.getSaveFileName(
                 self,
@@ -1369,28 +1392,30 @@ class MainWindow(QtWidgets.QMainWindow):
         """Launch the log window"""
         if not self.log_window:
             self.log_window = LogWindow()
-            self.addDockWidget(Qt.BottomDockWidgetArea, self.log_window)
+            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
         self.log_window.show()
 
     def launch_bandmap_window(self) -> None:
         """Launch the bandmap window"""
         if not self.bandmap_window:
             self.bandmap_window = BandMapWindow()
-            self.addDockWidget(Qt.RightDockWidgetArea, self.bandmap_window)
+            self.addDockWidget(
+                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
+            )
         self.bandmap_window.show()
 
     def launch_check_window(self) -> None:
         """Launch the check window"""
         if not self.check_window:
             self.check_window = CheckWindow()
-            self.addDockWidget(Qt.RightDockWidgetArea, self.check_window)
+            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.show()
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
         if not self.vfo_window:
             self.vfo_window = VfoWindow()
-            self.addDockWidget(Qt.RightDockWidgetArea, self.vfo_window)
+            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.show()
 
     def clear_band_indicators(self) -> None:
@@ -1407,8 +1432,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         for _, indicators in self.all_mode_indicators.items():
             for _, indicator in indicators.items():
-                indicator.setFrameShape(QtWidgets.QFrame.NoFrame)
-                if self.text_color == Qt.black:
+                indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+                if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet(
                         "font-family: JetBrains Mono; color: black;"
                     )
@@ -1433,7 +1458,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clear_band_indicators()
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
-                indicator.setFrameShape(QtWidgets.QFrame.Box)
+                indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet("font-family: JetBrains Mono; color: green;")
 
     def closeEvent(self, _event) -> None:
@@ -1522,7 +1547,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_K:
             self.toggle_cw_entry()
             return
-        if event.key() == Qt.Key_S and modifier == Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_S
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
             freq = self.radio_state.get("vfoa")
             dx = self.callsign.text()
             if freq and dx:
@@ -1533,7 +1561,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["freq"] = float(int(freq) / 1000)
                 self.multicast_interface.send_as_json(cmd)
             return
-        if event.key() == Qt.Key_M and modifier == Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_M
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
             freq = self.radio_state.get("vfoa")
             dx = self.callsign.text()
             if freq and dx:
@@ -1544,7 +1575,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["freq"] = float(int(freq) / 1000)
                 self.multicast_interface.send_as_json(cmd)
             return
-        if event.key() == Qt.Key_G and modifier == Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_G
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
             dx = self.callsign.text()
             if dx:
                 cmd = {}
@@ -1554,11 +1588,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.multicast_interface.send_as_json(cmd)
             return
         if (
-            event.key() == Qt.Key.Key_Escape and modifier != Qt.ControlModifier
+            event.key() == Qt.Key.Key_Escape
+            and modifier != Qt.KeyboardModifier.ControlModifier
         ):  # pylint: disable=no-member
             self.clearinputs()
             return
-        if event.key() == Qt.Key.Key_Escape and modifier == Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_Escape
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
             if self.cw is not None:
                 if self.cw.servertype == 1:
                     self.cw.sendcw("\x1b4")
@@ -1575,7 +1613,10 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             return
-        if event.key() == Qt.Key.Key_PageUp and modifier != Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_PageUp
+            and modifier != Qt.KeyboardModifier.ControlModifier
+        ):
             if self.cw is not None:
                 self.cw.speed += 1
                 self.cw_speed.setValue(self.cw.speed)
@@ -1584,7 +1625,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 2:
                     self.cw.set_winkeyer_speed(self.cw_speed.value())
             return
-        if event.key() == Qt.Key.Key_PageDown and modifier != Qt.ControlModifier:
+        if (
+            event.key() == Qt.Key.Key_PageDown
+            and modifier != Qt.KeyboardModifier.ControlModifier
+        ):
             if self.cw is not None:
                 self.cw.speed -= 1
                 self.cw_speed.setValue(self.cw.speed)
@@ -1596,7 +1640,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
-                if modifier == Qt.ShiftModifier:
+                if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.sent)
                     prev_tab.setFocus()
                     prev_tab.deselect()
@@ -1609,7 +1653,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.receive.hasFocus():
                 logger.debug("From receive")
-                if modifier == Qt.ShiftModifier:
+                if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.receive)
                     prev_tab.setFocus()
                     prev_tab.deselect()
@@ -1622,7 +1666,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.other_1.hasFocus():
                 logger.debug("From other_1")
-                if modifier == Qt.ShiftModifier:
+                if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.other_1)
                     prev_tab.setFocus()
                     prev_tab.deselect()
@@ -1635,7 +1679,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.other_2.hasFocus():
                 logger.debug("From other_2")
-                if modifier == Qt.ShiftModifier:
+                if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.other_2)
                     prev_tab.setFocus()
                     prev_tab.deselect()
@@ -1653,7 +1697,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.dupe_indicator.show()
                 else:
                     self.dupe_indicator.hide()
-                if modifier == Qt.ShiftModifier:
+                if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.callsign)
                     prev_tab.setFocus()
                     prev_tab.deselect()
@@ -1672,29 +1716,29 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.deselect()
                     next_tab.end(False)
                 return
-        if event.key() == Qt.Key_F1:
+        if event.key() == Qt.Key.Key_F1:
             self.process_function_key(self.F1)
-        if event.key() == Qt.Key_F2:
+        if event.key() == Qt.Key.Key_F2:
             self.process_function_key(self.F2)
-        if event.key() == Qt.Key_F3:
+        if event.key() == Qt.Key.Key_F3:
             self.process_function_key(self.F3)
-        if event.key() == Qt.Key_F4:
+        if event.key() == Qt.Key.Key_F4:
             self.process_function_key(self.F4)
-        if event.key() == Qt.Key_F5:
+        if event.key() == Qt.Key.Key_F5:
             self.process_function_key(self.F5)
-        if event.key() == Qt.Key_F6:
+        if event.key() == Qt.Key.Key_F6:
             self.process_function_key(self.F6)
-        if event.key() == Qt.Key_F7:
+        if event.key() == Qt.Key.Key_F7:
             self.process_function_key(self.F7)
-        if event.key() == Qt.Key_F8:
+        if event.key() == Qt.Key.Key_F8:
             self.process_function_key(self.F8)
-        if event.key() == Qt.Key_F9:
+        if event.key() == Qt.Key.Key_F9:
             self.process_function_key(self.F9)
-        if event.key() == Qt.Key_F10:
+        if event.key() == Qt.Key.Key_F10:
             self.process_function_key(self.F10)
-        if event.key() == Qt.Key_F11:
+        if event.key() == Qt.Key.Key_F11:
             self.process_function_key(self.F11)
-        if event.key() == Qt.Key_F12:
+        if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
     def set_window_title(self) -> None:

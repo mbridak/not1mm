@@ -1,6 +1,6 @@
 """Edit Contact Dialog"""
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 
 
 class EditContact(QtWidgets.QDialog):

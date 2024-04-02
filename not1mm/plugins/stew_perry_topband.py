@@ -32,7 +32,7 @@ import datetime
 import logging
 
 from pathlib import Path
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 from not1mm.lib.ham_utility import distance

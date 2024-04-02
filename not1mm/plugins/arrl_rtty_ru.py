@@ -6,7 +6,7 @@ import datetime
 from decimal import Decimal
 from pathlib import Path
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 name = "ARRL RTTY Round Up"
 cabrillo_name = "ARRL-RTTY"
