@@ -16,6 +16,7 @@ from json import loads
 import math
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt, QItemSelectionModel
+from PyQt5.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -51,7 +52,7 @@ def safe_float(the_input: any, default=0.0) -> float:
     return default
 
 
-class LogWindow(QtWidgets.QWidget):
+class LogWindow(QDockWidget):
     """
     The main window
     """

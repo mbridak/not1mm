@@ -1366,9 +1366,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_log_window(self) -> None:
         """Launch the log window"""
         if not self.log_window:
-            log_widget = LogWindow()
-            self.log_window = QDockWidget(log_widget.property("windowTitle"), self)
-            self.log_window.setWidget(log_widget)
+            self.log_window = LogWindow()
             self.addDockWidget(Qt.BottomDockWidgetArea, self.log_window)
         self.log_window.show()
 
