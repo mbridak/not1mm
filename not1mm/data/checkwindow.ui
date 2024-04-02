@@ -154,7 +154,7 @@
        </font>
       </property>
       <property name="text">
-       <string>DXC</string>
+       <string>Telnet</string>
       </property>
      </widget>
     </item>
