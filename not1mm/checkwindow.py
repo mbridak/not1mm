@@ -12,7 +12,7 @@ import queue
 from json import loads
 import Levenshtein
 
-from PyQt6 import QtGui, uic
+from PyQt6 import QtGui, uic, QtCore
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
 from PyQt6.QtGui import QMouseEvent, QColorConstants
 

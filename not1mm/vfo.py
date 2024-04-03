@@ -16,7 +16,7 @@ from json import loads, JSONDecodeError
 import serial
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QTimer
-from PyQt6.QtWidgets import QDockWidget, QApplication, QMainWindow
+from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QColorConstants
 
 import not1mm.fsutils as fsutils

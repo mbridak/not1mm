@@ -34,7 +34,7 @@ import soundfile as sf
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt
 from PyQt6.QtGui import QFontDatabase, QColorConstants
-from PyQt6.QtWidgets import QFileDialog, QDockWidget
+from PyQt6.QtWidgets import QFileDialog
 
 from not1mm.lib.about import About
 from not1mm.lib.cat_interface import CAT
