@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>DockWidget</class>
  <widget class="QDockWidget" name="DockWidget">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,14 @@
     <width>304</width>
     <height>132</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>JetBrains Mono</family>
+   </font>
+  </property>
+  <property name="features">
+   <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
   </property>
   <property name="windowTitle">
    <string>DockWidget</string>
@@ -28,6 +39,7 @@
         <widget class="QLCDNumber" name="lcdNumber">
          <property name="font">
           <font>
+           <family>JetBrains Mono</family>
            <pointsize>25</pointsize>
           </font>
          </property>

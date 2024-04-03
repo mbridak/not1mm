@@ -15,7 +15,7 @@ from json import loads
 
 import math
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import Qt, QItemSelectionModel
+from PyQt6.QtCore import QItemSelectionModel
 from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
@@ -87,8 +87,8 @@ class LogWindow(QDockWidget):
         21: "UUID",
     }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self.table_loading = True
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -103,6 +103,12 @@ class LogWindow(QDockWidget):
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
         uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
+        self.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
+            | QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )

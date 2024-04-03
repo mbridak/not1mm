@@ -17,8 +17,8 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColorConstants
+from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.multicast import Multicast
@@ -302,7 +302,7 @@ class Database:
         )
 
 
-class BandMapWindow(QtWidgets.QDockWidget):
+class BandMapWindow(QDockWidget):
     """The BandMapWindow class."""
 
     zoom = 5
@@ -321,11 +321,17 @@ class BandMapWindow(QtWidgets.QDockWidget):
     multicast_interface = None
     text_color = QtGui.QColor(45, 45, 45)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+        self.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
+            | QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.settings = self.get_settings()
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)

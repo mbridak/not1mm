@@ -1390,32 +1390,34 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def launch_log_window(self) -> None:
         """Launch the log window"""
-        if not self.log_window:
-            self.log_window = LogWindow()
-            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
+        if self.log_window:
+            self.log_window.close()
+        self.log_window = LogWindow()
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
         self.log_window.show()
 
     def launch_bandmap_window(self) -> None:
         """Launch the bandmap window"""
-        if not self.bandmap_window:
-            self.bandmap_window = BandMapWindow()
-            self.addDockWidget(
-                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
-            )
+        if self.bandmap_window:
+            self.bandmap_window.close()
+        self.bandmap_window = BandMapWindow()
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window)
         self.bandmap_window.show()
 
     def launch_check_window(self) -> None:
         """Launch the check window"""
-        if not self.check_window:
-            self.check_window = CheckWindow()
-            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
+        if self.check_window:
+            self.check_window.close()
+        self.check_window = CheckWindow()
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.show()
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
-        if not self.vfo_window:
-            self.vfo_window = VfoWindow()
-            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
+        if self.vfo_window:
+            self.vfo_window.close()
+        self.vfo_window = VfoWindow()
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.show()
 
     def clear_band_indicators(self) -> None:
@@ -2949,12 +2951,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 debug_response = f"{response}"
                 logger.debug("The Response: %s\n", debug_response)
                 if response:
-                    theirgrid = response.get("grid")
+                    theirgrid = response.get("grid", "")
                     self.contact["GridSquare"] = theirgrid
-                    _theircountry = response.get("country")
+                    _theircountry = response.get("country", "")
                     if self.station.get("GridSquare", ""):
                         heading = bearing(self.station.get("GridSquare", ""), theirgrid)
-                        kilometers = distance(self.station.get("GridSquare"), theirgrid)
+                        kilometers = distance(
+                            self.station.get("GridSquare", ""), theirgrid
+                        )
                         self.heading_distance.setText(
                             f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / "
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"
@@ -3311,18 +3315,18 @@ def install_icons() -> None:
     if sys.platform == "linux":
         os.system(
             "xdg-icon-resource install --size 32 --context apps --mode user "
-            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-32.png k6gte-not1mm"
+            f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-32.png k6gte-not1mm"
         )
         os.system(
             "xdg-icon-resource install --size 64 --context apps --mode user "
-            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-64.png k6gte-not1mm"
+            f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-64.png k6gte-not1mm"
         )
         os.system(
             "xdg-icon-resource install --size 128 --context apps --mode user "
-            f"{fsutils.MODULE_PATH}/data/k6gte.not1mm-128.png k6gte-not1mm"
+            f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-128.png k6gte-not1mm"
         )
         os.system(
-            f"xdg-desktop-menu install {fsutils.MODULE_PATH}/data/k6gte-not1mm.desktop"
+            f"xdg-desktop-menu install {fsutils.APP_DATA_PATH}/k6gte-not1mm.desktop"
         )
 
 

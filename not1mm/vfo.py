@@ -15,8 +15,8 @@ from json import loads, JSONDecodeError
 
 import serial
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtWidgets import QWidget, QDockWidget
+from PyQt6.QtCore import QTimer
+from PyQt6.QtWidgets import QDockWidget, QApplication, QMainWindow
 from PyQt6.QtGui import QColorConstants
 
 import not1mm.fsutils as fsutils
@@ -36,14 +36,22 @@ class VfoWindow(QDockWidget):
     multicast_interface = None
     current_palette = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
+
+        self.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
+            | QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
+        self.setWindowTitle("VFO Window")
+
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
-        self.setWindowTitle("VFO Window")
         self.lcdNumber.display(0)
         self.pico = None
         self._udpwatch = None
@@ -56,7 +64,6 @@ class VfoWindow(QDockWidget):
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
         self.setup_serial()
-        # app.processEvents()
         self.poll_rig_timer = QtCore.QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
