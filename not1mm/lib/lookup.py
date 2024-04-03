@@ -8,6 +8,7 @@ HamQTH
 import logging
 import xmltodict
 import requests
+from functools import lru_cache
 
 logger = logging.getLogger("lookup")
 
@@ -21,6 +22,7 @@ class HamDBlookup:
         self.url = "https://api.hamdb.org/"
         self.error = False
 
+    @lru_cache(maxsize=1000)
     def lookup(self, call: str) -> tuple:
         """
         Lookup a call on QRZ
@@ -172,6 +174,7 @@ class QRZlookup:
             self.session = False
             self.error = f"{exception}"
 
+    @lru_cache(maxsize=1000)
     def lookup(self, call: str) -> tuple:
         """
         Lookup a call on QRZ
@@ -202,6 +205,7 @@ class QRZlookup:
                     root = baseroot.get("QRZDatabase")
         return root.get("Callsign")
 
+    @lru_cache(maxsize=1000)
     def parse_lookup(self, query_result):
         """
         Returns gridsquare and name for a callsign looked up by qrz or hamdb.
@@ -328,6 +332,7 @@ class HamQTH:
                 self.error = session.get("error")
         logger.info("session: %s", self.session)
 
+    @lru_cache(maxsize=1000)
     def lookup(self, call: str) -> tuple:
         """
         Lookup a call on HamQTH
@@ -364,6 +369,7 @@ class HamQTH:
             the_result = self.parse_lookup(root)
         return the_result
 
+    @lru_cache(maxsize=1000)
     def parse_lookup(self, root) -> dict:
         """
         Returns gridsquare and name for a callsign
