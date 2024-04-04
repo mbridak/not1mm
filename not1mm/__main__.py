@@ -484,6 +484,40 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("contest"):
             self.load_contest()
 
+        self.actionLog_Window.setChecked(self.pref.get("logwindow", False))
+        if self.log_window:
+            self.log_window.close()
+        if self.actionLog_Window.isChecked():
+            self.log_window = LogWindow()
+            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
+            self.log_window.show()
+
+        self.actionBandmap.setChecked(self.pref.get("bandmapwindow", False))
+        if self.bandmap_window:
+            self.bandmap_window.close()
+        if self.actionBandmap.isChecked():
+            self.bandmap_window = BandMapWindow()
+            self.addDockWidget(
+                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
+            )
+            self.bandmap_window.show()
+
+        self.actionCheck_Window.setChecked(self.pref.get("checkwindow", False))
+        if self.check_window:
+            self.check_window.close()
+        if self.actionCheck_Window.isChecked():
+            self.check_window = CheckWindow()
+            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
+            self.check_window.show()
+
+        self.actionVFO.setChecked(self.pref.get("vfowindow", False))
+        if self.vfo_window:
+            self.vfo_window.close()
+        if self.actionVFO.isChecked():
+            self.vfo_window = VfoWindow()
+            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
+            self.vfo_window.show()
+
         if not DEBUG_ENABLED:
             if VersionTest(__version__).test():
                 self.show_message_box(
@@ -2404,63 +2438,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
-        # xxx
+
         if self.pref.get("darkmode"):
             self.actionDark_Mode_2.setChecked(True)
             self.setDarkMode(True)
         else:
             self.setDarkMode(False)
             self.actionDark_Mode_2.setChecked(False)
-
-        if self.pref.get("logwindow"):
-            self.actionLog_Window.setChecked(True)
-        else:
-            self.actionLog_Window.setChecked(False)
-
-        if self.log_window:
-            self.log_window.close()
-        if self.actionLog_Window.isChecked():
-            self.log_window = LogWindow()
-            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
-            self.log_window.show()
-
-        if self.pref.get("bandmapwindow"):
-            self.actionBandmap.setChecked(True)
-        else:
-            self.actionBandmap.setChecked(False)
-
-        if self.bandmap_window:
-            self.bandmap_window.close()
-        if self.actionBandmap.isChecked():
-            self.bandmap_window = BandMapWindow()
-            self.addDockWidget(
-                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
-            )
-            self.bandmap_window.show()
-
-        if self.pref.get("checkwindow"):
-            self.actionCheck_Window.setChecked(True)
-        else:
-            self.actionCheck_Window.setChecked(False)
-
-        if self.check_window:
-            self.check_window.close()
-        if self.actionCheck_Window.isChecked():
-            self.check_window = CheckWindow()
-            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
-            self.check_window.show()
-
-        if self.pref.get("vfowindow"):
-            self.actionVFO.setChecked(True)
-        else:
-            self.actionVFO.setChecked(False)
-
-        if self.vfo_window:
-            self.vfo_window.close()
-        if self.actionVFO.isChecked():
-            self.vfo_window = VfoWindow()
-            self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
-            self.vfo_window.show()
 
         self.rig_control = None
 
