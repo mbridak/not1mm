@@ -328,7 +328,8 @@ class VfoWindow(QDockWidget):
         Display an alert box with the supplied message.
         """
         message_box = QtWidgets.QMessageBox()
-        message_box.setPalette(self.current_palette)
+        if self.current_palette:
+            message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
         message_box.setText(message)
         message_box.setWindowTitle("Information")
