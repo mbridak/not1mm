@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-4] Added per-contest echange hint when adding new contest.
 - [24-4-2] Migrated to PyQt6. I'm sure there are broken things.
 - [24-4-1-2] Added color text indicators to the Check Partial window. Poached the code from @kyleboyle. Thanks! Fixed the Log, VFO and Check Partial windows to be actual docking widgets. Refocus call field after double clicking on item in the check partial window.
 - [24-4-1] Removed some un-needed loops and widgets from the check window. Fixed docking to the left side.
