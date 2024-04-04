@@ -894,7 +894,6 @@
           <item>
            <widget class="QFrame" name="Button_Row1">
             <layout class="QHBoxLayout" name="ButtonRow1">
-
              <property name="sizeConstraint">
               <enum>QLayout::SetNoConstraint</enum>
              </property>
@@ -1543,6 +1542,9 @@
    </property>
   </action>
   <action name="actionLog_Window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>QSO Log</string>
    </property>
@@ -1708,6 +1710,9 @@
    </property>
   </action>
   <action name="actionBandmap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Bandmap</string>
    </property>
@@ -1743,11 +1748,17 @@
    </property>
   </action>
   <action name="actionCheck_Window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Check Partial</string>
    </property>
   </action>
   <action name="actionVFO">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>VFO</string>
    </property>
