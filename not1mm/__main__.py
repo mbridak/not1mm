@@ -3181,9 +3181,9 @@ class MainWindow(QtWidgets.QMainWindow):
             )
         try:
             fsutils.openFileWithOS(fsutils.USER_DATA_PATH / macro_file)
-        except:
-            logger.exception(
-                f"Could not open file {fsutils.USER_DATA_PATH / macro_file}"
+        except FileNotFoundError | PermissionError | OSError as err:
+            logger.critical(
+                f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
             )
 
     def read_cw_macros(self) -> None:
