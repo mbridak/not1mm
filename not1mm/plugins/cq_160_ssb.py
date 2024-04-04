@@ -15,6 +15,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "ST/Prov or DX CQ Zone"
+
 name = "CQ 160 SSB"
 cabrillo_name = "CQ-160-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY

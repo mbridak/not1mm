@@ -16,6 +16,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "4-character grid square"
+
 name = "ARRL VHF JUN"
 mode = "BOTH"  # CW SSB BOTH RTTY
 cabrillo_name = "ARRL-VHF-JUN"

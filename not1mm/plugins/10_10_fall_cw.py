@@ -13,6 +13,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "Name + 10-10# + SPC"
+
 name = "10 10 FALL CW"
 cabrillo_name = "10-10-FALL-CW"
 mode = "CW"  # CW SSB BOTH RTTY

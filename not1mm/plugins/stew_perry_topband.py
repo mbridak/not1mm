@@ -39,6 +39,7 @@ from not1mm.lib.ham_utility import distance
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "4-Character grid square"
 cabrillo_name = "STEW-PERRY"
 name = "Stew Perry Topband"
 

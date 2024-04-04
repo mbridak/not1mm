@@ -57,6 +57,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "State/Province"
+
 name = "ARRL 10M"
 mode = "BOTH"  # CW SSB BOTH RTTY
 cabrillo_name = "ARRL-10"

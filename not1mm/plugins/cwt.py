@@ -13,6 +13,9 @@ from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+EXCHANGE_HINT = "Name + Member No./'CWA'"
+
 name = "CWT"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 11, 15]

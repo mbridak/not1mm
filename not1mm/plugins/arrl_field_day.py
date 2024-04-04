@@ -13,6 +13,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "1D ORG"
+
 name = "ARRL Field Day"
 mode = "BOTH"  # CW SSB BOTH RTTY
 cabrillo_name = "ARRL-FD"

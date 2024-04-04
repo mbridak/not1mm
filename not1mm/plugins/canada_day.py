@@ -14,6 +14,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "Province/Territory"
+
 name = "CANADA DAY"
 cabrillo_name = "CANADA-DAY"
 mode = "BOTH"  # CW SSB BOTH RTTY

@@ -27,6 +27,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "ITU Zone"
+
 name = "IARU HF"
 cabrillo_name = "IARU-HF"
 mode = "BOTH"  # CW SSB BOTH RTTY

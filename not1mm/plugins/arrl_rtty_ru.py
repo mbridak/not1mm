@@ -8,6 +8,8 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+EXCHANGE_HINT = ""
+
 name = "ARRL RTTY Round Up"
 cabrillo_name = "ARRL-RTTY"
 mode = "BOTH"  # CW SSB BOTH RTTY

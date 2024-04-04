@@ -14,6 +14,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "Prec Call Check Section"
+
 name = "ARRL Sweepstakes CW"
 cabrillo_name = "ARRL-SS-CW"
 mode = "CW"  # CW SSB BOTH RTTY

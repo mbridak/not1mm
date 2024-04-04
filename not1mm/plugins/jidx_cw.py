@@ -14,6 +14,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "Prefecture or CQ Zone"
+
 name = "JIDX CW"
 cabrillo_name = "JIDX-CW"
 mode = "CW"  # CW SSB BOTH RTTY

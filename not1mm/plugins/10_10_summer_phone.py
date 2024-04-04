@@ -14,6 +14,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+EXCHANGE_HINT = "Name + 10-10# + SPC"
+
 name = "10 10 SUMMER PHONE"
 cabrillo_name = "10-10-SUMMER-PHONE"
 mode = "SSB"  # CW SSB BOTH RTTY
