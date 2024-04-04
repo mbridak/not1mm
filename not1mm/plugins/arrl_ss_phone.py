@@ -385,30 +385,25 @@ def parse_exchange(self):
         numb = ""
         print(f"'{tokens}'")
         if tokens.isdigit():
-            print(f"{tokens} is digits")
             if sn == "":
                 sn = tokens
             else:
                 ck = tokens
             continue
         elif tokens.isalpha():
-            print(f"{tokens} is alpha")
             if len(tokens) == 1:
                 prec = tokens
             else:
                 sec = tokens
             continue
         elif tokens.isalnum():
-            print("isalnum")
             if tokens[:1].isalpha():
-                print(f"{tokens} is callsign")
                 call = tokens
                 continue
             for i, c in enumerate(tokens):
                 if c.isalpha():
                     text = tokens[i:]
                     numb = tokens[:i]
-                    print(f"{tokens[:i]} {tokens[i:]}")
                     break
             if len(text) == 1:
                 prec = text
