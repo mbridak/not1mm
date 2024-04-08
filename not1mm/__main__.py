@@ -62,6 +62,7 @@ from not1mm.lib.select_contest import SelectContest
 from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
+from not1mm.lib.ft8_watcher import FT8Watcher
 
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
@@ -199,6 +200,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.leftdot.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
+        self.ft8 = FT8Watcher()
+        self.ft8.set_callback(self.ft8_result)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self.next_field = self.other_2
         self.dupe_indicator.hide()
@@ -461,7 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         self.setWindowIcon(
-            QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-64.png"))
+            QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
         )
         self.readpreferences()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
@@ -524,6 +527,21 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def ft8_result(self, result):
+        """Callback for ft8 watcher"""
+        # (
+        #     call,
+        #     hisclass,
+        #     hissect,
+        #     the_dt,
+        #     freq,
+        #     band,
+        #     mode,
+        #     grid,
+        #     name,
+        # ) = result
+        print(f"{result=}")
 
     def setDarkMode(self, dark):
         """testing"""
