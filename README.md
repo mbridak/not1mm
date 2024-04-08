@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-7] Added FT8Watcher class to prep for FT8 support.
 - [24-4-4-1] Made docking widgets open state persistent.
 - [24-4-4] Added per-contest echange hint when adding new contest.
 - [24-4-2] Migrated to PyQt6. I'm sure there are broken things.
