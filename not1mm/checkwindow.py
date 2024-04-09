@@ -62,7 +62,7 @@ class CheckWindow(QDockWidget):
         self.multicast_interface = Multicast(
             self.pref.get("multicast_group", "239.1.1.1"),
             self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0,0,0,0"),
+            self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
 
