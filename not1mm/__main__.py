@@ -3452,8 +3452,8 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-logging.getLogger("PyQt5.uic.uiparser").setLevel("INFO")
-logging.getLogger("PyQt5.uic.properties").setLevel("INFO")
+logging.getLogger("PyQt6.uic.uiparser").setLevel("INFO")
+logging.getLogger("PyQt6.uic.properties").setLevel("INFO")
 app = QtWidgets.QApplication(sys.argv)
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(f"font families {families}")
