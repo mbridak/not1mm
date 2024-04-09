@@ -501,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionBandmap.isChecked():
             self.bandmap_window = BandMapWindow()
             self.addDockWidget(
-                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
+                Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window
             )
             self.bandmap_window.show()
 
@@ -1471,7 +1471,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionBandmap.isChecked():
             self.bandmap_window = BandMapWindow()
             self.addDockWidget(
-                Qt.DockWidgetArea.RightDockWidgetArea, self.bandmap_window
+                Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window
             )
             self.bandmap_window.show()
 
@@ -1495,6 +1495,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionVFO.isChecked():
             self.vfo_window = VfoWindow()
             self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
+            self.vfo_window.setTitleBarWidget(1)
             self.vfo_window.show()
 
     def clear_band_indicators(self) -> None:
