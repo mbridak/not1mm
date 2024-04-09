@@ -528,19 +528,31 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
-    def ft8_result(self, result):
-        """Callback for ft8 watcher"""
-        # (
-        #     call,
-        #     hisclass,
-        #     hissect,
-        #     the_dt,
-        #     freq,
-        #     band,
-        #     mode,
-        #     grid,
-        #     name,
-        # ) = result
+    def ft8_result(self, result: dict):
+        """
+        Callback for ft8 watcher
+
+        {
+            'CALL': 'KE0OG',
+            'GRIDSQUARE': 'DM10AT',
+            'MODE': 'FT8',
+            'RST_SENT': '',
+            'RST_RCVD': '',
+            'QSO_DATE': '20210329',
+            'TIME_ON': '183213',
+            'QSO_DATE_OFF': '20210329',
+            'TIME_OFF': '183213',
+            'BAND': '20M',
+            'FREQ': '14.074754',
+            'STATION_CALLSIGN': 'K6GTE',
+            'MY_GRIDSQUARE': 'DM13AT',
+            'CONTEST_ID': 'ARRL-FIELD-DAY',
+            'SRX_STRING': '1D UT',
+            'CLASS': '1D',
+            'ARRL_SECT': 'UT'
+        }
+
+        """
         print(f"{result=}")
 
     def setDarkMode(self, dark):
