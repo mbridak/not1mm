@@ -105,10 +105,9 @@ class LogWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
         self.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetClosable
         )
-        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
+        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )

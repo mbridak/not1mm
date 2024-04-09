@@ -42,10 +42,9 @@ class VfoWindow(QDockWidget):
 
         self.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetClosable
         )
-        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
+        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.setWindowTitle("VFO Window")
 
         self.rig_control = None

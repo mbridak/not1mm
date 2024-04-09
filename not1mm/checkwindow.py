@@ -52,10 +52,9 @@ class CheckWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
         self.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetClosable
         )
-        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
+        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()

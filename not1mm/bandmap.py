@@ -328,10 +328,9 @@ class BandMapWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
         self.setFeatures(
             QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
             | QDockWidget.DockWidgetFeature.DockWidgetClosable
         )
-        self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
+        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.settings = self.get_settings()
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
