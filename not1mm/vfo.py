@@ -39,12 +39,6 @@ class VfoWindow(QDockWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
-
-        self.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetClosable
-        )
-        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.setWindowTitle("VFO Window")
 
         self.rig_control = None

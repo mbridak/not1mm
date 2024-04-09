@@ -103,11 +103,6 @@ class LogWindow(QDockWidget):
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
         uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
-        self.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetClosable
-        )
-        # self.setAllowedAreas(QtCore.Qt.DockWidgetArea.AllDockWidgetAreas)
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )
