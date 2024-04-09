@@ -148,6 +148,10 @@ class MainWindow(QtWidgets.QMainWindow):
         "cluster_port": 7373,
         "cluster_filter": "Set DX Filter SpotterCont=NA",
         "cluster_mode": "OPEN",
+        "logwindow": True,
+        "bandmapwindow": True,
+        "checkwindow": True,
+        "vfowindow": False,
     }
     appstarted = False
     contact = {}
@@ -196,6 +200,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         data_path = fsutils.APP_DATA_PATH / "main.ui"
         uic.loadUi(data_path, self)
+        self.dockwidget = QtWidgets.QDockWidget(self)
+        self.dockwidget.setAllowedAreas(Qt.DockWidgetArea.AllDockWidgetAreas)
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
