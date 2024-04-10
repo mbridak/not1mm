@@ -1,7 +1,7 @@
 # Not1MM
 
  ![logo](https://github.com/mbridak/not1mm/raw/master/not1mm/data/k6gte.not1mm.svg)
- 
+
  The worlds #1 unfinished contest logger <sup>*According to my daughter Corinna.<sup>
 
 [![PyPI](https://img.shields.io/pypi/v/not1mm)](https://pypi.org/project/not1mm/)
@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-9-4] Check for portaudio instead of crash boom. Removed empty dockwidget. Tested on Plasma 6.
 - [24-4-9-3] Ugh. It's not a real day unless you forget to test.
 - [24-4-9-2] Put back the floatable dock widgets, 'cause Wayland strikes again.
 - [24-4-9-1] Removed DockWidgetFloatable from the dock widgets since my wee brain can't figure out how to add a dragable window frame to them once they are floating. Added a minimum size for the VFO LCD digits. Defaulted bandmap window to the right.
