@@ -31,6 +31,16 @@
   <property name="windowTitle">
    <string>Not1MM</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>k6gte.not1mm-32.png</normaloff>k6gte.not1mm-32.png</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
     <bool>true</bool>
@@ -1282,7 +1292,7 @@
      <x>0</x>
      <y>0</y>
      <width>878</width>
-     <height>30</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
