@@ -28,7 +28,13 @@ from shutil import copyfile
 
 import notctyparser
 import psutil
-import sounddevice as sd
+
+try:
+    import sounddevice as sd
+except OSError as exception:
+    print(exception)
+    print("portaudio is not installed")
+    sd = None
 import soundfile as sf
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt
@@ -200,8 +206,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         data_path = fsutils.APP_DATA_PATH / "main.ui"
         uic.loadUi(data_path, self)
-        self.dockwidget = QtWidgets.QDockWidget(self)
-        self.dockwidget.setAllowedAreas(Qt.DockWidgetArea.AllDockWidgetAreas)
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
@@ -2269,6 +2273,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Voicing: %s", the_string)
+        if sd is None:
+            logger.warning("Sounddevice/portaudio not installed.")
+            return
         op_path = fsutils.USER_DATA_PATH / self.current_op
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()
