@@ -1501,7 +1501,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionVFO.isChecked():
             self.vfo_window = VfoWindow()
             self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
-            self.vfo_window.setTitleBarWidget(1)
             self.vfo_window.show()
 
     def clear_band_indicators(self) -> None:
