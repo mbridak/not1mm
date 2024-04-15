@@ -258,39 +258,43 @@ class CheckWindow(QDockWidget):
                 filter(lambda x: x, [x.get("callsign", None) for x in spots]),
             )
 
-    def populate_layout(self, layout, call_list):
+    def populate_layout(self, layout, call_list) -> None:
+        """Apply blackmagic to a layout."""
         for i in reversed(range(layout.count())):
             if layout.itemAt(i).widget():
                 layout.itemAt(i).widget().setParent(None)
             else:
                 layout.removeItem(layout.itemAt(i))
-        labels = []
+        call_items = []
         for call in call_list:
             if call:
                 if self.call:
                     label_text = ""
+                    diff_score = 0
                     for tag, i1, i2, j1, j2 in Levenshtein.opcodes(call, self.call):
-                        # logger.debug('{:7}   a[{}:{}] --> b[{}:{}] {!r:>8} --> {!r}'.format(
-                        #    tag, i1, i2, j1, j2, call[i1:i2], self.call[j1:j2]))
                         if tag == "equal":
                             label_text += call[i1:i2]
                             continue
                         elif tag == "replace":
                             label_text += f"<span style='background-color: {self.character_remove_color};'>{call[i1:i2]}</span>"
+                            diff_score += max((i2 - i1), (j2 - j1)) * (
+                                len(call) + 1 - i2
+                            )
                         elif tag == "insert" or tag == "delete":
                             label_text += f"<span style='background-color: {self.character_add_color};'>{call[i1:i2]}</span>"
-                    labels.append(
-                        (
-                            Levenshtein.hamming(call, self.call),
-                            CallLabel(
-                                label_text, call=call, callback=self.item_clicked
-                            ),
-                        )
-                    )
+                            diff_score += max((i2 - i1), (j2 - j1)) * (len(call) - i2)
+                    call_items.append((diff_score, label_text, call))
 
-        for _, label in sorted(labels, key=lambda x: x[0]):
+        call_items = sorted(call_items, key=lambda x: x[0])
+        for i in reversed(range(layout.count())):
+            if layout.itemAt(i).widget():
+                layout.itemAt(i).widget().setParent(None)
+            else:
+                layout.removeItem(layout.itemAt(i))
+
+        for _, label_text, call in call_items:
+            label = CallLabel(label_text, call=call, callback=self.item_clicked)
             layout.addWidget(label)
-        # top aligns
         layout.addStretch(0)
 
 
@@ -307,6 +311,6 @@ class CallLabel(QLabel):
         self.call = call
         self.callback = callback
 
-    def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
+    def mouseReleaseEvent(self, e: QMouseEvent) -> None:
         if self.call and self.callback:
             self.callback(self.call)
