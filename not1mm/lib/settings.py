@@ -2,7 +2,13 @@
 
 import logging
 from PyQt6 import QtWidgets, uic
-import sounddevice as sd
+
+try:
+    import sounddevice as sd
+except OSError as exception:
+    print(exception)
+    print("portaudio is not installed")
+    sd = None
 
 
 class Settings(QtWidgets.QDialog):
@@ -15,7 +21,10 @@ class Settings(QtWidgets.QDialog):
         uic.loadUi(app_data_path / "configuration.ui", self)
         self.buttonBox.accepted.connect(self.save_changes)
         self.preference = pref
-        self.devices = sd.query_devices()
+        if sd:
+            self.devices = sd.query_devices()
+        else:
+            self.devices = []
         self.setup()
 
     def setup(self):
