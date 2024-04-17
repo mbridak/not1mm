@@ -35,8 +35,9 @@ class CheckWindow(QDockWidget):
     dxcLayout: QVBoxLayout = None
     qsoLayout: QVBoxLayout = None
 
-    character_remove_color = "#cc3333"
-    character_add_color = "#3333cc"
+    character_remove_color = "#dd3333"
+    character_add_color = "#3333dd"
+    character_match_color = "#33dd33"
 
     masterScrollWidget: QWidget = None
 
@@ -162,7 +163,7 @@ class CheckWindow(QDockWidget):
         None
         """
         while self.multicast_interface.server_udp.hasPendingDatagrams():
-            logger.error("Got multicast ")
+            logger.debug("Got multicast ")
             json_data = self.multicast_interface.read_datagram_as_json()
 
             if json_data.get("station", "") != platform.node():
@@ -283,6 +284,8 @@ class CheckWindow(QDockWidget):
                         elif tag == "insert" or tag == "delete":
                             label_text += f"<span style='background-color: {self.character_add_color};'>{call[i1:i2]}</span>"
                             diff_score += max((i2 - i1), (j2 - j1)) * (len(call) - i2)
+                    if call == self.call:
+                        label_text = f"<span style='background-color: {self.character_match_color};'>{call}</span>"
                     call_items.append((diff_score, label_text, call))
 
         call_items = sorted(call_items, key=lambda x: x[0])
