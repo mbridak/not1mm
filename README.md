@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-17] Trap OSError if no sound device. Stop fsutils/appdata from creating useless .not1mm and .username folder structures on Linux platforms.
 - [24-4-15] checkwindow.py Tighter results. Changed the call selection to use a single click.
 - [24-4-9-4] Check for portaudio instead of crash boom. Removed empty dockwidget. Tested on Plasma 6.
 - [24-4-9-3] Ugh. It's not a real day unless you forget to test.
