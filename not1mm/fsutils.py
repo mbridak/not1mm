@@ -31,6 +31,7 @@ _CONFIG_PATH = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
 _CONFIG_PATH += "/not1mm"
 CONFIG_PATH = Path(_CONFIG_PATH)
 CONFIG_FILE = CONFIG_PATH / "not1mm.json"
+LOG_FILE = USER_DATA_PATH / "not1mm_debug.log"
 
 if platform.system() not in ["Windows", "Darwin"]:
     try:
