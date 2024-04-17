@@ -193,7 +193,7 @@ pip install -U not1mm
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y libportaudio2 pipx
+sudo apt install -y libportaudio2 pipx libxcb-cursor0
 pipx install not1mm
 pipx ensurepath
 ```
