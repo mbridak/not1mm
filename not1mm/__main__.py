@@ -76,11 +76,6 @@ from not1mm.checkwindow import CheckWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 
-CTYFILE = {}
-
-with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
-    CTYFILE = loads(c_file.read())
-
 poll_time = datetime.datetime.now()
 
 
@@ -111,6 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
+    ctyfile = {}
     pref_ref = {
         "sounddevice": "default",
         "useqrz": False,
@@ -476,6 +472,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(
             QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
         )
+        with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
+            self.ctyfile = loads(c_file.read())
         self.readpreferences()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
@@ -1340,7 +1338,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 with open(
                     fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
                 ) as ctyfile:
-                    globals()["CTYFILE"] = loads(ctyfile.read())
+                    self.ctyfile = loads(ctyfile.read())
             else:
                 self.show_message_box("An Error occured updating file.")
         else:
@@ -1589,7 +1587,9 @@ class MainWindow(QtWidgets.QMainWindow):
         callsign = callsign.upper()
         for count in reversed(range(len(callsign))):
             searchitem = callsign[: count + 1]
-            result = {key: val for key, val in CTYFILE.items() if key == searchitem}
+            result = {
+                key: val for key, val in self.ctyfile.items() if key == searchitem
+            }
             if not result:
                 continue
             if result.get(searchitem).get("exact_match"):
