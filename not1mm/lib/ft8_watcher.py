@@ -8,7 +8,7 @@ GPL V3
 
 from PyQt6 import QtNetwork
 
-# import struct
+import struct
 
 
 class FT8Watcher:
@@ -86,21 +86,15 @@ class FT8Watcher:
 
         if packettype == 1:  # Status
             ...
-            # [dialfreq] = struct.unpack(">Q", payload[0:8])
-            # modelen = self.getint(payload[8:12])
-            # mode = payload[12 : 12 + modelen].decode()
-            # payload = payload[12 + modelen :]
-            # dxcalllen = self.getint(payload[0:4])
-            # dxcall = payload[4 : 4 + dxcalllen].decode()
-            # print(
-            #     "Status: sv:%s p:%s u:%s df:%s m:%s dxc:%s",
-            #     version,
-            #     packettype,
-            #     unique,
-            #     dialfreq,
-            #     mode,
-            #     dxcall,
-            # )
+            [dialfreq] = struct.unpack(">Q", payload[0:8])
+            modelen = self.getint(payload[8:12])
+            mode = payload[12 : 12 + modelen].decode()
+            payload = payload[12 + modelen :]
+            dxcalllen = self.getint(payload[0:4])
+            dxcall = payload[4 : 4 + dxcalllen].decode()
+            print(
+                f"Status: sv:{version} p:{packettype} u:{unique} df:{dialfreq} m:{mode} dxc:{dxcall}"
+            )
 
             # if f"{dxcall}{self.band}{self.mode}" in self.dupdict:
             #     self.ft8dupe = f"{dxcall} {self.band}M {self.mode} FT8 Dupe!"
