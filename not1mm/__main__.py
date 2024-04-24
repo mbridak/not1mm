@@ -37,7 +37,7 @@ except OSError as exception:
     sd = None
 import soundfile as sf
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import QDir, Qt
+from PyQt6.QtCore import QDir, Qt, QThread
 from PyQt6.QtGui import QFontDatabase, QColorConstants
 from PyQt6.QtWidgets import QFileDialog
 
@@ -75,6 +75,7 @@ from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
+from not1mm.radio import Radio
 
 poll_time = datetime.datetime.now()
 
@@ -186,6 +187,9 @@ class MainWindow(QtWidgets.QMainWindow):
     text_color = QColorConstants.Black
     current_palette = None
 
+    radio_thread = QThread()
+
+    rig_control = None
     log_window = None
     check_window = None
     bandmap_window = None
@@ -2491,27 +2495,48 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.rig_control = None
 
+        try:
+            if self.radio_thread.isRunning():
+                self.radio_thread.quit()
+                self.rig_control.time_to_quit = True
+        except (RuntimeError, AttributeError):
+            ...
+
         if self.pref.get("useflrig", False):
             logger.debug(
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control = CAT(
+            self.rig_control = Radio(
                 "flrig",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
+            self.radio_thread = QThread()
+            self.rig_control.moveToThread(self.radio_thread)
+            self.radio_thread.started.connect(self.rig_control.run)
+            self.radio_thread.finished.connect(self.radio_thread.deleteLater)
+            self.rig_control.poll_callback.connect(self.poll_radio)
+            self.radio_thread.start()
+            # self.rig_control.delta = 1
 
         if self.pref.get("userigctld", False):
             logger.debug(
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control = CAT(
+            self.rig_control = Radio(
                 "rigctld",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
+            self.radio_thread = QThread()
+            self.rig_control.moveToThread(self.radio_thread)
+            self.radio_thread.started.connect(self.rig_control.run)
+            self.radio_thread.finished.connect(self.radio_thread.deleteLater)
+            self.rig_control.poll_callback.connect(self.poll_radio)
+            self.radio_thread.start()
+            # self.rig_control.delta = 1
 
         if self.pref.get("cwtype", 0) == 0:
             self.cw = None
@@ -3173,81 +3198,143 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Destination: %s", str(destination_file))
                         destination_file.write_bytes(child.read_bytes())
 
-    def poll_radio(self) -> None:
-        """
-        Poll radio for VFO, mode, bandwidth.
-        Send state via multicast.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
+    def poll_radio(self, the_dict):
+        """catch"""
         self.set_radio_icon(0)
-        if self.rig_control:
-            if self.rig_control.online is False:
-                self.set_radio_icon(1)
-                self.rig_control.reinit()
-            if self.rig_control.online:
-                self.set_radio_icon(2)
-                info_dirty = False
-                vfo = self.rig_control.get_vfo()
-                mode = self.rig_control.get_mode()
-                bw = self.rig_control.get_bw()
+        print(f"{the_dict=}")
+        info_dirty = False
+        vfo = the_dict.get("vfoa", "")
+        mode = the_dict.get("mode", "")
+        bw = the_dict.get("bw", "")
+        online = the_dict.get("online", False)
 
-                if mode == "CW":
-                    self.setmode(mode)
-                if mode == "LSB" or mode == "USB":
-                    self.setmode("SSB")
-                if mode == "RTTY":
-                    self.setmode("RTTY")
+        if online is False:
+            self.set_radio_icon(1)
+        else:
+            self.set_radio_icon(2)
 
-                if vfo == "":
-                    return
-                if self.radio_state.get("vfoa") != vfo:
-                    info_dirty = True
-                    self.radio_state["vfoa"] = vfo
-                band = getband(str(vfo))
-                self.radio_state["band"] = band
-                self.contact["Band"] = get_logged_band(str(vfo))
-                self.set_band_indicator(band)
+            if mode == "CW":
+                self.setmode(mode)
+            if mode == "LSB" or mode == "USB":
+                self.setmode("SSB")
+            if mode == "RTTY":
+                self.setmode("RTTY")
 
-                if self.radio_state.get("mode") != mode:
-                    info_dirty = True
-                    self.radio_state["mode"] = mode
+            if vfo == "":
+                return
+            if self.radio_state.get("vfoa") != vfo:
+                info_dirty = True
+                self.radio_state["vfoa"] = vfo
+            band = getband(str(vfo))
+            self.radio_state["band"] = band
+            self.contact["Band"] = get_logged_band(str(vfo))
+            self.set_band_indicator(band)
 
-                if self.radio_state.get("bw") != bw:
-                    info_dirty = True
-                    self.radio_state["bw"] = bw
+            if self.radio_state.get("mode") != mode:
+                info_dirty = True
+                self.radio_state["mode"] = mode
 
-                if datetime.datetime.now() > globals()["poll_time"] or info_dirty:
-                    logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
-                    self.set_window_title()
-                    cmd = {}
-                    cmd["cmd"] = "RADIO_STATE"
-                    cmd["station"] = platform.node()
-                    cmd["band"] = band
-                    cmd["vfoa"] = vfo
-                    cmd["mode"] = mode
-                    cmd["bw"] = bw
-                    self.multicast_interface.send_as_json(cmd)
-                    if self.n1mm:
-                        if self.n1mm.send_radio_packets:
-                            self.n1mm.radio_info["Freq"] = vfo[:-1]
-                            self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                            self.n1mm.radio_info["Mode"] = mode
-                            self.n1mm.radio_info["OpCall"] = self.current_op
-                            self.n1mm.radio_info["IsRunning"] = str(
-                                self.pref.get("run_state", False)
-                            )
-                            self.n1mm.send_radio()
-                    globals()[
-                        "poll_time"
-                    ] = datetime.datetime.now() + datetime.timedelta(seconds=10)
+            if self.radio_state.get("bw") != bw:
+                info_dirty = True
+                self.radio_state["bw"] = bw
+
+            if info_dirty:
+                logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
+                self.set_window_title()
+                cmd = {}
+                cmd["cmd"] = "RADIO_STATE"
+                cmd["station"] = platform.node()
+                cmd["band"] = band
+                cmd["vfoa"] = vfo
+                cmd["mode"] = mode
+                cmd["bw"] = bw
+                self.multicast_interface.send_as_json(cmd)
+                if self.n1mm:
+                    if self.n1mm.send_radio_packets:
+                        self.n1mm.radio_info["Freq"] = vfo[:-1]
+                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                        self.n1mm.radio_info["Mode"] = mode
+                        self.n1mm.radio_info["OpCall"] = self.current_op
+                        self.n1mm.radio_info["IsRunning"] = str(
+                            self.pref.get("run_state", False)
+                        )
+                        self.n1mm.send_radio()
+
+    # def poll_radio(self) -> None:
+    #     """
+    #     Poll radio for VFO, mode, bandwidth.
+    #     Send state via multicast.
+
+    #     Parameters
+    #     ----------
+    #     None
+
+    #     Returns
+    #     -------
+    #     None
+    #     """
+
+    #     self.set_radio_icon(0)
+    #     if self.rig_control:
+    #         if self.rig_control.online is False:
+    #             self.set_radio_icon(1)
+    #             self.rig_control.reinit()
+    #         if self.rig_control.online:
+    #             self.set_radio_icon(2)
+    #             info_dirty = False
+    #             vfo = self.rig_control.get_vfo()
+    #             mode = self.rig_control.get_mode()
+    #             bw = self.rig_control.get_bw()
+
+    #             if mode == "CW":
+    #                 self.setmode(mode)
+    #             if mode == "LSB" or mode == "USB":
+    #                 self.setmode("SSB")
+    #             if mode == "RTTY":
+    #                 self.setmode("RTTY")
+
+    #             if vfo == "":
+    #                 return
+    #             if self.radio_state.get("vfoa") != vfo:
+    #                 info_dirty = True
+    #                 self.radio_state["vfoa"] = vfo
+    #             band = getband(str(vfo))
+    #             self.radio_state["band"] = band
+    #             self.contact["Band"] = get_logged_band(str(vfo))
+    #             self.set_band_indicator(band)
+
+    #             if self.radio_state.get("mode") != mode:
+    #                 info_dirty = True
+    #                 self.radio_state["mode"] = mode
+
+    #             if self.radio_state.get("bw") != bw:
+    #                 info_dirty = True
+    #                 self.radio_state["bw"] = bw
+
+    #             if datetime.datetime.now() > globals()["poll_time"] or info_dirty:
+    #                 logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
+    #                 self.set_window_title()
+    #                 cmd = {}
+    #                 cmd["cmd"] = "RADIO_STATE"
+    #                 cmd["station"] = platform.node()
+    #                 cmd["band"] = band
+    #                 cmd["vfoa"] = vfo
+    #                 cmd["mode"] = mode
+    #                 cmd["bw"] = bw
+    #                 self.multicast_interface.send_as_json(cmd)
+    #                 if self.n1mm:
+    #                     if self.n1mm.send_radio_packets:
+    #                         self.n1mm.radio_info["Freq"] = vfo[:-1]
+    #                         self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+    #                         self.n1mm.radio_info["Mode"] = mode
+    #                         self.n1mm.radio_info["OpCall"] = self.current_op
+    #                         self.n1mm.radio_info["IsRunning"] = str(
+    #                             self.pref.get("run_state", False)
+    #                         )
+    #                         self.n1mm.send_radio()
+    #                 globals()[
+    #                     "poll_time"
+    #                 ] = datetime.datetime.now() + datetime.timedelta(seconds=10)
 
     def edit_cw_macros(self) -> None:
         """
@@ -3447,7 +3534,7 @@ def run() -> None:
         f"Resolved OS file system paths: MODULE_PATH {fsutils.MODULE_PATH}, USER_DATA_PATH {fsutils.USER_DATA_PATH}, CONFIG_PATH {fsutils.CONFIG_PATH}"
     )
     install_icons()
-    timer.start(250)
+    # timer.start(250)
     sys.exit(app.exec())
 
 
@@ -3478,8 +3565,8 @@ y = window.pref.get("window_y", -1)
 window.setGeometry(x, y, width, height)
 window.callsign.setFocus()
 window.show()
-timer = QtCore.QTimer()
-timer.timeout.connect(window.poll_radio)
+# timer = QtCore.QTimer()
+# timer.timeout.connect(window.poll_radio)
 
 if __name__ == "__main__":
     run()
