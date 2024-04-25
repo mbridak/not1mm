@@ -28,13 +28,22 @@ class Radio(QObject):
     poll_time = datetime.datetime.now() + datetime.timedelta(seconds=delta)
     time_to_quit = False
     online = False
+    interface = None
+    host = None
+    port = None
 
     def __init__(self, interface: str, host: str, port: int) -> None:
         super().__init__()
         """setup interface"""
-        self.cat = CAT(interface, host, port)
+        self.interface = interface
+        self.host = host
+        self.port = port
 
     def run(self):
+        try:
+            self.cat = CAT(self.interface, self.host, self.port)
+        except ConnectionResetError:
+            ...
         while not self.time_to_quit:
             if datetime.datetime.now() > self.poll_time:
                 self.poll_time = datetime.datetime.now() + datetime.timedelta(
@@ -63,26 +72,19 @@ class Radio(QObject):
                 )
 
     def set_vfo(self, vfo):
-        self.cat.set_vfo(vfo)
+        if self.cat:
+            self.cat.set_vfo(vfo)
         self.vfoa = vfo
 
     def set_mode(self, mode):
-        self.cat.set_mode(mode)
+        if self.cat:
+            self.cat.set_mode(mode)
         self.mode = mode
 
     def ptt_on(self):
-        self.cat.ptt_on()
+        if self.cat:
+            self.cat.ptt_on()
 
     def ptt_off(self):
-        self.cat.ptt_off()
-
-    # if self.pref.get("userigctld", False):
-    #     logger.debug(
-    #         "Using rigctld: %s",
-    #         f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
-    #     )
-    #     self.rig_control = CAT(
-    #         "rigctld",
-    #         self.pref.get("CAT_ip", "127.0.0.1"),
-    #         int(self.pref.get("CAT_port", 4532)),
-    #     )
+        if self.cat:
+            self.cat.ptt_off()
