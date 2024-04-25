@@ -42,7 +42,6 @@ from PyQt6.QtGui import QFontDatabase, QColorConstants
 from PyQt6.QtWidgets import QFileDialog
 
 from not1mm.lib.about import About
-from not1mm.lib.cat_interface import CAT
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
