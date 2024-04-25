@@ -11,7 +11,7 @@ GPL V3
 
 import datetime
 
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, QThread
 from not1mm.lib.cat_interface import CAT
 
 
@@ -70,6 +70,7 @@ class Radio(QObject):
                         "online": self.online,
                     }
                 )
+            QThread.msleep(100)
 
     def set_vfo(self, vfo):
         if self.cat:
