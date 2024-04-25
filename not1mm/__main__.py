@@ -504,7 +504,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.close()
         if self.actionLog_Window.isChecked():
             self.log_window = LogWindow()
-            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
+            self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
             self.log_window.show()
 
         self.actionBandmap.setChecked(self.pref.get("bandmapwindow", False))
@@ -1471,7 +1471,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.close()
         if self.actionLog_Window.isChecked():
             self.log_window = LogWindow()
-            self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.log_window)
+            self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
             self.log_window.show()
 
     def launch_bandmap_window(self) -> None:
