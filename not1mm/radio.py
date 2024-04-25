@@ -24,7 +24,7 @@ class Radio(QObject):
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
-    delta = 10
+    delta = 1
     poll_time = datetime.datetime.now() + datetime.timedelta(seconds=delta)
     time_to_quit = False
     online = False
@@ -76,11 +76,27 @@ class Radio(QObject):
         if self.cat:
             self.cat.set_vfo(vfo)
         self.vfoa = vfo
+        self.poll_callback.emit(
+            {
+                "vfoa": self.vfoa,
+                "mode": self.mode,
+                "bw": self.bw,
+                "online": self.online,
+            }
+        )
 
     def set_mode(self, mode):
         if self.cat:
             self.cat.set_mode(mode)
         self.mode = mode
+        self.poll_callback.emit(
+            {
+                "vfoa": self.vfoa,
+                "mode": self.mode,
+                "bw": self.bw,
+                "online": self.online,
+            }
+        )
 
     def ptt_on(self):
         if self.cat:
