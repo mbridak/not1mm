@@ -2497,7 +2497,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.radio_thread.isRunning():
                 self.rig_control.time_to_quit = True
                 self.radio_thread.quit()
-                self.radio_thread.wait()
+                self.radio_thread.wait(1000)
 
         except (RuntimeError, AttributeError):
             ...
