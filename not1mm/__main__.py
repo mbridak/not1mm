@@ -3197,9 +3197,12 @@ class MainWindow(QtWidgets.QMainWindow):
                         destination_file.write_bytes(child.read_bytes())
 
     def poll_radio(self, the_dict):
-        """catch"""
+        """
+        Gets called by thread worker radio.py
+        Passing in a dictionary object with the
+        vfo freq, mode, bandwidth, and online state of the radio.
+        """
         self.set_radio_icon(0)
-        print(f"{the_dict=}")
         info_dirty = False
         vfo = the_dict.get("vfoa", "")
         mode = the_dict.get("mode", "")
@@ -3211,52 +3214,52 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.set_radio_icon(2)
 
-            if mode == "CW":
-                self.setmode(mode)
-            if mode == "LSB" or mode == "USB":
-                self.setmode("SSB")
-            if mode == "RTTY":
-                self.setmode("RTTY")
+        if vfo == "":
+            return
+        if self.radio_state.get("vfoa") != vfo:
+            info_dirty = True
+            self.radio_state["vfoa"] = vfo
+        band = getband(str(vfo))
+        self.radio_state["band"] = band
+        self.contact["Band"] = get_logged_band(str(vfo))
+        self.set_band_indicator(band)
 
-            if vfo == "":
-                return
-            if self.radio_state.get("vfoa") != vfo:
-                info_dirty = True
-                self.radio_state["vfoa"] = vfo
-            band = getband(str(vfo))
-            self.radio_state["band"] = band
-            self.contact["Band"] = get_logged_band(str(vfo))
-            self.set_band_indicator(band)
+        if self.radio_state.get("mode") != mode:
+            info_dirty = True
+            self.radio_state["mode"] = mode
 
-            if self.radio_state.get("mode") != mode:
-                info_dirty = True
-                self.radio_state["mode"] = mode
+        if self.radio_state.get("bw") != bw:
+            info_dirty = True
+            self.radio_state["bw"] = bw
 
-            if self.radio_state.get("bw") != bw:
-                info_dirty = True
-                self.radio_state["bw"] = bw
+        if mode == "CW":
+            self.setmode(mode)
+        if mode == "LSB" or mode == "USB":
+            self.setmode("SSB")
+        if mode == "RTTY":
+            self.setmode("RTTY")
 
-            if info_dirty:
-                logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
-                self.set_window_title()
-                cmd = {}
-                cmd["cmd"] = "RADIO_STATE"
-                cmd["station"] = platform.node()
-                cmd["band"] = band
-                cmd["vfoa"] = vfo
-                cmd["mode"] = mode
-                cmd["bw"] = bw
-                self.multicast_interface.send_as_json(cmd)
-                if self.n1mm:
-                    if self.n1mm.send_radio_packets:
-                        self.n1mm.radio_info["Freq"] = vfo[:-1]
-                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                        self.n1mm.radio_info["Mode"] = mode
-                        self.n1mm.radio_info["OpCall"] = self.current_op
-                        self.n1mm.radio_info["IsRunning"] = str(
-                            self.pref.get("run_state", False)
-                        )
-                        self.n1mm.send_radio()
+        if info_dirty:
+            logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
+            self.set_window_title()
+            cmd = {}
+            cmd["cmd"] = "RADIO_STATE"
+            cmd["station"] = platform.node()
+            cmd["band"] = band
+            cmd["vfoa"] = vfo
+            cmd["mode"] = mode
+            cmd["bw"] = bw
+            self.multicast_interface.send_as_json(cmd)
+            if self.n1mm:
+                if self.n1mm.send_radio_packets:
+                    self.n1mm.radio_info["Freq"] = vfo[:-1]
+                    self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                    self.n1mm.radio_info["Mode"] = mode
+                    self.n1mm.radio_info["OpCall"] = self.current_op
+                    self.n1mm.radio_info["IsRunning"] = str(
+                        self.pref.get("run_state", False)
+                    )
+                    self.n1mm.send_radio()
 
     def edit_cw_macros(self) -> None:
         """
