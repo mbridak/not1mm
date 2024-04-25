@@ -2493,12 +2493,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setDarkMode(False)
             self.actionDark_Mode_2.setChecked(False)
 
-        self.rig_control = None
-
         try:
             if self.radio_thread.isRunning():
-                self.radio_thread.quit()
                 self.rig_control.time_to_quit = True
+                self.radio_thread.quit()
+                self.radio_thread.wait()
+
         except (RuntimeError, AttributeError):
             ...
 
@@ -2512,10 +2512,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
-            self.radio_thread = QThread()
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.radio_thread.deleteLater)
+            self.radio_thread.finished.connect(self.rig_control.deleteLater)
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
             # self.rig_control.delta = 1
@@ -2530,10 +2529,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
-            self.radio_thread = QThread()
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.radio_thread.deleteLater)
+            self.radio_thread.finished.connect(self.rig_control.deleteLater)
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
             # self.rig_control.delta = 1
