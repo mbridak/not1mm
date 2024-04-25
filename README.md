@@ -145,6 +145,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
 - [24-4-25] Limited loop in radio.py, reducing clock cycles used. Moved Log window to the top of the logger.
 - [24-4-24] Placed CAT control into a thread so disconnecting the radio wouldn't lock up the interface.
 - [24-4-17] Trap OSError if no sound device. Stop fsutils/appdata from creating useless .not1mm and .username folder structures on Linux platforms.
