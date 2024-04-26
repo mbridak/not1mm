@@ -150,10 +150,11 @@ class MainWindow(QtWidgets.QMainWindow):
         "cluster_port": 7373,
         "cluster_filter": "Set DX Filter SpotterCont=NA",
         "cluster_mode": "OPEN",
-        "logwindow": True,
-        "bandmapwindow": True,
-        "checkwindow": True,
+        "logwindow": False,
+        "bandmapwindow": False,
+        "checkwindow": False,
         "vfowindow": False,
+        "darkmode": True,
     }
     appstarted = False
     contact = {}
