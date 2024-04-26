@@ -23,6 +23,7 @@
     - [Common installation recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
+      - [Ubuntu 24.04](#ubuntu-2404)
       - [Fedora 38 \& 39](#fedora-38--39)
       - [Fedora 40](#fedora-40)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
@@ -201,6 +202,16 @@ sudo apt upgrade
 sudo apt install -y libportaudio2 pipx libxcb-cursor0
 pipx install not1mm
 pipx ensurepath
+```
+
+#### Ubuntu 24.04
+
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install -y libportaudio2 pyqt6-dev-tools python3-pip
+pip install --break-system-packages not1mm
+source .profile
 ```
 
 #### Fedora 38 & 39
