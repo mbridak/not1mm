@@ -23,16 +23,16 @@
     - [Common installation recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
-      - [Ubuntu 24.04](#ubuntu-2404)
+      - [Ubuntu 24.04 LTS](#ubuntu-2404-lts)
       - [Fedora 38 \& 39](#fedora-38--39)
       - [Fedora 40](#fedora-40)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
       - [Bootstrapping pipx](#bootstrapping-pipx)
       - [Installing with pipx](#installing-with-pipx)
+    - [Installing from GitHub source](#installing-from-github-source)
   - [After the install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
-    - [Installing from GitHub source](#installing-from-github-source)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
@@ -185,6 +185,10 @@ through your distribution's package manager before continuing.
 I've taken the time to install some common Linux distributions into a VM and
 noted the minimum steps needed to install not1mm.
 
+<details>
+
+<summary><b>Ubuntu 22.04 LTS, 23.04 and 24.04 LTS</b></summary>
+
 #### Ubuntu 22.04 LTS
 
 ```bash
@@ -204,7 +208,7 @@ pipx install not1mm
 pipx ensurepath
 ```
 
-#### Ubuntu 24.04
+#### Ubuntu 24.04 LTS
 
 ```bash
 sudo apt update
@@ -213,6 +217,12 @@ sudo apt install -y libportaudio2 pyqt6-dev-tools python3-pip
 pip install --break-system-packages not1mm
 source .profile
 ```
+
+</details>
+
+<details>
+
+<summary><b>Fedora 38, 39 and 40</b></summary>
 
 #### Fedora 38 & 39
 
@@ -229,6 +239,9 @@ sudo dnf upgrade --refresh
 sudo dnf install python3-pip python3-pyqt6 portaudio
 pip install not1mm
 ```
+
+</details>
+<br>
 
 You can now open a new terminal and type not1mm. On it's first run, it may or
 may not install a lovely non AI generated icon, which you can later click on to
@@ -281,6 +294,40 @@ If you need to later update not1mm, you can do so with:
 pipx upgrade not1mm
 ```
 
+<details>
+<summary><b>Installing from GitHub source.</b></summary>
+
+### Installing from GitHub source
+
+Since this is packaged for PyPI, if you want to work on your own source branch,
+after cloning from github you would:
+
+```bash
+pip install --upgrade pip
+pip install setuptools
+pip install build
+source rebuild.sh
+```
+
+from the root directory. This installs a build chain and a local editable copy
+of not1mm.
+
+There's two ways to launch the program from the local editable copy.
+
+You can either be in the root of the source directory and type:
+
+```bash
+python not1mm
+```
+
+or be in some other directory and just type:
+
+```bash
+not1mm
+```
+
+</details>
+
 ## After the install
 
 You can now open a new terminal and type `not1mm`. On it's first run, it may or
@@ -311,35 +358,6 @@ To avoid this you can export an environment variable and launch the app like thi
 For a more permanent solution you can place the line
 `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then
 after logging out and back in you should be able to launch it normally.
-
-### Installing from GitHub source
-
-Since this is packaged for PyPI, if you want to work on your own source branch,
-after cloning from github you would:
-
-```bash
-pip install --upgrade pip
-pip install setuptools
-pip install build
-source rebuild.sh
-```
-
-from the root directory. This installs a build chain and a local editable copy
-of not1mm.
-
-There's two ways to launch the program from the local editable copy.
-
-You can either be in the root of the source directory and type:
-
-```bash
-python not1mm
-```
-
-or be in some other directory and just type:
-
-```bash
-not1mm
-```
 
 ## Various data file locations
 
