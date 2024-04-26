@@ -24,6 +24,7 @@
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
       - [Fedora 38 \& 39](#fedora-38--39)
+      - [Fedora 40](#fedora-40)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
       - [Bootstrapping pipx](#bootstrapping-pipx)
       - [Installing with pipx](#installing-with-pipx)
@@ -207,6 +208,14 @@ pipx ensurepath
 ```bash
 sudo dnf upgrade --refresh
 sudo dnf install python3-pip portaudio
+pip install not1mm
+```
+
+#### Fedora 40
+
+```bash
+sudo dnf upgrade --refresh
+sudo dnf install python3-pip python3-pyqt6 portaudio
 pip install not1mm
 ```
 
