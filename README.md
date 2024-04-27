@@ -1,4 +1,5 @@
 # Not1MM
+<!-- markdownlint-disable MD001 MD033 -->
 
  ![logo](https://github.com/mbridak/not1mm/raw/master/not1mm/data/k6gte.not1mm.svg)
 
@@ -147,6 +148,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-27] Cleaned up dark mode code.
 - [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
 - [24-4-25] Limited loop in radio.py, reducing clock cycles used. Moved Log window to the top of the logger.
 - [24-4-24] Placed CAT control into a thread so disconnecting the radio wouldn't lock up the interface.
