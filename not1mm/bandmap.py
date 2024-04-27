@@ -17,7 +17,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants
+from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
@@ -319,7 +319,7 @@ class BandMapWindow(QDockWidget):
     bandwidth_mark = []
     worked_list = {}
     multicast_interface = None
-    text_color = QtGui.QColor(45, 45, 45)
+    text_color = QColor(45, 45, 45)
 
     def __init__(self):
         super().__init__()
@@ -366,101 +366,50 @@ class BandMapWindow(QDockWidget):
                 return loads(file_descriptor.read())
 
     def setDarkMode(self, setdarkmode=False):
-        """testing"""
-
+        """Set dark mode"""
         if setdarkmode:
-            darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(56, 56, 56)
+            darkPalette = QPalette()
+            darkColor = QColor(56, 56, 56)
             self.text_color = QColorConstants.White
-            disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Window, darkColor)
+            disabledColor = QColor(127, 127, 127)
+            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
+            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
+            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.WindowText, QColorConstants.White
+                QPalette.ColorRole.HighlightedText, QColorConstants.Black
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.Text,
-                disabledColor,
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.ButtonText, QColorConstants.White
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.ButtonText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.ButtonText,
                 disabledColor,
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.BrightText, QColorConstants.Red
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.HighlightedText,
+                disabledColor,
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.HighlightedText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.Text,
                 disabledColor,
             )
 
             self.setPalette(darkPalette)
             self.callsignField.setPalette(darkPalette)
             self.update()
-            dark_button_style = (
-                "QPushButton {"
-                "background-color: rgb(56,56,56);"
-                "color: white;"
-                "border-style: outset;"
-                "border-width: 2px;"
-                "border-radius: 5px;"
-                "border-color: rgb(45,45,45);"
-                "padding: 6px;"
-                "}"
-                "QPushButton:pressed {"
-                "background-color: rgb(127, 127, 127);"
-                "border-style: inset;"
-                "}"
-            )
-            self.connectButton.setStyleSheet(dark_button_style)
-            self.clearButton.setStyleSheet(dark_button_style)
-            self.zoominButton.setStyleSheet(dark_button_style)
-            self.zoomoutButton.setStyleSheet(dark_button_style)
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
             self.callsignField.setPalette(palette)
             self.text_color = QColorConstants.Black
             self.update()
-            light_button_style = (
-                "QPushButton {"
-                "background-color: rgb(245,245,245);"
-                "color: rgb(52,52,52);"
-                "border-style: outset;"
-                "border-width: 2px;"
-                "border-radius: 5px;"
-                "border-color: rgb(150,150,150);"
-                "padding: 6px;"
-                "}"
-                "QPushButton:pressed {"
-                "background-color: rgb(127, 127, 127);"
-                "border-style: inset;"
-                "}"
-            )
-            self.connectButton.setStyleSheet(light_button_style)
-            self.clearButton.setStyleSheet(light_button_style)
-            self.zoominButton.setStyleSheet(light_button_style)
-            self.zoomoutButton.setStyleSheet(light_button_style)
 
     def connect(self):
         """Connect to the cluster."""
@@ -686,11 +635,9 @@ class BandMapWindow(QDockWidget):
             self.clear_freq_mark(self.bandwidth_mark)
             self.clear_freq_mark(self.rxMark)
             self.draw_bandwidth(
-                self.rx_freq, step, QtGui.QColor(30, 30, 180, 180), self.bandwidth_mark
+                self.rx_freq, step, QColor(30, 30, 180, 180), self.bandwidth_mark
             )
-            self.drawfreqmark(
-                self.rx_freq, step, QtGui.QColor(30, 180, 30, 180), self.rxMark
-            )
+            self.drawfreqmark(self.rx_freq, step, QColor(30, 180, 30, 180), self.rxMark)
 
     def Freq2ScenePos(self, freq: float):
         """doc"""
@@ -751,7 +698,7 @@ class BandMapWindow(QDockWidget):
         if freq < self.currentBand.start or freq > self.currentBand.end:
             return
         if freq and self.bandwidth:
-            # color = QtGui.QColor(30, 30, 180)
+            # color = QColor(30, 30, 180)
             bw_start = Decimal(str(freq)) - (
                 (Decimal(str(self.bandwidth)) / 2) / 1000000
             )
@@ -786,11 +733,11 @@ class BandMapWindow(QDockWidget):
             for items in result:
                 pen_color = self.text_color
                 if items.get("comment") == "MARKED":
-                    pen_color = QtGui.QColor(47, 47, 255)
+                    pen_color = QColor(47, 47, 255)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:
-                        pen_color = QtGui.QColor(255, 47, 47)
+                        pen_color = QColor(255, 47, 47)
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP

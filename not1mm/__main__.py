@@ -38,7 +38,7 @@ except OSError as exception:
 import soundfile as sf
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt, QThread
-from PyQt6.QtGui import QFontDatabase, QColorConstants
+from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor
 from PyQt6.QtWidgets import QFileDialog
 
 from not1mm.lib.about import About
@@ -567,76 +567,50 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         print(f"{result=}")
 
-    def setDarkMode(self, dark):
-        """testing"""
+    def setDarkMode(self, setdarkmode=False) -> None:
+        """Forces a darkmode palette."""
 
-        logger.debug(f"Dark mode set to: {dark}")
+        logger.debug(f"Dark mode set to: {setdarkmode}")
 
         cmd = {}
         cmd["cmd"] = "DARKMODE"
-        cmd["state"] = dark
+        cmd["state"] = setdarkmode
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
 
-        if dark:
-            darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(56, 56, 56)
-            disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Window, darkColor)
+        if setdarkmode:
+            darkPalette = QPalette()
+            darkColor = QColor(56, 56, 56)
+            disabledColor = QColor(127, 127, 127)
+            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
+            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
+            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.WindowText, QColorConstants.White
+                QPalette.ColorRole.HighlightedText, QColorConstants.Black
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.Text,
-                disabledColor,
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.ButtonText, QColorConstants.White
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.ButtonText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.ButtonText,
                 disabledColor,
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.BrightText, QColorConstants.Red
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.HighlightedText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.HighlightedText,
                 disabledColor,
             )
-            dark_button_style = (
-                "QPushButton {"
-                "background-color: rgb(56,56,56);"
-                "color: white;"
-                "border-style: outset;"
-                "border-width: 2px;"
-                "border-radius: 5px;"
-                "border-color: rgb(45,45,45);"
-                "padding: 6px;"
-                "}"
-                "QPushButton:pressed {"
-                "background-color: rgb(127, 127, 127);"
-                "border-style: inset;"
-                "}"
+            darkPalette.setColor(
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.Text,
+                disabledColor,
             )
+
             self.current_palette = darkPalette
             self.setPalette(darkPalette)
             self.text_color = QColorConstants.White
@@ -651,18 +625,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_1.setPalette(darkPalette)
             self.other_2.setPalette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
-            self.F1.setStyleSheet(dark_button_style)
-            self.F2.setStyleSheet(dark_button_style)
-            self.F3.setStyleSheet(dark_button_style)
-            self.F4.setStyleSheet(dark_button_style)
-            self.F5.setStyleSheet(dark_button_style)
-            self.F6.setStyleSheet(dark_button_style)
-            self.F7.setStyleSheet(dark_button_style)
-            self.F8.setStyleSheet(dark_button_style)
-            self.F9.setStyleSheet(dark_button_style)
-            self.F10.setStyleSheet(dark_button_style)
-            self.F11.setStyleSheet(dark_button_style)
-            self.F12.setStyleSheet(dark_button_style)
         else:
             palette = self.style().standardPalette()
             self.current_palette = palette
@@ -679,33 +641,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_2.setPalette(palette)
             self.cw_entry.setPalette(palette)
             self.text_color = QColorConstants.Black
-            light_button_style = (
-                "QPushButton {"
-                "background-color: rgb(245,245,245);"
-                "color: rgb(52,52,52);"
-                "border-style: outset;"
-                "border-width: 2px;"
-                "border-radius: 5px;"
-                "border-color: rgb(150,150,150);"
-                "padding: 6px;"
-                "}"
-                "QPushButton:pressed {"
-                "background-color: rgb(127, 127, 127);"
-                "border-style: inset;"
-                "}"
-            )
-            self.F1.setStyleSheet(light_button_style)
-            self.F2.setStyleSheet(light_button_style)
-            self.F3.setStyleSheet(light_button_style)
-            self.F4.setStyleSheet(light_button_style)
-            self.F5.setStyleSheet(light_button_style)
-            self.F6.setStyleSheet(light_button_style)
-            self.F7.setStyleSheet(light_button_style)
-            self.F8.setStyleSheet(light_button_style)
-            self.F9.setStyleSheet(light_button_style)
-            self.F10.setStyleSheet(light_button_style)
-            self.F11.setStyleSheet(light_button_style)
-            self.F12.setStyleSheet(light_button_style)
 
     def set_radio_icon(self, state: int) -> None:
         """

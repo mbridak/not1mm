@@ -14,7 +14,7 @@ import Levenshtein
 
 from PyQt6 import QtGui, uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
-from PyQt6.QtGui import QMouseEvent, QColorConstants
+from PyQt6.QtGui import QMouseEvent, QColorConstants, QPalette, QColor
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -70,51 +70,39 @@ class CheckWindow(QDockWidget):
             cmd["call"] = item
             self.multicast_interface.send_as_json(cmd)
 
-    def setDarkMode(self, dark: bool):
+    def setDarkMode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
 
         if dark:
-            darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(56, 56, 56)
-            disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Window, darkColor)
+            darkPalette = QPalette()
+            darkColor = QColor(56, 56, 56)
+            disabledColor = QColor(127, 127, 127)
+            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
+            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
+            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.WindowText, QColorConstants.White
+                QPalette.ColorRole.HighlightedText, QColorConstants.Black
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Base, QtGui.QColor(45, 45, 45)
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.Text,
-                disabledColor,
-            )
-            darkPalette.setColor(QtGui.QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.ButtonText, QColorConstants.White
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.ButtonText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.ButtonText,
                 disabledColor,
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.BrightText, QColorConstants.Red
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.HighlightedText,
+                disabledColor,
             )
             darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218)
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QtGui.QPalette.ColorGroup.Disabled,
-                QtGui.QPalette.ColorRole.HighlightedText,
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.Text,
                 disabledColor,
             )
 
