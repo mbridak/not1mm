@@ -726,7 +726,7 @@
         </widget>
        </item>
        <item row="2" column="3" alignment="Qt::AlignHCenter">
-        <widget class="QRadioButton" name="radioButton_5">
+        <widget class="QRadioButton" name="usecwviacat_radioButton">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
@@ -735,13 +735,13 @@
           </font>
          </property>
          <property name="accessibleName">
-          <string>none</string>
+          <string>CAT</string>
          </property>
          <property name="accessibleDescription">
-          <string>none</string>
+          <string>use cat for c w</string>
          </property>
          <property name="text">
-          <string>None</string>
+          <string>CAT</string>
          </property>
         </widget>
        </item>
@@ -1604,7 +1604,7 @@
   <tabstop>rigcontrolport_field</tabstop>
   <tabstop>cwport_field</tabstop>
   <tabstop>usepywinkeyer_radioButton</tabstop>
-  <tabstop>radioButton_5</tabstop>
+  <tabstop>usecwviacat_radioButton</tabstop>
   <tabstop>cwip_field</tabstop>
   <tabstop>usecwdaemon_radioButton</tabstop>
   <tabstop>connect_to_server</tabstop>

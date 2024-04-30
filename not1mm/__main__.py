@@ -705,7 +705,9 @@ class MainWindow(QtWidgets.QMainWindow):
             # self.send_backspace()
             self.oldtext = newtext
             return
-        if self.cw is not None:
+        if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+            self.rig_control.sendcw(newtext[len(self.oldtext) :])
+        elif self.cw is not None:
             self.cw.sendcw(newtext[len(self.oldtext) :])
         self.oldtext = newtext
 
@@ -2310,6 +2312,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.voice_string(self.process_macro(function_key.toolTip()))
             return
         if self.cw:
+            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
+                return
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
 
     def run_sp_buttons_clicked(self) -> None:

@@ -15,10 +15,17 @@ logger = logging.getLogger("cwinterface")
 
 
 class CW:
-    """An interface to cwdaemon and PyWinkeyerSerial"""
+    """
+
+    An interface to cwdaemon and PyWinkeyerSerial
+
+    servertype: int 1=cwdaemon, 2=pywinkeyer, 3=rigctld
+
+    """
 
     def __init__(self, servertype: int, host: str, port: int) -> None:
         self.servertype = servertype
+        self.cat = None
         self.host = host
         self.port = port
         self.speed = 20
@@ -42,34 +49,39 @@ class CW:
 
     def sendcw(self, texttosend):
         """sends cw to k1el"""
-        logger.info("sendcw: %s", texttosend)
+        logger.debug(f"{texttosend=} {self.servertype=}")
         if self.servertype == 2:
             self._sendcw_xmlrpc(texttosend)
         if self.servertype == 1:
             self._sendcw_udp(texttosend)
+        if self.servertype == 3 and self.cw is not None:
+            self._sendcwcat(texttosend)
 
     def _sendcw_xmlrpc(self, texttosend):
         """sends cw to xmlrpc"""
-        logger.info("xmlrpc: %s", texttosend)
+        logger.debug("xmlrpc: %s", texttosend)
         with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
             try:
                 proxy.k1elsendstring(texttosend)
             except Error as exception:
-                logger.info(
+                logger.debug(
                     "http://%s:%s, xmlrpc error: %s", self.host, self.port, exception
                 )
             except ConnectionRefusedError:
-                logger.info(
+                logger.debug(
                     "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
                 )
 
     def _sendcw_udp(self, texttosend):
         """send cw to udp port"""
-        logger.info("UDP: %s", texttosend)
+        logger.debug("UDP: %s", texttosend)
         server_address_port = (self.host, self.port)
         # bufferSize          = 1024
         udp_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         udp_client_socket.sendto(bytes(texttosend, "utf-8"), server_address_port)
+
+    def _sendcwcat(self, texttosend):
+        """..."""
 
     def set_winkeyer_speed(self, speed):
         """doc"""

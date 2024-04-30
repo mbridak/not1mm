@@ -10,9 +10,12 @@ GPL V3
 # pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
 
 import datetime
+import logging
 
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 from not1mm.lib.cat_interface import CAT
+
+logger = logging.getLogger("cat_interface")
 
 
 class Radio(QObject):
@@ -71,6 +74,12 @@ class Radio(QObject):
                     }
                 )
             QThread.msleep(100)
+
+    def sendcw(self, texttosend):
+        """..."""
+        logger.debug(f"Send CW: {texttosend}")
+        if self.cat:
+            self.cat.sendcw(texttosend)
 
     def set_vfo(self, vfo):
         if self.cat:

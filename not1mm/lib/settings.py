@@ -58,6 +58,9 @@ class Settings(QtWidgets.QDialog):
         self.usepywinkeyer_radioButton.setChecked(
             bool(self.preference.get("cwtype") == 2)
         )
+        # self.usecwviacat_radioButton.setChecked(
+        #     bool(self.preference.get("cwtype") == 3)
+        # )
         self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
         self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
         self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
@@ -131,8 +134,10 @@ class Settings(QtWidgets.QDialog):
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1
-        if self.usepywinkeyer_radioButton.isChecked():
+        elif self.usepywinkeyer_radioButton.isChecked():
             self.preference["cwtype"] = 2
+        # elif self.usecwviacat_radioButton.isChecked():
+        #     self.preference["cwtype"] = 3
         self.preference["useserver"] = self.connect_to_server.isChecked()
         self.preference["multicast_group"] = self.multicast_group.text()
         self.preference["multicast_port"] = self.multicast_port.text()

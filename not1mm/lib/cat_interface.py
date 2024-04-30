@@ -90,6 +90,36 @@ class CAT:
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
 
+    def sendcw(self, texttosend):
+        """..."""
+        logger.debug(f"{texttosend=} {self.interface=}")
+        if self.interface == "flrig":
+            ...
+            return
+        if self.interface == "rigctld":
+            ...
+            self.sendcwrigctl(texttosend)
+
+    def sendcwrigctl(self, texttosend):
+        """..."""
+
+    def sendcwxmlrpc(self, texttosend):
+        """..."""
+        logger.debug(f"{texttosend=}")
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                return True
+            except socket.error as exception:
+                self.online = False
+                logger.debug("setvfo_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return False
+        self.__initialize_rigctrld()
+        return False
+
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
         vfo = ""
