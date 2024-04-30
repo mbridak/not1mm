@@ -148,6 +148,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-4-30] Allowsending CW via rigctld if your radio supports it.
 - [24-4-27] Cleaned up dark mode code.
 - [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
 - [24-4-25] Limited loop in radio.py, reducing clock cycles used. Moved Log window to the top of the logger.
@@ -470,7 +471,10 @@ onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
 Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP
 `127.0.0.1` and port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` and
-port `8000`. Or `None`, if you want to Morse it like it's 1899.
+`CAT` which if your radio supports it, sends Morse characters via rigctld. As far
+as I can tell rigctld does not support setting the radios internal keyer speed. So
+the CW speed control widget will not be functional and you'd need to control the
+keyer speed thru the radios interface.
 
 ### Cluster
 
