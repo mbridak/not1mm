@@ -180,8 +180,11 @@ noted the minimum steps needed to install not1mm.
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y libportaudio2 python3-pip python3-pyqt6 python3-numpy
-pip install -U not1mm
+sudo apt install -y python3-pip python3-numpy libxcb-cursor0
+python3 -m pip install -U pip
+# Logout and back in
+pip3 install PyQt6
+pip3 install not1mm
 ```
 
 #### Ubuntu 23.04
