@@ -180,7 +180,7 @@ noted the minimum steps needed to install not1mm.
 ```bash
 sudo apt update
 sudo apt upgrade
-sudo apt install -y python3-pip python3-numpy libxcb-cursor0
+sudo apt install -y python3-pip python3-numpy libxcb-cursor0 libportaudio2
 python3 -m pip install -U pip
 # Logout and back in
 pip3 install PyQt6
