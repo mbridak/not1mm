@@ -35,7 +35,6 @@ except OSError as exception:
     print(exception)
     print("portaudio is not installed")
     sd = None
-import soundfile as sf
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt, QThread
 from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor
@@ -75,6 +74,7 @@ from not1mm.checkwindow import CheckWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 from not1mm.radio import Radio
+from not1mm.voice_keying import Voice
 
 poll_time = datetime.datetime.now()
 
@@ -188,6 +188,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_palette = None
 
     radio_thread = QThread()
+    voice_thread = QThread()
 
     rig_control = None
     log_window = None
@@ -479,6 +480,18 @@ class MainWindow(QtWidgets.QMainWindow):
         with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
             self.ctyfile = loads(c_file.read())
         self.readpreferences()
+
+        self.voice_process = Voice()
+        self.voice_process.moveToThread(self.voice_thread)
+        self.voice_thread.started.connect(self.voice_process.run)
+        self.voice_thread.finished.connect(self.voice_process.deleteLater)
+        self.voice_process.ptt_on.connect(self.ptt_on)
+        self.voice_process.ptt_off.connect(self.ptt_off)
+        self.voice_process.current_op = self.current_op
+        self.voice_process.data_path = fsutils.USER_DATA_PATH
+        self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
+        self.voice_thread.start()
+
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
@@ -492,6 +505,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.station = {}
         self.contact = self.database.empty_contact
         self.current_op = self.station.get("Call", "")
+        self.voice_process.current_op = self.current_op
         self.make_op_dir()
         self.read_cw_macros()
         self.clearinputs()
@@ -922,6 +936,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.station is None:
                 self.station = {}
             self.current_op = self.station.get("Call", "")
+            self.voice_process.current_op = self.current_op
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
@@ -958,6 +973,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.station.get("Call", "") == "":
                 self.edit_station_settings()
             self.current_op = self.station.get("Call", "")
+            self.voice_process.current_op = self.current_op
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
@@ -2118,6 +2134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.close()
         if self.current_op == "":
             self.current_op = self.station.get("Call", "")
+            self.voice_process.current_op = self.current_op
             self.make_op_dir()
         contest_count = self.database.fetch_all_contests()
         if len(contest_count) == 0:
@@ -2199,61 +2216,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         return macro
 
-    def voice_string(self, the_string: str) -> None:
-        """
-        voices string using nato phonetics.
-
-        Parameters
-        ----------
-        the_string : str
-        String to voicify.
-
-        Returns
-        -------
-        None
-        """
-
-        logger.debug("Voicing: %s", the_string)
-        if sd is None:
-            logger.warning("Sounddevice/portaudio not installed.")
-            return
-        op_path = fsutils.USER_DATA_PATH / self.current_op
-        if "[" in the_string:
-            sub_string = the_string.strip("[]").lower()
-            filename = f"{str(op_path)}/{sub_string}.wav"
-            if Path(filename).is_file():
-                logger.debug("Voicing: %s", filename)
-                data, _fs = sf.read(filename, dtype="float32")
-                self.ptt_on()
-                try:
-                    sd.default.device = self.pref.get("sounddevice", "default")
-                    sd.default.samplerate = 44100.0
-                    sd.play(data, blocking=False)
-                    # _status = sd.wait()
-                    # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
-                except sd.PortAudioError as err:
-                    logger.warning("%s", f"{err}")
-
-                self.ptt_off()
-            return
-        self.ptt_on()
-        for letter in the_string.lower():
-            if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
-                if letter == " ":
-                    letter = "space"
-                filename = f"{str(op_path)}/{letter}.wav"
-                if Path(filename).is_file():
-                    logger.debug("Voicing: %s", filename)
-                    data, _fs = sf.read(filename, dtype="float32")
-                    try:
-                        sd.default.device = self.pref.get("sounddevice", "default")
-                        sd.default.samplerate = 44100.0
-                        sd.play(data, blocking=False)
-                        logger.debug("%s", f"{sd.wait()}")
-                    except sd.PortAudioError as err:
-                        logger.warning("%s", f"{err}")
-        self.ptt_off()
-
     def ptt_on(self) -> None:
         """
         Turn on ptt for rig.
@@ -2285,6 +2247,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+
         logger.debug("PTT Off")
         if self.rig_control:
             self.leftdot.setPixmap(self.reddot)
@@ -2309,7 +2272,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
-            self.voice_string(self.process_macro(function_key.toolTip()))
+            self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
+            # self.voice_string(self.process_macro(function_key.toolTip()))
             return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
@@ -3103,6 +3067,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text().upper()
+            self.voice_process.current_op = self.current_op
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()
