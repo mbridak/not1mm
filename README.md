@@ -148,24 +148,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
-- [24-4-30] Allow sending CW via rigctld if your radio supports it.
-- [24-4-27] Cleaned up dark mode code.
-- [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
-- [24-4-25] Limited loop in radio.py, reducing clock cycles used. Moved Log window to the top of the logger.
-- [24-4-24] Placed CAT control into a thread so disconnecting the radio wouldn't lock up the interface.
-- [24-4-17] Trap OSError if no sound device. Stop fsutils/appdata from creating useless .not1mm and .username folder structures on Linux platforms.
-- [24-4-15] checkwindow.py Tighter results. Changed the call selection to use a single click.
-- [24-4-9-4] Check for portaudio instead of crash boom. Removed empty dockwidget. Tested on Plasma 6.
-- [24-4-9-3] Ugh. It's not a real day unless you forget to test.
-- [24-4-9-2] Put back the floatable dock widgets, 'cause Wayland strikes again.
-- [24-4-9-1] Removed DockWidgetFloatable from the dock widgets since my wee brain can't figure out how to add a dragable window frame to them once they are floating. Added a minimum size for the VFO LCD digits. Defaulted bandmap window to the right.
-- [24-4-9] Fixed Checkwindow not showing calls from logged contacts.
-- [24-4-7] Added FT8Watcher class to prep for FT8 support.
-- [24-4-4-1] Made docking widgets open state persistent.
-- [24-4-4] Added per-contest echange hint when adding new contest.
-- [24-4-2] Migrated to PyQt6. I'm sure there are broken things.
-- [24-4-1-2] Added color text indicators to the Check Partial window. Poached the code from @kyleboyle. Thanks! Fixed the Log, VFO and Check Partial windows to be actual docking widgets. Refocus call field after double clicking on item in the check partial window.
-- [24-4-1] Removed some un-needed loops and widgets from the check window. Fixed docking to the left side.
+- [24-5-1] Moved the voice keying into it's own thread.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
