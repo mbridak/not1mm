@@ -4,6 +4,9 @@
 Not1MM Contest logger
 Email: michael.bridak@gmail.com
 GPL V3
+Class: Voice
+Purpose: A voice keying class to handle playing soundfiles and activating PTT
+         Run in it's own thread.
 """
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
