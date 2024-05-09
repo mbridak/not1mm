@@ -2,6 +2,43 @@
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
+# CQ WW WPX Contest, CW
+#  	Status:	Active
+#  	Geographic Focus:	Worldwide
+#  	Participation:	Worldwide
+#  	Awards:	Worldwide
+#  	Mode:	CW
+#  	Bands:	160, 80, 40, 20, 15, 10m
+#  	Classes:	Single Op All Band (QRP/Low/High)
+# Single Op Single Band (QRP/Low/High)
+# Single Op Overlays: (TB-Wires/Rookie/Classic/Youth)
+# Multi-Single (Low/High)
+# Multi-Two
+# Multi-Multi
+# Multi-Distributed
+#  	Max operating hours:	Single Op: 36 hours with offtimes of at least 60 minutes
+# Multi-Op: 48 hours
+#  	Max power:	HP: 1500 watts
+# LP: 100 watts
+# QRP: 5 watts
+#  	Exchange:	RST + Serial No.
+#  	Work stations:	Once per band
+#  	QSO Points:	All: 6 points per 160/80/40m QSO with different continent
+# All: 3 points per 20/15/10m QSO with different continent
+# Non-NA: 2 points per 160/80/40m QSO with same continent different country
+# Non-NA: 1 point per 20/15/10m QSO with same continent different country
+# NA: 4 points per 160/80/40m QSO with same continent different country
+# NA: 2 points per 20/15/10m QSO with same continent different country
+# All: 1 point per QSO with same country
+#  	Multipliers:	Prefixes once
+#  	Score Calculation:	Total score = total QSO points x total mults
+#  	E-mail logs to:	(none)
+#  	Upload log at:	https://www.cqwpx.com/logcheck/
+#  	Mail logs to:	(none)
+#  	Find rules at:	https://www.cqwpx.com/rules.htm
+#  	Cabrillo name:	CQ-WPX-CW
+
+
 import datetime
 import logging
 
@@ -53,6 +90,8 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     self.other_label.setText("SentNR")
     self.field3.setAccessibleName("Sent Number")
     self.exch_label.setText("RcvNR")

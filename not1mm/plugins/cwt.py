@@ -2,6 +2,30 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
+# CWops Test (CWT)
+#  	Status:	Active
+#  	Geographic Focus:	Worldwide
+#  	Participation:	Worldwide
+#  	Awards:	Worldwide
+#  	Mode:	CW
+#  	Bands:	160, 80, 40, 20, 15, 10m
+#  	Classes:	Single Op (QRP/Low/High)
+#  	Max power:	HP: >100 watts
+# LP: 100 watts
+# QRP: 5 watts
+#  	Exchange:	Member: Name + Member No./"CWA"
+# non-Member: Name + (state/province/country)
+#  	Work stations:	Once per band
+#  	QSO Points:	1 point per QSO
+#  	Multipliers:	Each call once
+#  	Score Calculation:	Total score = total QSO points x total mults
+#  	Post log summary at:	http://www.3830scores.com
+#  	Mail logs to:	(none)
+#  	Find rules at:	https://cwops.org/cwops-tests/
+#  	Cabrillo name:	CW-OPS
+#  	Cabrillo name aliases:	CW-OPS-CWT
+
+
 import datetime
 import logging
 
@@ -52,6 +76,8 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("Name")
     self.field3.setAccessibleName("Name")

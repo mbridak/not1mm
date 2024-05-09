@@ -51,6 +51,8 @@ def interface(self):
     self.field2.show()
     self.field3.hide()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     label = self.field4.findChild(QtWidgets.QLabel)
     label.setText("CQ Zone")
     self.field4.setAccessibleName("C Q Zone")

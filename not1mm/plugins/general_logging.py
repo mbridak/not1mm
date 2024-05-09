@@ -43,6 +43,8 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("Name")
     self.field3.setAccessibleName("Name")

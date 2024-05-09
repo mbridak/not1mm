@@ -2,6 +2,35 @@
 
 # pylint: disable=invalid-name, unused-variable, c-extension-no-member
 
+# JIDX CW Contest
+#  	Status:	Active
+#  	Geographic Focus:	Japan
+#  	Participation:	Worldwide
+#  	Mode:	CW
+#  	Bands:	160, 80, 40, 20, 15, 10m
+#  	Classes:	Single Op All Band (Low/High)
+# Single Op Single Band (Low/High)
+# Multi-Single
+# Multi-Two
+# Maritime Mobile
+#  	Max power:	HP: >100W
+# LP: 100W
+#  	Exchange:	JA: RST + Prefecture No.
+# non-JA: RST + CQ Zone No.
+#  	Work stations:	Once per band
+#  	QSO Points:	4 points per JA-DX QSO on 160m
+# 2 points per JA-DX QSO on 80m
+# 1 points per JA-DX QSO on 40, 20, 15m
+# 2 points per JA-DX QSO on 10m
+#  	Multipliers:	JA Stations: DXCC countries and CQ zones once per band
+# non-JA Stations: JA prefectures plus JD1/O, JD1/MT, JD1/OT once per band
+#  	Score Calculation:	Total score = total QSO points x total mults
+#  	E-mail logs to:	cw[at]jidx[dot]org
+#  	Upload log at:	http://www.jidx.org/upload/uplog.html
+#  	Mail logs to:	(none)
+#  	Find rules at:	http://www.jidx.org/jidxrule-e.html
+#  	Cabrillo name:	JIDX-CW
+
 import datetime
 import logging
 
@@ -52,6 +81,8 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("SentNR")
     self.field3.setAccessibleName("Sent Number")

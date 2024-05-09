@@ -53,6 +53,8 @@ def interface(self):
     self.field2.show()
     self.field3.hide()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     # self.other_label.setText("SentNR")
     # self.field3.setAccessibleName("Sent Number")
     self.exch_label.setText("ST/Prov/CQ Zone")

@@ -2,6 +2,36 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
+# North American QSO Party, CW
+#  	Status:	Active
+#  	Geographic Focus:	North America
+#  	Participation:	Worldwide
+#  	Awards:	North America
+#  	Mode:	CW
+#  	Bands:	160, 80, 40, 20, 15, 10m
+#  	Classes:	Single Op (QRP/Low)
+# Single Op Assisted (QRP/Low)
+# Single Op Overlay: Youth
+# Multi-Two (Low)
+#  	Max operating hours:	Single Op: 10 hours
+# Multi-Two: 12 hours
+#  	Max power:	LP: 100 watts
+# QRP: 5 watts
+#  	Exchange:	NA: Name + (state/DC/province/country)
+# non-NA: Name
+#  	Work stations:	Once per band
+#  	QSO Points:	NA station: 1 point per QSO
+# non-NA station: 1 point per QSO with an NA station
+#  	Multipliers:	Each US state and DC (including KH6/KL7) once per band
+# Each VE province/territory once per band
+# Each North American country (except W/VE) once per band
+#  	Score Calculation:	Total score = total QSO points x total mults
+#  	E-mail logs to:	(none)
+#  	Upload log at:	http://www.ncjweb.com/naqplogsubmit/
+#  	Mail logs to:	(none)
+#  	Find rules at:	https://www.ncjweb.com/NAQP-Rules.pdf
+#  	Cabrillo name:	NAQP-CW
+
 import datetime
 import logging
 import platform
@@ -51,6 +81,8 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
     namefield = self.field3.findChild(QtWidgets.QLabel)
     namefield.setText("Name")
     self.field3.setAccessibleName("Name")
