@@ -299,6 +299,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ICWC MST</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>IARU HF</string>
       </property>
      </item>
