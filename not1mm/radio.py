@@ -12,7 +12,7 @@ GPL V3
 import datetime
 import logging
 
-from PyQt6.QtCore import QObject, pyqtSignal, QThread
+from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
 from not1mm.lib.cat_interface import CAT
 
 logger = logging.getLogger("cat_interface")
@@ -65,14 +65,17 @@ class Radio(QObject):
                 if bw:
                     self.bw = bw
                     self.online = True
-                self.poll_callback.emit(
-                    {
-                        "vfoa": self.vfoa,
-                        "mode": self.mode,
-                        "bw": self.bw,
-                        "online": self.online,
-                    }
-                )
+                try:
+                    self.poll_callback.emit(
+                        {
+                            "vfoa": self.vfoa,
+                            "mode": self.mode,
+                            "bw": self.bw,
+                            "online": self.online,
+                        }
+                    )
+                except QEventLoop:
+                    ...
             QThread.msleep(100)
 
     def sendcw(self, texttosend):
