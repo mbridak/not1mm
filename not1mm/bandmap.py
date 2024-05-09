@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-K6GTE Contest logger
+not1mm Contest logger
 Email: michael.bridak@gmail.com
 GPL V3
+Class: BandMapWindow
+Purpose: Onscreen widget to show realtime spots from an AR cluster.
 """
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines

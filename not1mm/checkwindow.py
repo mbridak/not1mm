@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-Check Window
+not1mm Contest logger
+Email: michael.bridak@gmail.com
+GPL V3
+Class: CheckWindow
+Purpose: Onscreen widget to show possible matches to callsigns entered in the main window.
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, line-too-long

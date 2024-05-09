@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-Display current log
+not1mm Contest logger
+Email: michael.bridak@gmail.com
+GPL V3
+Class: LogWindow
+Purpose: Onscreen widget to show and edit logged contacts. 
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, too-many-lines
