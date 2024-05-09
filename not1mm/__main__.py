@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-NOT1MM Logger
+not1mm Contest logger
+Email: michael.bridak@gmail.com
+GPL V3
+Purpose: Provides main logging window and a crap ton more.
 """
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 # pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long, bare-except
@@ -1247,6 +1250,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         self.cw_speed.hide()
 
+                self.clearinputs()
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
                 cmd["station"] = platform.node()
@@ -1848,6 +1852,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact = self.database.empty_contact
         self.heading_distance.setText("")
         self.dx_entity.setText("")
+
         if self.contest:
             mults = self.contest.show_mults(self)
             qsos = self.contest.show_qso(self)
@@ -1856,13 +1861,16 @@ class MainWindow(QtWidgets.QMainWindow):
             score = self.contest.calc_score(self)
             self.score.setText(str(score))
             self.contest.reset_label(self)
+            if self.contest.name != "ICWC Medium Speed Test":
+                if self.current_mode == "CW":
+                    self.sent.setText("599")
+                    self.receive.setText("599")
+                else:
+                    self.sent.setText("59")
+                    self.receive.setText("59")
+            else:
+                self.sent.setText("")
         self.callsign.clear()
-        if self.current_mode == "CW":
-            self.sent.setText("599")
-            self.receive.setText("599")
-        else:
-            self.sent.setText("59")
-            self.receive.setText("59")
         self.other_1.clear()
         self.other_2.clear()
         self.callsign.setFocus()
@@ -3010,15 +3018,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode == "CW":
             if self.current_mode != "CW":
                 self.current_mode = "CW"
-                # self.mode.setText("CW")
                 self.sent.setText("599")
                 self.receive.setText("599")
                 self.read_cw_macros()
+                if self.contest:
+                    if self.contest.name == "ICWC Medium Speed Test":
+                        self.contest.prefill(self)
             return
         if mode == "SSB":
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
-                # self.mode.setText("SSB")
                 self.sent.setText("59")
                 self.receive.setText("59")
                 self.read_cw_macros()
@@ -3026,7 +3035,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode == "RTTY":
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                # self.mode.setText("RTTY")
                 self.sent.setText("59")
                 self.receive.setText("59")
 
