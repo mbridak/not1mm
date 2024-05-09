@@ -20,3 +20,5 @@ venv
 manual.md
 flatpak-pip-generator
 not1mm.yaml
+not1mm/playsoundtest.py
+not1mm/lib/playsound.py
