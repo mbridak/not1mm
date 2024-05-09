@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-VFO Window
+not1mm Contest logger
+Email: michael.bridak@gmail.com
+GPL V3
+Class: VfoWindow
+Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig.
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation, c-extension-no-member
 
