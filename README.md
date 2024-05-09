@@ -137,6 +137,7 @@ I wish to thank those who've contributed to the project.
 - CQ World Wide SSB
 - CWOps CWT
 - IARU HF
+- ICWC MST
 - Japan International DX CW
 - Japan International DX SSB
 - NAQP CW
@@ -148,6 +149,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-5-9] Add ICWC MST.
 - [24-5-1] Moved the voice keying into it's own thread.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
