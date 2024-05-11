@@ -233,6 +233,16 @@ pip install not1mm
 ```
 
 </details>
+
+<details>
+
+<summary><b>Manjaro</b></summary>
+
+```bash
+pamac build not1mm-git 
+```
+
+</details>
 <br>
 
 You can now open a new terminal and type not1mm. On it's first run, it may or
