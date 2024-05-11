@@ -55,6 +55,9 @@ class Radio(QObject):
                 vfoa = self.cat.get_vfo()
                 self.online = False
                 if vfoa:
+                    if not vfoa.isnumeric():
+                        logger.debug(f"Bad VFOA data {vfoa=}")
+                        continue
                     self.vfoa = vfoa
                     self.online = True
                 mode = self.cat.get_mode()
