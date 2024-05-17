@@ -27,6 +27,7 @@
       - [Ubuntu 24.04 LTS](#ubuntu-2404-lts)
       - [Fedora 38 \& 39](#fedora-38--39)
       - [Fedora 40](#fedora-40)
+      - [Manjaro](#manjaro)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
       - [Bootstrapping pipx](#bootstrapping-pipx)
       - [Installing with pipx](#installing-with-pipx)
@@ -237,6 +238,8 @@ pip install not1mm
 <details>
 
 <summary><b>Manjaro</b></summary>
+
+#### Manjaro
 
 ```bash
 pamac build not1mm-git 
