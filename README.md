@@ -150,6 +150,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-5-25] Fixed points calculation for CQ WW WPX.
 - [24-5-10] Add sanity check for VFO freq.
 - [24-5-9] Add ICWC MST.
 - [24-5-1] Moved the voice keying into it's own thread.
