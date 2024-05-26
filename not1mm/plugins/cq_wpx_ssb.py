@@ -135,35 +135,39 @@ def points(self):
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
-            mycountry = item[1].get("entity", "")
-            mycontinent = item[1].get("continent", "")
+            my_country = item[1].get("entity", "")
+            my_continent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
     band = int(int(float(self.contact.get("Freq", 0))) / 1000)
     if result:
         for item in result.items():
-            entity = item[1].get("entity", "")
-            continent = item[1].get("continent", "")
+            their_country = item[1].get("entity", "")
+            their_continent = item[1].get("continent", "")
 
-            # If both are in North America
-            if mycontinent == "NA" and continent == "NA":
+            # Different Continent
+            if my_continent != their_continent:
+                if band in [28, 21, 14]:
+                    return 3
+                return 6
+
+            # Both in same country
+            if my_country.upper() == their_country.upper():
+                return 1
+
+            # Below Same Continent Different Country
+
+            # If in North America
+            if my_continent == "NA":
                 if band in [28, 21, 14]:
                     return 2
                 return 4
 
-            # Not NA, Both in same country
-            if mycountry.upper() == entity.upper():
-                return 1
-
-            # Same Continent
-            if mycontinent == continent:
+            # Non NA
+            if my_continent != "NA":
                 if band in [28, 21, 14]:
                     return 1
                 return 2
-
-            # Different Continent
-            if band in [28, 21, 14]:
-                return 3
-            return 6
+    # Something wrong
     return 0
 
 
