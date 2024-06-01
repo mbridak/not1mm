@@ -1741,6 +1741,11 @@
    <property name="text">
     <string>HotKeys</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionUpdate_MASTER_SCP">
    <property name="text">
@@ -1750,6 +1755,11 @@
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
   </action>
   <action name="actionUpdate_CTY">
@@ -1764,6 +1774,11 @@
    <property name="text">
     <string>Check Partial</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionVFO">
    <property name="checkable">
@@ -1772,6 +1787,11 @@
    <property name="text">
     <string>VFO</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
   </action>
   <action name="actionDark_Mode_2">
    <property name="checkable">
@@ -1779,6 +1799,11 @@
    </property>
    <property name="text">
     <string>Dark Mode</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
    </property>
   </action>
  </widget>
