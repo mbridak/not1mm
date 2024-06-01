@@ -510,12 +510,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
-        self.read_cw_macros()
+
         self.clearinputs()
 
         if self.pref.get("contest"):
             self.load_contest()
-
+        self.read_cw_macros()
         self.actionLog_Window.setChecked(self.pref.get("logwindow", False))
         if self.log_window:
             self.log_window.close()
