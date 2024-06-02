@@ -1,5 +1,9 @@
 # Changelog
 
+- [24-5-25] Fixed points calculation for CQ WW WPX.
+- [24-5-10] Add sanity check for VFO freq.
+- [24-5-9] Add ICWC MST.
+- [24-5-1] Moved the voice keying into it's own thread.
 - [24-4-30] Allow sending CW via rigctld if your radio supports it.
 - [24-4-27] Cleaned up dark mode code.
 - [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
