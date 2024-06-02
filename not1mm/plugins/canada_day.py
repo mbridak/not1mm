@@ -155,9 +155,9 @@ def prefill(self):
     #     self.other_2.setText(str(self.contact.get("ZN", "")))
 
     result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1"))
+    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
-        serial_nr = "1"
+        serial_nr = "001"
 
     exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
     field = self.field3.findChild(QtWidgets.QLineEdit)

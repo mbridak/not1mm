@@ -122,9 +122,9 @@ def predupe(self):  # pylint: disable=unused-argument
 def prefill(self):
     """Fill SentNR"""
     result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1"))
+    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
-        serial_nr = "1"
+        serial_nr = "001"
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
         field.setText(serial_nr)
