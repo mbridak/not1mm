@@ -150,6 +150,7 @@ I wish to thank those who've contributed to the project.
 
 ## Recent Changes
 
+- [24-6-27] Corrected ADIF contest_id for the Phone Weekly Test.
 - [24-6-1] Added leading zeros to S/N's less than 100.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.

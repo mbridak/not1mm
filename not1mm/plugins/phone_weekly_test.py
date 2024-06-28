@@ -181,7 +181,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "NAQP-SSB")
+    gen_adif(self, cabrillo_name, "WEEKLY-PHONE-TEST")
 
 
 def cabrillo(self):
