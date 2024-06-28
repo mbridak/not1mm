@@ -102,6 +102,21 @@ class N1MM:
         "ID": "",
     }
 
+    score_report = {
+        "app": "NOT1MM",
+        "contest": "",
+        "call": "",
+        "class": {
+            "ops": "SINGLE-OP",
+            "mode": "MIXED",
+            "power": "LOW",
+            "bands": "ALL",
+            "transmitter": "ONE",
+        },
+        "score": 0,
+        "timestamp": "",
+    }
+
     def __init__(
         self,
         radioport="127.0.0.1:12060",
@@ -158,6 +173,14 @@ class N1MM:
     def send_lookup(self):
         """Send lookup request"""
         self._send(self.lookup_port, self.contact_info, "lookupinfo")
+
+    def send_score(self):
+        """Send score"""
+        self._send(self.score_port, self.score_report, "scoreinfo")
+
+    def send_realtime_score(self):
+        """Send score"""
+        self._send(self.score_port, self.score_report, "dynamicresults")
 
     def _send(self, port_list, payload, package_name):
         """Send XML data"""
