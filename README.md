@@ -12,9 +12,19 @@
 [![Code Maturity:Snot Nosed](https://img.shields.io/badge/Code%20Maturity-Snot%20Nosed-red)](https://xkcd.com/1695/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/not1mm)](https://pypi.org/project/not1mm/)
 
+![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
+
 - [Not1MM](#not1mm)
   - [What and why is Not1MM](#what-and-why-is-not1mm)
+    - [The elephant in the room](#the-elephant-in-the-room)
+    - [The What](#the-what)
+    - [Target Environment](#target-environment)
+    - [The Why](#the-why)
+    - [General logging](#general-logging)
   - [Current state](#current-state)
+    - [Code maturity](#code-maturity)
+    - [Data and RTTY](#data-and-rtty)
+    - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
   - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes](#recent-changes)
@@ -35,17 +45,18 @@
   - [After the install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
+    - [Update your CTY and SCP files](#update-your-cty-and-scp-files)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
-  - [The database](#the-database)
+  - [The Database](#the-database)
     - [Why](#why)
-    - [The first one](#the-first-one)
+    - [The first one is free](#the-first-one-is-free)
     - [Why limit yourself](#why-limit-yourself)
     - [Revisiting an old friend](#revisiting-an-old-friend)
-  - [Station Settings dialog (REQUIRED)](#station-settings-dialog-required)
+  - [Station Settings dialog (It's REQUIRED Russ)](#station-settings-dialog-its-required-russ)
     - [Changing station information](#changing-station-information)
-  - [Selecting a contest (REQUIRED)](#selecting-a-contest-required)
+  - [Selecting a contest (It's REQUIRED Russ)](#selecting-a-contest-its-required-russ)
     - [Selecting a new contest](#selecting-a-new-contest)
     - [Selecting an existing contest as the current contest](#selecting-an-existing-contest-as-the-current-contest)
     - [Editing existing contest parameters](#editing-existing-contest-parameters)
@@ -81,34 +92,64 @@
 
 ## What and why is Not1MM
 
+### The elephant in the room
+
 Not1MM's interface is a blatant ripoff of N1MM. It is NOT N1MM and any problem
 you have with this software should in no way reflect on their software.
 
-If you use Windows(tm), you should run away from Not1MM and use someother
-program.
+### The What
 
-I personally don't use Windows(tm). While it may be possible to get N1MM working
-under Wine, I haven't checked. I'd rather not have to jump thru the hoops.
+Not1MM attempts to be a useable amateur radio, or HAM, contest logger. It's
+written in Python, 3.9+, and uses Qt6 framework for the graphical interface
+and SQLite for the database.
 
-**Currently this exists for my own personal amusement**. Something to do in my
-free time. While I'm not watching TV, Right vs Left political 'News' programs,
-mind numbing 'Reality' shows etc...
+### Target Environment
+
+The primary target for this application is Linux. It may be able to run on other
+platforms, BSD, Mac and Windows. But I don't have a way, or desire, to directly
+support them.
+
+### The Why
+
+**Currently this exists for my own personal amusement**. I've recently retired
+after 35+ years working for 'The Phone Company', GTE -> Verizon -> Frontier.
+And being a Gentleman of Leisure, needed something to do in my free time.
+I'm a casual contester and could not find any contesting software for Linux that
+I wanted to use. There is [Tucnak](http://tucnak.nagano.cz/) which is very robust
+and mature. It just wasn't for me.
+
+### General logging
+
+In short... Don't. There are much better general purpose QSO logging programs.
+Try QLog or CQRLog.
 
 ## Current state
 
-The current state is "**BETA**". I've used it for a few contests, and was able
-to work contacts and submit a cabrillo at the end. I'm not a "Contester". So
-I'll add contests as/if I work them. I'm only one guy, so if you see a bug let
-me know. I don't do much of any Data or RTTY operating. This is why you don't
-see RTTY in the list of working contests. The Lord helps those who burn people
-at the... I mean who help themselves. Feel free to fill in that hole with a pull
-request.
+### Code maturity
 
-![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
+The current state is "**BETA**".
+
+I've used it for quite a few contests, and was able to work contacts and submit
+cabrillos at the end. There are still quite a few features I'd like to implement.
+And "BETA" is a sort of get out of jail free badge for coders. A safety net for
+when the program craps the bed. I'm only one guy, so if you see a bug let me know.
+
+### Data and RTTY
+
+I don't do much of any digital or RTTY operating. This is why you don't see RTTY in
+the list of working contests. The Lord helps those who burn people at the... I
+mean, who help themselves. Feel free to fill in that hole with a pull request.
+
+### Other not so supported contests
+
+Of note, state QSO parties. I haven't worked any yet. And no one has submitted a PR
+adding one... So there you go. In the near future I'll probably add California, guess
+where I live, and the 4 states QSO party.
 
 ## Our Code Contributors ✨
 
-I wish to thank those who've contributed to the project.
+I wish to thank those who've contributed to the project. Below is an automatically
+generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 <a href="https://github.com/mbridak/not1mm/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
@@ -212,7 +253,7 @@ source .profile
 
 </details>
 
-<details>
+<details>REQUIRED
 
 <summary><b>Fedora 38, 39 and 40</b></summary>
 
@@ -363,6 +404,11 @@ For a more permanent solution you can place the line
 `export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then
 after logging out and back in you should be able to launch it normally.
 
+### Update your CTY and SCP files
+
+After all the configuration stuff below and before operating in a contest, you
+might want to update the CTY and SCP files. You can do this by choosing FILE->Update CTY and FILE->Update MASTER.SCP
+
 ## Various data file locations
 
 ### Data
@@ -376,7 +422,7 @@ CW macro files can be found there. Otherwise they will be found at
 Configuration file(s) can be found at the location defined by `XDG_CONFIG_HOME`.
 Otherwise they will be found at `yourhome/.config/not1mm`
 
-## The database
+## The Database
 
 ### Why
 
@@ -386,7 +432,7 @@ everything shown in the Station Settings dialog. You can have one database for
 the rest of your life. Filled with hundreds of contests you've logged. Or, you
 can create a new database to hold just one contest. You do You Boo.
 
-### The first one
+### The first one is free
 
 On the initial running, a database is created for you called `ham.db`. This, and
 all future databases, are located in the data directory mentioned above.
@@ -402,7 +448,7 @@ day for all I care. You can manage your own digital disaster.
 You can select a previously created databases for use by selecting
 `File` > `Open Database`.
 
-## Station Settings dialog (REQUIRED)
+## Station Settings dialog (It's REQUIRED Russ)
 
 After initial run of the program or creating a new database you will need to
 fill out the Station Settings dialog that will pop up.
@@ -422,7 +468,7 @@ You can fill. You can fill. Everyone look at your keys.
 Station information can be changed any time by going to
 `File` > `Station Settings` and editing the information.
 
-## Selecting a contest (REQUIRED)
+## Selecting a contest (It's REQUIRED Russ)
 
 ### Selecting a new contest
 
