@@ -3,6 +3,7 @@
 
 # pylint: disable=global-statement, raise-missing-from
 
+import datetime
 import random
 import socket
 import uuid
@@ -11,7 +12,6 @@ import threading
 import queue
 import argparse
 from random import randint
-from datetime import datetime
 from json import dumps, loads, JSONDecodeError
 
 
@@ -218,7 +218,9 @@ def log_contact():
         "mode": MODE,
         "band": BAND,
         "frequency": int(float(fakefreq(BAND, MODE)) * 1000),
-        "date_and_time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        "date_and_time": datetime.datetime.now(datetime.timezone.utc).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),
         "power": POWER,
         "grid": "DM13at",
         "opname": "John Doe",
