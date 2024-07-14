@@ -2863,7 +2863,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        if mode == "CW":
+        if mode in ("CW", "CW-U", "CW-L"):
             self.setmode("CW")
             self.radio_state["mode"] = "CW"
             if self.rig_control:
@@ -3015,7 +3015,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
-        if mode == "CW":
+        if mode in ("CW", "CW-U", "CW-L"):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
                 self.sent.setText("599")
@@ -3032,7 +3032,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.receive.setText("59")
                 self.read_cw_macros()
             return
-        if mode == "RTTY":
+        if mode in ("RTTY", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
                 self.sent.setText("59")
@@ -3145,7 +3145,7 @@ class MainWindow(QtWidgets.QMainWindow):
             info_dirty = True
             self.radio_state["bw"] = bw
 
-        if mode == "CW":
+        if mode in ("CW", "CW-U", "CW-L"):
             self.setmode(mode)
         if mode == "LSB" or mode == "USB":
             self.setmode("SSB")
@@ -3153,26 +3153,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setmode("RTTY")
 
         if info_dirty:
-            logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
-            self.set_window_title()
-            cmd = {}
-            cmd["cmd"] = "RADIO_STATE"
-            cmd["station"] = platform.node()
-            cmd["band"] = band
-            cmd["vfoa"] = vfo
-            cmd["mode"] = mode
-            cmd["bw"] = bw
-            self.multicast_interface.send_as_json(cmd)
-            if self.n1mm:
-                if self.n1mm.send_radio_packets:
-                    self.n1mm.radio_info["Freq"] = vfo[:-1]
-                    self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                    self.n1mm.radio_info["Mode"] = mode
-                    self.n1mm.radio_info["OpCall"] = self.current_op
-                    self.n1mm.radio_info["IsRunning"] = str(
-                        self.pref.get("run_state", False)
-                    )
-                    self.n1mm.send_radio()
+            try:
+                logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
+                self.set_window_title()
+                cmd = {}
+                cmd["cmd"] = "RADIO_STATE"
+                cmd["station"] = platform.node()
+                cmd["band"] = band
+                cmd["vfoa"] = vfo
+                cmd["mode"] = mode
+                cmd["bw"] = bw
+                self.multicast_interface.send_as_json(cmd)
+                if self.n1mm:
+                    if self.n1mm.send_radio_packets:
+                        self.n1mm.radio_info["Freq"] = vfo[:-1]
+                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                        self.n1mm.radio_info["Mode"] = mode
+                        self.n1mm.radio_info["OpCall"] = self.current_op
+                        self.n1mm.radio_info["IsRunning"] = str(
+                            self.pref.get("run_state", False)
+                        )
+                        self.n1mm.send_radio()
+            except TypeError as err:
+                logger.debug(f"{err=} {vfo=} {the_dict=}")
 
     def edit_cw_macros(self) -> None:
         """

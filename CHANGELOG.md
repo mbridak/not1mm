@@ -1,5 +1,7 @@
 # Changelog
 
+- [24-6-27] Corrected ADIF contest_id for the Phone Weekly Test.
+- [24-6-1] Added leading zeros to S/N's less than 100.
 - [24-5-25] Fixed points calculation for CQ WW WPX.
 - [24-5-10] Add sanity check for VFO freq.
 - [24-5-9] Add ICWC MST.

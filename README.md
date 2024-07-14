@@ -191,8 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [24-6-27] Corrected ADIF contest_id for the Phone Weekly Test.
-- [24-6-1] Added leading zeros to S/N's less than 100.
+- [24-7-13] Trap Exceptions in flrig xmlrpc client.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
