@@ -138,6 +138,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("getvfo_flrig: %s", f"{exception}")
@@ -177,6 +179,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -220,6 +224,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("getbw_flrig: %s", f"{exception}")
@@ -261,6 +267,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("getpower_flrig: %s", f"{exception}")
@@ -295,6 +303,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -333,6 +343,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("setvfo_flrig: %s", f"{exception}")
@@ -371,6 +383,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("setmode_flrig: %s", f"{exception}")
@@ -408,6 +422,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("setpower_flrig: %s", f"{exception}")
@@ -462,6 +478,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -496,6 +514,8 @@ class CAT:
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
