@@ -191,6 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-7-19] Use Qt's QSettings to store window and dockwidgets states.
 - [24-7-13] Trap Exceptions in flrig xmlrpc client.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
