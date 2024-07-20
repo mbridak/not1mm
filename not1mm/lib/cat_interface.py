@@ -328,10 +328,13 @@ class CAT:
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
-        if self.interface == "flrig":
-            return self.__setvfo_flrig(freq)
-        if self.interface == "rigctld":
-            return self.__setvfo_rigctld(freq)
+        try:
+            if self.interface == "flrig":
+                return self.__setvfo_flrig(freq)
+            if self.interface == "rigctld":
+                return self.__setvfo_rigctld(freq)
+        except ValueError:
+            ...
         return False
 
     def __setvfo_flrig(self, freq: str) -> bool:
