@@ -7,4 +7,4 @@ Exec=not1mm
 Icon=k6gte-not1mm
 Terminal=false
 Type=Application
-Categories=HamRadio;
+Categories=Qt;Utility;HamRadio;ContactManagement;Database;

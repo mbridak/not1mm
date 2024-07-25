@@ -191,6 +191,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-7-25] Updated application categories for the desktop file.
+- [24-7-25] Maybe let flrig send CW... Probably not.
 - [24-7-19] Use Qt's QSettings to store window and dockwidgets states.
 - [24-7-13] Trap Exceptions in flrig xmlrpc client.
 
