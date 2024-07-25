@@ -39,6 +39,7 @@ class VfoWindow(QDockWidget):
     message_shown = False
     multicast_interface = None
     current_palette = None
+    device_reconnect = False
 
     def __init__(self):
         super().__init__()
@@ -64,6 +65,7 @@ class VfoWindow(QDockWidget):
         self.poll_rig_timer = QtCore.QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
+        self.visibilityChanged.connect(self.window_state_changed)
 
     def setDarkMode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
@@ -178,11 +180,20 @@ class VfoWindow(QDockWidget):
                 if "vfoknob" in data.decode().strip():
                     return device
 
-    def setup_serial(self) -> None:
+    def window_state_changed(self):
+        """Setup vfo knob if window is toggled on"""
+
+        if self.isVisible():
+            self.setup_serial()
+
+    def setup_serial(self, supress_msg=False) -> None:
         """
         Setup the device returned by discover_device()
         Or display message saying we didn't find one.
         """
+
+        if not self.isVisible():
+            return
 
         device = self.discover_device()
         if device:
@@ -190,15 +201,16 @@ class VfoWindow(QDockWidget):
                 self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
                 self.pico.timeout = 100
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
+                self.device_reconnect = True
             except OSError:
-                if self.message_shown is False:
+                if self.message_shown is False and supress_msg is False:
                     self.message_shown = True
                     self.show_message_box(
                         "Unable to locate or open the VFO knob serial device."
                     )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
         else:
-            if self.message_shown is False:
+            if self.message_shown is False and supress_msg is False:
                 self.message_shown = True
                 self.show_message_box(
                     "Unable to locate or open the VFO knob serial device."
@@ -269,13 +281,14 @@ class VfoWindow(QDockWidget):
                     return
                 if vfo < 1700000 or vfo > 60000000:
                     return
-                if vfo != self.old_vfo:
+                if vfo != self.old_vfo or self.device_reconnect is True:
                     self.old_vfo = vfo
                     logger.debug(f"{vfo}")
                     self.showNumber(vfo)
                     # self.lcdNumber.display(dnum)
                     # app.processEvents()
                     cmd = f"F {vfo}\r"
+                    self.device_reconnect = False
                     try:
                         if self.pico:
                             self.pico.write(cmd.encode())
@@ -302,10 +315,14 @@ class VfoWindow(QDockWidget):
                             self.showNumber(result)
                             # self.lcdNumber.display(result)
                             # app.processEvents()
+            else:
+                self.setup_serial(supress_msg=True)
         except OSError:
             logger.critical("Unable to write to serial device.")
+            self.pico = None
         except AttributeError:
             logger.critical("Unable to write to serial device.")
+            self.pico = None
         # app.processEvents()
 
     def show_message_box(self, message: str) -> None:
