@@ -564,6 +564,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionVFO.isChecked():
             self.vfo_window.show()
 
+        self.cwspeed_spinbox_changed()
+
         if not DEBUG_ENABLED:
             if VersionTest(__version__).test():
                 self.show_message_box(
@@ -1582,6 +1584,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw_speed.value())
+        if self.rig_control:
+            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                if self.rig_control.interface == "flrig":
+                    self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
 
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """
@@ -2881,6 +2887,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rig_control.set_mode("CW")
                     if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                         if self.rig_control.interface == "flrig":
+                            self.cwspeed_spinbox_changed()
                             self.rig_control.cat.set_flrig_cw_send(True)
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
