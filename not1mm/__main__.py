@@ -1264,6 +1264,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         self.cw_speed.hide()
 
+                if hasattr(self.contest, "ft8_handler"):
+                    self.contest.set_self(self)
+                    self.ft8.set_callback(self.contest.ft8_handler)
+                else:
+                    self.ft8.set_callback(None)
+
                 self.clearinputs()
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
@@ -2867,7 +2873,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        if mode in ("CW", "CW-U", "CW-L"):
+        if mode in ("CW", "CW-U", "CW-L", "CWR"):
             self.setmode("CW")
             self.radio_state["mode"] = "CW"
             if self.rig_control:
@@ -3019,7 +3025,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
-        if mode in ("CW", "CW-U", "CW-L"):
+        if mode in ("CW", "CW-U", "CW-L", "CWR"):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
                 self.sent.setText("599")
@@ -3149,7 +3155,7 @@ class MainWindow(QtWidgets.QMainWindow):
             info_dirty = True
             self.radio_state["bw"] = bw
 
-        if mode in ("CW", "CW-U", "CW-L"):
+        if mode in ("CW", "CW-U", "CW-L", "CWR"):
             self.setmode(mode)
         if mode == "LSB" or mode == "USB":
             self.setmode("SSB")
@@ -3379,7 +3385,6 @@ def run() -> None:
         f"Resolved OS file system paths: MODULE_PATH {fsutils.MODULE_PATH}, USER_DATA_PATH {fsutils.USER_DATA_PATH}, CONFIG_PATH {fsutils.CONFIG_PATH}"
     )
     install_icons()
-    # timer.start(250)
     sys.exit(app.exec())
 
 
@@ -3403,15 +3408,9 @@ app = QtWidgets.QApplication(sys.argv)
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(f"font families {families}")
 window = MainWindow()
-# height = window.pref.get("window_height", 300)
-# width = window.pref.get("window_width", 700)
-# x = window.pref.get("window_x", -1)
-# y = window.pref.get("window_y", -1)
-# window.setGeometry(x, y, width, height)
 window.callsign.setFocus()
 window.show()
-# timer = QtCore.QTimer()
-# timer.timeout.connect(window.poll_radio)
+
 
 if __name__ == "__main__":
     run()

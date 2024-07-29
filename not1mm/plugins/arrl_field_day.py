@@ -13,6 +13,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+ALTEREGO = None
+
 EXCHANGE_HINT = "1D ORG"
 
 name = "ARRL Field Day"
@@ -319,3 +321,48 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+
+    """
+    print(f"{the_packet=}")
+
+    if ALTEREGO is not None:
+
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.contact["Exchange1"] = the_packet.get("CLASS", "ERR")
+        ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        ALTEREGO.contact["Mode"] = "FT8"
+        ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
+        ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
+        print(f"\n{ALTEREGO.contact=}\n")
