@@ -191,6 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-7-29] Add flrig cw speed change via onscreen widget.
 - [24-7-28] Second try at flrig CW.
 - [24-7-25-1] Have VFO dock widget handle disconnect/reconnect events of the USB VFO knob more gracefully.
 - [24-7-25] Updated application categories for the desktop file.
