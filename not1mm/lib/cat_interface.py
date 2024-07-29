@@ -131,10 +131,9 @@ class CAT:
 
     def sendcwxmlrpc(self, texttosend):
         """..."""
-        print(f"{texttosend=}")
+        logger.debug(f"{texttosend=}")
         try:
             self.online = True
-            self.server.rig.cwio_send(1)
             self.server.rig.cwio_text(texttosend)
             return
         except (
@@ -145,9 +144,26 @@ class CAT:
             http.client.ResponseNotReady,
         ) as exception:
             self.online = False
-            print("sendcwxmlrpc: %s", f"{exception}")
-            # logger.debug("sendcwxmlrpc: %s", f"{exception}")
+            logger.debug("%s", f"{exception}")
         return False
+
+    def set_flrig_cw_send(self, send: bool):
+        """..."""
+        if self.interface == "rigctld":
+            return
+        try:
+            self.online = True
+            self.server.rig.cwio_send(int(send))
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
+            ValueError,
+        ) as exception:
+            self.online = False
+            logger.debug("%s", f"{exception}")
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""

@@ -1661,6 +1661,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 1:
                     self.cw.sendcw("\x1b4")
                     return
+            if self.rig_control:
+                if self.rig_control.online:
+                    if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                        if self.rig_control.interface == "flrig":
+                            self.rig_control.cat.set_flrig_cw_send(False)
+                            self.rig_control.cat.set_flrig_cw_send(True)
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
@@ -2879,6 +2885,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control:
                 if self.rig_control.online:
                     self.rig_control.set_mode("CW")
+                    if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                        if self.rig_control.interface == "flrig":
+                            self.rig_control.cat.set_flrig_cw_send(True)
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
