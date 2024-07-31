@@ -2233,14 +2233,22 @@ class MainWindow(QtWidgets.QMainWindow):
         if next_serial == "None":
             next_serial = "1"
         macro = macro.upper()
-        macro = macro.replace("#", next_serial)
+        if self.radio_state.get("mode") == "CW":
+            macro = macro.replace("#", next_serial.rjust(3, "T"))
+        else:
+            macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
         else:
             macro = macro.replace("{SNT}", self.sent.text())
-        macro = macro.replace("{SENTNR}", self.other_1.text())
+        if self.radio_state.get("mode") == "CW":
+            macro = macro.replace(
+                "{SENTNR}", self.other_1.text().lstrip("0").rjust(3, "T")
+            )
+        else:
+            macro = macro.replace("{SENTNR}", self.other_1.text())
         macro = macro.replace(
             "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
         )
