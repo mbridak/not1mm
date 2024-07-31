@@ -139,3 +139,33 @@ https://spdxcontest.pzk.org.pl/2024/rules.php
 de EI6KW, Slav
    SP3RXO, Sławek
 
+-------------------------------------------
+
+ARI 40/80 Contest
+ 	Status:	Active
+ 	Geographic Focus:	Italy
+ 	Participation:	Italy
+ 	Awards:	Italy
+ 	Mode:	Phone, CW, Digital
+ 	Bands:	80, 40m
+ 	Classes:	Single Op All Band (CW/SSB/Digital/Mixed)(QRP/High)
+Single Op Single Band Mixed
+Single Op Overlays: (Rookie/Youth)
+Multi-Single
+Multi-Multi
+SWL
+ 	Max power:	HP: >5 watts
+QRP: 5 watts
+ 	Exchange:	RS(T) + 2-letter province car code
+ 	Work stations:	Once per mode per band
+ 	QSO Points:	1 point per phone QSO
+2 points per digital QSO
+3 points per CW QSO
+ 	Multipliers:	Each Italian province once per mode per band
+ 	Score Calculation:	Total score = total QSO points x total mults
+ 	E-mail logs to:	(none)
+ 	Upload log at:	http://www.ari.it/en/contest-hf/contest-4080/regolamento-contest-4080.html
+ 	Mail logs to:	(none)
+ 	Find rules at:	http://www.ari.it/en/contest-hf/contest-4080.html
+ 	Cabrillo name:	40-80
+	
