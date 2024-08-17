@@ -191,7 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [24-8-17] Removed some cruft.
+- [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
