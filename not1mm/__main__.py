@@ -77,6 +77,7 @@ from not1mm.voice_keying import Voice
 
 poll_time = datetime.datetime.now()
 
+
 class MainWindow(QtWidgets.QMainWindow):
     """
     The main window
@@ -495,23 +496,37 @@ class MainWindow(QtWidgets.QMainWindow):
             self.load_contest()
         self.read_cw_macros()
 
+        # Featureset for wayland
+        dockfeatures = (
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+            | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
+        )
+
         self.log_window = LogWindow()
         self.log_window.setObjectName("log-window")
+        if os.environ.get("WAYLAND_DISPLAY"):
+            self.log_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
         self.log_window.hide()
 
         self.bandmap_window = BandMapWindow()
         self.bandmap_window.setObjectName("bandmap-window")
+        if os.environ.get("WAYLAND_DISPLAY"):
+            self.bandmap_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window)
         self.bandmap_window.hide()
 
         self.check_window = CheckWindow()
         self.check_window.setObjectName("check-window")
+        if os.environ.get("WAYLAND_DISPLAY"):
+            self.check_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
 
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
+        if os.environ.get("WAYLAND_DISPLAY"):
+            self.vfo_window_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
 
