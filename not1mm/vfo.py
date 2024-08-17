@@ -162,7 +162,6 @@ class VfoWindow(QDockWidget):
 
         devices = None
         data = None
-        # app.processEvents()
         try:
             devices = os.listdir("/dev/serial/by-id")
         except FileNotFoundError:
@@ -216,7 +215,6 @@ class VfoWindow(QDockWidget):
                     "Unable to locate or open the VFO knob serial device."
                 )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
-        # app.processEvents()
 
     def watch_udp(self) -> None:
         """
@@ -263,7 +261,6 @@ class VfoWindow(QDockWidget):
         if len(dvfo) > 6:
             dnum = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
-            # app.processEvents()
 
     def poll_radio(self) -> None:
         """
@@ -285,8 +282,6 @@ class VfoWindow(QDockWidget):
                     self.old_vfo = vfo
                     logger.debug(f"{vfo}")
                     self.showNumber(vfo)
-                    # self.lcdNumber.display(dnum)
-                    # app.processEvents()
                     cmd = f"F {vfo}\r"
                     self.device_reconnect = False
                     try:
@@ -313,8 +308,6 @@ class VfoWindow(QDockWidget):
                         if self.rig_control:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
-                            # self.lcdNumber.display(result)
-                            # app.processEvents()
             else:
                 self.setup_serial(supress_msg=True)
         except OSError:
@@ -323,7 +316,6 @@ class VfoWindow(QDockWidget):
         except AttributeError:
             logger.critical("Unable to write to serial device.")
             self.pico = None
-        # app.processEvents()
 
     def show_message_box(self, message: str) -> None:
         """

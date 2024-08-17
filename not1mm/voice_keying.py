@@ -53,12 +53,10 @@ class Voice(QObject):
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     data, _fs = sf.read(filename, dtype="float32")
-                    # self.ptt_on.emit()
                     try:
                         sd.default.device = self.sounddevice
                         sd.default.samplerate = 44100.0
                         sd.play(data, blocking=True)
-                        # _status = sd.wait()
                         # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
                     except sd.PortAudioError as err:
                         logger.warning("%s", f"{err}")
@@ -84,8 +82,6 @@ class Voice(QObject):
         if sd is None:
             logger.warning("Sounddevice/portaudio not installed.")
             return
-        # fsutils.USER_DATA_PATH
-        # self.current_op
         op_path = self.data_path / self.current_op
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()

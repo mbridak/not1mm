@@ -659,20 +659,9 @@ class BandMapWindow(QDockWidget):
     def center_on_rxfreq(self):
         """doc"""
         freq_pos = self.Freq2ScenePos(self.rx_freq).y()
-        # self.graphicsView.verticalScrollBar().setSliderPosition(
-        #     int(freq_pos - (self.height() / 2) + 80)
-        # )
         self.scrollArea.verticalScrollBar().setValue(
             int(freq_pos - (self.height() / 2) + 80)
         )
-        # This does not work... Have no idea why.
-        # anim = QtCore.QPropertyAnimation(
-        #     self.scrollArea.verticalScrollBar(), "value".encode()
-        # )
-        # anim.setDuration(300)
-        # anim.setStartValue(self.scrollArea.verticalScrollBar().value())
-        # anim.setEndValue(int(freq_pos - (self.height() / 2) + 80))
-        # anim.start(QtCore.QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
 
     def drawfreqmark(self, freq, _step, color, currentPolygon) -> None:
         """doc"""
@@ -842,7 +831,6 @@ class BandMapWindow(QDockWidget):
                 dx = parts[4]
                 _time = parts[-1]
                 comment = " ".join(parts[5:-1])
-                # spot = DxSpot()
                 spot = {}
                 spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
                 spot["callsign"] = dx
@@ -856,13 +844,11 @@ class BandMapWindow(QDockWidget):
                     logger.debug(f"couldn't parse freq from datablock {data}")
                 return
             if self.callsignField.text().upper() in data:
-                # self.connectButton.setStyleSheet("color: green;")
                 self.connectButton.setText("Connected")
                 logger.debug(f"callsign login acknowledged {data}")
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
-        # self.connectButton.setStyleSheet("color: yellow;")
         self.connectButton.setText("Connecting")
 
     def socket_error(self) -> None:

@@ -111,7 +111,6 @@ class CheckWindow(QDockWidget):
             )
 
             self.setPalette(darkPalette)
-            # self.CheckPartialWindow.setPalette(darkPalette)
         else:
             palette = self.style().standardPalette()
             self.setPalette(palette)
