@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "24.7.31"
+version = "24.8.17"
 description = "NOT1MM Logger"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -16,7 +16,6 @@ dependencies = [
     "requests",
     "dicttoxml",
     "xmltodict",
-    "psutil",
     "pyserial",
     "sounddevice",
     "soundfile",
@@ -28,7 +27,7 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Environment :: X11 Applications :: Qt",
     "Operating System :: POSIX :: Linux",
