@@ -1,4 +1,4 @@
-/.vscode
+not1mm/.vscode
 /.venv
 /dist
 /not1mm.egg-info
@@ -22,3 +22,4 @@ flatpak-pip-generator
 not1mm.yaml
 not1mm/playsoundtest.py
 not1mm/lib/playsound.py
+not1mm/.DS_Store
