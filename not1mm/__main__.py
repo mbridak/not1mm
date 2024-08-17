@@ -16,11 +16,8 @@ import locale
 import logging
 from logging.handlers import RotatingFileHandler
 import os
-
 import platform
-import re
 import socket
-
 import sys
 import threading
 import uuid
@@ -30,7 +27,6 @@ from pathlib import Path
 from shutil import copyfile
 
 import notctyparser
-import psutil
 
 try:
     import sounddevice as sd
@@ -80,29 +76,6 @@ from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
 
 poll_time = datetime.datetime.now()
-
-
-def check_process(name: str) -> bool:
-    """
-    Checks to see if the name of the program is in the active process list.
-
-    Parameters
-    ----------
-    name : str
-
-    Returns
-    -------
-    Bool
-    """
-    for proc in psutil.process_iter():
-        try:
-            if len(proc.cmdline()) == 2:
-                if name in proc.cmdline()[1] and "python" in proc.cmdline()[0]:
-                    return True
-        except (psutil.NoSuchProcess, psutil.ZombieProcess, psutil.AccessDenied):
-            continue
-    return False
-
 
 class MainWindow(QtWidgets.QMainWindow):
     """
@@ -781,25 +754,6 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
         app.quit()
-
-    @staticmethod
-    def check_process(name: str) -> bool:
-        """
-        Checks to see if program is in the active process list.
-
-        Parameters
-        ----------
-        name : str
-
-        Returns
-        -------
-        Bool
-        """
-
-        for proc in psutil.process_iter():
-            if bool(re.match(name, proc.name().lower())):
-                return True
-        return False
 
     def show_message_box(self, message: str) -> None:
         """
