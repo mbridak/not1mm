@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "24.8.17"
+version = "24.8.17.1"
 description = "NOT1MM Logger"
 readme = "README.md"
 requires-python = ">=3.9"
