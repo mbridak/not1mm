@@ -526,7 +526,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
         if os.environ.get("WAYLAND_DISPLAY"):
-            self.vfo_window_window.setFeatures(dockfeatures)
+            self.vfo_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
 
