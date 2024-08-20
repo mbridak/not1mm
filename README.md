@@ -182,6 +182,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ICWC MST
 - Japan International DX CW
 - Japan International DX SSB
+- K1USN Slow Speed Test
 - NAQP CW
 - NAQP SSB
 - Phone Weekly Test
@@ -191,6 +192,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-8-20] Added K1USN Slow Speed Test
 - [24-8-17-1] Did an oops. Fixed the oops.
 - [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
 
