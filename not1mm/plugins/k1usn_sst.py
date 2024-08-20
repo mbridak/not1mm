@@ -33,11 +33,11 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Name or Name + SPC"
+EXCHANGE_HINT = "Name + SPC"
 
-name = "PHONE WEEKLY TEST"
-cabrillo_name = "PHONE-WEEKLY-TEST"
-mode = "SSB"  # CW SSB BOTH RTTY
+name = "K1USN SLOW SPEED TEST"
+cabrillo_name = "K1USN-SST"
+mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -73,8 +73,8 @@ def interface(self):
     namefield.setText("Name")
     self.field3.setAccessibleName("Name")
     spc = self.field4.findChild(QtWidgets.QLabel)
-    spc.setText("State")
-    self.field4.setAccessibleName("State")
+    spc.setText("SPC")
+    self.field4.setAccessibleName("SPC")
 
 
 def reset_label(self):

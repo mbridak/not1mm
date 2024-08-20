@@ -319,6 +319,11 @@
      </item>
      <item>
       <property name="text">
+       <string>K1USN SST</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>NAQP CW</string>
       </property>
      </item>

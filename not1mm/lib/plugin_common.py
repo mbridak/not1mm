@@ -158,11 +158,31 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 except TypeError:
                     ...
 
+                # SRX STRING, Contest dependent
                 try:
+                    # ----------Field Days------------
                     if cabrillo_name in ("WFD", "ARRL-FD"):
                         rcv = (
                             f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
                         )
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+                    # ------------CQ 160---------------
+                    elif cabrillo_name in ("CQ-160-CW", "CQ-160-SSB"):
+                        rcv = f"{contact.get('Exchange1', '')}"
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+                    # --------------K1USN-SST-----------
+                    elif cabrillo_name == "K1USN-SST":
+                        rcv = f"{contact.get('Name', '')} {contact.get('Sect', '')}"
                         if len(rcv) > 1:
                             print(
                                 f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
@@ -175,19 +195,6 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                             end="\r\n",
                             file=file_descriptor,
                         )
-                except TypeError:
-                    ...
-
-                # cabrillo_name = "CQ-160-CW"
-                try:
-                    if cabrillo_name in ("CQ-160-CW", "CQ-160-SSB"):
-                        rcv = f"{contact.get('Exchange1', '')}"
-                        if len(rcv) > 1:
-                            print(
-                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
-                                end="\r\n",
-                                file=file_descriptor,
-                            )
                 except TypeError:
                     ...
 
