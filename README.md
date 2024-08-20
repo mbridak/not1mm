@@ -38,6 +38,7 @@
       - [Fedora 38 \& 39](#fedora-38--39)
       - [Fedora 40](#fedora-40)
       - [Manjaro](#manjaro)
+      - [Mint](#mint)
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
       - [Bootstrapping pipx](#bootstrapping-pipx)
       - [Installing with pipx](#installing-with-pipx)
@@ -209,8 +210,14 @@ clue me into the black magic needed to get it to work.
 
 ### Prerequisites
 
-not1mm requires Python 3.9+, PyQt6 and libportaudio2. You should install these
-through your distribution's package manager before continuing.
+not1mm requires:
+
+- Python 3.9+
+- PyQt6
+- libportaudio2
+- libxcb-cursor0 (maybe... Depends on the distro)
+ 
+You should install these through your distribution's package manager before continuing.
 
 ### Common installation recipes for Ubuntu and Fedora
 
@@ -285,6 +292,22 @@ pip install not1mm
 
 ```bash
 pamac build not1mm-git 
+```
+
+</details>
+
+<details>
+
+<summary><b>Mint 22</b></summary>
+
+#### Mint
+
+```bash
+sudo apt install python3-pip
+sudo apt install pipx
+sudo apt install libxcb-cursor0
+pipx install not1mm
+pipx ensurepath
 ```
 
 </details>
@@ -398,7 +421,9 @@ qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it 
 This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
 ```
 
-To avoid this you can export an environment variable and launch the app like this:
+You can use your package manager to load libxcb-cursor0.
+
+If that's not an option, you can export an environment variable and launch the app like this:
 
 `mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
 
