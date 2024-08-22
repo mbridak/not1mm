@@ -193,6 +193,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-8-22] Add loading splash screen.
 - [24-8-20] Added K1USN Slow Speed Test
 - [24-8-17-1] Did an oops. Fixed the oops.
 - [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
