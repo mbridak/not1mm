@@ -35,9 +35,9 @@ except OSError as exception:
     print("portaudio is not installed")
     sd = None
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import QDir, Qt, QThread, QSettings
-from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
+from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
+from PyQt6.QtWidgets import QFileDialog, QSplashScreen
 
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
@@ -3398,12 +3398,24 @@ logging.basicConfig(
 logging.getLogger("PyQt6.uic.uiparser").setLevel("INFO")
 logging.getLogger("PyQt6.uic.properties").setLevel("INFO")
 app = QtWidgets.QApplication(sys.argv)
+
+pixmap = QPixmap(f"{os.fspath(fsutils.APP_DATA_PATH)}/splash.png")
+splash = QSplashScreen(pixmap)
+splash.show()
+app.processEvents()
+splash.showMessage(
+    "Starting Up",
+    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
+    color=QColor(255, 255, 0),
+)
+QCoreApplication.processEvents()
+
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(f"font families {families}")
 window = MainWindow()
 window.callsign.setFocus()
 window.show()
-
+splash.finish(window)
 
 if __name__ == "__main__":
     run()
