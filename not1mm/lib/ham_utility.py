@@ -373,3 +373,29 @@ def distance_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
     logger.debug("lat1:%d lon1:%d lat2:%d lon2:%d", lat1, lon1, lat2, lon2)
     # lat2, lon2 = gridtolatlon(grid2)
     return round(haversine(lon1, lat1, lon2, lat2))
+
+
+def parse_udc(filename: str) -> dict:
+    """
+    simply parses a n1mm style udc file and returns a dict with key value pairs.
+    """
+
+    udc_contest = {}
+    the_good_stuff = False
+
+    try:
+        with open(filename, "r", encoding="utf-8") as file_descriptor:
+            for line in file_descriptor:
+                if "[CONTEST]" in line.upper():
+                    the_good_stuff = True
+                    continue
+                if "=" in line and the_good_stuff is True:
+                    try:
+                        key, value = line.split("=")
+                        udc_contest[key.strip()] = value.strip()
+                    except ValueError:
+                        ...
+    except FileNotFoundError:
+        logger.debug("UDC file not found.")
+        return {}
+    return udc_contest
