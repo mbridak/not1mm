@@ -1,37 +1,4 @@
-Helvetica
--------------------------------------------------
-Status:	Active
- 	Geographic Focus:	Switzerland
- 	Participation:	Worldwide
- 	Mode:	CW, SSB, Digital
- 	Bands:	160, 80, 40, 20, 15, 10m
- 	Classes:	Single Op (CW/SSB) High
-Single Op Mixed (QRP/Low/High)
-Multi-Op (CW/SSB/Mixed) High
-SWL
- 	Max operating hours:	18 with a maximum of two rest periods of any length
- 	Max power:	HP: >100 watts
-LP: 100 watts
-QRP: 5 watts (CW/Digital) or 10 watts (SSB)
- 	Exchange:	HB: RS(T) + 2-letter canton
-non-HB: RS(T) + Serial No.
- 	Work stations:	Once per band per mode
- 	QSO Points:	10 points per QSO with HB
-1 point per QSO with same continent
-3 points per QSO with different continent
- 	Multipliers:	Each canton once per band
-Each DXCC country once per band
- 	Score Calculation:	Total score = total QSO points x total mults
- 	E-mail logs to:	contest[at]uska[dot]ch
- 	Mail logs to:	(none)
- 	Find rules at:	https://www.uska.ch/events/uska-helvetia-contest-concours-helvetia-hf/
- 	Cabrillo name:	HELVETIA
- 	
- 	
- 	
-------------------------------------------------------------------------- 	
- 	
- 	
+
 REF Contest, CW
  	Status:	Active
  	Geographic Focus:	France + overseas territories
