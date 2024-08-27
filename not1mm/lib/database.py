@@ -567,7 +567,7 @@ class DataBase:
     def fetch_country_band_count(self) -> dict:
         """
         returns dict with count of unique NR.
-        {nr_count: count}
+        {cb_count: count}
         """
         try:
             with sqlite3.connect(self.database) as conn:
@@ -575,6 +575,23 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(DISTINCT(CountryPrefix || ':' || Band)) as cb_count from dxlog where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_country_count(self) -> dict:
+        """
+        Fetch count of unique countries
+        {dxcc_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(CountryPrefix)) as dxcc_count from dxlog where ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
@@ -877,6 +894,20 @@ class DataBase:
                 cursor = conn.cursor()
                 cursor.execute(
                     f"select count(*) as count from dxlog where IsMultiplier1 = 1 and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_mult2_count(self) -> dict:
+        """return QSO count"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as count from dxlog where IsMultiplier2 = 1 and ContestNR = {self.current_contest};"
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
