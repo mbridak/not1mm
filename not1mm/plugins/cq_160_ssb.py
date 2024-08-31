@@ -177,7 +177,7 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_mult1_count()
+    result = self.database.fetch_mult_count(1)
     count = result.get("count", 0)
     return count
 
@@ -198,7 +198,7 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        result = self.database.fetch_mult1_count()
+        result = self.database.fetch_mult_count(1)
         mults = int(result.get("count", 0))
         return contest_points * mults
     return 0

@@ -250,8 +250,8 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    return int(self.database.fetch_mult1_count().get("count", 0)) + int(
-        self.database.fetch_mult2_count().get("count", 0)
+    return int(self.database.fetch_mult_count(1).get("count", 0)) + int(
+        self.database.fetch_mult_count(2).get("count", 0)
     )
 
 
