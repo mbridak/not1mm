@@ -1,4 +1,4 @@
-# Generated with flatpak-pip-generator --yaml --checker-data --cleanup scripts requests dicttoxml xmltodict psutil pyserial sounddevice numpy notctyparser rapidfuzz appdata
+# Generated with flatpak-pip-generator --runtime=org.kde.Sdk//6.7 --yaml --checker-data --cleanup scripts requests dicttoxml xmltodict psutil pyserial sounddevice meson_python scikit_build numpy notctyparser rapidfuzz appdata
 build-commands: []
 buildsystem: simple
 modules:
@@ -8,41 +8,41 @@ modules:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
         --prefix=${FLATPAK_DEST} "requests" --no-build-isolation
     sources:
-      - &id001
+      - &id002
         type: file
-        url: https://files.pythonhosted.org/packages/ba/06/a07f096c664aeb9f01624f858c3add0a4e913d6c96257acb4fce61e7de14/certifi-2024.2.2-py3-none-any.whl
-        sha256: dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1
+        url: https://files.pythonhosted.org/packages/12/90/3c9ff0512038035f59d279fddeb79f5f1eccd8859f06d6163c58798b9487/certifi-2024.8.30-py3-none-any.whl
+        sha256: 922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8
         x-checker-data:
           name: certifi
           packagetype: bdist_wheel
           type: pypi
-      - &id002
+      - &id003
         type: file
         url: https://files.pythonhosted.org/packages/63/09/c1bc53dab74b1816a00d8d030de5bf98f724c52c1635e07681d312f20be8/charset-normalizer-3.3.2.tar.gz
         sha256: f30c3cb33b24454a82faecaf01b19c18562b1e89558fb6c56de4d9118a032fd5
         x-checker-data:
           name: charset-normalizer
           type: pypi
-      - &id003
+      - &id004
         type: file
-        url: https://files.pythonhosted.org/packages/c2/e7/a82b05cf63a603df6e68d59ae6a68bf5064484a0718ea5033660af4b54a9/idna-3.6-py3-none-any.whl
-        sha256: c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f
+        url: https://files.pythonhosted.org/packages/22/7e/d71db821f177828df9dea8c42ac46473366f191be53080e552e628aad991/idna-3.8-py3-none-any.whl
+        sha256: 050b4e5baadcd44d760cedbd2b8e639f2ff89bbc7a5730fcc662954303377aac
         x-checker-data:
           name: idna
           packagetype: bdist_wheel
           type: pypi
-      - &id004
+      - &id005
         type: file
-        url: https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl
-        sha256: 58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f
+        url: https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl
+        sha256: 70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
         x-checker-data:
           name: requests
           packagetype: bdist_wheel
           type: pypi
-      - &id005
+      - &id006
         type: file
-        url: https://files.pythonhosted.org/packages/a2/73/a68704750a7679d0b6d3ad7aa8d4da8e14e151ae82e6fee774e6e0d05ec8/urllib3-2.2.1-py3-none-any.whl
-        sha256: 450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d
+        url: https://files.pythonhosted.org/packages/ca/1c/89ffc63a9605b583d5df2be791a27bc1a42b7c32bab68d3c8f2f73a98cd4/urllib3-2.2.2-py3-none-any.whl
+        sha256: a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472
         x-checker-data:
           name: urllib3
           packagetype: bdist_wheel
@@ -82,6 +82,21 @@ modules:
     cleanup:
       - /bin
       - /share/man/man1
+  - name: python3-psutil
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} "psutil" --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/18/c7/8c6872f7372eb6a6b2e4708b88419fb46b857f7a2e1892966b851cc79fc9/psutil-6.0.0.tar.gz
+        sha256: 8faae4f310b6d969fa26ca0545338b21f73c6b15db7c4a8d934a5482faa818f2
+        x-checker-data:
+          name: psutil
+          type: pypi
+    cleanup:
+      - /bin
+      - /share/man/man1
   - name: python3-pyserial
     buildsystem: simple
     build-commands:
@@ -98,16 +113,6 @@ modules:
     cleanup:
       - /bin
       - /share/man/man1
-  - name: python3-numpy
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --no-index --find-links="file://${PWD}" --prefix=${FLATPAK_DEST}
-        "numpy" --report=pip_report.json --no-build-isolation
-    sources:
-      - &id003
-        type: file
-        url: https://files.pythonhosted.org/packages/65/6e/09db70a523a96d25e115e71cc56a6f9031e7b8cd166c1ac8438307c14058/numpy-1.26.4.tar.gz
-        sha256: 2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010
   - name: python3-sounddevice
     buildsystem: simple
     build-commands:
@@ -115,23 +120,78 @@ modules:
         --prefix=${FLATPAK_DEST} "sounddevice" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/68/ce/95b0bae7968c65473e1298efb042e10cafc7bafc14d9e4f154008241c91d/cffi-1.16.0.tar.gz
-        sha256: bcb3ef43e58665bbda2fb198698fcae6776483e0c4a631aa5647806c25e02cc0
+        url: https://files.pythonhosted.org/packages/1e/bf/82c351342972702867359cfeba5693927efe0a8dd568165490144f554b18/cffi-1.17.0.tar.gz
+        sha256: f3157624b7558b914cb039fd1af735e5e8049a87c817cc215109ad1c8779df76
         x-checker-data:
           name: cffi
           type: pypi
       - type: file
-        url: https://files.pythonhosted.org/packages/62/d5/5f610ebe421e85889f2e55e33b7f9a6795bd982198517d912eb1c76e1a53/pycparser-2.21-py2.py3-none-any.whl
-        sha256: 8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9
+        url: https://files.pythonhosted.org/packages/13/a3/a812df4e2dd5696d1f351d58b8fe16a405b234ad2886a0dab9183fb78109/pycparser-2.22-py3-none-any.whl
+        sha256: c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc
         x-checker-data:
           name: pycparser
           packagetype: bdist_wheel
           type: pypi
       - type: file
-        url: https://files.pythonhosted.org/packages/d7/d5/f0a0aba169f23657c7af3f0c878db7413a9a3b113026fc759862a697c611/sounddevice-0.4.6-py3-none-any.whl
-        sha256: 5de768ba6fe56ad2b5aaa2eea794b76b73e427961c95acad2ee2ed7f866a4b20
+        url: https://files.pythonhosted.org/packages/e6/3c/241480772b55a39d4c07f2d88cf43e0a2955cc662f369c33dfb4fb79e9fa/sounddevice-0.5.0-py3-none-any.whl
+        sha256: 8a734043ab1f751cb20f6f25d8f07408a1aadf2eeca923061849d38bb59f9e3d
         x-checker-data:
           name: sounddevice
+          packagetype: bdist_wheel
+          type: pypi
+    cleanup:
+      - /bin
+      - /share/man/man1
+  - name: python3-meson_python
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} "meson_python" --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/91/c0/104cb6244c83fe6bc3886f144cc433db0c0c78efac5dc00e409a5a08c87d/meson_python-0.16.0-py3-none-any.whl
+        sha256: 842dc9f5dc29e55fc769ff1b6fe328412fe6c870220fc321060a1d2d395e69e8
+        x-checker-data:
+          name: meson_python
+          packagetype: bdist_wheel
+          type: pypi
+      - &id001
+        type: file
+        url: https://files.pythonhosted.org/packages/08/aa/cc0199a5f0ad350994d660967a8efb233fe0416e4639146c089643407ce6/packaging-24.1-py3-none-any.whl
+        sha256: 5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124
+        x-checker-data:
+          name: packaging
+          packagetype: bdist_wheel
+          type: pypi
+      - type: file
+        url: https://files.pythonhosted.org/packages/aa/5f/bb5970d3d04173b46c9037109f7f05fc8904ff5be073ee49bb6ff00301bc/pyproject_metadata-0.8.0-py3-none-any.whl
+        sha256: ad858d448e1d3a1fb408ac5bac9ea7743e7a8bbb472f2693aaa334d2db42f526
+        x-checker-data:
+          name: pyproject_metadata
+          packagetype: bdist_wheel
+          type: pypi
+    cleanup:
+      - /bin
+      - /share/man/man1
+  - name: python3-scikit_build
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} "scikit_build" --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl
+        sha256: 7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2
+        x-checker-data:
+          name: distro
+          packagetype: bdist_wheel
+          type: pypi
+      - *id001
+      - type: file
+        url: https://files.pythonhosted.org/packages/c3/a3/21b519f58de90d684056c52ec4e45f744cfda7483f082dcc4dd18cc74a93/scikit_build-0.18.1-py3-none-any.whl
+        sha256: a6860e300f6807e76f21854163bdb9db16afc74eadf34bd6a9947d3fdfcd725a
+        x-checker-data:
+          name: scikit_build
           packagetype: bdist_wheel
           type: pypi
     cleanup:
@@ -142,12 +202,10 @@ modules:
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
         --prefix=${FLATPAK_DEST} "numpy" --no-build-isolation
-    build-options:
-      build-args: --share=network
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/65/6e/09db70a523a96d25e115e71cc56a6f9031e7b8cd166c1ac8438307c14058/numpy-1.26.4.tar.gz
-        sha256: 2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010
+        url: https://files.pythonhosted.org/packages/54/a4/f8188c4f3e07f7737683588210c073478abcb542048cf4ab6fedad0b458a/numpy-2.1.0.tar.gz
+        sha256: 7dc90da0081f7e1da49ec4e398ede6a8e9cc4f5ebe5f9e06b443ed889ee9aaa2
         x-checker-data:
           name: numpy
           type: pypi
@@ -160,8 +218,8 @@ modules:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
         --prefix=${FLATPAK_DEST} "notctyparser" --no-build-isolation
     sources:
-      - *id001
       - *id002
+      - *id003
       - type: file
         url: https://files.pythonhosted.org/packages/7c/d4/8c31aad9cc18f451c49f7f9cfb5799dadffc88177f7917bc90a66459b1d7/feedparser-6.0.11-py3-none-any.whl
         sha256: 0be7ee7b395572b19ebeb1d6aafb0028dee11169f1c934e0ed67d54992f4ad45
@@ -169,10 +227,10 @@ modules:
           name: feedparser
           packagetype: bdist_wheel
           type: pypi
-      - *id003
+      - *id004
       - type: file
-        url: https://files.pythonhosted.org/packages/73/a6/0730ff6cbb87e42e1329a486fe4ccbd3f8f728cb629c2671b0d093a85918/lxml-5.1.1.tar.gz
-        sha256: 42a8aa957e98bd8b884a8142175ec24ce4ef0a57760e8879f193bfe64b757ca9
+        url: https://files.pythonhosted.org/packages/e7/6b/20c3a4b24751377aaa6307eb230b66701024012c29dd374999cc92983269/lxml-5.3.0.tar.gz
+        sha256: 4e109ca30d1edec1ac60cdbe341905dc3b8f55b16855e03a54aaf59e51ec8c6f
         x-checker-data:
           name: lxml
           type: pypi
@@ -183,14 +241,14 @@ modules:
           name: notctyparser
           packagetype: bdist_wheel
           type: pypi
-      - *id004
+      - *id005
       - type: file
         url: https://files.pythonhosted.org/packages/9e/bd/3704a8c3e0942d711c1299ebf7b9091930adae6675d7c8f476a7ce48653c/sgmllib3k-1.0.0.tar.gz
         sha256: 7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9
         x-checker-data:
           name: sgmllib3k
           type: pypi
-      - *id005
+      - *id006
     cleanup:
       - /bin
       - /share/man/man1
@@ -201,8 +259,8 @@ modules:
         --prefix=${FLATPAK_DEST} "rapidfuzz" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/65/75/e52ee00ebf8c13f8ca60b61641dfc1b8786b0d0d2fd4065cb337c861fe3e/rapidfuzz-3.7.0.tar.gz
-        sha256: 620df112c39c6d27316dc1e22046dc0382d6d91fd60d7c51bd41ca0333d867e9
+        url: https://files.pythonhosted.org/packages/e8/b0/e0756b5efe826c1bdf6442777cc924b41258685dcf372ee77399cc10408e/rapidfuzz-3.9.6.tar.gz
+        sha256: 5cf2a7d621e4515fee84722e93563bf77ff2cbe832a77a48b81f88f9e23b9e8d
         x-checker-data:
           name: rapidfuzz
           type: pypi

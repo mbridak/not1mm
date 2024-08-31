@@ -1,9 +1,9 @@
 id: com.github.mbridak.not1mm
 runtime: org.kde.Sdk
-runtime-version: '6.6'
+runtime-version: '6.5'
 sdk: org.kde.Sdk
 base: com.riverbankcomputing.PyQt.BaseApp
-base-version: '6.6'
+base-version: '6.5'
 command: not1mm
 cleanup-commands:
   - /app/cleanup-BaseApp.sh
@@ -29,6 +29,6 @@ modules:
       - python ./install.py --yes --no-deps --prefix=$FLATPAK_DEST
     sources:
       - type: archive
-        url: https://files.pythonhosted.org/packages/44/1f/cbb099359418d48bf7f48941007ea678a35ade7f41c0f9b03a6fab94b740/not1mm-24.3.27.tar.gz
-        sha256: 97f89efd32281df95aa9745c03b48faf5f9b3256cdb318ac37320cf82a7f72b6
+        url: https://files.pythonhosted.org/packages/54/28/ececcf92586390869f0dafbc0d091d79ab65386945253bf31553260c9c02/not1mm-24.8.27.tar.gz
+        sha256: fff14b90939d4d0111aa966ab9ce69df582eca610f14adc6de51b05f560d598d
 
