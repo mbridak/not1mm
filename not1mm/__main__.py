@@ -23,6 +23,7 @@ import threading
 import uuid
 
 from json import dumps, loads
+from json.decoder import JSONDecodeError
 from pathlib import Path
 from shutil import copyfile
 
@@ -186,8 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
-        data_path = fsutils.APP_DATA_PATH / "main.ui"
-        uic.loadUi(data_path, self)
+        uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
@@ -460,7 +460,10 @@ class MainWindow(QtWidgets.QMainWindow):
             QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
         )
         with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
-            self.ctyfile = loads(c_file.read())
+            try:
+                self.ctyfile = loads(c_file.read())
+            except (JSONDecodeError, TypeError):
+                logging.CRITICAL("There was an error parsing the BigCity file.")
         self.readpreferences()
 
         self.voice_process = Voice()
@@ -1290,7 +1293,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 with open(
                     fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
                 ) as ctyfile:
-                    self.ctyfile = loads(ctyfile.read())
+                    try:
+                        self.ctyfile = loads(ctyfile.read())
+                    except (JSONDecodeError, TypeError):
+                        logging.CRITICAL("There was an error parsing the BigCity file.")
             else:
                 self.show_message_box("An Error occured updating file.")
         else:
@@ -2344,7 +2350,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 with open(
                     fsutils.CONFIG_FILE, "rt", encoding="utf-8"
                 ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
+                    try:
+                        self.pref = loads(file_descriptor.read())
+                    except (JSONDecodeError, TypeError):
+                        logging.CRITICAL(
+                            "There was an error parsing the preference file."
+                        )
                     logger.info("%s", self.pref)
             else:
                 logger.info("No preference file. Writing preference.")
