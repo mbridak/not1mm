@@ -459,11 +459,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(
             QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
         )
-        with open(fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8") as c_file:
-            try:
+
+        try:
+            with open(
+                fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
+            ) as c_file:
                 self.ctyfile = loads(c_file.read())
-            except (JSONDecodeError, TypeError):
-                logging.CRITICAL("There was an error parsing the BigCity file.")
+        except (IOError, JSONDecodeError, TypeError):
+            logging.CRITICAL("There was an error parsing the BigCity file.")
+
         self.readpreferences()
 
         self.voice_process = Voice()
@@ -1288,13 +1292,15 @@ class MainWindow(QtWidgets.QMainWindow):
             if updated:
                 cty.dump(fsutils.APP_DATA_PATH / "cty.json")
                 self.show_message_box("cty file updated.")
-                with open(
-                    fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
-                ) as ctyfile:
-                    try:
+                try:
+                    with open(
+                        fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
+                    ) as ctyfile:
                         self.ctyfile = loads(ctyfile.read())
-                    except (JSONDecodeError, TypeError):
-                        logging.CRITICAL("There was an error parsing the BigCity file.")
+                except (IOError, JSONDecodeError, TypeError) as err:
+                    logging.CRITICAL(
+                        f"There was an error {err} parsing the BigCity file."
+                    )
             else:
                 self.show_message_box("An Error occured updating file.")
         else:
@@ -3206,10 +3212,14 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(
-                fsutils.APP_DATA_PATH / macro_file, fsutils.USER_DATA_PATH / macro_file
-            )
+            logger.debug("copying default macro file.")
+            try:
+                copyfile(
+                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / macro_file,
+                )
+            except IOError as err:
+                logger.critical(f"Error {err} copying macro file.")
         try:
             fsutils.openFileWithOS(fsutils.USER_DATA_PATH / macro_file)
         except FileNotFoundError | PermissionError | OSError as err:
@@ -3230,22 +3240,26 @@ class MainWindow(QtWidgets.QMainWindow):
             macro_file = "ssbmacros.txt"
 
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("read_cw_macros: copying default macro file.")
-            copyfile(
-                fsutils.APP_DATA_PATH / macro_file, fsutils.USER_DATA_PATH / macro_file
-            )
-        with open(
-            fsutils.USER_DATA_PATH / macro_file, "r", encoding="utf-8"
-        ) as file_descriptor:
-            for line in file_descriptor:
-                try:
+            logger.debug("copying default macro file.")
+            try:
+                copyfile(
+                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / macro_file,
+                )
+            except IOError as err:
+                logger.critical(f"Error {err} copying macro file.")
+        try:
+            with open(
+                fsutils.USER_DATA_PATH / macro_file, "r", encoding="utf-8"
+            ) as file_descriptor:
+                for line in file_descriptor:
                     mode, fkey, buttonname, cwtext = line.split("|")
                     if mode.strip().upper() == "R" and self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                     if mode.strip().upper() != "R" and not self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
-                except ValueError as err:
-                    logger.info("read_cw_macros: %s", err)
+        except (IOError, ValueError) as err:
+            logger.info("read_cw_macros: %s", err)
         keys = self.fkeys.keys()
         if "F1" in keys:
             self.F1.setText(f"F1: {self.fkeys['F1'][0]}")
