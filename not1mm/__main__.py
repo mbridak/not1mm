@@ -494,9 +494,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.make_op_dir()
 
         self.clearinputs()
-
-        if self.pref.get("contest"):
-            self.load_contest()
+        self.load_contest()
         self.read_cw_macros()
 
         # Featureset for wayland
