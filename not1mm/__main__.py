@@ -2097,7 +2097,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_settings(self) -> None:
         """
-        Save settings to database.
+        Save Station settings to database.
 
         Parameters
         ----------
@@ -2326,7 +2326,7 @@ class MainWindow(QtWidgets.QMainWindow):
             with open(fsutils.CONFIG_FILE, "wt", encoding="utf-8") as file_descriptor:
                 file_descriptor.write(dumps(self.pref, indent=4))
                 # logger.info("writing: %s", self.pref)
-        except IOError as exception:
+        except (IOError, TypeError, ValueError) as exception:
             logger.critical("writepreferences: %s", exception)
 
     def readpreferences(self) -> None:
@@ -2363,7 +2363,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.pref = self.pref_ref.copy()
                     file_descriptor.write(dumps(self.pref, indent=4))
                     logger.info("%s", self.pref)
-        except IOError as exception:
+        except (IOError, TypeError, ValueError) as exception:
             logger.critical("Error: %s", exception)
 
         self.look_up = None
