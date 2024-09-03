@@ -1,5 +1,10 @@
 # Changelog
 
+- [24-8-27] Added Helvetia contest.
+- [24-8-22] Add loading splash screen.
+- [24-8-20] Added K1USN Slow Speed Test
+- [24-8-17-1] Did an oops. Fixed the oops.
+- [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
 - [24-7-31] Serial number leading Zeros sent as T in CW.
 - [24-7-29] Add flrig cw speed change via onscreen widget.
 - [24-7-28] Second try at flrig CW.

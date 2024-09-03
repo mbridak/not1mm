@@ -69,6 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
+  - [Logging WSJT-X FT8 contacts](#logging-wsjt-x-ft8-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -194,11 +195,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [24-8-27] Added Helvetia contest.
-- [24-8-22] Add loading splash screen.
-- [24-8-20] Added K1USN Slow Speed Test
-- [24-8-17-1] Did an oops. Fixed the oops.
-- [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
+- [24-9-3] Added WSJT-X FT8 mode contacts to ARRL Field Day.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -219,7 +216,7 @@ not1mm requires:
 - PyQt6
 - libportaudio2
 - libxcb-cursor0 (maybe... Depends on the distro)
- 
+
 You should install these through your distribution's package manager before continuing.
 
 ### Common installation recipes for Ubuntu and Fedora
@@ -306,9 +303,7 @@ pamac build not1mm-git
 #### Mint
 
 ```bash
-sudo apt install python3-pip
-sudo apt install pipx
-sudo apt install libxcb-cursor0
+sudo apt install python3-pip pipx libxcb-cursor0 
 pipx install not1mm
 pipx ensurepath
 ```
@@ -576,6 +571,13 @@ You can define which bands appear in the main window. Those with checkmarks will
 appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
+
+## Logging WSJT-X FT8 contacts
+
+**Currently only working for ARRL Field Day.**
+
+not1mm listens for WSJT-X UDP traffic on the default localhost:2237. No setup is
+needed to be done on not1mm's side.
 
 ## Sending CW
 
