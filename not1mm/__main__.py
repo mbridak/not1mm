@@ -1908,11 +1908,14 @@ class MainWindow(QtWidgets.QMainWindow):
             " "
         )[:19]
         self.contact["Call"] = self.callsign.text()
-        self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
-        self.contact["QSXFreq"] = round(
-            float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
-        )
-        self.contact["Mode"] = self.radio_state.get("mode", "")
+        if self.contact.get("Mode") != "FT8":
+            self.contact["Freq"] = round(
+                float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
+            )
+            self.contact["QSXFreq"] = round(
+                float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
+            )
+            self.contact["Mode"] = self.radio_state.get("mode", "")
         self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["ContestNR"] = self.pref.get("contest", "0")
         self.contact["StationPrefix"] = self.station.get("Call", "")
