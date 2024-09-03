@@ -298,7 +298,7 @@ def cabrillo(self):
                 themode = contact.get("Mode", "")
                 if themode in ("LSB", "USB"):
                     themode = "PH"
-                if themode in ("FT8"):
+                if themode in ("FT8", "FT4"):
                     themode = "DG"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
@@ -365,7 +365,7 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
         ALTEREGO.contact["Exchange1"] = the_packet.get("CLASS", "ERR")
         ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
-        ALTEREGO.contact["Mode"] = "FT8"
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
             float(the_packet.get("FREQ", "0.0")) * 1000, 2

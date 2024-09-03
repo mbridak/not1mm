@@ -69,7 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
-  - [Logging WSJT-X FT8 contacts](#logging-wsjt-x-ft8-contacts)
+  - [Logging WSJT-X FT8/FT4 contacts](#logging-wsjt-x-ft8ft4-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -572,7 +572,7 @@ appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
-## Logging WSJT-X FT8 contacts
+## Logging WSJT-X FT8/FT4 contacts
 
 **Currently only working for ARRL Field Day.**
 
