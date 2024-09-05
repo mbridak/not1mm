@@ -67,6 +67,7 @@ from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
+from not1mm.lib.fldigi_watcher import FlDigiWatcher
 
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
@@ -163,7 +164,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     radio_thread = QThread()
     voice_thread = QThread()
+    fldigi_thread = QThread()
 
+    fldigi_watcher = None
     rig_control = None
     log_window = None
     check_window = None
@@ -507,6 +510,13 @@ class MainWindow(QtWidgets.QMainWindow):
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
 
+        self.fldigi_watcher = FlDigiWatcher()
+        self.fldigi_watcher.moveToThread(self.fldigi_thread)
+        self.fldigi_thread.started.connect(self.fldigi_watcher.run)
+        self.fldigi_thread.finished.connect(self.fldigi_watcher.deleteLater)
+        self.fldigi_watcher.poll_callback.connect(self.fldigi_qso)
+        self.fldigi_thread.start()
+
         self.log_window = LogWindow()
         self.log_window.setObjectName("log-window")
         if os.environ.get("WAYLAND_DISPLAY"):
@@ -565,6 +575,48 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def fldigi_qso(self, result: str):
+        """
+        gets called when there is a new fldigi qso logged.
+
+        {
+            'FREQ': '7.029500',
+            'CALL': 'DL2DSL',
+            'MODE': 'RTTY',
+            'NAME': 'BOB',
+            'QSO_DATE': '20240904',
+            'QSO_DATE_OFF': '20240904',
+            'TIME_OFF': '212825',
+            'TIME_ON': '212800',
+            'RST_RCVD': '599',
+            'RST_SENT': '599',
+            'BAND': '40M',
+            'COUNTRY': 'FED. REP. OF GERMANY',
+            'CQZ': '14',
+            'STX': '000',
+            'STX_STRING': '1D ORG',
+            'CLASS': '1D',
+            'ARRL_SECT': 'DX',
+            'TX_PWR': '0',
+            'OPERATOR': 'K6GTE',
+            'STATION_CALLSIGN': 'K6GTE',
+            'MY_GRIDSQUARE': 'DM13AT',
+            'MY_CITY': 'ANAHEIM, CA',
+            'MY_STATE': 'CA'
+        }
+
+        """
+
+        datadict = {}
+        splitdata = result.upper().strip().split("<")
+        for data in splitdata:
+            if data:
+                tag = data.split(":")
+                if tag == ["EOR>"]:
+                    break
+                datadict[tag[0]] = tag[1].split(">")[1].strip()
+        logger.debug(f"{datadict=}")
 
     def ft8_result(self, result: dict):
         """
