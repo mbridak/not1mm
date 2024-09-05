@@ -296,9 +296,9 @@ def cabrillo(self):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode in ("LSB", "USB"):
+                if themode in ("LSB", "USB", "FM"):
                     themode = "PH"
-                if themode in ("FT8", "FT4"):
+                if themode in ("FT8", "FT4", "RTTY"):
                     themode = "DG"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
@@ -381,7 +381,7 @@ def ft8_handler(the_packet: dict):
         }
 
     """
-
+    logger.debug(f"{the_packet=}")
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
@@ -397,6 +397,7 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.contact["Band"] = get_logged_band(
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
+        logger.debug(f"{ALTEREGO.contact=}")
         ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
         ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
         ALTEREGO.save_contact()

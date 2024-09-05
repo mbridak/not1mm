@@ -6,9 +6,13 @@ https://github.com/mbridak/not1mm
 GPL V3
 """
 
+import logging
+
 from PyQt6 import QtNetwork
 
 import struct
+
+logger = logging.getLogger(__name__)
 
 
 class FT8Watcher:
@@ -64,7 +68,7 @@ class FT8Watcher:
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
-        # print("%s %s %s", sender_host, sender_port_number, datagram)
+        logger.debug(f"{sender_host=}, {sender_port_number=}, {datagram=}")
 
         if datagram[0:4] != b"\xad\xbc\xcb\xda":
             return  # bail if no wsjt-x magic number
