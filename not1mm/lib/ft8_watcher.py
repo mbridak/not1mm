@@ -68,7 +68,7 @@ class FT8Watcher:
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
-        logger.debug(f"{sender_host=}, {sender_port_number=}, {datagram=}")
+        logger.debug(f"{datagram=}")
 
         if datagram[0:4] != b"\xad\xbc\xcb\xda":
             return  # bail if no wsjt-x magic number
