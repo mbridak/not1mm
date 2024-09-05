@@ -333,7 +333,7 @@ def set_self(the_outie):
 
 def ft8_handler(the_packet: dict):
     """Process FT8 QSO packets
-
+    FT8
     {
         'CALL': 'KE0OG',
         'GRIDSQUARE': 'DM10AT',
@@ -353,12 +353,36 @@ def ft8_handler(the_packet: dict):
         'CLASS': '1D',
         'ARRL_SECT': 'UT'
     }
+    FlDigi
+    {
+            'FREQ': '7.029500',
+            'CALL': 'DL2DSL',
+            'MODE': 'RTTY',
+            'NAME': 'BOB',
+            'QSO_DATE': '20240904',
+            'QSO_DATE_OFF': '20240904',
+            'TIME_OFF': '212825',
+            'TIME_ON': '212800',
+            'RST_RCVD': '599',
+            'RST_SENT': '599',
+            'BAND': '40M',
+            'COUNTRY': 'FED. REP. OF GERMANY',
+            'CQZ': '14',
+            'STX': '000',
+            'STX_STRING': '1D ORG',
+            'CLASS': '1D',
+            'ARRL_SECT': 'DX',
+            'TX_PWR': '0',
+            'OPERATOR': 'K6GTE',
+            'STATION_CALLSIGN': 'K6GTE',
+            'MY_GRIDSQUARE': 'DM13AT',
+            'MY_CITY': 'ANAHEIM, CA',
+            'MY_STATE': 'CA'
+        }
 
     """
-    print(f"{the_packet=}")
 
     if ALTEREGO is not None:
-
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
         ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
@@ -375,5 +399,4 @@ def ft8_handler(the_packet: dict):
         )
         ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
         ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
-        print(f"\n{ALTEREGO.contact=}\n")
         ALTEREGO.save_contact()

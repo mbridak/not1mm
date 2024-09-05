@@ -196,7 +196,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rightdot.hide()
         self.n1mm = N1MM()
         self.ft8 = FT8Watcher()
-        self.ft8.set_callback(self.ft8_result)
+        self.ft8.set_callback(None)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self.next_field = self.other_2
         self.dupe_indicator.hide()
@@ -617,33 +617,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     break
                 datadict[tag[0]] = tag[1].split(">")[1].strip()
         logger.debug(f"{datadict=}")
-
-    def ft8_result(self, result: dict):
-        """
-        Callback for ft8 watcher
-
-        {
-            'CALL': 'KE0OG',
-            'GRIDSQUARE': 'DM10AT',
-            'MODE': 'FT8',
-            'RST_SENT': '',
-            'RST_RCVD': '',
-            'QSO_DATE': '20210329',
-            'TIME_ON': '183213',
-            'QSO_DATE_OFF': '20210329',
-            'TIME_OFF': '183213',
-            'BAND': '20M',
-            'FREQ': '14.074754',
-            'STATION_CALLSIGN': 'K6GTE',
-            'MY_GRIDSQUARE': 'DM13AT',
-            'CONTEST_ID': 'ARRL-FIELD-DAY',
-            'SRX_STRING': '1D UT',
-            'CLASS': '1D',
-            'ARRL_SECT': 'UT'
-        }
-
-        """
-        print(f"{result=}")
+        if hasattr(self.contest, "ft8_handler"):
+            self.contest.set_self(self)
+            self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
         """Forces a darkmode palette."""
