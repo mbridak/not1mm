@@ -23,3 +23,4 @@ not1mm.yaml
 not1mm/playsoundtest.py
 not1mm/lib/playsound.py
 not1mm/.DS_Store
+trim_new_contest_ui.sh
