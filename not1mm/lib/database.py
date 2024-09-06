@@ -663,8 +663,8 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
-    def fetch_call_exists(self, call) -> dict:
-        """returns a dict key of nr_count"""
+    def fetch_call_exists(self, call: str) -> dict:
+        """returns a dict key of call_count"""
         try:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
