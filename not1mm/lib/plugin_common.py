@@ -172,7 +172,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 file=file_descriptor,
                             )
                     # ------------CQ 160---------------
-                    elif cabrillo_name in ("CQ-160-CW", "CQ-160-SSB"):
+                    elif cabrillo_name in ("CQ-160-CW", "CQ-160-SSB", "WEEKLY-RTTY"):
                         rcv = f"{contact.get('Exchange1', '')}"
                         if len(rcv) > 1:
                             print(
