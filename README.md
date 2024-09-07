@@ -69,7 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
-  - [Logging WSJT-X FT8/FT4 contacts](#logging-wsjt-x-ft8ft4-contacts)
+  - [Logging WSJT-X FT8/FT4 and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4-and-fldigi-rtty-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -575,12 +575,20 @@ appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
-## Logging WSJT-X FT8/FT4 contacts
+## Logging WSJT-X FT8/FT4 and FLDIGI RTTY contacts
 
-**Currently only working for ARRL Field Day.**
+**FT8/FT4 Currently only working for ARRL Field Day.**
 
 not1mm listens for WSJT-X UDP traffic on the default localhost:2237. No setup is
-needed to be done on not1mm's side.
+needed to be done on not1mm's side. That's good because I'm lazy.
+
+not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
+way. It just keeps asking what was the last QSO and compares it to the previous response.
+If it's different, it's new. I've added the Weekly RTTY Test so this can be tested.
+
+Unlike WSJT, fldigi needs to be setup for this to work. The XMLRPC interface needs to be
+active. And in fldigi's config dialog go to CONTESTS -> General -> CONTEST and select
+Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 
 ## Sending CW
 
