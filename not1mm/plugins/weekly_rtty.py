@@ -114,12 +114,12 @@ def set_contact_vars(self):
         f"{self.other_1.text().upper()} {self.other_2.text().upper()}"
     )
 
-    result = self.database.fetch_sect_band_exists(self.callsign.text())
-    result = ALTEREGO.database.fetch_call_exists(the_packet.get("CALL", ""))
+    result = self.database.fetch_call_exists(self.callsign.text())
+    # result = ALTEREGO.database.fetch_call_exists(self.callsign.text())
     if result.get("call_count", ""):
-        ALTEREGO.contact["IsMultiplier1"] = 0
+        self.contact["IsMultiplier1"] = 0
     else:
-        ALTEREGO.contact["IsMultiplier1"] = 1
+        self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):
@@ -417,6 +417,12 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
         ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
         ALTEREGO.contact["Exchange1"] = the_packet.get("SRX_STRING", "")
+        exch1 = ""
+        exch2 = ""
+        if " " in str(the_packet.get("SRX_STRING", "")):
+            exch1, exch2 = str(the_packet.get("SRX_STRING", "")).strip().split(" ")
+            ALTEREGO.other_1.setText(exch1)
+            ALTEREGO.other_2.setText(exch2)
         # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
         ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)

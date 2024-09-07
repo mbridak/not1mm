@@ -1936,7 +1936,7 @@ class MainWindow(QtWidgets.QMainWindow):
             " "
         )[:19]
         self.contact["Call"] = self.callsign.text()
-        if self.contact.get("Mode") not in ("FT8", "FT4"):
+        if self.contact.get("Mode") not in ("FT8", "FT4", "RTTY"):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
             )
