@@ -138,9 +138,9 @@ when the program craps the bed. I'm only one guy, so if you see a bug let me kno
 
 ### Data and RTTY
 
-I don't do much of any digital or RTTY operating. This is why you don't see RTTY in
-the list of working contests. The Lord helps those who burn people at the... I
-mean, who help themselves. Feel free to fill in that hole with a pull request.
+I've recently added portions of code to watch for WSTJ-X and fldigi QSOs. I've added
+the Weekly RTTY Test, So RTTY could be tested. Also added FT8/4 and RTTY to ARRL Field
+Day. Praying that it works. I'll add more details later.
 
 ### Other not so supported contests
 
