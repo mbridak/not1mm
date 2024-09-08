@@ -196,6 +196,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-8] Correct n1mm contact packet info.
 - [24-9-6] Added the Weekly RTTY
 - [24-9-5] Added FlDigi support for Field Day.
 - [24-9-3] Added WSJT-X FT8 mode contacts to ARRL Field Day.
