@@ -3214,14 +3214,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["bw"] = bw
                 self.multicast_interface.send_as_json(cmd)
                 if self.n1mm:
+                    self.n1mm.radio_info["Freq"] = vfo[:-1]
+                    self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                    self.n1mm.radio_info["Mode"] = mode
+                    self.n1mm.radio_info["OpCall"] = self.current_op
+                    self.n1mm.radio_info["IsRunning"] = str(
+                        self.pref.get("run_state", False)
+                    )
                     if self.n1mm.send_radio_packets:
-                        self.n1mm.radio_info["Freq"] = vfo[:-1]
-                        self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                        self.n1mm.radio_info["Mode"] = mode
-                        self.n1mm.radio_info["OpCall"] = self.current_op
-                        self.n1mm.radio_info["IsRunning"] = str(
-                            self.pref.get("run_state", False)
-                        )
+                        # self.n1mm.radio_info["Freq"] = vfo[:-1]
+                        # self.n1mm.radio_info["TXFreq"] = vfo[:-1]
+                        # self.n1mm.radio_info["Mode"] = mode
+                        # self.n1mm.radio_info["OpCall"] = self.current_op
+                        # self.n1mm.radio_info["IsRunning"] = str(
+                        #     self.pref.get("run_state", False)
+                        # )
                         self.n1mm.send_radio()
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
