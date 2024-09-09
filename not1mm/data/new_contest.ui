@@ -309,6 +309,16 @@
      </item>
      <item>
       <property name="text">
+       <string>IARU FIELDDAY R1 CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>IARU FIELDDAY R1 SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>IARU HF</string>
       </property>
      </item>
@@ -364,9 +374,26 @@
      <property name="accessibleName">
       <string>Start of contest Date and U T C Time</string>
      </property>
+     <property name="dateTime">
+      <datetime>
+       <hour>8</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2024</year>
+       <month>1</month>
+       <day>1</day>
+      </datetime>
+     </property>
+     <property name="date">
+      <date>
+       <year>2024</year>
+       <month>1</month>
+       <day>1</day>
+      </date>
+     </property>
      <property name="time">
       <time>
-       <hour>0</hour>
+       <hour>8</hour>
        <minute>0</minute>
        <second>0</second>
       </time>
