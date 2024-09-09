@@ -181,6 +181,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - CQ World Wide SSB
 - CWOps CWT
 - Helvetia
+- IARU Fieldday R1 CW
+- IARU Fieldday R1 SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW
@@ -196,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-9] Add IARU R1 Fieldday CW and SSB
 - [24-9-8] Correct n1mm contact packet info.
 - [24-9-6] Added the Weekly RTTY
 - [24-9-5] Added FlDigi support for Field Day.
