@@ -136,3 +136,17 @@ QRP: 5 watts
  	Find rules at:	http://www.ari.it/en/contest-hf/contest-4080.html
  	Cabrillo name:	40-80
 	
+---------------------------------------------------------
+
+IARU Region 1 Field Day, CW
+ 	Status:	Active
+ 	Geographic Focus:	Europe
+ 	Participation:	Worldwide
+ 	Mode:	CW
+ 	Bands:	160, 80, 40, 20, 15, 10m
+ 	Classes:	(see your national society rules)
+ 	Exchange:	RST + Serial No.
+ 	E-mail logs to:	(none)
+ 	Upload log at:	https://dxhf2.darc.de/~fdcwlog/upload.cgi?form=referat&lang=en
+ 	Mail logs to:	(none)
+ 	Find rules at:	https://www.darc.de/der-club/referate/conteste/iaru-region-1-fieldday/en/
