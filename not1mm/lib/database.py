@@ -725,6 +725,34 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_dxcc_exists(self, dxcc) -> dict:
+        """returns the dict dxcc_count of dxcc existing in current contest."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as dxcc_count from dxlog where CountryPrefix = '{dxcc}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def fetch_dxcc_exists_before_me(self, dxcc, time_stamp) -> dict:
+        """returns the dict dxcc_count of dxcc existing in current contest."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as dxcc_count from dxlog where TS < '{time_stamp}' and CountryPrefix = '{dxcc}' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_wpx_exists(self, wpx) -> dict:
         """returns a dict key of wpx_count"""
         try:
