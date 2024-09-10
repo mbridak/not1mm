@@ -1,5 +1,11 @@
 # Changelog
 
+- [24-9-10] Add WSJT FT8/4 and fldigi support to ARRL VHF.
+- [24-9-9] Add IARU R1 Fieldday CW and SSB.
+- [24-9-8] Correct n1mm contact packet info.
+- [24-9-6] Added the Weekly RTTY.
+- [24-9-5] Added FlDigi support for Field Day.
+- [24-9-3] Added WSJT-X FT8 mode contacts to ARRL Field Day.
 - [24-8-27] Added Helvetia contest.
 - [24-8-22] Add loading splash screen.
 - [24-8-20] Added K1USN Slow Speed Test
