@@ -476,8 +476,6 @@ def ft8_handler(the_packet: dict):
 
     """
     logger.debug(f"{the_packet=}")
-    print(f"{the_packet=}\n")
-    print(f"{ALTEREGO.contact=}\n")
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
@@ -502,7 +500,6 @@ def ft8_handler(the_packet: dict):
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
         logger.debug(f"{ALTEREGO.contact=}")
-        print(f"{ALTEREGO.contact=}\n")
         ALTEREGO.other_1.setText(my_grid)
         ALTEREGO.other_2.setText(their_grid)
         ALTEREGO.save_contact()
