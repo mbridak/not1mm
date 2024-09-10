@@ -23,9 +23,22 @@ class FT8Watcher:
     def __init__(self, *args, **kwargs):
         """Initialize"""
         super().__init__(*args, **kwargs)
-        self.callback = None
+        self.multicast_group = "224.0.0.1"
+        self.multicast_port = 2237
+        self.interface_ip = "0.0.0.0"
         self.udp_socket = QtNetwork.QUdpSocket()
-        self.udp_socket.bind(QtNetwork.QHostAddress.SpecialAddress.LocalHost, 2237)
+        b_result = self.udp_socket.bind(
+            QtNetwork.QHostAddress.SpecialAddress.AnyIPv4,
+            int(self.multicast_port),
+            QtNetwork.QAbstractSocket.BindFlag.ReuseAddressHint,
+        )
+        logger.info(f"multicast bind {b_result}")
+        join_result = self.udp_socket.joinMulticastGroup(
+            QtNetwork.QHostAddress(self.multicast_group)
+        )
+        logger.info(f"joinMulticastGroup result {join_result}")
+
+        self.callback = None
         self.udp_socket.readyRead.connect(self.on_udp_socket_ready_read)
 
     def set_callback(self, callback):
