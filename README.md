@@ -198,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-10-1] ft8_watcher now used default WSJT-X Multicast address and port.
 - [24-9-10] Add WSJT FT8/4 and fldigi support to ARRL VHF.
 - [24-9-9] Add IARU R1 Fieldday CW and SSB.
 - [24-9-8] Correct n1mm contact packet info.
@@ -584,8 +585,8 @@ appear. Those without will not.
 
 **FT8/FT4 Currently only working for ARRL Field Day.**
 
-not1mm listens for WSJT-X UDP traffic on the default localhost:2237. No setup is
-needed to be done on not1mm's side. That's good because I'm lazy.
+not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
+No setup is needed to be done on not1mm's side. That's good because I'm lazy.
 
 not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
 way. It just keeps asking what was the last QSO and compares it to the previous response.

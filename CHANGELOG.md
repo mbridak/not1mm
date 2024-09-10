@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-9-10-1] ft8_watcher now used default WSJT-X Multicast address and port.
 - [24-9-10] Add WSJT FT8/4 and fldigi support to ARRL VHF.
 - [24-9-9] Add IARU R1 Fieldday CW and SSB.
 - [24-9-8] Correct n1mm contact packet info.
