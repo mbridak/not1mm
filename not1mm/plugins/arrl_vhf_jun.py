@@ -11,11 +11,13 @@ import logging
 from pathlib import Path
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+ALTEREGO = None
 EXCHANGE_HINT = "4-character grid square"
 
 name = "ARRL VHF JUN"
@@ -26,6 +28,7 @@ columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
+    "Mode",
     "SentNr",
     "RcvNr",
     "PTS",
@@ -344,9 +347,21 @@ def cabrillo(self):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode == "LSB" or themode == "USB":
+                if themode in ("LSB", "USB", "FM", "AM"):
                     themode = "PH"
-                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+                if themode in (
+                    "FT8",
+                    "FT4",
+                    "RTTY",
+                    "PSK31",
+                    "FSK441",
+                    "MSK144",
+                    "JT65",
+                ):
+                    themode = "DG"
+                freq = int(contact.get("Freq", "0")) / 1000
+
+                frequency = str(int(freq)).rjust(4)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
@@ -371,3 +386,91 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+        'FREQ': '7.029500',
+        'CALL': 'DL2DSL',
+        'MODE': 'RTTY',
+        'NAME': 'BOB',
+        'QSO_DATE': '20240904',
+        'QSO_DATE_OFF': '20240904',
+        'TIME_OFF': '212825',
+        'TIME_ON': '212800',
+        'RST_RCVD': '599',
+        'RST_SENT': '599',
+        'BAND': '40M',
+        'COUNTRY': 'FED. REP. OF GERMANY',
+        'CQZ': '14',
+        'STX': '000',
+        'STX_STRING': '1D ORG',
+        'CLASS': '1D',
+        'ARRL_SECT': 'DX',
+        'TX_PWR': '0',
+        'OPERATOR': 'K6GTE',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'MY_CITY': 'ANAHEIM, CA',
+        'MY_STATE': 'CA'
+    }
+
+    """
+    logger.debug(f"{the_packet=}")
+    print(f"{the_packet=}\n")
+    print(f"{ALTEREGO.contact=}\n")
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        my_grid = the_packet.get("MY_GRIDSQUARE", "")
+        if my_grid:
+            if len(my_grid) > 4:
+                my_grid = my_grid[:4]
+        their_grid = the_packet.get("GRIDSQUARE", "")
+        if their_grid:
+            if len(their_grid) > 4:
+                their_grid = their_grid[:4]
+        ALTEREGO.contact["NR"] = their_grid
+        # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+        print(f"{ALTEREGO.contact=}\n")
+        ALTEREGO.other_1.setText(my_grid)
+        ALTEREGO.other_2.setText(their_grid)
+        ALTEREGO.save_contact()
