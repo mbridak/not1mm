@@ -379,7 +379,7 @@ def cabrillo(self):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode in ("LSB", "USB", "FM", "AM"):
+                if themode in ("LSB", "USB", "AM"):
                     themode = "PH"
                 if themode in (
                     "FT8",
