@@ -22,6 +22,7 @@ class FlDigiWatcher(QObject):
                 server = xmlrpc.client.ServerProxy(self.target)
                 self.response = server.logbook.last_record()
             except OSError:
+                QThread.msleep(100)
                 continue
             if self.payload != self.response:
                 self.payload = self.response
