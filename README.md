@@ -198,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-11-1] Fixed high clock cycle usage from the FlDigiWatcher class.
 - [24-9-11] Fixed the HamQTH call lookups.
 - [24-9-10-2] Removed mapping of FM to PH in the ARRL VHF Cabrillo logs
 - [24-9-10-1] ft8_watcher now used default WSJT-X Multicast address and port.
