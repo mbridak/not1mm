@@ -323,7 +323,7 @@ class HamQTH:
             return
         logger.info("resultcode: %s", query_result.status_code)
         baseroot = xmltodict.parse(query_result.text)
-        root = baseroot.get("HamQTH")
+        root = baseroot.get("HamQTH", {})
         session = root.get("session")
         if session:
             if session.get("session_id"):
@@ -344,55 +344,49 @@ class HamQTH:
             "error_text": False,
         }
         if self.session:
-            payload = {"id": self.session, "callsign": call, "prg": "wfdlogger"}
+            payload = {"id": self.session, "callsign": call, "prg": "not1mm"}
             try:
                 query_result = requests.get(self.url, params=payload, timeout=10.0)
             except requests.exceptions.Timeout:
                 self.error = True
                 return the_result
             logger.info("resultcode: %s", query_result.status_code)
-            baseroot = xmltodict.parse(query_result.text)
-            root = baseroot.get("HamQTH")
-            search = root.get("search")
-            session = root.get("session")
-            if not search:
-                if session:
-                    if session.get("error"):
-                        if session.get("error") == "Callsign not found":
-                            the_result["error_text"] = session.get("error")
-                            return the_result
-                        if session.get("error") == "Session does not exist or expired":
-                            self.getsession()
-                            query_result = requests.get(
-                                self.url, params=payload, timeout=10.0
-                            )
-            the_result = self.parse_lookup(root)
-        return the_result
 
-    @lru_cache(maxsize=1000)
-    def parse_lookup(self, root) -> dict:
-        """
-        Returns gridsquare and name for a callsign
-        Or False for both if none found or error.
-        """
-        the_result = {
-            "grid": False,
-            "name": False,
-            "nickname": False,
-            "error_text": False,
-        }
-        session = root.get("session")
-        search = root.get("search")
-        if session:
-            if session.get("error"):
-                the_result["error_text"] = session.get("error")
-        if search:
-            if search.get("grid"):
-                the_result["grid"] = search.get("grid")
-            if search.get("nick"):
-                the_result["nickname"] = search.get("nick")
-            if search.get("adr_name"):
-                the_result["name"] = search.get("adr_name")
+            query_dict = xmltodict.parse(query_result.text)
+
+            the_result["grid"] = (
+                query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
+            )
+            the_result["name"] = (
+                query_dict.get("HamQTH", {}).get("search", {}).get("name", False)
+            )
+            the_result["nickname"] = (
+                query_dict.get("HamQTH", {}).get("search", {}).get("nickname", False)
+            )
+            the_result["error_text"] = (
+                query_dict.get("HamQTH", {}).get("session", {}).get("error", False)
+            )
+
+            if the_result.get("error_text") == "Callsign not found":
+                return the_result
+            if the_result.get("error_text") == "Session does not exist or expired":
+                self.getsession()
+                query_result = requests.get(self.url, params=payload, timeout=10.0)
+                the_result["grid"] = (
+                    query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
+                )
+                the_result["name"] = (
+                    query_dict.get("HamQTH", {}).get("search", {}).get("name", False)
+                )
+                the_result["nickname"] = (
+                    query_dict.get("HamQTH", {})
+                    .get("search", {})
+                    .get("nickname", False)
+                )
+                the_result["error_text"] = (
+                    query_dict.get("HamQTH", {}).get("session", {}).get("error", False)
+                )
+
         return the_result
 
 
