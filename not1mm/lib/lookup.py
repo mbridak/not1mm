@@ -151,18 +151,21 @@ class QRZlookup:
             payload = {"username": self.username, "password": self.password}
             query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
             baseroot = xmltodict.parse(query_result.text)
-            root = baseroot.get("QRZDatabase")
-            if root:
-                session = root.get("Session")
+            root = baseroot.get("QRZDatabase", {})
+            self.session = (
+                baseroot.get("QRZDatabase", {}).get("Session", {}).get("Key", "")
+            )
+            self.expiration = (
+                baseroot.get("QRZDatabase", {}).get("Session", {}).get("SubExp", "")
+            )
+            self.error = (
+                baseroot.get("QRZDatabase", {}).get("Session", {}).get("Error", "")
+            )
+            self.message = (
+                baseroot.get("QRZDatabase", {}).get("Session", {}).get("Message", "")
+            )
+
             logger.info("\n\n%s\n\n", root)
-            if session.get("Key"):
-                self.session = session.get("Key")
-            if session.get("SubExp"):
-                self.expiration = session.get("SubExp")
-            if session.get("Error"):
-                self.error = session.get("Error")
-            if session.get("Message"):
-                self.message = session.get("Message")
             logger.info(
                 "key:%s error:%s message:%s",
                 self.session,
@@ -175,7 +178,7 @@ class QRZlookup:
             self.error = f"{exception}"
 
     @lru_cache(maxsize=1000)
-    def lookup(self, call: str) -> tuple:
+    def lookup(self, call: str) -> dict:
         """
         Lookup a call on QRZ
         """
@@ -190,9 +193,9 @@ class QRZlookup:
                 return {"error": exception}
             baseroot = xmltodict.parse(query_result.text)
             logger.debug(f"xml lookup {baseroot}\n")
-            root = baseroot.get("QRZDatabase")
+            root = baseroot.get("QRZDatabase", {})
+            session = baseroot.get("QRZDatabase", {}).get("Session", {})
             logger.info("\n\n%s\n\n", root)
-            session = root.get("Session")
             if not session.get("Key"):  # key expired get a new one
                 logger.info("no key, getting new one.")
                 self.getsession()
@@ -204,98 +207,6 @@ class QRZlookup:
                     baseroot = xmltodict.parse(query_result.text)
                     root = baseroot.get("QRZDatabase")
         return root.get("Callsign")
-
-    @lru_cache(maxsize=1000)
-    def parse_lookup(self, query_result):
-        """
-        Returns gridsquare and name for a callsign looked up by qrz or hamdb.
-        Or False for both if none found or error.
-
-        <?xml version="1.0" encoding="utf-8"?>
-        <QRZDatabase version="1.34" xmlns="http://xmldata.qrz.com">
-        <Callsign>
-        <call>K6GTE</call>
-        <aliases>KM6HQI</aliases>
-        <dxcc>291</dxcc>
-        <nickname>Mike</nickname>
-        <fname>Michael C</fname>
-        <name>Bridak</name>
-        <addr1>2854 W Bridgeport Ave</addr1>
-        <addr2>Anaheim</addr2>
-        <state>CA</state>
-        <zip>92804</zip>
-        <country>United States</country>
-        <lat>33.825460</lat>
-        <lon>-117.987510</lon>
-        <grid>DM13at</grid>
-        <county>Orange</county>
-        <ccode>271</ccode>
-        <fips>06059</fips>
-        <land>United States</land>
-        <efdate>2021-01-13</efdate>
-        <expdate>2027-11-07</expdate>
-        <class>G</class>
-        <codes>HVIE</codes>
-        <email>michael.bridak@gmail.com</email>
-        <u_views>1569</u_views>
-        <bio>6399</bio>
-        <biodate>2022-02-26 00:51:44</biodate>
-        <image>https://cdn-xml.qrz.com/e/k6gte/qsl.png</image>
-        <imageinfo>285:545:99376</imageinfo>
-        <moddate>2021-04-08 21:41:07</moddate>
-        <MSA>5945</MSA>
-        <AreaCode>714</AreaCode>
-        <TimeZone>Pacific</TimeZone>
-        <GMTOffset>-8</GMTOffset>
-        <DST>Y</DST>
-        <eqsl>0</eqsl>
-        <mqsl>1</mqsl>
-        <cqzone>3</cqzone>
-        <ituzone>6</ituzone>
-        <born>1967</born>
-        <lotw>1</lotw>
-        <user>K6GTE</user>
-        <geoloc>geocode</geoloc>
-        <name_fmt>Michael C "Mike" Bridak</name_fmt>
-        </Callsign>
-        <Session>
-        <Key>42d5c9736525b485e8edb782b101c74b</Key>
-        <Count>4140</Count>
-        <SubExp>Tue Feb 21 07:01:49 2023</SubExp>
-        <GMTime>Sun May  1 20:00:36 2022</GMTime>
-        <Remark>cpu: 0.022s</Remark>
-        </Session>
-        </QRZDatabase>
-
-        """
-        logger.info("QRZlookup-parse_lookup:")
-        grid = False
-        name = False
-        error_text = False
-        nickname = False
-        if query_result.status_code == 200:
-            baseroot = xmltodict.parse(query_result.text)
-            root = baseroot.get("QRZDatabase")
-            session = root.get("Session")
-            callsign = root.get("Callsign")
-            logger.info("\n\n%s\n\n", root)
-            if session.get("Error"):
-                error_text = session.get("Error")
-                self.error = error_text
-            if callsign:
-                if callsign.get("grid"):
-                    grid = callsign.get("grid")
-                if callsign.get("fname"):
-                    name = callsign.get("fname")
-                if callsign.get("name"):
-                    if not name:
-                        name = callsign.get("name")
-                    else:
-                        name = f"{name} {callsign.get('name')}"
-                if callsign.get("nickname"):
-                    nickname = callsign.get("nickname")
-        logger.info("%s %s %s %s", grid, name, nickname, error_text)
-        return grid, name, nickname, error_text
 
 
 class HamQTH:
@@ -333,7 +244,7 @@ class HamQTH:
         logger.info("session: %s", self.session)
 
     @lru_cache(maxsize=1000)
-    def lookup(self, call: str) -> tuple:
+    def lookup(self, call: str) -> dict:
         """
         Lookup a call on HamQTH
         """
