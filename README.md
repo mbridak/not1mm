@@ -69,7 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
-  - [Logging WSJT-X FT8/FT4 and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4-and-fldigi-rtty-contacts)
+  - [Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4etc-and-fldigi-rtty-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -586,9 +586,9 @@ appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
-## Logging WSJT-X FT8/FT4 and FLDIGI RTTY contacts
+## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
-**FT8/FT4 Currently only working for ARRL Field Day.**
+**Digital modes only working for ARRL Field Day, ARRL VHF, and Weekly RTTY**
 
 not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
 No setup is needed to be done on not1mm's side. That's good because I'm lazy.
