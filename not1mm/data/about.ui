@@ -18,7 +18,7 @@
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
-       <family>JetBrains Mono</family>
+       <family>JetBrains Mono ExtraLight</family>
        <pointsize>30</pointsize>
       </font>
      </property>

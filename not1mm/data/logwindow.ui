@@ -23,7 +23,7 @@
       <widget class="QTableWidget" name="generalLog">
        <property name="font">
         <font>
-         <family>JetBrains Mono</family>
+         <family>JetBrains Mono ExtraLight</family>
         </font>
        </property>
        <property name="focusPolicy">
@@ -36,7 +36,7 @@
       <widget class="QTableWidget" name="focusedLog">
        <property name="font">
         <font>
-         <family>JetBrains Mono</family>
+         <family>JetBrains Mono ExtraLight</family>
         </font>
        </property>
        <property name="focusPolicy">

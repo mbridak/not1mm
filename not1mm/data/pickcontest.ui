@@ -10,6 +10,11 @@
     <height>246</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>JetBrains Mono ExtraLight</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Choose a Contest</string>
   </property>

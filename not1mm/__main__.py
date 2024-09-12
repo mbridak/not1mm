@@ -1505,10 +1505,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono; color: black;"
+                        "font-family: JetBrains Mono ExtraLight; color: black;"
                     )
                 else:
-                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
+                    indicator.setStyleSheet(
+                        "font-family: JetBrains Mono ExtraLight; color: white"
+                    )
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -1529,7 +1531,9 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
-                indicator.setStyleSheet("font-family: JetBrains Mono; color: green;")
+                indicator.setStyleSheet(
+                    "font-family: JetBrains Mono ExtraLight; color: green;"
+                )
 
     def closeEvent(self, _event) -> None:
         """

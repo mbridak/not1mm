@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono</family>
+    <family>JetBrains Mono ExtraLight</family>
    </font>
   </property>
   <property name="windowTitle">
@@ -82,7 +82,7 @@
      <widget class="QScrollArea" name="scrollArea">
       <property name="font">
        <font>
-        <family>JetBrains Mono</family>
+        <family>JetBrains Mono ExtraLight</family>
         <pointsize>9</pointsize>
        </font>
       </property>
@@ -103,7 +103,7 @@
        </property>
        <property name="font">
         <font>
-         <family>JetBrains Mono</family>
+         <family>JetBrains Mono ExtraLight</family>
          <pointsize>9</pointsize>
         </font>
        </property>
@@ -112,7 +112,7 @@
          <widget class="QGraphicsView" name="graphicsView">
           <property name="font">
            <font>
-            <family>JetBrains Mono</family>
+            <family>JetBrains Mono ExtraLight</family>
             <pointsize>6</pointsize>
            </font>
           </property>
@@ -207,7 +207,7 @@
        <widget class="QLabel" name="clear_spot_olderLabel">
         <property name="font">
          <font>
-          <family>JetBrains Mono</family>
+          <family>JetBrains Mono ExtraLight</family>
           <pointsize>11</pointsize>
          </font>
         </property>
