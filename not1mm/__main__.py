@@ -19,7 +19,6 @@ import os
 import platform
 import socket
 import sys
-import threading
 import uuid
 
 from json import dumps, loads
@@ -57,7 +56,6 @@ from not1mm.lib.ham_utility import (
     reciprocol,
     fakefreq,
 )
-from not1mm.lib.lookup import HamQTH, QRZlookup
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
@@ -76,6 +74,7 @@ from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
+from not1mm.lookupservice import LookupService
 
 poll_time = datetime.datetime.now()
 
@@ -172,6 +171,7 @@ class MainWindow(QtWidgets.QMainWindow):
     check_window = None
     bandmap_window = None
     vfo_window = None
+    lookup_service = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -470,6 +470,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ctyfile = loads(c_file.read())
         except (IOError, JSONDecodeError, TypeError):
             logging.CRITICAL("There was an error parsing the BigCity file.")
+
+        self.lookup_service = LookupService()
+        self.lookup_service.hide()
 
         self.readpreferences()
 
@@ -1784,12 +1787,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     text = self.callsign.text()
                     text = text.upper()
-                    _thethread = threading.Thread(
-                        target=self.check_callsign2,
-                        args=(text,),
-                        daemon=True,
-                    )
-                    _thethread.start()
+                    cmd = {}
+                    cmd["cmd"] = "LOOKUP_CALL"
+                    cmd["station"] = platform.node()
+                    cmd["call"] = text
+                    self.multicast_interface.send_as_json(cmd)
                     next_tab = self.tab_next.get(self.callsign)
                     next_tab.setFocus()
                     next_tab.deselect()
@@ -2411,18 +2413,18 @@ class MainWindow(QtWidgets.QMainWindow):
         except (IOError, TypeError, ValueError) as exception:
             logger.critical("Error: %s", exception)
 
-        self.look_up = None
-        if self.pref.get("useqrz"):
-            self.look_up = QRZlookup(
-                self.pref.get("lookupusername"),
-                self.pref.get("lookuppassword"),
-            )
+        # self.look_up = None
+        # if self.pref.get("useqrz"):
+        #     self.look_up = QRZlookup(
+        #         self.pref.get("lookupusername"),
+        #         self.pref.get("lookuppassword"),
+        #     )
 
-        if self.pref.get("usehamqth"):
-            self.look_up = HamQTH(
-                self.pref.get("lookupusername"),
-                self.pref.get("lookuppassword"),
-            )
+        # if self.pref.get("usehamqth"):
+        #     self.look_up = HamQTH(
+        #         self.pref.get("lookupusername"),
+        #         self.pref.get("lookuppassword"),
+        #     )
 
         if self.pref.get("run_state"):
             self.radioButton_run.setChecked(True)
@@ -2450,6 +2452,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
+
+        cmd = {}
+        cmd["cmd"] = "REFRESH_LOOKUP"
+        cmd["station"] = platform.node()
+        self.multicast_interface.send_as_json(cmd)
 
         if self.pref.get("darkmode"):
             self.actionDark_Mode_2.setChecked(True)
@@ -2626,6 +2633,39 @@ class MainWindow(QtWidgets.QMainWindow):
                 ):
                     self.callsign.setText(json_data.get("call", ""))
                     self.callsign.setFocus()
+
+                # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
+
+                if (
+                    json_data.get("cmd", "") == "LOOKUP_RESPONSE"
+                    and json_data.get("station", "") == platform.node()
+                ):
+
+                    fname = json_data.get("result", {}).get("fname", "")
+                    name = json_data.get("result", {}).get("name", "")
+                    grid = json_data.get("result", {}).get("grid", "")
+                    error_text = json_data.get("result", {}).get("error_text", "")
+                    nickname = json_data.get("result", {}).get("nickname", "")
+
+                    if self.contest:
+                        if "General Logging" in self.contest.name:
+                            if nickname:
+                                self.other_1.setText(nickname)
+                            elif fname:
+                                self.other_1.setText(fname)
+                            elif name:
+                                self.other_1.setText(name)
+
+                    if grid:
+                        self.contact["GridSquare"] = grid
+                    # _theircountry = response.get("country", "")
+                    if self.station.get("GridSquare", ""):
+                        heading = bearing(self.station.get("GridSquare", ""), grid)
+                        kilometers = distance(self.station.get("GridSquare", ""), grid)
+                        self.heading_distance.setText(
+                            f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                        )
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
@@ -2848,12 +2888,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.dupe_indicator.show()
             else:
                 self.dupe_indicator.hide()
-            _thethread = threading.Thread(
-                target=self.check_callsign2,
-                args=(text,),
-                daemon=True,
-            )
-            _thethread.start()
+            cmd = {}
+            cmd["cmd"] = "LOOKUP_CALL"
+            cmd["station"] = platform.node()
+            cmd["call"] = stripped_text
+            self.multicast_interface.send_as_json(cmd)
             self.next_field.setFocus()
             return
         cmd = {}
@@ -3007,44 +3046,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 if len(callsign) > 2:
                     if self.contest:
                         self.contest.prefill(self)
-
-    def check_callsign2(self, callsign) -> None:
-        """
-        Check the callsign after it has been entered.
-        Look up the callsign in the callsign database.
-        Get the grid square and calculate the distance and heading.
-
-        Parameters
-        ----------
-        callsign : str
-        Callsign to check.
-
-        Returns
-        -------
-        None
-        """
-
-        callsign = callsign.strip()
-        debug_lookup = f"{self.look_up}"
-        logger.debug("%s, %s", callsign, debug_lookup)
-        if hasattr(self.look_up, "session"):
-            if self.look_up.session:
-                response = self.look_up.lookup(callsign)
-                debug_response = f"{response}"
-                logger.debug("The Response: %s\n", debug_response)
-                if response:
-                    theirgrid = response.get("grid", "")
-                    self.contact["GridSquare"] = theirgrid
-                    _theircountry = response.get("country", "")
-                    if self.station.get("GridSquare", ""):
-                        heading = bearing(self.station.get("GridSquare", ""), theirgrid)
-                        kilometers = distance(
-                            self.station.get("GridSquare", ""), theirgrid
-                        )
-                        self.heading_distance.setText(
-                            f"{theirgrid} Hdg {heading}° LP {reciprocol(heading)}° / "
-                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
-                        )
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
