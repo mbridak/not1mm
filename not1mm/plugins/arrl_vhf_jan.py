@@ -379,6 +379,7 @@ def cabrillo(self):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+
                 if themode in ("LSB", "USB", "AM"):
                     themode = "PH"
                 if themode in (
@@ -389,6 +390,8 @@ def cabrillo(self):
                     "FSK441",
                     "MSK144",
                     "JT65",
+                    "JT9",
+                    "Q65",
                 ):
                     themode = "DG"
                 freq = int(contact.get("Freq", "0")) / 1000
@@ -475,7 +478,7 @@ def ft8_handler(the_packet: dict):
     }
 
     """
-    logger.debug(f"{the_packet=}")
+    # print(f"\n{the_packet=}\n")
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
@@ -490,8 +493,10 @@ def ft8_handler(the_packet: dict):
             if len(their_grid) > 4:
                 their_grid = their_grid[:4]
         ALTEREGO.contact["NR"] = their_grid
-        # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
-        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        if the_packet.get("SUBMODE"):
+            ALTEREGO.contact["Mode"] = the_packet.get("SUBMODE", "ERR")
+        else:
+            ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
             float(the_packet.get("FREQ", "0.0")) * 1000, 2
@@ -499,7 +504,7 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.contact["Band"] = get_logged_band(
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
-        logger.debug(f"{ALTEREGO.contact=}")
+        # print(f"\n{ALTEREGO.contact=}\n")
         ALTEREGO.other_1.setText(my_grid)
         ALTEREGO.other_2.setText(their_grid)
         ALTEREGO.save_contact()

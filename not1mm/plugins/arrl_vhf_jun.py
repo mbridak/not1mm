@@ -357,6 +357,8 @@ def cabrillo(self):
                     "FSK441",
                     "MSK144",
                     "JT65",
+                    "JT9",
+                    "Q65",
                 ):
                     themode = "DG"
                 freq = int(contact.get("Freq", "0")) / 1000
@@ -459,7 +461,10 @@ def ft8_handler(the_packet: dict):
                 their_grid = their_grid[:4]
         ALTEREGO.contact["NR"] = their_grid
         # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
-        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        if the_packet.get("SUBMODE"):
+            ALTEREGO.contact["Mode"] = the_packet.get("SUBMODE", "ERR")
+        else:
+            ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
             float(the_packet.get("FREQ", "0.0")) * 1000, 2

@@ -1950,6 +1950,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "FSK441",
             "MSK144",
             "JT65",
+            "JT9",
+            "Q65"
         ):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2

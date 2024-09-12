@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-9-12] Fixed WSJT-X MFSK submodes FT4 Q65.
 - [24-9-11-2] Removed all the sketchy threaded call lookups. They're now implimented as a multicast service.
 - [24-9-11-1] Fixed high clock cycle usage from the FlDigiWatcher class.
 - [24-9-11] Fixed the HamQTH call lookups.

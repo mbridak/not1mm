@@ -138,6 +138,6 @@ class FT8Watcher:
                 if tag == ["EOR>"]:
                     break
                 self.datadict[tag[0]] = tag[1].split(">")[1].strip()
-
+        # print(f"\n{self.datadict}\n")
         if self.callback:
             self.callback(self.datadict)
