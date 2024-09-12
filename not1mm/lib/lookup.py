@@ -264,15 +264,14 @@ class HamQTH:
             logger.info("resultcode: %s", query_result.status_code)
 
             query_dict = xmltodict.parse(query_result.text)
-
             the_result["grid"] = (
                 query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
             )
             the_result["name"] = (
-                query_dict.get("HamQTH", {}).get("search", {}).get("name", False)
+                query_dict.get("HamQTH", {}).get("search", {}).get("adr_name", False)
             )
             the_result["nickname"] = (
-                query_dict.get("HamQTH", {}).get("search", {}).get("nickname", False)
+                query_dict.get("HamQTH", {}).get("search", {}).get("nick", False)
             )
             the_result["error_text"] = (
                 query_dict.get("HamQTH", {}).get("session", {}).get("error", False)
@@ -287,12 +286,12 @@ class HamQTH:
                     query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
                 )
                 the_result["name"] = (
-                    query_dict.get("HamQTH", {}).get("search", {}).get("name", False)
-                )
-                the_result["nickname"] = (
                     query_dict.get("HamQTH", {})
                     .get("search", {})
-                    .get("nickname", False)
+                    .get("adr_name", False)
+                )
+                the_result["nickname"] = (
+                    query_dict.get("HamQTH", {}).get("search", {}).get("nick", False)
                 )
                 the_result["error_text"] = (
                     query_dict.get("HamQTH", {}).get("session", {}).get("error", False)
