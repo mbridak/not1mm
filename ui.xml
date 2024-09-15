@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="welcome">
+    <property name="orientation">1</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">0</property>
+        <child>
+          <object class="GtkBox" id="bandmode">
+            <property name="orientation">1</property>
+            <style>
+              <class name="bandmode"/>
+            </style>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">SSB</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">160</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">80</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">40</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">20</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">15</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">10</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">1</property>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Callsign</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry">
+                        <style>
+                          <class name="callsignentry"/>
+                        </style>
+                        <property name="max-length">14</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">SNT</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry">
+                        <property name="max-length">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">RCV</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry">
+                        <property name="max-length">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Name</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry"></object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Comment</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry"></object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <child>
+                  <object class="GtkImage" id="vfoa">
+                    <property name="icon-name">media-record</property>
+                    <style>
+                      <class name="left10"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage" id="vfob">
+                    <property name="icon-name">media-record</property>
+                    <style>
+                      <class name="left10"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="run">
+                    <style>
+                      <class name="left10"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Run</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="sp">
+                    <style>
+                      <class name="left10"/>
+                    </style>
+                    <property name="group">run</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">S&amp;P</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="cwspeed">
+                    <style>
+                      <class name="cwspeed"/>
+                      <class name="left10"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <property name="homogeneous">true</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F1: Run CQ</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F2: HisCall</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F3: Run Exch</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F4: Run TU</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F5: MyCall</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F6: MyClass</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <property name="homogeneous">true</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F7: MySect</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F8: Roger</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F9: AGN</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F10: Call ?</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F11: Class ?</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">F12: Sect ?</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <property name="homogeneous">true</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Esc: STOP</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Wipe</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Log It</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Edit</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Mark</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Store</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">Stop It</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">QRZ</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">0</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Heading and Distance</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">0</property>
+        <property name="homogeneous">true</property>
+        <child>
+          <object class="GtkLabel" id="dxentity">
+            <style>
+              <class name="dxentity"/>
+            </style>
+            <property name="label">dxentity</property>
+            <property name="halign">start</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">mults</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="score">
+            <style>
+              <class name="score"/>
+            </style>
+            <property name="label">score</property>
+            <property name="halign">end</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -33,26 +33,28 @@ class LookupService(QDockWidget):
         super().__init__()
         self._udpwatch = None
 
-        self.settings = self.get_settings()
         self.look_up = None
-        if self.settings.get("useqrz"):
-            self.look_up = QRZlookup(
-                self.settings.get("lookupusername"),
-                self.settings.get("lookuppassword"),
-            )
+        self.settings = self.get_settings()
+        if self.settings:
 
-        if self.settings.get("usehamqth"):
-            self.look_up = HamQTH(
-                self.settings.get("lookupusername"),
-                self.settings.get("lookuppassword"),
-            )
+            if self.settings.get("useqrz"):
+                self.look_up = QRZlookup(
+                    self.settings.get("lookupusername"),
+                    self.settings.get("lookuppassword"),
+                )
 
-        self.multicast_interface = Multicast(
-            self.settings.get("multicast_group", "239.1.1.1"),
-            self.settings.get("multicast_port", 2239),
-            self.settings.get("interface_ip", "0.0.0.0"),
-        )
-        self.multicast_interface.ready_read_connect(self.watch_udp)
+            if self.settings.get("usehamqth"):
+                self.look_up = HamQTH(
+                    self.settings.get("lookupusername"),
+                    self.settings.get("lookuppassword"),
+                )
+
+            self.multicast_interface = Multicast(
+                self.settings.get("multicast_group", "239.1.1.1"),
+                self.settings.get("multicast_port", 2239),
+                self.settings.get("interface_ip", "0.0.0.0"),
+            )
+            self.multicast_interface.ready_read_connect(self.watch_udp)
 
     def get_settings(self) -> dict:
         """Get the settings."""
