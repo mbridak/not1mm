@@ -403,10 +403,10 @@ def cabrillo(self):
                 print(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
+                    # f"{str(contact.get('SNT', '')).ljust(3)} "
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
+                    # f"{str(contact.get('RCV', '')).ljust(3)} "
                     f"{str(contact.get('NR', '')).ljust(6)}",
                     end="\r\n",
                     file=file_descriptor,

@@ -198,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-15] Fixing an ARRL VHF Cabrillo format error.
 - [24-9-14] BugFix. Starting lookups fail init if no settings.
 - [24-9-12] Fixed WSJT-X MFSK submodes FT4 Q65.
 - [24-9-11-2] Removed all the sketchy threaded call lookups. They're now implimented as a multicast service.
