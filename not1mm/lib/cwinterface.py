@@ -50,35 +50,43 @@ class CW:
     def sendcw(self, texttosend):
         """sends cw to k1el"""
         logger.debug(f"{texttosend=} {self.servertype=}")
-        if self.servertype == 2:
-            self._sendcw_xmlrpc(texttosend)
-        if self.servertype == 1:
-            self._sendcw_udp(texttosend)
-        if self.servertype == 3 and self.cw is not None:
-            self._sendcwcat(texttosend)
+        if texttosend:
+            if self.servertype == 2:
+                self._sendcw_xmlrpc(texttosend)
+            if self.servertype == 1:
+                self._sendcw_udp(texttosend)
+            if self.servertype == 3 and self.cw is not None:
+                self._sendcwcat(texttosend)
 
     def _sendcw_xmlrpc(self, texttosend):
         """sends cw to xmlrpc"""
         logger.debug("xmlrpc: %s", texttosend)
-        with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
-            try:
-                proxy.k1elsendstring(texttosend)
-            except Error as exception:
-                logger.debug(
-                    "http://%s:%s, xmlrpc error: %s", self.host, self.port, exception
-                )
-            except ConnectionRefusedError:
-                logger.debug(
-                    "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
-                )
+        if texttosend:
+            with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
+                try:
+                    proxy.k1elsendstring(texttosend)
+                except Error as exception:
+                    logger.debug(
+                        "http://%s:%s, xmlrpc error: %s",
+                        self.host,
+                        self.port,
+                        exception,
+                    )
+                except ConnectionRefusedError:
+                    logger.debug(
+                        "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
+                    )
 
     def _sendcw_udp(self, texttosend):
         """send cw to udp port"""
         logger.debug("UDP: %s", texttosend)
-        server_address_port = (self.host, self.port)
-        # bufferSize          = 1024
-        udp_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        udp_client_socket.sendto(bytes(texttosend, "utf-8"), server_address_port)
+        if texttosend:
+            server_address_port = (self.host, self.port)
+            # bufferSize          = 1024
+            udp_client_socket = socket.socket(
+                family=socket.AF_INET, type=socket.SOCK_DGRAM
+            )
+            udp_client_socket.sendto(bytes(texttosend, "utf-8"), server_address_port)
 
     def _sendcwcat(self, texttosend):
         """..."""
