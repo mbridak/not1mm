@@ -185,9 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         self.setCorner(Qt.Corner.TopRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
-        self.setCorner(
-            Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea
-        )
+        self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
@@ -218,9 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
 
-        self.actionConfiguration_Settings.triggered.connect(
-            self.edit_configuration_settings
-        )
+        self.actionConfiguration_Settings.triggered.connect(self.edit_configuration_settings)
         self.actionStationSettings.triggered.connect(self.edit_station_settings)
 
         self.actionNew_Contest.triggered.connect(self.new_contest_dialog)
@@ -609,8 +605,7 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
             darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
             darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
+            darkPalette.setColor(QPalette.ColorRole.HighlightedText, QColorConstants.Black
             )
             darkPalette.setColor(
                 QPalette.ColorGroup.Disabled,
