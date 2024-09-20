@@ -66,7 +66,7 @@ columns = [
     "Snt",
     "Rcv",
     "SentNr",
-    "CK",
+    "ZN",
     "Exchange1",
     "PTS",
 ]
@@ -141,10 +141,10 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["ZN"] = self.other_2.text()
-    self.contact["NR"] = self.other_2.text()
+    self.contact["ZN"] = self.other_1.text()
+    self.contact["Exchange1"] = self.other_2.text()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
-
+    
 
 def predupe(self):
     """called after callsign entered"""
@@ -152,13 +152,17 @@ def predupe(self):
 
 def prefill(self):
     """Fill CQ Zone"""
-    if len(self.other_2.text()) == 0:
-        self.other_2.setText(str(self.contact.get("ZN", "")))
-    self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(str(self.contact.get("ZN", "")))
+    # self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
 def points(self):
     """Calc point"""
+    # QSO Points:	    1 point per QSO with same country
+    #                   2 points per QSO with same continent
+    #                   3 points per QSO with different continent
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
@@ -170,17 +174,21 @@ def points(self):
             entity = item[1].get("entity", "")
             continent = item[1].get("continent", "")
             if mycountry.upper() == entity.upper():
-                return 0
-            if mycontinent and continent == "NA":
-                return 2
-            if mycontinent == continent:
                 return 1
-            return 3
+            if mycontinent == continent:
+                return 2
+            else:
+                return 3
     return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
+
+    # Multipliers:	    W/VE Stations: Each US state/VE area once per band
+    #                   Each DXCC/WAE country once per band
+    #                   Each CQ zone once per band
+
     result1 = self.database.fetch_zn_band_count()
     result2 = self.database.fetch_country_band_count()
     if result1 and result2:
