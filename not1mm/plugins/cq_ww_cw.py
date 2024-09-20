@@ -1,5 +1,39 @@
 """CQ World Wide DX CW plugin"""
 
+# CQ Worldwide DX Contest, CW
+#  	Status:	Active
+#  	Geographic Focus:	Worldwide
+#  	Participation:	Worldwide
+#  	Awards:	Worldwide
+#  	Mode:	CW
+#  	Bands:	160, 80, 40, 20, 15, 10m
+#  	Classes:	Single Op All Band (QRP/Low/High)
+# Single Op Single Band (QRP/Low/High)
+# Single Op Assisted All Band (QRP/Low/High)
+# Single Op Assisted Single Band (QRP/Low/High)
+# Single Op Overlays: (Classic/Rookie/Youth)
+# Multi-Single (Low/High)
+# Multi-Two
+# Multi-Multi
+# Explorer
+#  	Max power:	HP: 1500 watts
+# LP: 100 watts
+# QRP: 5 watts
+#  	Exchange:	RST + CQ Zone No.
+#  	Work stations:	Once per band
+#  	QSO Points:	0 points per QSO with same country (counts as mult)
+# 1 point per QSO with different country same continent
+# 2 points per QSO with different country same continent (NA)
+# 3 points per QSO with different continent
+#  	Multipliers:	Each CQ zone once per band
+# Each country once per band
+#  	Score Calculation:	Total score = total QSO points x total mults
+#  	E-mail logs to:	(none)
+#  	Upload log at:	https://www.cqww.com/logcheck/
+#  	Mail logs to:	(none)
+#  	Find rules at:	https://www.cqww.com/rules.htm
+#  	Cabrillo name:	CQ-WW-CW
+
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime

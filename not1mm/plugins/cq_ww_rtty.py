@@ -1,38 +1,40 @@
-"""CQ World Wide DX SSB plugin"""
+"""CQ World Wide DX CW plugin"""
 
-# CQ Worldwide DX Contest, SSB
+# CQ Worldwide DX Contest, RTTY
 # Status:	        Active
 # Geographic Focus:	Worldwide
 # Participation:	Worldwide
 # Awards:	        Worldwide
-# Mode:	            SSB
-# Bands:	        160, 80, 40, 20, 15, 10m
-# Classes:	        Single Op All Band (QRP/Low/High)
-#                   Single Op Single Band (QRP/Low/High)
-#                   Single Op Assisted All Band (QRP/Low/High)
-#                   Single Op Assisted Single Band (QRP/Low/High)
+# Mode:	            RTTY
+# Bands:	        80, 40, 20, 15, 10m
+# Classes:	        Single Op All Band (High/Low/QRP)
+#                   Single Op Single Band (High/Low/QRP)
+#                   Single Op Assisted All Band (High/Low/QRP)
+#                   Single Op Assisted Single Band (High/Low/QRP)
 #                   Single Op Overlays: (Classic/Rookie/Youth)
-#                   Multi-Single (Low/High)
+#                   Multi-Single (High/Low)
 #                   Multi-Two
 #                   Multi-Multi
 #                   Explorer
 # Max power:	    HP: 1500 watts
 #                   LP: 100 watts
 #                   QRP: 5 watts
-# Exchange:	        RS + CQ Zone No.
+# Exchange:	        48 States/Canada: RST + CQ Zone + (state/VE area)
+#                   All Others:       RST + CQ Zone
 # Work stations:	Once per band
-# QSO Points:	    0 points per QSO with same country (counts as mult)
-#                   1 point per QSO with different country same continent
-#                   2 points per QSO with different country same continent (NA)
+# QSO Points:	    1 point per QSO with same country
+#                   2 points per QSO with same continent
 #                   3 points per QSO with different continent
-# Multipliers:	    Each CQ zone once per band
-#                   Each country once per band
+# Multipliers:	    W/VE Stations: Each US state/VE area once per band
+#                   Each DXCC/WAE country once per band
+#                   Each CQ zone once per band
 # Score Calculation:	Total score = total QSO points x total mults
 # E-mail logs to:	(none)
-# Upload log at:	https://www.cqww.com/logcheck/
-# Mail logs to:	    (none)
-# Find rules at:	https://www.cqww.com/rules.htm
-# Cabrillo name:	CQ-WW-SSB
+# Upload log at:	https://www.cqwwrtty.com/logcheck/
+# Mail logs to:	    (see rules)
+# Find rules at:	https://www.cqwwrtty.com/
+# Cabrillo name:	CQ-WW-RTTY
+
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -43,16 +45,19 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "CQ Zone No."
+ALTEREGO = None
 
-name = "CQ WW SSB"
-cabrillo_name = "CQ-WW-SSB"
-mode = "SSB"  # CW SSB BOTH RTTY
+EXCHANGE_HINT = "RST + CQ Zone + (state/VE area)"
+
+name = "CQ WW RTTY"
+cabrillo_name = "CQ-WW-RTTY"
+mode = "RTTY"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -61,7 +66,8 @@ columns = [
     "Snt",
     "Rcv",
     "SentNr",
-    "RcvNr",
+    "CK",
+    "Exchange1",
     "PTS",
 ]
 
@@ -83,13 +89,16 @@ def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
+    self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    label = self.field4.findChild(QtWidgets.QLabel)
+    label = self.field3.findChild(QtWidgets.QLabel)
     label.setText("CQ Zone")
-    self.field4.setAccessibleName("C Q Zone")
+    self.field3.setAccessibleName("C Q Zone")
+    label = self.field4.findChild(QtWidgets.QLabel)
+    label.setText("State/Prov")
+    self.field4.setAccessibleName("U S State or Providence")
 
 
 def reset_label(self):
@@ -202,7 +211,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "CQ-WW-SSB")
+    gen_adif(self, cabrillo_name, "CQ-WW-CW")
 
 
 def cabrillo(self):
@@ -380,3 +389,89 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+            'FREQ': '7.029500',
+            'CALL': 'DL2DSL',
+            'MODE': 'RTTY',
+            'NAME': 'BOB',
+            'QSO_DATE': '20240904',
+            'QSO_DATE_OFF': '20240904',
+            'TIME_OFF': '212825',
+            'TIME_ON': '212800',
+            'RST_RCVD': '599',
+            'RST_SENT': '599',
+            'BAND': '40M',
+            'COUNTRY': 'FED. REP. OF GERMANY',
+            'CQZ': '14',
+            'STX': '000',
+            'STX_STRING': '1D ORG',
+            'CLASS': '1D',
+            'ARRL_SECT': 'DX',
+            'TX_PWR': '0',
+            'OPERATOR': 'K6GTE',
+            'STATION_CALLSIGN': 'K6GTE',
+            'MY_GRIDSQUARE': 'DM13AT',
+            'MY_CITY': 'ANAHEIM, CA',
+            'MY_STATE': 'CA'
+        }
+
+    """
+    logger.debug(f"{the_packet=}")
+    # {
+    #   'FREQ': '7.040000', 'CALL': 'K5TUX', 'MODE': 'RTTY', 'QSO_DATE': '20240916', 'QSO_DATE_OFF': '20240916',
+    #   'TIME_OFF': '235422', 'TIME_ON': '235100', 'RST_RCVD': '599', 'RST_SENT': '599', 'STATE': 'MO', 'BAND': '40M',
+    #   'COUNTRY': 'USA', 'CQZ': '3', 'STX': '000', 'STX_STRING': 'DM13', 'TX_PWR': '0', 'OPERATOR': 'K6GTE',
+    #   'STATION_CALLSIGN': 'K6GTE', 'MY_GRIDSQUARE': 'DM13AT', 'MY_CITY': 'ANAHEIM, CA', 'MY_STATE': 'CA'
+    # }
+
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.contact["Exchange1"] = f"{the_packet.get("STATE", "")}".strip()
+        # ALTEREGO.contact["Exchange1"] = the_packet.get("STATE", "")
+        ALTEREGO.contact["CK"] = the_packet.get("CQZ", "")
+        # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+        # ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
+        # ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
+        ALTEREGO.save_contact()
