@@ -1897,7 +1897,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.score.setText(str(score))
             self.contest.reset_label(self)
             if self.contest.name != "ICWC Medium Speed Test":
-                if self.current_mode == "CW":
+                if self.current_mode in ("CW", "RTTY"):
                     self.sent.setText("599")
                     self.receive.setText("599")
                 else:
@@ -3099,8 +3099,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ("RTTY", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                self.sent.setText("59")
-                self.receive.setText("59")
+                self.sent.setText("599")
+                self.receive.setText("599")
 
     def get_opon(self) -> None:
         """
