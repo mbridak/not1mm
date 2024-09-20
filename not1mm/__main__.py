@@ -2650,7 +2650,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     fname = json_data.get("result", {}).get("fname", "")
                     name = json_data.get("result", {}).get("name", "")
                     grid = json_data.get("result", {}).get("grid", "")
-                    error_text = json_data.get("result", {}).get("error_text", "")
+                    # error_text = json_data.get("result", {}).get("error_text", "")
                     nickname = json_data.get("result", {}).get("nickname", "")
 
                     if self.contest:
