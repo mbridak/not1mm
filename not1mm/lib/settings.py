@@ -79,9 +79,7 @@ class Settings(QtWidgets.QDialog):
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
         self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
         self.send_n1mm_radio.setChecked(bool(self.preference.get("send_n1mm_radio")))
-        self.send_n1mm_contact.setChecked(
-            bool(self.preference.get("send_n1mm_contact"))
-        )
+        self.send_n1mm_contact.setChecked(bool(self.preference.get("send_n1mm_contact")))
         self.send_n1mm_lookup.setChecked(bool(self.preference.get("send_n1mm_lookup")))
         self.send_n1mm_score.setChecked(bool(self.preference.get("send_n1mm_score")))
 
@@ -107,9 +105,7 @@ class Settings(QtWidgets.QDialog):
         self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
         self.activate_4m.setChecked(bool("4" in self.preference.get("bands", [])))
         self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
-        self.activate_1dot25.setChecked(
-            bool("1.25" in self.preference.get("bands", []))
-        )
+        self.activate_1dot25.setChecked(bool("1.25" in self.preference.get("bands", [])))
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
         self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))

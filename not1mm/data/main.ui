@@ -99,7 +99,7 @@
            <item>
             <widget class="QLabel" name="cw_band_160">
              <property name="accessibleName">
-              <string>160 c w</string>
+              <string>160</string>
              </property>
              <property name="text">
               <string>160</string>
@@ -159,7 +159,7 @@
              </property>
             </widget>
            </item>
-		   <item>
+           <item>
             <widget class="QLabel" name="cw_band_17">
              <property name="text">
               <string>17</string>
