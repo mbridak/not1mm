@@ -120,6 +120,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="cw_band_60">
+             <property name="text">
+              <string>60</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="cw_band_40">
              <property name="text">
               <string>40</string>
@@ -129,7 +139,18 @@
              </property>
             </widget>
            </item>
-           <item>
+		   <item>
+            <widget class="QLabel" name="cw_band_30">
+             <property name="text">
+              <string>30</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
+		   <item>
             <widget class="QLabel" name="cw_band_20">
              <property name="text">
               <string>20</string>
@@ -139,7 +160,16 @@
              </property>
             </widget>
            </item>
-           <item>
+            <widget class="QLabel" name="cw_band_17">
+             <property name="text">
+              <string>17</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="cw_band_15">
              <property name="text">
               <string>15</string>
@@ -150,6 +180,17 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="cw_band_12">
+             <property name="text">
+              <string>12</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
+		   <item>
             <widget class="QLabel" name="cw_band_10">
              <property name="text">
               <string>10</string>
@@ -170,6 +211,17 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="cw_band_4">
+             <property name="text">
+              <string>4</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
+		   <item>
             <widget class="QLabel" name="cw_band_2">
              <property name="text">
               <string>2</string>
@@ -293,6 +345,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="ssb_band_60">
+             <property name="text">
+              <string>60</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="ssb_band_40">
              <property name="text">
               <string>40</string>
@@ -313,6 +375,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="ssb_band_17">
+             <property name="text">
+              <string>17</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="ssb_band_15">
              <property name="text">
               <string>15</string>
@@ -323,6 +395,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="ssb_band_12">
+             <property name="text">
+              <string>12</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="ssb_band_10">
              <property name="text">
               <string>10</string>
@@ -343,6 +425,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="ssb_band_4">
+             <property name="text">
+              <string>4</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="ssb_band_2">
              <property name="text">
               <string>2</string>
@@ -466,6 +558,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="rtty_band_60">
+             <property name="text">
+              <string>60</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="rtty_band_40">
              <property name="text">
               <string>40</string>
@@ -476,6 +578,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="rtty_band_30">
+             <property name="text">
+              <string>30</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="rtty_band_20">
              <property name="text">
               <string>20</string>
@@ -486,6 +598,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="rtty_band_17">
+             <property name="text">
+              <string>17</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="rtty_band_15">
              <property name="text">
               <string>15</string>
@@ -496,6 +618,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="rtty_band_12">
+             <property name="text">
+              <string>12</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="rtty_band_10">
              <property name="text">
               <string>10</string>
@@ -516,6 +648,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="rtty_band_4">
+             <property name="text">
+              <string>4</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+		   <item>
             <widget class="QLabel" name="rtty_band_2">
              <property name="text">
               <string>2</string>

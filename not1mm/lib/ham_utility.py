@@ -99,6 +99,8 @@ def getband(freq: str) -> str:
             return "10"
         if 54000000 > frequency > 50000000:
             return "6"
+        if 70500000 > frequency > 70000000:
+            return "4"
         if 148000000 > frequency > 144000000:
             return "2"
         if 225000000 > frequency > 222000000:
@@ -143,6 +145,8 @@ def get_logged_band(freq: str) -> str:
             return "28"
         if 54000000 > frequency > 50000000:
             return "50"
+        if 70500000 > frequency > 70000000:
+            return "70"
         if 148000000 > frequency > 144000000:
             return "144"
         if 225000000 > frequency > 222000000:

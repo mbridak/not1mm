@@ -94,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
-        "bands": ["160", "80", "40", "20", "15", "10"],
+        "bands": ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"],
         "current_database": "ham.db",
         "contest": "",
         "multicast_group": "239.1.1.1",
@@ -307,19 +307,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
             80, "CW"
         )
+        self.cw_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            60, "CW"
+        )
         self.cw_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
             40, "CW"
+        )
+        self.cw_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            30, "CW"
         )
         self.cw_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
             20, "CW"
         )
+        self.cw_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            17, "CW"
+        )
         self.cw_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
             15, "CW"
+        )
+        self.cw_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            12, "CW"
         )
         self.cw_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
             10, "CW"
         )
         self.cw_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "CW")
+        self.cw_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(4, "CW")
         self.cw_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "CW")
         self.cw_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
             222, "CW"
@@ -340,20 +353,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ssb_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
             80, "SSB"
         )
+        self.ssb_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            60, "SSB"
+        )
         self.ssb_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
             40, "SSB"
         )
         self.ssb_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
             20, "SSB"
         )
+        self.ssb_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            17, "SSB"
+        )
         self.ssb_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
             15, "SSB"
+        )
+        self.ssb_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            12, "SSB"
         )
         self.ssb_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
             10, "SSB"
         )
         self.ssb_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
             6, "SSB"
+        )
+        self.ssb_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            4, "SSB"
         )
         self.ssb_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
             2, "SSB"
@@ -377,20 +402,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rtty_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
             80, "RTTY"
         )
+        self.rtty_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            60, "RTTY"
+        )
         self.rtty_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
             40, "RTTY"
+        )
+        self.rtty_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            30, "RTTY"
         )
         self.rtty_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
             20, "RTTY"
         )
+        self.rtty_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            17, "RTTY"
+        )
         self.rtty_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
             15, "RTTY"
+        )
+        self.rtty_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            12, "RTTY"
         )
         self.rtty_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
             10, "RTTY"
         )
         self.rtty_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
             6, "RTTY"
+        )
+        self.rtty_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            4, "RTTY"
         )
         self.rtty_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
             2, "RTTY"
@@ -411,11 +451,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.band_indicators_cw = {
             "160": self.cw_band_160,
             "80": self.cw_band_80,
+            "60": self.cw_band_60,
             "40": self.cw_band_40,
+            "30": self.cw_band_30,
             "20": self.cw_band_20,
+            "17": self.cw_band_17,
             "15": self.cw_band_15,
+            "12": self.cw_band_12,
             "10": self.cw_band_10,
             "6": self.cw_band_6,
+            "4": self.cw_band_4,
             "2": self.cw_band_2,
             "1.25": self.cw_band_125,
             "70cm": self.cw_band_70cm,
@@ -426,11 +471,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.band_indicators_ssb = {
             "160": self.ssb_band_160,
             "80": self.ssb_band_80,
+            "60": self.ssb_band_60,
             "40": self.ssb_band_40,
             "20": self.ssb_band_20,
+            "17": self.ssb_band_17,
             "15": self.ssb_band_15,
+            "12": self.ssb_band_12,
             "10": self.ssb_band_10,
             "6": self.ssb_band_6,
+            "4": self.ssb_band_4,
             "2": self.ssb_band_2,
             "1.25": self.ssb_band_125,
             "70cm": self.ssb_band_70cm,
@@ -441,11 +490,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.band_indicators_rtty = {
             "160": self.rtty_band_160,
             "80": self.rtty_band_80,
+            "60": self.rtty_band_60,
             "40": self.rtty_band_40,
+            "30": self.rtty_band_30,
             "20": self.rtty_band_20,
+            "17": self.rtty_band_17,
             "15": self.rtty_band_15,
+            "12": self.rtty_band_12,
             "10": self.rtty_band_10,
             "6": self.rtty_band_6,
+            "4": self.rtty_band_4,
             "2": self.rtty_band_2,
             "1.25": self.rtty_band_125,
             "70cm": self.rtty_band_70cm,
@@ -2548,7 +2602,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # If bands list is empty fill it with HF.
         if self.pref.get("bands", []) == []:
-            self.pref["bands"] = ["160", "80", "40", "20", "15", "10"]
+            self.pref["bands"] = ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"]
 
         # Hide all the bands and then show only the wanted bands.
         for _indicator in [
