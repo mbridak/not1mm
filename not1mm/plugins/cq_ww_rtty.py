@@ -191,8 +191,10 @@ def show_mults(self):
 
     result1 = self.database.fetch_zn_band_count()
     result2 = self.database.fetch_country_band_count()
-    if result1 and result2:
-        return int(result1.get("zb_count", 0)) + int(result2.get("cb_count", 0))
+    res3_query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as spc_count from dxlog where ContestNR = {self.database.current_contest};"
+    result3 = self.database.exec_sql(res3_query)
+    if result1 and result2 and result3:
+        return int(result1.get("zb_count", 0)) + int(result2.get("cb_count", 0)) + int(result3.get("spc_count", 0))
     return 0
 
 
