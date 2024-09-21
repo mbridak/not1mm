@@ -611,18 +611,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         """
 
-        datadict = {}
-        splitdata = result.upper().strip().split("<")
-        for data in splitdata:
-            if data:
-                tag = data.split(":")
-                if tag == ["EOR>"]:
-                    break
-                datadict[tag[0]] = tag[1].split(">")[1].strip()
-        logger.debug(f"{datadict=}")
-        if hasattr(self.contest, "ft8_handler"):
-            self.contest.set_self(self)
-            self.contest.ft8_handler(datadict)
+        if result and result != "NONE":
+            datadict = {}
+            splitdata = result.upper().strip().split("<")
+            for data in splitdata:
+                if data:
+                    tag = data.split(":")
+                    if tag == ["EOR>"]:
+                        break
+                    datadict[tag[0]] = tag[1].split(">")[1].strip()
+            logger.debug(f"{datadict=}")
+            if hasattr(self.contest, "ft8_handler"):
+                self.contest.set_self(self)
+                self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
         """Forces a darkmode palette."""
@@ -1951,7 +1952,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "MSK144",
             "JT65",
             "JT9",
-            "Q65"
+            "Q65",
         ):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
