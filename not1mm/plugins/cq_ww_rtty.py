@@ -82,7 +82,7 @@ def init_contest(self):
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
-    self.next_field = self.other_2
+    self.next_field = self.other_1
 
 
 def interface(self):
@@ -112,10 +112,12 @@ def set_tab_next(self):
         self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+            QtWidgets.QLineEdit
+        ),
         self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
     }
 
@@ -131,7 +133,7 @@ def set_tab_prev(self):
         self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
     }
@@ -154,7 +156,6 @@ def prefill(self):
     """Fill CQ Zone"""
     if len(self.other_1.text()) == 0:
         self.other_1.setText(str(self.contact.get("ZN", "")))
-    # self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
 def points(self):
