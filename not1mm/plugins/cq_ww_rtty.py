@@ -221,7 +221,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "CQ-WW-CW")
+    gen_adif(self, cabrillo_name, "CQ-WW-RTTY")
 
 
 def cabrillo(self):

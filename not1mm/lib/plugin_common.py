@@ -189,6 +189,15 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 end="\r\n",
                                 file=file_descriptor,
                             )
+                    # ------------CQ-WW-DX-RTTY---------
+                    elif cabrillo_name == "CQ-WW-RTTY":
+                        rcv = f"{str(contact.get('ZN', '')).zfill(2)} {contact.get('Exchange1', 'DX')}"
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
                     elif rcvnr != "0":
                         print(
                             f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",
