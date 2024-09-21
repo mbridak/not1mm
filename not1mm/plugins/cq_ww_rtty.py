@@ -456,16 +456,13 @@ def ft8_handler(the_packet: dict):
     #   'COUNTRY': 'USA', 'CQZ': '3', 'STX': '000', 'STX_STRING': 'DM13', 'TX_PWR': '0', 'OPERATOR': 'K6GTE',
     #   'STATION_CALLSIGN': 'K6GTE', 'MY_GRIDSQUARE': 'DM13AT', 'MY_CITY': 'ANAHEIM, CA', 'MY_STATE': 'CA'
     # }
-
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
         ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
         ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
         ALTEREGO.contact["Exchange1"] = f"{the_packet.get("STATE", "")}".strip()
-        # ALTEREGO.contact["Exchange1"] = the_packet.get("STATE", "")
-        ALTEREGO.contact["CK"] = the_packet.get("CQZ", "")
-        # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        ALTEREGO.contact["ZN"] = the_packet.get("CQZ", "")
         ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
@@ -475,6 +472,6 @@ def ft8_handler(the_packet: dict):
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
         logger.debug(f"{ALTEREGO.contact=}")
-        # ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
-        # ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
+        ALTEREGO.other_1.setText(str(the_packet.get("CQZ", "ERR")))
+        ALTEREGO.other_2.setText(f"{the_packet.get("STATE", "")}".strip())
         ALTEREGO.save_contact()
