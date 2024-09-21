@@ -268,11 +268,6 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
-            # print(
-            #     f"ARRL-SECTION: {self.pref.get('section', '')}",
-            #     end="\r\n",
-            #     file=file_descriptor,
-            # )
             print(
                 f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory','')}",
                 end="\r\n",
@@ -309,11 +304,6 @@ def cabrillo(self):
                 end="\r\n",
                 file=file_descriptor,
             )
-            # print(
-            #     f"CATEGORY: {None}",
-            #     end="\r\n",
-            #     file=file_descriptor,
-            # )
             print(
                 f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory','')}",
                 end="\r\n",
@@ -374,6 +364,8 @@ def cabrillo(self):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
+                if themode.strip() == "RTTY":
+                    themode = "RY"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
@@ -385,7 +377,8 @@ def cabrillo(self):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('ZN', '')).ljust(6)}",
+                    f"{str(contact.get('ZN', '')).zfill(2)}",
+                    f"{str(contact.get('Exchange1', '')).ljust(2)}",
                     end="\r\n",
                     file=file_descriptor,
                 )
