@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-9-22] Merged in changes for CQ WW RTTY
 - [24-9-15] Fixing an ARRL VHF Cabrillo format error.
 - [24-9-14] BugFix. Starting lookups fail init if no settings.
 - [24-9-12] Fixed WSJT-X MFSK submodes FT4 Q65.
