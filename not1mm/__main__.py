@@ -66,6 +66,7 @@ from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_watcher import FlDigiWatcher
+from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
@@ -172,6 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
     bandmap_window = None
     vfo_window = None
     lookup_service = None
+    fldigi_util = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -610,19 +612,19 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         """
-
-        datadict = {}
-        splitdata = result.upper().strip().split("<")
-        for data in splitdata:
-            if data:
-                tag = data.split(":")
-                if tag == ["EOR>"]:
-                    break
-                datadict[tag[0]] = tag[1].split(">")[1].strip()
-        logger.debug(f"{datadict=}")
-        if hasattr(self.contest, "ft8_handler"):
-            self.contest.set_self(self)
-            self.contest.ft8_handler(datadict)
+        if result and result != "NONE":
+            datadict = {}
+            splitdata = result.upper().strip().split("<")
+            for data in splitdata:
+                if data:
+                    tag = data.split(":")
+                    if tag == ["EOR>"]:
+                        break
+                    datadict[tag[0]] = tag[1].split(">")[1].strip()
+            logger.debug(f"{datadict=}")
+            if hasattr(self.contest, "ft8_handler"):
+                self.contest.set_self(self)
+                self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
         """Forces a darkmode palette."""
@@ -2339,6 +2341,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
+        if self.radio_state.get("mode") in ["RTTY"]:
+            self.fldigi_util.send_string(self.process_macro(function_key.toolTip()))
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
@@ -2479,6 +2483,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         except (RuntimeError, AttributeError):
             ...
+
+        self.fldigi_util = FlDigi_Comm()
 
         if self.pref.get("useflrig", False):
             logger.debug(
@@ -2988,6 +2994,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
+            self.read_cw_macros()
             return
         if mode == "SSB":
             self.setmode("SSB")
@@ -3101,6 +3108,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_mode = "RTTY"
                 self.sent.setText("599")
                 self.receive.setText("599")
+                self.read_cw_macros()
 
     def get_opon(self) -> None:
         """
@@ -3262,6 +3270,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
+        elif self.radio_state.get("mode") == "RTTY":
+            macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
@@ -3279,6 +3289,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.critical(
                 f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
             )
+        self.read_cw_macros()
 
     def read_cw_macros(self) -> None:
         """
@@ -3289,6 +3300,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
+        elif self.radio_state.get("mode") == "RTTY":
+            macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
 
