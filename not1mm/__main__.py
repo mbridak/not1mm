@@ -66,6 +66,7 @@ from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_watcher import FlDigiWatcher
+from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
@@ -172,6 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
     bandmap_window = None
     vfo_window = None
     lookup_service = None
+    fldigi_util = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1898,7 +1900,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.score.setText(str(score))
             self.contest.reset_label(self)
             if self.contest.name != "ICWC Medium Speed Test":
-                if self.current_mode == "CW":
+                if self.current_mode in ("CW", "RTTY"):
                     self.sent.setText("599")
                     self.receive.setText("599")
                 else:
@@ -2340,6 +2342,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
+        if self.radio_state.get("mode") in ["RTTY"]:
+            self.fldigi_util.send_string(self.process_macro(function_key.toolTip()))
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
@@ -2480,6 +2484,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         except (RuntimeError, AttributeError):
             ...
+
+        self.fldigi_util = FlDigi_Comm()
 
         if self.pref.get("useflrig", False):
             logger.debug(
@@ -2651,7 +2657,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     fname = json_data.get("result", {}).get("fname", "")
                     name = json_data.get("result", {}).get("name", "")
                     grid = json_data.get("result", {}).get("grid", "")
-                    error_text = json_data.get("result", {}).get("error_text", "")
+                    # error_text = json_data.get("result", {}).get("error_text", "")
                     nickname = json_data.get("result", {}).get("nickname", "")
 
                     if self.contest:
@@ -2989,6 +2995,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
+            self.read_cw_macros()
             return
         if mode == "SSB":
             self.setmode("SSB")
@@ -3100,8 +3107,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ("RTTY", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                self.sent.setText("59")
-                self.receive.setText("59")
+                self.sent.setText("599")
+                self.receive.setText("599")
+                self.read_cw_macros()
 
     def get_opon(self) -> None:
         """
@@ -3263,6 +3271,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
+        elif self.radio_state.get("mode") == "RTTY":
+            macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
@@ -3280,6 +3290,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.critical(
                 f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
             )
+        self.read_cw_macros()
 
     def read_cw_macros(self) -> None:
         """
@@ -3290,6 +3301,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
+        elif self.radio_state.get("mode") == "RTTY":
+            macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
 

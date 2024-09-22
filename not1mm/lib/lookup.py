@@ -188,7 +188,10 @@ class QRZlookup:
             payload = {"s": self.session, "callsign": call}
             try:
                 query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
-            except requests.exceptions.Timeout as exception:
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ) as exception:
                 self.error = True
                 return {"error": exception}
             baseroot = xmltodict.parse(query_result.text)
@@ -228,8 +231,8 @@ class HamQTH:
         self.session = False
         payload = {"u": self.username, "p": self.password}
         try:
-            query_result = requests.get(self.url, params=payload, timeout=10.0)
-        except requests.exceptions.Timeout:
+            query_result = requests.get(self.url, params=payload, timeout=2.0)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
             self.error = True
             return
         logger.info("resultcode: %s", query_result.status_code)
@@ -258,7 +261,7 @@ class HamQTH:
             payload = {"id": self.session, "callsign": call, "prg": "not1mm"}
             try:
                 query_result = requests.get(self.url, params=payload, timeout=10.0)
-            except requests.exceptions.Timeout:
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 self.error = True
                 return the_result
             logger.info("resultcode: %s", query_result.status_code)
