@@ -1,0 +1,24 @@
+S|F1|MyCall|{MYCALL}
+S|F2|Exch|{EXCH}
+S|F3|My NR|{SENTNR}
+S|F4|empty| 
+S|F5|AGN|agn
+S|F6|?|?
+S|F7|Roger|rr
+S|F8|73|73
+S|F9|..|ee
+S|F10|Call?|cl?
+S|F11|NR??|NR?
+S|F12|TU|tu
+R|F1|Run CQ|cq test {MYCALL} {MYCALL} test
+R|F2|HisCall|{HISCALL}
+R|F3|Run Exch|{HISCALL} {SNT} {SENTNR}
+R|F4|Run TU|tu {MYCALL} qrz
+R|F5|MyCall|{MYCALL}
+R|F6|MyNR|{SENTNR}
+R|F7|?|?
+R|F8|Roger|rr
+R|F9|AGN|agn
+R|F10|Call?|cl?
+R|F11|NR?|NR?
+R|F12|Ack Call?|{HISCALL} rr tu
