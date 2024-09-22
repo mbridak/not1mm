@@ -612,6 +612,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         """
+
         if result and result != "NONE":
             datadict = {}
             splitdata = result.upper().strip().split("<")
