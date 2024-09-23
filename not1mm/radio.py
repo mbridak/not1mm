@@ -34,6 +34,7 @@ class Radio(QObject):
     interface = None
     host = None
     port = None
+    modes = ""
 
     def __init__(self, interface: str, host: str, port: int) -> None:
         super().__init__()
@@ -45,6 +46,7 @@ class Radio(QObject):
     def run(self):
         try:
             self.cat = CAT(self.interface, self.host, self.port)
+            self.modes = self.cat.get_mode_list()
         except ConnectionResetError:
             ...
         while not self.time_to_quit:
@@ -112,6 +114,9 @@ class Radio(QObject):
                 "online": self.online,
             }
         )
+
+    def get_modes(self):
+        return self.modes
 
     def ptt_on(self):
         if self.cat:
