@@ -2342,7 +2342,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
-        if self.radio_state.get("mode") in ["RTTY"]:
+        if self.radio_state.get("mode") in [
+            "RTTY",
+            "USB-D",
+            "LSB-D",
+            "PKTLSB",
+            "PKTUSB",
+            "DIGI-U",
+            "DIGI-L",
+        ]:
             self.fldigi_util.send_string(self.process_macro(function_key.toolTip()))
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
@@ -3209,6 +3217,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_band_indicator(band)
+
+        if self.rig_control:
+            if self.rig_control.online:
+                self.rig_control.get_modes()
 
         if self.radio_state.get("mode") != mode:
             info_dirty = True
