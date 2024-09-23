@@ -1,5 +1,5 @@
 S|F1|MyCall|{MYCALL}
-S|F2|Exch|{EXCH}
+S|F2|Exch|{SNT} {EXCH}
 S|F3|My NR|{SENTNR}
 S|F4|empty| 
 S|F5|AGN|agn
@@ -12,7 +12,7 @@ S|F11|NR??|NR?
 S|F12|TU|tu
 R|F1|Run CQ|cq test {MYCALL} {MYCALL} test
 R|F2|HisCall|{HISCALL}
-R|F3|Run Exch|{HISCALL} {SNT} {SENTNR}
+R|F3|Run Exch|{HISCALL} {SNT} {EXCH}
 R|F4|Run TU|tu {MYCALL} qrz
 R|F5|MyCall|{MYCALL}
 R|F6|MyNR|{SENTNR}
