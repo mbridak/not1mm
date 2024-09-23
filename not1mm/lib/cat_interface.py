@@ -90,7 +90,7 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.5)
+            self.rigctrlsocket.settimeout(0.1)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
@@ -103,6 +103,18 @@ class CAT:
         """reinitialise rigctl"""
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
+
+    def __get_serial_string(self):
+        """Gets any serial data waiting"""
+        dump = ""
+        thegrab = ""
+        try:
+            while True:
+                thegrab += self.rigctrlsocket.recv(1024).decode()
+                dump += thegrab
+        except socket.error:
+            ...
+        return dump
 
     def sendcw(self, texttosend):
         """..."""
@@ -119,7 +131,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
-                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
                 self.online = False
@@ -216,7 +228,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(b"f\n")
-                return self.rigctrlsocket.recv(1024).decode().strip()
+                return self.__get_serial_string().strip()
             except socket.error as exception:
                 self.online = False
                 logger.debug("getvfo_rigctld: %s", f"{exception}")
@@ -237,6 +249,8 @@ class CAT:
 
     def __getmode_flrig(self) -> str:
         """Returns mode via flrig"""
+        # QMX ['CW-U', 'CW-L', 'DIGI-U', 'DIGI-L']
+        # 7300 ['LSB', 'USB', 'AM', 'FM', 'CW', 'CW-R', 'RTTY', 'RTTY-R', 'LSB-D', 'USB-D', 'AM-D', 'FM-D']
         try:
             self.online = True
             return self.server.rig.get_mode()
@@ -253,11 +267,13 @@ class CAT:
 
     def __getmode_rigctld(self) -> str:
         """Returns mode vai rigctld"""
+        # QMX 'AM CW USB LSB RTTY FM CWR RTTYR'
+        # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
         if self.rigctrlsocket:
             try:
                 self.online = True
                 self.rigctrlsocket.send(b"m\n")
-                mode = self.rigctrlsocket.recv(1024).decode()
+                mode = self.__get_serial_string()
                 mode = mode.strip().split()[0]
                 # logger.debug("%s", mode)
                 return mode
@@ -302,7 +318,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(b"m\n")
-                mode = self.rigctrlsocket.recv(1024).decode()
+                mode = self.__get_serial_string()
                 mode = mode.strip().split()[1]
                 # logger.debug("%s", mode)
                 return mode
@@ -344,7 +360,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(b"l RFPOWER\n")
-                return int(float(self.rigctrlsocket.recv(1024).decode().strip()) * 100)
+                return int(float(self.__get_serial_string().strip()) * 100)
             except socket.error as exception:
                 self.online = False
                 logger.debug("getpower_rigctld: %s", f"{exception}")
@@ -381,7 +397,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(b"t\n")
-                ptt = self.rigctrlsocket.recv(1024).decode()
+                ptt = self.__get_serial_string()
                 logger.debug("%s", ptt)
                 ptt = ptt.strip()
                 return ptt
@@ -390,6 +406,49 @@ class CAT:
                 logger.debug("%s", f"{exception}")
                 self.rigctrlsocket = None
         return "0"
+
+    def get_mode_list(self):
+        "Get a list of modes supported by the radio"
+        if self.interface == "flrig":
+            return self.__get_mode_list_flrig()
+        if self.interface == "rigctld":
+            return self.__get_mode_list_rigctld()
+        return False
+
+    def __get_mode_list_flrig(self):
+        """Returns list of modes supported by the radio"""
+        try:
+            self.online = True
+            return self.server.rig.get_modes()
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
+        ) as exception:
+            self.online = False
+            logger.debug("%s", f"{exception}")
+        return ""
+
+    def __get_mode_list_rigctld(self):
+        """Returns list of modes supported by the radio"""
+        # Mode list: AM CW USB LSB RTTY FM CWR RTTYR
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(b"1\n")
+                dump = self.__get_serial_string()
+                for line in dump.splitlines():
+                    if "Mode list:" in line:
+                        modes = line.split(":")[1].strip()
+                        return modes
+                return ""
+            except socket.error as exception:
+                self.online = False
+                logger.debug("%s", f"{exception}")
+                self.rigctrlsocket = None
+        return ""
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
@@ -424,7 +483,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(bytes(f"F {freq}\n", "utf-8"))
-                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
                 self.online = False
@@ -464,7 +523,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(bytes(f"M {mode} 0\n", "utf-8"))
-                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
                 self.online = False
@@ -503,7 +562,7 @@ class CAT:
             try:
                 self.online = True
                 self.rigctrlsocket.send(rig_cmd)
-                _ = self.rigctrlsocket.recv(1024).decode().strip()
+                _ = self.__get_serial_string()
             except socket.error:
                 self.online = False
                 self.rigctrlsocket = None
@@ -532,7 +591,7 @@ class CAT:
         try:
             self.online = True
             self.rigctrlsocket.send(rig_cmd)
-            _ = self.rigctrlsocket.recv(1024).decode().strip()
+            _ = self.__get_serial_string()
         except socket.error:
             self.online = False
             self.rigctrlsocket = None
@@ -568,7 +627,7 @@ class CAT:
         try:
             self.online = True
             self.rigctrlsocket.send(rig_cmd)
-            _ = self.rigctrlsocket.recv(1024).decode().strip()
+            _ = self.__get_serial_string()
         except socket.error:
             self.online = False
             self.rigctrlsocket = None
