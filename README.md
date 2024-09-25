@@ -199,6 +199,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-24] Correct crash in CWT.
 - [24-9-23] Improved serial interface to rigctld. Send RTTY macros to fldigi when radio modes are RTTY, USB-D, LSB-D, PKTLSB, PKTUSB, DIGI-U, DIGI-L.
 - [24-9-22] Merged in changes for CQ WW RTTY
 - [24-9-15] Fixing an ARRL VHF Cabrillo format error.
