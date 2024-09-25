@@ -2661,32 +2661,34 @@ class MainWindow(QtWidgets.QMainWindow):
                     json_data.get("cmd", "") == "LOOKUP_RESPONSE"
                     and json_data.get("station", "") == platform.node()
                 ):
+                    if json_data.get("result", None) is not None:
+                        fname = json_data.get("result", {}).get("fname", "")
+                        name = json_data.get("result", {}).get("name", "")
+                        grid = json_data.get("result", {}).get("grid", "")
+                        # error_text = json_data.get("result", {}).get("error_text", "")
+                        nickname = json_data.get("result", {}).get("nickname", "")
 
-                    fname = json_data.get("result", {}).get("fname", "")
-                    name = json_data.get("result", {}).get("name", "")
-                    grid = json_data.get("result", {}).get("grid", "")
-                    # error_text = json_data.get("result", {}).get("error_text", "")
-                    nickname = json_data.get("result", {}).get("nickname", "")
+                        if self.contest:
+                            if "General Logging" in self.contest.name:
+                                if nickname:
+                                    self.other_1.setText(nickname)
+                                elif fname:
+                                    self.other_1.setText(fname)
+                                elif name:
+                                    self.other_1.setText(name)
 
-                    if self.contest:
-                        if "General Logging" in self.contest.name:
-                            if nickname:
-                                self.other_1.setText(nickname)
-                            elif fname:
-                                self.other_1.setText(fname)
-                            elif name:
-                                self.other_1.setText(name)
-
-                    if grid:
-                        self.contact["GridSquare"] = grid
-                    # _theircountry = response.get("country", "")
-                    if self.station.get("GridSquare", ""):
-                        heading = bearing(self.station.get("GridSquare", ""), grid)
-                        kilometers = distance(self.station.get("GridSquare", ""), grid)
-                        self.heading_distance.setText(
-                            f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
-                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
-                        )
+                        if grid:
+                            self.contact["GridSquare"] = grid
+                        # _theircountry = response.get("country", "")
+                        if self.station.get("GridSquare", ""):
+                            heading = bearing(self.station.get("GridSquare", ""), grid)
+                            kilometers = distance(
+                                self.station.get("GridSquare", ""), grid
+                            )
+                            self.heading_distance.setText(
+                                f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                            )
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
