@@ -90,30 +90,39 @@ class Radio(QObject):
             self.cat.sendcw(texttosend)
 
     def set_vfo(self, vfo):
+        self.vfoa = vfo
+
         if self.cat:
             self.cat.set_vfo(vfo)
-        self.vfoa = vfo
-        self.poll_callback.emit(
-            {
-                "vfoa": self.vfoa,
-                "mode": self.mode,
-                "bw": self.bw,
-                "online": self.online,
-            }
-        )
+        try:
+            self.poll_callback.emit(
+                {
+                    "vfoa": self.vfoa,
+                    "mode": self.mode,
+                    "bw": self.bw,
+                    "online": self.online,
+                }
+            )
+        except RuntimeError:
+            ...
 
     def set_mode(self, mode):
+        self.mode = mode
+
         if self.cat:
             self.cat.set_mode(mode)
-        self.mode = mode
-        self.poll_callback.emit(
-            {
-                "vfoa": self.vfoa,
-                "mode": self.mode,
-                "bw": self.bw,
-                "online": self.online,
-            }
-        )
+
+        try:
+            self.poll_callback.emit(
+                {
+                    "vfoa": self.vfoa,
+                    "mode": self.mode,
+                    "bw": self.bw,
+                    "online": self.online,
+                }
+            )
+        except RuntimeError:
+            ...
 
     def get_modes(self):
         return self.modes
