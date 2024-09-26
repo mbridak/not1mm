@@ -79,9 +79,7 @@ class Settings(QtWidgets.QDialog):
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
         self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
         self.send_n1mm_radio.setChecked(bool(self.preference.get("send_n1mm_radio")))
-        self.send_n1mm_contact.setChecked(
-            bool(self.preference.get("send_n1mm_contact"))
-        )
+        self.send_n1mm_contact.setChecked(bool(self.preference.get("send_n1mm_contact")))
         self.send_n1mm_lookup.setChecked(bool(self.preference.get("send_n1mm_lookup")))
         self.send_n1mm_score.setChecked(bool(self.preference.get("send_n1mm_score")))
 
@@ -96,15 +94,18 @@ class Settings(QtWidgets.QDialog):
             self.cluster_mode.setCurrentIndex(index)
         self.activate_160m.setChecked(bool("160" in self.preference.get("bands", [])))
         self.activate_80m.setChecked(bool("80" in self.preference.get("bands", [])))
+        self.activate_60m.setChecked(bool("60" in self.preference.get("bands", [])))
         self.activate_40m.setChecked(bool("40" in self.preference.get("bands", [])))
+        self.activate_30m.setChecked(bool("30" in self.preference.get("bands", [])))
         self.activate_20m.setChecked(bool("20" in self.preference.get("bands", [])))
+        self.activate_17m.setChecked(bool("17" in self.preference.get("bands", [])))
         self.activate_15m.setChecked(bool("15" in self.preference.get("bands", [])))
+        self.activate_12m.setChecked(bool("12" in self.preference.get("bands", [])))
         self.activate_10m.setChecked(bool("10" in self.preference.get("bands", [])))
         self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
+        self.activate_4m.setChecked(bool("4" in self.preference.get("bands", [])))
         self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
-        self.activate_1dot25.setChecked(
-            bool("1.25" in self.preference.get("bands", []))
-        )
+        self.activate_1dot25.setChecked(bool("1.25" in self.preference.get("bands", [])))
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
         self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))
@@ -166,16 +167,26 @@ class Settings(QtWidgets.QDialog):
             bandlist.append("160")
         if self.activate_80m.isChecked():
             bandlist.append("80")
+        if self.activate_60m.isChecked():
+            bandlist.append("60")
         if self.activate_40m.isChecked():
             bandlist.append("40")
+        if self.activate_30m.isChecked():
+            bandlist.append("30")
         if self.activate_20m.isChecked():
             bandlist.append("20")
+        if self.activate_17m.isChecked():
+            bandlist.append("17")
         if self.activate_15m.isChecked():
             bandlist.append("15")
+        if self.activate_12m.isChecked():
+            bandlist.append("12")
         if self.activate_10m.isChecked():
             bandlist.append("10")
         if self.activate_6m.isChecked():
             bandlist.append("6")
+        if self.activate_4m.isChecked():
+            bandlist.append("4")
         if self.activate_2m.isChecked():
             bandlist.append("2")
         if self.activate_1dot25.isChecked():

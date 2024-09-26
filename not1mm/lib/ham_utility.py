@@ -99,6 +99,8 @@ def getband(freq: str) -> str:
             return "10"
         if 54000000 > frequency > 50000000:
             return "6"
+        if 70500000 > frequency > 70000000:
+            return "4"
         if 148000000 > frequency > 144000000:
             return "2"
         if 225000000 > frequency > 222000000:
@@ -143,6 +145,8 @@ def get_logged_band(freq: str) -> str:
             return "28"
         if 54000000 > frequency > 50000000:
             return "50"
+        if 70500000 > frequency > 70000000:
+            return "70"
         if 148000000 > frequency > 144000000:
             return "144"
         if 225000000 > frequency > 222000000:
@@ -249,6 +253,7 @@ def fakefreq(band: str, mode: str) -> str:
         "12": ["24911", "24920", "24970"],
         "10": ["28065", "28070", "28400"],
         "6": ["50030", "50300", "50125"],
+        "4": ["70030", "70300", "70125"],
         "2": ["144030", "144144", "144250"],
         "222": ["222100", "222070", "222100"],
         "432": ["432070", "432200", "432100"],
