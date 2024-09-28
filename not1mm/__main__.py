@@ -3034,13 +3034,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ("CW", "CW-U", "CW-L", "CWR"):
             self.setmode("CW")
             self.radio_state["mode"] = "CW"
-            if self.rig_control:
-                if self.rig_control.online:
-                    self.rig_control.set_mode("CW")
-                    if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                        if self.rig_control.interface == "flrig":
-                            self.cwspeed_spinbox_changed()
-                            self.rig_control.cat.set_flrig_cw_send(True)
+            if self.rig_control and self.rig_control.online:
+                self.rig_control.set_mode("CW")
+                if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                    if self.rig_control.interface == "flrig":
+                        self.cwspeed_spinbox_changed()
+                        self.rig_control.cat.set_flrig_cw_send(True)
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
@@ -3049,11 +3048,10 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if mode == "RTTY":
             self.setmode("RTTY")
-            if self.rig_control:
-                if self.rig_control.online:
-                    self.rig_control.set_mode("RTTY")
-                else:
-                    self.radio_state["mode"] = "RTTY"
+            if self.rig_control and self.rig_control.online:
+                self.rig_control.set_mode("RTTY")
+            else:
+                self.radio_state["mode"] = "RTTY"
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
@@ -3273,9 +3271,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_band_indicator(band)
 
-        if self.rig_control:
-            if self.rig_control.online:
-                self.rig_control.get_modes()
+        if self.rig_control and self.rig_control.online:
+            self.rig_control.get_modes()
 
         if self.radio_state.get("mode") != mode:
             info_dirty = True
@@ -3289,7 +3286,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.setmode(mode)
         if mode == "LSB" or mode == "USB":
             self.setmode("SSB")
-        if mode == "RTTY":
+        if mode in (
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+            "DIGI-U",
+            "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
+        ):
             self.setmode("RTTY")
 
         if info_dirty:
