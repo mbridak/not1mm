@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-9-28] Fixed crash with CAT None, Display tweek. Refactored a couple conditionals.
 - [24-9-25-1] Added WARC and 4M bands.
 - [24-9-25] Fix QRZ lookup crash on non-existant call.
 - [24-9-24] Correct crash in CWT.
