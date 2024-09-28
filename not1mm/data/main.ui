@@ -778,6 +778,12 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="sent">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
                    <family>JetBrains Mono ExtraLight</family>
@@ -813,6 +819,12 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="receive">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
                    <family>JetBrains Mono ExtraLight</family>
