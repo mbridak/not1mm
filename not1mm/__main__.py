@@ -3347,7 +3347,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
-        elif self.radio_state.get("mode") == "RTTY":
+        elif self.radio_state.get("mode") in (
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+            "DIGI-U",
+            "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
+        ):
             macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
@@ -3377,7 +3389,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.radio_state.get("mode") == "CW":
             macro_file = "cwmacros.txt"
-        elif self.radio_state.get("mode") == "RTTY":
+        elif self.radio_state.get("mode") in (
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+            "DIGI-U",
+            "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
+        ):
             macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
