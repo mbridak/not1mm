@@ -165,32 +165,21 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Summer Phone
 - 10 10 Winter Phone
 - ARRL 10M
-- ARRL DX CW
-- ARRL DX SSB
+- ARRL DX CW, SSB
 - ARRL Field Day
-- ARRL Sweepstakes CW
-- ARRL Sweepstakes SSB
-- ARRL VHF January
-- ARRL VHF June
-- ARRL VHF September
-- CQ 160 CW
-- CQ 160 SSB
-- CQ WPX CW
-- CQ WPX SSB
-- CQ World Wide CW
-- CQ World Wide RTTY
-- CQ World Wide SSB
+- ARRL Sweepstakes CW, SSB
+- ARRL VHF January, June, September
+- CQ 160 CW, SSB
+- CQ WPX CW, SSB
+- CQ World Wide CW, RTTY, SSB
 - CWOps CWT
 - Helvetia
-- IARU Fieldday R1 CW
-- IARU Fieldday R1 SSB
+- IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
-- Japan International DX CW
-- Japan International DX SSB
+- Japan International DX CW, SSB
 - K1USN Slow Speed Test
-- NAQP CW
-- NAQP SSB
+- NAQP CW, SSB
 - Phone Weekly Test
 - RAC Canada Day
 - Stew Perry Topband
