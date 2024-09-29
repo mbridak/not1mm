@@ -1,5 +1,7 @@
 # Changelog
 
+- [24-9-28-2] Fix Cabrillo and ADIF export for cqwwrtty.
+- [24-9-28-1] Add RTTY-R, LSB-D, USB-D, AM-D, FM-D, DIGI-U, DIGI-L, RTTYR, PKTLSB, PKTUSB to list of modes that will load in the RTTY/DG Macros.
 - [24-9-28] Fixed crash with CAT None, Display tweek. Refactored a couple conditionals.
 - [24-9-25-1] Added WARC and 4M bands.
 - [24-9-25] Fix QRZ lookup crash on non-existant call.
