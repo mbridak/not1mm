@@ -365,7 +365,19 @@ def cabrillo(self):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
-                if themode.strip() == "RTTY":
+                if themode.strip() in (
+                        "RTTY",
+                        "RTTY-R",
+                        "LSB-D",
+                        "USB-D",
+                        "AM-D",
+                        "FM-D",
+                        "DIGI-U",
+                        "DIGI-L",
+                        "RTTYR",
+                        "PKTLSB",
+                        "PKTUSB",
+                    ):
                     themode = "RY"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 

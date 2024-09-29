@@ -38,6 +38,8 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 themode = contact.get("Mode", "")
                 if themode == "CWR":
                     themode = "CW"
+                if cabrillo_name in ("CQ-WW-RTTY", "WEEKLY-RTTY"):
+                    themode = "RTTY"
                 frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
                 band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
                 sentrst = contact.get("SNT", "")
