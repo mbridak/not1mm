@@ -188,6 +188,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-9-29] Corrected Cabrillo generation for CQWWRTTY.
 - [24-9-28-2] Fix Cabrillo and ADIF export for cqwwrtty.
 - [24-9-28-1] Add RTTY-R, LSB-D, USB-D, AM-D, FM-D, DIGI-U, DIGI-L, RTTYR, PKTLSB, PKTUSB to list of modes that will load in the RTTY/DG Macros.
 - [24-9-28] Fixed crash with CAT None, Display tweek. Refactored a couple conditionals.

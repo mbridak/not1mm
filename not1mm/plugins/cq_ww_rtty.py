@@ -379,6 +379,9 @@ def cabrillo(self):
                         "PKTUSB",
                     ):
                     themode = "RY"
+                exchange1 = contact.get('Exchange1', '')
+                if exchange1 == '':
+                    exchange1 = "DX"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
@@ -391,7 +394,7 @@ def cabrillo(self):
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
                     f"{str(contact.get('ZN', '')).zfill(2)}",
-                    f"{str(contact.get('Exchange1', '')).ljust(2)}",
+                    f"{str(exchange1).ljust(2)}",
                     end="\r\n",
                     file=file_descriptor,
                 )
