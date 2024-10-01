@@ -98,6 +98,9 @@ class Radio(QObject):
             "FM-D",
             "DIGI-U",
             "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
         ]
         if the_mode in datamodes:
             self.last_data_mode = the_mode
