@@ -175,10 +175,10 @@ class MainWindow(QtWidgets.QMainWindow):
     lookup_service = None
     fldigi_util = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, splash):
+        super().__init__()
         logger.info("MainWindow: __init__")
-
+        self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
             "Right": Qt.DockWidgetArea.RightDockWidgetArea,
@@ -519,6 +519,8 @@ class MainWindow(QtWidgets.QMainWindow):
             QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
         )
 
+        self.show_splash_msg("Loading CTY file.")
+
         try:
             with open(
                 fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
@@ -527,11 +529,15 @@ class MainWindow(QtWidgets.QMainWindow):
         except (IOError, JSONDecodeError, TypeError):
             logging.CRITICAL("There was an error parsing the BigCity file.")
 
+        self.show_splash_msg("Starting LookUp Service.")
+
         self.lookup_service = LookupService()
         self.lookup_service.hide()
 
+        self.show_splash_msg("Reading preferences.")
         self.readpreferences()
 
+        self.show_splash_msg("Starting voice thread.")
         self.voice_process = Voice()
         self.voice_process.moveToThread(self.voice_thread)
         self.voice_thread.started.connect(self.voice_process.run)
@@ -560,7 +566,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.make_op_dir()
 
         self.clearinputs()
+        self.show_splash_msg("Loading contest.")
         self.load_contest()
+        self.show_splash_msg("Reading macros.")
         self.read_cw_macros()
 
         # Featureset for wayland
@@ -569,6 +577,7 @@ class MainWindow(QtWidgets.QMainWindow):
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
 
+        self.show_splash_msg("Starting FlDigi watcher.")
         self.fldigi_watcher = FlDigiWatcher()
         self.fldigi_watcher.moveToThread(self.fldigi_thread)
         self.fldigi_thread.started.connect(self.fldigi_watcher.run)
@@ -576,6 +585,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fldigi_watcher.poll_callback.connect(self.fldigi_qso)
         self.fldigi_thread.start()
 
+        self.show_splash_msg("Setting up LogWindow.")
         self.log_window = LogWindow()
         self.log_window.setObjectName("log-window")
         if os.environ.get("WAYLAND_DISPLAY"):
@@ -583,6 +593,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
         self.log_window.hide()
 
+        self.show_splash_msg("Setting up BandMapWindow.")
         self.bandmap_window = BandMapWindow()
         self.bandmap_window.setObjectName("bandmap-window")
         if os.environ.get("WAYLAND_DISPLAY"):
@@ -590,6 +601,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window)
         self.bandmap_window.hide()
 
+        self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow()
         self.check_window.setObjectName("check-window")
         if os.environ.get("WAYLAND_DISPLAY"):
@@ -597,6 +609,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
 
+        self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
         if os.environ.get("WAYLAND_DISPLAY"):
@@ -604,6 +617,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
 
+        self.show_splash_msg("Restoring window states.")
         self.settings = QSettings("K6GTE", "not1mm")
         if self.settings.value("windowState") is not None:
             self.restoreState(self.settings.value("windowState"))
@@ -634,6 +648,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def show_splash_msg(self, msg: str) -> None:
+        """Show text message in the splash window."""
+        self.splash.showMessage(
+            msg,
+            alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
+            color=QColor(255, 255, 0),
+        )
+        QCoreApplication.processEvents()
 
     def fldigi_qso(self, result: str):
         """
@@ -1457,29 +1480,25 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[Esc]\t\tClears the input fields of any text.\n"
-            "[CTRL-Esc]\t\tStops cwdaemon from sending Morse.\n"
-            "[PgUp]\t\tIncreases the cw sending speed.\n"
-            "[PgDown]\t\tDecreases the cw sending speed.\n"
-            "[Arrow-Up]\t\tJump to the next spot above the current\n"
-            "\t\tVFO cursor in the bandmap window (CAT\n"
-            "\t\tRequired).\n"
-            "[Arrow-Down] \tJump to the next spot below the current\n"
-            "\t\tVFO cursor in the bandmap window (CAT\n"
-            "\t\tRequired).\n"
-            "[TAB]\t\tMove cursor to the right one field.\n"
-            "[Shift-Tab]\t\tMove cursor left One field.\n"
-            "[SPACE]\t\tWhen in the callsign field, will move the\n"
-            "\t\tinput to the first field needed for the\n"
-            "\t\texchange.\n"
-            "[Enter]\t\tSubmits the fields to the log.\n"
-            "[F1-F12]\t\tSend (CW/RTTY/Voice) macros.\n"
-            "[CTRL-G]\t\tTune to a spot matching partial text in\n"
-            "\t\tthe callsign entry field (CAT Required).\n"
-            "[CTRL-M]\t\tMark Callsign to the bandmap window to\n"
-            "\t\twork later.\n"
-            "[CTRL-S]\t\tSpot Callsign to the cluster.\n"
-            "[CTRL-SHIFT-K]\tOpen CW text input field.\n"
+            "[Esc]\tClears the input fields of any text.\n"
+            "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
+            "[PgUp]\tIncreases the cw sending speed.\n"
+            "[PgDown]\tDecreases the cw sending speed.\n"
+            "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
+            "\tin the bandmap window (CAT Required).\n"
+            "[Arrow-Down] Jump to the next spot below the current\n"
+            "\tVFO cursor in the bandmap window (CAT Required).\n"
+            "[TAB]\tMove cursor to the right one field.\n"
+            "[Shift-Tab]\tMove cursor left One field.\n"
+            "[SPACE]\tWhen in the callsign field, will move the input to the\n"
+            "\tfirst field needed for the exchange.\n"
+            "[Enter]\tSubmits the fields to the log.\n"
+            "[F1-F12]\tSend (CW or Voice) macros.\n"
+            "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
+            "\tentry field (CAT Required).\n"
+            "[CTRL-M]\tMark Callsign to the bandmap window to work later."
+            "[CTRL-S]\tSpot Callsign to the cluster.\n"
+            "[CTRL-SHIFT-K] Open CW text input field.\n"
         )
 
     def filepicker(self, action: str) -> str:
@@ -3605,7 +3624,7 @@ app = QtWidgets.QApplication(sys.argv)
 pixmap = QPixmap(f"{os.fspath(fsutils.APP_DATA_PATH)}/splash.png")
 splash = QSplashScreen(pixmap)
 splash.show()
-app.processEvents()
+# app.processEvents()
 splash.showMessage(
     "Starting Up",
     alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
@@ -3615,10 +3634,10 @@ QCoreApplication.processEvents()
 
 families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
 logger.info(f"font families {families}")
-window = MainWindow()
+window = MainWindow(splash)
 window.callsign.setFocus()
-window.show()
 splash.finish(window)
+window.show()
 
 if __name__ == "__main__":
     run()
