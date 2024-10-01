@@ -263,16 +263,18 @@ source .profile
 
 ```bash
 sudo dnf upgrade --refresh
-sudo dnf install python3-pip portaudio
-pip install not1mm
+sudo dnf install python3-pip pipx portaudio
+pipx install not1mm
+pipx ensurepath
 ```
 
 #### Fedora 40
 
 ```bash
 sudo dnf upgrade --refresh
-sudo dnf install python3-pip python3-pyqt6 portaudio
-pip install not1mm
+sudo dnf install python3-pip pipx python3-pyqt6 portaudio
+pipx install not1mm
+pipx ensurepath
 ```
 
 </details>
@@ -567,7 +569,12 @@ appear. Those without will not.
 
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
-**Digital modes only working for ARRL Field Day, ARRL VHF, and Weekly RTTY**
+**Digital modes only working for:**
+
+- ARRL Field Day
+- ARRL VHF
+- Weekly RTTY
+- CQ WW DX RTTY
 
 not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
 No setup is needed to be done on not1mm's side. That's good because I'm lazy.
@@ -575,6 +582,10 @@ No setup is needed to be done on not1mm's side. That's good because I'm lazy.
 not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
 way. It just keeps asking what was the last QSO and compares it to the previous response.
 If it's different, it's new. I've added the Weekly RTTY Test so this can be tested.
+
+The F1-F12 function keys be sent to fldigi via XMLRPC. Fldigi will be placed into TX
+mode, the message will be sent and a ^r will be tacked onto the end to place it back into
+RX mode.
 
 Unlike WSJT, fldigi needs to be setup for this to work. The XMLRPC interface needs to be
 active. And in fldigi's config dialog go to CONTESTS -> General -> CONTEST and select
