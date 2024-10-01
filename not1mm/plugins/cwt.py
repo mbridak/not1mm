@@ -150,7 +150,7 @@ def predupe(self):
         logger.debug("%s", f"{result}")
         if result:
             value = result.get("NR", "").upper()
-            if len(value.split(" ")) == 2:
+            if len(value.split()) == 2:
                 parsed_name, suffix = value.split()
                 self.other_1.setText(str(parsed_name))
                 self.other_2.setText(str(suffix))
