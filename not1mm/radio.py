@@ -35,6 +35,7 @@ class Radio(QObject):
     host = None
     port = None
     modes = ""
+    last_data_mode = "RTTY"
 
     def __init__(self, interface: str, host: str, port: int) -> None:
         super().__init__()
@@ -65,6 +66,7 @@ class Radio(QObject):
                 mode = self.cat.get_mode()
                 if mode:
                     self.mode = mode
+                    self.store_last_data_mode(mode)
                     self.online = True
                 bw = self.cat.get_bw()
                 if bw:
@@ -82,6 +84,26 @@ class Radio(QObject):
                 except QEventLoop:
                     ...
             QThread.msleep(100)
+
+    def store_last_data_mode(self, the_mode: str = ""):
+        """if the last mode is a data mode, save it."""
+        # QMX ['CW-U', 'CW-L', 'DIGI-U', 'DIGI-L']
+        # 7300 ['LSB', 'USB', 'AM', 'FM', 'CW', 'CW-R', 'RTTY', 'RTTY-R', 'LSB-D', 'USB-D', 'AM-D', 'FM-D']
+        datamodes = [
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+            "DIGI-U",
+            "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
+        ]
+        if the_mode in datamodes:
+            self.last_data_mode = the_mode
 
     def sendcw(self, texttosend):
         """..."""
@@ -125,7 +147,12 @@ class Radio(QObject):
             ...
 
     def get_modes(self):
+        """get list of modes"""
         return self.modes
+
+    def get_last_data_mode(self):
+        """gets last used data mode."""
+        return self.last_data_mode
 
     def ptt_on(self):
         if self.cat:

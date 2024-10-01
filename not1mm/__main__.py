@@ -1306,6 +1306,15 @@ class MainWindow(QtWidgets.QMainWindow):
                             band = getband(str(self.radio_state.get("vfoa", "0.0")))
                             self.set_band_indicator(band)
                             self.set_window_title()
+                        if self.contest_settings.get("ModeCategory", "") == "RTTY":
+                            self.setmode("RTTY")
+                            self.radio_state["mode"] = "RTTY"
+                            if self.rig_control:
+                                if self.rig_control.online:
+                                    self.rig_control.set_mode("RTTY")
+                            band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                            self.set_band_indicator(band)
+                            self.set_window_title()
                         if self.contest_settings.get("ModeCategory", "") == "SSB":
                             self.setmode("SSB")
                             if int(self.radio_state.get("vfoa", 0)) > 10000000:
