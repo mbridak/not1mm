@@ -676,7 +676,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [Shift-Tab] | Move cursor left One field. |
 | [SPACE] | When in the callsign field, will move the input to the first field needed for the exchange. |
 | [Enter] | Submits the fields to the log. |
-| [F1-F12] | Send (CW or Voice) macros. |
+| [F1-F12] | Send (CW/RTTY/Voice) macros. |
 | [CTRL-S] | Spot Callsign to the cluster. |
 | [CTRL-M] | Mark Callsign to the bandmap window to work later. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
