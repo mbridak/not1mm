@@ -188,29 +188,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [24-9-29] Corrected Cabrillo generation for CQWWRTTY.
-- [24-9-28-2] Fix Cabrillo and ADIF export for cqwwrtty.
-- [24-9-28-1] Add RTTY-R, LSB-D, USB-D, AM-D, FM-D, DIGI-U, DIGI-L, RTTYR, PKTLSB, PKTUSB to list of modes that will load in the RTTY/DG Macros.
-- [24-9-28] Fixed crash with CAT None, Display tweek. Refactored a couple conditionals.
-- [24-9-25-1] Added WARC and 4M bands.
-- [24-9-25] Fix QRZ lookup crash on non-existant call.
-- [24-9-24] Correct crash in CWT.
-- [24-9-23] Improved serial interface to rigctld. Send RTTY macros to fldigi when radio modes are RTTY, USB-D, LSB-D, PKTLSB, PKTUSB, DIGI-U, DIGI-L.
-- [24-9-22] Merged in changes for CQ WW RTTY
-- [24-9-15] Fixing an ARRL VHF Cabrillo format error.
-- [24-9-14] BugFix. Starting lookups fail init if no settings.
-- [24-9-12] Fixed WSJT-X MFSK submodes FT4 Q65.
-- [24-9-11-2] Removed all the sketchy threaded call lookups. They're now implimented as a multicast service.
-- [24-9-11-1] Fixed high clock cycle usage from the FlDigiWatcher class.
-- [24-9-11] Fixed the HamQTH call lookups.
-- [24-9-10-2] Removed mapping of FM to PH in the ARRL VHF Cabrillo logs
-- [24-9-10-1] ft8_watcher now used default WSJT-X Multicast address and port.
-- [24-9-10] Add WSJT FT8/4 and fldigi support to ARRL VHF.
-- [24-9-9] Add IARU R1 Fieldday CW and SSB.
-- [24-9-8] Correct n1mm contact packet info.
-- [24-9-6] Added the Weekly RTTY.
-- [24-9-5] Added FlDigi support for Field Day.
-- [24-9-3] Added WSJT-X FT8 mode contacts to ARRL Field Day.
+- [24-10-1] Merged PR removing leading zeros from serial numbers. Merged PR correcting the parsing of lookups for previous name and state in the CWT.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
