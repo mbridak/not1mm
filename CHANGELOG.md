@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-2] Add WPX RTTY.
 - [24-10-1] Merged PR removing leading zeros from serial numbers. Merged PR correcting the parsing of lookups for previous name and state in the CWT.
 - [24-9-29] Corrected Cabrillo generation for CQWWRTTY.
 - [24-9-28-2] Fix Cabrillo and ADIF export for cqwwrtty.
