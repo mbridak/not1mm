@@ -170,7 +170,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- CQ WPX CW, SSB
+- CQ WPX CW, RTTY, SSB
 - CQ World Wide CW, RTTY, SSB
 - CWOps CWT
 - Helvetia

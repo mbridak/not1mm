@@ -237,7 +237,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "CQ-WPX-CW")
+    gen_adif(self, cabrillo_name, "CQ-WPX-RTTY")
 
 
 def cabrillo(self):
@@ -485,12 +485,7 @@ def ft8_handler(the_packet: dict):
 
     """
     logger.debug(f"{the_packet=}")
-    # {
-    #   'FREQ': '7.040000', 'CALL': 'K5TUX', 'MODE': 'RTTY', 'QSO_DATE': '20240916', 'QSO_DATE_OFF': '20240916',
-    #   'TIME_OFF': '235422', 'TIME_ON': '235100', 'RST_RCVD': '599', 'RST_SENT': '599', 'STATE': 'MO', 'BAND': '40M',
-    #   'COUNTRY': 'USA', 'CQZ': '3', 'STX': '000', 'STX_STRING': 'DM13', 'TX_PWR': '0', 'OPERATOR': 'K6GTE',
-    #   'STATION_CALLSIGN': 'K6GTE', 'MY_GRIDSQUARE': 'DM13AT', 'MY_CITY': 'ANAHEIM, CA', 'MY_STATE': 'CA'
-    # }
+
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
@@ -507,6 +502,6 @@ def ft8_handler(the_packet: dict):
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
         logger.debug(f"{ALTEREGO.contact=}")
-        ALTEREGO.other_1.setText(str(the_packet.get("CQZ", "ERR")))
-        ALTEREGO.other_2.setText(f"{the_packet.get("STATE", "")}".strip())
+        ALTEREGO.other_1.setText(f"{the_packet.get("STX", "")}".strip())
+        ALTEREGO.other_2.setText(f"{the_packet.get("SRX", "")}".strip())
         ALTEREGO.save_contact()
