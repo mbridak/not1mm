@@ -170,7 +170,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- CQ WPX CW, SSB
+- CQ WPX CW, RTTY, SSB
 - CQ World Wide CW, RTTY, SSB
 - CWOps CWT
 - Helvetia
@@ -604,7 +604,7 @@ field.
 
 To edit the macros, choose `File` > `Edit Macros`. This will open your systems
 registered text editor with current macros loaded. When your done just save the
-file and close the editor. The file loaded to edit, CW or SSB, will be
+file and close the editor. The file loaded to edit, CW, SSB or RTTY, will be
 determined by your current operating mode.
 
 After editing and saving the macro file. You can force the logger to reload the
