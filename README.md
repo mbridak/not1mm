@@ -307,10 +307,6 @@ pipx ensurepath
 </details>
 <br>
 
-You can now open a new terminal and type not1mm. On it's first run, it may or
-may not install a lovely non AI generated icon, which you can later click on to
-launch the application.
-
 ### Python, PyPI, pip and pipx
 
 This software is a Python package hosted on PyPI, and installable with the pip
@@ -576,6 +572,7 @@ appear. Those without will not.
 - ARRL VHF
 - Weekly RTTY
 - CQ WW DX RTTY
+- CQ WPX RTTY
 
 not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
 No setup is needed to be done on not1mm's side. That's good because I'm lazy.
