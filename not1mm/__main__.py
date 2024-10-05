@@ -1084,6 +1084,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["station"] = platform.node()
             self.multicast_interface.send_as_json(cmd)
             self.clearinputs()
+            self.open_contest()
 
     def new_contest(self) -> None:
         """Create new contest in existing database."""
