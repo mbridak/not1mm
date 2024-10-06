@@ -17,52 +17,110 @@ WAIT_TIME = 10
 
 CONTEST_DATA = {
     "General Logging": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "dan", "other_2": "cool dude"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "dan", "other_2": "cool dude"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "mike", "other_2": "cool dude"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "dan",
+            "other_2": "cool dude",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "dan",
+            "other_2": "cool dude",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "mike",
+            "other_2": "cool dude",
+        },
     ],
     "10 10 FALL CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "dan 1234 ia"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "dan 1234 ia"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "mike 1234 ca"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "dan 1234 ia",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "dan 1234 ia",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "mike 1234 ca",
+        },
     ],
     "10 10 SPRING CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "dan 1234 ia"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "dan 1234 ia"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "mike 1234 ca"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "dan 1234 ia",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "dan 1234 ia",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_2": "mike 1234 ca",
+        },
     ],
     "10 10 SUMMER PHONE": [
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "dan 1234 ia"},
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "dan 1234 ia"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "mike 1234 ca"},
-
     ],
     "10 10 WINTER PHONE": [
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "dan 1234 ia"},
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "dan 1234 ia"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "mike 1234 ca"},
-
     ],
     "ARRL 10M": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "ia"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "ia"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "2345", "other_2": "ca"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "ia",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "ia",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2345",
+            "other_2": "ca",
+        },
     ],
     "ARRL DX CW": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "100W"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "100W"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "100W"},
-
     ],
     "ARRL DX SSB": [
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "100W"},
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "100W"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "100W"},
-
     ],
     "ARRL FIELD DAY": [
         {"callsign": "KF0NRV", "other_1": "1", "other_2": "a"},
@@ -70,88 +128,213 @@ CONTEST_DATA = {
         {"callsign": "K6GTE", "other_1": "1", "other_2": "a"},
     ],
     "ARRL SS CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "27"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "42"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "100"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "27",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "42",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "100",
+        },
     ],
     "ARRL SS PHONE": [
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "1", "other_2": "27"},
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "2", "other_2": "42"},
-        {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_1": "3", "other_2": "100"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "1",
+            "other_2": "27",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "2",
+            "other_2": "42",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "3",
+            "other_2": "100",
+        },
     ],
     "ARRL VHF JAN": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "2345", "other_2": "AA11bb"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2345",
+            "other_2": "AA11bb",
+        },
     ],
     "ARRL VHF JUN": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "2345", "other_2": "AA11bb"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2345",
+            "other_2": "AA11bb",
+        },
     ],
     "ARRL VHF SEP": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "2345", "other_2": "AA11bb"},
-
-    ],
-    "ARRL VHF SEP": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1234", "other_2": "BB22AA"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "2345", "other_2": "AA11bb"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1234",
+            "other_2": "BB22AA",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2345",
+            "other_2": "AA11bb",
+        },
     ],
     "CANADA DAY": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "ia"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "ia"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "ca"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "ia",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "ia",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "ca",
+        },
     ],
     "CQ 160 CW": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "ia"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "ia"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "ca"},
-
     ],
     "CQ 160 SSB": [
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "ia"},
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "ia"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "ca"},
-
     ],
     "CQ WPX CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "3"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "1"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "3",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "1",
+        },
     ],
     "CQ WPX SSB": [
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "1", "other_2": "3"},
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_1": "3", "other_2": "1"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "1",
+            "other_2": "3",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "3",
+            "other_2": "1",
+        },
     ],
     "CQ WW CW": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "4"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "4"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "3"},
-
     ],
     "CQ WW RTTY": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "4"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "4"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "3"},
-
     ],
     "CQ WW SSB": [
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "4"},
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "4"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "3"},
-
     ],
     "CWT": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
@@ -159,10 +342,27 @@ CONTEST_DATA = {
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
     ],
     "HELVETIA": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "3"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "1"},
-
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "3",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "1",
+        },
     ],
     "ICWC MST": [
         {"callsign": "KF0NRV", "sent": "1", "other_1": "dan", "other_2": "1"},
@@ -170,30 +370,101 @@ CONTEST_DATA = {
         {"callsign": "K6GTE", "sent": "3", "other_1": "mike", "other_2": "3"},
     ],
     "IARU FIELDDAY R1 CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "1"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "3"},
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "1",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "3",
+        },
     ],
     "IARU FIELDDAY R1 SSB": [
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "1", "other_2": "1"},
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_1": "3", "other_2": "3"},
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "1",
+            "other_2": "1",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "3",
+            "other_2": "3",
+        },
     ],
     "IARU HF": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "7"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_2": "7"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_2": "6"},
-
     ],
     "JIDX CW": [
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "1"},
-        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "3"},
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "1",
+            "other_2": "1",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "3",
+            "other_2": "3",
+        },
     ],
     "JIDX PH": [
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "1", "other_2": "1"},
-        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "2", "other_2": "2"},
-        {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_1": "3", "other_2": "3"},
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "1",
+            "other_2": "1",
+        },
+        {
+            "callsign": "KF0NRV",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "2",
+            "other_2": "2",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "59",
+            "receive": "59",
+            "other_1": "3",
+            "other_2": "3",
+        },
     ],
     "K1USN SST": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
@@ -219,7 +490,6 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "AA11bb"},
-
     ],
     "WEEKLY RTTY": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
@@ -242,7 +512,8 @@ def app(qtbot):
     qtbot.addWidget(not1mm_app)
 
     # Stub out filepicker and create a new database
-    os.remove(fsutils.USER_DATA_PATH / "contest_testing.db")
+    if os.path.exists(fsutils.USER_DATA_PATH / "contest_testing.db"):
+        os.remove(fsutils.USER_DATA_PATH / "contest_testing.db")
     not1mm_app.filepicker = lambda x: "contest_testing.db"
     not1mm_app.actionNew_Database.trigger()
 
