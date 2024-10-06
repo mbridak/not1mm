@@ -31,11 +31,11 @@ class Multicast:
             int(self.multicast_port),
             QtNetwork.QAbstractSocket.BindFlag.ReuseAddressHint,
         )
-        logger.warn(f"multicast bind {b_result}")
+        logger.warning(f"multicast bind {b_result}")
         join_result = self.server_udp.joinMulticastGroup(
             QtNetwork.QHostAddress(self.multicast_group)
         )
-        logger.warn(f"joinMulticastGroup result {join_result}")
+        logger.warning(f"joinMulticastGroup result {join_result}")
 
     def has_pending_datagrams(self) -> bool:
         """Check if there is a pending datagram"""

@@ -3602,6 +3602,21 @@ def run() -> None:
     """
     Main Entry
     """
+    splash.show()
+    # app.processEvents()
+    splash.showMessage(
+        "Starting Up",
+        alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
+        color=QColor(255, 255, 0),
+    )
+    QCoreApplication.processEvents()
+
+    families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
+    logger.info(f"font families {families}")
+    window = MainWindow(splash)
+    window.callsign.setFocus()
+    splash.finish(window)
+    window.show()
     logger.debug(
         f"Resolved OS file system paths: MODULE_PATH {fsutils.MODULE_PATH}, USER_DATA_PATH {fsutils.USER_DATA_PATH}, CONFIG_PATH {fsutils.CONFIG_PATH}"
     )
@@ -3625,25 +3640,11 @@ logging.basicConfig(
 )
 logging.getLogger("PyQt6.uic.uiparser").setLevel("INFO")
 logging.getLogger("PyQt6.uic.properties").setLevel("INFO")
+
 app = QtWidgets.QApplication(sys.argv)
 
 pixmap = QPixmap(f"{os.fspath(fsutils.APP_DATA_PATH)}/splash.png")
 splash = QSplashScreen(pixmap)
-splash.show()
-# app.processEvents()
-splash.showMessage(
-    "Starting Up",
-    alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
-    color=QColor(255, 255, 0),
-)
-QCoreApplication.processEvents()
-
-families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-logger.info(f"font families {families}")
-window = MainWindow(splash)
-window.callsign.setFocus()
-splash.finish(window)
-window.show()
 
 if __name__ == "__main__":
     run()
