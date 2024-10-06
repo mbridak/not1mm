@@ -21,6 +21,7 @@ from json import loads
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.multicast import Multicast
@@ -322,6 +323,7 @@ class BandMapWindow(QDockWidget):
     worked_list = {}
     multicast_interface = None
     text_color = QColor(45, 45, 45)
+    cluster_expire = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -329,6 +331,9 @@ class BandMapWindow(QDockWidget):
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
         self.settings = self.get_settings()
+        self.clear_spot_olderSpinBox.setValue(
+            int(self.settings.get("cluster_expire", 1))
+        )
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
@@ -876,6 +881,7 @@ class BandMapWindow(QDockWidget):
     def spot_aging_changed(self) -> None:
         """Called when spot aging spinbox is changed."""
         self.agetime = self.clear_spot_olderSpinBox.value()
+        self.cluster_expire.emit(str(self.agetime))
 
     def showContextMenu(self) -> None:
         """doc string for the linter"""

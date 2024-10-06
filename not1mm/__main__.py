@@ -125,6 +125,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "cluster_port": 7373,
         "cluster_filter": "Set DX Filter SpotterCont=NA",
         "cluster_mode": "OPEN",
+        "cluster_expire": 1,
         "logwindow": False,
         "bandmapwindow": False,
         "checkwindow": False,
@@ -600,6 +601,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bandmap_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window)
         self.bandmap_window.hide()
+        self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
 
         self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow()
@@ -657,6 +659,11 @@ class MainWindow(QtWidgets.QMainWindow):
             color=QColor(255, 255, 0),
         )
         QCoreApplication.processEvents()
+
+    def cluster_expire_updated(self, number):
+        """signal from bandmap"""
+        self.pref["cluster_expire"] = int(number)
+        self.write_preference()
 
     def fldigi_qso(self, result: str):
         """
@@ -2585,7 +2592,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
-            # self.rig_control.delta = 1
 
         if self.pref.get("userigctld", False):
             logger.debug(
@@ -2602,7 +2608,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
-            # self.rig_control.delta = 1
 
         if self.pref.get("cwtype", 0) == 0:
             self.cw = None

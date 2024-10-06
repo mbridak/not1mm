@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-5-1] Store the bandmap spots age timer in the preferences.
 - [24-10-5] Force reselction of contest after different DB opened.
 - [24-10-2] Add WPX RTTY.
 - [24-10-1] Merged PR removing leading zeros from serial numbers. Merged PR correcting the parsing of lookups for previous name and state in the CWT.
