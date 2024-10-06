@@ -95,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
-        "bands": ["160", "80", "60", "40", "30", "20", "17", "15", "12", "10"],
+        "bands": ["160", "80", "40", "20", "15", "10"],
         "current_database": "ham.db",
         "contest": "",
         "multicast_group": "239.1.1.1",

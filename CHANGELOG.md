@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
 - [24-10-5-1] Store the bandmap spots age timer in the preferences.
 - [24-10-5] Force reselction of contest after different DB opened.
 - [24-10-2] Add WPX RTTY.
