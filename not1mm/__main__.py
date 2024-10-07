@@ -245,10 +245,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
-        # Disconnecting the save_contact by pressing return /SM0HPL
-        self.callsign.returnPressed.disconnect(self.save_contact)
-        # Add "send F2 + F3" method (~line 643 ) instead, and move to receive field /SM0HPL
+          
+        # Try disconnecting the save_contact by pressing return /SM0HPL
+        try:
+            self.callsign.returnPressed.disconnect(self.save_contact)
+        except TypeError:
+            pass
+        # Add "send F2 + F3" method (~line 550 ) instead, and move focus to other_2 field
+        # where saving the contact can happen /SM0HPL
         self.callsign.returnPressed.connect(self.callsign_enter_pressed)
+        #### /SM0HPL
         self.sent.returnPressed.connect(self.save_contact)
         self.receive.returnPressed.connect(self.save_contact)
         self.other_1.returnPressed.connect(self.save_contact)
@@ -544,18 +550,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
-
+        # New method to send F2 and F3 instead of saving to log  /SM0HPL
 
     def callsign_enter_pressed(self):
         self.process_function_key(self.F2)
         self.process_function_key(self.F3)
-        self.receive.setFocus()    
-    
-        """
-        Pressing enter in the callsign field replaced from 
-        being save_contact to F2 + F3 /SM0HPL
+        self.other_2.setFocus()
 
-        """
+        #### /SM0HPL
     
     def fldigi_qso(self, result: str):
         """
