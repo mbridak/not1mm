@@ -519,6 +519,14 @@ def app(qtbot):
 
     # Enter initial setings as default
     settings_dialog = not1mm_app.settings_dialog
+    settings_dialog.Call.setText("K5TUX")
+    settings_dialog.ITUZone.setText("7")
+    settings_dialog.CQZone.setText("4")
+    settings_dialog.Country.setText("United States")
+    settings_dialog.GridSquare.setText("EM37bb")
+    settings_dialog.Latitude.setText("37.0625")
+    settings_dialog.Longitude.setText("-93.875")
+
     qtbot.keyClick(
         settings_dialog,
         QtCore.Qt.Key.Key_Tab,
@@ -538,7 +546,8 @@ def app(qtbot):
     qtbot.keyClick(contest_dialog, QtCore.Qt.Key.Key_Return)
     yield not1mm_app
     # Cleanup
-    os.remove(fsutils.USER_DATA_PATH / "contest_testing.db")
+    if os.path.exists(fsutils.USER_DATA_PATH / "contest_testing.db"):
+        os.remove(fsutils.USER_DATA_PATH / "contest_testing.db")
 
 
 def test_contests(app, qtbot):
