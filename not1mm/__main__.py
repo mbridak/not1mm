@@ -245,7 +245,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
-        self.callsign.returnPressed.connect(self.save_contact)
+        # Disconnecting the save_contact by pressing return /SM0HPL
+        self.callsign.returnPressed.disconnect(self.save_contact)
+        # Add "send F2 + F3" method (~line 643 ) instead, and move to receive field /SM0HPL
+        self.callsign.returnPressed.connect(self.callsign_enter_pressed)
         self.sent.returnPressed.connect(self.save_contact)
         self.receive.returnPressed.connect(self.save_contact)
         self.other_1.returnPressed.connect(self.save_contact)
@@ -303,152 +306,58 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F12))
         self.F12.clicked.connect(lambda x: self.process_function_key(self.F12))
 
-        self.cw_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "CW"
-        )
-        self.cw_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "CW"
-        )
-        self.cw_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "CW"
-        )
-        self.cw_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "CW"
-        )
-        self.cw_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            30, "CW"
-        )
-        self.cw_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "CW"
-        )
-        self.cw_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "CW"
-        )
-        self.cw_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "CW"
-        )
-        self.cw_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "CW"
-        )
-        self.cw_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "CW"
-        )
+        self.cw_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(160, "CW")
+        self.cw_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(80, "CW")
+        self.cw_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(60, "CW")
+        self.cw_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(40, "CW")
+        self.cw_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(30, "CW")
+        self.cw_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(20, "CW")
+        self.cw_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(17, "CW")
+        self.cw_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(15, "CW")
+        self.cw_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(12, "CW")
+        self.cw_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(10, "CW")
         self.cw_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "CW")
         self.cw_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(4, "CW")
         self.cw_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "CW")
-        self.cw_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "CW"
-        )
-        self.cw_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "CW"
-        )
-        self.cw_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "CW"
-        )
-        self.cw_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "CW"
-        )
+        self.cw_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(222, "CW")
+        self.cw_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(432, "CW")
+        self.cw_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(902, "CW")
+        self.cw_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(1240, "CW")
 
-        self.ssb_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "SSB"
-        )
-        self.ssb_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "SSB"
-        )
-        self.ssb_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "SSB"
-        )
-        self.ssb_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "SSB"
-        )
-        self.ssb_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "SSB"
-        )
-        self.ssb_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "SSB"
-        )
-        self.ssb_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "SSB"
-        )
-        self.ssb_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "SSB"
-        )
-        self.ssb_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "SSB"
-        )
-        self.ssb_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            6, "SSB"
-        )
-        self.ssb_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            4, "SSB"
-        )
-        self.ssb_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            2, "SSB"
-        )
-        self.ssb_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "SSB"
-        )
-        self.ssb_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "SSB"
-        )
-        self.ssb_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "SSB"
-        )
-        self.ssb_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "SSB"
-        )
+        self.ssb_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(160, "SSB")
+        self.ssb_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(80, "SSB")
+        self.ssb_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(60, "SSB")
+        self.ssb_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(40, "SSB")
+        self.ssb_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(20, "SSB")
+        self.ssb_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(17, "SSB")
+        self.ssb_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(15, "SSB")
+        self.ssb_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(12, "SSB")
+        self.ssb_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(10, "SSB")
+        self.ssb_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "SSB")
+        self.ssb_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(4, "SSB")
+        self.ssb_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "SSB")
+        self.ssb_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(222, "SSB")
+        self.ssb_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(432, "SSB")
+        self.ssb_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(902, "SSB")
+        self.ssb_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(1240, "SSB")
 
-        self.rtty_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "RTTY"
-        )
-        self.rtty_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "RTTY"
-        )
-        self.rtty_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "RTTY"
-        )
-        self.rtty_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "RTTY"
-        )
-        self.rtty_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            30, "RTTY"
-        )
-        self.rtty_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "RTTY"
-        )
-        self.rtty_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "RTTY"
-        )
-        self.rtty_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "RTTY"
-        )
-        self.rtty_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "RTTY"
-        )
-        self.rtty_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "RTTY"
-        )
-        self.rtty_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            6, "RTTY"
-        )
-        self.rtty_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            4, "RTTY"
-        )
-        self.rtty_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            2, "RTTY"
-        )
-        self.rtty_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "RTTY"
-        )
-        self.rtty_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "RTTY"
-        )
-        self.rtty_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "RTTY"
-        )
-        self.rtty_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "RTTY"
-        )
+        self.rtty_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(160, "RTTY")
+        self.rtty_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(80, "RTTY")
+        self.rtty_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(60, "RTTY")
+        self.rtty_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(40, "RTTY")
+        self.rtty_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(30, "RTTY")
+        self.rtty_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(20, "RTTY")
+        self.rtty_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(17, "RTTY")
+        self.rtty_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(15, "RTTY")
+        self.rtty_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(12, "RTTY")
+        self.rtty_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(10, "RTTY")
+        self.rtty_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "RTTY")
+        self.rtty_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(4, "RTTY")
+        self.rtty_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "RTTY")
+        self.rtty_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(222, "RTTY")
+        self.rtty_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(432, "RTTY")
+        self.rtty_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(902, "RTTY")
+        self.rtty_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(1240, "RTTY")
 
         self.band_indicators_cw = {
             "160": self.cw_band_160,
@@ -635,6 +544,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
+
+
+    def callsign_enter_pressed(self):
+        self.process_function_key(self.F2)
+        self.process_function_key(self.F3)
+        self.receive.setFocus()    
+    
+        """
+        Pressing enter in the callsign field replaced from 
+        being save_contact to F2 + F3 /SM0HPL
+
+        """
+    
     def fldigi_qso(self, result: str):
         """
         gets called when there is a new fldigi qso logged.
