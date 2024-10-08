@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "24.10.6"
+version = "24.10.8"
 description = "NOT1MM Logger"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -43,7 +43,7 @@ classifiers = [
 [tool.setuptools.packages.find]
 where = ["."]
 
-exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "usb_vfo_knob*",]
+exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test","usb_vfo_knob*",]
 
 [tool.setuptools.package-data]
 "not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html",]
