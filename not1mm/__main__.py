@@ -582,6 +582,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
 ###### /SM0HPL
 
+    def show_splash_msg(self, msg: str) -> None:
+        """Show text message in the splash window."""
+        self.splash.showMessage(
+            msg,
+            alignment=Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
+            color=QColor(255, 255, 0),
+        )
+        QCoreApplication.processEvents()
+
+    def cluster_expire_updated(self, number):
+        """signal from bandmap"""
+        self.pref["cluster_expire"] = int(number)
+        self.write_preference()
+
     def fldigi_qso(self, result: str):
         """
         gets called when there is a new fldigi qso logged.
