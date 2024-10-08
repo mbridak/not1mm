@@ -23,6 +23,12 @@ class Settings(QtWidgets.QDialog):
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
         self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
         self.usecwviacat_radioButton.clicked.connect(self.set_catforcw_port_hint)
+        self.cwport_field.setToolTip(
+            "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
+        )
+        self.rigcontrolport_field.setToolTip(
+            "Usually 4532 for rigctld and 12345 for flrig."
+        )
         self.preference = pref
         if sd:
             self.devices = sd.query_devices()
