@@ -2329,15 +2329,15 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Called when a function key is clicked or triggered programmatically.
 
-    Parameters
-    ----------
-    function_key : QPushButton or str
-        Function key to process.
+        Parameters
+        ----------
+        function_key : QPushButton or str
+            Function key to process.
 
-    Returns
-    -------
-    None
-    """
+        Returns
+        -------
+        None
+        """
     if isinstance(function_key, str):
         # If it's a string, find the corresponding function key
         function_key_name = function_key.upper()
