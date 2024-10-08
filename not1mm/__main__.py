@@ -246,20 +246,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
           
-        # Try disconnecting the save_contact by pressing return /SM0HPL
-        try:
-            self.callsign.returnPressed.disconnect(self.save_contact)
-        except TypeError:
-            pass
-        # Add "send F2 + F3" method (~line 550 ) instead, and move focus to other_2 field
-        # where saving the contact can happen /SM0HPL
+###### Remove old returnPressed function /SM0HPL
+#        self.callsign.returnPressed.connect(self.save_contact)
+        # Add send F2 method (~line 550 ) instead, and move focus to other_2 field where saving the contact can happen /SM0HPL
         self.callsign.returnPressed.connect(self.callsign_enter_pressed)
+        # Add send F4 method and also save contact, return focus to callsign field
+        self.other_2.returnPressed.connect(self.on_other_2_return_pressed)
         #### /SM0HPL
         self.sent.returnPressed.connect(self.save_contact)
         self.receive.returnPressed.connect(self.save_contact)
         self.other_1.returnPressed.connect(self.save_contact)
         self.other_1.textEdited.connect(self.other_1_changed)
-        self.other_2.returnPressed.connect(self.save_contact)
+#        self.other_2.returnPressed.connect(self.save_contact)
         self.other_2.textEdited.connect(self.other_2_changed)
 
         self.sent.setText("59")
@@ -550,15 +548,40 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
-        # New method to send F2 and F3 instead of saving to log  /SM0HPL
+###### New method to send F3 instead of saving to log  /SM0HPL
+
+#    def callsign_enter_pressed(self):
+#        self.process_function_key(self.F2)
+#        self.process_function_key(self.F3)
+#        self.other_2.setFocus()
 
     def callsign_enter_pressed(self):
-        self.process_function_key(self.F2)
-        self.process_function_key(self.F3)
-        self.other_2.setFocus()
+        # Stripping whitespace
+        callsign = self.callsign.text().strip()
+        if not callsign:
+            # Callsign is empty, execute F1
+            self.process_function_key('F1')
+            # Keep focus in callsign field until it's filled
+            self.callsign.setFocus()
+        else:
+            # Callsign is not empty, execute F3
+            self.process_function_key('F3')
+            # Move focus to other_2 field
+            self.other_2.setFocus()
 
-        #### /SM0HPL
+###### /SM0HPL
     
+###### New method for sending F4 after logging  /SM0HPL    
+    def on_other_2_return_pressed(self):
+        # Log the contact
+            self.save_contact()
+    
+        # Execute F4 macros and put focus in the callsign field
+            self.process_function_key('F4')
+            self.callsign.setFocus()
+
+###### /SM0HPL
+
     def fldigi_qso(self, result: str):
         """
         gets called when there is a new fldigi qso logged.
