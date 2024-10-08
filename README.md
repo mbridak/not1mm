@@ -838,4 +838,4 @@ The best thing you can do is play around with it to see how it behaves.
 In the `Sent Exchange` field of the New Contest dialog put in the Precidence,
 Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
-For the Run Exchange macro I'd put `{HISCALL} # A K6GTE 17 ORG`.
+For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
