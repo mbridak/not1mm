@@ -20,6 +20,9 @@ class Settings(QtWidgets.QDialog):
         self.logger = logging.getLogger("settings")
         uic.loadUi(app_data_path / "configuration.ui", self)
         self.buttonBox.accepted.connect(self.save_changes)
+        self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
+        self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
+        self.usecwviacat_radioButton.clicked.connect(self.set_catforcw_port_hint)
         self.preference = pref
         if sd:
             self.devices = sd.query_devices()
@@ -37,7 +40,6 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.sounddevice.setCurrentIndex(index)
         self.useqrz_radioButton.setChecked(bool(self.preference.get("useqrz")))
-        # self.usehamdb_radioButton.setChecked(bool(self.preference.get("usehamdb")))
         self.usehamqth_radioButton.setChecked(bool(self.preference.get("usehamqth")))
         self.lookup_user_name_field.setText(
             str(self.preference.get("lookupusername", ""))
@@ -51,7 +53,10 @@ class Settings(QtWidgets.QDialog):
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
         self.cwip_field.setText(str(self.preference.get("cwip", "")))
-        self.cwport_field.setText(str(self.preference.get("cwport", "")))
+        if self.preference.get("cwport", ""):
+            self.cwport_field.setText(str(self.preference.get("cwport", "")))
+        else:
+            self.cwport_field.setText("")
         self.usecwdaemon_radioButton.setChecked(
             bool(self.preference.get("cwtype") == 1)
         )
@@ -61,6 +66,13 @@ class Settings(QtWidgets.QDialog):
         self.usecwviacat_radioButton.setChecked(
             bool(self.preference.get("cwtype") == 3)
         )
+        if self.preference.get("cwtype") == 1:
+            self.set_cwdaemon_port_hint()
+        elif self.preference.get("cwtype") == 2:
+            self.set_winkeyer_port_hint()
+        elif self.preference.get("cwtype") == 3:
+            self.set_catforcw_port_hint()
+
         self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
         self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
         self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
@@ -73,13 +85,14 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("n1mm_station_name", ""))
         )
         self.n1mm_operator.setText(str(self.preference.get("n1mm_operator", "")))
-        # self.n1mm_ip.setText(str(self.preference.get("n1mm_ip", "")))
         self.n1mm_radioport.setText(str(self.preference.get("n1mm_radioport", "")))
         self.n1mm_contactport.setText(str(self.preference.get("n1mm_contactport", "")))
         self.n1mm_lookupport.setText(str(self.preference.get("n1mm_lookupport", "")))
         self.n1mm_scoreport.setText(str(self.preference.get("n1mm_scoreport", "")))
         self.send_n1mm_radio.setChecked(bool(self.preference.get("send_n1mm_radio")))
-        self.send_n1mm_contact.setChecked(bool(self.preference.get("send_n1mm_contact")))
+        self.send_n1mm_contact.setChecked(
+            bool(self.preference.get("send_n1mm_contact"))
+        )
         self.send_n1mm_lookup.setChecked(bool(self.preference.get("send_n1mm_lookup")))
         self.send_n1mm_score.setChecked(bool(self.preference.get("send_n1mm_score")))
 
@@ -105,10 +118,27 @@ class Settings(QtWidgets.QDialog):
         self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
         self.activate_4m.setChecked(bool("4" in self.preference.get("bands", [])))
         self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
-        self.activate_1dot25.setChecked(bool("1.25" in self.preference.get("bands", [])))
+        self.activate_1dot25.setChecked(
+            bool("1.25" in self.preference.get("bands", []))
+        )
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
         self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))
+
+    def set_cwdaemon_port_hint(self):
+        """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setPlaceholderText("127.0.0.1")
+        self.cwport_field.setPlaceholderText("6789")
+
+    def set_winkeyer_port_hint(self):
+        """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setPlaceholderText("127.0.0.1")
+        self.cwport_field.setPlaceholderText("8000")
+
+    def set_catforcw_port_hint(self):
+        """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setPlaceholderText("")
+        self.cwport_field.setPlaceholderText("")
 
     def save_changes(self):
         """
@@ -131,6 +161,7 @@ class Settings(QtWidgets.QDialog):
         try:
             self.preference["cwport"] = int(self.cwport_field.text())
         except ValueError:
+            self.preference["cwport"] = None
             ...
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():

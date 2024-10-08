@@ -2609,13 +2609,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
 
-        if self.pref.get("cwtype", 0) == 0:
-            self.cw = None
-        else:
+        self.cw = None
+        if (
+            self.pref.get("cwport")
+            and self.pref.get("cwip")
+            and self.pref.get("cwtype")
+        ):
             self.cw = CW(
                 int(self.pref.get("cwtype")),
                 self.pref.get("cwip"),
-                int(self.pref.get("cwport", 6789)),
+                int(self.pref.get("cwport")),
             )
             self.cw.speed = 20
             if self.cw.servertype == 2:
@@ -2646,13 +2649,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pref["bands"] = [
                 "160",
                 "80",
-                "60",
                 "40",
-                "30",
                 "20",
-                "17",
                 "15",
-                "12",
                 "10",
             ]
 
@@ -2711,7 +2710,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.callsign_changed()
                     self.callsign.setFocus()
                     self.callsign.activateWindow()
-                    window.raise_()
+                    # This broke somehow.
+                    # window.raise_()
                     continue
 
                 if (
