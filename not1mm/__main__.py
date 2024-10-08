@@ -2322,8 +2322,8 @@ class MainWindow(QtWidgets.QMainWindow):
             app.processEvents()
             self.rig_control.ptt_off()
 
-###### This modification allows the method to handle both QPushButton objects (when clicked directly) 
-###### and string inputs (when triggered programmatically, like in callsign_enter_pressed). /SM0HPL
+        # This modification allows the method to handle both QPushButton objects (when clicked directly) 
+        # and string inputs (when triggered programmatically, like in callsign_enter_pressed). /SM0HPL
 
     def process_function_key(self, function_key) -> None:
         """
@@ -2332,21 +2332,21 @@ class MainWindow(QtWidgets.QMainWindow):
         Parameters
         ----------
         function_key : QPushButton or str
-            Function key to process.
+        Function key to process.
 
         Returns
         -------
         None
         """
-    if isinstance(function_key, str):
-        # If it's a string, find the corresponding function key
-        function_key_name = function_key.upper()
-        function_key = getattr(self, function_key_name, None)
-        if function_key is None:
-            logger.warning(f"Function key {function_key_name} not found")
-            return
+        if isinstance(function_key, str):
+            # If it's a string, find the corresponding function key
+            function_key_name = function_key.upper()
+            function_key = getattr(self, function_key_name, None)
+            if function_key is None:
+                logger.warning(f"Function key {function_key_name} not found")
+                return
 
-    logger.debug("Function Key: %s", function_key.text())
+        logger.debug("Function Key: %s", function_key.text())
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
