@@ -1620,6 +1620,515 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="options_tab">
+      <attribute name="title">
+       <string>Options</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="use_esm">
+         <property name="text">
+          <string>Enable ESM</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_2l">
+         <property name="text">
+          <string>CQ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_24">
+         <property name="text">
+          <string>AGN</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QComboBox" name="esm_hiscall">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QComboBox" name="esm_cq">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QComboBox" name="esm_qrz">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QComboBox" name="esm_mycall">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>Exchange</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>QRZ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QComboBox" name="esm_agn">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="esm_exch">
+         <item>
+          <property name="text">
+           <string>F1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F9</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F11</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>F12</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DISABLED</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>His Call</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_26">
+         <property name="text">
+          <string>My Call</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer_12">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="3">
+        <spacer name="horizontalSpacer_13">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -1707,7 +2216,7 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
