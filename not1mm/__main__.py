@@ -651,6 +651,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
 
+    def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
+        """Turn the_button green."""
+        pal = QPalette()
+        pal.isCopyOf(self.current_palette)
+        greenColor = QColor(0, 128, 0)
+        pal.setBrush(QPalette.ColorRole.Button, greenColor)
+        the_button.setPalette(pal)
+
+    def restore_button_color(self, the_button: QtWidgets.QPushButton) -> None:
+        """Restores the color of the button"""
+        the_button.setPalette(self.current_palette)
+
     def show_splash_msg(self, msg: str) -> None:
         """Show text message in the splash window."""
         self.splash.showMessage(
