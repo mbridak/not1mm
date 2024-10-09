@@ -162,6 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
     oldtext = ""
     text_color = QColorConstants.Black
     current_palette = None
+    use_esm = False
+    esm_dict = {}
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -2678,7 +2680,32 @@ class MainWindow(QtWidgets.QMainWindow):
             for band_to_show in self.pref.get("bands", []):
                 if band_to_show in _indicator:
                     _indicator[band_to_show].show()
-        # self.show_band_mode()
+
+        fkey_dict = {
+            "F1": self.F1,
+            "F2": self.F2,
+            "F3": self.F3,
+            "F4": self.F4,
+            "F5": self.F5,
+            "F6": self.F6,
+            "F7": self.F7,
+            "F8": self.F8,
+            "F9": self.F9,
+            "F10": self.F10,
+            "F11": self.F11,
+            "F12": self.F12,
+            "DISABLED": None,
+        }
+
+        self.use_esm = self.pref.get("use_esm", False)
+        self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
+        self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
+        self.esm_dict["QRZ"] = fkey_dict.get(self.pref.get("esm_qrz", "DISABLED"))
+        self.esm_dict["AGN"] = fkey_dict.get(self.pref.get("esm_agn", "DISABLED"))
+        self.esm_dict["HISCALL"] = fkey_dict.get(
+            self.pref.get("esm_hiscall", "DISABLED")
+        )
+        self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
 
     def watch_udp(self) -> None:
         """
