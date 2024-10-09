@@ -672,7 +672,7 @@ class MainWindow(QtWidgets.QMainWindow):
             print(f"{hasattr(self.contest, "process_esm")=}")
             if hasattr(self.contest, "process_esm"):
                 print(f"{hasattr(self.contest, "process_esm")=}")
-                self.contest.process_esm()
+                self.contest.process_esm(self)
             else:
                 print("Save contact")
                 self.save_contact()
