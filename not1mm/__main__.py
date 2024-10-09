@@ -248,12 +248,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
-        self.callsign.returnPressed.connect(self.save_contact)
-        self.sent.returnPressed.connect(self.save_contact)
-        self.receive.returnPressed.connect(self.save_contact)
-        self.other_1.returnPressed.connect(self.save_contact)
+        self.callsign.returnPressed.connect(self.check_esm)
+        self.sent.returnPressed.connect(self.check_esm)
+        self.receive.returnPressed.connect(self.check_esm)
+        self.other_1.returnPressed.connect(self.check_esm)
         self.other_1.textEdited.connect(self.other_1_changed)
-        self.other_2.returnPressed.connect(self.save_contact)
+        self.other_2.returnPressed.connect(self.check_esm)
         self.other_2.textEdited.connect(self.other_2_changed)
 
         self.sent.setText("59")
@@ -664,6 +664,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def restore_button_color(self, the_button: QtWidgets.QPushButton) -> None:
         """Restores the color of the button"""
         the_button.setPalette(self.current_palette)
+
+    def check_esm(self):
+        """Check for ESM, otherwise save contact."""
+        print(f"{self.use_esm=}")
+        if self.use_esm:
+            print(f"{hasattr(self.contest, "process_esm")=}")
+            if hasattr(self.contest, "process_esm"):
+                print(f"{hasattr(self.contest, "process_esm")=}")
+                self.contest.process_esm()
+            else:
+                print("Save contact")
+                self.save_contact()
+        else:
+            self.save_contact()
 
     def show_splash_msg(self, msg: str) -> None:
         """Show text message in the splash window."""
