@@ -71,6 +71,11 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.esm_qrz.setCurrentIndex(index)
 
+        value = self.preference.get("esm_qsob4", "DISABLED")
+        index = self.esm_qsob4.findText(value)
+        if index != -1:
+            self.esm_qsob4.setCurrentIndex(index)
+
         for device in self.devices:
             if device.get("max_output_channels"):
                 self.sounddevice.addItem(device.get("name"))
@@ -190,6 +195,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["esm_hiscall"] = self.esm_hiscall.currentText()
         self.preference["esm_mycall"] = self.esm_mycall.currentText()
         self.preference["esm_qrz"] = self.esm_qrz.currentText()
+        self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
 
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()

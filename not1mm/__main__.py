@@ -2706,6 +2706,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pref.get("esm_hiscall", "DISABLED")
         )
         self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
+        self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
 
     def watch_udp(self) -> None:
         """
