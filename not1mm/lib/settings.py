@@ -38,6 +38,44 @@ class Settings(QtWidgets.QDialog):
 
     def setup(self):
         """setup dialog"""
+
+        self.use_esm.setChecked(bool(self.preference.get("use_esm")))
+
+        value = self.preference.get("esm_agn", "DISABLED")
+        index = self.esm_agn.findText(value)
+        if index != -1:
+            self.esm_agn.setCurrentIndex(index)
+
+        value = self.preference.get("esm_cq", "DISABLED")
+        index = self.esm_cq.findText(value)
+        if index != -1:
+            self.esm_cq.setCurrentIndex(index)
+
+        value = self.preference.get("esm_exch", "DISABLED")
+        index = self.esm_exch.findText(value)
+        if index != -1:
+            self.esm_exch.setCurrentIndex(index)
+
+        value = self.preference.get("esm_hiscall", "DISABLED")
+        index = self.esm_hiscall.findText(value)
+        if index != -1:
+            self.esm_hiscall.setCurrentIndex(index)
+
+        value = self.preference.get("esm_mycall", "DISABLED")
+        index = self.esm_mycall.findText(value)
+        if index != -1:
+            self.esm_mycall.setCurrentIndex(index)
+
+        value = self.preference.get("esm_qrz", "DISABLED")
+        index = self.esm_qrz.findText(value)
+        if index != -1:
+            self.esm_qrz.setCurrentIndex(index)
+
+        value = self.preference.get("esm_qsob4", "DISABLED")
+        index = self.esm_qsob4.findText(value)
+        if index != -1:
+            self.esm_qsob4.setCurrentIndex(index)
+
         for device in self.devices:
             if device.get("max_output_channels"):
                 self.sounddevice.addItem(device.get("name"))
@@ -150,6 +188,15 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["use_esm"] = self.use_esm.isChecked()
+        self.preference["esm_cq"] = self.esm_cq.currentText()
+        self.preference["esm_agn"] = self.esm_agn.currentText()
+        self.preference["esm_exch"] = self.esm_exch.currentText()
+        self.preference["esm_hiscall"] = self.esm_hiscall.currentText()
+        self.preference["esm_mycall"] = self.esm_mycall.currentText()
+        self.preference["esm_qrz"] = self.esm_qrz.currentText()
+        self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
+
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
         # self.preference["usehamdb"] = self.usehamdb_radioButton.isChecked()

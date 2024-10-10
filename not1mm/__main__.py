@@ -37,7 +37,7 @@ except OSError as exception:
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
 from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
-from PyQt6.QtWidgets import QFileDialog, QSplashScreen
+from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
 
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
@@ -162,6 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
     oldtext = ""
     text_color = QColorConstants.Black
     current_palette = None
+    use_esm = False
+    esm_dict = {}
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -175,6 +177,8 @@ class MainWindow(QtWidgets.QMainWindow):
     vfo_window = None
     lookup_service = None
     fldigi_util = None
+
+    current_widget = None
 
     def __init__(self, splash):
         super().__init__()
@@ -194,6 +198,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()
@@ -246,13 +251,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radioButton_sp.clicked.connect(self.run_sp_buttons_clicked)
         self.score.setText("0")
         self.callsign.textEdited.connect(self.callsign_changed)
-        self.callsign.returnPressed.connect(self.save_contact)
-        self.sent.returnPressed.connect(self.save_contact)
-        self.receive.returnPressed.connect(self.save_contact)
-        self.other_1.returnPressed.connect(self.save_contact)
+        self.callsign.returnPressed.connect(self.check_esm_with_enter)
+        self.callsign.cursorPositionChanged.connect(self.check_esm)
+        self.sent.returnPressed.connect(self.check_esm_with_enter)
+        self.sent.cursorPositionChanged.connect(self.check_esm)
+        self.receive.returnPressed.connect(self.check_esm_with_enter)
+        self.receive.cursorPositionChanged.connect(self.check_esm)
+        self.other_1.returnPressed.connect(self.check_esm_with_enter)
         self.other_1.textEdited.connect(self.other_1_changed)
-        self.other_2.returnPressed.connect(self.save_contact)
+        self.other_1.cursorPositionChanged.connect(self.check_esm)
+        self.other_2.returnPressed.connect(self.check_esm_with_enter)
         self.other_2.textEdited.connect(self.other_2_changed)
+        self.other_2.cursorPositionChanged.connect(self.check_esm)
 
         self.sent.setText("59")
         self.receive.setText("59")
@@ -650,6 +660,47 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def on_focus_changed(self, new):
+        """"""
+        if self.use_esm:
+            if hasattr(self.contest, "process_esm"):
+                self.contest.process_esm(self, new_focused_widget=new)
+
+    def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
+        """Turn the_button green."""
+        if the_button is not None:
+            pal = QPalette()
+            pal.isCopyOf(self.current_palette)
+            greenColor = QColor(0, 128, 0)
+            pal.setBrush(QPalette.ColorRole.Button, greenColor)
+            the_button.setPalette(pal)
+
+    def restore_button_color(self, the_button: QtWidgets.QPushButton) -> None:
+        """Restores the color of the button"""
+        the_button.setPalette(self.current_palette)
+
+    def check_esm_with_enter(self):
+        """Check for ESM, otherwise save contact."""
+        if self.use_esm:
+            if hasattr(self.contest, "process_esm"):
+                self.contest.process_esm(self, with_enter=True)
+            else:
+                self.save_contact()
+        else:
+            self.save_contact()
+
+    def check_esm(self):
+        """Check for ESM, otherwise save contact."""
+        if self.use_esm:
+            if hasattr(self.contest, "process_esm"):
+                self.contest.process_esm(self)
+            else:
+                ...
+                # self.save_contact()
+        else:
+            ...
+            # self.save_contact()
 
     def show_splash_msg(self, msg: str) -> None:
         """Show text message in the splash window."""
@@ -1719,7 +1770,6 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-
         modifier = event.modifiers()
         if event.key() == Qt.Key.Key_K:
             self.toggle_cw_entry()
@@ -2027,7 +2077,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("saving contact")
         if self.contest is None:
-            self.show_message_box("You have no contest defined.")
+            self.show_message_box("You have no contest defined...")
             return
         if len(self.callsign.text()) < 3:
             return
@@ -2666,7 +2716,33 @@ class MainWindow(QtWidgets.QMainWindow):
             for band_to_show in self.pref.get("bands", []):
                 if band_to_show in _indicator:
                     _indicator[band_to_show].show()
-        # self.show_band_mode()
+
+        fkey_dict = {
+            "F1": self.F1,
+            "F2": self.F2,
+            "F3": self.F3,
+            "F4": self.F4,
+            "F5": self.F5,
+            "F6": self.F6,
+            "F7": self.F7,
+            "F8": self.F8,
+            "F9": self.F9,
+            "F10": self.F10,
+            "F11": self.F11,
+            "F12": self.F12,
+            "DISABLED": None,
+        }
+
+        self.use_esm = self.pref.get("use_esm", False)
+        self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
+        self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
+        self.esm_dict["QRZ"] = fkey_dict.get(self.pref.get("esm_qrz", "DISABLED"))
+        self.esm_dict["AGN"] = fkey_dict.get(self.pref.get("esm_agn", "DISABLED"))
+        self.esm_dict["HISCALL"] = fkey_dict.get(
+            self.pref.get("esm_hiscall", "DISABLED")
+        )
+        self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
+        self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
 
     def watch_udp(self) -> None:
         """
