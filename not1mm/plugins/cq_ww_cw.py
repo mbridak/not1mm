@@ -380,3 +380,67 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+def process_esm(self, new_focused_widget=None, with_enter=False):
+    """ESM State Machine"""
+
+    # self.pref["run_state"]
+
+    # -----===== Assigned F-Keys =====-----
+    # self.esm_dict["CQ"]
+    # self.esm_dict["EXCH"]
+    # self.esm_dict["QRZ"]
+    # self.esm_dict["AGN"]
+    # self.esm_dict["HISCALL"]
+    # self.esm_dict["MYCALL"]
+    # self.esm_dict["QSOB4"]
+
+    # ----==== text fields ====----
+    # self.callsign
+    # self.sent
+    # self.receive
+    # self.other_1
+    # self.other_2
+
+    inputs = {
+        self.callsign: "callsign",
+        self.sent: "sent",
+        self.receive: "receive",
+        self.other_1: "other_1",
+        self.other_2: "other_2",
+    }
+    if new_focused_widget is not None:
+        self.current_widget = inputs.get(new_focused_widget)
+
+    print(f"checking esm {self.current_widget=} {with_enter=}")
+
+    for a_button in [
+        self.F1,
+        self.F2,
+        self.F3,
+        self.F4,
+        self.F5,
+        self.F6,
+        self.F7,
+        self.F8,
+        self.F9,
+        self.F10,
+        self.F11,
+        self.F12,
+    ]:
+        self.restore_button_color(a_button)
+
+    if self.current_widget == "callsign":
+        if len(self.callsign.text()) < 3:
+            self.make_button_green(self.esm_dict["CQ"])
+        elif len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
+            self.make_button_green(self.esm_dict["EXCH"])
+            self.make_button_green(self.esm_dict["HISCALL"])
+    if self.current_widget == "other_2":
+        if self.other_2.text() == "":
+            self.make_button_green(self.esm_dict["AGN"])
+        elif self.other_2.text().isnumeric():
+            self.make_button_green(self.esm_dict["QRZ"])
+        else:
+            self.make_button_green(self.esm_dict["AGN"])
