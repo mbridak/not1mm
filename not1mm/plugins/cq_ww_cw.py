@@ -413,7 +413,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = inputs.get(new_focused_widget)
 
-    print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
     for a_button in [
         self.F1,
@@ -488,4 +488,3 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
-            
