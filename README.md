@@ -87,6 +87,7 @@
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Recalulate Mults](#recalulate-mults)
+  - [Testing Out ESM Currently only in CQ WW CW](#testing-out-esm-currently-only-in-cq-ww-cw)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
@@ -188,6 +189,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-10-10] Add ESM to CQ WW CW to test it out.
 - [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
 - [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
 - [24-10-5-1] Store the bandmap spots age timer in the preferences.
@@ -796,6 +798,19 @@ Boom... ADIF
 After editing a contact and before generating a Cabrillo file. There is a Misc
 menu option that will recalculate the multipliers incase an edit had caused a
 change.
+
+## Testing Out ESM Currently only in CQ WW CW
+
+I caved and started working on ESM or Enter Sends Message. Currently it is only
+working in the CQ WW CW. To test it out you can go to `FILE -> Configuration Settings`
+
+Check the mark to Use ESM and tell it which function keys do what. The keys will need
+to have the same function in both Run and S&P modes. The function keys will highlight
+green depending on the state of the input fields. The green keys will be sent if you
+press the Enter key. You should use the Space bar to move to another field.
+
+The contact will be automatically logged once all the needed info is collected and the
+QRZ (for Run) or Exchange (for S&P) is sent.
 
 ## Contest specific notes
 
