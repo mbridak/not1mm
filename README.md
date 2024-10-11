@@ -88,6 +88,15 @@
   - [ADIF](#adif)
   - [Recalulate Mults](#recalulate-mults)
   - [Testing Out ESM Currently only in CQ WW CW](#testing-out-esm-currently-only-in-cq-ww-cw)
+  - [Run States](#run-states)
+    - [CQ](#cq)
+    - [Call Entered send His Call and the Exchange](#call-entered-send-his-call-and-the-exchange)
+    - [Empty exchange field send AGN till you get it](#empty-exchange-field-send-agn-till-you-get-it)
+    - [Exchange field filled, send TU QRZ and logs it](#exchange-field-filled-send-tu-qrz-and-logs-it)
+  - [S\&P States](#sp-states)
+    - [With his call entered, Send your call](#with-his-call-entered-send-your-call)
+    - [If no exchange entered send AGN](#if-no-exchange-entered-send-agn)
+    - [With exchange entered, send your exchange and log it](#with-exchange-entered-send-your-exchange-and-log-it)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
@@ -804,6 +813,9 @@ change.
 I caved and started working on ESM or Enter Sends Message. Currently it is only
 working in the CQ WW CW. To test it out you can go to `FILE -> Configuration Settings`
 
+![Config Screen](https://private-user-images.githubusercontent.com/49108421/375571913-1fbb1da1-5b81-45f8-8b6d-412702add200.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDU2MjUsIm5iZiI6MTcyODYwNTMyNSwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzE5MTMtMWZiYjFkYTEtNWI4MS00NWY4LThiNmQtNDEyNzAyYWRkMjAwLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMDg0NVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTU2NDBlZTliMTFlYzc1NjE1MzA4MjE1YTVkMzlhNmIwNzYzYjVlMzM5MDdjNTlkODVlODY1MzBlZWJmZWEzMWImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.DITQPUAHkFLk1ezFxvQYLCJVaq8vrUDm_5EbfDLJbsE)
+
+
 Check the mark to Use ESM and tell it which function keys do what. The keys will need
 to have the same function in both Run and S&P modes. The function keys will highlight
 green depending on the state of the input fields. The green keys will be sent if you
@@ -811,6 +823,39 @@ press the Enter key. You should use the Space bar to move to another field.
 
 The contact will be automatically logged once all the needed info is collected and the
 QRZ (for Run) or Exchange (for S&P) is sent.
+
+## Run States
+
+### CQ
+
+![CQ](https://private-user-images.githubusercontent.com/49108421/375572433-a156588d-83b5-4edd-b9f6-4ab4291c258c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDU2MjUsIm5iZiI6MTcyODYwNTMyNSwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzI0MzMtYTE1NjU4OGQtODNiNS00ZWRkLWI5ZjYtNGFiNDI5MWMyNThjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMDg0NVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTVjYTdjZDhhMmJiZTA5NTdmNDIxNTgxMmY5NmJmNDBiZmZjZTk2MTAyODM4NjYxYWQzY2Q3NGNkN2ZiYzZmNTImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.44q-Ns0aWBLBFARF8Oyb2wxF0olZx28eddPyp_p_T3s)
+
+### Call Entered send His Call and the Exchange
+
+![Call Entered send His Call and the Exchange.](https://private-user-images.githubusercontent.com/49108421/375572785-1d9f6a33-1cd1-4e08-82d5-b11851e279c7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzI3ODUtMWQ5ZjZhMzMtMWNkMS00ZTA4LTgyZDUtYjExODUxZTI3OWM3LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWEyZmEzOGM4ZmQ4MTNlZmM5ZDA2N2FmNDBkNTYzOTVmYTM3NzFiY2Q4NDE1ZTlkYzhmMjhiNGI4NGJiMmMzY2EmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.KcEd-CBbY2MHKrApqmXkr06Pcb0kvYyxK8tdQH3doc4)
+
+### Empty exchange field send AGN till you get it
+
+![Empty exchange field send AGN till you get it](https://private-user-images.githubusercontent.com/49108421/375573288-3fa5f231-0648-412a-94d7-06ab38e1334f.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzMyODgtM2ZhNWYyMzEtMDY0OC00MTJhLTk0ZDctMDZhYjM4ZTEzMzRmLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWIxNjA5NWM0MWI2ZmU0ODNmYjY2N2M5YTdjNzQ5ZDdkZWZkZmE3MDI2NjBlNzc4YmNhNTNjYjMzOTI4MjIwMzcmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.VycMnaYPKW08YmCQmeGpQWToDpNNaEmNZ3LAnEQUifM)
+
+### Exchange field filled, send TU QRZ and logs it
+
+![Exchange field filled, send TU QRZ and logs it](https://private-user-images.githubusercontent.com/49108421/375573434-b6ee0617-60ac-4937-82cc-e1b1428899d5.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzM0MzQtYjZlZTA2MTctNjBhYy00OTM3LTgyY2MtZTFiMTQyODg5OWQ1LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWQxNzM4ODY2NWViNzNhZjI2OWRiYzQ0ZTBmMWIxOTRhODRiZDI1ZjQ3OWI0YjY5OGM4OGYxYmRjYWVjYjYzNjYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.yCx8NWkE9Ep-NKv2oxEjWWDMraBZsov59GzHspC3jmk)
+
+## S&P States
+
+### With his call entered, Send your call
+
+![With his call entered, Send your call](https://private-user-images.githubusercontent.com/49108421/375573821-67dd35c7-8563-4ad6-bee6-7f7514e7d3a6.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzM4MjEtNjdkZDM1YzctODU2My00YWQ2LWJlZTYtN2Y3NTE0ZTdkM2E2LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdkNDRmYmI2MThlYjg2ZjU5NjY3OWY2YTEyMGU2YWQ5YjIyM2NhY2QzODVhY2U3ZGZhMDI3ZDQzMmY1MTU5MWMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.p8JisS0D5noIDRUAjwkOyxpzR10MhIYmW-y8h2ngnZo)
+
+### If no exchange entered send AGN
+
+![If no exchange entered send AGN](https://private-user-images.githubusercontent.com/49108421/375573957-9753786b-3018-4821-b07a-42bdf50b4468.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzM5NTctOTc1Mzc4NmItMzAxOC00ODIxLWIwN2EtNDJiZGY1MGI0NDY4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY5M2E1MzllOTc3YmEwNDZkOWFlYmEyMmQzNDc0YTUwYThmNzk1ODQ4M2IzMGExNjQyMTdlMzkyYzdmZjgyODkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.We-bPqprJ24HQW7eCjxFKuUxWJwawRZWab74INuSyyA)
+
+### With exchange entered, send your exchange and log it
+
+![With exchange entered, send your exchange and log it](https://private-user-images.githubusercontent.com/49108421/375574075-9857287e-ce11-44c8-a7de-417912988f08.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjg2MDYyNjAsIm5iZiI6MTcyODYwNTk2MCwicGF0aCI6Ii80OTEwODQyMS8zNzU1NzQwNzUtOTg1NzI4N2UtY2UxMS00NGM4LWE3ZGUtNDE3OTEyOTg4ZjA4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDEwMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMDExVDAwMTkyMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPThmNzZiOTRkMzQyOGIxMWUzMjM4ZWVjMzI3ZTkzZjc3OThkZjI5NWYxYTNkYTQ0ZDYyNzJkMTA5ZjQwNDBmMzEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.YtD5IoXhSmSUs53ofWJUmuJZqca2Uhe6dYk8JyOHBgM)
+
 
 ## Contest specific notes
 
