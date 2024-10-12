@@ -199,6 +199,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
+        self.inputs_dict = {
+            self.callsign: "callsign",
+            self.sent: "sent",
+            self.receive: "receive",
+            self.other_1: "other_1",
+            self.other_2: "other_2",
+        }
         self.cw_entry.hide()
         self.leftdot.hide()
         self.rightdot.hide()

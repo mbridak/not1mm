@@ -518,15 +518,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     # self.other_1
     # self.other_2
 
-    inputs = {
-        self.callsign: "callsign",
-        self.sent: "sent",
-        self.receive: "receive",
-        self.other_1: "other_1",
-        self.other_2: "other_2",
-    }
     if new_focused_widget is not None:
-        self.current_widget = inputs.get(new_focused_widget)
+        self.current_widget = self.inputs_dict.get(new_focused_widget)
 
     # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
