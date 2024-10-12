@@ -2107,6 +2107,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
             )
             self.contact["Mode"] = self.radio_state.get("mode", "")
+        self.contact["Freq"] = round(float(self.radio_state.get("vfoa", 0.0)) / 1000, 2)
+        self.contact["QSXFreq"] = round(
+            float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
+        )
         self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["ContestNR"] = self.pref.get("contest", "0")
         self.contact["StationPrefix"] = self.station.get("Call", "")
@@ -2465,7 +2469,7 @@ class MainWindow(QtWidgets.QMainWindow):
             app.processEvents()
             self.rig_control.ptt_off()
 
-    def process_function_key(self, function_key) -> None:
+    def process_function_key(self, function_key, rttysendrx=True) -> None:
         """
         Called when a function key is clicked.
 
@@ -2495,7 +2499,10 @@ class MainWindow(QtWidgets.QMainWindow):
             "DIGI-U",
             "DIGI-L",
         ]:
-            self.fldigi_util.send_string(self.process_macro(function_key.toolTip()))
+            self.fldigi_util.send_string(
+                self.process_macro(function_key.toolTip()), rxafter=rttysendrx
+            )
+            return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
