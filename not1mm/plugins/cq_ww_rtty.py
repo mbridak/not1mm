@@ -146,7 +146,7 @@ def set_contact_vars(self):
     self.contact["ZN"] = self.other_1.text()
     self.contact["Exchange1"] = self.other_2.text()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
-    
+
 
 def predupe(self):
     """called after callsign entered"""
@@ -195,7 +195,11 @@ def show_mults(self):
     res3_query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as spc_count from dxlog where ContestNR = {self.database.current_contest};"
     result3 = self.database.exec_sql(res3_query)
     if result1 and result2 and result3:
-        return int(result1.get("zb_count", 0)) + int(result2.get("cb_count", 0)) + int(result3.get("spc_count", 0))
+        return (
+            int(result1.get("zb_count", 0))
+            + int(result2.get("cb_count", 0))
+            + int(result3.get("spc_count", 0))
+        )
     return 0
 
 
@@ -366,21 +370,21 @@ def cabrillo(self):
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
                 if themode.strip() in (
-                        "RTTY",
-                        "RTTY-R",
-                        "LSB-D",
-                        "USB-D",
-                        "AM-D",
-                        "FM-D",
-                        "DIGI-U",
-                        "DIGI-L",
-                        "RTTYR",
-                        "PKTLSB",
-                        "PKTUSB",
-                    ):
+                    "RTTY",
+                    "RTTY-R",
+                    "LSB-D",
+                    "USB-D",
+                    "AM-D",
+                    "FM-D",
+                    "DIGI-U",
+                    "DIGI-L",
+                    "RTTYR",
+                    "PKTLSB",
+                    "PKTUSB",
+                ):
                     themode = "RY"
-                exchange1 = contact.get('Exchange1', '')
-                if exchange1 == '':
+                exchange1 = contact.get("Exchange1", "")
+                if exchange1 == "":
                     exchange1 = "DX"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
@@ -491,3 +495,117 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.other_1.setText(str(the_packet.get("CQZ", "ERR")))
         ALTEREGO.other_2.setText(f'{the_packet.get("STATE", "")}'.strip())
         ALTEREGO.save_contact()
+
+
+def process_esm(self, new_focused_widget=None, with_enter=False):
+    """ESM State Machine"""
+
+    # self.pref["run_state"]
+
+    # -----===== Assigned F-Keys =====-----
+    # self.esm_dict["CQ"]
+    # self.esm_dict["EXCH"]
+    # self.esm_dict["QRZ"]
+    # self.esm_dict["AGN"]
+    # self.esm_dict["HISCALL"]
+    # self.esm_dict["MYCALL"]
+    # self.esm_dict["QSOB4"]
+
+    # ----==== text fields ====----
+    # self.callsign
+    # self.sent
+    # self.receive
+    # self.other_1
+    # self.other_2
+
+    inputs = {
+        self.callsign: "callsign",
+        self.sent: "sent",
+        self.receive: "receive",
+        self.other_1: "other_1",
+        self.other_2: "other_2",
+    }
+    if new_focused_widget is not None:
+        self.current_widget = inputs.get(new_focused_widget)
+
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+
+    for a_button in [
+        self.F1,
+        self.F2,
+        self.F3,
+        self.F4,
+        self.F5,
+        self.F6,
+        self.F7,
+        self.F8,
+        self.F9,
+        self.F10,
+        self.F11,
+        self.F12,
+    ]:
+        self.restore_button_color(a_button)
+
+    buttons_to_send = []
+
+    if self.pref.get("run_state"):
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) < 3:
+                self.make_button_green(self.esm_dict["CQ"])
+                buttons_to_send.append(self.esm_dict["CQ"])
+            elif len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
+                self.make_button_green(self.esm_dict["HISCALL"])
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["HISCALL"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+
+        if self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            elif self.other_1.text().isnumeric() and self.other_2.text().isalpha():
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            sendstring = ""
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
+                    # self.process_function_key(button, rttysendrx=False)
+            self.fldigi_util.send_string(sendstring)
+    else:
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
+                self.make_button_green(self.esm_dict["MYCALL"])
+                buttons_to_send.append(self.esm_dict["MYCALL"])
+
+        if self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            elif self.other_1.text().isnumeric() and self.other_2.text().isalpha():
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+                buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            sendstring = ""
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
+                    # self.process_function_key(button, rttysendrx=False)
+            self.fldigi_util.send_string(sendstring)
