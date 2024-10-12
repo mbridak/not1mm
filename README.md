@@ -87,7 +87,7 @@
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Recalulate Mults](#recalulate-mults)
-  - [Testing Out ESM Currently only in CQ WW CW](#testing-out-esm-currently-only-in-cq-ww-cw)
+  - [Testing Out ESM Currently only in CQ WW](#testing-out-esm-currently-only-in-cq-ww)
     - [Run States](#run-states)
       - [CQ](#cq)
       - [Call Entered send His Call and the Exchange](#call-entered-send-his-call-and-the-exchange)
@@ -198,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-10-11] added ESM to CQWW SSB and RTTY.
 - [24-10-10] Add ESM to CQ WW CW to test it out.
 - [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
 - [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
@@ -808,15 +809,14 @@ After editing a contact and before generating a Cabrillo file. There is a Misc
 menu option that will recalculate the multipliers incase an edit had caused a
 change.
 
-## Testing Out ESM Currently only in CQ WW CW
+## Testing Out ESM Currently only in CQ WW
 
 I caved and started working on ESM or Enter Sends Message. Currently it is only
-working in the CQ WW CW. To test it out you can go to `FILE -> Configuration Settings`
+working in the CQ WW. To test it out you can go to `FILE -> Configuration Settings`
 
 ![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/esm_config.png)
 
-
-Check the mark to Use ESM and tell it which function keys do what. The keys will need
+Check the mark to Enable ESM and tell it which function keys do what. The keys will need
 to have the same function in both Run and S&P modes. The function keys will highlight
 green depending on the state of the input fields. The green keys will be sent if you
 press the Enter key. You should use the Space bar to move to another field.
