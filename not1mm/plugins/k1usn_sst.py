@@ -365,3 +365,102 @@ def recalculate_mults(self):
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
+
+
+def process_esm(self, new_focused_widget=None, with_enter=False):
+    """ESM State Machine"""
+
+    # self.pref["run_state"]
+
+    # -----===== Assigned F-Keys =====-----
+    # self.esm_dict["CQ"]
+    # self.esm_dict["EXCH"]
+    # self.esm_dict["QRZ"]
+    # self.esm_dict["AGN"]
+    # self.esm_dict["HISCALL"]
+    # self.esm_dict["MYCALL"]
+    # self.esm_dict["QSOB4"]
+
+    # ----==== text fields ====----
+    # self.callsign
+    # self.sent
+    # self.receive
+    # self.other_1
+    # self.other_2
+
+    if new_focused_widget is not None:
+        self.current_widget = self.inputs_dict.get(new_focused_widget)
+
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+
+    for a_button in [
+        self.F1,
+        self.F2,
+        self.F3,
+        self.F4,
+        self.F5,
+        self.F6,
+        self.F7,
+        self.F8,
+        self.F9,
+        self.F10,
+        self.F11,
+        self.F12,
+    ]:
+        self.restore_button_color(a_button)
+
+    buttons_to_send = []
+
+    if self.pref.get("run_state"):
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) < 3:
+                self.make_button_green(self.esm_dict["CQ"])
+                buttons_to_send.append(self.esm_dict["CQ"])
+            elif len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
+                self.make_button_green(self.esm_dict["HISCALL"])
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["HISCALL"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            elif self.other_1.text().isalpha() and self.other_2.text().isalpha():
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)
+    else:
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
+                self.make_button_green(self.esm_dict["MYCALL"])
+                buttons_to_send.append(self.esm_dict["MYCALL"])
+
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            elif self.other_1.text().isalpha() and self.other_2.text().isalpha():
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+                buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)
