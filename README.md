@@ -150,7 +150,9 @@ when the program craps the bed. I'm only one guy, so if you see a bug let me kno
 
 I've recently added portions of code to watch for WSTJ-X and fldigi QSOs. I've added
 the Weekly RTTY Test, So RTTY could be tested. Also added FT8/4 and RTTY to ARRL Field
-Day and ARRL VHF. Praying that it works. I'll add more details later.
+Day and ARRL VHF. Found works better if you don't use FlDigi for making the QSO at all.
+Rather just using it as a RTTY modem and sending the text for it to send from Not1MM
+using the function keys or ESM.
 
 ### Other not so supported contests
 
