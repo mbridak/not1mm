@@ -183,23 +183,24 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
-- CQ World Wide CW, RTTY, SSB
-- CWOps CWT
+- .CQ World Wide CW, RTTY, SSB
+- .CWOps CWT
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
-- K1USN Slow Speed Test
+- .K1USN Slow Speed Test
 - NAQP CW, SSB
 - Phone Weekly Test
 - RAC Canada Day
 - Stew Perry Topband
-- Weekly RTTY
+- .Weekly RTTY
 - Winter Field Day
 
 ## Recent Changes
 
+- [24-10-13] Added ESM to Weekly RTTY, K1USN and CWT.
 - [24-10-11] added ESM to CQWW SSB and RTTY.
 - [24-10-10] Add ESM to CQ WW CW to test it out.
 - [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
