@@ -1,13 +1,13 @@
-"""NAQP CW plugin"""
+"""NAQP RTTY plugin"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
-# North American QSO Party, CW
+# North American QSO Party, RTTY
 #  	Status:	Active
 #  	Geographic Focus:	North America
 #  	Participation:	Worldwide
 #  	Awards:	North America
-#  	Mode:	CW
+#  	Mode:	RTTY
 #  	Bands:	160, 80, 40, 20, 15, 10m
 #  	Classes:	Single Op (QRP/Low)
 # Single Op Assisted (QRP/Low)
@@ -30,7 +30,7 @@
 #  	Upload log at:	http://www.ncjweb.com/naqplogsubmit/
 #  	Mail logs to:	(none)
 #  	Find rules at:	https://www.ncjweb.com/NAQP-Rules.pdf
-#  	Cabrillo name:	NAQP-CW
+#  	Cabrillo name:	NAQP-RTTY
 
 import datetime
 import logging
@@ -40,6 +40,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
@@ -47,9 +48,11 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "Name or Name + SPC"
 
-name = "NAQP CW"
-cabrillo_name = "NAQP-CW"
-mode = "CW"  # CW SSB BOTH RTTY
+ALTEREGO = None
+
+name = "NAQP RTTY"
+cabrillo_name = "NAQP-RTTY"
+mode = "RTTY"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -191,7 +194,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "NAQP-CW")
+    gen_adif(self, cabrillo_name, "NAQP-RTTY")
 
 
 def cabrillo(self):
@@ -344,6 +347,22 @@ def cabrillo(self):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
+                if themode == "LSB" or themode == "USB":
+                    themode = "PH"
+                if themode.strip() in (
+                    "RTTY",
+                    "RTTY-R",
+                    "LSB-D",
+                    "USB-D",
+                    "AM-D",
+                    "FM-D",
+                    "DIGI-U",
+                    "DIGI-L",
+                    "RTTYR",
+                    "PKTLSB",
+                    "PKTUSB",
+                ):
+                    themode = "RY"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
@@ -391,6 +410,92 @@ def recalculate_mults(self):
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
         self.multicast_interface.send_as_json(cmd)
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+            'FREQ': '7.029500',
+            'CALL': 'DL2DSL',
+            'MODE': 'RTTY',
+            'NAME': 'BOB',
+            'QSO_DATE': '20240904',
+            'QSO_DATE_OFF': '20240904',
+            'TIME_OFF': '212825',
+            'TIME_ON': '212800',
+            'RST_RCVD': '599',
+            'RST_SENT': '599',
+            'BAND': '40M',
+            'COUNTRY': 'FED. REP. OF GERMANY',
+            'CQZ': '14',
+            'STX': '000',
+            'STX_STRING': '1D ORG',
+            'CLASS': '1D',
+            'ARRL_SECT': 'DX',
+            'TX_PWR': '0',
+            'OPERATOR': 'K6GTE',
+            'STATION_CALLSIGN': 'K6GTE',
+            'MY_GRIDSQUARE': 'DM13AT',
+            'MY_CITY': 'ANAHEIM, CA',
+            'MY_STATE': 'CA'
+        }
+
+    """
+    logger.debug(f"{the_packet=}")
+    print(f"{the_packet=}")
+    # the_packet=
+    # {
+    # 'FREQ': '14.028415', 'CALL': 'K5TUY', 'MODE': 'RTTY', 'NAME': 'RUSS', 'QSO_DATE': '20241015',
+    # 'QSO_DATE_OFF': '20241015', 'TIME_OFF': '131334', 'TIME_ON': '130300', 'RST_RCVD': '599', 'RST_SENT': '599',
+    # 'BAND': '20M', 'COUNTRY': 'USA', 'CQZ': '5', 'STX': '000', 'SRX_STRING': 'MO', 'STX_STRING': 'DM13',
+    # 'TX_PWR': '0', 'OPERATOR': 'K6GTE', 'STATION_CALLSIGN': 'K6GTE', 'MY_GRIDSQUARE': 'DM13AT',
+    # 'MY_CITY': 'ANAHEIM, CA', 'MY_STATE': 'CA'
+    # }
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.other_1.setText(str(the_packet.get("NAME", "")))
+        ALTEREGO.other_2.setText(f'{the_packet.get("SRX_STRING", "")}'.strip())
+        ALTEREGO.contact["ZN"] = the_packet.get("CQZ", "")
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+
+        ALTEREGO.save_contact()
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -475,12 +580,14 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
+            sendstring = ""
             for button in buttons_to_send:
                 if button:
                     if button == "LOGIT":
                         self.save_contact()
                         continue
-                    self.process_function_key(button)
+                    sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
+            self.fldigi_util.send_string(sendstring)
     else:
         if self.current_widget == "callsign":
             if len(self.callsign.text()) > 2 and self.callsign.text().isalnum():
@@ -511,9 +618,11 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
+            sendstring = ""
             for button in buttons_to_send:
                 if button:
                     if button == "LOGIT":
                         self.save_contact()
                         continue
-                    self.process_function_key(button)
+                    sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
+            self.fldigi_util.send_string(sendstring)

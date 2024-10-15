@@ -182,7 +182,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- CQ WPX CW, RTTY, SSB
+- .CQ WPX CW, RTTY, SSB
 - .CQ World Wide CW, RTTY, SSB
 - .CWOps CWT
 - Helvetia
@@ -191,7 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ICWC MST
 - Japan International DX CW, SSB
 - .K1USN Slow Speed Test
-- NAQP CW, SSB
+- .NAQP CW, RTTY, SSB
 - Phone Weekly Test
 - RAC Canada Day
 - Stew Perry Topband
@@ -200,6 +200,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-10-15] Add NAQP RTTY, Added ESM to NAQP.
 - [24-10-14] Add ESM to CQ WPX.
 - [24-10-13] Added ESM to Weekly RTTY, K1USN and CWT.
 - [24-10-11] added ESM to CQWW SSB and RTTY.

@@ -354,6 +354,11 @@
      </item>
      <item>
       <property name="text">
+       <string>NAQP RTTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>NAQP SSB</string>
       </property>
      </item>

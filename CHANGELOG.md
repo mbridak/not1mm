@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-15] Add NAQP RTTY, Added ESM to NAQP.
 - [24-10-14] Add ESM to CQ WPX.
 - [24-10-13] Added ESM to Weekly RTTY, K1USN and CWT.
 - [24-10-11] Added ESM to CQWW SSB and RTTY.
