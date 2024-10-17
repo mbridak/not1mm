@@ -47,6 +47,7 @@ class CheckWindow(QDockWidget):
 
     def __init__(self):
         super().__init__()
+        self.active = False
         self.load_pref()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
@@ -64,6 +65,11 @@ class CheckWindow(QDockWidget):
             self.pref.get("interface_ip", "0.0.0.0"),
         )
         self.multicast_interface.ready_read_connect(self.watch_udp)
+
+    def setActive(self, mode: bool):
+        self.active = bool(mode)
+
+        print(f"{self.active=}")
 
     def item_clicked(self, item):
         """docstring for item_clicked"""
@@ -159,8 +165,14 @@ class CheckWindow(QDockWidget):
 
             if json_data.get("station", "") != platform.node():
                 continue
+            if json_data.get("cmd", "") == "DARKMODE":
+                self.setDarkMode(json_data.get("state", False))
+                continue
             if json_data.get("cmd", "") == "UPDATELOG":
                 self.clear_lists()
+                continue
+            if self.active is False:
+                continue
             if json_data.get("cmd", "") == "CALLCHANGED":
                 call = json_data.get("call", "")
                 self.call = call
@@ -175,9 +187,6 @@ class CheckWindow(QDockWidget):
             if json_data.get("cmd", "") == "NEWDB":
                 ...
                 # self.load_new_db()
-
-            if json_data.get("cmd", "") == "DARKMODE":
-                self.setDarkMode(json_data.get("state", False))
 
     def clear_lists(self) -> None:
         """

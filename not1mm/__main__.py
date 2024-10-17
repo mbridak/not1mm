@@ -654,6 +654,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionCheck_Window.setChecked(self.pref.get("checkwindow", False))
         if self.actionCheck_Window.isChecked():
             self.check_window.show()
+            self.check_window.setActive(True)
 
         self.actionVFO.setChecked(self.pref.get("vfowindow", False))
         if self.actionVFO.isChecked():
@@ -1631,8 +1632,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         if self.actionCheck_Window.isChecked():
             self.check_window.show()
+            self.check_window.setActive(True)
         else:
             self.check_window.hide()
+            self.check_window.setActive(False)
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
