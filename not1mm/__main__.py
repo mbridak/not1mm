@@ -3051,7 +3051,6 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -3090,11 +3089,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.change_freq(stripped_text)
                 return
 
-            self.check_callsign(stripped_text)
-            if self.check_dupe(stripped_text):
-                self.dupe_indicator.show()
-            else:
-                self.dupe_indicator.hide()
             cmd = {}
             cmd["cmd"] = "LOOKUP_CALL"
             cmd["station"] = platform.node()
@@ -3108,6 +3102,10 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["call"] = stripped_text
         self.multicast_interface.send_as_json(cmd)
         self.check_callsign(stripped_text)
+        if self.check_dupe(stripped_text):
+            self.dupe_indicator.show()
+        else:
+            self.dupe_indicator.hide()
 
     def change_freq(self, stripped_text: str) -> None:
         """
