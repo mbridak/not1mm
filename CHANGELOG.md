@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
 - [24-10-17] Increased max CW speed to 99, 'cause people be crazy. Trying smaller timeout for the rigctlsocket. Not having the checkwindow process events while not visible since it's a resource hog.
 - [24-10-15-1] Fix callsigns with a slash failing check during ESM.
 - [24-10-15] Add NAQP RTTY, Added ESM to NAQP.
