@@ -3163,14 +3163,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if mode in ("CW", "CW-U", "CW-L", "CWR"):
-            self.setmode("CW")
-            self.radio_state["mode"] = "CW"
             if self.rig_control and self.rig_control.online:
                 self.rig_control.set_mode("CW")
                 if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                     if self.rig_control.interface == "flrig":
                         self.cwspeed_spinbox_changed()
                         self.rig_control.cat.set_flrig_cw_send(True)
+            self.setmode("CW")
+            self.radio_state["mode"] = "CW"
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
@@ -3178,11 +3178,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.read_cw_macros()
             return
         if mode == "RTTY":
-            self.setmode("RTTY")
             if self.rig_control and self.rig_control.online:
                 self.rig_control.set_mode("RTTY")
             else:
                 self.radio_state["mode"] = "RTTY"
+            self.setmode("RTTY")
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
@@ -3190,16 +3190,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.read_cw_macros()
             return
         if mode == "SSB":
-            self.setmode("SSB")
             if int(self.radio_state.get("vfoa", 0)) > 10000000:
                 self.radio_state["mode"] = "USB"
             else:
                 self.radio_state["mode"] = "LSB"
+            if self.rig_control:
+                self.rig_control.set_mode(self.radio_state.get("mode"))
+            self.setmode("SSB")
             band = getband(str(self.radio_state.get("vfoa", "0.0")))
             self.set_band_indicator(band)
             self.set_window_title()
-            if self.rig_control:
-                self.rig_control.set_mode(self.radio_state.get("mode"))
             self.clearinputs()
             self.read_cw_macros()
 
