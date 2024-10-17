@@ -493,8 +493,9 @@ class BandMapWindow(QDockWidget):
             if packet.get("cmd", "") == "MARKDX":
                 dx = packet.get("dx", "")
                 freq = packet.get("freq", 0.0)
+                the_UTC_time = datetime.now(timezone.utc).isoformat(" ")[:19].split()[1]
                 spot = {
-                    "ts": "2099-01-01 01:00:00",
+                    "ts": "2099-01-01 " + the_UTC_time,
                     "callsign": dx,
                     "freq": freq / 1000,
                     "band": self.currentBand.name,
