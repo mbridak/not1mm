@@ -409,20 +409,16 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
     for a_button in [
-        self.F1,
-        self.F2,
-        self.F3,
-        self.F4,
-        self.F5,
-        self.F6,
-        self.F7,
-        self.F8,
-        self.F9,
-        self.F10,
-        self.F11,
-        self.F12,
+        self.esm_dict["CQ"],
+        self.esm_dict["EXCH"],
+        self.esm_dict["QRZ"],
+        self.esm_dict["AGN"],
+        self.esm_dict["HISCALL"],
+        self.esm_dict["MYCALL"],
+        self.esm_dict["QSOB4"],
     ]:
-        self.restore_button_color(a_button)
+        if a_button is not None:
+            self.restore_button_color(a_button)
 
     buttons_to_send = []
 
@@ -431,10 +427,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if len(self.callsign.text()) < 3:
                 self.make_button_green(self.esm_dict["CQ"])
                 buttons_to_send.append(self.esm_dict["CQ"])
-            elif (
-                len(self.callsign.text()) > 2
-                and self.callsign.text().replace("/", "").isalnum()
-            ):
+            elif len(self.callsign.text()) > 2:
                 self.make_button_green(self.esm_dict["HISCALL"])
                 self.make_button_green(self.esm_dict["EXCH"])
                 buttons_to_send.append(self.esm_dict["HISCALL"])
@@ -461,10 +454,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
     else:
         if self.current_widget == "callsign":
-            if (
-                len(self.callsign.text()) > 2
-                and self.callsign.text().replace("/", "").isalnum()
-            ):
+            if len(self.callsign.text()) > 2:
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
