@@ -90,7 +90,7 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.05)
+            self.rigctrlsocket.settimeout(0.2)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
@@ -522,7 +522,9 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"M {mode} 0\n", "utf-8"))
+                self.rigctrlsocket.send(bytes(f"\nM {mode} 0\n", "utf-8"))
+                if self.__get_serial_string() != "RPRT 0\n":
+                    self.rigctrlsocket.send(bytes(f"\nM {mode} 0\n", "utf-8"))
                 _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
