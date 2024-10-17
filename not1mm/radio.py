@@ -27,7 +27,7 @@ class Radio(QObject):
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
-    delta = 2
+    delta = 1
     poll_time = datetime.datetime.now() + datetime.timedelta(seconds=delta)
     time_to_quit = False
     online = False
