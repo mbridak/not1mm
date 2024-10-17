@@ -10,6 +10,8 @@ multicast_port = 2239
 multicast_group = "239.1.1.1"
 interface_ip = "0.0.0.0"
 
+print(f"\n\nListening on multicast group {multicast_group} port {multicast_port}\n\n")
+
 fifo = queue.Queue()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
