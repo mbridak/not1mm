@@ -1,4 +1,4 @@
-S|F1|MyCall|{MYCALL}
+S|F1|CQ|cq test {MYCALL} {MYCALL} test
 S|F2|HisCall|{HISCALL}
 S|F3|Exch|{SNT} {EXCH}
 S|F4|empty| 
