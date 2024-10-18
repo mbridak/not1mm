@@ -69,8 +69,6 @@ class CheckWindow(QDockWidget):
     def setActive(self, mode: bool):
         self.active = bool(mode)
 
-        print(f"{self.active=}")
-
     def item_clicked(self, item):
         """docstring for item_clicked"""
         if item:
