@@ -47,6 +47,7 @@ class Radio(QObject):
     def run(self):
         try:
             self.cat = CAT(self.interface, self.host, self.port)
+            self.online = self.cat.online
             self.modes = self.cat.get_mode_list()
         except ConnectionResetError:
             ...

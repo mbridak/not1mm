@@ -2661,7 +2661,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
 
-        if self.pref.get("userigctld", False):
+        elif self.pref.get("userigctld", False):
             logger.debug(
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
@@ -2670,6 +2670,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 "rigctld",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
+            )
+            self.rig_control.moveToThread(self.radio_thread)
+            self.radio_thread.started.connect(self.rig_control.run)
+            self.radio_thread.finished.connect(self.rig_control.deleteLater)
+            self.rig_control.poll_callback.connect(self.poll_radio)
+            self.radio_thread.start()
+        else:
+            self.rig_control = Radio(
+                "fake",
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 0000)),
             )
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
@@ -3125,6 +3136,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         vfo = float(stripped_text)
         vfo = int(vfo * 1000)
+
+        if self.rig_control:
+            self.rig_control.set_vfo(vfo)
+            return
+
         band = getband(str(vfo))
         self.set_band_indicator(band)
         self.radio_state["vfoa"] = vfo
@@ -3132,9 +3148,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_window_title()
         self.clearinputs()
-        if self.rig_control:
-            self.rig_control.set_vfo(vfo)
-            return
+
         cmd = {}
         cmd["cmd"] = "RADIO_STATE"
         cmd["station"] = platform.node()
@@ -3168,13 +3182,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.rig_control.interface == "flrig":
                         self.cwspeed_spinbox_changed()
                         self.rig_control.cat.set_flrig_cw_send(True)
-            self.setmode("CW")
-            self.radio_state["mode"] = "CW"
-            band = getband(str(self.radio_state.get("vfoa", "0.0")))
-            self.set_band_indicator(band)
-            self.set_window_title()
-            self.clearinputs()
-            self.read_cw_macros()
+            else:
+                self.setmode("CW")
+                self.radio_state["mode"] = "CW"
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
+                self.set_window_title()
+                self.clearinputs()
+                self.read_cw_macros()
             return
         if mode == "RTTY":
             if self.rig_control and self.rig_control.online:
@@ -3193,14 +3208,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.radio_state["mode"] = "USB"
             else:
                 self.radio_state["mode"] = "LSB"
-            if self.rig_control:
+            if self.rig_control and self.rig_control.online:
                 self.rig_control.set_mode(self.radio_state.get("mode"))
-            self.setmode("SSB")
-            band = getband(str(self.radio_state.get("vfoa", "0.0")))
-            self.set_band_indicator(band)
-            self.set_window_title()
-            self.clearinputs()
-            self.read_cw_macros()
+            else:
+                self.setmode("SSB")
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
+                self.set_window_title()
+                self.clearinputs()
+                self.read_cw_macros()
 
     def check_callsign(self, callsign) -> None:
         """
