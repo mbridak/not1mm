@@ -822,8 +822,8 @@ change.
 
 ## Testing Out ESM Currently only in CQ WW
 
-I caved and started working on ESM or Enter Sends Message. Currently it is only
-working in the CQ WW. To test it out you can go to `FILE -> Configuration Settings`
+I caved and started working on ESM or Enter Sends Message. To test it out you can
+go to `FILE -> Configuration Settings`
 
 ![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/esm_config.png)
 
