@@ -117,17 +117,19 @@ class Radio(QObject):
 
         if self.cat:
             self.cat.set_vfo(vfo)
-        try:
-            self.poll_callback.emit(
-                {
-                    "vfoa": self.vfoa,
-                    "mode": self.mode,
-                    "bw": self.bw,
-                    "online": self.online,
-                }
-            )
-        except RuntimeError:
-            ...
+
+        self.poll_time = datetime.datetime.now()
+        # try:
+        #     self.poll_callback.emit(
+        #         {
+        #             "vfoa": str(self.vfoa),
+        #             "mode": self.mode,
+        #             "bw": self.bw,
+        #             "online": self.online,
+        #         }
+        #     )
+        # except RuntimeError:
+        #     ...
 
     def set_mode(self, mode):
         self.mode = mode
@@ -135,17 +137,18 @@ class Radio(QObject):
         if self.cat:
             self.cat.set_mode(mode)
 
-        try:
-            self.poll_callback.emit(
-                {
-                    "vfoa": self.vfoa,
-                    "mode": self.mode,
-                    "bw": self.bw,
-                    "online": self.online,
-                }
-            )
-        except RuntimeError:
-            ...
+        self.poll_time = datetime.datetime.now()
+        # try:
+        #     self.poll_callback.emit(
+        #         {
+        #             "vfoa": str(self.vfoa),
+        #             "mode": self.mode,
+        #             "bw": self.bw,
+        #             "online": self.online,
+        #         }
+        #     )
+        # except RuntimeError:
+        #     ...
 
     def get_modes(self):
         """get list of modes"""
