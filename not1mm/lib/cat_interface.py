@@ -71,6 +71,15 @@ class CAT:
         self.host = host
         self.port = port
         self.online = False
+        self.fake_radio = {
+            "vfo": "14032000",
+            "mode": "CW",
+            "bw": "500",
+            "power": "100",
+            "modes": ["CW", "USB", "LSB", "RTTY"],
+            "ptt": False,
+        }
+
         if self.interface == "flrig":
             target = f"http://{host}:{port}"
             logger.debug("%s", target)
@@ -84,8 +93,11 @@ class CAT:
                 http.client.BadStatusLine,
             ):
                 self.online = False
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             self.__initialize_rigctrld()
+        elif self.interface == "fake":
+            self.online = True
+        return
 
     def __initialize_rigctrld(self):
         try:
@@ -121,8 +133,7 @@ class CAT:
         logger.debug(f"{texttosend=} {self.interface=}")
         if self.interface == "flrig":
             self.sendcwxmlrpc(texttosend)
-            return
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             self.sendcwrigctl(texttosend)
 
     def sendcwrigctl(self, texttosend):
@@ -200,10 +211,12 @@ class CAT:
         vfo = ""
         if self.interface == "flrig":
             vfo = self.__getvfo_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             vfo = self.__getvfo_rigctld()
             if "RPRT -" in vfo:
                 vfo = ""
+        else:
+            vfo = self.fake_radio.get("vfo", "")
         return vfo
 
     def __getvfo_flrig(self) -> str:
@@ -243,8 +256,10 @@ class CAT:
         mode = ""
         if self.interface == "flrig":
             mode = self.__getmode_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             mode = self.__getmode_rigctld()
+        else:
+            mode = self.fake_radio.get("mode")
         return mode
 
     def __getmode_flrig(self) -> str:
@@ -291,9 +306,10 @@ class CAT:
         """Get current vfo bandwidth"""
         if self.interface == "flrig":
             return self.__getbw_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__getbw_rigctld()
-        return False
+        else:
+            return self.fake_radio.get("bw")
 
     def __getbw_flrig(self):
         """return bandwidth"""
@@ -336,9 +352,10 @@ class CAT:
         """Get power level from rig"""
         if self.interface == "flrig":
             return self.__getpower_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__getpower_rigctld()
-        return False
+        else:
+            return self.fake_radio.get("power", "100")
 
     def __getpower_flrig(self):
         try:
@@ -371,7 +388,7 @@ class CAT:
         """Get PTT state"""
         if self.interface == "flrig":
             return self.__getptt_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__getptt_rigctld()
         return False
 
@@ -411,8 +428,10 @@ class CAT:
         "Get a list of modes supported by the radio"
         if self.interface == "flrig":
             return self.__get_mode_list_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__get_mode_list_rigctld()
+        else:
+            return self.fake_radio.get("modes")
         return False
 
     def __get_mode_list_flrig(self):
@@ -455,8 +474,11 @@ class CAT:
         try:
             if self.interface == "flrig":
                 return self.__setvfo_flrig(freq)
-            if self.interface == "rigctld":
+            elif self.interface == "rigctld":
                 return self.__setvfo_rigctld(freq)
+            else:
+                self.fake_radio["vfo"] = str(freq)
+                return True
         except ValueError:
             ...
         return False
@@ -497,9 +519,11 @@ class CAT:
         """Sets the radios mode"""
         if self.interface == "flrig":
             return self.__setmode_flrig(mode)
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__setmode_rigctld(mode)
-        return False
+        else:
+            self.fake_radio["mode"] = mode
+            return True
 
     def __setmode_flrig(self, mode: str) -> bool:
         """Sets the radios mode"""
@@ -539,9 +563,11 @@ class CAT:
         """Sets the radios power"""
         if self.interface == "flrig":
             return self.__setpower_flrig(power)
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__setpower_rigctld(power)
-        return False
+        else:
+            self.fake_radio["power"] = str(power)
+            return True
 
     def __setpower_flrig(self, power):
         try:
@@ -573,9 +599,11 @@ class CAT:
         """turn ptt on/off"""
         if self.interface == "flrig":
             return self.__ptt_on_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__ptt_on_rigctld()
-        return False
+        else:
+            self.fake_radio["ptt"] = True
+            return True
 
     def __ptt_on_rigctld(self):
         """Toggle PTT state on"""
@@ -618,9 +646,11 @@ class CAT:
         """turn ptt on/off"""
         if self.interface == "flrig":
             return self.__ptt_off_flrig()
-        if self.interface == "rigctld":
+        elif self.interface == "rigctld":
             return self.__ptt_off_rigctld()
-        return False
+        else:
+            self.fake_radio["ptt"] = False
+            return True
 
     def __ptt_off_rigctld(self):
         """Toggle PTT state off"""
