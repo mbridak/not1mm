@@ -179,7 +179,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL 10M
 - ARRL DX CW, SSB
 - ARRL Field Day
-- ARRL Sweepstakes CW, SSB
+- .ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
 - .CQ WPX CW, RTTY, SSB
@@ -200,7 +200,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [24-10-19] Change ESM button states when the run state is toggled.
+- [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
 - [24-10-18] Fixed marked spots showing the correct time.
 - [24-10-17-2] Add ESM to ARRL Sweepstakes.
 - [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
