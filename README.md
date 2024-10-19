@@ -26,7 +26,7 @@
     - [Data and RTTY](#data-and-rtty)
     - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
-  - [List of should be working contests](#list-of-should-be-working-contests)
+  - [List of should be working contests, those in bold have ESM](#list-of-should-be-working-contests-those-in-bold-have-esm)
   - [Recent Changes](#recent-changes)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
@@ -169,7 +169,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
-## List of should be working contests
+## List of should be working contests, those in bold have ESM
 
 - General Logging (There are better general loggers like QLog, KLog, CQRLog)
 - 10 10 Fall CW
@@ -178,28 +178,29 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Winter Phone
 - ARRL 10M
 - ARRL DX CW, SSB
-- ARRL Field Day
-- ARRL Sweepstakes CW, SSB
+- **ARRL Field Day**
+- **ARRL Sweepstakes CW, SSB**
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- .CQ WPX CW, RTTY, SSB
-- .CQ World Wide CW, RTTY, SSB
-- .CWOps CWT
+- **CQ WPX CW, RTTY, SSB**
+- **CQ World Wide CW, RTTY, SSB**
+- **CWOps CWT**
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
-- .K1USN Slow Speed Test
-- .NAQP CW, RTTY, SSB
+- **K1USN Slow Speed Test**
+- **NAQP CW, RTTY, SSB**
 - Phone Weekly Test
 - RAC Canada Day
 - Stew Perry Topband
-- .Weekly RTTY
-- Winter Field Day
+- **Weekly RTTY**
+- **Winter Field Day**
 
 ## Recent Changes
 
+- [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
 - [24-10-18] Fixed marked spots showing the correct time.
 - [24-10-17-2] Add ESM to ARRL Sweepstakes.
 - [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
@@ -821,8 +822,8 @@ change.
 
 ## Testing Out ESM Currently only in CQ WW
 
-I caved and started working on ESM or Enter Sends Message. Currently it is only
-working in the CQ WW. To test it out you can go to `FILE -> Configuration Settings`
+I caved and started working on ESM or Enter Sends Message. To test it out you can
+go to `FILE -> Configuration Settings`
 
 ![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/esm_config.png)
 

@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
 - [24-10-18] Fixed marked spots showing the correct time.
 - [24-10-17-2] Add ESM to ARRL Sweepstakes.
 - [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
