@@ -2534,6 +2534,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
         self.read_cw_macros()
+        self.check_esm()
 
     def write_preference(self) -> None:
         """
