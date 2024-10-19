@@ -1710,6 +1710,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("windowState", self.saveState())
         self.settings.sync()
 
+        try:  # Shutdown the radio thread.
+            if self.radio_thread.isRunning():
+                self.rig_control.time_to_quit = True
+                self.radio_thread.quit()
+                self.radio_thread.wait(1000)
+
+        except (RuntimeError, AttributeError):
+            ...
+
         cmd = {}
         cmd["cmd"] = "HALT"
         cmd["station"] = platform.node()
@@ -3088,17 +3097,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.show_help_dialog()
                 self.clearinputs()
                 return
-            if stripped_text == "TEST":
-                result = self.database.get_calls_and_bands()
-                cmd = {}
-                cmd["cmd"] = "WORKED"
-                cmd["station"] = platform.node()
-                cmd["worked"] = result
-                self.multicast_interface.send_as_json(cmd)
-                self.clearinputs()
-                return
+            # if stripped_text == "TEST":
+            #     result = self.database.get_calls_and_bands()
+            #     cmd = {}
+            #     cmd["cmd"] = "WORKED"
+            #     cmd["station"] = platform.node()
+            #     cmd["worked"] = result
+            #     self.multicast_interface.send_as_json(cmd)
+            #     self.clearinputs()
+            #     return
             if self.is_floatable(stripped_text):
                 self.change_freq(stripped_text)
+                self.clearinputs()
                 return
 
             cmd = {}
@@ -3187,9 +3197,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.radio_state["mode"] = "CW"
                 band = getband(str(self.radio_state.get("vfoa", "0.0")))
                 self.set_band_indicator(band)
-                self.set_window_title()
-                self.clearinputs()
-                self.read_cw_macros()
+            self.set_window_title()
+            self.clearinputs()
+            self.read_cw_macros()
             return
         if mode == "RTTY":
             if self.rig_control and self.rig_control.online:
@@ -3214,9 +3224,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.setmode("SSB")
                 band = getband(str(self.radio_state.get("vfoa", "0.0")))
                 self.set_band_indicator(band)
-                self.set_window_title()
-                self.clearinputs()
-                self.read_cw_macros()
+            self.set_window_title()
+            self.clearinputs()
+            self.read_cw_macros()
 
     def check_callsign(self, callsign) -> None:
         """
