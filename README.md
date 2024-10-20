@@ -177,7 +177,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Summer Phone
 - 10 10 Winter Phone
 - ARRL 10M
-- ARRL DX CW, SSB
+- **ARRL DX CW, SSB**
 - **ARRL Field Day**
 - **ARRL Sweepstakes CW, SSB**
 - ARRL VHF January, June, September
@@ -200,6 +200,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-10-20] Add ESM to ARRL DX.
 - [24-10-19-1] Rewrite part of CAT control.
 - [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
 - [24-10-18] Fixed marked spots showing the correct time.
