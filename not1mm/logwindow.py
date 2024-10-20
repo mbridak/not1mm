@@ -131,7 +131,9 @@ class LogWindow(QDockWidget):
 
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
-
+        self.generalLog.horizontalHeader().sectionResized.connect(
+            self.resize_headers_to_match
+        )
         self.focusedLog.setContextMenuPolicy(
             QtCore.Qt.ContextMenuPolicy.CustomContextMenu
         )
@@ -143,6 +145,7 @@ class LogWindow(QDockWidget):
 
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
+
             log.setColumnWidth(self.get_column("Snt"), 50)
             log.setColumnWidth(self.get_column("Rcv"), 50)
             log.setColumnWidth(self.get_column("SentNr"), 75)
@@ -171,6 +174,11 @@ class LogWindow(QDockWidget):
         cmd["station"] = platform.node()
 
         self.multicast_interface.send_as_json(cmd)
+
+    def resize_headers_to_match(self) -> None:
+        """"""
+        for i in range(self.generalLog.columnCount()):
+            self.focusedLog.setColumnWidth(i, self.generalLog.columnWidth(i))
 
     def set_dark_mode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
