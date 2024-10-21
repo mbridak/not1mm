@@ -16,7 +16,6 @@ import locale
 import logging
 from logging.handlers import RotatingFileHandler
 import os
-import platform
 import socket
 import sys
 import uuid
@@ -56,7 +55,8 @@ from not1mm.lib.ham_utility import (
     reciprocol,
     fakefreq,
 )
-from not1mm.lib.multicast import Multicast
+
+# from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
 from not1mm.lib.super_check_partial import SCP
@@ -550,6 +550,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Starting LookUp Service.")
 
         self.lookup_service = LookupService()
+        self.lookup_service.message.connect(self.dockwidget_message)
         self.lookup_service.hide()
 
         self.show_splash_msg("Reading preferences.")
@@ -583,33 +584,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
 
-        self.clearinputs()
-        self.show_splash_msg("Loading contest.")
-        self.load_contest()
-        self.show_splash_msg("Reading macros.")
-        self.read_cw_macros()
-
         # Featureset for wayland
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
         )
-
-        self.show_splash_msg("Starting FlDigi watcher.")
-        self.fldigi_watcher = FlDigiWatcher()
-        self.fldigi_watcher.moveToThread(self.fldigi_thread)
-        self.fldigi_thread.started.connect(self.fldigi_watcher.run)
-        self.fldigi_thread.finished.connect(self.fldigi_watcher.deleteLater)
-        self.fldigi_watcher.poll_callback.connect(self.fldigi_qso)
-        self.fldigi_thread.start()
-
-        self.show_splash_msg("Setting up LogWindow.")
-        self.log_window = LogWindow()
-        self.log_window.setObjectName("log-window")
-        if os.environ.get("WAYLAND_DISPLAY"):
-            self.log_window.setFeatures(dockfeatures)
-        self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
-        self.log_window.hide()
 
         self.show_splash_msg("Setting up BandMapWindow.")
         self.bandmap_window = BandMapWindow()
@@ -619,6 +598,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window)
         self.bandmap_window.hide()
         self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
+        self.bandmap_window.message.connect(self.dockwidget_message)
+        self.bandmap_window.callsignField.setText(self.current_op)
 
         self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow()
@@ -627,6 +608,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
+        self.check_window.message.connect(self.dockwidget_message)
 
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
@@ -635,6 +617,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
+
+        self.show_splash_msg("Setting up LogWindow.")
+        self.log_window = LogWindow()
+        self.log_window.setObjectName("log-window")
+        if os.environ.get("WAYLAND_DISPLAY"):
+            self.log_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
+        self.log_window.hide()
+        self.log_window.message.connect(self.dockwidget_message)
+
+        self.clearinputs()
+        self.show_splash_msg("Loading contest.")
+        self.load_contest()
+        self.show_splash_msg("Reading macros.")
+        self.read_cw_macros()
+
+        self.show_splash_msg("Starting FlDigi watcher.")
+        self.fldigi_watcher = FlDigiWatcher()
+        self.fldigi_watcher.moveToThread(self.fldigi_thread)
+        self.fldigi_thread.started.connect(self.fldigi_watcher.run)
+        self.fldigi_thread.finished.connect(self.fldigi_watcher.deleteLater)
+        self.fldigi_watcher.poll_callback.connect(self.fldigi_qso)
+        self.fldigi_thread.start()
 
         self.show_splash_msg("Restoring window states.")
         self.settings = QSettings("K6GTE", "not1mm")
@@ -646,19 +651,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionLog_Window.setChecked(self.pref.get("logwindow", False))
         if self.actionLog_Window.isChecked():
             self.log_window.show()
+        else:
+            self.log_window.hide()
 
         self.actionBandmap.setChecked(self.pref.get("bandmapwindow", False))
         if self.actionBandmap.isChecked():
             self.bandmap_window.show()
+        else:
+            self.bandmap_window.hide()
 
         self.actionCheck_Window.setChecked(self.pref.get("checkwindow", False))
         if self.actionCheck_Window.isChecked():
             self.check_window.show()
             self.check_window.setActive(True)
+        else:
+            self.check_window.hide()
+            self.check_window.setActive(False)
 
         self.actionVFO.setChecked(self.pref.get("vfowindow", False))
         if self.actionVFO.isChecked():
             self.vfo_window.show()
+        else:
+            self.vfo_window.hide()
 
         self.cwspeed_spinbox_changed()
 
@@ -719,6 +733,88 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         QCoreApplication.processEvents()
 
+    def dockwidget_message(self, msg):
+        """signal from bandmap"""
+        if msg:
+            if msg.get("cmd", "") == "GETCOLUMNS":
+                if hasattr(self.contest, "columns"):
+                    cmd = {}
+                    cmd["cmd"] = "SHOWCOLUMNS"
+                    cmd["COLUMNS"] = self.contest.columns
+                    if self.log_window:
+                        self.log_window.msg_from_main(cmd)
+                return
+            if msg.get("cmd", "") == "TUNE":
+                # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                vfo = msg.get("freq")
+                vfo = float(vfo) * 1000000
+                self.radio_state["vfoa"] = int(vfo)
+                if self.rig_control:
+                    self.rig_control.set_vfo(int(vfo))
+                spot = msg.get("spot", "")
+                self.callsign.setText(spot)
+                self.callsign_changed()
+                self.callsign.setFocus()
+                self.callsign.activateWindow()
+                return
+
+            if msg.get("cmd", "") == "GETWORKEDLIST":
+                result = self.database.get_calls_and_bands()
+                cmd = {}
+                cmd["cmd"] = "WORKED"
+                cmd["worked"] = result
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
+                return
+
+            if msg.get("cmd", "") == "GETCONTESTSTATUS":
+                cmd = {
+                    "cmd": "CONTESTSTATUS",
+                    "contest": self.contest_settings,
+                    "operator": self.current_op,
+                }
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
+                    self.bandmap_window.callsignField.setText(self.current_op)
+                return
+
+            if msg.get("cmd", "") == "CHANGECALL":
+                self.callsign.setText(msg.get("call", ""))
+                self.callsign.setFocus()
+
+            if msg.get("cmd", "") == "CHECKSPOTS":
+                if self.check_window:
+                    self.check_window.msg_from_main(msg)
+
+            # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
+
+            if msg.get("cmd", "") == "LOOKUP_RESPONSE":
+                if msg.get("result", None) is not None:
+                    fname = msg.get("result", {}).get("fname", "")
+                    name = msg.get("result", {}).get("name", "")
+                    grid = msg.get("result", {}).get("grid", "")
+                    nickname = msg.get("result", {}).get("nickname", "")
+
+                    if self.contest:
+                        if "General Logging" in self.contest.name:
+                            if nickname:
+                                self.other_1.setText(nickname)
+                            elif fname:
+                                self.other_1.setText(fname)
+                            elif name:
+                                self.other_1.setText(name)
+
+                    if grid:
+                        self.contact["GridSquare"] = grid
+                    # _theircountry = response.get("country", "")
+                    if self.station.get("GridSquare", ""):
+                        heading = bearing(self.station.get("GridSquare", ""), grid)
+                        kilometers = distance(self.station.get("GridSquare", ""), grid)
+                        self.heading_distance.setText(
+                            f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                        )
+
     def cluster_expire_updated(self, number):
         """signal from bandmap"""
         self.pref["cluster_expire"] = int(number)
@@ -778,8 +874,12 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd = {}
         cmd["cmd"] = "DARKMODE"
         cmd["state"] = setdarkmode
-        cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.check_window:
+            self.check_window.msg_from_main(cmd)
 
         if setdarkmode:
             darkPalette = QPalette()
@@ -948,8 +1048,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cmd = {}
         cmd["cmd"] = "HALT"
-        cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
         app.quit()
 
     def show_message_box(self, message: str) -> None:
@@ -1110,8 +1210,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
-            cmd["station"] = platform.node()
-            self.multicast_interface.send_as_json(cmd)
+            if self.log_window:
+                self.log_window.msg_from_main(cmd)
             self.clearinputs()
             self.edit_station_settings()
 
@@ -1147,8 +1247,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
-            cmd["station"] = platform.node()
-            self.multicast_interface.send_as_json(cmd)
+            if self.log_window:
+                self.log_window.msg_from_main(cmd)
             self.clearinputs()
             self.open_contest()
 
@@ -1436,14 +1536,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.clearinputs()
                 cmd = {}
                 cmd["cmd"] = "NEWDB"
-                cmd["station"] = platform.node()
-                self.multicast_interface.send_as_json(cmd)
+                if self.log_window:
+                    self.log_window.msg_from_main(cmd)
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
-                    cmd["station"] = platform.node()
                     cmd["COLUMNS"] = self.contest.columns
-                    self.multicast_interface.send_as_json(cmd)
+                    if self.log_window:
+                        self.log_window.msg_from_main(cmd)
 
     def check_for_new_cty(self) -> None:
         """
@@ -1721,8 +1821,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cmd = {}
         cmd["cmd"] = "HALT"
-        cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
         self.write_preference()
 
     def cty_lookup(self, callsign: str) -> list:
@@ -1802,10 +1906,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if freq and dx:
                 cmd = {}
                 cmd["cmd"] = "SPOTDX"
-                cmd["station"] = platform.node()
                 cmd["dx"] = dx
                 cmd["freq"] = float(int(freq) / 1000)
-                self.multicast_interface.send_as_json(cmd)
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
             return
         if (
             event.key() == Qt.Key.Key_M
@@ -1816,10 +1920,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if freq and dx:
                 cmd = {}
                 cmd["cmd"] = "MARKDX"
-                cmd["station"] = platform.node()
                 cmd["dx"] = dx
                 cmd["freq"] = float(int(freq) / 1000)
-                self.multicast_interface.send_as_json(cmd)
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
             return
         if (
             event.key() == Qt.Key.Key_G
@@ -1829,9 +1933,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if dx:
                 cmd = {}
                 cmd["cmd"] = "FINDDX"
-                cmd["station"] = platform.node()
                 cmd["dx"] = dx
-                self.multicast_interface.send_as_json(cmd)
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
             return
         if (
             event.key() == Qt.Key.Key_Escape
@@ -1856,14 +1960,14 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
-            cmd["station"] = platform.node()
-            self.multicast_interface.send_as_json(cmd)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
             return
         if event.key() == Qt.Key.Key_Down:
             cmd = {}
             cmd["cmd"] = "NEXTSPOT"
-            cmd["station"] = platform.node()
-            self.multicast_interface.send_as_json(cmd)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
             return
         if (
             event.key() == Qt.Key.Key_PageUp
@@ -1959,9 +2063,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     text = text.upper()
                     cmd = {}
                     cmd["cmd"] = "LOOKUP_CALL"
-                    cmd["station"] = platform.node()
                     cmd["call"] = text
-                    self.multicast_interface.send_as_json(cmd)
+                    if self.lookup_service:
+                        self.lookup_service.msg_from_main(cmd)
                     next_tab = self.tab_next.get(self.callsign)
                     next_tab.setFocus()
                     next_tab.deselect()
@@ -2031,10 +2135,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cmd = {}
         cmd["cmd"] = "WORKED"
-        cmd["station"] = platform.node()
         cmd["worked"] = self.worked_list
         logger.debug("%s", f"{cmd}")
-        self.multicast_interface.send_as_json(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
 
     def clearinputs(self) -> None:
         """
@@ -2077,9 +2181,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setFocus()
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
-        cmd["station"] = platform.node()
         cmd["call"] = ""
-        self.multicast_interface.send_as_json(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.check_window:
+            self.check_window.msg_from_main(cmd)
 
     def save_contact(self) -> None:
         """
@@ -2199,8 +2307,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
-        cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.check_window:
+            self.check_window.msg_from_main(cmd)
 
     def new_contest_dialog(self) -> None:
         """
@@ -2623,17 +2733,10 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.actionMode_and_Bands.setChecked(False)
 
-        self.multicast_interface = Multicast(
-            self.pref.get("multicast_group", "239.1.1.1"),
-            self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
-        )
-        self.multicast_interface.ready_read_connect(self.watch_udp)
-
         cmd = {}
         cmd["cmd"] = "REFRESH_LOOKUP"
-        cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
 
         if self.pref.get("darkmode"):
             self.actionDark_Mode_2.setChecked(True)
@@ -2781,119 +2884,6 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
         self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
-
-    def watch_udp(self) -> None:
-        """
-        Watch the UDP socket for incoming data.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        while self.multicast_interface.has_pending_datagrams():
-            json_data = self.multicast_interface.read_datagram_as_json()
-            if json_data:
-                if (
-                    json_data.get("cmd", "") == "GETCOLUMNS"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    if hasattr(self.contest, "columns"):
-                        cmd = {}
-                        cmd["cmd"] = "SHOWCOLUMNS"
-                        cmd["station"] = platform.node()
-                        cmd["COLUMNS"] = self.contest.columns
-                        self.multicast_interface.send_as_json(cmd)
-                    continue
-                if (
-                    json_data.get("cmd", "") == "TUNE"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
-                    vfo = json_data.get("freq")
-                    vfo = float(vfo) * 1000000
-                    self.radio_state["vfoa"] = int(vfo)
-                    if self.rig_control:
-                        self.rig_control.set_vfo(int(vfo))
-                    spot = json_data.get("spot", "")
-                    self.callsign.setText(spot)
-                    self.callsign_changed()
-                    self.callsign.setFocus()
-                    self.callsign.activateWindow()
-                    # This broke somehow.
-                    # window.raise_()
-                    continue
-
-                if (
-                    json_data.get("cmd", "") == "GETWORKEDLIST"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    result = self.database.get_calls_and_bands()
-                    cmd = {}
-                    cmd["cmd"] = "WORKED"
-                    cmd["station"] = platform.node()
-                    cmd["worked"] = result
-                    self.multicast_interface.send_as_json(cmd)
-                    continue
-
-                if (
-                    json_data.get("cmd", "") == "GETCONTESTSTATUS"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    cmd = {
-                        "cmd": "CONTESTSTATUS",
-                        "station": platform.node(),
-                        "contest": self.contest_settings,
-                        "operator": self.current_op,
-                    }
-                    self.multicast_interface.send_as_json(cmd)
-                    continue
-
-                if (
-                    json_data.get("cmd", "") == "CHANGECALL"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    self.callsign.setText(json_data.get("call", ""))
-                    self.callsign.setFocus()
-
-                # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
-
-                if (
-                    json_data.get("cmd", "") == "LOOKUP_RESPONSE"
-                    and json_data.get("station", "") == platform.node()
-                ):
-                    if json_data.get("result", None) is not None:
-                        fname = json_data.get("result", {}).get("fname", "")
-                        name = json_data.get("result", {}).get("name", "")
-                        grid = json_data.get("result", {}).get("grid", "")
-                        # error_text = json_data.get("result", {}).get("error_text", "")
-                        nickname = json_data.get("result", {}).get("nickname", "")
-
-                        if self.contest:
-                            if "General Logging" in self.contest.name:
-                                if nickname:
-                                    self.other_1.setText(nickname)
-                                elif fname:
-                                    self.other_1.setText(fname)
-                                elif name:
-                                    self.other_1.setText(name)
-
-                        if grid:
-                            self.contact["GridSquare"] = grid
-                        # _theircountry = response.get("country", "")
-                        if self.station.get("GridSquare", ""):
-                            heading = bearing(self.station.get("GridSquare", ""), grid)
-                            kilometers = distance(
-                                self.station.get("GridSquare", ""), grid
-                            )
-                            self.heading_distance.setText(
-                                f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
-                                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
-                            )
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
@@ -3097,32 +3087,26 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.show_help_dialog()
                 self.clearinputs()
                 return
-            # if stripped_text == "TEST":
-            #     result = self.database.get_calls_and_bands()
-            #     cmd = {}
-            #     cmd["cmd"] = "WORKED"
-            #     cmd["station"] = platform.node()
-            #     cmd["worked"] = result
-            #     self.multicast_interface.send_as_json(cmd)
-            #     self.clearinputs()
-            #     return
             if self.is_floatable(stripped_text):
                 self.change_freq(stripped_text)
                 self.clearinputs()
                 return
-
             cmd = {}
             cmd["cmd"] = "LOOKUP_CALL"
-            cmd["station"] = platform.node()
             cmd["call"] = stripped_text
-            self.multicast_interface.send_as_json(cmd)
+            if self.lookup_service:
+                self.lookup_service.msg_from_main(cmd)
             self.next_field.setFocus()
             return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
-        cmd["station"] = platform.node()
         cmd["call"] = stripped_text
-        self.multicast_interface.send_as_json(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.check_window:
+            self.check_window.msg_from_main(cmd)
         self.check_callsign(stripped_text)
         if self.check_dupe(stripped_text):
             self.dupe_indicator.show()
@@ -3161,10 +3145,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cmd = {}
         cmd["cmd"] = "RADIO_STATE"
-        cmd["station"] = platform.node()
         cmd["band"] = band
         cmd["vfoa"] = vfo
-        self.multicast_interface.send_as_json(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
 
     def change_mode(self, mode: str) -> None:
         """
@@ -3366,6 +3350,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.opon_dialog.NewOperator.text():
             self.current_op = self.opon_dialog.NewOperator.text().upper()
             self.voice_process.current_op = self.current_op
+            if self.bandmap_window:
+                self.bandmap_window.callsignField.setText(self.current_op)
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()
@@ -3457,18 +3443,26 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             self.setmode("RTTY")
 
+        cmd = {}
+        cmd["cmd"] = "RADIO_STATE"
+        cmd["band"] = band
+        cmd["vfoa"] = vfo
+        cmd["mode"] = mode
+        cmd["bw"] = bw
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
         if info_dirty:
             try:
                 logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
                 self.set_window_title()
                 cmd = {}
                 cmd["cmd"] = "RADIO_STATE"
-                cmd["station"] = platform.node()
                 cmd["band"] = band
                 cmd["vfoa"] = vfo
                 cmd["mode"] = mode
                 cmd["bw"] = bw
-                self.multicast_interface.send_as_json(cmd)
+                if self.bandmap_window:
+                    self.bandmap_window.msg_from_main(cmd)
                 if self.n1mm:
                     self.n1mm.radio_info["Freq"] = vfo[:-1]
                     self.n1mm.radio_info["TXFreq"] = vfo[:-1]
@@ -3478,13 +3472,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.pref.get("run_state", False)
                     )
                     if self.n1mm.send_radio_packets:
-                        # self.n1mm.radio_info["Freq"] = vfo[:-1]
-                        # self.n1mm.radio_info["TXFreq"] = vfo[:-1]
-                        # self.n1mm.radio_info["Mode"] = mode
-                        # self.n1mm.radio_info["OpCall"] = self.current_op
-                        # self.n1mm.radio_info["IsRunning"] = str(
-                        #     self.pref.get("run_state", False)
-                        # )
                         self.n1mm.send_radio()
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
