@@ -23,7 +23,6 @@ from PyQt6.QtCore import pyqtSignal
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 
-# from not1mm.lib.multicast import Multicast
 from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,6 @@ logger = logging.getLogger(__name__)
 class CheckWindow(QDockWidget):
     """The check window. Shows list or probable stations."""
 
-    multicast_interface = None
     message = pyqtSignal(dict)
     dbname = None
     pref = {}
@@ -61,12 +59,6 @@ class CheckWindow(QDockWidget):
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
-        # self.multicast_interface = Multicast(
-        #     self.pref.get("multicast_group", "239.1.1.1"),
-        #     self.pref.get("multicast_port", 2239),
-        #     self.pref.get("interface_ip", "0.0.0.0"),
-        # )
-        # self.multicast_interface.ready_read_connect(self.watch_udp)
 
     def msg_from_main(self, packet):
         """"""
