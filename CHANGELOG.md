@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-20-1] ReWrote how the widgets interact. I porbably broke a thing or two. Let me know. 
 - [24-10-20] Add ESM to ARRL DX.
 - [24-10-19-1] Rewrite part of CAT control.
 - [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
