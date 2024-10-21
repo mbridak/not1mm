@@ -200,6 +200,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
 - [24-10-20-1] ReWrote how the widgets interact. I porbably broke a thing or two. Let me know. 
 - [24-10-20] Add ESM to ARRL DX.
 - [24-10-19-1] Rewrite part of CAT control.
