@@ -193,7 +193,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **K1USN Slow Speed Test**
 - **NAQP CW, RTTY, SSB**
 - Phone Weekly Test
-- RAC Canada Day
+- **RAC Canada Day**
+- **REF CW, SSB**
 - Stew Perry Topband
 - **Weekly RTTY**
 - **Winter Field Day**
