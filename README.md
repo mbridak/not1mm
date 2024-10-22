@@ -27,7 +27,7 @@
     - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
   - [List of should be working contests, those in bold have ESM](#list-of-should-be-working-contests-those-in-bold-have-esm)
-  - [Recent Changes](#recent-changes)
+  - [Recent Changes (Polishing the Turd)](#recent-changes-polishing-the-turd)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
@@ -198,8 +198,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **Weekly RTTY**
 - **Winter Field Day**
 
-## Recent Changes
+## Recent Changes (Polishing the Turd)
 
+- [24-10-22] Added ESM to RAC Canada Day. Added French REF.
 - [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
 - [24-10-20-1] ReWrote how the widgets interact. I porbably broke a thing or two. Let me know. 
 - [24-10-20] Add ESM to ARRL DX.

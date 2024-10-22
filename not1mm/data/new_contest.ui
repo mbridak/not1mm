@@ -369,6 +369,16 @@
      </item>
      <item>
       <property name="text">
+       <string>REF CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>REF SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>STEW PERRY TOPBAND</string>
       </property>
      </item>

@@ -1,74 +1,82 @@
-"""rac canada day"""
+"""
+REF Contest, SSB
+Status:	Active
+Geographic Focus:	France + overseas territories
+Participation:	Worldwide
+Awards:	Worldwide
+Mode:	CW
+Bands:	80, 40, 20, 15, 10m
+Classes:	Single Op All Band
+            Single Op Single Band
+            Multi-Single
+            Club
+            SWL
+Max power:	HP: >100 Watts
+            LP: 100 Watts
+            QRP: 5 Watts
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
+Exchange:	French: RST + Department/Prefix
+            non-French: RST + Serial No.
+
+Work stations:	Once per band
+
+QSO Points:	French: 6 points per QSO with French station same continent
+            French: 15 points per QSO with French station on different continent
+            French: 1 point per QSO with non-French station same continent
+            French: 2 points per QSO with non-French station on different continent
+            non-French: 1 point per QSO with French station same continent
+            non-French: 3 points per QSO with French station on different continent
+
+Multipliers:	French/Corsica departments once per band
+                French overseas prefixes once per band
+                non-French DXCC countries once per band (available only to French stations)
+
+Score Calculation:	Total score = total QSO points x total mults
+
+Upload log at:	https://concours.r-e-f.org/contest/logs/upload-form/
+Find rules at:	https://concours.r-e-f.org/reglements/actuels/reg_cdfhfdx.pdf
+Cabrillo name:	REF-SSB
+Cabrillo name aliases:	REF
+"""
 
 import datetime
 import logging
+import platform
 
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, get_points
+
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Province/Territory"
+EXCHANGE_HINT = "Canton or #"
 
-name = "CANADA DAY"
-cabrillo_name = "CANADA-DAY"
-mode = "BOTH"  # CW SSB BOTH RTTY
+name = "French REF DX contest - SSB"
+cabrillo_name = "REF-SSB"
+mode = "SSB"  # CW SSB BOTH RTTY
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
+    "Mode",
     "Snt",
     "Rcv",
     "SentNr",
     "RcvNr",
+    "M1",
+    "M2",
     "PTS",
 ]
 
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 3
-
-RAC_OFFICIAL_STATIONS = [
-    "VA2RAC",
-    "VA3RAC",
-    "VE1RAC",
-    "VE4RAC",
-    "VE5RAC",
-    "VE6RAC",
-    "VE7RAC",
-    "VE8RAC",
-    "VE9RAC",
-    "VO1RAC",
-    "VO2RAC",
-    "VY0RAC",
-    "VY1RAC",
-    "VY2RAC",
-    "VE3RHQ",
-]
-
-PROV_SEC = [
-    "NS",
-    "QC",
-    "ON",
-    "MB",
-    "SK",
-    "AB",
-    "BC",
-    "NT",
-    "NB",
-    "NL",
-    "NU",
-    "YT",
-    "PE",
-]
+dupe_type = 2
 
 
 def init_contest(self):
@@ -85,14 +93,12 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    self.snt_label.setText("SNT")
-    self.field1.setAccessibleName("RST Sent")
     label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("SentNR")
-    self.field3.setAccessibleName("Sent Number")
+    label.setText("Sent")
+    self.field3.setAccessibleName("Sent")
     label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Prov/territory or SN")
-    self.field4.setAccessibleName("Province Territory or Serial Number")
+    label.setText("Dep/Pfx/SN")
+    self.field4.setAccessibleName("Department, Prefix or SN")
 
 
 def reset_label(self):
@@ -102,8 +108,8 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
+        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
         self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
@@ -121,29 +127,59 @@ def set_tab_prev(self):
     self.tab_prev = {
         self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
         self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
         self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
     }
 
 
-def validate(self):
-    """doc"""
-    return True
-
-
 def set_contact_vars(self):
-    """Contest Specific"""
+    """
+    Contest Specific
+    Multipliers:
+    French/Corsica departments once per band
+    French overseas prefixes once per band
+    non-French DXCC countries once per band (available only to French stations)
+    """
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
+    self.contact["SentNr"] = self.other_1.text().upper()
     self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.other_1.text()
+
+    self.contact["IsMultiplier1"] = 0
+    self.contact["IsMultiplier2"] = 0
+
+    if (
+        self.contact.get("CountryPrefix", "") == "F"
+        and self.contact.get("NR", "").isalpha()
+    ):
+        canton = self.contact.get("NR", "").upper()
+        band = self.contact.get("Band", "")
+        query = (
+            f"select count(*) as canton_count from dxlog where "
+            f"NR = '{canton}' "
+            f"and Band = '{band}' "
+            f"and ContestNR = {self.pref.get('contest', '1')};"
+        )
+        result = self.database.exec_sql(query)
+        count = int(result.get("canton_count", 0))
+        if count == 0:
+            self.contact["IsMultiplier1"] = 1
+
+    if self.contact.get("CountryPrefix", ""):
+        dxcc = self.contact.get("CountryPrefix", "")
+        band = self.contact.get("Band", "")
+        query = (
+            f"select count(*) as dxcc_count from dxlog where "
+            f"CountryPrefix = '{dxcc}' "
+            f"and Band = '{band}' "
+            f"and ContestNR = {self.pref.get('contest', '1')};"
+        )
+        result = self.database.exec_sql(query)
+        if not result.get("dxcc_count", ""):
+            self.contact["IsMultiplier2"] = 1
 
 
 def predupe(self):
@@ -151,46 +187,77 @@ def predupe(self):
 
 
 def prefill(self):
-    """Fill sentnr"""
-    result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-    if serial_nr == "None":
-        serial_nr = "001"
-
-    exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
+    """Fill SentNR"""
     field = self.field3.findChild(QtWidgets.QLineEdit)
-    if len(field.text()) == 0:
-        field.setText(exchange)
+    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
+    if sent_sxchange_setting.strip() == "#":
+        result = self.database.get_serial()
+        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+        if serial_nr == "None":
+            serial_nr = "001"
+        if len(field.text()) == 0:
+            field.setText(serial_nr)
+    else:
+        field.setText(sent_sxchange_setting)
 
 
 def points(self):
-    """Calc point"""
-    call = self.contact.get("Call", "")
-    if call in RAC_OFFICIAL_STATIONS:
-        return 20
+    """
+    Scoring:
+    French: 6 points per QSO with French station same continent
+    French: 15 points per QSO with French station on different continent
+    French: 1 point per QSO with non-French station same continent
+    French: 2 points per QSO with non-French station on different continent
+    non-French: 1 point per QSO with French station same continent
+    non-French: 3 points per QSO with French station on different continent
 
+    self.contact["CountryPrefix"]
+    self.contact["Continent"]
+    """
+
+    # Just incase the cty lookup fails
+    my_country = None
+    my_continent = None
+    their_continent = None
+    their_country = None
+
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if result:
+        for item in result.items():
+            my_country = item[1].get("entity", "")
+            my_continent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
     if result:
         for item in result.items():
-            entity = item[1].get("entity", "")
-            # continent = item[1].get("continent", "")
-            if entity == "Canada":
-                return 10
+            their_country = item[1].get("entity", "")
+            their_continent = item[1].get("continent", "")
 
-    return 2
+    if my_country == "France":
+        if their_country == "France":
+            if my_continent == their_continent:
+                return 6
+            else:
+                return 15
+        else:
+            if my_continent == their_continent:
+                return 1
+            else:
+                return 2
+    else:
+        if their_country == "France":
+            if their_continent == my_continent:
+                return 1
+            else:
+                return 3
+
+    return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
-
-    sql = (
-        "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog "
-        "where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+    return int(self.database.fetch_mult_count(1).get("count", 0)) + int(
+        self.database.fetch_mult_count(2).get("count", 0)
     )
-    result = self.database.exec_sql(sql)
-    if result:
-        return result.get("mult_count", 0)
-    return 0
 
 
 def show_qso(self):
@@ -203,23 +270,63 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
-    mults = show_mults(self)
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
         if score is None:
             score = "0"
-        if int(mults) > 0:
-            contest_points = int(score) * int(mults)
-            return contest_points
         contest_points = int(score)
-        return contest_points
+        mults = show_mults(self)
+        return contest_points * mults
     return 0
+
+
+def recalculate_mults(self):
+    """Recalculates multipliers after change in logged qso."""
+
+    all_contacts = self.database.fetch_all_contacts_asc()
+    for contact in all_contacts:
+
+        contact["IsMultiplier1"] = 0
+        contact["IsMultiplier2"] = 0
+
+        time_stamp = contact.get("TS", "")
+        canton = contact.get("NR", "")
+        dxcc = contact.get("CountryPrefix", "")
+        band = contact.get("Band", "")
+        if dxcc == "HB" and canton.isalpha():
+            query = (
+                f"select count(*) as canton_count from dxlog where  TS < '{time_stamp}' "
+                f"and NR = '{canton.upper()}' "
+                f"and Band = '{band}' "
+                f"and ContestNR = {self.pref.get('contest', '1')};"
+            )
+            result = self.database.exec_sql(query)
+            count = int(result.get("canton_count", 0))
+            if count == 0:
+                contact["IsMultiplier1"] = 1
+
+        if dxcc:
+            query = (
+                f"select count(*) as dxcc_count from dxlog where TS < '{time_stamp}' "
+                f"and CountryPrefix = '{dxcc}' "
+                f"and Band = '{band}' "
+                f"and ContestNR = {self.pref.get('contest', '1')};"
+            )
+            result = self.database.exec_sql(query)
+            if not result.get("dxcc_count", ""):
+                contact["IsMultiplier2"] = 1
+
+        self.database.change_contact(contact)
+    cmd = {}
+    cmd["cmd"] = "UPDATELOG"
+    cmd["station"] = platform.node()
+    self.multicast_interface.send_as_json(cmd)
 
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "RAC-CANADA-DAY")
+    gen_adif(self, cabrillo_name, "REF-SSB")
 
 
 def cabrillo(self):
@@ -395,10 +502,6 @@ def cabrillo(self):
         return
 
 
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
-
-
 def process_esm(self, new_focused_widget=None, with_enter=False):
     """ESM State Machine"""
 
@@ -422,6 +525,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
+
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
     for a_button in [
         self.esm_dict["CQ"],
@@ -448,14 +553,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_1.text() == "" or self.other_2.text() == "":
+        elif self.current_widget == "other_2":
+            if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            else:
+            elif self.other_2.text().isnumeric():
                 self.make_button_green(self.esm_dict["QRZ"])
                 buttons_to_send.append(self.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -470,14 +578,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_1.text() == "" or self.other_2.text() == "":
+        elif self.current_widget == "other_2":
+            if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            else:
+            elif self.other_2.text().isnumeric():
                 self.make_button_green(self.esm_dict["EXCH"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
                 buttons_to_send.append("LOGIT")
+            else:
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
