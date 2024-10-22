@@ -162,7 +162,7 @@ class Database:
         try:
             if erase:
                 delete_call = (
-                    "delete from spots where callsign = ? and ts < DATETIME();"
+                    "delete from spots where callsign = ? AND comment != 'MARKED';"
                 )
                 self.cursor.execute(delete_call, (spot.get("callsign"),))
                 self.db.commit()
@@ -415,18 +415,8 @@ class BandMapWindow(QDockWidget):
         if packet.get("cmd", "") == "SPOTDX":
             dx = packet.get("dx", "")
             freq = packet.get("freq", 0.0)
-            the_UTC_time = datetime.now(timezone.utc).isoformat(" ")[:19].split()[1]
-            spot = {
-                "ts": "2099-01-01 " + the_UTC_time,
-                "callsign": dx,
-                "freq": freq / 1000,
-                "band": self.currentBand.name,
-                "mode": "DX",
-                "spotter": platform.node(),
-                "comment": "MARKED",
-            }
-            self.spots.addspot(spot, erase=False)
-            self.update_stations()
+            spotdx = f"dx {dx} {freq}"
+            self.send_command(spotdx)
             return
         if packet.get("cmd", "") == "MARKDX":
             dx = packet.get("dx", "")
