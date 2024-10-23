@@ -201,6 +201,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-10-23] Remove duplicate marked calls in the bandmap.
 - [24-10-22] Added ESM to RAC Canada Day. Added French REF.
 - [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
 - [24-10-20-1] ReWrote how the widgets interact. I porbably broke a thing or two. Let me know. 
