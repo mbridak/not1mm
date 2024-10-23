@@ -160,7 +160,11 @@ class Database:
         Nothing.
         """
         try:
-            if erase:
+            if spot.get("comment", None) == "MARKED":
+                delete_call = "delete from spots where callsign = ?;"
+                self.cursor.execute(delete_call, (spot.get("callsign"),))
+                self.db.commit()
+            elif erase:
                 delete_call = (
                     "delete from spots where callsign = ? AND comment != 'MARKED';"
                 )
