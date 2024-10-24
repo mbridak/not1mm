@@ -201,7 +201,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
-- [24-10-24] Forgot to convert the VFO dockwidget along with the rest.
+- [24-10-24] Forgot to convert the VFO dockwidget along with the rest. CQ WW CW, Dupes now score 0.
 - [24-10-23] Remove duplicate marked calls in the bandmap.
 - [24-10-22] Added ESM to RAC Canada Day. Added French REF.
 - [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
@@ -517,7 +517,7 @@ You can fill. You can fill. Everyone look at your keys.
 
 ### Changing station information
 
-Station information can be changed any time by going to
+Station information can be changed any time by going toawandahl
 `File` > `Station Settings` and editing the information.
 
 ## Selecting a contest (It's REQUIRED Russ)
