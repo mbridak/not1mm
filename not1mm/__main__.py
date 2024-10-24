@@ -746,6 +746,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if msg.get("cmd", "") == "TUNE":
                 # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                if self.vfo_window:
+                    self.vfo_window.msg_from_main(msg)
                 vfo = msg.get("freq")
                 vfo = float(vfo) * 1000000
                 self.radio_state["vfoa"] = int(vfo)
@@ -880,6 +882,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bandmap_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
+        if self.vfo_window:
+            self.vfo_window.msg_from_main(cmd)
 
         if setdarkmode:
             darkPalette = QPalette()
