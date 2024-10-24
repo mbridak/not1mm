@@ -14,8 +14,7 @@ Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig
 
 import logging
 import os
-import platform
-from json import loads, JSONDecodeError
+from json import loads
 
 import serial
 from PyQt6 import QtCore, QtWidgets, uic
@@ -25,7 +24,6 @@ from PyQt6.QtGui import QColorConstants, QPalette, QColor
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
-from not1mm.lib.multicast import Multicast
 
 logger = logging.getLogger(__name__)
 
@@ -45,22 +43,12 @@ class VfoWindow(QDockWidget):
         super().__init__()
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-
         self.rig_control = None
         self.timer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
         self.lcdNumber.display(0)
         self.pico = None
-        self._udpwatch = None
-
-        self.multicast_interface = Multicast(
-            self.pref.get("multicast_group", "239.1.1.1"),
-            self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
-        )
-        self.multicast_interface.ready_read_connect(self.watch_udp)
-
         self.setup_serial()
         self.poll_rig_timer = QtCore.QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
@@ -216,44 +204,26 @@ class VfoWindow(QDockWidget):
                 )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
-    def watch_udp(self) -> None:
+    def msg_from_main(self, msg_dict) -> None:
         """
         Watch for a 'HALT' UPD packet from not1mm.
         Exit app if found.
         """
-        while self.multicast_interface.server_udp.hasPendingDatagrams():
-            datagram = self.multicast_interface.getpacket()
+        if msg_dict.get("cmd", "") == "TUNE":
+            # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+            vfo = msg_dict.get("freq")
+            vfo = float(vfo) * 1000000
+            changefreq = f"F {int(vfo)}\r"
             try:
-                debug_info = f"{datagram}"
-                logger.debug(debug_info)
-                json_data = loads(datagram)
-            except UnicodeDecodeError as err:
-                the_error = f"Not Unicode: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            except JSONDecodeError as err:
-                the_error = f"Not JSON: {err}\n{datagram}"
-                logger.debug(the_error)
-                continue
-            if json_data.get("station", "") != platform.node():
-                continue
-            logger.debug(f"{json_data=}")
-
-            if json_data.get("cmd", "") == "TUNE":
-                # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
-                vfo = json_data.get("freq")
-                vfo = float(vfo) * 1000000
-                changefreq = f"F {int(vfo)}\r"
-                try:
-                    if self.pico:
-                        self.pico.write(changefreq.encode())
-                except OSError:
-                    logger.critical("Unable to write to serial device.")
-                except AttributeError:
-                    logger.critical("Unable to write to serial device.")
-                continue
-            if json_data.get("cmd", "") == "DARKMODE":
-                self.setDarkMode(json_data.get("state", False))
+                if self.pico:
+                    self.pico.write(changefreq.encode())
+            except OSError:
+                logger.critical("Unable to write to serial device.")
+            except AttributeError:
+                logger.critical("Unable to write to serial device.")
+            return
+        if msg_dict.get("cmd", "") == "DARKMODE":
+            self.setDarkMode(msg_dict.get("state", False))
 
     def showNumber(self, the_number) -> None:
         """Display vfo value with dots"""
