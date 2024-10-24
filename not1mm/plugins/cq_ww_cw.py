@@ -45,6 +45,7 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
+from not1mm.lib.ham_utility import get_logged_band
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +151,14 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+    # Retrieve callsign and band information
+    call = self.contact.get("Call", "")
+    band = float(get_logged_band(str(int(self.contact.get("Freq", 0.0) * 1000))))
+
+    # Check if the contact is a duplicate on the current band
+    dupe_check = self.database.check_dupe_on_band(call, band)
+    if dupe_check.get("isdupe", 0) > 0:
+        return 0  # Return zero points for duplicates
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
