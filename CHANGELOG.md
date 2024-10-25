@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-25] Add File Menu option to create either an ASCII or UTF8 Cabrillo.
 - [24-10-24-1] Make all Cabrillo files with UTF-8.
 - [24-10-24] Forgot to convert the VFO dockwidget along with the rest. CQ WW CW, Dupes now score 0.
 - [24-10-23] Remove duplicate marked calls in the bandmap.
