@@ -256,7 +256,7 @@ def cabrillo(self):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="ascii") as file_descriptor:
+        with open(filename, "w", encoding="utf-8") as file_descriptor:
             print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
             print(
                 f"CREATED-BY: Not1MM v{__version__}",
