@@ -1471,7 +1471,8 @@
     <addaction name="actionStationSettings"/>
     <addaction name="separator"/>
     <addaction name="actionGenerate_ADIF"/>
-    <addaction name="actionGenerate_Cabrillo"/>
+    <addaction name="actionGenerate_Cabrillo_ASCII"/>
+    <addaction name="actionGenerate_Cabrillo_UTF8"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
@@ -1684,9 +1685,28 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionGenerate_Cabrillo">
+  <action name="actionGenerate_Cabrillo_ASCII">
    <property name="text">
-    <string>Generate Cabrillo</string>
+    <string>Generate Cabrillo ASCII</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono ExtraLight</family>
+    </font>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGenerate_Cabrillo_UTF8">
+   <property name="text">
+    <string>Generate Cabrillo UTF-8</string>
    </property>
    <property name="font">
     <font>

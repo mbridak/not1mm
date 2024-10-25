@@ -211,7 +211,16 @@ def adif(self):
     gen_adif(self, cabrillo_name, "JIDX-CW")
 
 
-def cabrillo(self):
+def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
+    """"""
+    print(
+        line_to_output.encode(file_encoding, errors="ignore").decode(),
+        end=ending,
+        file=file_descriptor,
+    )
+
+
+def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
     # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
@@ -264,83 +273,99 @@ def cabrillo(self):
     log = self.database.fetch_all_contacts_asc()
     try:
         with open(filename, "w", encoding="utf-8") as file_descriptor:
-            print("START-OF-LOG: 2.0", end="\r\n", file=file_descriptor)
+            output_cabrillo_line(
+                "START-OF-LOG: 2.0", "\r\n", file_descriptor, file_encoding
+            )
 
-            print(
+            output_cabrillo_line(
                 f"CONTEST: {cabrillo_name}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             if self.station.get("Club", ""):
-                print(
+                output_cabrillo_line(
                     f"CLUB: {self.station.get('Club', '').upper()}",
-                    end="\r\n",
-                    file=file_descriptor,
+                    "\r\n",
+                    file_descriptor,
+                    file_encoding,
                 )
-            print(
+            output_cabrillo_line(
                 f"CALLSIGN: {self.station.get('Call','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY: {category}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CLAIMED-SCORE: {calc_score(self)} ({qsos}-{raw_points}-{mults})",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             ops = f"@{self.station.get('Call','')}"
             list_of_ops = self.database.get_ops()
             for op in list_of_ops:
                 ops += f", {op.get('Operator', '')}"
-            print(
+            output_cabrillo_line(
                 f"OPERATORS: {ops}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CREATED-BY: Not1MM v{__version__}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ENTITY: {mycountry}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"NAME: {self.station.get('Name', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS: {self.station.get('Street1', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS: {self.station.get('City', '')}, {self.station.get('State', '')} ",
                 f"{self.station.get('Zip', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS: {self.station.get('Country', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"EMAIL: {self.station.get('Email', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f'SENTNR: {self.contest_settings.get("SentExchange", "")}',
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
@@ -351,7 +376,7 @@ def cabrillo(self):
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                print(
+                output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
@@ -359,10 +384,11 @@ def cabrillo(self):
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
                     f"{str(contact.get('NR', '')).ljust(6)}",
-                    end="\r\n",
-                    file=file_descriptor,
+                    "\r\n",
+                    file_descriptor,
+                    file_encoding,
                 )
-            print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
     except IOError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)

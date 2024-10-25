@@ -134,7 +134,7 @@ def adif(self):
     gen_adif(self, cabrillo_name)
 
 
-def cabrillo(self):
+def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
 
 
