@@ -230,7 +230,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
 
-        self.actionGenerate_Cabrillo.triggered.connect(self.generate_cabrillo)
+        self.actionGenerate_Cabrillo_ASCII.triggered.connect(
+            lambda x: self.generate_cabrillo("ascii")
+        )
+        self.actionGenerate_Cabrillo_UTF8.triggered.connect(
+            lambda x: self.generate_cabrillo("utf-8")
+        )
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
 
         self.actionConfiguration_Settings.triggered.connect(
@@ -3629,7 +3634,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("******ADIF*****")
         self.contest.adif(self)
 
-    def generate_cabrillo(self) -> None:
+    def generate_cabrillo(self, file_encoding: str) -> None:
         """
         Calls the contest Cabrillo file generator. Maybe.
 
@@ -3643,7 +3648,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("******Cabrillo*****")
-        self.contest.cabrillo(self)
+        self.contest.cabrillo(self, file_encoding)
 
 
 def load_fonts_from_dir(directory: str) -> set:
