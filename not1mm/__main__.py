@@ -751,6 +751,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if msg.get("cmd", "") == "TUNE":
                 # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                self.clearinputs()
                 if self.vfo_window:
                     self.vfo_window.msg_from_main(msg)
                 vfo = msg.get("freq")
