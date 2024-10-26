@@ -809,7 +809,10 @@ class BandMapWindow(QDockWidget):
         """Process waiting bytes"""
         while self.socket.bytesAvailable():
             data = self.socket.readLine(1000)
-            data = str(data, "utf-8").strip()
+            try:
+                data = str(data, "utf-8").strip()
+            except UnicodeDecodeError:
+                continue
 
             if "login:" in data or "call:" in data or "callsign:" in data:
                 self.send_command(self.callsignField.text())
