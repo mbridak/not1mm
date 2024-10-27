@@ -823,7 +823,6 @@ class BandMapWindow(QDockWidget):
                 )
                 return
             if "BEACON" in data:
-                print(f"dropped beacon {data=}")
                 return
             if "DX de" in data:
                 parts = data.split()
