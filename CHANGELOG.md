@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-10-27-2] Allow BandMap, CheckWindow and LogWindow to undock from main window while using Wayland if PyQt6 version is at least 6.7.1
 - [24-10-27-1] Fixed setting radios ssb mode when crossing 10M boundary.
 - [24-10-27] Fix bug where a contacts info could be carried over to new contact if no new value was written.
 - [24-10-26] Clear inputs when seeking to a call from the bandmap via the arrow up and down. Fixed bandmap crash from bad telnet data. Drop beacons from bandmap.

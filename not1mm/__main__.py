@@ -37,6 +37,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
 from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
 from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
+from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
@@ -589,7 +590,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
 
-        # Featureset for wayland
+        logger.debug(f"{QT_VERSION_STR=} {PYQT_VERSION_STR=}")
+        x = PYQT_VERSION_STR.split(".")
+        old_Qt = True
+        # test if pyqt version is at least 6.7.1
+        if len(x) == 1:
+            if int(x[0]) > 6:
+                old_Qt = False
+        elif len(x) == 2:
+            if int(x[0]) >= 6 and int(x[1]) > 7:
+                old_Qt = False
+        elif len(x) == 3:
+            if int(x[0]) >= 6 and int(x[1]) >= 7 and int(x[2]) >= 1:
+                old_Qt = False
+
+        # Featureset for wayland if pyqt is older that 6.7.1
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
@@ -598,7 +613,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Setting up BandMapWindow.")
         self.bandmap_window = BandMapWindow()
         self.bandmap_window.setObjectName("bandmap-window")
-        if os.environ.get("WAYLAND_DISPLAY"):
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.bandmap_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.bandmap_window)
         self.bandmap_window.hide()
@@ -609,7 +624,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow()
         self.check_window.setObjectName("check-window")
-        if os.environ.get("WAYLAND_DISPLAY"):
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.check_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
@@ -618,7 +633,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
-        if os.environ.get("WAYLAND_DISPLAY"):
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.vfo_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
@@ -626,7 +641,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Setting up LogWindow.")
         self.log_window = LogWindow()
         self.log_window.setObjectName("log-window")
-        if os.environ.get("WAYLAND_DISPLAY"):
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.log_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
         self.log_window.hide()
