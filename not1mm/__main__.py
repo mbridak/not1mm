@@ -598,10 +598,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if int(x[0]) > 6:
                 old_Qt = False
         elif len(x) == 2:
-            if int(x[0]) >= 6 and int(x[1]) > 7:
+            if int(x[0]) >= 6 and int(x[1]) > 8:
                 old_Qt = False
         elif len(x) == 3:
-            if int(x[0]) >= 6 and int(x[1]) >= 7 and int(x[2]) >= 1:
+            if int(x[0]) >= 6 and int(x[1]) >= 7 and int(x[2]) >= 2:
                 old_Qt = False
 
         # Featureset for wayland if pyqt is older that 6.7.1
