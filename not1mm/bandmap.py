@@ -822,6 +822,9 @@ class BandMapWindow(QDockWidget):
                     "set dx mode " + self.settings.get("cluster_mode", "OPEN")
                 )
                 return
+            if "BEACON" in data:
+                print(f"dropped beacon {data=}")
+                return
             if "DX de" in data:
                 parts = data.split()
                 spotter = parts[2]
