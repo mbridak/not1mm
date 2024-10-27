@@ -1041,7 +1041,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(str(band), mode)
             self.change_freq(freq)
-            self.change_mode(mode)
+            vfo = float(freq)
+            vfo = int(vfo * 1000)
+            self.change_mode(mode, intended_freq=vfo)
 
     def quit_app(self) -> None:
         """
@@ -3125,12 +3127,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def change_freq(self, stripped_text: str) -> None:
         """
-        Change VFO to given frequency in Khz and set the band indicator.
-        Send the new frequency to the rig control.
+        Change Radios VFO to given frequency in Khz.
 
         Parameters
         ----------
-        stripped_text : str
+        stripped_text: str
+
         Stripped of any spaces.
 
         Returns
@@ -3160,7 +3162,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
 
-    def change_mode(self, mode: str) -> None:
+    def change_mode(self, mode: str, intended_freq=None) -> None:
         """
         Change mode to given mode.
         Send the new mode to the rig control.
@@ -3208,10 +3210,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.read_cw_macros()
             return
         if mode == "SSB":
-            if int(self.radio_state.get("vfoa", 0)) > 10000000:
+            if intended_freq:
+                freq = intended_freq
+            else:
+                freq = int(self.radio_state.get("vfoa", 0))
+
+            if freq > 10000000:
                 self.radio_state["mode"] = "USB"
             else:
                 self.radio_state["mode"] = "LSB"
+
             if self.rig_control and self.rig_control.online:
                 self.rig_control.set_mode(self.radio_state.get("mode"))
             else:
