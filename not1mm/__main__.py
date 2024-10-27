@@ -584,7 +584,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
-        self.contact = self.database.empty_contact
+        self.contact = self.database.empty_contact.copy()
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
@@ -1211,7 +1211,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "current_database", "ham.db"
             )
             self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
-            self.contact = self.database.empty_contact
+            self.contact = self.database.empty_contact.copy()
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
@@ -1246,7 +1246,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "current_database", "ham.db"
             )
             self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
-            self.contact = self.database.empty_contact
+            self.contact = self.database.empty_contact.copy()
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
@@ -2164,7 +2164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.dupe_indicator.hide()
-        self.contact = self.database.empty_contact
+        self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
         self.dx_entity.setText("")
 
