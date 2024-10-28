@@ -201,7 +201,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
-- [24-10-27-2] Allow BandMap, CheckWindow and LogWindow to undock from main window while using Wayland if PyQt6 version is at least 6.7.2
+- [24-10-27-2] Changed CQ zone auto population for CQ WW, it now waits for the user to exit the callsign entry window before auto filling the zone.
 - [24-10-27-1] Fixed setting radios ssb mode when crossing 10M boundary.
 - [24-10-27] Fix bug where a contacts info could be carried over to new contact if no new value was written.
 - [24-10-26] Clear inputs when seeking to a call from the bandmap via the arrow up and down. Fixed bandmap crash from bad telnet data. Drop beacons from bandmap.

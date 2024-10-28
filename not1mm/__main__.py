@@ -3124,6 +3124,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.lookup_service:
                 self.lookup_service.msg_from_main(cmd)
             self.next_field.setFocus()
+            if self.contest:
+                if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
+                    self.contest.prefill(self)
             return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
@@ -3293,7 +3296,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
                 if len(callsign) > 2:
                     if self.contest:
-                        self.contest.prefill(self)
+                        if (
+                            "CQ WW" not in self.contest.name
+                            and "IARU HF" not in self.contest.name
+                        ):
+                            self.contest.prefill(self)
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
