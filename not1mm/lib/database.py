@@ -152,6 +152,36 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
 
+    def create_callhistory_table(self) -> None:
+        """creates the callhistory table"""
+        logger.debug("Creating DXLOG Table")
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cursor = conn.cursor()
+                sql_command = (
+                    "CREATE TABLE IF NOT EXISTS CALLHISTORY ("
+                    "Call VARCHAR(15) NOT NULL, "
+                    "Name VARCHAR(15) NOT NULL, "
+                    "Loc1 VARCHAR(10) DEFAULT '', "
+                    "Loc2 VARCHAR(10) DEFAULT '', "
+                    "Sect VARCHAR(8) DEFAULT '', "
+                    "State VARCHAR(8) DEFAULT '', "
+                    "CK TINYINT DEFAULT 0, "
+                    "BirthDate DATETIME NOT NULL, "
+                    "Exch1 VARCHAR(20) DEFAULT '', "
+                    "Misc VARCHAR(20) DEFAULT '', "
+                    "Power VARCHAR(8) DEFAULT '', "
+                    "CqZone TINYINT DEFAULT 0, "
+                    "ITUZone TINYINT DEFAULT 0, "
+                    "UserText VARCHAR(20) DEFAULT '', "
+                    "LastUpdateNote VARCHAR(20) DEFAULT '', "
+                    "PRIMARY KEY (`Call`) );"
+                )
+                cursor.execute(sql_command)
+                conn.commit()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+
     def update_dxlog_table(self) -> None:
         """update missing columns"""
         logger.debug("Updating DXLOG Table")
