@@ -78,6 +78,7 @@ class DataBase:
         self.create_contest_table()
         self.create_contest_instance_table()
         self.create_station_table()
+        self.create_callhistory_table()
 
     @staticmethod
     def row_factory(cursor, row):
@@ -494,6 +495,17 @@ class DataBase:
                     conn.commit()
             except sqlite3.Error as exception:
                 logger.info("DataBase delete_contact: %s", exception)
+
+    def delete_callhistory(self) -> None:
+        """Deletes all info from callhistory table."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                sql = "delete from CALLHISTORY;"
+                cur = conn.cursor()
+                cur.execute(sql)
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("%s", exception)
 
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""
