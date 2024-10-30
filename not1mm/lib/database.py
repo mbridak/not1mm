@@ -387,6 +387,28 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def add_callhistory_item(self, history: dict) -> None:
+        """Add an item to the call history db"""
+        pre = "INSERT INTO CALLHISTORY("
+        values = []
+        columns = ""
+        placeholders = ""
+        for key in history.keys():
+            columns += f"{key},"
+            values.append(history[key])
+            placeholders += "?,"
+        post = f") VALUES({placeholders[:-1]});"
+        sql = f"{pre}{columns[:-1]}{post}"
+
+        try:
+            with sqlite3.connect(self.database) as conn:
+                logger.info("%s", sql)
+                cur = conn.cursor()
+                cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("%s", exception)
+
     def add_contest(self, contest: dict) -> None:
         """Add Contest"""
 
