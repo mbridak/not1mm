@@ -162,13 +162,13 @@ class DataBase:
                 sql_command = (
                     "CREATE TABLE IF NOT EXISTS CALLHISTORY ("
                     "Call VARCHAR(15) NOT NULL, "
-                    "Name VARCHAR(15) NOT NULL, "
+                    "Name VARCHAR(15), "
                     "Loc1 VARCHAR(10) DEFAULT '', "
                     "Loc2 VARCHAR(10) DEFAULT '', "
                     "Sect VARCHAR(8) DEFAULT '', "
                     "State VARCHAR(8) DEFAULT '', "
                     "CK TINYINT DEFAULT 0, "
-                    "BirthDate DATETIME NOT NULL, "
+                    "BirthDate DATETIME, "
                     "Exch1 VARCHAR(20) DEFAULT '', "
                     "Misc VARCHAR(20) DEFAULT '', "
                     "Power VARCHAR(8) DEFAULT '', "
@@ -402,11 +402,31 @@ class DataBase:
 
         try:
             with sqlite3.connect(self.database) as conn:
-                logger.info("%s", sql)
                 cur = conn.cursor()
                 cur.execute(sql, tuple(values))
                 conn.commit()
         except sqlite3.Error as exception:
+            logger.info("%s", exception)
+
+    def add_callhistory_items(self, history_list: list) -> None:
+        """Add a list of items to the call history db"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                for history in history_list:
+                    pre = "INSERT INTO CALLHISTORY("
+                    values = []
+                    columns = ""
+                    placeholders = ""
+                    for key in history.keys():
+                        columns += f"{key},"
+                        values.append(history[key])
+                        placeholders += "?,"
+                    post = f") VALUES({placeholders[:-1]});"
+                    sql = f"{pre}{columns[:-1]}{post}"
+                    cur = conn.cursor()
+                    cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error:
             logger.info("%s", exception)
 
     def add_contest(self, contest: dict) -> None:
