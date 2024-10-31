@@ -162,21 +162,21 @@ class DataBase:
                 sql_command = (
                     "CREATE TABLE IF NOT EXISTS CALLHISTORY ("
                     "Call VARCHAR(15) NOT NULL, "
-                    "Name VARCHAR(15), "
-                    "Loc1 VARCHAR(10) DEFAULT '', "
-                    "Loc2 VARCHAR(10) DEFAULT '', "
+                    "Name VARCHAR(20), "
+                    "Loc1 VARCHAR(6) DEFAULT '', "
+                    "Loc2 VARCHAR(6) DEFAULT '', "
                     "Sect VARCHAR(8) DEFAULT '', "
                     "State VARCHAR(8) DEFAULT '', "
                     "CK TINYINT DEFAULT 0, "
-                    "BirthDate DATETIME, "
-                    "Exch1 VARCHAR(20) DEFAULT '', "
-                    "Misc VARCHAR(20) DEFAULT '', "
+                    "BirthDate DATE, "
+                    "Exch1 VARCHAR(12) DEFAULT '', "
+                    "Misc VARCHAR(15) DEFAULT '', "
                     "Power VARCHAR(8) DEFAULT '', "
                     "CqZone TINYINT DEFAULT 0, "
                     "ITUZone TINYINT DEFAULT 0, "
-                    "UserText VARCHAR(20) DEFAULT '', "
-                    "LastUpdateNote VARCHAR(20) DEFAULT '', "
-                    "PRIMARY KEY (`Call`) );"
+                    "UserText VARCHAR(60) DEFAULT '', "
+                    "LastUpdateNote VARCHAR(20) DEFAULT '' "
+                    ");"
                 )
                 cursor.execute(sql_command)
                 conn.commit()
@@ -426,7 +426,8 @@ class DataBase:
                     cur = conn.cursor()
                     cur.execute(sql, tuple(values))
                 conn.commit()
-        except sqlite3.Error:
+        except sqlite3.Error as exception:
+            print(exception)
             logger.info("%s", exception)
 
     def add_contest(self, contest: dict) -> None:
