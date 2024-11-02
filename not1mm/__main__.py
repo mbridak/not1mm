@@ -199,6 +199,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
         self.inputs_dict = {
             self.callsign: "callsign",
@@ -230,6 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
+        self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
 
         self.actionGenerate_Cabrillo_ASCII.triggered.connect(
             lambda x: self.generate_cabrillo("ascii")
@@ -702,6 +704,45 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def load_call_history(self) -> None:
+        """"""
+        filename = self.filepicker("other")
+        if filename:
+            self.database.create_callhistory_table()
+            self.database.delete_callhistory()
+
+            try:
+                with open(filename, "rt", encoding="utf-8") as file_descriptor:
+                    lines = file_descriptor.readlines()
+                    if "!!Order!!" in lines[0]:
+                        item_names = lines[0].strip().split(",")
+                        # ['!!Order!!', 'Call', 'Sect', 'State', 'CK', 'UserText', '']
+                        item_names = item_names[1:-1]
+                        # ['Call', 'Sect', 'State', 'CK', 'UserText']
+                        lines = lines[1:]
+                        group_list = []
+                        for line in lines:
+                            if line.startswith("#"):
+                                continue
+                            group = {}
+                            fields = line.strip().split(",")
+                            # ['4U1WB','MDC','DC','89','']
+                            count = 0
+                            try:
+                                for item in item_names:
+                                    if item == "":
+                                        continue
+                                    group[item] = fields[count]
+                                    count += 1
+                                group_list.append(group)
+                                # database.add_callhistory_item(group)
+                                # print(f"{group=}")
+                            except IndexError:
+                                ...
+                        self.database.add_callhistory_items(group_list)
+            except FileNotFoundError as err:
+                self.show_message_box(f"{err}")
 
     def on_focus_changed(self, new):
         """"""
@@ -1726,6 +1767,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 "Choose a Database",
                 str(fsutils.USER_DATA_PATH),
                 "Database (*.db)",
+                options=options,
+            )
+        if action == "other":
+            file, _ = QFileDialog.getOpenFileName(
+                self,
+                "Choose a File",
+                "~/",
+                "Any (*.*)",
                 options=options,
             )
         return file

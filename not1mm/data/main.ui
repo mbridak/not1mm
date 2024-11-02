@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>785</width>
-    <height>268</height>
+    <width>855</width>
+    <height>621</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,7 +59,7 @@
      <number>0</number>
     </property>
     <item row="1" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
       <item>
        <layout class="QHBoxLayout" name="mainsection">
         <item>
@@ -1368,6 +1368,13 @@
        </layout>
       </item>
       <item>
+       <widget class="QLabel" name="history_info">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="StatusLine">
         <property name="sizeConstraint">
          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
@@ -1443,7 +1450,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>878</width>
+     <width>855</width>
      <height>25</height>
     </rect>
    </property>
@@ -1476,6 +1483,7 @@
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
+    <addaction name="actionLoad_Call_History_File"/>
     <addaction name="actionUpdate_CTY"/>
     <addaction name="actionUpdate_MASTER_SCP"/>
     <addaction name="separator"/>
@@ -1976,6 +1984,11 @@
     <font>
      <family>JetBrains Mono ExtraLight</family>
     </font>
+   </property>
+  </action>
+  <action name="actionLoad_Call_History_File">
+   <property name="text">
+    <string>Load Call History File</string>
    </property>
   </action>
  </widget>
