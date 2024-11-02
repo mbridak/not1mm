@@ -41,7 +41,11 @@ class Settings(QtWidgets.QDialog):
     def setup(self):
         """setup dialog"""
 
-        self.use_esm.setChecked(bool(self.preference.get("use_esm")))
+        self.use_call_history.setChecked(
+            bool(self.preference.get("use_call_history", False))
+        )
+
+        self.use_esm.setChecked(bool(self.preference.get("use_esm", False)))
 
         value = self.preference.get("esm_agn", "DISABLED")
         index = self.esm_agn.findText(value)
@@ -190,6 +194,7 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["use_call_history"] = self.use_call_history.isChecked()
         self.preference["use_esm"] = self.use_esm.isChecked()
         self.preference["esm_cq"] = self.esm_cq.currentText()
         self.preference["esm_agn"] = self.esm_agn.currentText()

@@ -164,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
     text_color = QColorConstants.Black
     current_palette = None
     use_esm = False
+    use_call_history = False
     esm_dict = {}
 
     radio_thread = QThread()
@@ -2950,6 +2951,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "DISABLED": None,
         }
 
+        self.use_call_history = self.pref.get("use_call_history", False)
         self.use_esm = self.pref.get("use_esm", False)
         self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
         self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
