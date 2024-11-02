@@ -19,6 +19,8 @@ class Settings(QtWidgets.QDialog):
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
         uic.loadUi(app_data_path / "configuration.ui", self)
+        self.tabWidget.setTabVisible(5, False)
+        # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
         self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
