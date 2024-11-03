@@ -478,13 +478,11 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if self.other_2.text() == "" or self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            elif self.other_1.text().isalpha() and self.other_2.text().isalpha():
+            else:
                 self.make_button_green(self.esm_dict["QRZ"])
                 buttons_to_send.append(self.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
-            else:
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
+
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
                 if button:
@@ -502,13 +500,11 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if self.other_2.text() == "" or self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            elif self.other_1.text().isalpha() and self.other_2.text().isalpha():
+            else:
                 self.make_button_green(self.esm_dict["EXCH"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
                 buttons_to_send.append("LOGIT")
-            else:
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
+
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
                 if button:
@@ -516,3 +512,14 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Name', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Exch1', '')}")
