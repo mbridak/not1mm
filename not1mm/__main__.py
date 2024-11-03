@@ -2016,6 +2016,12 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         modifier = event.modifiers()
+        if (
+            event.key() == Qt.Key.Key_Equal
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            self.save_contact()
+            return
         if event.key() == Qt.Key.Key_K:
             self.toggle_cw_entry()
             return
@@ -2997,6 +3003,8 @@ class MainWindow(QtWidgets.QMainWindow):
         }
 
         self.use_call_history = self.pref.get("use_call_history", False)
+        if self.use_call_history:
+            self.history_info.show()
         self.use_esm = self.pref.get("use_esm", False)
         self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
         self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
@@ -3221,6 +3229,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.lookup_service.msg_from_main(cmd)
             self.next_field.setFocus()
             if self.contest:
+                if self.use_call_history and hasattr(
+                    self.contest, "check_call_history"
+                ):
+                    self.contest.check_call_history(self)
                 if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
                     self.contest.prefill(self)
             return
