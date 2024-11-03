@@ -69,6 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
+    - [Options](#options)
   - [Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4etc-and-fldigi-rtty-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
@@ -579,6 +580,13 @@ You can define which bands appear in the main window. Those with checkmarks will
 appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
+
+### Options
+
+On the Options TAB you can select to use Enter Sends Message (ESM), configure its function keys.
+Select whether or not to use Call History info.
+
+![Bands Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
 
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
