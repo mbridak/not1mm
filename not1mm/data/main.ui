@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>855</width>
-    <height>621</height>
+    <height>641</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1302,7 +1302,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>Edit</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1322,7 +1322,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>Store</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1342,7 +1342,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>QRZ</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1504,6 +1504,7 @@
     </property>
     <addaction name="actionCW_Macros"/>
     <addaction name="actionDark_Mode_2"/>
+    <addaction name="actionCommand_Buttons_2"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -1989,6 +1990,19 @@
   <action name="actionLoad_Call_History_File">
    <property name="text">
     <string>Load Call History File</string>
+   </property>
+  </action>
+  <action name="actionShow_Command_Buttons">
+   <property name="text">
+    <string>Command Buttons</string>
+   </property>
+  </action>
+  <action name="actionCommand_Buttons_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Command Buttons</string>
    </property>
   </action>
  </widget>
