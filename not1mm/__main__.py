@@ -1736,13 +1736,14 @@ class MainWindow(QtWidgets.QMainWindow):
             "[Shift-Tab]\tMove cursor left One field.\n"
             "[SPACE]\tWhen in the callsign field, will move the input to the\n"
             "\tfirst field needed for the exchange.\n"
-            "[Enter]\tSubmits the fields to the log.\n"
+            "[Enter]\tSubmits the fields to the log. Unless ESM is enabled.\n"
             "[F1-F12]\tSend (CW or Voice) macros.\n"
             "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
             "\tentry field (CAT Required).\n"
             "[CTRL-M]\tMark Callsign to the bandmap window to work later."
             "[CTRL-S]\tSpot Callsign to the cluster.\n"
             "[CTRL-SHIFT-K] Open CW text input field.\n"
+            "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
         )
 
     def filepicker(self, action: str) -> str:
