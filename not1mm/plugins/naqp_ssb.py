@@ -447,9 +447,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
         elif self.current_widget == "other_1" or self.current_widget == "other_2":
             continent = self.contact.get("Continent")
-            print(
-                f"{self.current_widget=} {self.other_1.text().isalpha()=} {self.other_2.text().isalpha()=} {continent=}"
-            )
             if self.other_1.text() == "" or (
                 self.other_2.text() == "" and continent == "NA"
             ):
@@ -514,3 +511,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Name', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('State', '')}")

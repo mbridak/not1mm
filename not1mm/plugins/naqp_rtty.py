@@ -549,8 +549,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
     for a_button in [
         self.F1,
         self.F2,
@@ -582,9 +580,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
         elif self.current_widget == "other_1" or self.current_widget == "other_2":
             continent = self.contact.get("Continent")
-            print(
-                f"{self.current_widget=} {self.other_1.text().isalpha()=} {self.other_2.text().isalpha()=} {continent=}"
-            )
             if self.other_1.text() == "" or (
                 self.other_2.text() == "" and continent == "NA"
             ):
@@ -653,3 +648,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         continue
                     sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
             self.fldigi_util.send_string(sendstring)
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Name', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('State', '')}")
