@@ -706,6 +706,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [CTRL-M] | Mark Callsign to the bandmap window to work later. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
+| [CTRL-=] | Log the contact without sending the ESM macros.|
 
 ### The Log Window
 
