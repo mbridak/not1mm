@@ -272,7 +272,7 @@ def cabrillo(self, file_encoding):
     mults = show_mults(self)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 2.0", "\r\n", file_descriptor, file_encoding
             )
