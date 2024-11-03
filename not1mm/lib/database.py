@@ -550,6 +550,18 @@ class DataBase:
         except sqlite3.Error as exception:
             logger.info("%s", exception)
 
+    def fetch_call_history(self, call: str):
+        """"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(f"select * from CALLHISTORY where call='{call}';")
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""
         try:
