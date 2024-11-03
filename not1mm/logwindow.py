@@ -13,7 +13,6 @@ Purpose: Onscreen widget to show and edit logged contacts.
 
 import logging
 import os
-import platform
 import queue
 from json import loads
 
@@ -22,11 +21,13 @@ from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QItemSelectionModel
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QColorConstants, QPalette, QColor
+from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_contact import EditContact
-from not1mm.lib.multicast import Multicast
+
+# from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,7 @@ class LogWindow(QDockWidget):
     The main window
     """
 
+    message = pyqtSignal(dict)
     multicast_interface = None
     dbname = None
     edit_contact_dialog = None
@@ -131,7 +133,9 @@ class LogWindow(QDockWidget):
 
         self.generalLog.cellDoubleClicked.connect(self.double_clicked)
         self.generalLog.cellChanged.connect(self.cell_changed)
-
+        self.generalLog.horizontalHeader().sectionResized.connect(
+            self.resize_headers_to_match
+        )
         self.focusedLog.setContextMenuPolicy(
             QtCore.Qt.ContextMenuPolicy.CustomContextMenu
         )
@@ -143,6 +147,7 @@ class LogWindow(QDockWidget):
 
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
+
             log.setColumnWidth(self.get_column("Snt"), 50)
             log.setColumnWidth(self.get_column("Rcv"), 50)
             log.setColumnWidth(self.get_column("SentNr"), 75)
@@ -159,18 +164,37 @@ class LogWindow(QDockWidget):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
-        self.multicast_interface = Multicast(
-            self.pref.get("multicast_group", "239.1.1.1"),
-            self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
-        )
-        self.multicast_interface.ready_read_connect(self.watch_udp)
-
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
-        cmd["station"] = platform.node()
+        self.message.emit(cmd)
 
-        self.multicast_interface.send_as_json(cmd)
+    def msg_from_main(self, msg):
+        """"""
+        if msg.get("cmd", "") == "UPDATELOG":
+            logger.debug("External refresh command.")
+            self.get_log()
+        if msg.get("cmd", "") == "CALLCHANGED":
+            call = msg.get("call", "")
+            self.show_like_calls(call)
+        if msg.get("cmd", "") == "NEWDB":
+            self.load_new_db()
+        if msg.get("cmd", "") == "SHOWCOLUMNS":
+            for column in range(len(self.columns)):
+                self.generalLog.setColumnHidden(column, True)
+                self.focusedLog.setColumnHidden(column, True)
+            columns_to_show = msg.get("COLUMNS", [])
+            for column in columns_to_show:
+                if column == "Freq":
+                    column = "Freq (Khz)"
+                self.generalLog.setColumnHidden(self.get_column(column), False)
+                self.focusedLog.setColumnHidden(self.get_column(column), False)
+        if msg.get("cmd", "") == "DARKMODE":
+            self.set_dark_mode(msg.get("state", False))
+
+    def resize_headers_to_match(self) -> None:
+        """"""
+        for i in range(self.generalLog.columnCount()):
+            self.focusedLog.setColumnWidth(i, self.generalLog.columnWidth(i))
 
     def set_dark_mode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
@@ -903,37 +927,6 @@ class LogWindow(QDockWidget):
             )
         self.generalLog.blockSignals(False)
         self.focusedLog.blockSignals(False)
-
-    def watch_udp(self) -> None:
-        """
-        Watch for UDP datagrams.
-        Parse commands from our platform.node().
-        """
-        while self.multicast_interface.server_udp.hasPendingDatagrams():
-            json_data = self.multicast_interface.read_datagram_as_json()
-
-            if json_data.get("station", "") != platform.node():
-                continue
-            if json_data.get("cmd", "") == "UPDATELOG":
-                logger.debug("External refresh command.")
-                self.get_log()
-            if json_data.get("cmd", "") == "CALLCHANGED":
-                call = json_data.get("call", "")
-                self.show_like_calls(call)
-            if json_data.get("cmd", "") == "NEWDB":
-                self.load_new_db()
-            if json_data.get("cmd", "") == "SHOWCOLUMNS":
-                for column in range(len(self.columns)):
-                    self.generalLog.setColumnHidden(column, True)
-                    self.focusedLog.setColumnHidden(column, True)
-                columns_to_show = json_data.get("COLUMNS", [])
-                for column in columns_to_show:
-                    if column == "Freq":
-                        column = "Freq (Khz)"
-                    self.generalLog.setColumnHidden(self.get_column(column), False)
-                    self.focusedLog.setColumnHidden(self.get_column(column), False)
-            if json_data.get("cmd", "") == "DARKMODE":
-                self.set_dark_mode(json_data.get("state", False))
 
     def show_like_calls(self, call: str) -> None:
         """

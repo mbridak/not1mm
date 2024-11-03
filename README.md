@@ -26,8 +26,8 @@
     - [Data and RTTY](#data-and-rtty)
     - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
-  - [List of should be working contests](#list-of-should-be-working-contests)
-  - [Recent Changes](#recent-changes)
+  - [List of should be working contests, those in bold have ESM](#list-of-should-be-working-contests-those-in-bold-have-esm)
+  - [Recent Changes (Polishing the Turd)](#recent-changes-polishing-the-turd)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
@@ -87,10 +87,22 @@
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Recalulate Mults](#recalulate-mults)
+  - [ESM](#esm)
+    - [Run States](#run-states)
+      - [CQ](#cq)
+      - [Call Entered send His Call and the Exchange](#call-entered-send-his-call-and-the-exchange)
+      - [Empty exchange field send AGN till you get it](#empty-exchange-field-send-agn-till-you-get-it)
+      - [Exchange field filled, send TU QRZ and logs it](#exchange-field-filled-send-tu-qrz-and-logs-it)
+    - [S\&P States](#sp-states)
+      - [With his call entered, Send your call](#with-his-call-entered-send-your-call)
+      - [If no exchange entered send AGN](#if-no-exchange-entered-send-agn)
+      - [With exchange entered, send your exchange and log it](#with-exchange-entered-send-your-exchange-and-log-it)
+  - [Call History Files](#call-history-files)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
       - [The exchange](#the-exchange)
+    - [RAEM](#raem)
 
 ## What and why is Not1MM
 
@@ -140,7 +152,9 @@ when the program craps the bed. I'm only one guy, so if you see a bug let me kno
 
 I've recently added portions of code to watch for WSTJ-X and fldigi QSOs. I've added
 the Weekly RTTY Test, So RTTY could be tested. Also added FT8/4 and RTTY to ARRL Field
-Day and ARRL VHF. Praying that it works. I'll add more details later.
+Day and ARRL VHF. Found works better if you don't use FlDigi for making the QSO at all.
+Rather just using it as a RTTY modem and sending the text for it to send from Not1MM
+using the function keys or ESM.
 
 ### Other not so supported contests
 
@@ -157,7 +171,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
-## List of should be working contests
+## List of should be working contests, those in bold have ESM
 
 - General Logging (There are better general loggers like QLog, KLog, CQRLog)
 - 10 10 Fall CW
@@ -165,35 +179,33 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Summer Phone
 - 10 10 Winter Phone
 - ARRL 10M
-- ARRL DX CW, SSB
-- ARRL Field Day
-- ARRL Sweepstakes CW, SSB
+- **ARRL DX CW, SSB**
+- **ARRL Field Day**
+- **ARRL Sweepstakes CW, SSB**
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- CQ WPX CW, RTTY, SSB
-- CQ World Wide CW, RTTY, SSB
-- CWOps CWT
+- **CQ WPX CW, RTTY, SSB**
+- **CQ World Wide CW, RTTY, SSB**
+- **CWOps CWT**
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
-- K1USN Slow Speed Test
-- NAQP CW, SSB
+- **K1USN Slow Speed Test**
+- **NAQP CW, RTTY, SSB**
 - Phone Weekly Test
-- RAC Canada Day
+- **RAEM**
+- **RAC Canada Day**
+- **REF CW, SSB**
 - Stew Perry Topband
-- Weekly RTTY
-- Winter Field Day
+- **Weekly RTTY**
+- **Winter Field Day**
 
-## Recent Changes
+## Recent Changes (Polishing the Turd)
 
-- [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
-- [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
-- [24-10-5-1] Store the bandmap spots age timer in the preferences.
-- [24-10-5] Force reselction of contest after different DB opened.
-- [24-10-2] Add WPX RTTY.
-- [24-10-1] Merged PR removing leading zeros from serial numbers. Merged PR correcting the parsing of lookups for previous name and state in the CWT.
+- [24-11-3] Added RAEM contest
+- [24-11-2] Add beginning of call history files. Add command buttons.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -486,7 +498,7 @@ You can fill. You can fill. Everyone look at your keys.
 
 ### Changing station information
 
-Station information can be changed any time by going to
+Station information can be changed any time by going toawandahl
 `File` > `Station Settings` and editing the information.
 
 ## Selecting a contest (It's REQUIRED Russ)
@@ -688,12 +700,13 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [TAB] | Move cursor to the right one field. |
 | [Shift-Tab] | Move cursor left One field. |
 | [SPACE] | When in the callsign field, will move the input to the first field needed for the exchange. |
-| [Enter] | Submits the fields to the log. |
+| [Enter] | Submits the fields to the log. Unless ESM is enabled. |
 | [F1-F12] | Send (CW/RTTY/Voice) macros. |
 | [CTRL-S] | Spot Callsign to the cluster. |
 | [CTRL-M] | Mark Callsign to the bandmap window to work later. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
+| [CTRL-=] | Log the contact without sending the ESM macros.|
 
 ### The Log Window
 
@@ -797,6 +810,57 @@ After editing a contact and before generating a Cabrillo file. There is a Misc
 menu option that will recalculate the multipliers incase an edit had caused a
 change.
 
+## ESM
+
+I caved and started working on ESM or Enter Sends Message. To test it out you can
+go to `FILE -> Configuration Settings`
+
+![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/esm_config.png)
+
+Check the mark to Enable ESM and tell it which function keys do what. The keys will need
+to have the same function in both Run and S&P modes. The function keys will highlight
+green depending on the state of the input fields. The green keys will be sent if you
+press the Enter key. You should use the Space bar to move to another field.
+
+The contact will be automatically logged once all the needed info is collected and the
+QRZ (for Run) or Exchange (for S&P) is sent.
+
+### Run States
+
+#### CQ
+
+![CQ](https://github.com/mbridak/not1mm/raw/master/pic/esm_cq.png)
+
+#### Call Entered send His Call and the Exchange
+
+![Call Entered send His Call and the Exchange.](https://github.com/mbridak/not1mm/raw/master/pic/esm_withcall.png)
+
+#### Empty exchange field send AGN till you get it
+
+![Empty exchange field send AGN till you get it](https://github.com/mbridak/not1mm/raw/master/pic/esm_empty_exchange.png)
+
+#### Exchange field filled, send TU QRZ and logs it
+
+![Exchange field filled, send TU QRZ and logs it](https://github.com/mbridak/not1mm/raw/master/pic/esm_qrz.png)
+
+### S&P States
+
+#### With his call entered, Send your call
+
+![With his call entered, Send your call](https://github.com/mbridak/not1mm/raw/master/pic/esm_sp_call.png)
+
+#### If no exchange entered send AGN
+
+![If no exchange entered send AGN](https://github.com/mbridak/not1mm/raw/master/pic/esm_sp_agn.png)
+
+#### With exchange entered, send your exchange and log it
+
+![With exchange entered, send your exchange and log it](https://github.com/mbridak/not1mm/raw/master/pic/esm_sp_logit.png)
+
+## Call History Files
+
+I've started work on using 'call history files'.
+
 ## Contest specific notes
 
 I found it might be beneficial to have a section devoted to wierd quirky things
@@ -839,3 +903,8 @@ In the `Sent Exchange` field of the New Contest dialog put in the Precidence,
 Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
 For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
+
+### RAEM
+
+In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon.
+for me 33N117W. And in the exchange macro put `# {EXCH}`.

@@ -1,18 +1,18 @@
 S|F1|MyCall|{MYCALL}
-S|F2|Exch|{SNT} {SENTNR}
+S|F2|Exch|{SNT} {EXCH}
 S|F3|My NR|{SENTNR}
 S|F4|empty| 
-S|F5|AGN|[again]
+S|F5|MyCall|{MYCALL}
 S|F6|empty| 
 S|F7|Roger|[roger]
 S|F8|73|[73]
-S|F9|empty| 
+S|F9|AGN|[again]
 S|F10|Call?|[yourcall]
 S|F11|NR??|[mynumber]
 S|F12|TU|[thankyou]
 R|F1|Run CQ|[cq]
 R|F2|HisCall|{HISCALL}
-R|F3|Run Exch|{HISCALL} {SNT} {SENTNR}
+R|F3|Run Exch|{SNT} {EXCH}
 R|F4|Run TU|[thankyouqrz]
 R|F5|MyCall|{MYCALL}
 R|F6|MyNR|{SENTNR}

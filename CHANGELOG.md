@@ -1,5 +1,31 @@
 # Changelog
 
+- [24-11-3] Added RAEM contest
+- [24-11-2] Add beginning of call history files. Add command buttons.
+- [24-10-27-2] Changed CQ zone auto population for CQ WW, it now waits for the user to exit the callsign entry window before auto filling the zone.
+- [24-10-27-1] Fixed setting radios ssb mode when crossing 10M boundary.
+- [24-10-27] Fix bug where a contacts info could be carried over to new contact if no new value was written.
+- [24-10-26] Clear inputs when seeking to a call from the bandmap via the arrow up and down. Fixed bandmap crash from bad telnet data. Drop beacons from bandmap.
+- [24-10-25] Add File Menu option to create either an ASCII or UTF8 Cabrillo.
+- [24-10-24-1] Make all Cabrillo files with UTF-8.
+- [24-10-24] Forgot to convert the VFO dockwidget along with the rest. CQ WW CW, Dupes now score 0.
+- [24-10-23] Remove duplicate marked calls in the bandmap.
+- [24-10-22] Added ESM to RAC Canada Day. Added French REF.
+- [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
+- [24-10-20-1] ReWrote how the widgets interact. I probably broke a thing or two. Let me know.
+- [24-10-20] Add ESM to ARRL DX.
+- [24-10-19-1] Rewrite part of CAT control.
+- [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
+- [24-10-18] Fixed marked spots showing the correct time.
+- [24-10-17-2] Add ESM to ARRL Sweepstakes.
+- [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
+- [24-10-17] Increased max CW speed to 99, 'cause people be crazy. Trying smaller timeout for the rigctlsocket. Not having the checkwindow process events while not visible since it's a resource hog.
+- [24-10-15-1] Fix callsigns with a slash failing check during ESM.
+- [24-10-15] Add NAQP RTTY, Added ESM to NAQP.
+- [24-10-14] Add ESM to CQ WPX.
+- [24-10-13] Added ESM to Weekly RTTY, K1USN and CWT.
+- [24-10-11] Added ESM to CQWW SSB and RTTY.
+- [24-10-10] Add ESM to CQ WW CW to test it out.
 - [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
 - [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
 - [24-10-5-1] Store the bandmap spots age timer in the preferences.

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>855</width>
-    <height>465</height>
+    <height>641</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,7 +59,7 @@
      <number>0</number>
     </property>
     <item row="1" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
       <item>
        <layout class="QHBoxLayout" name="mainsection">
         <item>
@@ -1011,7 +1011,7 @@
                <number>5</number>
               </property>
               <property name="maximum">
-               <number>40</number>
+               <number>99</number>
               </property>
               <property name="value">
                <number>20</number>
@@ -1302,7 +1302,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>Edit</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1322,7 +1322,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>Store</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1342,7 +1342,7 @@
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>QRZ</string>
+                <string>---</string>
                </property>
               </widget>
              </item>
@@ -1366,6 +1366,13 @@
          </layout>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="history_info">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="StatusLine">
@@ -1443,7 +1450,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>878</width>
+     <width>855</width>
      <height>25</height>
     </rect>
    </property>
@@ -1471,10 +1478,12 @@
     <addaction name="actionStationSettings"/>
     <addaction name="separator"/>
     <addaction name="actionGenerate_ADIF"/>
-    <addaction name="actionGenerate_Cabrillo"/>
+    <addaction name="actionGenerate_Cabrillo_ASCII"/>
+    <addaction name="actionGenerate_Cabrillo_UTF8"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
+    <addaction name="actionLoad_Call_History_File"/>
     <addaction name="actionUpdate_CTY"/>
     <addaction name="actionUpdate_MASTER_SCP"/>
     <addaction name="separator"/>
@@ -1495,6 +1504,7 @@
     </property>
     <addaction name="actionCW_Macros"/>
     <addaction name="actionDark_Mode_2"/>
+    <addaction name="actionCommand_Buttons_2"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -1684,9 +1694,28 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionGenerate_Cabrillo">
+  <action name="actionGenerate_Cabrillo_ASCII">
    <property name="text">
-    <string>Generate Cabrillo</string>
+    <string>Generate Cabrillo ASCII</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono ExtraLight</family>
+    </font>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGenerate_Cabrillo_UTF8">
+   <property name="text">
+    <string>Generate Cabrillo UTF-8</string>
    </property>
    <property name="font">
     <font>
@@ -1956,6 +1985,24 @@
     <font>
      <family>JetBrains Mono ExtraLight</family>
     </font>
+   </property>
+  </action>
+  <action name="actionLoad_Call_History_File">
+   <property name="text">
+    <string>Load Call History File</string>
+   </property>
+  </action>
+  <action name="actionShow_Command_Buttons">
+   <property name="text">
+    <string>Command Buttons</string>
+   </property>
+  </action>
+  <action name="actionCommand_Buttons_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Command Buttons</string>
    </property>
   </action>
  </widget>

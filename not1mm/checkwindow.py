@@ -11,7 +11,6 @@ Purpose: Onscreen widget to show possible matches to callsigns entered in the ma
 
 import logging
 import os
-import platform
 import queue
 from json import loads
 import Levenshtein
@@ -19,10 +18,11 @@ import Levenshtein
 from PyQt6 import uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
 from PyQt6.QtGui import QMouseEvent, QColorConstants, QPalette, QColor
+from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
-from not1mm.lib.multicast import Multicast
+
 from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 class CheckWindow(QDockWidget):
     """The check window. Shows list or probable stations."""
 
-    multicast_interface = None
+    message = pyqtSignal(dict)
     dbname = None
     pref = {}
     call = None
@@ -47,6 +47,7 @@ class CheckWindow(QDockWidget):
 
     def __init__(self):
         super().__init__()
+        self.active = False
         self.load_pref()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
@@ -58,21 +59,43 @@ class CheckWindow(QDockWidget):
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
-        self.multicast_interface = Multicast(
-            self.pref.get("multicast_group", "239.1.1.1"),
-            self.pref.get("multicast_port", 2239),
-            self.pref.get("interface_ip", "0.0.0.0"),
-        )
-        self.multicast_interface.ready_read_connect(self.watch_udp)
+
+    def msg_from_main(self, packet):
+        """"""
+        if packet.get("cmd", "") == "DARKMODE":
+            self.setDarkMode(packet.get("state", False))
+            return
+        if packet.get("cmd", "") == "UPDATELOG":
+            self.clear_lists()
+            return
+
+        if self.active is False:
+            return
+        if packet.get("cmd", "") == "CALLCHANGED":
+            call = packet.get("call", "")
+            self.call = call
+            self.master_list(call)
+            self.log_list(call)
+            return
+        if packet.get("cmd", "") == "CHECKSPOTS":
+            self.populate_layout(self.dxcLayout, [])
+            spots = packet.get("spots", [])
+            self.telnet_list(spots)
+            return
+        if packet.get("cmd", "") == "NEWDB":
+            ...
+            # self.load_new_db()
+
+    def setActive(self, mode: bool):
+        self.active = bool(mode)
 
     def item_clicked(self, item):
         """docstring for item_clicked"""
         if item:
             cmd = {}
             cmd["cmd"] = "CHANGECALL"
-            cmd["station"] = platform.node()
             cmd["call"] = item
-            self.multicast_interface.send_as_json(cmd)
+            self.message.emit(cmd)
 
     def setDarkMode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
@@ -140,44 +163,6 @@ class CheckWindow(QDockWidget):
         except IOError as exception:
             logger.critical("Error: %s", exception)
         self.setDarkMode(self.pref.get("darkmode", False))
-
-    def watch_udp(self):
-        """
-        Puts UDP datagrams in a FIFO queue.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        while self.multicast_interface.server_udp.hasPendingDatagrams():
-            logger.debug("Got multicast ")
-            json_data = self.multicast_interface.read_datagram_as_json()
-
-            if json_data.get("station", "") != platform.node():
-                continue
-            if json_data.get("cmd", "") == "UPDATELOG":
-                self.clear_lists()
-            if json_data.get("cmd", "") == "CALLCHANGED":
-                call = json_data.get("call", "")
-                self.call = call
-                self.master_list(call)
-                self.log_list(call)
-                continue
-            if json_data.get("cmd", "") == "CHECKSPOTS":
-                self.populate_layout(self.dxcLayout, [])
-                spots = json_data.get("spots", [])
-                self.telnet_list(spots)
-                continue
-            if json_data.get("cmd", "") == "NEWDB":
-                ...
-                # self.load_new_db()
-
-            if json_data.get("cmd", "") == "DARKMODE":
-                self.setDarkMode(json_data.get("state", False))
 
     def clear_lists(self) -> None:
         """

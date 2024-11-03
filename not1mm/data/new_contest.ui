@@ -354,12 +354,32 @@
      </item>
      <item>
       <property name="text">
+       <string>NAQP RTTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>NAQP SSB</string>
       </property>
      </item>
      <item>
       <property name="text">
        <string>PHONE WEEKLY TEST</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RAEM</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>REF CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>REF SSB</string>
       </property>
      </item>
      <item>

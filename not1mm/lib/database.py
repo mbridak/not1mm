@@ -78,6 +78,7 @@ class DataBase:
         self.create_contest_table()
         self.create_contest_instance_table()
         self.create_station_table()
+        self.create_callhistory_table()
 
     @staticmethod
     def row_factory(cursor, row):
@@ -146,6 +147,36 @@ class DataBase:
                     "CLAIMEDQSO INTEGER DEFAULT 1,"
                     "Dirty INTEGER DEFAULT 1,"
                     "PRIMARY KEY (`TS`, `Call`) );"
+                )
+                cursor.execute(sql_command)
+                conn.commit()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+
+    def create_callhistory_table(self) -> None:
+        """creates the callhistory table"""
+        logger.debug("Creating DXLOG Table")
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cursor = conn.cursor()
+                sql_command = (
+                    "CREATE TABLE IF NOT EXISTS CALLHISTORY ("
+                    "Call VARCHAR(15) NOT NULL, "
+                    "Name VARCHAR(20), "
+                    "Loc1 VARCHAR(6) DEFAULT '', "
+                    "Loc2 VARCHAR(6) DEFAULT '', "
+                    "Sect VARCHAR(8) DEFAULT '', "
+                    "State VARCHAR(8) DEFAULT '', "
+                    "CK TINYINT DEFAULT 0, "
+                    "BirthDate DATE, "
+                    "Exch1 VARCHAR(12) DEFAULT '', "
+                    "Misc VARCHAR(15) DEFAULT '', "
+                    "Power VARCHAR(8) DEFAULT '', "
+                    "CqZone TINYINT DEFAULT 0, "
+                    "ITUZone TINYINT DEFAULT 0, "
+                    "UserText VARCHAR(60) DEFAULT '', "
+                    "LastUpdateNote VARCHAR(20) DEFAULT '' "
+                    ");"
                 )
                 cursor.execute(sql_command)
                 conn.commit()
@@ -356,6 +387,49 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def add_callhistory_item(self, history: dict) -> None:
+        """Add an item to the call history db"""
+        pre = "INSERT INTO CALLHISTORY("
+        values = []
+        columns = ""
+        placeholders = ""
+        for key in history.keys():
+            columns += f"{key},"
+            values.append(history[key])
+            placeholders += "?,"
+        post = f") VALUES({placeholders[:-1]});"
+        sql = f"{pre}{columns[:-1]}{post}"
+
+        try:
+            with sqlite3.connect(self.database) as conn:
+                cur = conn.cursor()
+                cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("%s", exception)
+
+    def add_callhistory_items(self, history_list: list) -> None:
+        """Add a list of items to the call history db"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                for history in history_list:
+                    pre = "INSERT INTO CALLHISTORY("
+                    values = []
+                    columns = ""
+                    placeholders = ""
+                    for key in history.keys():
+                        columns += f"{key},"
+                        values.append(history[key])
+                        placeholders += "?,"
+                    post = f") VALUES({placeholders[:-1]});"
+                    sql = f"{pre}{columns[:-1]}{post}"
+                    cur = conn.cursor()
+                    cur.execute(sql, tuple(values))
+                conn.commit()
+        except sqlite3.Error as exception:
+            print(exception)
+            logger.info("%s", exception)
+
     def add_contest(self, contest: dict) -> None:
         """Add Contest"""
 
@@ -464,6 +538,29 @@ class DataBase:
                     conn.commit()
             except sqlite3.Error as exception:
                 logger.info("DataBase delete_contact: %s", exception)
+
+    def delete_callhistory(self) -> None:
+        """Deletes all info from callhistory table."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                sql = "delete from CALLHISTORY;"
+                cur = conn.cursor()
+                cur.execute(sql)
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.info("%s", exception)
+
+    def fetch_call_history(self, call: str):
+        """"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(f"select * from CALLHISTORY where call='{call}';")
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
 
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""

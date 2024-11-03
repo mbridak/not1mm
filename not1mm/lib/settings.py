@@ -19,6 +19,8 @@ class Settings(QtWidgets.QDialog):
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
         uic.loadUi(app_data_path / "configuration.ui", self)
+        self.tabWidget.setTabVisible(5, False)
+        # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
         self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
@@ -38,6 +40,48 @@ class Settings(QtWidgets.QDialog):
 
     def setup(self):
         """setup dialog"""
+
+        self.use_call_history.setChecked(
+            bool(self.preference.get("use_call_history", False))
+        )
+
+        self.use_esm.setChecked(bool(self.preference.get("use_esm", False)))
+
+        value = self.preference.get("esm_agn", "DISABLED")
+        index = self.esm_agn.findText(value)
+        if index != -1:
+            self.esm_agn.setCurrentIndex(index)
+
+        value = self.preference.get("esm_cq", "DISABLED")
+        index = self.esm_cq.findText(value)
+        if index != -1:
+            self.esm_cq.setCurrentIndex(index)
+
+        value = self.preference.get("esm_exch", "DISABLED")
+        index = self.esm_exch.findText(value)
+        if index != -1:
+            self.esm_exch.setCurrentIndex(index)
+
+        value = self.preference.get("esm_hiscall", "DISABLED")
+        index = self.esm_hiscall.findText(value)
+        if index != -1:
+            self.esm_hiscall.setCurrentIndex(index)
+
+        value = self.preference.get("esm_mycall", "DISABLED")
+        index = self.esm_mycall.findText(value)
+        if index != -1:
+            self.esm_mycall.setCurrentIndex(index)
+
+        value = self.preference.get("esm_qrz", "DISABLED")
+        index = self.esm_qrz.findText(value)
+        if index != -1:
+            self.esm_qrz.setCurrentIndex(index)
+
+        value = self.preference.get("esm_qsob4", "DISABLED")
+        index = self.esm_qsob4.findText(value)
+        if index != -1:
+            self.esm_qsob4.setCurrentIndex(index)
+
         for device in self.devices:
             if device.get("max_output_channels"):
                 self.sounddevice.addItem(device.get("name"))
@@ -150,6 +194,16 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["use_call_history"] = self.use_call_history.isChecked()
+        self.preference["use_esm"] = self.use_esm.isChecked()
+        self.preference["esm_cq"] = self.esm_cq.currentText()
+        self.preference["esm_agn"] = self.esm_agn.currentText()
+        self.preference["esm_exch"] = self.esm_exch.currentText()
+        self.preference["esm_hiscall"] = self.esm_hiscall.currentText()
+        self.preference["esm_mycall"] = self.esm_mycall.currentText()
+        self.preference["esm_qrz"] = self.esm_qrz.currentText()
+        self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
+
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
         # self.preference["usehamdb"] = self.usehamdb_radioButton.isChecked()

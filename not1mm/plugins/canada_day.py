@@ -51,6 +51,7 @@ RAC_OFFICIAL_STATIONS = [
     "VY0RAC",
     "VY1RAC",
     "VY2RAC",
+    "VE3RHQ",
 ]
 
 PROV_SEC = [
@@ -151,9 +152,6 @@ def predupe(self):
 
 def prefill(self):
     """Fill sentnr"""
-    # if len(self.other_2.text()) == 0:
-    #     self.other_2.setText(str(self.contact.get("ZN", "")))
-
     result = self.database.get_serial()
     serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
@@ -163,8 +161,6 @@ def prefill(self):
     field = self.field3.findChild(QtWidgets.QLineEdit)
     if len(field.text()) == 0:
         field.setText(exchange)
-
-    # self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
 
 def points(self):
@@ -177,7 +173,7 @@ def points(self):
     if result:
         for item in result.items():
             entity = item[1].get("entity", "")
-            continent = item[1].get("continent", "")
+            # continent = item[1].get("continent", "")
             if entity == "Canada":
                 return 10
 
@@ -226,7 +222,16 @@ def adif(self):
     gen_adif(self, cabrillo_name, "RAC-CANADA-DAY")
 
 
-def cabrillo(self):
+def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
+    """"""
+    print(
+        line_to_output.encode(file_encoding, errors="ignore").decode(),
+        end=ending,
+        file=file_descriptor,
+    )
+
+
+def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
     # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
@@ -242,134 +247,151 @@ def cabrillo(self):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="ascii") as file_descriptor:
-            print("START-OF-LOG: 3.0", end="\r\n", file=file_descriptor)
-            print(
-                f"CREATED-BY: Not1MM v{__version__}",
-                end="\r\n",
-                file=file_descriptor,
+        with open(filename, "w", encoding="utf-8") as file_descriptor:
+            output_cabrillo_line(
+                "START-OF-LOG: 3.0",
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
+                f"CREATED-BY: Not1MM v{__version__}",
+                "\r\n",
+                file_descriptor,
+                file_encoding,
+            )
+            output_cabrillo_line(
                 f"CONTEST: {cabrillo_name}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             if self.station.get("Club", ""):
-                print(
+                output_cabrillo_line(
                     f"CLUB: {self.station.get('Club', '').upper()}",
-                    end="\r\n",
-                    file=file_descriptor,
+                    "\r\n",
+                    file_descriptor,
+                    file_encoding,
                 )
-            print(
+            output_cabrillo_line(
                 f"CALLSIGN: {self.station.get('Call','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"LOCATION: {self.station.get('ARRLSection', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            # print(
-            #     f"ARRL-SECTION: {self.pref.get('section', '')}",
-            #     end="\r\n",
-            #     file=file_descriptor,
-            # )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-BAND: {self.contest_settings.get('BandCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-MODE: {self.contest_settings.get('ModeCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                print(
+                output_cabrillo_line(
                     f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory','')}",
-                    end="\r\n",
-                    file=file_descriptor,
+                    "\r\n",
+                    file_descriptor,
+                    file_encoding,
                 )
-            print(
+            output_cabrillo_line(
                 f"GRID-LOCATOR: {self.station.get('GridSquare','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            # print(
-            #     f"CATEGORY: {None}",
-            #     end="\r\n",
-            #     file=file_descriptor,
-            # )
-            print(
+            output_cabrillo_line(
                 f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory','')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
 
-            print(
+            output_cabrillo_line(
                 f"CLAIMED-SCORE: {calc_score(self)}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             ops = f"@{self.station.get('Call','')}"
             list_of_ops = self.database.get_ops()
             for op in list_of_ops:
                 ops += f", {op.get('Operator', '')}"
-            print(
+            output_cabrillo_line(
                 f"OPERATORS: {ops}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"NAME: {self.station.get('Name', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS: {self.station.get('Street1', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS-CITY: {self.station.get('City', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
-            print(
+            output_cabrillo_line(
                 f"EMAIL: {self.station.get('Email', '')}",
-                end="\r\n",
-                file=file_descriptor,
+                "\r\n",
+                file_descriptor,
+                file_encoding,
             )
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
@@ -380,7 +402,7 @@ def cabrillo(self):
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                print(
+                output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
@@ -388,10 +410,11 @@ def cabrillo(self):
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
                     f"{str(contact.get('NR', '')).ljust(6)}",
-                    end="\r\n",
-                    file=file_descriptor,
+                    "\r\n",
+                    file_descriptor,
+                    file_encoding,
                 )
-            print("END-OF-LOG:", end="\r\n", file=file_descriptor)
+            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
     except IOError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
@@ -401,3 +424,92 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+def process_esm(self, new_focused_widget=None, with_enter=False):
+    """ESM State Machine"""
+
+    # self.pref["run_state"]
+
+    # -----===== Assigned F-Keys =====-----
+    # self.esm_dict["CQ"]
+    # self.esm_dict["EXCH"]
+    # self.esm_dict["QRZ"]
+    # self.esm_dict["AGN"]
+    # self.esm_dict["HISCALL"]
+    # self.esm_dict["MYCALL"]
+    # self.esm_dict["QSOB4"]
+
+    # ----==== text fields ====----
+    # self.callsign
+    # self.sent
+    # self.receive
+    # self.other_1
+    # self.other_2
+
+    if new_focused_widget is not None:
+        self.current_widget = self.inputs_dict.get(new_focused_widget)
+
+    for a_button in [
+        self.esm_dict["CQ"],
+        self.esm_dict["EXCH"],
+        self.esm_dict["QRZ"],
+        self.esm_dict["AGN"],
+        self.esm_dict["HISCALL"],
+        self.esm_dict["MYCALL"],
+        self.esm_dict["QSOB4"],
+    ]:
+        if a_button is not None:
+            self.restore_button_color(a_button)
+
+    buttons_to_send = []
+
+    if self.pref.get("run_state"):
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) < 3:
+                self.make_button_green(self.esm_dict["CQ"])
+                buttons_to_send.append(self.esm_dict["CQ"])
+            elif len(self.callsign.text()) > 2:
+                self.make_button_green(self.esm_dict["HISCALL"])
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["HISCALL"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            else:
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)
+    else:
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) > 2:
+                self.make_button_green(self.esm_dict["MYCALL"])
+                buttons_to_send.append(self.esm_dict["MYCALL"])
+
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            else:
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+                buttons_to_send.append("LOGIT")
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)

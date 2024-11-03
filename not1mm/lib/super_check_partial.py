@@ -72,7 +72,7 @@ class SCP:
                 [
                     x[0]
                     for x in process.extract(
-                        acall, self.scp, scorer=prefer_prefix_score, limit=25
+                        acall, self.scp, scorer=prefer_prefix_score, limit=20
                     )
                 ]
             )
