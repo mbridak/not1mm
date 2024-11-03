@@ -226,7 +226,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
-        self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
+        self.actionCommand_Buttons_2.triggered.connect(
+            self.command_buttons_state_change
+        )
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
@@ -292,6 +294,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_red = QtGui.QPixmap(str(icon_path / "radio_red.png"))
         self.radio_green = QtGui.QPixmap(str(icon_path / "radio_green.png"))
         self.radio_icon.setPixmap(self.radio_grey)
+
+        self.log_it.clicked.connect(self.save_contact)
+        self.wipe.clicked.connect(self.clearinputs)
+        self.esc_stop.clicked.connect(self.stop_cw)
+        self.mark.clicked.connect(self.mark_spot)
+        self.spot_it.clicked.connect(self.spot_dx)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F1))
@@ -1957,6 +1965,43 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
 
+    def stop_cw(self):
+        """"""
+        if self.cw is not None:
+            if self.cw.servertype == 1:
+                self.cw.sendcw("\x1b4")
+                return
+        if self.rig_control:
+            if self.rig_control.online:
+                if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                    if self.rig_control.interface == "flrig":
+                        self.rig_control.cat.set_flrig_cw_send(False)
+                        self.rig_control.cat.set_flrig_cw_send(True)
+
+    def mark_spot(self):
+        """"""
+        freq = self.radio_state.get("vfoa")
+        dx = self.callsign.text()
+        if freq and dx:
+            cmd = {}
+            cmd["cmd"] = "MARKDX"
+            cmd["dx"] = dx
+            cmd["freq"] = float(int(freq) / 1000)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
+
+    def spot_dx(self):
+        """"""
+        freq = self.radio_state.get("vfoa")
+        dx = self.callsign.text()
+        if freq and dx:
+            cmd = {}
+            cmd["cmd"] = "SPOTDX"
+            cmd["dx"] = dx
+            cmd["freq"] = float(int(freq) / 1000)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
+
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """
         This overrides Qt key event.
@@ -3019,7 +3064,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
+        self.pref["command_buttons"] = self.actionCommand_Buttons_2.isChecked()
         self.write_preference()
         self.show_command_buttons()
 
