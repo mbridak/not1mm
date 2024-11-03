@@ -737,12 +737,16 @@ class MainWindow(QtWidgets.QMainWindow):
                             group = {}
                             fields = line.strip().split(",")
                             # ['4U1WB','MDC','DC','89','']
+                            number_of_fields = len(fields)
                             count = 0
                             try:
                                 for item in item_names:
                                     if item == "":
                                         continue
-                                    group[item] = fields[count]
+                                    if count < number_of_fields:
+                                        group[item] = fields[count]
+                                    else:
+                                        group[item] = ""
                                     count += 1
                                 group_list.append(group)
                                 # database.add_callhistory_item(group)
