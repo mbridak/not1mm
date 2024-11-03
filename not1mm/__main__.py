@@ -2294,7 +2294,10 @@ class MainWindow(QtWidgets.QMainWindow):
             score = self.contest.calc_score(self)
             self.score.setText(str(score))
             self.contest.reset_label(self)
-            if self.contest.name != "ICWC Medium Speed Test":
+            if (
+                self.contest.name != "ICWC Medium Speed Test"
+                and self.contest.name != "RAEM"
+            ):
                 if self.current_mode in ("CW", "RTTY"):
                     self.sent.setText("599")
                     self.receive.setText("599")

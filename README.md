@@ -87,7 +87,7 @@
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
   - [Recalulate Mults](#recalulate-mults)
-  - [Testing Out ESM Currently only in CQ WW](#testing-out-esm-currently-only-in-cq-ww)
+  - [ESM](#esm)
     - [Run States](#run-states)
       - [CQ](#cq)
       - [Call Entered send His Call and the Exchange](#call-entered-send-his-call-and-the-exchange)
@@ -97,10 +97,12 @@
       - [With his call entered, Send your call](#with-his-call-entered-send-your-call)
       - [If no exchange entered send AGN](#if-no-exchange-entered-send-agn)
       - [With exchange entered, send your exchange and log it](#with-exchange-entered-send-your-exchange-and-log-it)
+  - [Call History Files](#call-history-files)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
       - [The exchange](#the-exchange)
+    - [RAEM](#raem)
 
 ## What and why is Not1MM
 
@@ -193,6 +195,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **K1USN Slow Speed Test**
 - **NAQP CW, RTTY, SSB**
 - Phone Weekly Test
+- **RAEM**
 - **RAC Canada Day**
 - **REF CW, SSB**
 - Stew Perry Topband
@@ -201,6 +204,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-3] Added RAEM contest
 - [24-11-2] Add beginning of call history files. Add command buttons.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
@@ -805,7 +809,7 @@ After editing a contact and before generating a Cabrillo file. There is a Misc
 menu option that will recalculate the multipliers incase an edit had caused a
 change.
 
-## Testing Out ESM Currently only in CQ WW
+## ESM
 
 I caved and started working on ESM or Enter Sends Message. To test it out you can
 go to `FILE -> Configuration Settings`
@@ -852,6 +856,10 @@ QRZ (for Run) or Exchange (for S&P) is sent.
 
 ![With exchange entered, send your exchange and log it](https://github.com/mbridak/not1mm/raw/master/pic/esm_sp_logit.png)
 
+## Call History Files
+
+I've started work on using 'call history files'.
+
 ## Contest specific notes
 
 I found it might be beneficial to have a section devoted to wierd quirky things
@@ -894,3 +902,8 @@ In the `Sent Exchange` field of the New Contest dialog put in the Precidence,
 Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
 For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
+
+### RAEM
+
+In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon.
+for me 33N117W. And in the exchange macro put `# {EXCH}`.

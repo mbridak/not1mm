@@ -369,6 +369,11 @@
      </item>
      <item>
       <property name="text">
+       <string>RAEM</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>REF CW</string>
       </property>
      </item>
