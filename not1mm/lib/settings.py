@@ -19,6 +19,8 @@ class Settings(QtWidgets.QDialog):
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
         uic.loadUi(app_data_path / "configuration.ui", self)
+        self.tabWidget.setTabVisible(5, False)
+        # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
         self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
@@ -39,7 +41,11 @@ class Settings(QtWidgets.QDialog):
     def setup(self):
         """setup dialog"""
 
-        self.use_esm.setChecked(bool(self.preference.get("use_esm")))
+        self.use_call_history.setChecked(
+            bool(self.preference.get("use_call_history", False))
+        )
+
+        self.use_esm.setChecked(bool(self.preference.get("use_esm", False)))
 
         value = self.preference.get("esm_agn", "DISABLED")
         index = self.esm_agn.findText(value)
@@ -188,6 +194,7 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["use_call_history"] = self.use_call_history.isChecked()
         self.preference["use_esm"] = self.use_esm.isChecked()
         self.preference["esm_cq"] = self.esm_cq.currentText()
         self.preference["esm_agn"] = self.esm_agn.currentText()

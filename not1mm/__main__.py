@@ -164,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
     text_color = QColorConstants.Black
     current_palette = None
     use_esm = False
+    use_call_history = False
     esm_dict = {}
 
     radio_thread = QThread()
@@ -199,6 +200,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
         self.inputs_dict = {
             self.callsign: "callsign",
@@ -224,12 +226,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
-        self.actionCommand_Buttons.triggered.connect(self.command_buttons_state_change)
+        self.actionCommand_Buttons_2.triggered.connect(
+            self.command_buttons_state_change
+        )
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
+        self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
 
         self.actionGenerate_Cabrillo_ASCII.triggered.connect(
             lambda x: self.generate_cabrillo("ascii")
@@ -289,6 +294,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_red = QtGui.QPixmap(str(icon_path / "radio_red.png"))
         self.radio_green = QtGui.QPixmap(str(icon_path / "radio_green.png"))
         self.radio_icon.setPixmap(self.radio_grey)
+
+        self.log_it.clicked.connect(self.save_contact)
+        self.wipe.clicked.connect(self.clearinputs)
+        self.esc_stop.clicked.connect(self.stop_cw)
+        self.mark.clicked.connect(self.mark_spot)
+        self.spot_it.clicked.connect(self.spot_dx)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F1))
@@ -702,6 +713,45 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    def load_call_history(self) -> None:
+        """"""
+        filename = self.filepicker("other")
+        if filename:
+            self.database.create_callhistory_table()
+            self.database.delete_callhistory()
+
+            try:
+                with open(filename, "rt", encoding="utf-8") as file_descriptor:
+                    lines = file_descriptor.readlines()
+                    if "!!Order!!" in lines[0]:
+                        item_names = lines[0].strip().split(",")
+                        # ['!!Order!!', 'Call', 'Sect', 'State', 'CK', 'UserText', '']
+                        item_names = item_names[1:-1]
+                        # ['Call', 'Sect', 'State', 'CK', 'UserText']
+                        lines = lines[1:]
+                        group_list = []
+                        for line in lines:
+                            if line.startswith("#"):
+                                continue
+                            group = {}
+                            fields = line.strip().split(",")
+                            # ['4U1WB','MDC','DC','89','']
+                            count = 0
+                            try:
+                                for item in item_names:
+                                    if item == "":
+                                        continue
+                                    group[item] = fields[count]
+                                    count += 1
+                                group_list.append(group)
+                                # database.add_callhistory_item(group)
+                                # print(f"{group=}")
+                            except IndexError:
+                                ...
+                        self.database.add_callhistory_items(group_list)
+            except FileNotFoundError as err:
+                self.show_message_box(f"{err}")
 
     def on_focus_changed(self, new):
         """"""
@@ -1728,6 +1778,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 "Database (*.db)",
                 options=options,
             )
+        if action == "other":
+            file, _ = QFileDialog.getOpenFileName(
+                self,
+                "Choose a File",
+                "~/",
+                "Any (*.*)",
+                options=options,
+            )
         return file
 
     def recalculate_mults(self) -> None:
@@ -1907,6 +1965,43 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
 
+    def stop_cw(self):
+        """"""
+        if self.cw is not None:
+            if self.cw.servertype == 1:
+                self.cw.sendcw("\x1b4")
+                return
+        if self.rig_control:
+            if self.rig_control.online:
+                if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                    if self.rig_control.interface == "flrig":
+                        self.rig_control.cat.set_flrig_cw_send(False)
+                        self.rig_control.cat.set_flrig_cw_send(True)
+
+    def mark_spot(self):
+        """"""
+        freq = self.radio_state.get("vfoa")
+        dx = self.callsign.text()
+        if freq and dx:
+            cmd = {}
+            cmd["cmd"] = "MARKDX"
+            cmd["dx"] = dx
+            cmd["freq"] = float(int(freq) / 1000)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
+
+    def spot_dx(self):
+        """"""
+        freq = self.radio_state.get("vfoa")
+        dx = self.callsign.text()
+        if freq and dx:
+            cmd = {}
+            cmd["cmd"] = "SPOTDX"
+            cmd["dx"] = dx
+            cmd["freq"] = float(int(freq) / 1000)
+            if self.bandmap_window:
+                self.bandmap_window.msg_from_main(cmd)
+
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """
         This overrides Qt key event.
@@ -1921,6 +2016,12 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         modifier = event.modifiers()
+        if (
+            event.key() == Qt.Key.Key_Equal
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            self.save_contact()
+            return
         if event.key() == Qt.Key.Key_K:
             self.toggle_cw_entry()
             return
@@ -2901,6 +3002,9 @@ class MainWindow(QtWidgets.QMainWindow):
             "DISABLED": None,
         }
 
+        self.use_call_history = self.pref.get("use_call_history", False)
+        if self.use_call_history:
+            self.history_info.show()
         self.use_esm = self.pref.get("use_esm", False)
         self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
         self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
@@ -2968,7 +3072,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        self.pref["command_buttons"] = self.actionCommand_Buttons.isChecked()
+        self.pref["command_buttons"] = self.actionCommand_Buttons_2.isChecked()
         self.write_preference()
         self.show_command_buttons()
 
@@ -3125,6 +3229,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.lookup_service.msg_from_main(cmd)
             self.next_field.setFocus()
             if self.contest:
+                if self.use_call_history and hasattr(
+                    self.contest, "check_call_history"
+                ):
+                    self.contest.check_call_history(self)
                 if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
                     self.contest.prefill(self)
             return

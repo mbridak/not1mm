@@ -43,7 +43,7 @@ classifiers = [
 [tool.setuptools.packages.find]
 where = ["."]
 
-exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test","usb_vfo_knob*",]
+exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test", "usb_vfo_knob*", "research*",]
 
 [tool.setuptools.package-data]
 "not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html",]
