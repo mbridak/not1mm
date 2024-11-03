@@ -2285,6 +2285,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dupe_indicator.hide()
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
+        self.history_info.setText("")
         self.dx_entity.setText("")
 
         if self.contest:
