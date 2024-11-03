@@ -134,6 +134,16 @@ def prefill(self):
         field.setText(serial_nr)
 
 
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f" {result.get('CK','')}{result.get('Sect', '')}")
+
+
 def points(self):
     """Calc point"""
     return 2
