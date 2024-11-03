@@ -153,7 +153,7 @@ when the program craps the bed. I'm only one guy, so if you see a bug let me kno
 
 I've recently added portions of code to watch for WSTJ-X and fldigi QSOs. I've added
 the Weekly RTTY Test, So RTTY could be tested. Also added FT8/4 and RTTY to ARRL Field
-Day and ARRL VHF. Found works better if you don't use FlDigi for making the QSO at all.
+Day and ARRL VHF. Found it works better if you don't use FlDigi for making the QSO at all.
 Rather just using it as a RTTY modem and sending the text for it to send from Not1MM
 using the function keys or ESM.
 
@@ -188,7 +188,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **CQ WPX CW, RTTY, SSB**
 - **CQ World Wide CW, RTTY, SSB**
 - **CWOps CWT**
-- Helvetia
+- **Helvetia**
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
@@ -205,6 +205,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
 - [24-11-3] Added RAEM contest
 - [24-11-2] Add beginning of call history files. Add command buttons.
 

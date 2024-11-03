@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
 - [24-11-3] Added RAEM contest
 - [24-11-2] Add beginning of call history files. Add command buttons.
 - [24-10-27-2] Changed CQ zone auto population for CQ WW, it now waits for the user to exit the callsign entry window before auto filling the zone.
