@@ -22,12 +22,12 @@ serial = usb_cdc.console
 enc = rotaryio.IncrementalEncoder(GP22, GP21)
 enc.position = 0
 
-last_position = 0
+last_position = None
 inputstring = ""
 fine_mode = True  # Start in fine mode
 
 def out(data):
-    serial.write(data.encode())
+    usb_cdc.console.write(data.encode())
 
 def update_leds():
     green_led.value = fine_mode
@@ -39,17 +39,20 @@ last_switch_state = switch.value
 last_toggle_time = time.monotonic()
 
 while True:
-    current_switch_state = switch.value
     current_time = time.monotonic()
+    current_switch_state = switch.value
 
     if current_switch_state != last_switch_state and (current_time - last_toggle_time) > 0.2:
-        if not current_switch_state:  # Switch is pressed (active low)
+        if current_switch_state == False:  # Switch is pressed (active low)
             fine_mode = not fine_mode
             update_leds()
             last_toggle_time = current_time
         last_switch_state = current_switch_state
 
     current_position = enc.position
+    if last_position is None:
+        last_position = current_position
+    
     if current_position != last_position:
         change = current_position - last_position
         if fine_mode:
@@ -58,27 +61,27 @@ while True:
             change = change // 1  # Coarser steps
         
         if change != 0:
-            new_position = last_position + (change * (1 if fine_mode else 20))
-            enc.position = new_position
-            out(f"{new_position}\r\n")
+            enc.position = last_position + (change * (1 if fine_mode else 20))
+            out(f"{enc.position}\r\n")
         last_position = enc.position
 
-    if serial.in_waiting:
+    if usb_cdc.console.in_waiting:
         led.value = True
-        incoming = serial.read(serial.in_waiting).decode()
-        inputstring += incoming
+        incoming = usb_cdc.console.read(usb_cdc.console.in_waiting)
+        inputstring = inputstring + incoming.decode()
 
-        if '\r' in inputstring:
-            command, inputstring = inputstring.split('\r', 1)
-            command = command.strip()
-            if command == 'f':
-                out(f"{enc.position}\r\n")
-            elif command.startswith("F") and len(command.split()) == 2:
-                freq = command.split()[1]
+        if inputstring[-1] == "\r":
+            if inputstring.strip() == 'f':
+                position = enc.position
+                out(f"{position}\r\n")
+            if inputstring[0] == "F" and len(inputstring.strip().split()) == 2:
+                freq = inputstring.strip().split()[1]
                 if freq.isdigit():
                     enc.position = int(freq)
                     last_position = enc.position
-            elif command == 'whatareyou':
+            if inputstring.strip() == 'whatareyou':
                 out("vfoknob\r\n")
+            inputstring = ""
         led.value = False
 
+    time.sleep(0.01)  # Small delay to prevent busy-waiting
