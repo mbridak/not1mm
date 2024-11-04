@@ -23,11 +23,11 @@ while time.monotonic() - start_time < 3:
     
     # Check if the switch is pressed
     if not switch.value:
-        green_led.value = True  # Keep green LED on to indicate USB access enabled
+        green_led.value = True
         storage.enable_usb_drive()
         supervisor.set_next_code_file(None)
         supervisor.reload()
 
 # If the switch wasn't pressed, disable the USB drive
-green_led.value = False  # Turn off green LED
+green_led.value = False
 storage.disable_usb_drive()
