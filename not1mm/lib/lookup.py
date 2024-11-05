@@ -183,7 +183,7 @@ class QRZlookup:
         Lookup a call on QRZ
         """
         logger.info("%s", call)
-        _response = None
+        root = {}
         if self.session:
             payload = {"s": self.session, "callsign": call}
             try:
@@ -208,7 +208,7 @@ class QRZlookup:
                         self.qrzurl, params=payload, timeout=3.0
                     )
                     baseroot = xmltodict.parse(query_result.text)
-                    root = baseroot.get("QRZDatabase")
+                    root = baseroot.get("QRZDatabase", {})
         return root.get("Callsign")
 
 
