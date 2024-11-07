@@ -448,3 +448,15 @@ def recalculate_mults(self):
             contact["IsMultiplier1"] = 0
         self.database.change_contact(contact)
     trigger_update(self)
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        # if self.other_1.text() == "":
+        #     self.other_1.setText(f"{result.get('CQZone', '')}")
+        # if self.other_2.text() == "":
+        #     self.other_2.setText(f"{result.get('State', '')}")

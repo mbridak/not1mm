@@ -205,6 +205,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
 - [24-11-5] Fix crash with bad qrz credentials.
 - [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
 - [24-11-3] Added RAEM contest

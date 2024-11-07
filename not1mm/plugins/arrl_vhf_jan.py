@@ -535,3 +535,13 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.other_1.setText(my_grid)
         ALTEREGO.other_2.setText(their_grid)
         ALTEREGO.save_contact()
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Loc1', '')}")
