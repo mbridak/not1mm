@@ -1,9 +1,10 @@
+setuptools
+build
 PyQt6
 requests
 dicttoxml
 xmltodict
 pyserial
-numpy
 notctyparser >= 23.6.21
 sounddevice
 soundfile
