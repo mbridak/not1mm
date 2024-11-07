@@ -3,6 +3,7 @@ not1mm/.vscode
 /dist
 /not1mm.egg-info
 /publish.sh
+/.flatpak-builder
 __pycache__
 not1mm.json
 test.py
