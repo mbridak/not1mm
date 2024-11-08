@@ -22,18 +22,4 @@ finish-args:
 
 modules:
   - python3-modules.yaml
-  
-  - name: not1mm
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "build" --no-build-isolation
-    sources:
-      - type: file
-        url: https://files.pythonhosted.org/packages/8d/6c/8ed1d760092ec73bc0c43e284911fd043582077561cf7904728baea95e8b/not1mm-24.11.6-py3-none-any.whl
-        sha256: e0046a1537416cfbba6d8e7b77c42e5a84e9e1135dbbb39a04c3e9dc17bbdc1b
-        x-checker-data:
-          name: not1mm
-          packagetype: bdist_wheel
-          type: pypi
 
