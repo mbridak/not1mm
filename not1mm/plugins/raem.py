@@ -494,7 +494,6 @@ def recalculate_mults(self):
 def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())
-    print(f"{result=}")
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":

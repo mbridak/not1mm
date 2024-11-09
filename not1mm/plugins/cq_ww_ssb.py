@@ -511,7 +511,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())
-    print(f"{result=}")
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
