@@ -1107,11 +1107,16 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         Nothing
         """
+
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(str(band), mode)
             self.change_freq(freq)
             vfo = float(freq)
             vfo = int(vfo * 1000)
+            if mode == "CW":
+                mode = self.rig_control.last_cw_mode
+            if mode == "RTTY":
+                mode = self.rig_control.last_data_mode
             self.change_mode(mode, intended_freq=vfo)
 
     def quit_app(self) -> None:
@@ -3315,10 +3320,9 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-
         if mode in ("CW", "CW-U", "CW-L", "CWR"):
             if self.rig_control and self.rig_control.online:
-                self.rig_control.set_mode("CW")
+                self.rig_control.set_mode(self.rig_control.last_cw_mode)
                 if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                     if self.rig_control.interface == "flrig":
                         self.cwspeed_spinbox_changed()
@@ -3332,9 +3336,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.read_cw_macros()
             return
-        if mode == "RTTY":
+        if mode in (
+            "DIGI-U",
+            "DIGI-L",
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+        ):
             if self.rig_control and self.rig_control.online:
-                self.rig_control.set_mode("RTTY")
+                self.rig_control.set_mode(self.rig_control.last_data_mode)
             else:
                 self.radio_state["mode"] = "RTTY"
             self.setmode("RTTY")
@@ -3548,6 +3561,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Passing in a dictionary object with the
         vfo freq, mode, bandwidth, and online state of the radio.
         """
+        logger.debug(f"{the_dict=}")
         self.set_radio_icon(0)
         info_dirty = False
         vfo = the_dict.get("vfoa", "")
@@ -3645,7 +3659,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        if self.radio_state.get("mode") == "CW":
+        if self.radio_state.get("mode") in ("CW", "CW-L", "CW-R", "CWR"):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
             "RTTY",
@@ -3659,6 +3673,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "RTTYR",
             "PKTLSB",
             "PKTUSB",
+            "FSK",
         ):
             macro_file = "rttymacros.txt"
         else:
@@ -3687,7 +3702,11 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if self.radio_state.get("mode") == "CW":
+        if self.radio_state.get("mode") in (
+            "CW",
+            "CW-L",
+            "CW-R",
+        ):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
             "RTTY",
