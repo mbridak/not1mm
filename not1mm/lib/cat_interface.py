@@ -97,6 +97,7 @@ class CAT:
             self.__initialize_rigctrld()
         elif self.interface == "fake":
             self.online = True
+            logger.debug("Using Fake Rig")
         return
 
     def __initialize_rigctrld(self):
@@ -223,7 +224,9 @@ class CAT:
         """Poll the radio using flrig"""
         try:
             self.online = True
-            return self.server.rig.get_vfo()
+            vfo_value = self.server.rig.get_vfo()
+            logger.debug(f"{vfo_value=}")
+            return vfo_value
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
@@ -232,7 +235,7 @@ class CAT:
             http.client.ResponseNotReady,
         ) as exception:
             self.online = False
-            logger.debug("getvfo_flrig: %s", f"{exception}")
+            logger.debug(f"{exception=}")
         return ""
 
     def __getvfo_rigctld(self) -> str:
@@ -244,7 +247,7 @@ class CAT:
                 return self.__get_serial_string().strip()
             except socket.error as exception:
                 self.online = False
-                logger.debug("getvfo_rigctld: %s", f"{exception}")
+                logger.debug(f"{exception=}")
                 self.rigctrlsocket = None
             return ""
 
@@ -268,7 +271,9 @@ class CAT:
         # 7300 ['LSB', 'USB', 'AM', 'FM', 'CW', 'CW-R', 'RTTY', 'RTTY-R', 'LSB-D', 'USB-D', 'AM-D', 'FM-D']
         try:
             self.online = True
-            return self.server.rig.get_mode()
+            mode_value = self.server.rig.get_mode()
+            logger.debug(f"{mode_value=}")
+            return mode_value
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
@@ -282,7 +287,7 @@ class CAT:
 
     def __getmode_rigctld(self) -> str:
         """Returns mode vai rigctld"""
-        # QMX 'AM CW USB LSB RTTY FM CWR RTTYR'
+        # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
         if self.rigctrlsocket:
             try:
@@ -316,6 +321,7 @@ class CAT:
         try:
             self.online = True
             bandwidth = self.server.rig.get_bw()
+            logger.debug(f"{bandwidth=}")
             return bandwidth[0]
         except (
             ConnectionRefusedError,
@@ -438,7 +444,9 @@ class CAT:
         """Returns list of modes supported by the radio"""
         try:
             self.online = True
-            return self.server.rig.get_modes()
+            mode_list = self.server.rig.get_modes()
+            logger.debug(f"{mode_list=}")
+            return mode_list
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
@@ -529,7 +537,10 @@ class CAT:
         """Sets the radios mode"""
         try:
             self.online = True
-            return self.server.rig.set_mode(mode)
+            logger.debug(f"{mode=}")
+            set_mode_result = self.server.rig.set_mode(mode)
+            logger.debug(f"self.server.rig.setmode(mode) = {set_mode_result}")
+            return set_mode_result
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
@@ -538,7 +549,7 @@ class CAT:
             http.client.ResponseNotReady,
         ) as exception:
             self.online = False
-            logger.debug("setmode_flrig: %s", f"{exception}")
+            logger.debug(f"{exception=}")
         return False
 
     def __setmode_rigctld(self, mode: str) -> bool:
