@@ -111,7 +111,7 @@ class CAT:
 
     def __check_sane_ip(self, ip: str) -> bool:
         """check if IP address look normal"""
-        x = ip.split()
+        x = ip.split(".")
         if len(x) != 4:
             return False
         for y in x:
