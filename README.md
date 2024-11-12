@@ -205,6 +205,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-12] add check for ipv4 address for CAT.
 - [24-11-10] ReJiggered CAT/flrig interface to hopefull make it more workable.
 - [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
 - [24-11-5] Fix crash with bad qrz credentials.
