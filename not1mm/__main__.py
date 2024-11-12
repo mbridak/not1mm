@@ -2024,8 +2024,19 @@ class MainWindow(QtWidgets.QMainWindow):
         Returns:
         -------
         None
+
+        Control
+        QWRTYIOPSFGHJLBNM,./;'[]//-
+
+
+        shift control
+        ABCDEFGHIJKLMNOPQRSTUVWXY
         """
         modifier = event.modifiers()
+        # the_key = event.key()
+
+        # print(f"Modifier is {modifier=} Key is {the_key=}")
+
         if (
             event.key() == Qt.Key.Key_Equal
             and modifier == Qt.KeyboardModifier.ControlModifier

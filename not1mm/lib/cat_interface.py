@@ -81,7 +81,11 @@ class CAT:
         }
 
         if self.interface == "flrig":
-            target = f"http://{host}:{port}"
+            if not self.__check_sane_ip(self.host):
+                self.online = False
+                return
+
+            target = f"http://{self.host}:{self.port}"
             logger.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
             self.online = True
@@ -91,14 +95,29 @@ class CAT:
                 ConnectionRefusedError,
                 xmlrpc.client.Fault,
                 http.client.BadStatusLine,
+                socket.error,
+                socket.gaierror,
             ):
                 self.online = False
         elif self.interface == "rigctld":
+            if not self.__check_sane_ip(self.host):
+                self.online = False
+                return
             self.__initialize_rigctrld()
         elif self.interface == "fake":
             self.online = True
             logger.debug("Using Fake Rig")
         return
+
+    def __check_sane_ip(self, ip: str) -> bool:
+        """check if IP address look normal"""
+        x = ip.split()
+        if len(x) != 4:
+            return False
+        for y in x:
+            if not y.isnumeric():
+                return False
+        return True
 
     def __initialize_rigctrld(self):
         try:
@@ -107,7 +126,13 @@ class CAT:
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
-        except (ConnectionRefusedError, TimeoutError, OSError) as exception:
+        except (
+            ConnectionRefusedError,
+            TimeoutError,
+            OSError,
+            socket.error,
+            socket.gaierror,
+        ) as exception:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -233,6 +258,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug(f"{exception=}")
@@ -280,6 +306,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -329,6 +356,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("getbw_flrig: %s", f"{exception}")
@@ -453,6 +481,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -502,6 +531,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("setvfo_flrig: %s", f"{exception}")
@@ -547,6 +577,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug(f"{exception=}")
@@ -590,6 +621,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("setpower_flrig: %s", f"{exception}")
@@ -648,6 +680,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -686,6 +719,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
