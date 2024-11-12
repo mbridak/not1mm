@@ -611,7 +611,7 @@ class MainWindow(QtWidgets.QMainWindow):
         elif len(x) >= 2:
             if int(x[0]) >= 6 and int(x[1]) >= 8:
                 old_Qt = False
-        print(f"{old_Qt=} {x=}")
+
         # Featureset for wayland if pyqt is older that 6.7.1
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
@@ -3027,6 +3027,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.use_call_history = self.pref.get("use_call_history", False)
         if self.use_call_history:
             self.history_info.show()
+        else:
+            self.history_info.hide()
         self.use_esm = self.pref.get("use_esm", False)
         self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
         self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
