@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-15] Made checkwindow font bigger and match a little more contrasted.
 - [24-11-12] add check for ipv4 address for CAT.
 - [24-11-10] ReJiggered CAT/flrig interface to hopefull make it more workable.
 - [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
