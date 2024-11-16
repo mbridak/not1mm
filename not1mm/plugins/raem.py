@@ -491,6 +491,16 @@ def recalculate_mults(self):
     #     self.database.change_contact(contact)
 
 
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
 def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())

@@ -3274,6 +3274,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dupe_indicator.show()
         else:
             self.dupe_indicator.hide()
+        if self.contest:
+            if self.use_call_history and hasattr(
+                self.contest, "populate_history_info_line"
+            ):
+                self.contest.populate_history_info_line(self)
 
     def change_freq(self, stripped_text: str) -> None:
         """

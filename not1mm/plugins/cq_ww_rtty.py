@@ -639,6 +639,16 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             self.fldigi_util.send_string(sendstring)
 
 
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('CQZone', '')}, {result.get('State', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
 def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())
