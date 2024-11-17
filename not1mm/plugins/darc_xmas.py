@@ -76,11 +76,13 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    #self.snt_label.setText("SNT")
-    #self.field1.setAccessibleName("RST Sent")
-    #label = self.field4.findChild(QtWidgets.QLabel)
-    #label.setText("DOK/#")
-    #self.field4.setAccessibleName("DOK/NM or Number")
+    self.snt_label.setText("SNT")
+    label = self.field3.findChild(QtWidgets.QLabel)
+    label.setText("DOK/# Sent")
+    self.field3.setAccessibleName("RST Sent")
+    label = self.field4.findChild(QtWidgets.QLabel)
+    label.setText("DOK/# RCVD")
+    self.field4.setAccessibleName("DOK/NM or Number")
 
 
 def reset_label(self):
