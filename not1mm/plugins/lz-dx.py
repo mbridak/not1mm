@@ -156,6 +156,7 @@ def set_tab_prev(self):
         ),
     }
 
+
 '''
 def set_contact_vars(self):
     """Contest Specific"""
@@ -220,10 +221,10 @@ def prefill(self):
             field.setText(serial_nr)
     else:
         field.setText(sent_sxchange_setting)
-    
-    #print(self.contact.get("ZN", 0))
-    """Fill ITU Zone"""
-    #if len(self.other_2.text()) == 0:
+
+    # print(self.contact.get("ZN", 0))
+    # """Fill ITU Zone"""
+    # if len(self.other_2.text()) == 0:
     #    self.other_2.setText(str(self.contact.get("ZN", 0)))
 
 
@@ -543,7 +544,7 @@ def recalculate_mults(self):
     cmd = {}
     cmd["cmd"] = "UPDATELOG"
     cmd["station"] = platform.node()
-    #self.multicast_interface.send_as_json(cmd)
+    # self.multicast_interface.send_as_json(cmd)
 
 
 def populate_history_info_line(self):
