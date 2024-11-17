@@ -1,5 +1,6 @@
 """
-LZ-DX
+@dg9vh
+LZ-DX 
 -------------------------------------------------
 Status:	Active
 Geographic Focus:	Bulgaria
@@ -28,7 +29,7 @@ Multipliers: District and DXCC country (including Bulgaria) per band: 1 point
 Score Calculation:	Total score = total QSO points x total mults
 Mail logs to:	lzdxc@bfra.bg
 Find rules at:	https://lzdx.bfra.bg/rulesen.html
-Cabrillo name:	HELVETIA
+Cabrillo name:	LZ-DX
 """
 
 import datetime
@@ -157,16 +158,6 @@ def set_tab_prev(self):
     }
 
 
-'''
-def set_contact_vars(self):
-    """Contest Specific"""
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text().upper()
-    self.contact["NR"] = self.other_2.text().upper()
-'''
-
-
 def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
@@ -221,11 +212,6 @@ def prefill(self):
             field.setText(serial_nr)
     else:
         field.setText(sent_sxchange_setting)
-
-    # print(self.contact.get("ZN", 0))
-    # """Fill ITU Zone"""
-    # if len(self.other_2.text()) == 0:
-    #    self.other_2.setText(str(self.contact.get("ZN", 0)))
 
 
 def show_mults(self):
