@@ -74,13 +74,13 @@ def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
+    self.field3.show()
     self.field4.show()
-    self.snt_label.setText("SNT")
-    self.field1.setAccessibleName("RST Sent")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("DOK/#")
-    self.field3.setAccessibleName("DOK/NM or Number")
+    #self.snt_label.setText("SNT")
+    #self.field1.setAccessibleName("RST Sent")
+    #label = self.field4.findChild(QtWidgets.QLabel)
+    #label.setText("DOK/#")
+    #self.field4.setAccessibleName("DOK/NM or Number")
 
 
 def reset_label(self):
@@ -120,7 +120,8 @@ def set_contact_vars(self):
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
+    self.contact["SentNr"] = self.other_1.text()
+    #self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
     dok = self.contact["NR"]
     
     dxcc = self.contact.get("CountryPrefix", "")
@@ -150,18 +151,6 @@ def set_contact_vars(self):
 
 def predupe(self):
     """prefill his exchange with last known values"""
-    if self.other_1.text() == "" and self.other_2.text() == "":
-        call = self.callsign.text().upper()
-        query = f"select NR from dxlog where Call = '{call}' and ContestName = 'DARC XMAS' order by ts desc;"
-        logger.debug(query)
-        result = self.database.exec_sql(query)
-        logger.debug("%s", f"{result}")
-        if result:
-            value = result.get("NR", "").upper()
-            if len(value.split()) == 2:
-                parsed_name, suffix = value.split()
-                self.other_1.setText(str(parsed_name))
-                self.other_2.setText(str(suffix))
 
 
 def prefill(self):
@@ -173,10 +162,21 @@ def prefill(self):
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
+        field = self.field3.findChild(QtWidgets.QLineEdit)
         if len(field.text()) == 0:
             field.setText(serial_nr)
     else:
         field.setText(sent_sxchange_setting)
+    
+    if self.other_2.text() == "":
+        call = self.callsign.text().upper()
+        query = f"select NR from dxlog where Call = '{call}' and ContestName = 'XMAS' order by ts desc;"
+        logger.debug(query)
+        result = self.database.exec_sql(query)
+        logger.debug("%s", f"{result}")
+        if result:
+           if isinstance(result.get("NR", ""), str):
+              self.other_2.setText(str(result.get("NR", "")))
 
 
 def points(self):
