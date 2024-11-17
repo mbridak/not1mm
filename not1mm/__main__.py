@@ -3433,7 +3433,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contact["CountryPrefix"] = primary_pfx
                 self.contact["ZN"] = int(cq)
                 if self.contest:
-                    if self.contest.name == "IARU HF":
+                    if self.contest.name in("IARU HF", "LZ DX"):
                         self.contact["ZN"] = int(itu)
                 self.contact["Continent"] = continent
                 self.dx_entity.setText(

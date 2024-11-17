@@ -344,6 +344,11 @@
      </item>
      <item>
       <property name="text">
+       <string>LZ-DX</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>K1USN SST</string>
       </property>
      </item>
