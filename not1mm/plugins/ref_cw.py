@@ -93,12 +93,10 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("Sent")
-    self.field3.setAccessibleName("Sent")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Dep/Pfx/SN")
-    self.field4.setAccessibleName("Department, Prefix or SN")
+    self.other_label.setText("Sent")
+    self.other_1.setAccessibleName("Sent")
+    self.exch_label.setText("Dep/Pfx/SN")
+    self.other_2.setAccessibleName("Department, Prefix or SN")
 
 
 def reset_label(self):
@@ -108,30 +106,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.sent: self.other_1,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.callsign,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 
@@ -188,17 +178,16 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
-    field = self.field3.findChild(QtWidgets.QLineEdit)
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if sent_sxchange_setting.strip() == "#":
         result = self.database.get_serial()
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(field.text()) == 0:
-            field.setText(serial_nr)
+        if len(self.other_1.text()) == 0:
+            self.other_1.setText(serial_nr)
     else:
-        field.setText(sent_sxchange_setting)
+        self.other_1.setText(sent_sxchange_setting)
 
 
 def points(self):

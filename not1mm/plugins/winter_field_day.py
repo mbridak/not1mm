@@ -2,6 +2,20 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
+# Label and field names
+# callsign_label, callsign
+# snt_label, sent
+# rcv_label, receive
+# other_label, other_1
+# exch_label, other_2
+
+# command button names
+# esc_stop
+# log_it
+# mark
+# spot_it
+# wipe
+
 import datetime
 import logging
 
@@ -48,12 +62,10 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("Class")
-    self.field3.setAccessibleName("Class")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Section")
-    self.field4.setAccessibleName("Section")
+    self.other_label.setText("Class")
+    self.other_1.setAccessibleName("Class")
+    self.exch_label.setText("Section")
+    self.other_2.setAccessibleName("Section")
 
 
 def reset_label(self):
@@ -63,30 +75,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.sent: self.other_1,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.callsign,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 

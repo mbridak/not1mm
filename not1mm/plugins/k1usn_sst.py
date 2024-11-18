@@ -69,12 +69,10 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    namefield = self.field3.findChild(QtWidgets.QLabel)
-    namefield.setText("Name")
-    self.field3.setAccessibleName("Name")
-    spc = self.field4.findChild(QtWidgets.QLabel)
-    spc.setText("SPC")
-    self.field4.setAccessibleName("SPC")
+    self.other_label.setText("Name")
+    self.other_1.setAccessibleName("Name")
+    self.exch_label.setText("SPC")
+    self.other_2.setAccessibleName("SPC")
 
 
 def reset_label(self):
@@ -84,22 +82,18 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 

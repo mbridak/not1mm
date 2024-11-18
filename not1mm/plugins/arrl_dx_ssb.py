@@ -55,8 +55,7 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Power/State/Province")
+    self.exch_label.setText("Power/State/Province")
     self.field4.setAccessibleName("Power or state or province")
 
 
@@ -67,32 +66,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.sent,
+        self.sent: self.receive,
+        self.receive: self.other_2,
+        self.other_1: self.callsign,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.sent,
+        self.other_1: self.receive,
+        self.other_2: self.receive,
     }
 
 

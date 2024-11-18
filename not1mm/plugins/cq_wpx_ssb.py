@@ -55,11 +55,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("SentNR")
+    self.other_label.setText("SentNR")
     self.field3.setAccessibleName("Sent Number")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("RcvNR")
+    self.exch_label.setText("RcvNR")
     self.field4.setAccessibleName("Received Number")
 
 
@@ -70,34 +68,22 @@ def reset_label(self):  # pylint: disable=unused-argument
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.sent,
+        self.sent: self.receive,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.sent,
+        self.other_1: self.receive,
+        self.other_2: self.other_1,
     }
 
 
@@ -125,9 +111,8 @@ def prefill(self):
     serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
-    field = self.field3.findChild(QtWidgets.QLineEdit)
-    if len(field.text()) == 0:
-        field.setText(serial_nr)
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(serial_nr)
 
 
 def points(self):
