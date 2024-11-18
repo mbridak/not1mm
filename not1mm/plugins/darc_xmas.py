@@ -67,7 +67,7 @@ def init_contest(self):
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
-    self.next_field = self.other_1
+    self.next_field = self.other_2
 
 
 def interface(self):
@@ -96,7 +96,10 @@ def set_tab_next(self):
         self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field4.findChild(
+        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
             QtWidgets.QLineEdit
         ),
         self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
@@ -111,7 +114,10 @@ def set_tab_prev(self):
         self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
             QtWidgets.QLineEdit
         ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
+            QtWidgets.QLineEdit
+        ),
+        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
             QtWidgets.QLineEdit
         ),
     }
@@ -123,9 +129,9 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
-    #self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
+    # self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
     dok = self.contact["NR"]
-    
+
     dxcc = self.contact.get("CountryPrefix", "")
     band = self.contact.get("Band", "")
 
@@ -142,7 +148,7 @@ def set_contact_vars(self):
             self.contact["IsMultiplier2"] = 1
         else:
             self.contact["IsMultiplier2"] = 0
-        
+
     if self.contact.get("WPXPrefix", ""):
         result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
         if result.get("wpx_count", ""):
@@ -169,7 +175,7 @@ def prefill(self):
             field.setText(serial_nr)
     else:
         field.setText(sent_sxchange_setting)
-    
+
     if self.other_2.text() == "":
         call = self.callsign.text().upper()
         query = f"select NR from dxlog where Call = '{call}' and ContestName = 'XMAS' order by ts desc;"
@@ -177,8 +183,8 @@ def prefill(self):
         result = self.database.exec_sql(query)
         logger.debug("%s", f"{result}")
         if result:
-           if isinstance(result.get("NR", ""), str):
-              self.other_2.setText(str(result.get("NR", "")))
+            if isinstance(result.get("NR", ""), str):
+                self.other_2.setText(str(result.get("NR", "")))
 
 
 def points(self):
@@ -216,7 +222,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "CWOPS-CWT")
+    gen_adif(self, cabrillo_name, "XMAS")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -454,7 +460,6 @@ def recalculate_mults(self):
             else:
                 contact["IsMultiplier2"] = 0
         self.database.change_contact(contact)
-        
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
