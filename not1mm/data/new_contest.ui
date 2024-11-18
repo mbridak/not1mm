@@ -309,6 +309,11 @@
      </item>
      <item>
       <property name="text">
+       <string>DARC XMAS</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
