@@ -188,12 +188,14 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **CQ WPX CW, RTTY, SSB**
 - **CQ World Wide CW, RTTY, SSB**
 - **CWOps CWT**
+- **DARC Xmas**
 - **Helvetia**
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
 - **K1USN Slow Speed Test**
+- **LZ DX**
 - **NAQP CW, RTTY, SSB**
 - Phone Weekly Test
 - **RAEM**
@@ -205,6 +207,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
 - [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
 - [24-11-15] Made checkwindow font bigger and match a little more contrasted.
 - [24-11-12] add check for ipv4 address for CAT.
