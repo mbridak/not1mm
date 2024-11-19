@@ -3190,7 +3190,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contest.parse_exchange(self)
                 return
             if hasattr(self.contest, "advance_on_space"):
-                if self.contest.advance_on_space[3]:
+                if self.contest.advance_on_space[4]:
                     text = self.other_2.text()
                     text = text.upper()
                     # position = self.other_2.cursorPosition()
