@@ -197,7 +197,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **K1USN Slow Speed Test**
 - **LZ DX**
 - **NAQP CW, RTTY, SSB**
-- Phone Weekly Test
+- **Phone Weekly Test**
 - **RAEM**
 - **RAC Canada Day**
 - **REF CW, SSB**
