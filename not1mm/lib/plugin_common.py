@@ -151,6 +151,16 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 end="\r\n",
                                 file=file_descriptor,
                             )
+                    elif cabrillo_name in ("ICWC-MST"):
+                        sent = (
+                            f'{self.contest_settings.get("SentExchange", "")} {sentnr}'
+                        )
+                        if sent:
+                            print(
+                                f"<STX_STRING:{len(sent)}>{sent.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
                     elif sentnr != "0":
                         print(
                             f"<STX_STRING:{len(sentnr)}>{sentnr}",
@@ -162,8 +172,17 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 # SRX STRING, Contest dependent
                 try:
+                    # ----------Medium Speed Test------------
+                    if cabrillo_name in ("ICWC-MST"):
+                        rcv = f"{hisname.upper()} {contact.get('NR', '')}"
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
                     # ----------Field Days------------
-                    if cabrillo_name in ("WFD", "ARRL-FD"):
+                    elif cabrillo_name in ("WFD", "ARRL-FD"):
                         rcv = (
                             f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
                         )
