@@ -192,7 +192,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **Helvetia**
 - IARU Fieldday R1 CW, SSB
 - IARU HF
-- ICWC MST
+- **ICWC MST**
 - **Japan International DX CW, SSB**
 - **K1USN Slow Speed Test**
 - **LZ DX**
@@ -207,6 +207,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
 - [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
 - [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
 - [24-11-15] Made checkwindow font bigger and match a little more contrasted.

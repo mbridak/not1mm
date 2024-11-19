@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
 - [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
 - [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
 - [24-11-15] Made checkwindow font bigger and match a little more contrasted.
