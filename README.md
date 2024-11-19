@@ -193,7 +193,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
-- Japan International DX CW, SSB
+- **Japan International DX CW, SSB**
 - **K1USN Slow Speed Test**
 - **LZ DX**
 - **NAQP CW, RTTY, SSB**
