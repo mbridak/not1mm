@@ -201,7 +201,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **RAEM**
 - **RAC Canada Day**
 - **REF CW, SSB**
-- Stew Perry Topband
+- **Stew Perry Topband**
 - **Weekly RTTY**
 - **Winter Field Day**
 
