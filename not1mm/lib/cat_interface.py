@@ -9,7 +9,7 @@ rig.cwio_send             n:i  cwio transmit 1/0 (on/off)
 command lines to test the CW API via XMLRPC
 
 Setting WPM
-curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_set_wpm</methodName><params><param><value><i4>28</i4></value></param></params></methodCall>" http://localhost:12345 
+curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_set_wpm</methodName><params><param><value><i4>28</i4></value></param></params></methodCall>" http://localhost:12345
 
 Setting the text to send
 curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_text</methodName><params><param><value><string>test test test</string></value></param></params></methodCall>" http://localhost:12345
@@ -177,6 +177,21 @@ class CAT:
                 return False
         self.__initialize_rigctrld()
         return False
+
+    def set_rigctl_cw_speed(self, speed):
+        """Set CW speed via rigctld"""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"L KEYSPD {speed}\n", "utf-8"))
+                _ = self.__get_serial_string()
+                return
+            except socket.error as exception:
+                self.online = False
+                logger.debug("set_level_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return
+        self.__initialize_rigctrld()
 
     def sendcwxmlrpc(self, texttosend):
         """Add text to flrig's cw send buffer."""

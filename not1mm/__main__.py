@@ -1971,6 +1971,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
+                elif self.rig_control.interface == "rigctld":
+                    self.rig_control.cat.set_rigctl_cw_speed(self.cw_speed.value())
 
     def stop_cw(self):
         """"""
