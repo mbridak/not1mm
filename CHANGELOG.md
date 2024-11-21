@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-21] Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call history support for General Logging.
 - [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
 - [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
 - [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
