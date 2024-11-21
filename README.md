@@ -922,7 +922,6 @@ So if one were to go to `FILE -> LOAD CALL HISTORY FILE` and choose a downloaded
 
 Where the Name and State would auto-populate and the UserText info apprears in the bottom left.
 
-
 ## Contest specific notes
 
 I found it might be beneficial to have a section devoted to wierd quirky things
