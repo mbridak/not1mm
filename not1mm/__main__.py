@@ -256,7 +256,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionNew_Database.triggered.connect(self.new_database)
         self.actionOpen_Database.triggered.connect(self.open_database)
 
-        self.actionEdit_Macros.triggered.connect(self.edit_cw_macros)
+        self.actionEdit_Macros.triggered.connect(self.edit_macros)
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
         self.actionHotKeys.triggered.connect(self.show_key_help)
@@ -659,7 +659,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Loading contest.")
         self.load_contest()
         self.show_splash_msg("Reading macros.")
-        self.read_cw_macros()
+        self.read_macros()
 
         self.show_splash_msg("Starting FlDigi watcher.")
         self.fldigi_watcher = FlDigiWatcher()
@@ -2804,7 +2804,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
-        self.read_cw_macros()
+        self.read_macros()
         self.check_esm()
 
     def write_preference(self) -> None:
@@ -3351,7 +3351,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
             return
         if mode in (
             "DIGI-U",
@@ -3372,7 +3372,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
             return
         if mode == "SSB":
             if intended_freq:
@@ -3393,7 +3393,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
 
     def check_callsign(self, callsign) -> None:
         """
@@ -3480,7 +3480,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_mode = "CW"
                 self.sent.setText("599")
                 self.receive.setText("599")
-                self.read_cw_macros()
+                self.read_macros()
                 if self.contest:
                     if self.contest.name == "ICWC Medium Speed Test":
                         self.contest.prefill(self)
@@ -3490,14 +3490,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_mode = "SSB"
                 self.sent.setText("59")
                 self.receive.setText("59")
-                self.read_cw_macros()
+                self.read_macros()
             return
         if mode in ("RTTY", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
                 self.sent.setText("599")
                 self.receive.setText("599")
-                self.read_cw_macros()
+                self.read_macros()
 
     def get_opon(self) -> None:
         """
@@ -3664,7 +3664,7 @@ class MainWindow(QtWidgets.QMainWindow):
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
-    def edit_cw_macros(self) -> None:
+    def edit_macros(self) -> None:
         """
         Calls the default text editor to edit the CW macro file.
 
@@ -3710,9 +3710,9 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.critical(
                 f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
             )
-        self.read_cw_macros()
+        self.read_macros()
 
-    def read_cw_macros(self) -> None:
+    def read_macros(self) -> None:
         """
         Reads in the CW macros, firsts it checks to see if the file exists. If it does not,
         and this has been packaged with pyinstaller it will copy the default file from the
