@@ -1627,6 +1627,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["COLUMNS"] = self.contest.columns
                     if self.log_window:
                         self.log_window.msg_from_main(cmd)
+            self.read_macros()
 
     def check_for_new_cty(self) -> None:
         """
@@ -3664,18 +3665,13 @@ class MainWindow(QtWidgets.QMainWindow):
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
-    def edit_macros(self) -> None:
-        """
-        Calls the default text editor to edit the CW macro file.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
+    def get_macro_filename(self):
+        """"""
+        # Have not1mm check in USER_DATA_PATH for the existence of a folder with the contests name.
+        # If it exists, check to see if a cw/ssb/rtty macro files exists within it and load them before
+        # falling back to the default ones.
+        # If user selects menu option to edit the current macro file, make the previous checks, if the
+        # specific one does not exist, copy the default to the contest directory and edit that copy.
         if self.radio_state.get("mode") in ("CW", "CW-L", "CW-R", "CWR"):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
@@ -3695,8 +3691,14 @@ class MainWindow(QtWidgets.QMainWindow):
             macro_file = "rttymacros.txt"
         else:
             macro_file = "ssbmacros.txt"
+
+        try:
+            if not (fsutils.USER_DATA_PATH / self.contest.name).exists():
+                os.mkdir(fsutils.USER_DATA_PATH / self.contest.name)
+        except AttributeError:
+            return ""
+
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("copying default macro file.")
             try:
                 copyfile(
                     fsutils.APP_DATA_PATH / macro_file,
@@ -3704,12 +3706,37 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except IOError as err:
                 logger.critical(f"Error {err} copying macro file.")
+
+        if not (fsutils.USER_DATA_PATH / self.contest.name / macro_file).exists():
+            try:
+                copyfile(
+                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / self.contest.name / macro_file,
+                )
+            except IOError as err:
+                logger.critical(f"Error {err} copying macro file.")
+
+        return fsutils.USER_DATA_PATH / self.contest.name / macro_file
+
+    def edit_macros(self) -> None:
+        """
+        Calls the default text editor to edit the CW macro file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        macro_file = self.get_macro_filename()
+
         try:
-            fsutils.openFileWithOS(fsutils.USER_DATA_PATH / macro_file)
+            fsutils.openFileWithOS(macro_file)
         except FileNotFoundError | PermissionError | OSError as err:
-            logger.critical(
-                f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
-            )
+            logger.critical(f"Could not open file {macro_file} {err}")
         self.read_macros()
 
     def read_macros(self) -> None:
@@ -3719,42 +3746,10 @@ class MainWindow(QtWidgets.QMainWindow):
         temp directory this is running from... In theory.
         """
 
-        if self.radio_state.get("mode") in (
-            "CW",
-            "CW-L",
-            "CW-R",
-        ):
-            macro_file = "cwmacros.txt"
-        elif self.radio_state.get("mode") in (
-            "RTTY",
-            "RTTY-R",
-            "LSB-D",
-            "USB-D",
-            "AM-D",
-            "FM-D",
-            "DIGI-U",
-            "DIGI-L",
-            "RTTYR",
-            "PKTLSB",
-            "PKTUSB",
-        ):
-            macro_file = "rttymacros.txt"
-        else:
-            macro_file = "ssbmacros.txt"
+        macro_file = self.get_macro_filename()
 
-        if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("copying default macro file.")
-            try:
-                copyfile(
-                    fsutils.APP_DATA_PATH / macro_file,
-                    fsutils.USER_DATA_PATH / macro_file,
-                )
-            except IOError as err:
-                logger.critical(f"Error {err} copying macro file.")
         try:
-            with open(
-                fsutils.USER_DATA_PATH / macro_file, "r", encoding="utf-8"
-            ) as file_descriptor:
+            with open(macro_file, "r", encoding="utf-8") as file_descriptor:
                 for line in file_descriptor:
                     mode, fkey, buttonname, cwtext = line.split("|")
                     if mode.strip().upper() == "R" and self.pref.get("run_state"):
