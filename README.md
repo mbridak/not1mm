@@ -26,7 +26,7 @@
     - [Data and RTTY](#data-and-rtty)
     - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
-  - [List of should be working contests, those in bold have ESM](#list-of-should-be-working-contests-those-in-bold-have-esm)
+  - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes (Polishing the Turd)](#recent-changes-polishing-the-turd)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
@@ -172,38 +172,38 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
-## List of should be working contests, those in bold have ESM
+## List of should be working contests
 
-- **General Logging** (There are better general loggers like QLog, KLog, CQRLog)
+- General Logging (There are better general loggers like QLog, KLog, CQRLog)
 - 10 10 Fall CW
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
-- **ARRL 10M**
-- **ARRL DX CW, SSB**
-- **ARRL Field Day**
-- **ARRL Sweepstakes CW, SSB**
-- **ARRL VHF January, June, September**
-- **CQ 160 CW, SSB**
-- **CQ WPX CW, RTTY, SSB**
-- **CQ World Wide CW, RTTY, SSB**
-- **CWOps CWT**
-- **DARC Xmas**
-- **Helvetia**
-- **IARU Fieldday R1 CW, SSB**
-- **IARU HF**
-- **ICWC MST**
-- **Japan International DX CW, SSB**
-- **K1USN Slow Speed Test**
-- **LZ DX**
-- **NAQP CW, RTTY, SSB**
-- **Phone Weekly Test**
-- **RAEM**
-- **RAC Canada Day**
-- **REF CW, SSB**
-- **Stew Perry Topband**
-- **Weekly RTTY**
-- **Winter Field Day**
+- ARRL 10M
+- ARRL DX CW, SSB
+- ARRL Field Day
+- ARRL Sweepstakes CW, SSB
+- ARRL VHF January, June, September
+- CQ 160 CW, SSB
+- CQ WPX CW, RTTY, SSB
+- CQ World Wide CW, RTTY, SSB
+- CWOps CWT
+- DARC Xmas
+- Helvetia
+- IARU Fieldday R1 CW, SSB
+- IARU HF
+- ICWC MST
+- Japan International DX CW, SSB
+- K1USN Slow Speed Test
+- LZ DX
+- NAQP CW, RTTY, SSB
+- Phone Weekly Test
+- RAEM
+- RAC Canada Day
+- REF CW, SSB
+- Stew Perry Topband
+- Weekly RTTY
+- Winter Field Day
 
 ## Recent Changes (Polishing the Turd)
 
