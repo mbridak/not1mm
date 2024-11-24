@@ -190,8 +190,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - **CWOps CWT**
 - **DARC Xmas**
 - **Helvetia**
-- IARU Fieldday R1 CW, SSB
-- IARU HF
+- **IARU Fieldday R1 CW, SSB**
+- **IARU HF**
 - **ICWC MST**
 - **Japan International DX CW, SSB**
 - **K1USN Slow Speed Test**
