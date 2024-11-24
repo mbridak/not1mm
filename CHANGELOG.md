@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.
 - [24-11-24] Added ESM to IARU HF and FieldDay.
 - [24-11-23] Made macros per contest.
 - [24-11-21] Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call history support for General Logging.
