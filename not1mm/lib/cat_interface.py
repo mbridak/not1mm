@@ -337,7 +337,8 @@ class CAT:
                 self.rigctrlsocket.send(b"m\n")
                 mode = self.__get_serial_string()
                 mode = mode.strip().split()[0]
-                # logger.debug("%s", mode)
+                if mode == "RPRT":
+                    return ""
                 return mode
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
