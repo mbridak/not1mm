@@ -3543,6 +3543,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()
+        self.set_window_title()
 
     def make_op_dir(self) -> None:
         """
