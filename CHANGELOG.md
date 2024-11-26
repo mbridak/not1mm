@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
 - [24-11-26] Trying something different with rigctld parsing.
 - [24-11-15] Fix CQWW points, fix mode showing as RPRT.
 - [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.

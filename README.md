@@ -207,6 +207,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
 - [24-11-26] Trying something different with rigctld parsing.
 - [24-11-15] Fix CQWW points, fix mode showing as RPRT.
 - [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.
@@ -716,8 +717,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 
 | Key | Result |
 | -------------- | --- |
-| [Esc] | Clears the input fields of any text. |
-| [CTRL-Esc] | Stops cwdaemon from sending Morse. |
+| [Esc] | Stops cwdaemon from sending Morse. |
 | [PgUp] | Increases the cw sending speed. |
 | [PgDown] | Decreases the cw sending speed. |
 | [Arrow-Up] | Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). |
@@ -732,6 +732,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
 | [CTRL-=] | Log the contact without sending the ESM macros.|
+| [CTRL-W] | Clears the input fields of any text. |
 
 ### The Log Window
 

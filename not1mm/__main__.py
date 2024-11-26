@@ -1731,7 +1731,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[Esc]\tClears the input fields of any text.\n"
             "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
             "[PgUp]\tIncreases the cw sending speed.\n"
             "[PgDown]\tDecreases the cw sending speed.\n"
@@ -1751,6 +1750,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "[CTRL-S]\tSpot Callsign to the cluster.\n"
             "[CTRL-SHIFT-K] Open CW text input field.\n"
             "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
+            "[CTRL-W]\tClears the input fields of any text.\n"
         )
 
     def filepicker(self, action: str) -> str:
@@ -2087,14 +2087,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.bandmap_window.msg_from_main(cmd)
             return
         if (
-            event.key() == Qt.Key.Key_Escape
-            and modifier != Qt.KeyboardModifier.ControlModifier
+            event.key() == Qt.Key.Key_W
+            and modifier == Qt.KeyboardModifier.ControlModifier
         ):  # pylint: disable=no-member
             self.clearinputs()
             return
         if (
             event.key() == Qt.Key.Key_Escape
-            and modifier == Qt.KeyboardModifier.ControlModifier
+            and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
                 if self.cw.servertype == 1:
