@@ -284,8 +284,11 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"f\n")
-                return self.__get_serial_string().strip()
+                self.rigctrlsocket.send(b"|f\n")
+                report = self.__get_serial_string().strip()
+                if "get_freq:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[1].split(" ")[1]
             except socket.error as exception:
                 self.online = False
                 logger.debug(f"{exception=}")
@@ -334,12 +337,12 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"m\n")
-                mode = self.__get_serial_string()
-                mode = mode.strip().split()[0]
-                if mode == "RPRT":
-                    return ""
-                return mode
+                self.rigctrlsocket.send(b"|m\n")
+                # get_mode:|Mode: CW|Passband: 500|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "getmode:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[1].split(" ")[1]
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
             except socket.error as exception:
@@ -383,11 +386,13 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"m\n")
-                mode = self.__get_serial_string()
-                mode = mode.strip().split()[1]
-                # logger.debug("%s", mode)
-                return mode
+                self.rigctrlsocket.send(b"|m\n")
+                # get_mode:|Mode: CW|Passband: 500|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "getmode:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[2].split(" ")[1]
+
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
             except socket.error as exception:
@@ -426,8 +431,12 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"l RFPOWER\n")
-                return int(float(self.__get_serial_string().strip()) * 100)
+                self.rigctrlsocket.send(b"|l RFPOWER\n")
+                # get_level: RFPOWER|0.000000|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "get_level: RFPOWER|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return int(float(seg_rpt[1]) * 100)
             except socket.error as exception:
                 self.online = False
                 logger.debug("getpower_rigctld: %s", f"{exception}")
