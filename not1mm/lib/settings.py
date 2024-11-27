@@ -99,6 +99,7 @@ class Settings(QtWidgets.QDialog):
         )
         self.rigcontrolip_field.setText(str(self.preference.get("CAT_ip", "")))
         self.rigcontrolport_field.setText(str(self.preference.get("CAT_port", "")))
+        self.catpoll_field.setText(str(self.preference.get("CAT_polldelta", 500)))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
@@ -213,6 +214,10 @@ class Settings(QtWidgets.QDialog):
         self.preference["CAT_ip"] = self.rigcontrolip_field.text()
         try:
             self.preference["CAT_port"] = int(self.rigcontrolport_field.text())
+        except ValueError:
+            ...
+        try:
+            self.preference["CAT_polldelta"] = int(self.catpoll_field.text())
         except ValueError:
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()

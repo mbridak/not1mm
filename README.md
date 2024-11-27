@@ -207,6 +207,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-27] Added CAT poll interval.
 - [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
 - [24-11-26] Trying something different with rigctld parsing.
 - [24-11-15] Fix CQWW points, fix mode showing as RPRT.

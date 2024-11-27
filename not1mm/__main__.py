@@ -2920,6 +2920,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
@@ -2936,6 +2937,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
@@ -2947,6 +2949,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 0000)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)

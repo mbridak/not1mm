@@ -27,8 +27,8 @@ class Radio(QObject):
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
-    delta = 1
-    poll_time = datetime.datetime.now() + datetime.timedelta(seconds=delta)
+    delta = 500
+    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=delta)
     time_to_quit = False
     online = False
     interface = None
@@ -72,7 +72,7 @@ class Radio(QObject):
         while not self.time_to_quit:
             if datetime.datetime.now() > self.poll_time:
                 self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    seconds=self.delta
+                    milliseconds=self.delta
                 )
                 vfoa = self.cat.get_vfo()
                 self.online = False
@@ -102,7 +102,8 @@ class Radio(QObject):
                     )
                 except QEventLoop:
                     ...
-            QThread.msleep(100)
+            # QThread.msleep(int(self.delta / 2))
+            QThread.msleep(1)
 
     def store_last_data_mode(self, the_mode: str = ""):
         """if the last mode is a data mode, save it."""
