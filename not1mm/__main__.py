@@ -39,6 +39,9 @@ from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixma
 from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
+# DXCC Tracker
+from not1mm.lib.dxcc_tracker import DXCCTrackerWidget
+
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -300,7 +303,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.esc_stop.clicked.connect(self.stop_cw)
         self.mark.clicked.connect(self.mark_spot)
         self.spot_it.clicked.connect(self.spot_dx)
-
+        
+        self.dxcc_tracker.clicked.connect(self.open_dxcc_tracker)  ### DXCC Tracker
+        
         self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.F1.customContextMenuRequested.connect(lambda x: self.edit_macro(self.F1))
         self.F1.clicked.connect(lambda x: self.process_function_key(self.F1))
@@ -710,6 +715,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+    ### DXCC Tracker
+    def open_dxcc_tracker(self):
+        if not hasattr(self, "dxcc_tracker_window"):
+            self.dxcc_tracker_window = DXCCTrackerWidget()
+        self.dxcc_tracker_window.show()
+        self.dxcc_tracker_window.raise_()
 
     def load_call_history(self) -> None:
         """"""
