@@ -2,6 +2,20 @@
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
+# Label and field names
+# callsign_label, callsign
+# snt_label, sent
+# rcv_label, receive
+# other_label, other_1
+# exch_label, other_2
+
+# command button names
+# esc_stop
+# log_it
+# mark
+# spot_it
+# wipe
+
 import datetime
 import logging
 
@@ -48,12 +62,10 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("Class")
-    self.field3.setAccessibleName("Class")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Section")
-    self.field4.setAccessibleName("Section")
+    self.other_label.setText("Class")
+    self.other_1.setAccessibleName("Class")
+    self.exch_label.setText("Section")
+    self.other_2.setAccessibleName("Section")
 
 
 def reset_label(self):
@@ -63,30 +75,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.sent: self.other_1,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.callsign,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 
@@ -172,7 +176,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",
@@ -439,3 +443,24 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('Sect', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Exch1', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Sect', '')}")

@@ -9,7 +9,7 @@ rig.cwio_send             n:i  cwio transmit 1/0 (on/off)
 command lines to test the CW API via XMLRPC
 
 Setting WPM
-curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_set_wpm</methodName><params><param><value><i4>28</i4></value></param></params></methodCall>" http://localhost:12345 
+curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_set_wpm</methodName><params><param><value><i4>28</i4></value></param></params></methodCall>" http://localhost:12345
 
 Setting the text to send
 curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_text</methodName><params><param><value><string>test test test</string></value></param></params></methodCall>" http://localhost:12345
@@ -81,7 +81,11 @@ class CAT:
         }
 
         if self.interface == "flrig":
-            target = f"http://{host}:{port}"
+            if not self.__check_sane_ip(self.host):
+                self.online = False
+                return
+
+            target = f"http://{self.host}:{self.port}"
             logger.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
             self.online = True
@@ -91,13 +95,29 @@ class CAT:
                 ConnectionRefusedError,
                 xmlrpc.client.Fault,
                 http.client.BadStatusLine,
+                socket.error,
+                socket.gaierror,
             ):
                 self.online = False
         elif self.interface == "rigctld":
+            if not self.__check_sane_ip(self.host):
+                self.online = False
+                return
             self.__initialize_rigctrld()
         elif self.interface == "fake":
             self.online = True
+            logger.debug("Using Fake Rig")
         return
+
+    def __check_sane_ip(self, ip: str) -> bool:
+        """check if IP address look normal"""
+        x = ip.split(".")
+        if len(x) != 4:
+            return False
+        for y in x:
+            if not y.isnumeric():
+                return False
+        return True
 
     def __initialize_rigctrld(self):
         try:
@@ -106,7 +126,13 @@ class CAT:
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
-        except (ConnectionRefusedError, TimeoutError, OSError) as exception:
+        except (
+            ConnectionRefusedError,
+            TimeoutError,
+            OSError,
+            socket.error,
+            socket.gaierror,
+        ) as exception:
             self.rigctrlsocket = None
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -151,6 +177,21 @@ class CAT:
                 return False
         self.__initialize_rigctrld()
         return False
+
+    def set_rigctl_cw_speed(self, speed):
+        """Set CW speed via rigctld"""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"L KEYSPD {speed}\n", "utf-8"))
+                _ = self.__get_serial_string()
+                return
+            except socket.error as exception:
+                self.online = False
+                logger.debug("set_level_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return
+        self.__initialize_rigctrld()
 
     def sendcwxmlrpc(self, texttosend):
         """Add text to flrig's cw send buffer."""
@@ -223,16 +264,19 @@ class CAT:
         """Poll the radio using flrig"""
         try:
             self.online = True
-            return self.server.rig.get_vfo()
+            vfo_value = self.server.rig.get_vfo()
+            logger.debug(f"{vfo_value=}")
+            return vfo_value
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
-            logger.debug("getvfo_flrig: %s", f"{exception}")
+            logger.debug(f"{exception=}")
         return ""
 
     def __getvfo_rigctld(self) -> str:
@@ -240,11 +284,14 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"f\n")
-                return self.__get_serial_string().strip()
+                self.rigctrlsocket.send(b"|f\n")
+                report = self.__get_serial_string().strip()
+                if "get_freq:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[1].split(" ")[1]
             except socket.error as exception:
                 self.online = False
-                logger.debug("getvfo_rigctld: %s", f"{exception}")
+                logger.debug(f"{exception=}")
                 self.rigctrlsocket = None
             return ""
 
@@ -268,13 +315,16 @@ class CAT:
         # 7300 ['LSB', 'USB', 'AM', 'FM', 'CW', 'CW-R', 'RTTY', 'RTTY-R', 'LSB-D', 'USB-D', 'AM-D', 'FM-D']
         try:
             self.online = True
-            return self.server.rig.get_mode()
+            mode_value = self.server.rig.get_mode()
+            logger.debug(f"{mode_value=}")
+            return mode_value
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -282,16 +332,17 @@ class CAT:
 
     def __getmode_rigctld(self) -> str:
         """Returns mode vai rigctld"""
-        # QMX 'AM CW USB LSB RTTY FM CWR RTTYR'
+        # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"m\n")
-                mode = self.__get_serial_string()
-                mode = mode.strip().split()[0]
-                # logger.debug("%s", mode)
-                return mode
+                self.rigctrlsocket.send(b"|m\n")
+                # get_mode:|Mode: CW|Passband: 500|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "getmode:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[1].split(" ")[1]
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
             except socket.error as exception:
@@ -316,6 +367,7 @@ class CAT:
         try:
             self.online = True
             bandwidth = self.server.rig.get_bw()
+            logger.debug(f"{bandwidth=}")
             return bandwidth[0]
         except (
             ConnectionRefusedError,
@@ -323,6 +375,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("getbw_flrig: %s", f"{exception}")
@@ -333,11 +386,13 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"m\n")
-                mode = self.__get_serial_string()
-                mode = mode.strip().split()[1]
-                # logger.debug("%s", mode)
-                return mode
+                self.rigctrlsocket.send(b"|m\n")
+                # get_mode:|Mode: CW|Passband: 500|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "getmode:|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return seg_rpt[2].split(" ")[1]
+
             except IndexError as exception:
                 logger.debug("%s", f"{exception}")
             except socket.error as exception:
@@ -376,8 +431,12 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"l RFPOWER\n")
-                return int(float(self.__get_serial_string().strip()) * 100)
+                self.rigctrlsocket.send(b"|l RFPOWER\n")
+                # get_level: RFPOWER|0.000000|RPRT 0
+                report = self.__get_serial_string().strip()
+                if "get_level: RFPOWER|" in report and "RPRT 0" in report:
+                    seg_rpt = report.split("|")
+                    return int(float(seg_rpt[1]) * 100)
             except socket.error as exception:
                 self.online = False
                 logger.debug("getpower_rigctld: %s", f"{exception}")
@@ -438,13 +497,16 @@ class CAT:
         """Returns list of modes supported by the radio"""
         try:
             self.online = True
-            return self.server.rig.get_modes()
+            mode_list = self.server.rig.get_modes()
+            logger.debug(f"{mode_list=}")
+            return mode_list
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -494,6 +556,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("setvfo_flrig: %s", f"{exception}")
@@ -529,16 +592,20 @@ class CAT:
         """Sets the radios mode"""
         try:
             self.online = True
-            return self.server.rig.set_mode(mode)
+            logger.debug(f"{mode=}")
+            set_mode_result = self.server.rig.set_mode(mode)
+            logger.debug(f"self.server.rig.setmode(mode) = {set_mode_result}")
+            return set_mode_result
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
-            logger.debug("setmode_flrig: %s", f"{exception}")
+            logger.debug(f"{exception=}")
         return False
 
     def __setmode_rigctld(self, mode: str) -> bool:
@@ -579,6 +646,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("setpower_flrig: %s", f"{exception}")
@@ -637,6 +705,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -675,6 +744,7 @@ class CAT:
             http.client.BadStatusLine,
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
+            AttributeError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")

@@ -1,6 +1,29 @@
-"""ARRL plugin"""
+"""DARC XMAS plugin"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
+
+#   DARC Christmas Contest
+#   Status:	Active
+#   Geographic Focus:	Germany
+#   Participation:	Worldwide
+#   Awards:	Worldwide
+#   Mode:	CW, SSB
+#   Bands:	80, 40m
+#   Classes:	Single Op (Low/High)
+#   Max power:	HP: >100 watts
+#   LP: 100 watts
+#   Exchange:	RST + DOK
+#   non-Member (DL): RST + 'NM' or 'no member'
+#   outside DL:   RST + serial number
+#   Work stations:	Once per band and mode
+#   QSO Points:	1 point per QSO
+#   Multipliers:	DOK (DARC/VFDB), 'NM' does not count + each WPX-prefix per band
+#   Score Calculation:	Total score = total QSO points x total mults
+#   Mail logs to:	(none)
+#   Find rules at:	https://www.darc.de/der-club/referate/conteste/weihnachtswettbewerb/regeln/
+#   Upload logs at: https://dxhf2.darc.de/~xmaslog/upload.cgi?form=referat&lang=de
+#   Cabrillo name:	XMAS
+
 
 import datetime
 import logging
@@ -9,16 +32,16 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif
+from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Prec Call Check Section"
+EXCHANGE_HINT = "DOK/NM or #"
 
-name = "ARRL Sweepstakes CW"
-cabrillo_name = "ARRL-SS-CW"
-mode = "CW"  # CW SSB BOTH RTTY
+name = "DARC XMAS"
+mode = "BOTH"  # CW SSB BOTH RTTY
+# columns = [0, 1, 2, 3, 4, 5, 6, 11, 15]
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
@@ -27,15 +50,16 @@ columns = [
     "Rcv",
     "SentNr",
     "RcvNr",
-    "CK",
-    "Prec",
-    "Sect",
     "M1",
+    "M2",
     "PTS",
 ]
+cabrillo_name = "XMAS"
+
+advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 1
+dupe_type = 3
 
 
 def init_contest(self):
@@ -53,16 +77,14 @@ def interface(self):
     self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
-    self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("SentNR")
-    self.field3.setAccessibleName("Sent Number")
-    self.exch_label.setText("sn prec ck sec")
-    self.field4.setAccessibleName("Serial Number Precident check section")
+    self.other_label.setText("DOK/# Sent")
+    self.field3.setAccessibleName("RST Sent")
+    self.exch_label.setText("DOK/# RCVD")
+    self.field4.setAccessibleName("DOK/NM or Number")
 
 
 def reset_label(self):
     """reset label after field cleared"""
-    self.exch_label.setText("sn prec ck sec")
 
 
 def set_tab_next(self):
@@ -89,68 +111,76 @@ def set_tab_prev(self):
 
 def set_contact_vars(self):
     """Contest Specific"""
-    sn, prec, ck, sec, call = parse_exchange(self)
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
+    self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
-    self.contact["NR"] = sn
-    self.contact["Prec"] = prec
-    self.contact["CK"] = ck
-    self.contact["Sect"] = sec
-    self.contact["Call"] = call
-    result = self.database.fetch_sect_exists(sec)
-    if result.get("sect_count", ""):
-        self.contact["IsMultiplier1"] = 0
-    else:
-        self.contact["IsMultiplier1"] = 1
+    # self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
+    dok = self.contact["NR"]
+
+    dxcc = self.contact.get("CountryPrefix", "")
+    band = self.contact.get("Band", "")
+
+    if dxcc == "DL" and not isinstance(dok, int) and dok.upper() != "NM":
+        query = (
+            f"select count(*) as dok_count from dxlog where 1=1 "
+            f"and NR = '{dok.upper()}' "
+            f"and Band = '{band}' "
+            f"and ContestNR = {self.pref.get('contest', '1')};"
+        )
+        result = self.database.exec_sql(query)
+        count = int(result.get("dok_count", 0))
+        if count == 0:
+            self.contact["IsMultiplier2"] = 1
+        else:
+            self.contact["IsMultiplier2"] = 0
+
+    if self.contact.get("WPXPrefix", ""):
+        result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
+        if result.get("wpx_count", ""):
+            self.contact["IsMultiplier1"] = 0
+        else:
+            self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):
-    """called after callsign entered"""
+    """prefill his exchange with last known values"""
 
 
 def prefill(self):
     """Fill SentNR"""
-    result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-    if serial_nr == "None":
-        serial_nr = "001"
-    if len(self.other_1.text()) == 0:
-        self.other_1.setText(serial_nr)
-
-
-def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('CK', '')}, {result.get('Sect', '')}, {result.get('UserText','...')}"
-        )
+    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
+    if sent_sxchange_setting.strip() == "#":
+        result = self.database.get_serial()
+        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+        if serial_nr == "None":
+            serial_nr = "001"
+        if len(self.other_1.text()) == 0:
+            self.other_1.setText(serial_nr)
     else:
-        self.history_info.setText("")
+        self.other_1.setText(sent_sxchange_setting)
 
-
-def check_call_history(self):
-    """"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText','')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f" {result.get('CK','')}{result.get('Sect', '')}")
+    if self.other_2.text() == "":
+        call = self.callsign.text().upper()
+        query = f"select NR from dxlog where Call = '{call}' and ContestName = 'XMAS' order by ts desc;"
+        logger.debug(query)
+        result = self.database.exec_sql(query)
+        logger.debug("%s", f"{result}")
+        if result:
+            if isinstance(result.get("NR", ""), str):
+                self.other_2.setText(str(result.get("NR", "")))
 
 
 def points(self):
     """Calc point"""
-    return 2
+    return 1
 
 
 def show_mults(self):
     """Return display string for mults"""
-    sql = (
-        "select count(DISTINCT(Sect)) as mults from dxlog "
-        f"where ContestNR = {self.database.current_contest};"
+    return int(self.database.fetch_mult_count(1).get("count", 0)) + int(
+        self.database.fetch_mult_count(2).get("count", 0)
     )
-    result = self.database.exec_sql(sql)
-    return int(result.get("mults", 0))
 
 
 def show_qso(self):
@@ -161,28 +191,22 @@ def show_qso(self):
     return 0
 
 
-def get_points(self):
-    """Return raw points before mults"""
-    result = self.database.fetch_points()
-    logger.debug("%s", f"{result}")
-    if result:
-        pts = result.get("Points", "0")
-        if pts is None:
-            return 0
-        return int(result.get("Points", "0"))
-    return 0
-
-
 def calc_score(self):
     """Return calculated score"""
-    pts = get_points(self)
-    mults = show_mults(self)
-    return pts * mults
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        contest_points = int(score)
+        mults = show_mults(self)
+        return contest_points * mults
+    return 0
 
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "ARRL-SS-CW")
+    gen_adif(self, cabrillo_name, "XMAS")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -356,7 +380,6 @@ def cabrillo(self, file_encoding):
                 file_descriptor,
                 file_encoding,
             )
-            sent_exch = self.contest_settings.get("SentExchange", "").upper()
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
@@ -369,13 +392,11 @@ def cabrillo(self, file_encoding):
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SentNr', '')).zfill(4)} "
-                    f"{sent_exch.replace(' '+contact.get('StationPrefix', ''), '')} "
+                    f"{str(contact.get('SNT', '')).ljust(3)} "
+                    f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('NR', '')).zfill(4)} "
-                    f"{contact.get('Prec', '')} "
-                    f"{str(contact.get('CK', '')).zfill(2)} "
-                    f"{contact.get('Sect', '')}",
+                    f"{str(contact.get('RCV', '')).ljust(3)} "
+                    f"{str(contact.get('NR', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -390,63 +411,39 @@ def cabrillo(self, file_encoding):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
+
+        contact["IsMultiplier1"] = 0
+        contact["IsMultiplier2"] = 0
+
         time_stamp = contact.get("TS", "")
-        sec = contact.get("Sect", "")
-        result = self.database.fetch_sect_exists_before_me(sec, time_stamp)
-        sect_count = result.get("sect_count", 1)
-        if sect_count == 0:
+        dok = contact.get("NR", "")
+        dxcc = contact.get("CountryPrefix", "")
+        band = contact.get("Band", "")
+        wpx = contact.get("WPXPrefix", "")
+        result = self.database.fetch_wpx_exists_before_me(wpx, time_stamp)
+        wpx_count = result.get("wpx_count", 1)
+        if wpx_count == 0:
             contact["IsMultiplier1"] = 1
         else:
             contact["IsMultiplier1"] = 0
+
+        if dxcc == "DL" and not isinstance(dok, int) and dok.upper() != "NM":
+            query = (
+                f"select count(*) as dok_count from dxlog where  TS < '{time_stamp}' "
+                f"and NR = '{dok.upper()}' "
+                f"and Band = '{band}' "
+                f"and ContestNR = {self.pref.get('contest', '1')};"
+            )
+            result = self.database.exec_sql(query)
+            count = int(result.get("dok_count", 0))
+            if count == 0:
+                contact["IsMultiplier2"] = 1
+            else:
+                contact["IsMultiplier2"] = 0
         self.database.change_contact(contact)
-
-
-def parse_exchange(self):
-    """Parse exchange..."""
-    exchange = self.other_2.text()
-    exchange = exchange.upper()
-    sn = ""
-    prec = ""
-    ck = ""
-    sec = ""
-    call = self.callsign.text()
-
-    for tokens in exchange.split():
-        text = ""
-        numb = ""
-        if tokens.isdigit():
-            if sn == "":
-                sn = tokens
-            else:
-                ck = tokens
-            continue
-        elif tokens.isalpha():
-            if len(tokens) == 1:
-                prec = tokens
-            else:
-                sec = tokens
-            continue
-        elif tokens.isalnum():
-            if tokens[:1].isalpha():
-                # print(f"{tokens} is callsign")
-                call = tokens
-                continue
-            for i, c in enumerate(tokens):
-                if c.isalpha():
-                    text = tokens[i:]
-                    numb = tokens[:i]
-                    break
-            if len(text) == 1:
-                prec = text
-                sn = numb
-            else:
-                sec = text
-                ck = numb
-    label = f"sn:{sn} p:{prec} cl:{call} ck:{ck} sec:{sec}"
-    self.exch_label.setText(label)
-    return (sn, prec, ck, sec, call)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -476,16 +473,20 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
     for a_button in [
-        self.esm_dict["CQ"],
-        self.esm_dict["EXCH"],
-        self.esm_dict["QRZ"],
-        self.esm_dict["AGN"],
-        self.esm_dict["HISCALL"],
-        self.esm_dict["MYCALL"],
-        self.esm_dict["QSOB4"],
+        self.F1,
+        self.F2,
+        self.F3,
+        self.F4,
+        self.F5,
+        self.F6,
+        self.F7,
+        self.F8,
+        self.F9,
+        self.F10,
+        self.F11,
+        self.F12,
     ]:
-        if a_button is not None:
-            self.restore_button_color(a_button)
+        self.restore_button_color(a_button)
 
     buttons_to_send = []
 
@@ -500,8 +501,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -522,8 +523,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_2.text() == "" or self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -538,3 +539,22 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Exch1', '')}")

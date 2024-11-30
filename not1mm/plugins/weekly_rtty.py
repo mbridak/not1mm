@@ -18,6 +18,13 @@
 # Mail logs to:	(none)
 # Find rules at:	https://radiosport.world/wrt.html
 
+# Label and field names
+# callsign_label, callsign
+# snt_label, sent
+# rcv_label, receive
+# other_label, other_1
+# exch_label, other_2
+
 import datetime
 import logging
 import platform
@@ -69,12 +76,10 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    namefield = self.field3.findChild(QtWidgets.QLabel)
-    namefield.setText("Name")
-    self.field3.setAccessibleName("Name")
-    spc = self.field4.findChild(QtWidgets.QLabel)
-    spc.setText("SPC")
-    self.field4.setAccessibleName("SPC")
+    self.other_label.setText("Name")
+    self.other_1.setAccessibleName("Name")
+    self.exch_label.setText("SPC")
+    self.other_2.setAccessibleName("SPC")
 
 
 def reset_label(self):
@@ -84,22 +89,18 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 
@@ -194,7 +195,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",
@@ -572,3 +573,24 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         continue
                     sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
             self.fldigi_util.send_string(sendstring)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Sect', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('Name', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Sect', '')}")

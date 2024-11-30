@@ -26,7 +26,7 @@
     - [Data and RTTY](#data-and-rtty)
     - [Other not so supported contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
-  - [List of should be working contests, those in bold have ESM](#list-of-should-be-working-contests-those-in-bold-have-esm)
+  - [List of should be working contests](#list-of-should-be-working-contests)
   - [Recent Changes (Polishing the Turd)](#recent-changes-polishing-the-turd)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
@@ -69,6 +69,7 @@
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
+    - [Options](#options)
   - [Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4etc-and-fldigi-rtty-contacts)
   - [Sending CW](#sending-cw)
   - [Editing macro keys](#editing-macro-keys)
@@ -152,7 +153,7 @@ when the program craps the bed. I'm only one guy, so if you see a bug let me kno
 
 I've recently added portions of code to watch for WSTJ-X and fldigi QSOs. I've added
 the Weekly RTTY Test, So RTTY could be tested. Also added FT8/4 and RTTY to ARRL Field
-Day and ARRL VHF. Found works better if you don't use FlDigi for making the QSO at all.
+Day and ARRL VHF. Found it works better if you don't use FlDigi for making the QSO at all.
 Rather just using it as a RTTY modem and sending the text for it to send from Not1MM
 using the function keys or ESM.
 
@@ -171,7 +172,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
-## List of should be working contests, those in bold have ESM
+## List of should be working contests
 
 - General Logging (There are better general loggers like QLog, KLog, CQRLog)
 - 10 10 Fall CW
@@ -179,31 +180,50 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Summer Phone
 - 10 10 Winter Phone
 - ARRL 10M
-- **ARRL DX CW, SSB**
-- **ARRL Field Day**
-- **ARRL Sweepstakes CW, SSB**
+- ARRL DX CW, SSB
+- ARRL Field Day
+- ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
-- **CQ WPX CW, RTTY, SSB**
-- **CQ World Wide CW, RTTY, SSB**
-- **CWOps CWT**
+- CQ WPX CW, RTTY, SSB
+- CQ World Wide CW, RTTY, SSB
+- CWOps CWT
+- DARC Xmas
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
-- **K1USN Slow Speed Test**
-- **NAQP CW, RTTY, SSB**
+- K1USN Slow Speed Test
+- LZ DX
+- NAQP CW, RTTY, SSB
 - Phone Weekly Test
-- **RAEM**
-- **RAC Canada Day**
-- **REF CW, SSB**
+- RAEM
+- RAC Canada Day
+- REF CW, SSB
 - Stew Perry Topband
-- **Weekly RTTY**
-- **Winter Field Day**
+- Weekly RTTY
+- Winter Field Day
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-11-27] Added CAT poll interval.
+- [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
+- [24-11-26] Trying something different with rigctld parsing.
+- [24-11-15] Fix CQWW points, fix mode showing as RPRT.
+- [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.
+- [24-11-24] Added ESM to IARU HF and FieldDay.
+- [24-11-23] Made macros per contest.
+- [24-11-21] Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call history support for General Logging.
+- [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
+- [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
+- [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
+- [24-11-15] Made checkwindow font bigger and match a little more contrasted.
+- [24-11-12] add check for ipv4 address for CAT.
+- [24-11-10] ReJiggered CAT/flrig interface to hopefull make it more workable.
+- [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
+- [24-11-5] Fix crash with bad qrz credentials.
+- [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
 - [24-11-3] Added RAEM contest
 - [24-11-2] Add beginning of call history files. Add command buttons.
 
@@ -580,6 +600,13 @@ appear. Those without will not.
 
 ![Bands Configuration Screen](https://github.com/mbridak/not1mm/raw/master/pic/configure_bands.png)
 
+### Options
+
+On the Options TAB you can select to use Enter Sends Message (ESM), configure its function keys.
+Select whether or not to use Call History info.
+
+![Bands Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
+
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
 **Digital modes only working for:**
@@ -691,8 +718,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 
 | Key | Result |
 | -------------- | --- |
-| [Esc] | Clears the input fields of any text. |
-| [CTRL-Esc] | Stops cwdaemon from sending Morse. |
+| [Esc] | Stops cwdaemon from sending Morse. |
 | [PgUp] | Increases the cw sending speed. |
 | [PgDown] | Decreases the cw sending speed. |
 | [Arrow-Up] | Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). |
@@ -707,6 +733,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
 | [CTRL-SHIFT-K] | Open CW text input field. |
 | [CTRL-=] | Log the contact without sending the ESM macros.|
+| [CTRL-W] | Clears the input fields of any text. |
 
 ### The Log Window
 
@@ -815,7 +842,7 @@ change.
 I caved and started working on ESM or Enter Sends Message. To test it out you can
 go to `FILE -> Configuration Settings`
 
-![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/esm_config.png)
+![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_options.png)
 
 Check the mark to Enable ESM and tell it which function keys do what. The keys will need
 to have the same function in both Run and S&P modes. The function keys will highlight
@@ -859,7 +886,49 @@ QRZ (for Run) or Exchange (for S&P) is sent.
 
 ## Call History Files
 
-I've started work on using 'call history files'.
+I've started work on using 'call history files'. To test it, you can
+go to `FILE -> Configuration Settings`
+
+![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_options.png)
+
+Place a check in the `Use Call History` box. Call history files are very specific to the contest you are working. Example files can be obtained from [n1mm's](https://n1mmwp.hamdocs.com/mmfiles/categories/callhistory/?) website. They have a searchbox so you can find the contest you are looking for. If you are feeling masocistic, you can craft your own. The general makeup of the file is a header defining the fields to be used, followed by by lines of comma separated data.
+
+An example file excerpt looks like:
+
+```text
+!!Order!!,Call,Name,State,UserText,
+#
+# 0-This is helping file, LOG what is sent.
+# 1-Last Edit,2024-08-18
+# 2-Send any corrections direct to ve2fk@arrl.net
+# 3-Updated from the log of Marsh/KA5M
+# 4-Thanks Bjorn SM7IUN for his help. 
+# 5-Thanks
+# NAQPCW 
+# NAQPRTTY 
+# NAQPSSB 
+# SPRINTCW 
+# SPRINTLADD 
+# SPRINTNS 
+# SPRINTRTTY 
+# SPRINTSSB
+AA0AC,DAVE,MN,Example UserText
+AA0AI,STEVE,IA,
+AA0AO,TOM,MN,
+AA0AW,DOUG,MN,
+AA0BA,,TN,
+AA0BR,,CO,
+AA0BW,,MO,
+```
+
+The first line is the field definition header. The lines starting with a `#` are comments. Some of the comments are other contests that this file also works with.
+This is followed by the actual data. If the matched call has `UserText` information, that user text is populated to the bottom left of the logging window.
+
+So if one were to go to `FILE -> LOAD CALL HISTORY FILE` and choose a downloaded call history file for NAQP and typed in the call AA0AC while operating in the NAQP, after pressing space, one would see:
+
+![Call History Example](https://github.com/mbridak/not1mm/raw/master/pic/call_history_example.png)
+
+Where the Name and State would auto-populate and the UserText info apprears in the bottom left.
 
 ## Contest specific notes
 

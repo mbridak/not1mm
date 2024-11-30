@@ -93,11 +93,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("CQ Zone")
+    self.other_label.setText("CQ Zone")
     self.field3.setAccessibleName("C Q Zone")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("State/Prov")
+    self.exch_label.setText("State/Prov")
     self.field4.setAccessibleName("U S State or Providence")
 
 
@@ -108,34 +106,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.sent,
+        self.sent: self.receive,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.sent,
+        self.other_1: self.receive,
+        self.other_2: self.other_1,
     }
 
 
@@ -254,7 +240,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",
@@ -637,3 +623,24 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         continue
                     sendstring = f"{sendstring}{self.process_macro(button.toolTip())} "
             self.fldigi_util.send_string(sendstring)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('CQZone', '')}, {result.get('State', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_1.text() == "":
+            self.other_1.setText(f"{result.get('CQZone', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('State', '')}")

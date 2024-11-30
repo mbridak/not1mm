@@ -256,7 +256,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionNew_Database.triggered.connect(self.new_database)
         self.actionOpen_Database.triggered.connect(self.open_database)
 
-        self.actionEdit_Macros.triggered.connect(self.edit_cw_macros)
+        self.actionEdit_Macros.triggered.connect(self.edit_macros)
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
         self.actionHotKeys.triggered.connect(self.show_key_help)
@@ -608,11 +608,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(x) == 1:
             if int(x[0]) > 6:
                 old_Qt = False
-        elif len(x) == 2:
-            if int(x[0]) >= 6 and int(x[1]) > 8:
-                old_Qt = False
-        elif len(x) == 3:
-            if int(x[0]) >= 6 and int(x[1]) >= 7 and int(x[2]) >= 2:
+        elif len(x) >= 2:
+            if int(x[0]) >= 6 and int(x[1]) >= 8:
                 old_Qt = False
 
         # Featureset for wayland if pyqt is older that 6.7.1
@@ -662,7 +659,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Loading contest.")
         self.load_contest()
         self.show_splash_msg("Reading macros.")
-        self.read_cw_macros()
+        self.read_macros()
 
         self.show_splash_msg("Starting FlDigi watcher.")
         self.fldigi_watcher = FlDigiWatcher()
@@ -737,12 +734,16 @@ class MainWindow(QtWidgets.QMainWindow):
                             group = {}
                             fields = line.strip().split(",")
                             # ['4U1WB','MDC','DC','89','']
+                            number_of_fields = len(fields)
                             count = 0
                             try:
                                 for item in item_names:
                                     if item == "":
                                         continue
-                                    group[item] = fields[count]
+                                    if count < number_of_fields:
+                                        group[item] = fields[count]
+                                    else:
+                                        group[item] = ""
                                     count += 1
                                 group_list.append(group)
                                 # database.add_callhistory_item(group)
@@ -1103,11 +1104,16 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         Nothing
         """
+
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(str(band), mode)
             self.change_freq(freq)
             vfo = float(freq)
             vfo = int(vfo * 1000)
+            if mode == "CW":
+                mode = self.rig_control.last_cw_mode
+            if mode == "RTTY":
+                mode = self.rig_control.last_data_mode
             self.change_mode(mode, intended_freq=vfo)
 
     def quit_app(self) -> None:
@@ -1621,6 +1627,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["COLUMNS"] = self.contest.columns
                     if self.log_window:
                         self.log_window.msg_from_main(cmd)
+            self.read_macros()
 
     def check_for_new_cty(self) -> None:
         """
@@ -1724,7 +1731,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[Esc]\tClears the input fields of any text.\n"
             "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
             "[PgUp]\tIncreases the cw sending speed.\n"
             "[PgDown]\tDecreases the cw sending speed.\n"
@@ -1736,13 +1742,15 @@ class MainWindow(QtWidgets.QMainWindow):
             "[Shift-Tab]\tMove cursor left One field.\n"
             "[SPACE]\tWhen in the callsign field, will move the input to the\n"
             "\tfirst field needed for the exchange.\n"
-            "[Enter]\tSubmits the fields to the log.\n"
+            "[Enter]\tSubmits the fields to the log. Unless ESM is enabled.\n"
             "[F1-F12]\tSend (CW or Voice) macros.\n"
             "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
             "\tentry field (CAT Required).\n"
             "[CTRL-M]\tMark Callsign to the bandmap window to work later."
             "[CTRL-S]\tSpot Callsign to the cluster.\n"
             "[CTRL-SHIFT-K] Open CW text input field.\n"
+            "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
+            "[CTRL-W]\tClears the input fields of any text.\n"
         )
 
     def filepicker(self, action: str) -> str:
@@ -1964,6 +1972,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
+                elif self.rig_control.interface == "rigctld":
+                    self.rig_control.cat.set_rigctl_cw_speed(self.cw_speed.value())
 
     def stop_cw(self):
         """"""
@@ -2014,8 +2024,19 @@ class MainWindow(QtWidgets.QMainWindow):
         Returns:
         -------
         None
+
+        Control
+        QWRTYIOPSFGHJLBNM,./;'[]//-
+
+
+        shift control
+        ABCDEFGHIJKLMNOPQRSTUVWXY
         """
         modifier = event.modifiers()
+        # the_key = event.key()
+
+        # print(f"Modifier is {modifier=} Key is {the_key=}")
+
         if (
             event.key() == Qt.Key.Key_Equal
             and modifier == Qt.KeyboardModifier.ControlModifier
@@ -2066,14 +2087,14 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.bandmap_window.msg_from_main(cmd)
             return
         if (
-            event.key() == Qt.Key.Key_Escape
-            and modifier != Qt.KeyboardModifier.ControlModifier
+            event.key() == Qt.Key.Key_W
+            and modifier == Qt.KeyboardModifier.ControlModifier
         ):  # pylint: disable=no-member
             self.clearinputs()
             return
         if (
             event.key() == Qt.Key.Key_Escape
-            and modifier == Qt.KeyboardModifier.ControlModifier
+            and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
                 if self.cw.servertype == 1:
@@ -2284,6 +2305,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dupe_indicator.hide()
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
+        self.history_info.setText("")
         self.dx_entity.setText("")
 
         if self.contest:
@@ -2783,7 +2805,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         self.pref["run_state"] = self.radioButton_run.isChecked()
         self.write_preference()
-        self.read_cw_macros()
+        self.read_macros()
         self.check_esm()
 
     def write_preference(self) -> None:
@@ -2898,6 +2920,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
@@ -2914,6 +2937,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
@@ -2925,6 +2949,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 0000)),
             )
+            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
             self.rig_control.moveToThread(self.radio_thread)
             self.radio_thread.started.connect(self.rig_control.run)
             self.radio_thread.finished.connect(self.rig_control.deleteLater)
@@ -3008,6 +3033,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.use_call_history = self.pref.get("use_call_history", False)
         if self.use_call_history:
             self.history_info.show()
+        else:
+            self.history_info.hide()
         self.use_esm = self.pref.get("use_esm", False)
         self.esm_dict["CQ"] = fkey_dict.get(self.pref.get("esm_cq", "DISABLED"))
         self.esm_dict["EXCH"] = fkey_dict.get(self.pref.get("esm_exch", "DISABLED"))
@@ -3169,7 +3196,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contest.parse_exchange(self)
                 return
             if hasattr(self.contest, "advance_on_space"):
-                if self.contest.advance_on_space[3]:
+                if self.contest.advance_on_space[4]:
                     text = self.other_2.text()
                     text = text.upper()
                     # position = self.other_2.cursorPosition()
@@ -3253,6 +3280,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dupe_indicator.show()
         else:
             self.dupe_indicator.hide()
+        if self.contest:
+            if self.use_call_history and hasattr(
+                self.contest, "populate_history_info_line"
+            ):
+                self.contest.populate_history_info_line(self)
 
     def change_freq(self, stripped_text: str) -> None:
         """
@@ -3309,10 +3341,9 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-
         if mode in ("CW", "CW-U", "CW-L", "CWR"):
             if self.rig_control and self.rig_control.online:
-                self.rig_control.set_mode("CW")
+                self.rig_control.set_mode(self.rig_control.last_cw_mode)
                 if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                     if self.rig_control.interface == "flrig":
                         self.cwspeed_spinbox_changed()
@@ -3324,11 +3355,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
             return
-        if mode == "RTTY":
+        if mode in (
+            "DIGI-U",
+            "DIGI-L",
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+        ):
             if self.rig_control and self.rig_control.online:
-                self.rig_control.set_mode("RTTY")
+                self.rig_control.set_mode(self.rig_control.last_data_mode)
             else:
                 self.radio_state["mode"] = "RTTY"
             self.setmode("RTTY")
@@ -3336,7 +3376,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
             return
         if mode == "SSB":
             if intended_freq:
@@ -3357,7 +3397,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band_indicator(band)
             self.set_window_title()
             self.clearinputs()
-            self.read_cw_macros()
+            self.read_macros()
 
     def check_callsign(self, callsign) -> None:
         """
@@ -3399,7 +3439,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contact["CountryPrefix"] = primary_pfx
                 self.contact["ZN"] = int(cq)
                 if self.contest:
-                    if self.contest.name == "IARU HF":
+                    if self.contest.name in ("IARU HF", "LZ DX"):
                         self.contact["ZN"] = int(itu)
                 self.contact["Continent"] = continent
                 self.dx_entity.setText(
@@ -3444,7 +3484,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_mode = "CW"
                 self.sent.setText("599")
                 self.receive.setText("599")
-                self.read_cw_macros()
+                self.read_macros()
                 if self.contest:
                     if self.contest.name == "ICWC Medium Speed Test":
                         self.contest.prefill(self)
@@ -3454,14 +3494,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_mode = "SSB"
                 self.sent.setText("59")
                 self.receive.setText("59")
-                self.read_cw_macros()
+                self.read_macros()
             return
         if mode in ("RTTY", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
                 self.sent.setText("599")
                 self.receive.setText("599")
-                self.read_cw_macros()
+                self.read_macros()
 
     def get_opon(self) -> None:
         """
@@ -3506,6 +3546,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()
+        self.set_window_title()
 
     def make_op_dir(self) -> None:
         """
@@ -3542,6 +3583,7 @@ class MainWindow(QtWidgets.QMainWindow):
         Passing in a dictionary object with the
         vfo freq, mode, bandwidth, and online state of the radio.
         """
+        logger.debug(f"{the_dict=}")
         self.set_radio_icon(0)
         info_dirty = False
         vfo = the_dict.get("vfoa", "")
@@ -3627,7 +3669,60 @@ class MainWindow(QtWidgets.QMainWindow):
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
-    def edit_cw_macros(self) -> None:
+    def get_macro_filename(self):
+        """"""
+        # Have not1mm check in USER_DATA_PATH for the existence of a folder with the contests name.
+        # If it exists, check to see if a cw/ssb/rtty macro files exists within it and load them before
+        # falling back to the default ones.
+        # If user selects menu option to edit the current macro file, make the previous checks, if the
+        # specific one does not exist, copy the default to the contest directory and edit that copy.
+        if self.radio_state.get("mode") in ("CW", "CW-L", "CW-R", "CWR"):
+            macro_file = "cwmacros.txt"
+        elif self.radio_state.get("mode") in (
+            "RTTY",
+            "RTTY-R",
+            "LSB-D",
+            "USB-D",
+            "AM-D",
+            "FM-D",
+            "DIGI-U",
+            "DIGI-L",
+            "RTTYR",
+            "PKTLSB",
+            "PKTUSB",
+            "FSK",
+        ):
+            macro_file = "rttymacros.txt"
+        else:
+            macro_file = "ssbmacros.txt"
+
+        try:
+            if not (fsutils.USER_DATA_PATH / self.contest.name).exists():
+                os.mkdir(fsutils.USER_DATA_PATH / self.contest.name)
+        except AttributeError:
+            return ""
+
+        if not (fsutils.USER_DATA_PATH / macro_file).exists():
+            try:
+                copyfile(
+                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / macro_file,
+                )
+            except IOError as err:
+                logger.critical(f"Error {err} copying macro file.")
+
+        if not (fsutils.USER_DATA_PATH / self.contest.name / macro_file).exists():
+            try:
+                copyfile(
+                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / self.contest.name / macro_file,
+                )
+            except IOError as err:
+                logger.critical(f"Error {err} copying macro file.")
+
+        return fsutils.USER_DATA_PATH / self.contest.name / macro_file
+
+    def edit_macros(self) -> None:
         """
         Calls the default text editor to edit the CW macro file.
 
@@ -3639,80 +3734,26 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        if self.radio_state.get("mode") == "CW":
-            macro_file = "cwmacros.txt"
-        elif self.radio_state.get("mode") in (
-            "RTTY",
-            "RTTY-R",
-            "LSB-D",
-            "USB-D",
-            "AM-D",
-            "FM-D",
-            "DIGI-U",
-            "DIGI-L",
-            "RTTYR",
-            "PKTLSB",
-            "PKTUSB",
-        ):
-            macro_file = "rttymacros.txt"
-        else:
-            macro_file = "ssbmacros.txt"
-        if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("copying default macro file.")
-            try:
-                copyfile(
-                    fsutils.APP_DATA_PATH / macro_file,
-                    fsutils.USER_DATA_PATH / macro_file,
-                )
-            except IOError as err:
-                logger.critical(f"Error {err} copying macro file.")
-        try:
-            fsutils.openFileWithOS(fsutils.USER_DATA_PATH / macro_file)
-        except FileNotFoundError | PermissionError | OSError as err:
-            logger.critical(
-                f"Could not open file {fsutils.USER_DATA_PATH / macro_file} {err}"
-            )
-        self.read_cw_macros()
 
-    def read_cw_macros(self) -> None:
+        macro_file = self.get_macro_filename()
+
+        try:
+            fsutils.openFileWithOS(macro_file)
+        except FileNotFoundError | PermissionError | OSError as err:
+            logger.critical(f"Could not open file {macro_file} {err}")
+        self.read_macros()
+
+    def read_macros(self) -> None:
         """
         Reads in the CW macros, firsts it checks to see if the file exists. If it does not,
         and this has been packaged with pyinstaller it will copy the default file from the
         temp directory this is running from... In theory.
         """
 
-        if self.radio_state.get("mode") == "CW":
-            macro_file = "cwmacros.txt"
-        elif self.radio_state.get("mode") in (
-            "RTTY",
-            "RTTY-R",
-            "LSB-D",
-            "USB-D",
-            "AM-D",
-            "FM-D",
-            "DIGI-U",
-            "DIGI-L",
-            "RTTYR",
-            "PKTLSB",
-            "PKTUSB",
-        ):
-            macro_file = "rttymacros.txt"
-        else:
-            macro_file = "ssbmacros.txt"
+        macro_file = self.get_macro_filename()
 
-        if not (fsutils.USER_DATA_PATH / macro_file).exists():
-            logger.debug("copying default macro file.")
-            try:
-                copyfile(
-                    fsutils.APP_DATA_PATH / macro_file,
-                    fsutils.USER_DATA_PATH / macro_file,
-                )
-            except IOError as err:
-                logger.critical(f"Error {err} copying macro file.")
         try:
-            with open(
-                fsutils.USER_DATA_PATH / macro_file, "r", encoding="utf-8"
-            ) as file_descriptor:
+            with open(macro_file, "r", encoding="utf-8") as file_descriptor:
                 for line in file_descriptor:
                     mode, fkey, buttonname, cwtext = line.split("|")
                     if mode.strip().upper() == "R" and self.pref.get("run_state"):

@@ -1,5 +1,22 @@
 # Changelog
 
+- [24-11-27] Added CAT poll interval.
+- [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
+- [24-11-26] Trying something different with rigctld parsing.
+- [24-11-15] Fix CQWW points, fix mode showing as RPRT.
+- [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.
+- [24-11-24] Added ESM to IARU HF and FieldDay.
+- [24-11-23] Made macros per contest.
+- [24-11-21] Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call history support for General Logging.
+- [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
+- [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
+- [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
+- [24-11-15] Made checkwindow font bigger and match a little more contrasted.
+- [24-11-12] add check for ipv4 address for CAT.
+- [24-11-10] ReJiggered CAT/flrig interface to hopefull make it more workable.
+- [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
+- [24-11-5] Fix crash with bad qrz credentials.
+- [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
 - [24-11-3] Added RAEM contest
 - [24-11-2] Add beginning of call history files. Add command buttons.
 - [24-10-27-2] Changed CQ zone auto population for CQ WW, it now waits for the user to exit the callsign entry window before auto filling the zone.

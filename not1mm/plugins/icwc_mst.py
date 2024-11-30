@@ -55,7 +55,7 @@ columns = [
     "PTS",
 ]
 
-advance_on_space = [True, True, True, True, True]
+advance_on_space = [True, True, True, True, False]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
@@ -66,22 +66,22 @@ def init_contest(self):
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
-    self.next_field = self.other_1
+    self.next_field = self.other_2
 
 
 def interface(self):
     """Setup user interface"""
-    self.field1.show()
+    self.field1.hide()
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    self.snt_label.setText("Sent S/N")
-    self.field1.setAccessibleName("Sent Serial Number")
-    self.other_label.setText("Name")
-    self.field3.setAccessibleName("Name")
-    self.exch_label.setText("S/N")
-    self.field4.setAccessibleName("Serial Number")
-    self.sent.setText("")
+    # self.snt_label.setText("Sent S/N")
+    # self.field1.setAccessibleName("Sent Serial Number")
+    self.other_label.setText("Sent S/N")
+    self.field3.setAccessibleName("Sent Serial Number")
+    self.exch_label.setText("Name + S/N")
+    self.field4.setAccessibleName("Name and Serial Number")
+    # self.sent.setText("")
 
 
 def reset_label(self):  # pylint: disable=unused-argument
@@ -91,34 +91,18 @@ def reset_label(self):  # pylint: disable=unused-argument
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        # self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-        #     QtWidgets.QLineEdit
-        # ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        # self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-        #     QtWidgets.QLineEdit
-        # ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 
@@ -126,9 +110,12 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = "599"
     self.contact["RCV"] = "599"
-    self.contact["SentNr"] = self.sent.text()
-    self.contact["Name"] = self.other_1.text()
-    self.contact["NR"] = self.other_2.text()
+    self.contact["SentNr"] = self.other_1.text()
+    exch = self.other_2.text().upper()
+    if " " in exch:
+        self.contact["Name"], self.contact["NR"] = exch.split(" ")
+    else:
+        self.contact["Name"] = exch
 
 
 def predupe(self):  # pylint: disable=unused-argument
@@ -138,12 +125,11 @@ def predupe(self):  # pylint: disable=unused-argument
 def prefill(self):
     """Fill SentNR"""
     result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1"))
+    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
-        serial_nr = "1"
-    field = self.sent
-    if len(field.text()) == 0:
-        field.setText(serial_nr)
+        serial_nr = "001"
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(serial_nr)
 
 
 def points(self):
@@ -209,7 +195,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",
@@ -397,3 +383,113 @@ def recalculate_mults(self):
     #     else:
     #         contact["IsMultiplier1"] = 0
     #     self.database.change_contact(contact)
+
+
+def process_esm(self, new_focused_widget=None, with_enter=False):
+    """ESM State Machine"""
+
+    # self.pref["run_state"]
+
+    # -----===== Assigned F-Keys =====-----
+    # self.esm_dict["CQ"]
+    # self.esm_dict["EXCH"]
+    # self.esm_dict["QRZ"]
+    # self.esm_dict["AGN"]
+    # self.esm_dict["HISCALL"]
+    # self.esm_dict["MYCALL"]
+    # self.esm_dict["QSOB4"]
+
+    # ----==== text fields ====----
+    # self.callsign
+    # self.sent
+    # self.receive
+    # self.other_1
+    # self.other_2
+
+    if new_focused_widget is not None:
+        self.current_widget = self.inputs_dict.get(new_focused_widget)
+
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+
+    for a_button in [
+        self.esm_dict["CQ"],
+        self.esm_dict["EXCH"],
+        self.esm_dict["QRZ"],
+        self.esm_dict["AGN"],
+        self.esm_dict["HISCALL"],
+        self.esm_dict["MYCALL"],
+        self.esm_dict["QSOB4"],
+    ]:
+        if a_button is not None:
+            self.restore_button_color(a_button)
+
+    buttons_to_send = []
+
+    if self.pref.get("run_state"):
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) < 3:
+                self.make_button_green(self.esm_dict["CQ"])
+                buttons_to_send.append(self.esm_dict["CQ"])
+            elif len(self.callsign.text()) > 2:
+                self.make_button_green(self.esm_dict["HISCALL"])
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["HISCALL"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+
+        elif self.current_widget in ["other_2"]:
+            if self.other_2.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            else:
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)
+    else:
+        if self.current_widget == "callsign":
+            if len(self.callsign.text()) > 2:
+                self.make_button_green(self.esm_dict["MYCALL"])
+                buttons_to_send.append(self.esm_dict["MYCALL"])
+
+        elif self.current_widget in ["other_2"]:
+            if self.other_2.text() == "":
+                self.make_button_green(self.esm_dict["AGN"])
+                buttons_to_send.append(self.esm_dict["AGN"])
+            else:
+                self.make_button_green(self.esm_dict["EXCH"])
+                buttons_to_send.append(self.esm_dict["EXCH"])
+                buttons_to_send.append("LOGIT")
+
+        if with_enter is True and bool(len(buttons_to_send)):
+            for button in buttons_to_send:
+                if button:
+                    if button == "LOGIT":
+                        self.save_contact()
+                        continue
+                    self.process_function_key(button)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Name', '')}")

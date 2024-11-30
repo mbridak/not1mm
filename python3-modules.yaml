@@ -1,4 +1,4 @@
-# Generated with flatpak-pip-generator --runtime=org.kde.Sdk//6.7 --yaml --checker-data --cleanup scripts requests dicttoxml xmltodict psutil pyserial sounddevice meson_python scikit_build numpy notctyparser rapidfuzz appdata
+# Generated with flatpak-pip-generator --runtime=org.kde.Sdk//6.7 --yaml --checker-data --cleanup scripts requests dicttoxml xmltodict pyserial sounddevice meson_python scikit_build notctyparser rapidfuzz appdata build setuptools
 build-commands: []
 buildsystem: simple
 modules:
@@ -197,21 +197,6 @@ modules:
     cleanup:
       - /bin
       - /share/man/man1
-  - name: python3-numpy
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "numpy" --no-build-isolation
-    sources:
-      - type: file
-        url: https://files.pythonhosted.org/packages/54/a4/f8188c4f3e07f7737683588210c073478abcb542048cf4ab6fedad0b458a/numpy-2.1.0.tar.gz
-        sha256: 7dc90da0081f7e1da49ec4e398ede6a8e9cc4f5ebe5f9e06b443ed889ee9aaa2
-        x-checker-data:
-          name: numpy
-          type: pypi
-    cleanup:
-      - /bin
-      - /share/man/man1
   - name: python3-notctyparser
     buildsystem: simple
     build-commands:
@@ -283,4 +268,16 @@ modules:
     cleanup:
       - /bin
       - /share/man/man1
+  - name: not1mm
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --prefix=/app --no-index --find-links="file://${PWD}" --prefix=${FLATPAK_DEST} "not1mm" --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/8d/6c/8ed1d760092ec73bc0c43e284911fd043582077561cf7904728baea95e8b/not1mm-24.11.6-py3-none-any.whl
+        sha256: e0046a1537416cfbba6d8e7b77c42e5a84e9e1135dbbb39a04c3e9dc17bbdc1b
+        x-checker-data:
+          name: not1mm
+          packagetype: bdist_wheel
+          type: pypi
 name: python3-modules

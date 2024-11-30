@@ -52,11 +52,11 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    label = self.field3.findChild(QtWidgets.QLabel)
-    label.setText("Class")
+    # label = self.field3.findChild(QtWidgets.QLabel)
+    self.other_label.setText("Class")
     self.field3.setAccessibleName("Class")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("Section")
+    # label = self.field4.findChild(QtWidgets.QLabel)
+    self.exch_label.setText("Section")
     self.field4.setAccessibleName("Section")
 
 
@@ -67,30 +67,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field3.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.other_1,
+        self.sent: self.other_1,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.callsign,
+        self.other_1: self.callsign,
+        self.other_2: self.other_1,
     }
 
 
@@ -173,7 +165,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding="utf-8") as file_descriptor:
+        with open(filename, "w", encoding=file_encoding) as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",

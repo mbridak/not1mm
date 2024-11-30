@@ -1,0 +1,25 @@
+id: io.github.mbridak.not1mm
+runtime: org.kde.Sdk
+runtime-version: '6.7'
+sdk: org.kde.Sdk
+base: com.riverbankcomputing.PyQt.BaseApp
+base-version: '6.7'
+command: not1mm
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+build-options:
+  env:
+    - BASEAPP_REMOVE_PYWEBENGINE=1
+finish-args:
+  - --talk-name=org.freedesktop.Flatpak
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --filesystem=host:rw
+  - --share=network
+  - --socket=cups
+  - --device=dri
+  - --share=ipc
+
+modules:
+  - python3-modules.yaml
+

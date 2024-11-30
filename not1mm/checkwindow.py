@@ -41,7 +41,7 @@ class CheckWindow(QDockWidget):
 
     character_remove_color = "#dd3333"
     character_add_color = "#3333dd"
-    character_match_color = "#33dd33"
+    character_match_color = "#33bb33"
 
     masterScrollWidget: QWidget = None
 

@@ -27,15 +27,24 @@ class Radio(QObject):
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
-    delta = 1
-    poll_time = datetime.datetime.now() + datetime.timedelta(seconds=delta)
+    delta = 500
+    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=delta)
     time_to_quit = False
     online = False
     interface = None
     host = None
     port = None
     modes = ""
+    cw_list = ["CW", "CW-L", "CW-U", "CWR"]
+    rtty_list = [
+        "RTTY",
+        "DIGI-L",
+        "PKTLSB",
+        "LSB-D",
+    ]
     last_data_mode = "RTTY"
+    last_cw_mode = "CW"
+    last_ph_mode = "SSB"
 
     def __init__(self, interface: str, host: str, port: int) -> None:
         super().__init__()
@@ -49,12 +58,21 @@ class Radio(QObject):
             self.cat = CAT(self.interface, self.host, self.port)
             self.online = self.cat.online
             self.modes = self.cat.get_mode_list()
+            for pos_cw in self.cw_list:
+                if pos_cw in self.modes:
+                    self.last_cw_mode = pos_cw
+                    break
+            for pos_rtty in self.rtty_list:
+                if pos_rtty in self.modes:
+                    self.last_data_mode = pos_rtty
+                    break
+
         except ConnectionResetError:
             ...
         while not self.time_to_quit:
             if datetime.datetime.now() > self.poll_time:
                 self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    seconds=self.delta
+                    milliseconds=self.delta
                 )
                 vfoa = self.cat.get_vfo()
                 self.online = False
@@ -84,7 +102,8 @@ class Radio(QObject):
                     )
                 except QEventLoop:
                     ...
-            QThread.msleep(100)
+            # QThread.msleep(int(self.delta / 2))
+            QThread.msleep(1)
 
     def store_last_data_mode(self, the_mode: str = ""):
         """if the last mode is a data mode, save it."""
@@ -97,6 +116,7 @@ class Radio(QObject):
             "USB-D",
             "AM-D",
             "FM-D",
+            "FSK",
             "DIGI-U",
             "DIGI-L",
             "RTTYR",
@@ -105,6 +125,11 @@ class Radio(QObject):
         ]
         if the_mode in datamodes:
             self.last_data_mode = the_mode
+
+        cwmodes = ["CW", "CW-L", "CW-U", "CWR"]
+
+        if the_mode in cwmodes:
+            self.last_cw_mode = the_mode
 
     def sendcw(self, texttosend):
         """..."""

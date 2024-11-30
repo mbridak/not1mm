@@ -28,6 +28,21 @@
 #  	Find rules at:	https://raem.srr.ru/rules/
 #  	Cabrillo name:	RAEM
 
+# Label and field names
+# callsign_label, callsign
+# snt_label, sent
+# rcv_label, receive
+# other_label, other_1
+# exch_label, other_2
+
+# command button names
+# esc_stop
+# log_it
+# mark
+# spot_it
+# wipe
+
+
 import datetime
 import logging
 
@@ -77,11 +92,11 @@ def interface(self):
     self.field3.show()
     self.field4.show()
     self.snt_label.setText("Sent S/N")
-    self.field1.setAccessibleName("Sent Serial Number")
+    self.sent.setAccessibleName("Sent Serial Number")
     self.other_label.setText("Rcv S/N")
-    self.field3.setAccessibleName("Serial Number")
+    self.other_1.setAccessibleName("Serial Number")
     self.exch_label.setText("Exchange")
-    self.field4.setAccessibleName("Exchange")
+    self.other_2.setAccessibleName("Exchange")
     self.sent.setText("")
 
 
@@ -92,34 +107,20 @@ def reset_label(self):  # pylint: disable=unused-argument
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
-        # self.field2.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-        #     QtWidgets.QLineEdit
-        # ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.sent,
+        self.sent: self.other_1,
+        self.other_1: self.other_2,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        # self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-        #     QtWidgets.QLineEdit
-        # ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field3.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.other_1: self.sent,
+        self.other_2: self.other_1,
     }
 
 
@@ -491,10 +492,19 @@ def recalculate_mults(self):
     #     self.database.change_contact(contact)
 
 
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
 def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())
-    print(f"{result=}")
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":

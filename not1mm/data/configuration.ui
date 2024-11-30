@@ -377,6 +377,43 @@
        <string>CAT</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="rigcontrolport_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="accessibleName">
+          <string>port number</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>port number of rig control d or f l rig.</string>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
+         </property>
+         <property name="text">
+          <string>4532</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="4">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="rigcontrolip_field">
          <property name="font">
@@ -398,7 +435,38 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0" colspan="4">
+       <item row="3" column="1" colspan="3">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Rig Control IP:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="4">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="sizeConstraint">
           <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
@@ -513,21 +581,8 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="1" colspan="3">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_6">
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_7">
          <property name="font">
           <font>
            <family>JetBrains Mono ExtraLight</family>
@@ -537,7 +592,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Rig Control IP:</string>
+          <string>Port:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -557,60 +612,15 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_7">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono ExtraLight</family>
-           <pointsize>12</pointsize>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_27">
          <property name="text">
-          <string>Port:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>CAT Poll Interval (ms):</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="4">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="rigcontrolport_field">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono ExtraLight</family>
-           <pointsize>12</pointsize>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="accessibleName">
-          <string>port number</string>
-         </property>
-         <property name="accessibleDescription">
-          <string>port number of rig control d or f l rig.</string>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
-         </property>
-         <property name="text">
-          <string>4532</string>
-         </property>
-        </widget>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="catpoll_field"/>
        </item>
       </layout>
      </widget>

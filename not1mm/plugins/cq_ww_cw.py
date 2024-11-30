@@ -88,8 +88,7 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    label = self.field4.findChild(QtWidgets.QLabel)
-    label.setText("CQ Zone")
+    self.exch_label.setText("CQ Zone")
     self.field4.setAccessibleName("C Q Zone")
 
 
@@ -100,32 +99,22 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.field1.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field2.findChild(QtWidgets.QLineEdit): self.field4.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field4.findChild(QtWidgets.QLineEdit): self.callsign,
+        self.callsign: self.sent,
+        self.sent: self.receive,
+        self.receive: self.other_2,
+        self.other_1: self.callsign,
+        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.field4.findChild(QtWidgets.QLineEdit),
-        self.field1.findChild(QtWidgets.QLineEdit): self.callsign,
-        self.field2.findChild(QtWidgets.QLineEdit): self.field1.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field3.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
-        self.field4.findChild(QtWidgets.QLineEdit): self.field2.findChild(
-            QtWidgets.QLineEdit
-        ),
+        self.callsign: self.other_2,
+        self.sent: self.callsign,
+        self.receive: self.sent,
+        self.other_1: self.receive,
+        self.other_2: self.receive,
     }
 
 
@@ -165,17 +154,26 @@ def points(self):
             mycountry = item[1].get("entity", "")
             mycontinent = item[1].get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
+
     if result:
         for item in result.items():
             entity = item[1].get("entity", "")
             continent = item[1].get("continent", "")
-            if mycountry.upper() == entity.upper():
-                return 0
-            if mycontinent and continent == "NA":
+
+            # Contacts between stations on different continents count three (3) points.
+            if mycontinent != continent:
+                return 3
+
+            # Exception: Contacts between stations in different countries within the North American boundaries count two (2) points.
+            if (mycontinent == "NA" and continent == "NA") and mycountry != entity:
                 return 2
-            if mycontinent == continent:
+
+            # Contacts between stations on the same continent but in different countries count one (1) point.
+            if mycountry.upper() != entity.upper():
                 return 1
-            return 3
+
+            # Contacts between stations in the same country have zero (0) QSO point value, but count for zone and country multiplier credit.
+
     return 0
 
 
@@ -518,3 +516,22 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('CQZone', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('CQZone', '')}")

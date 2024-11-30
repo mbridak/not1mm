@@ -1,13 +1,13 @@
+setuptools
+build
 PyQt6
 requests
 dicttoxml
 xmltodict
-psutil
 pyserial
+notctyparser >= 23.6.21
 sounddevice
 soundfile
-numpy
-notctyparser >= 23.6.21
 rapidfuzz
 appdata
 Levenshtein

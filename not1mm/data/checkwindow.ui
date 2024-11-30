@@ -31,6 +31,12 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono ExtraLight</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="sizeAdjustPolicy">
        <enum>QAbstractScrollArea::AdjustToContents</enum>
       </property>
@@ -62,6 +68,12 @@
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
       </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono ExtraLight</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
       <property name="sizeAdjustPolicy">
        <enum>QAbstractScrollArea::AdjustToContents</enum>
       </property>
@@ -92,6 +104,12 @@
      <widget class="QScrollArea" name="qsoAreaScroll">
       <property name="focusPolicy">
        <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="font">
+       <font>
+        <family>JetBrains Mono ExtraLight</family>
+        <pointsize>12</pointsize>
+       </font>
       </property>
       <property name="sizeAdjustPolicy">
        <enum>QAbstractScrollArea::AdjustToContents</enum>
