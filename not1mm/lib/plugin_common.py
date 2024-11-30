@@ -1,9 +1,45 @@
 """Common function(s) for all contest plugins"""
 
 import datetime
+from dicttoxml import dicttoxml
 from decimal import Decimal
 from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
+
+
+def online_score(self):
+    """generate online xml"""
+
+    # <?xml version="1.0"?>
+    # <dynamicresults>
+    # <contest>CQ-WW-SSB</contest>
+    # <call>VA2WA</call> <ops>NR9Q</ops>
+    # <class power="HIGH" assisted = "ASSISTED" transmitter="ONE" ops="SINGLE-OP" bands="ALL" mode="SSB" overlay="N/A"></class>
+    # <club>Contest Group du Quebec</club>
+    # <soft>My logger</soft>
+    # <version>4.38</version>
+    # <qth>
+    # <dxcccountry>K</dxcccountry>
+    # <cqzone>4</cqzone>
+    # <iaruzone>8</iaruzone>
+    # <arrlsection>IL</arrlsection>
+    # <stprvoth>IL</stprvoth>
+    # <grid6>EN40IC</grid6>
+    # </qth>
+    # <breakdown>
+    # <qso band="total" mode="ALL">20</qso>
+    # <mult band="total" mode="ALL" type="zone">13</mult>
+    # <mult band="total" mode="ALL" type="country">17</mult>
+    # <point band="total" mode="ALL">49</point>
+    # </breakdown> <score>1470</score>
+    # <timestamp>2018-10-29 13:20:27</timestamp>
+    # </dynamicresults>
+
+    info = {}
+    info["contest"] = "CQ-WW-SSB"
+    info["call"] = "VA2WA"
+    info["ops"] = "NR9Q"
+    print(f"{dicttoxml(info, custom_root='dynamicresults', attr_type=False).decode()=}")
 
 
 def get_points(self):

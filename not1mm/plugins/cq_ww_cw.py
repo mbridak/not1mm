@@ -43,7 +43,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score
 from not1mm.lib.version import __version__
 from not1mm.lib.ham_utility import get_logged_band
 
