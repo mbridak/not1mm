@@ -1337,12 +1337,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="qrz">
+              <widget class="QPushButton" name="dxcc_tracker">
                <property name="focusPolicy">
                 <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
-                <string>---</string>
+                <string>DXCC Tracker</string>
                </property>
               </widget>
              </item>
