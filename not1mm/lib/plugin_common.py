@@ -1,45 +1,61 @@
 """Common function(s) for all contest plugins"""
 
 import datetime
-from dicttoxml import dicttoxml
 from decimal import Decimal
 from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
+from not1mm.lib.version import __version__
 
 
-def online_score(self):
+def online_score_xml(self):
     """generate online xml"""
 
-    # <?xml version="1.0"?>
-    # <dynamicresults>
-    # <contest>CQ-WW-SSB</contest>
-    # <call>VA2WA</call> <ops>NR9Q</ops>
-    # <class power="HIGH" assisted = "ASSISTED" transmitter="ONE" ops="SINGLE-OP" bands="ALL" mode="SSB" overlay="N/A"></class>
-    # <club>Contest Group du Quebec</club>
-    # <soft>My logger</soft>
-    # <version>4.38</version>
-    # <qth>
-    # <dxcccountry>K</dxcccountry>
-    # <cqzone>4</cqzone>
-    # <iaruzone>8</iaruzone>
-    # <arrlsection>IL</arrlsection>
-    # <stprvoth>IL</stprvoth>
-    # <grid6>EN40IC</grid6>
-    # </qth>
-    # <breakdown>
-    # <qso band="total" mode="ALL">20</qso>
-    # <mult band="total" mode="ALL" type="zone">13</mult>
-    # <mult band="total" mode="ALL" type="country">17</mult>
-    # <point band="total" mode="ALL">49</point>
-    # </breakdown> <score>1470</score>
-    # <timestamp>2018-10-29 13:20:27</timestamp>
-    # </dynamicresults>
+    mults = self.contest.get_mults(self)
+    the_mults = ""
+    for thing in mults:
+        the_mults += (
+            f'<mult band="total" mode="ALL" type="{thing}">{mults.get(thing,0)}</mult>'
+        )
 
-    info = {}
-    info["contest"] = "CQ-WW-SSB"
-    info["call"] = "VA2WA"
-    info["ops"] = "NR9Q"
-    print(f"{dicttoxml(info, custom_root='dynamicresults', attr_type=False).decode()=}")
+    the_points = self.contest.just_points(self)
+
+    the_date_time = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[:19]
+    assisted = self.contest_settings.get("AssistedCategory", "")
+    bands = self.contest_settings.get("BandCategory", "")
+    modes = self.contest_settings.get("ModeCategory", "")
+    xmiter = self.contest_settings.get("TransmitterCategory", "")
+    ops = self.contest_settings.get("OperatorCategory", "")
+    overlay = self.contest_settings.get("OverlayCategory", "")
+    power = self.contest_settings.get("PowerCategory", "")
+
+    the_xml = (
+        '<?xml version="1.0"?>'
+        "<dynamicresults>"
+        f"<contest>{self.contest.cabrillo_name}</contest>"
+        f'<call>{self.station.get("Call", "")}</call>'
+        # <ops>NR9Q</ops>
+        f'<class power="{power}" assisted = "{assisted}" transmitter="{xmiter}" ops="{ops}" bands="{bands}" mode="{modes}" overlay="{overlay}"></class>'
+        f"<club>{self.station.get('Club', '').upper()}</club>"
+        "<soft>Not1MM</soft>"
+        f"<version>{__version__}</version>"
+        "<qth>"
+        # <dxcccountry>K</dxcccountry>
+        f"<cqzone>{self.station.get('CQZone','')}</cqzone>"
+        f"<iaruzone>{self.station.get('IARUZone','')}</iaruzone>"
+        f"<arrlsection>{self.station.get('ARRLSection', '')}</arrlsection>"
+        f"<stprvoth>{self.station.get('State','')}</stprvoth>"
+        f"<grid6>{self.station.get('GridSquare','')}</grid6>"
+        "</qth>"
+        "<breakdown>"
+        f'<qso band="total" mode="ALL">{self.contest.show_qso(self)}</qso>'
+        f"{the_mults}"
+        f'<point band="total" mode="ALL">{the_points}</point>'
+        "</breakdown>"
+        f"<score>{self.contest.calc_score(self)}</score>"
+        f"<timestamp>{the_date_time}</timestamp>"
+        "</dynamicresults>"
+    )
+    return the_xml
 
 
 def get_points(self):
