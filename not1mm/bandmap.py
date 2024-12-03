@@ -311,6 +311,10 @@ class Database:
             (f"-{minutes} minutes",),
         )
 
+    def delete_marks(self) -> None:
+        """Delete marked spots."""
+        self.cursor.execute("delete from spots where ts > datetime('now');")
+
 
 class BandMapWindow(QDockWidget):
     """The BandMapWindow class."""
@@ -345,6 +349,7 @@ class BandMapWindow(QDockWidget):
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
+        self.clearmarkedButton.clicked.connect(self.clear_marked)
         self.zoominButton.clicked.connect(self.dec_zoom)
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
@@ -872,6 +877,10 @@ class BandMapWindow(QDockWidget):
     def clear_spots(self) -> None:
         """Delete all spots from the database."""
         self.spots.delete_spots(0)
+
+    def clear_marked(self) -> None:
+        """Delete all marked spots."""
+        self.spots.delete_marks()
 
     def spot_aging_changed(self) -> None:
         """Called when spot aging spinbox is changed."""
