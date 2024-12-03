@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>383</width>
+    <width>342</width>
     <height>700</height>
    </rect>
   </property>
@@ -97,7 +97,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>359</width>
+         <width>326</width>
          <height>512</height>
         </rect>
        </property>
@@ -148,18 +148,49 @@
          <enum>Qt::NoFocus</enum>
         </property>
         <property name="accessibleName">
-         <string>clear all</string>
+         <string>clear spots</string>
         </property>
         <property name="accessibleDescription">
          <string>clear spots</string>
         </property>
+        <property name="maximumSize">
+         <size>
+         <width>1110</width>
+          <height>27</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Clear All</string>
+         <string>🗑 Spots</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearmarkedButton">
+        <property name="minimumSize">
+         <size>
+          <width>110</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+         <width>1110</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>🗑 Marked</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="zoominButton">
+        <property name="maximumSize">
+         <size>
+          <width>27</width>
+          <height>27</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
@@ -170,12 +201,18 @@
          <string>zoom in</string>
         </property>
         <property name="text">
-         <string>Zoom In</string>
+         <string>➕</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="zoomoutButton">
+        <property name="maximumSize">
+         <size>
+          <width>27</width>
+          <height>27</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
@@ -186,7 +223,7 @@
          <string>zoom out</string>
         </property>
         <property name="text">
-         <string>Zoom Out</string>
+         <string>➖</string>
         </property>
        </widget>
       </item>
@@ -205,12 +242,6 @@
       </property>
       <item>
        <widget class="QLabel" name="clear_spot_olderLabel">
-        <property name="font">
-         <font>
-          <family>JetBrains Mono ExtraLight</family>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Clear older than </string>
         </property>
