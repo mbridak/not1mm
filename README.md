@@ -501,7 +501,7 @@ You can fill. You can fill. Everyone look at your keys.
 
 ### Changing station information
 
-Station information can be changed any time by going toawandahl
+Station information can be changed any time by going to
 `File` > `Station Settings` and editing the information.
 
 ## Selecting a contest (It's REQUIRED Russ)
