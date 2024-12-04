@@ -695,6 +695,23 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_exchange1_unique_count(self) -> dict:
+        """
+        Fetch count of unique countries
+        {exch1_count: count}
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(DISTINCT(Exchange1)) as exch1_count from dxlog where Exchange1 != '' and ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_arrldx_country_band_count(self) -> dict:
         """
         returns dict with count of unique NR.
