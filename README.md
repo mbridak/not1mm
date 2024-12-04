@@ -554,10 +554,7 @@ onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
 Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP
 `127.0.0.1`port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` port `8000` and
-`CAT` which if your radio supports it, sends Morse characters via rigctld. As far
-as I can tell rigctld does not support setting the radios internal keyer speed. So
-the CW speed control widget will not be functional and you'd need to control the
-keyer speed thru the radios interface.
+`CAT` which if your radio supports it, sends Morse characters via rigctld.
 
 ### Cluster
 
