@@ -582,27 +582,21 @@ appear. Those without will not.
 
 ### Options
 
-On the Options TAB you can select to use Enter Sends Message (ESM), configure its function keys.
-Select whether or not to use Call History info.
+On the Options TAB you can:
 
-![Bands Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
+- Select to use Enter Sends Message (ESM), and configure it's function keys.
+- Select whether or not to use Call History info.
+
+![Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
 
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
-
-**Digital modes only working for:**
-
-- ARRL Field Day
-- ARRL VHF
-- Weekly RTTY
-- CQ WW DX RTTY
-- CQ WPX RTTY
 
 not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
 No setup is needed to be done on not1mm's side. That's good because I'm lazy.
 
 not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
 way. It just keeps asking what was the last QSO and compares it to the previous response.
-If it's different, it's new. I've added the Weekly RTTY Test so this can be tested.
+If it's different, it's new.
 
 The F1-F12 function keys be sent to fldigi via XMLRPC. Fldigi will be placed into TX
 mode, the message will be sent and a ^r will be tacked onto the end to place it back into
@@ -615,18 +609,20 @@ Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 ## Sending CW
 
 Other than sending CW by hand, you can also send predefined CW text messages by
-pressing F1 - F12. See next section on Editing macro keys. If you need to send
-something freeform, you can press CTRL-SHIFT-K, this will expose an entry field
-at the bottom of the window which you can type directly into. When you're done
-you can either press CTRL-SHIFT-K again, or press the Enter Key to close the
-field.
+pressing F1 - F12. See next section on Editing macro keys. 
+
+If you need to send something freeform, you can press `CTRL-SHIFT-K`, this will
+expose an entry field at the bottom of the window which you can type directly into.
+When you're done you can either press CTRL-SHIFT-K again, or press the Enter Key to
+close the field.
 
 ## Editing macro keys
 
 To edit the macros, choose `File` > `Edit Macros`. This will open your systems
 registered text editor with current macros loaded. When your done just save the
 file and close the editor. The file loaded to edit, CW, SSB or RTTY, will be
-determined by your current operating mode.
+determined by your current operating mode and contest. Each contest gets it's own
+copy of the macros.
 
 After editing and saving the macro file. You can force the logger to reload the
 macro file by toggeling between `Run` and `S&P` states.
