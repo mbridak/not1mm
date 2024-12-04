@@ -219,6 +219,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ARRL 160M</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ARRL DX CW</string>
       </property>
      </item>

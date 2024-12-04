@@ -207,6 +207,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-12-3-1] Adding ARRL 160
 - [24-12-3] Add button to bandmap to delete marked spots.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.

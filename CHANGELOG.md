@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-12-3-1] Adding ARRL 160
 - [24-12-3] Add button to bandmap to delete marked spots.
 - [24-11-27] Added CAT poll interval.
 - [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
