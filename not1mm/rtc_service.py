@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class RTCService(QObject):
     """The RTC Service class."""
 
-    poll_callback = pyqtSignal(dict)
+    rtc_callback = pyqtSignal(dict)
     delta = 2  # two minutes
     poll_time = datetime.datetime.now() + datetime.timedelta(minutes=delta)
     time_to_quit = False
@@ -44,6 +44,7 @@ class RTCService(QObject):
         while not self.time_to_quit:
             # if self.pref.get("send_rtc_scores", False) is True:
             if datetime.datetime.now() > self.poll_time:
+                response = ""
                 self.poll_time = datetime.datetime.now() + datetime.timedelta(
                     minutes=self.delta
                 )
@@ -60,15 +61,15 @@ class RTCService(QObject):
                             ),
                             timeout=30,
                         )
-                        print(f"{self.xml=}\n{result=}\n{result.text}")
+                        response = f"{result.status_code}|{result.reason}|{result.text}"
                     except requests.exceptions.Timeout:
-                        print("RTC post timeout.")
+                        response = "RTC post timeout."
                     except requests.exceptions.RequestException as e:
-                        print(f"An RTC post error occurred: {e}")
+                        response = f"An RTC post error occurred: {e}"
                 else:
-                    print("No XML data")
+                    response = "No XML data"
                 try:
-                    self.poll_callback.emit({"success": True})
+                    self.rtc_callback.emit({"result": response})
                 except QEventLoop:
                     ...
             QThread.msleep(1)

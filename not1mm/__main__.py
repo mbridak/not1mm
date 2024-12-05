@@ -2475,14 +2475,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_rtc_xml(self):
         """Update RTC XML"""
-        print("update the xml")
         if self.pref.get("send_rtc_scores", False):
             if self.contest is None:
                 return
             if hasattr(self.contest, "online_score_xml"):
                 if self.rtc_service is not None:
                     self.rtc_service.xml = self.contest.online_score_xml(self)
-                    print(f"{self.rtc_service.xml=}")
 
     def new_contest_dialog(self) -> None:
         """
@@ -2941,6 +2939,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rtc_thread.finished.connect(self.rtc_service.deleteLater)
             # self.rtc_service.poll_callback.connect(self.rtc_result)
             self.rtc_thread.start()
+            self.rtc_service.rtc_callback.connect(self.rtc_response)
 
         try:
             if self.radio_thread.isRunning():
@@ -3097,6 +3096,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
         self.write_preference()
         self.setDarkMode(self.actionDark_Mode_2.isChecked())
+
+    def rtc_response(self, response):
+        print(f"{response=}")
 
     def cw_macros_state_changed(self) -> None:
         """
