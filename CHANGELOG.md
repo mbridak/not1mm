@@ -1,5 +1,7 @@
 # Changelog
 
+- [24-12-5] Add 'real time' score posting to external sites.
+- [24-12-4] Merged PR from @alduhoo Add STATION_CALLSIGN field to ADIF output
 - [24-12-3-1] Adding ARRL 160
 - [24-12-3] Add button to bandmap to delete marked spots.
 - [24-11-27] Added CAT poll interval.
