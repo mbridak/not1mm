@@ -611,7 +611,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug(f"{QT_VERSION_STR=} {PYQT_VERSION_STR=}")
         x = PYQT_VERSION_STR.split(".")
         old_Qt = True
-        # test if pyqt version is at least 6.7.1
+        # test if pyqt version is at least 6.8
         if len(x) == 1:
             if int(x[0]) > 6:
                 old_Qt = False
@@ -619,7 +619,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if int(x[0]) >= 6 and int(x[1]) >= 8:
                 old_Qt = False
 
-        # Featureset for wayland if pyqt is older that 6.7.1
+        # Featureset for wayland if pyqt is older that 6.8
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
