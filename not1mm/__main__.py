@@ -77,6 +77,7 @@ from not1mm.vfo import VfoWindow
 from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
 from not1mm.lookupservice import LookupService
+from not1mm.rtc_service import RTCService
 
 poll_time = datetime.datetime.now()
 
@@ -102,6 +103,11 @@ class MainWindow(QtWidgets.QMainWindow):
         "multicast_group": "239.1.1.1",
         "multicast_port": 2239,
         "interface_ip": "0.0.0.0",
+        "send_rtc_scores": False,
+        "rtc_url": "",
+        "rtc_user": "",
+        "rtc_pass": "",
+        "rtc_interval": 2,
         "send_n1mm_packets": False,
         "n1mm_station_name": "20M CW Tent",
         "n1mm_operator": "Bernie",
@@ -156,7 +162,6 @@ class MainWindow(QtWidgets.QMainWindow):
     opon_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state = {}
-    rig_control = None
     worked_list = {}
     cw_entry_visible = False
     last_focus = None
@@ -170,6 +175,7 @@ class MainWindow(QtWidgets.QMainWindow):
     radio_thread = QThread()
     voice_thread = QThread()
     fldigi_thread = QThread()
+    rtc_thread = QThread()
 
     fldigi_watcher = None
     rig_control = None
@@ -179,6 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
     vfo_window = None
     lookup_service = None
     fldigi_util = None
+    rtc_service = None
 
     current_widget = None
 
@@ -712,7 +719,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
 
     def load_call_history(self) -> None:
-        """"""
+        """Display filepicker and load chosen call history file."""
         filename = self.filepicker("other")
         if filename:
             self.database.create_callhistory_table()
@@ -755,13 +762,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.show_message_box(f"{err}")
 
     def on_focus_changed(self, new):
-        """"""
+        """Called when text entry focus has changed."""
         if self.use_esm:
             if hasattr(self.contest, "process_esm"):
                 self.contest.process_esm(self, new_focused_widget=new)
 
     def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
-        """Turn the_button green."""
+        """Takes supplied QPushButton object and turns it green."""
         if the_button is not None:
             pal = QPalette()
             pal.isCopyOf(self.current_palette)
@@ -2457,7 +2464,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
-
+        if self.pref.get("send_rtc_scores", False):
+            if hasattr(self.contest, "online_score_xml"):
+                if self.rtc_service is not None:
+                    self.rtc_service.xml = self.contest.online_score_xml(self)
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
         if self.log_window:
@@ -2899,6 +2909,25 @@ class MainWindow(QtWidgets.QMainWindow):
             self.actionDark_Mode_2.setChecked(False)
 
         try:
+            if self.rtc_thread.isRunning():
+                self.rtc_service.time_to_quit = True
+                self.rtc_thread.quit()
+                self.rtc_thread.wait(1000)
+
+        except (RuntimeError, AttributeError):
+            ...
+
+        self.rtc_service = None
+
+        if self.pref.get("send_rtc_scores", False):
+            self.rtc_service = RTCService()
+            self.rtc_service.moveToThread(self.rtc_thread)
+            self.rtc_thread.started.connect(self.rtc_service.run)
+            self.rtc_thread.finished.connect(self.rtc_service.deleteLater)
+            # self.rtc_service.poll_callback.connect(self.rtc_result)
+            self.rtc_thread.start()
+
+        try:
             if self.radio_thread.isRunning():
                 self.rig_control.time_to_quit = True
                 self.radio_thread.quit()
@@ -3045,6 +3074,12 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
         self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
+
+        self.send_rtc_scores = self.pref.get("send_rtc_scores", False)
+        self.rtc_url = self.pref.get("rtc_url", "")
+        self.rtc_user = self.pref.get("rtc_user", "")
+        self.rtc_pass = self.pref.get("rtc_pass", "")
+        self.rtc_interval = self.pref.get("rtc_interval", 2)
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
