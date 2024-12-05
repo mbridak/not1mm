@@ -1606,6 +1606,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             self.set_window_title()
                             if self.rig_control:
                                 self.rig_control.set_mode(self.radio_state.get("mode"))
+                        self.update_rtc_xml()
                 except ModuleNotFoundError:
                     self.pref["contest"] = 1
                     self.show_message_box("Contest plugin not found")
@@ -2464,16 +2465,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
-        if self.pref.get("send_rtc_scores", False):
-            if hasattr(self.contest, "online_score_xml"):
-                if self.rtc_service is not None:
-                    self.rtc_service.xml = self.contest.online_score_xml(self)
+        self.update_rtc_xml()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
         if self.log_window:
             self.log_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
+
+    def update_rtc_xml(self):
+        """Update RTC XML"""
+        print("update the xml")
+        if self.pref.get("send_rtc_scores", False):
+            if self.contest is None:
+                return
+            if hasattr(self.contest, "online_score_xml"):
+                if self.rtc_service is not None:
+                    self.rtc_service.xml = self.contest.online_score_xml(self)
+                    print(f"{self.rtc_service.xml=}")
 
     def new_contest_dialog(self) -> None:
         """
@@ -2919,6 +2928,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.rtc_service = None
 
+        self.send_rtc_scores = self.pref.get("send_rtc_scores", False)
+        self.rtc_url = self.pref.get("rtc_url", "")
+        self.rtc_user = self.pref.get("rtc_user", "")
+        self.rtc_pass = self.pref.get("rtc_pass", "")
+        self.rtc_interval = self.pref.get("rtc_interval", 2)
+
         if self.pref.get("send_rtc_scores", False):
             self.rtc_service = RTCService()
             self.rtc_service.moveToThread(self.rtc_thread)
@@ -3075,11 +3090,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.esm_dict["MYCALL"] = fkey_dict.get(self.pref.get("esm_mycall", "DISABLED"))
         self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
 
-        self.send_rtc_scores = self.pref.get("send_rtc_scores", False)
-        self.rtc_url = self.pref.get("rtc_url", "")
-        self.rtc_user = self.pref.get("rtc_user", "")
-        self.rtc_pass = self.pref.get("rtc_pass", "")
-        self.rtc_interval = self.pref.get("rtc_interval", 2)
+        self.update_rtc_xml()
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
