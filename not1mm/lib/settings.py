@@ -41,6 +41,19 @@ class Settings(QtWidgets.QDialog):
     def setup(self):
         """setup dialog"""
 
+        self.send_rtc_scores.setChecked(
+            bool(self.preference.get("send_rtc_scores", False))
+        )
+
+        value = self.preference.get("rtc_url", "")
+        index = self.rtc_url.findText(value)
+        if index != -1:
+            self.rtc_url.setCurrentIndex(index)
+
+        self.rtc_user.setText(str(self.preference.get("rtc_user", "")))
+        self.rtc_pass.setText(str(self.preference.get("rtc_pass", "")))
+        self.rtc_interval.setText(str(self.preference.get("rtc_interval", "2")))
+
         self.use_call_history.setChecked(
             bool(self.preference.get("use_call_history", False))
         )
@@ -195,6 +208,15 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["send_rtc_scores"] = self.send_rtc_scores.isChecked()
+        self.preference["rtc_url"] = self.rtc_url.currentText()
+        self.preference["rtc_user"] = self.rtc_user.text()
+        self.preference["rtc_pass"] = self.rtc_pass.text()
+        try:
+            self.preference["rtc_interval"] = int(self.rtc_interval.text())
+        except ValueError:
+            self.preference["rtc_interval"] = 2
+
         self.preference["use_call_history"] = self.use_call_history.isChecked()
         self.preference["use_esm"] = self.use_esm.isChecked()
         self.preference["esm_cq"] = self.esm_cq.currentText()
