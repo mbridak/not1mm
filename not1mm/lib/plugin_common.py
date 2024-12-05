@@ -21,10 +21,11 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     now = datetime.datetime.now()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
+    station_callsign = self.station.get('Call', '').upper()
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.adi"
+        + f"{station_callsign}_{cabrillo_name}_{date_time}.adi"
     )
     log = self.database.fetch_all_contacts_asc()
     try:
@@ -65,6 +66,15 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 try:
                     print(
                         f"<TIME_ON:{len(loggedtime)}>{loggedtime}",
+                        end="\r\n",
+                        file=file_descriptor,
+                    )
+                except TypeError:
+                    ...
+
+                try:
+                    print(
+                        f"<STATION_CALLSIGN:{len(station_callsign)}>{station_callsign}",
                         end="\r\n",
                         file=file_descriptor,
                     )
