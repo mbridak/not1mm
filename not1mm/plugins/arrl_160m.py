@@ -123,7 +123,48 @@ def points(self):
 
     # Both in same country
 
-    if mypfx in ["K", "VE"] and pfx in ["K", "VE"]:
+    # 2.1.1 Alaska (KL7 – AK) and Hawaii (KH6 – PAC), the Caribbean US possessions (KP1-KP5 -
+    # PR or VI), and all of the Pacific Ocean territories (KHØ-KH9 – PAC) participate as W/VE stations
+    # and count as ARRL sections.
+    if mypfx in [
+        "K",
+        "KL",
+        "KH0",
+        "KH1",
+        "KH2",
+        "KH3",
+        "KH4",
+        "KH5",
+        "KH6",
+        "KH7",
+        "KH8",
+        "KH9",
+        "KP1",
+        "KP2",
+        "KP3",
+        "KP4",
+        "KP5",
+        "VE",
+    ] and pfx in [
+        "K",
+        "KL",
+        "KH0",
+        "KH1",
+        "KH2",
+        "KH3",
+        "KH4",
+        "KH5",
+        "KH6",
+        "KH7",
+        "KH8",
+        "KH9",
+        "KP1",
+        "KP2",
+        "KP3",
+        "KP4",
+        "KP5",
+        "VE",
+    ]:
         return 2
 
     if mypfx.upper() != pfx.upper():
@@ -134,8 +175,10 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_country_count()
-    mults = int(result.get("dxcc_count", 0))
+    mults = 0
+    if can_claim_dxcc(self):
+        result = self.database.fetch_country_count()
+        mults = int(result.get("dxcc_count", 0))
 
     result = self.database.fetch_exchange1_unique_count()
     mults2 = int(result.get("exch1_count", 0))
@@ -153,6 +196,7 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
+    mults = 0
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
@@ -160,13 +204,45 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
 
-        result = self.database.fetch_country_count()
-        mults = int(result.get("dxcc_count", 0))
+        if can_claim_dxcc(self):
+            result = self.database.fetch_country_count()
+            mults = int(result.get("dxcc_count", 0))
 
         result = self.database.fetch_exchange1_unique_count()
         mults2 = int(result.get("exch1_count", 0))
         return contest_points * (mults + mults2)
     return 0
+
+
+def can_claim_dxcc(self):
+    """"""
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if result:
+        mypfx = ""
+        for item in result.items():
+            mypfx = item[1].get("primary_pfx", "")
+        if mypfx in [
+            "K",
+            "KL",
+            "KH0",
+            "KH1",
+            "KH2",
+            "KH3",
+            "KH4",
+            "KH5",
+            "KH6",
+            "KH7",
+            "KH8",
+            "KH9",
+            "KP1",
+            "KP2",
+            "KP3",
+            "KP4",
+            "KP5",
+            "VE",
+        ]:
+            return True
+        return False
 
 
 def adif(self):
@@ -538,8 +614,11 @@ def check_call_history(self):
 def get_mults(self):
     """"""
     mults = {}
+    if can_claim_dxcc(self):
+        mults["country"] = self.database.fetch_country_count().get("dxcc_count", 0)
+
     mults["state"] = self.database.fetch_exchange1_unique_count().get("exch1_count", 0)
-    mults["country"] = self.database.fetch_country_count().get("dxcc_count", 0)
+
     return mults
 
 
