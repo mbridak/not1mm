@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -381,14 +381,6 @@ def cabrillo(self, file_encoding):
         return
 
 
-# def trigger_update(self):
-#     """Triggers the log window to update."""
-#     cmd = {}
-#     cmd["cmd"] = "UPDATELOG"
-#     cmd["station"] = platform.node()
-#     self.multicast_interface.send_as_json(cmd)
-
-
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
     # all_contacts = self.database.fetch_all_contacts_asc()
@@ -541,3 +533,16 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('Exch1', '')}")
+
+
+def get_mults(self):
+    """"""
+    mults = {}
+    mults["state"] = self.database.fetch_exchange1_unique_count().get("exch1_count", 0)
+    mults["country"] = self.database.fetch_country_count().get("dxcc_count", 0)
+    return mults
+
+
+def just_points(self):
+    """"""
+    return self.database.fetch_points().get("Points", "0")
