@@ -588,6 +588,7 @@ On the Options TAB you can:
 
 - Select to use Enter Sends Message (ESM), and configure it's function keys.
 - Select whether or not to use Call History info.
+- Select whether or not to send XML score info to online scoreboards.
 
 ![Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
 
