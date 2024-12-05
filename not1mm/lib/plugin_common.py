@@ -4,6 +4,58 @@ import datetime
 from decimal import Decimal
 from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
+from not1mm.lib.version import __version__
+
+
+def online_score_xml(self):
+    """generate online xml"""
+
+    mults = self.contest.get_mults(self)
+    the_mults = ""
+    for thing in mults:
+        the_mults += (
+            f'<mult band="total" mode="ALL" type="{thing}">{mults.get(thing,0)}</mult>'
+        )
+
+    the_points = self.contest.just_points(self)
+
+    the_date_time = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[:19]
+    assisted = self.contest_settings.get("AssistedCategory", "")
+    bands = self.contest_settings.get("BandCategory", "")
+    modes = self.contest_settings.get("ModeCategory", "")
+    xmiter = self.contest_settings.get("TransmitterCategory", "")
+    ops = self.contest_settings.get("OperatorCategory", "")
+    overlay = self.contest_settings.get("OverlayCategory", "")
+    power = self.contest_settings.get("PowerCategory", "")
+
+    the_xml = (
+        '<?xml version="1.0"?>'
+        "<dynamicresults>"
+        f"<contest>{self.contest.cabrillo_name}</contest>"
+        f'<call>{self.station.get("Call", "")}</call>'
+        # <ops>NR9Q</ops>
+        f'<class power="{power}" assisted = "{assisted}" transmitter="{xmiter}" ops="{ops}" bands="{bands}" mode="{modes}" overlay="{overlay}"></class>'
+        f"<club>{self.station.get('Club', '').upper()}</club>"
+        "<soft>Not1MM</soft>"
+        f"<version>{__version__}</version>"
+        "<qth>"
+        # <dxcccountry>K</dxcccountry>
+        f"<cqzone>{self.station.get('CQZone','')}</cqzone>"
+        f"<iaruzone>{self.station.get('IARUZone','')}</iaruzone>"
+        f"<arrlsection>{self.station.get('ARRLSection', '')}</arrlsection>"
+        f"<stprvoth>{self.station.get('State','')}</stprvoth>"
+        f"<grid6>{self.station.get('GridSquare','')}</grid6>"
+        "</qth>"
+        "<breakdown>"
+        f'<qso band="total" mode="ALL">{self.contest.show_qso(self)}</qso>'
+        f"{the_mults}"
+        f'<point band="total" mode="ALL">{the_points}</point>'
+        "</breakdown>"
+        f"<score>{self.contest.calc_score(self)}</score>"
+        f"<timestamp>{the_date_time}</timestamp>"
+        "</dynamicresults>"
+    )
+    return the_xml
 
 
 def get_points(self):

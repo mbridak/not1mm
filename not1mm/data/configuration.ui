@@ -2174,6 +2174,76 @@
            </widget>
           </item>
           <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="send_rtc_scores">
+            <property name="text">
+             <string>Use RTC score reporting</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="rtc_url">
+            <item>
+             <property name="text">
+              <string>https://hamscore.com/postxml/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>https://contestonlinescore.com/post/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>http://contest.run</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="rtc_user">
+            <property name="placeholderText">
+             <string>username</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="rtc_pass">
+            <property name="echoMode">
+             <enum>QLineEdit::EchoMode::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>password</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>Score posting interval (minutes)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="rtc_interval">
+            <property name="text">
+             <string>2</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_8">
             <property name="orientation">
              <enum>Qt::Vertical</enum>

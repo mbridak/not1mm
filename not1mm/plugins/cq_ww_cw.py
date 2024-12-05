@@ -43,7 +43,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 from not1mm.lib.ham_utility import get_logged_band
 
@@ -175,6 +175,19 @@ def points(self):
             # Contacts between stations in the same country have zero (0) QSO point value, but count for zone and country multiplier credit.
 
     return 0
+
+
+def get_mults(self):
+    """"""
+    mults = {}
+    mults["zone"] = self.database.fetch_zn_band_count().get("zb_count", 0)
+    mults["country"] = self.database.fetch_country_band_count().get("cb_count", 0)
+    return mults
+
+
+def just_points(self):
+    """"""
+    return self.database.fetch_points().get("Points", "0")
 
 
 def show_mults(self):

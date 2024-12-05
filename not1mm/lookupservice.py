@@ -3,8 +3,8 @@
 not1mm Contest logger
 Email: michael.bridak@gmail.com
 GPL V3
-Class: BandMapWindow
-Purpose: Onscreen widget to show realtime spots from an AR cluster.
+Class: LookupService
+Purpose: Lookup callsigns with online services.
 """
 
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
