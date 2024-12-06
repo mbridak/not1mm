@@ -180,6 +180,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Summer Phone
 - 10 10 Winter Phone
 - ARRL 10M
+- ARRL 160M
 - ARRL DX CW, SSB
 - ARRL Field Day
 - ARRL Sweepstakes CW, SSB
