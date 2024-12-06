@@ -8,3 +8,4 @@
 - Add Macros to send hex codes to radio. Icom Voice memories etc.
 - Autopopulate exchange based on previous contact on a different band.
 - Change sort order of log window.
+- add RTC to arrl 10m, rac, raem, arrl rtty roundup, cq 160 cw, k1usn
