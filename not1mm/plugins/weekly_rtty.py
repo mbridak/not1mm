@@ -601,7 +601,7 @@ def get_mults(self):
     """"""
 
     mults = {}
-    mults["prefix"] = show_mults(self)
+    mults["state"] = show_mults(self)
     return mults
 
 
