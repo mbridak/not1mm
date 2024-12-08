@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
 - [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
 - [24-12-6] Add RTC to K1USN.
 -[24-12-5-1] ARRL 160 gets rtc.
