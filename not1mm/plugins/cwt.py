@@ -54,7 +54,7 @@ columns = [
     "M1",
     "PTS",
 ]
-cabrillo_name = "CWOPS-CWT"
+cabrillo_name = "CW-OPS"
 
 advance_on_space = [True, True, True, True, True]
 
