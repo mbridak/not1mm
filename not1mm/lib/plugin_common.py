@@ -23,6 +23,8 @@ def online_score_xml(self):
     assisted = self.contest_settings.get("AssistedCategory", "")
     bands = self.contest_settings.get("BandCategory", "")
     modes = self.contest_settings.get("ModeCategory", "")
+    if modes in ["SSB+CW", "SSB+CW+DIGITAL"]:
+        modes = "MIXED"
     xmiter = self.contest_settings.get("TransmitterCategory", "")
     ops = self.contest_settings.get("OperatorCategory", "")
     overlay = self.contest_settings.get("OverlayCategory", "")
@@ -35,7 +37,7 @@ def online_score_xml(self):
         f'<call>{self.station.get("Call", "")}</call>'
         # <ops>NR9Q</ops>
         f'<class power="{power}" assisted = "{assisted}" transmitter="{xmiter}" ops="{ops}" bands="{bands}" mode="{modes}" overlay="{overlay}"></class>'
-        f"<club>{self.station.get('Club', '').upper()}</club>"
+        f"<club>{self.station.get('Club', '')}</club>"
         "<soft>Not1MM</soft>"
         f"<version>{__version__}</version>"
         "<qth>"

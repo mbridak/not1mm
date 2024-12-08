@@ -52,7 +52,7 @@ import logging
 from pathlib import Path
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -174,7 +174,7 @@ def points(self):
     return 0
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
     # CountryPrefix, integer
 
@@ -211,6 +211,9 @@ def show_mults(self):
     result = self.database.exec_sql(sql)
     if result:
         dx = result.get("mult_count", 0)
+
+    if rtc is not None:
+        return dx, us_ve_mx + mm
 
     return us_ve_mx + mm + dx
 
@@ -285,7 +288,7 @@ def cabrillo(self, file_encoding):
             )
             if self.station.get("Club", ""):
                 output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
+                    f"CLUB: {self.station.get('Club', '')}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -320,8 +323,11 @@ def cabrillo(self, file_encoding):
                 file_descriptor,
                 file_encoding,
             )
+            mode = self.contest_settings.get("ModeCategory", "")
+            if mode in ["SSB+CW", "SSB+CW+DIGITAL"]:
+                mode = "MIXED"
             output_cabrillo_line(
-                f"CATEGORY-MODE: {self.contest_settings.get('ModeCategory','')}",
+                f"CATEGORY-MODE: {mode}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -551,3 +557,15 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('State', '')}")
+
+
+def get_mults(self):
+    """"""
+    mults = {}
+    mults["country"], mults["state"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """"""
+    return get_points(self)

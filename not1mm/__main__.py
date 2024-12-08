@@ -2634,7 +2634,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station["SAntH2"] = self.settings_dialog.ASL.text()
         self.station["ARRLSection"] = self.settings_dialog.ARRLSection.text().upper()
         self.station["RoverQTH"] = self.settings_dialog.RoverQTH.text()
-        self.station["Club"] = self.settings_dialog.Club.text().title()
+        self.station["Club"] = self.settings_dialog.Club.text()
         self.station["Email"] = self.settings_dialog.Email.text()
         self.database.add_station(self.station)
         self.settings_dialog.close()

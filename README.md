@@ -208,6 +208,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-12-8-2] Add RTC to ARRL 10M, Tweaked cabrillo file output.
 - [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
 - [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
 - [24-12-6] Add RTC to K1USN.

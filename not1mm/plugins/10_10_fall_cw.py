@@ -238,8 +238,11 @@ def cabrillo(self, file_encoding):
                 file_descriptor,
                 file_encoding,
             )
+            mode = self.contest_settings.get("ModeCategory", "")
+            if mode in ["SSB+CW", "SSB+CW+DIGITAL"]:
+                mode = "MIXED"
             output_cabrillo_line(
-                f"CATEGORY-MODE: {self.contest_settings.get('ModeCategory','')}",
+                f"CATEGORY-MODE: {mode}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
