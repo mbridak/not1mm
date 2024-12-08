@@ -44,7 +44,7 @@ ALTEREGO = None
 EXCHANGE_HINT = "Name + SPC"
 
 name = "WEEKLY RTTY TEST"
-cabrillo_name = "WEEKLY-RTTY"
+cabrillo_name = "WRT"
 mode = "RTTY"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
 columns = [
