@@ -208,6 +208,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
 - [24-12-6] Add RTC to K1USN.
 -[24-12-5-1] ARRL 160 gets rtc.
 - [24-12-5] Add 'real time' score posting to external sites.

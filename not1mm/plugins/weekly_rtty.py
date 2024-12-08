@@ -34,7 +34,7 @@ from pathlib import Path
 from PyQt6 import QtWidgets
 
 from not1mm.lib.ham_utility import get_logged_band
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -138,9 +138,9 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_section_band_count_nodx()
+    result = self.database.fetch_call_count()
     if result:
-        return int(result.get("sb_count", 0))
+        return int(result.get("call_count", 0))
     return 0
 
 
@@ -594,3 +594,23 @@ def check_call_history(self):
             self.other_1.setText(f"{result.get('Name', '')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('Sect', '')}")
+
+
+# --------RTC Stuff-----------
+def get_mults(self):
+    """"""
+
+    mults = {}
+    mults["prefix"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """"""
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        return int(score)
+    return 0
