@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Name + SPC"
 
 name = "K1USN SLOW SPEED TEST"
-cabrillo_name = "K1USN-SST"
+cabrillo_name = "K1USNSST"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
 columns = [
