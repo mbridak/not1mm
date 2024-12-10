@@ -40,7 +40,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -559,3 +559,15 @@ def check_call_history(self):
             self.other_1.setText(f"{result.get('Name', '')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('State', '')}")
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["state"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

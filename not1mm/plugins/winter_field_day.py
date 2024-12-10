@@ -21,14 +21,14 @@ import logging
 
 from pathlib import Path
 from PyQt6 import QtWidgets
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "1O ORG"
 
-cabrillo_name = "WFD"
+cabrillo_name = "WFDA-CONTEST"
 name = "Winter Field Day"
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 mode = "BOTH"  # CW SSB BOTH RTTY
@@ -467,3 +467,15 @@ def check_call_history(self):
             self.other_1.setText(f"{result.get('Exch1', '')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('Sect', '')}")
+
+
+def get_mults(self):
+    """"""
+    mults = {}
+    mults["wpxprefix"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """"""
+    return get_points(self)
