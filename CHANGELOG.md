@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-12-11] Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
 - [24-12-9] Add RTC to Winter Field Day, Stew Perry, REF, RAEM, NAQP, LZ-DX, JIDX
 - [24-12-8-2] Add RTC to ARRL 10M, Tweaked cabrillo file output.
 - [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.

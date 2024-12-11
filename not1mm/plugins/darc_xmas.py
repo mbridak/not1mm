@@ -32,7 +32,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -176,11 +176,14 @@ def points(self):
     return 1
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
-    return int(self.database.fetch_mult_count(1).get("count", 0)) + int(
-        self.database.fetch_mult_count(2).get("count", 0)
-    )
+    _wpx = int(self.database.fetch_mult_count(1).get("count", 0))
+    _dok = int(self.database.fetch_mult_count(2).get("count", 0))
+    if rtc is not None:
+        return (_dok, _wpx)
+
+    return _wpx + _dok
 
 
 def show_qso(self):
@@ -561,3 +564,15 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_1.text() == "":
             self.other_1.setText(f"{result.get('Exch1', '')}")
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["state"], mults["wpxprefix"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

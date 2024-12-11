@@ -46,7 +46,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -547,3 +547,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["wpxprefix"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

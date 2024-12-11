@@ -237,11 +237,14 @@ def points(self):
     return 0
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
-    return int(self.database.fetch_mult_count(1).get("count", 0)) + int(
-        self.database.fetch_mult_count(2).get("count", 0)
-    )
+    one = int(self.database.fetch_mult_count(1).get("count", 0))
+    two = int(self.database.fetch_mult_count(2).get("count", 0))
+    if rtc is not None:
+        return (two, one)
+
+    return one + two
 
 
 def show_qso(self):
@@ -625,3 +628,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["country"], mults["state"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

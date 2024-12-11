@@ -22,7 +22,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -143,12 +143,28 @@ def points(self):
     return 5
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
+    # select count(DISTINCT(ZN || ':' || Band || ':' || Mode)) as zbm_count from dxlog where ContestNR = 14 and typeof(ZN)!="integer";
+    total_mults = 0
     result1 = self.database.fetch_zn_band_mode_count()
     if result1:
-        return int(result1.get("zbm_count", 0))
-    return 0
+        total_mults = int(result1.get("zbm_count", 0))
+
+    query = (
+        f"select count(DISTINCT(ZN || ':' || Band || ':' || Mode)) "
+        f"as zbm_count from dxlog where ContestNR = {self.pref.get('contest', '1')} "
+        f"and typeof(ZN)!='integer';"
+    )
+    result = self.database.exec_sql(query)
+    hq_count = int(result.get("zbm_count", 0))
+
+    zones = total_mults - hq_count
+
+    if rtc is not None:
+        return (hq_count, zones)
+
+    return total_mults
 
 
 def show_qso(self):
@@ -479,7 +495,7 @@ def populate_history_info_line(self):
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+            f"{result.get('Call', '')}, {result.get('Sect', '')}, {result.get('UserText','...')}"
         )
     else:
         self.history_info.setText("")
@@ -491,4 +507,17 @@ def check_call_history(self):
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+            self.other_2.setText(f"{result.get('Sect', '')}")
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+
+    mults = {}
+    mults["state"], mults["zone"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

@@ -46,7 +46,7 @@ from pathlib import Path
 from PyQt6 import QtWidgets
 
 from not1mm.lib.ham_utility import get_logged_band
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -169,24 +169,30 @@ def points(self):
     return 0
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
 
     # Multipliers:	    W/VE Stations: Each US state/VE area once per band
     #                   Each DXCC/WAE country once per band
     #                   Each CQ zone once per band
 
+    _zone, _country, _spc_count = 0, 0, 0
     result1 = self.database.fetch_zn_band_count()
     result2 = self.database.fetch_country_band_count()
     res3_query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as spc_count from dxlog where ContestNR = {self.database.current_contest};"
     result3 = self.database.exec_sql(res3_query)
-    if result1 and result2 and result3:
-        return (
-            int(result1.get("zb_count", 0))
-            + int(result2.get("cb_count", 0))
-            + int(result3.get("spc_count", 0))
-        )
-    return 0
+
+    if result1:
+        _zone = int(result1.get("zb_count", 0))
+    if result2:
+        _country = int(result2.get("cb_count", 0))
+    if result3:
+        _spc_count = int(result3.get("spc_count", 0))
+
+    if rtc is not None:
+        return (_country + _spc_count, _zone)
+
+    return _country + _spc_count + _zone
 
 
 def show_qso(self):
@@ -647,3 +653,15 @@ def check_call_history(self):
             self.other_1.setText(f"{result.get('CQZone', '')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('State', '')}")
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["country"], mults["zone"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)
