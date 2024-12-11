@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -140,21 +140,24 @@ def points(self):
     return 0
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
     location = self.cty_lookup(self.station.get("Call", ""))
+    _country, _state = 0, 0
     if location:
         for item in location.items():
             mycountry = item[1].get("primary_pfx", "")
             if mycountry in ["K", "VE"]:
                 result = self.database.fetch_arrldx_country_band_count()
                 if result:
-                    return int(result.get("cb_count", 0))
+                    _country = int(result.get("cb_count", 0))
             else:
                 result = self.database.fetch_arrldx_state_prov_count()
                 if result:
-                    return int(result.get("cb_count", 0))
-    return 0
+                    _state = int(result.get("cb_count", 0))
+    if rtc is not None:
+        return (_country, _state)
+    return _country + _state
 
 
 def show_qso(self):
@@ -511,3 +514,22 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def get_mults(self):
+    """"""
+
+    mults = {}
+    mults["country"], mults["state"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """"""
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        return int(score)
+    return 0

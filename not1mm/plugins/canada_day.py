@@ -9,7 +9,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Province/Territory"
 
 name = "CANADA DAY"
-cabrillo_name = "CANADA-DAY"
+cabrillo_name = "RAC"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -501,3 +501,22 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def get_mults(self):
+    """"""
+
+    mults = {}
+    mults["state"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """"""
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        return int(score)
+    return 0

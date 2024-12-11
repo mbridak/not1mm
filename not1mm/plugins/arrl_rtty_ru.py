@@ -7,6 +7,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from PyQt6 import QtWidgets
+from not1mm.lib.plugin_common import online_score_xml
 
 EXCHANGE_HINT = ""
 
@@ -93,7 +94,7 @@ def points(self):
     """Calc point"""
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
 
 
@@ -272,3 +273,19 @@ def cabrillo(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+
+
+# States/Prov.	DXCC	state	country
+
+
+def get_mults(self):
+    """"""
+
+    mults = {}
+    mults["state"], mults["country"] = show_mults(self, rtc=True)
+    return mults
+
+
+def just_points(self):
+    """"""
+    return get_points(self)

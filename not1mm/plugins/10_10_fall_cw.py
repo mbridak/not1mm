@@ -8,7 +8,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Name + 10-10# + SPC"
 
 name = "10 10 FALL CW"
-cabrillo_name = "10-10-FALL-CW"
+cabrillo_name = "10-10"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [
@@ -453,3 +453,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+
+
+def get_mults(self):
+    """"""
+
+    mults = {}
+    return mults
+
+
+def just_points(self):
+    """"""
+    return get_points(self)
