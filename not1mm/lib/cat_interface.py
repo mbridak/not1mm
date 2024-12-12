@@ -122,7 +122,7 @@ class CAT:
     def __initialize_rigctrld(self):
         try:
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.2)
+            self.rigctrlsocket.settimeout(0.5)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
@@ -146,12 +146,14 @@ class CAT:
         """Gets any serial data waiting"""
         dump = ""
         thegrab = ""
+        self.rigctrlsocket.settimeout(0.1)
         try:
             while True:
                 thegrab += self.rigctrlsocket.recv(1024).decode()
                 dump += thegrab
-        except socket.error:
+        except (socket.error, UnicodeDecodeError):
             ...
+        self.rigctrlsocket.settimeout(0.5)
         return dump
 
     def sendcw(self, texttosend):

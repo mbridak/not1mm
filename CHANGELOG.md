@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-12-12] Add a try exception for a unicode decode error.
 - [24-12-11-1] Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
 - [24-12-11] Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
 - [24-12-9] Add RTC to Winter Field Day, Stew Perry, REF, RAEM, NAQP, LZ-DX, JIDX
