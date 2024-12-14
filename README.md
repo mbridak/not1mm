@@ -208,6 +208,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-12-14] Changed method of detecting fldigi QSOs. See docs.
 - [24-12-12] Add a try exception for a unicode decode error.
 - [24-12-11-1] Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
 - [24-12-11] Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
@@ -607,9 +608,13 @@ On the Options TAB you can:
 not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
 No setup is needed to be done on not1mm's side. That's good because I'm lazy.
 
-not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
+~~not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
 way. It just keeps asking what was the last QSO and compares it to the previous response.
-If it's different, it's new.
+If it's different, it's new.~~
+
+not1mm watches for fldigi qso's by watching for UDP traffic from fldigi on 127.0.0.1:9876.
+
+![fldigi configuration dialog](https://github.com/mbridak/not1mm/blob/master/pic/fldigi_adif_udp.png?raw=true)
 
 The F1-F12 function keys be sent to fldigi via XMLRPC. Fldigi will be placed into TX
 mode, the message will be sent and a ^r will be tacked onto the end to place it back into
