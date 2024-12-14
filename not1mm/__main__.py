@@ -33,7 +33,7 @@ except OSError as exception:
     print(exception)
     print("portaudio is not installed")
     sd = None
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
 from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
 from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
@@ -66,7 +66,6 @@ from not1mm.lib.settings import Settings
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
-from not1mm.lib.fldigi_watcher import FlDigiWatcher
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
 import not1mm.fsutils as fsutils
@@ -174,10 +173,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     radio_thread = QThread()
     voice_thread = QThread()
-    fldigi_thread = QThread()
     rtc_thread = QThread()
 
-    fldigi_watcher = None
     rig_control = None
     log_window = None
     check_window = None
@@ -668,14 +665,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_splash_msg("Reading macros.")
         self.read_macros()
 
-        self.show_splash_msg("Starting FlDigi watcher.")
-        self.fldigi_watcher = FlDigiWatcher()
-        self.fldigi_watcher.moveToThread(self.fldigi_thread)
-        self.fldigi_thread.started.connect(self.fldigi_watcher.run)
-        self.fldigi_thread.finished.connect(self.fldigi_watcher.deleteLater)
-        self.fldigi_watcher.poll_callback.connect(self.fldigi_qso)
-        self.fldigi_thread.start()
-
         self.show_splash_msg("Restoring window states.")
         self.settings = QSettings("K6GTE", "not1mm")
         if self.settings.value("windowState") is not None:
@@ -717,6 +706,20 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can udate to the current version by using:\npip install -U not1mm"
                 )
+
+        self.udp_socket = QtNetwork.QUdpSocket()
+        b_result = self.udp_socket.bind(
+            QtNetwork.QHostAddress.SpecialAddress.AnyIPv4, 9876
+        )
+        logger.info(f"bind {b_result}")
+        self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
+
+    def fldigi_on_udp_socket_ready_read(self):
+        """"""
+        datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
+            self.udp_socket.pendingDatagramSize()
+        )
+        self.fldigi_qso(datagram.decode())
 
     def load_call_history(self) -> None:
         """Display filepicker and load chosen call history file."""
