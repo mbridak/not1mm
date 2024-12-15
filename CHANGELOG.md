@@ -1,5 +1,6 @@
 # Changelog
 
+- [24-12-15] Fixed Button focus policy in the bandmap window.
 - [24-12-14] Changed method of detecting fldigi QSOs. See docs.
 - [24-12-12] Add a try exception for a unicode decode error.
 - [24-12-11-1] Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
