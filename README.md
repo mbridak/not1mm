@@ -208,6 +208,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [24-12-29] Add {LOGIT} macro.
 - [24-12-15] Fixed Button focus policy in the bandmap window.
 - [24-12-14] Changed method of detecting fldigi QSOs. See docs.
 - [24-12-12] Add a try exception for a unicode decode error.
@@ -657,6 +658,7 @@ You can include a limited set of substitution instructions.
 | {SNT} | Sends 5nn (cw) or 599 (ssb) |
 | {SENTNR} | Sends whats in the SentNR field. |
 | {EXCH} | Sends what's in the Sent Exchange field when contest is defined. |
+| {LOGIT} | Log the contact after macro pressed. |
 | '#' | Sends serial number. |
 
 ### Macro use with voice

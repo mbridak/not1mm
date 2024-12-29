@@ -1742,7 +1742,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[CTRL-Esc]\tStops cwdaemon from sending Morse.\n"
+            "[ESC]\tStops cwdaemon from sending Morse.\n"
             "[PgUp]\tIncreases the cw sending speed.\n"
             "[PgDown]\tDecreases the cw sending speed.\n"
             "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
@@ -2731,6 +2731,9 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace(
             "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
         )
+        if "{LOGIT}" in macro:
+            macro = macro.replace("{LOGIT}", "")
+            self.save_contact()
         return macro
 
     def ptt_on(self) -> None:
