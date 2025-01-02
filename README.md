@@ -183,6 +183,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL 160M
 - ARRL DX CW, SSB
 - ARRL Field Day
+- ARRL RTTY Roundup
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
