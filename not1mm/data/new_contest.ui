@@ -239,6 +239,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ARRL RTTY RU</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ARRL SS CW</string>
       </property>
      </item>

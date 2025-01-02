@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-1-1] Added ARRL RTTY RU.
 - [24-12-29] Add {LOGIT} macro.
 - [24-12-15] Fixed Button focus policy in the bandmap window.
 - [24-12-14] Changed method of detecting fldigi QSOs. See docs.
@@ -11,7 +12,7 @@
 - [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
 - [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
 - [24-12-6] Add RTC to K1USN.
--[24-12-5-1] ARRL 160 gets rtc.
+- [24-12-5-1] ARRL 160 gets rtc.
 - [24-12-5] Add 'real time' score posting to external sites.
 - [24-12-4] Merged PR from @alduhoo Add STATION_CALLSIGN field to ADIF output
 - [24-12-3-1] Adding ARRL 160

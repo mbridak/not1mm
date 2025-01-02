@@ -183,6 +183,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ARRL 160M
 - ARRL DX CW, SSB
 - ARRL Field Day
+- ARRL RTTY Roundup
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
@@ -208,22 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
-- [24-12-29] Add {LOGIT} macro.
-- [24-12-15] Fixed Button focus policy in the bandmap window.
-- [24-12-14] Changed method of detecting fldigi QSOs. See docs.
-- [24-12-12] Add a try exception for a unicode decode error.
-- [24-12-11-1] Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
-- [24-12-11] Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
-- [24-12-9] Add RTC to Winter Field Day, Stew Perry, REF, RAEM, NAQP, LZ-DX, JIDX
-- [24-12-8-2] Add RTC to ARRL 10M, Tweaked cabrillo file output.
-- [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
-- [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
-- [24-12-6] Add RTC to K1USN.
--[24-12-5-1] ARRL 160 gets rtc.
-- [24-12-5] Add 'real time' score posting to external sites.
-- [24-12-4] Merged PR from @alduhoo Add STATION_CALLSIGN field to ADIF output
-- [24-12-3-1] Adding ARRL 160
-- [24-12-3] Add button to bandmap to delete marked spots.
+- [25-1-1] Added ARRL RTTY RU.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
