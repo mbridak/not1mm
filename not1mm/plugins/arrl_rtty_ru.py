@@ -1,34 +1,32 @@
 """
-Mode:	RTTY
- 	Bands:	80, 40, 20, 15, 10m
- 	Classes:	Single Op (QRP/Low/High)
-Single Op Unlimited (QRP/Low/High)
-Single Op Overlay: (Limited Antennas)
-Multi-Single (Low/High)
-Multi-Two
-Multi-Multi
- 	Max operating hours:	24 hours
- 	Max power:	HP: 1500 watts
-LP: 100 watts
- 	Exchange:	W/VE: RST + (state/province)
-non-W/VE: RST + Serial No.
- 	Work stations:	Once per band
- 	QSO Points:	1 point per QSO
- 	Multipliers:	Each US state+DC (except KH6/KL7) once only
-Each VE province/territory once only
-Each DXCC country (including KH6/KL7) once only
- 	Score Calculation:	Total score = total QSO points x total mults
- 	Submit logs by:	2359Z January 12, 2025
- 	E-mail logs to:	(none)
- 	Upload log at:	https://contest-log-submission.arrl.org/
- 	Mail logs to:	RTTY Roundup
-ARRL
-225 Main St.
-Newington, CT 06111
-USA
- 	Find rules at:	https://www.arrl.org/rtty-roundup
-
-
+Mode:       RTTY
+Bands:      80, 40, 20, 15, 10m
+Classes:	Single Op (QRP/Low/High)
+            Single Op Unlimited (QRP/Low/High)
+            Single Op Overlay: (Limited Antennas)
+            Multi-Single (Low/High)
+            Multi-Two
+            Multi-Multi
+Max operating hours:	24 hours
+Max power:	HP: 1500 watts
+            LP: 100 watts
+Exchange:	W/VE: RST + (state/province)
+            non-W/VE: RST + Serial No.
+Work stations:	Once per band
+QSO Points:	1 point per QSO
+Multipliers:	Each US state+DC (except KH6/KL7) once only
+                Each VE province/territory once only
+                Each DXCC country (including KH6/KL7) once only
+Score Calculation:	Total score = total QSO points x total mults
+Submit logs by:	2359Z January 12, 2025
+E-mail logs to:	(none)
+Upload log at:	https://contest-log-submission.arrl.org/
+Mail logs to:	RTTY Roundup
+                ARRL
+                225 Main St.
+                Newington, CT 06111
+                USA
+Find rules at:	https://www.arrl.org/rtty-roundup
 """
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
@@ -550,6 +548,7 @@ def set_self(the_outie):
 
 
 def ft8_handler(the_packet: dict):
+    print(f"{the_packet=}")
     """Process FT8 QSO packets
     FT8
     {
@@ -573,40 +572,89 @@ def ft8_handler(the_packet: dict):
     }
     FlDigi
     {
-            'FREQ': '7.029500',
-            'CALL': 'DL2DSL',
-            'MODE': 'RTTY',
-            'NAME': 'BOB',
-            'QSO_DATE': '20240904',
-            'QSO_DATE_OFF': '20240904',
-            'TIME_OFF': '212825',
-            'TIME_ON': '212800',
-            'RST_RCVD': '599',
-            'RST_SENT': '599',
-            'BAND': '40M',
-            'COUNTRY': 'FED. REP. OF GERMANY',
-            'CQZ': '14',
-            'STX': '000',
-            'STX_STRING': '1D ORG',
-            'CLASS': '1D',
-            'ARRL_SECT': 'DX',
-            'TX_PWR': '0',
-            'OPERATOR': 'K6GTE',
-            'STATION_CALLSIGN': 'K6GTE',
-            'MY_GRIDSQUARE': 'DM13AT',
-            'MY_CITY': 'ANAHEIM, CA',
-            'MY_STATE': 'CA'
-        }
+        'CALL': 'K5TUS', 
+        'MODE': 'RTTY', 
+        'FREQ': '14.068415', 
+        'BAND': '20M', 
+        'QSO_DATE': '20250103', 
+        'TIME_ON': '2359', 
+        'QSO_DATE_OFF': '20250103', 
+        'TIME_OFF': '2359', 
+        'NAME': '', 
+        'QTH': '', 
+        'STATE': 'ORG', 
+        'VE_PROV': '', 
+        'COUNTRY': 'USA', 
+        'RST_SENT': '599', 
+        'RST_RCVD': '599', 
+        'TX_PWR': '0', 
+        'CNTY': '', 
+        'DXCC': '', 
+        'CQZ': '5', 
+        'IOTA': '', 
+        'CONT': '', 
+        'ITUZ': '', 
+        'GRIDSQUARE': '', 
+        'QSLRDATE': '', 
+        'QSLSDATE': '', 
+        'EQSLRDATE': '', 
+        'EQSLSDATE': '', 
+        'LOTWRDATE': '', 
+        'LOTWSDATE': '', 
+        'QSL_VIA': '', 
+        'NOTES': '', 
+        'SRX': '', 
+        'STX': '000', 
+        'SRX_STRING': '', 
+        'STX_STRING': 'CA', 
+
+
+        'SRX': '666', 
+        'STX': '000', 
+        'SRX_STRING': '', 
+        'STX_STRING': 'CA',
+
+        'SRX': '004', 'STX': '000', 'SRX_STRING': '', 'STX_STRING': '#',
+
+        'CLASS': '', 
+        'ARRL_SECT': '', 
+        'OPERATOR': 'K6GTE', 
+        'STATION_CALLSIGN': 'K6GTE', 
+        'MY_GRIDSQUARE': 'DM13AT', 
+        'MY_CITY': 'ANAHEIM, CA', 
+        'CHECK': '', 
+        'AGE': '', 
+        'TEN_TEN': '', 
+        'CWSS_PREC': '', 
+        'CWSS_SECTION': '', 
+        'CWSS_SERNO': '', 
+        'CWSS_CHK': ''
+    }
 
     """
     logger.debug(f"{the_packet=}")
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
-        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
-        ALTEREGO.contact["Exchange1"] = the_packet.get("CLASS", "ERR")
-        ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "599")
+        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "599")
+
+        sent_string = the_packet.get("STX_STRING", "")
+        if sent_string != "":
+            ALTEREGO.contact["SentNr"] = sent_string
+            ALTEREGO.other_1.setText(str(sent_string))
+        else:
+            ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")
+            ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))
+
+        rx_string = the_packet.get("STATE", "")
+        if rx_string != "":
+            ALTEREGO.contact["NR"] = rx_string
+            ALTEREGO.other_2.setText(str(rx_string))
+        else:
+            ALTEREGO.contact["NR"] = the_packet.get("SRX", "000")
+            ALTEREGO.other_2.setText(str(the_packet.get("SRX", "000")))
+
         ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
@@ -616,6 +664,5 @@ def ft8_handler(the_packet: dict):
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
         logger.debug(f"{ALTEREGO.contact=}")
-        ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
-        ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
+
         ALTEREGO.save_contact()

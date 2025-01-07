@@ -209,6 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [25-1-6] Altered RTTY RU UDP ADIF parse.
 - [25-1-1] Added ARRL RTTY RU.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
