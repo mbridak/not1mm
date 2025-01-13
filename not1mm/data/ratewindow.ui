@@ -13,10 +13,11 @@
   <property name="font">
    <font>
     <family>JetBrains Mono ExtraLight</family>
+    <pointsize>10</pointsize>
    </font>
   </property>
   <property name="windowTitle">
-   <string>DockWidget</string>
+   <string>RateWindow</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <property name="sizePolicy">
