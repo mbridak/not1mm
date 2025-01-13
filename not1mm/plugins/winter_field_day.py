@@ -330,6 +330,8 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
+                if themode == "RTTY":
+                    themode = "DG"
                 frequency = str(int(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
