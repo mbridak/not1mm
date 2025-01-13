@@ -73,6 +73,7 @@ from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
+from not1mm.ratewindow import RateWindow
 from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
 from not1mm.lookupservice import LookupService
@@ -136,6 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "bandmapwindow": False,
         "checkwindow": False,
         "vfowindow": False,
+        "ratewindow": False,
         "darkmode": True,
     }
     appstarted = False
@@ -236,6 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
+        self.actionRate_Window.triggered.connect(self.launch_rate_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
@@ -642,6 +645,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.check_window.hide()
         self.check_window.message.connect(self.dockwidget_message)
 
+        self.show_splash_msg("Setting up RateWindow.")
+        self.rate_window = RateWindow()
+        self.rate_window.setObjectName("rate-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.rate_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rate_window)
+        self.rate_window.hide()
+        self.rate_window.message.connect(self.dockwidget_message)
+
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
@@ -691,6 +703,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.check_window.hide()
             self.check_window.setActive(False)
+
+        self.actionRate_Window.setChecked(self.pref.get("ratewindow", False))
+        if self.actionRate_Window.isChecked():
+            print(f"===============ratewindow=============")
+            self.rate_window.show()
+            self.rate_window.setActive(True)
+        else:
+            self.rate_window.hide()
+            self.rate_window.setActive(False)
 
         self.actionVFO.setChecked(self.pref.get("vfowindow", False))
         if self.actionVFO.isChecked():
@@ -1840,6 +1861,17 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.check_window.hide()
             self.check_window.setActive(False)
+
+    def launch_rate_window(self) -> None:
+        """Launch the check window"""
+        self.pref["ratewindow"] = self.actionRate_Window.isChecked()
+        self.write_preference()
+        if self.actionRate_Window.isChecked():
+            self.rate_window.show()
+            self.rate_window.setActive(True)
+        else:
+            self.rate_window.hide()
+            self.rate_window.setActive(False)
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""

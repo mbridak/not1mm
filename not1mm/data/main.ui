@@ -1513,6 +1513,7 @@
     <addaction name="actionLog_Window"/>
     <addaction name="actionBandmap"/>
     <addaction name="actionCheck_Window"/>
+    <addaction name="actionRate_Window"/>
     <addaction name="actionVFO"/>
    </widget>
    <widget class="QMenu" name="menuOther">
@@ -1954,6 +1955,19 @@
    </property>
    <property name="text">
     <string>Check Partial</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono ExtraLight</family>
+    </font>
+   </property>
+  </action>
+  <action name="actionRate_Window">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rate Window</string>
    </property>
    <property name="font">
     <font>
