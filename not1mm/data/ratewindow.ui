@@ -13,7 +13,6 @@
   <property name="font">
    <font>
     <family>JetBrains Mono ExtraLight</family>
-    <pointsize>10</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -83,6 +82,45 @@
            <height>0</height>
           </size>
          </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="Text">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Last Hour:</string>
          </property>
@@ -106,7 +144,7 @@
           </size>
          </property>
          <property name="text">
-          <string>2 Q/h</string>
+          <string>0 Q/h</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -115,6 +153,33 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_4">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>10 Last QSO:</string>
          </property>
@@ -147,6 +212,33 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_6">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>100 Last QSO:</string>
          </property>
@@ -179,6 +271,33 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="starttime">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Since 1400z:</string>
          </property>
@@ -202,7 +321,7 @@
           </size>
          </property>
          <property name="text">
-          <string>2 QSO</string>
+          <string>0 QSO</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -240,6 +359,33 @@
            <height>0</height>
           </size>
          </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Time ON:</string>
          </property>
@@ -257,7 +403,7 @@
           </size>
          </property>
          <property name="text">
-          <string>00:14</string>
+          <string>00:00</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -266,6 +412,33 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_12">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Time off:</string>
          </property>
@@ -283,7 +456,7 @@
           </size>
          </property>
          <property name="text">
-          <string>13586:07</string>
+          <string>00:00</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -324,6 +497,33 @@
            <height>0</height>
           </size>
          </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Run QSO:</string>
          </property>
@@ -341,7 +541,7 @@
           </size>
          </property>
          <property name="text">
-          <string>5</string>
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -350,6 +550,33 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_16">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>S&amp;P QSO:</string>
          </property>
@@ -367,7 +594,7 @@
           </size>
          </property>
          <property name="text">
-          <string>4</string>
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -376,6 +603,33 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_18">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Hour Run QSO:</string>
          </property>
@@ -402,6 +656,33 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_17">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Hour S&amp;P QSO:</string>
          </property>
@@ -419,7 +700,7 @@
           </size>
          </property>
          <property name="text">
-          <string>2</string>
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -441,7 +722,7 @@
      <item>
       <widget class="QLabel" name="band_mode">
        <property name="text">
-        <string>Band: 144 - Mode: CW 30 WPM</string>
+        <string>Band: 144 - Mode: CW 00 WPM</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -473,6 +754,33 @@
            <height>0</height>
           </size>
          </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Average km:</string>
          </property>
@@ -490,7 +798,7 @@
           </size>
          </property>
          <property name="text">
-          <string>508 km </string>
+          <string>0 km </string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -499,6 +807,33 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_25">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Average pts:</string>
          </property>
@@ -516,7 +851,7 @@
           </size>
          </property>
          <property name="text">
-          <string>508 pts</string>
+          <string>0 pts</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -590,6 +925,33 @@
            <height>0</height>
           </size>
          </property>
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>Time by mult:</string>
          </property>
@@ -622,6 +984,33 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_32">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>1 QSO Counts:</string>
          </property>
@@ -648,6 +1037,33 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_34">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>1 Mult Counts:</string>
          </property>
@@ -658,6 +1074,33 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_35">
+         <property name="palette">
+          <palette>
+           <active>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </active>
+           <inactive>
+            <colorrole role="WindowText">
+             <brush brushstyle="SolidPattern">
+              <color alpha="255">
+               <red>245</red>
+               <green>194</green>
+               <blue>17</blue>
+              </color>
+             </brush>
+            </colorrole>
+           </inactive>
+           <disabled/>
+          </palette>
+         </property>
          <property name="text">
           <string>1 Mult Worth:</string>
          </property>
@@ -713,7 +1156,7 @@
      <item>
       <widget class="QLabel" name="label_38">
        <property name="text">
-        <string>CW 30 WPM	R11</string>
+        <string>CW 00 WPM	R11</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
