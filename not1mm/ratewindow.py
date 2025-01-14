@@ -9,13 +9,15 @@ Purpose: not sure yet
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, line-too-long
 
+import datetime
+import time
 import logging
 import os
 
 from PyQt6 import uic
-from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
+from PyQt6.QtWidgets import QLabel, QWidget, QDockWidget
 from PyQt6.QtGui import QMouseEvent, QColorConstants, QPalette, QColor
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QTimer
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -33,6 +35,7 @@ class RateWindow(QDockWidget):
     message = pyqtSignal(dict)
     dbname = None
     pref = {}
+    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
     def __init__(self):
         super().__init__()
@@ -45,6 +48,9 @@ class RateWindow(QDockWidget):
         self.database.current_contest = self.pref.get("contest", 0)
 
         uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.get_run_and_total_qs)
+        self.timer.start(1000)
 
     def msg_from_main(self, packet):
         """"""
@@ -128,3 +134,41 @@ class RateWindow(QDockWidget):
         except (IOError, JSONDecodeError) as exception:
             logger.critical("Error: %s", exception)
         self.setDarkMode(self.pref.get("darkmode", False))
+
+    def get_run_and_total_qs(self):
+        """get numbers"""
+
+        # last_hour
+        # 10_last_qso
+        # hundred_last_qso
+        # since_starttime
+        # --------------------
+        # time_on
+        # time_off
+        # --------------------
+        # run_qso
+        # sandp_qso
+        # hour_run_qso
+        # hour_sandp_qso
+        # --------------------
+        # avg_km
+        # avg_pts
+        # --------------------
+        # time_by_mult
+        # qso_counts
+        # mult_counts
+        # mult_worth
+        # {'runs': 3, 'totalqs': 3}
+
+        # WHERE datetime(timestamp) > datetime(current_timestamp, '-60 minutes')
+        if self.active:
+            query = f"select sum(IsRunQSO) as runs, count(*) as totalqs from dxlog where ContestNR = {self.database.current_contest};"
+            result = self.database.exec_sql(query)
+            sandp = result.get("totalqs", 0) - result.get("runs", 0)
+            self.run_qso.setText(f"{result.get("runs", 0)}")
+            self.sandp_qso.setText(f"{sandp}")
+            self.qso_counts.setText(f"{result.get("totalqs", 0)} pts")
+
+            query = f"select count(*) as totalqs from dxlog where ContestNR = {self.database.current_contest} and datetime(TS) > datetime(current_timestamp, '-60 minutes');"
+            result = self.database.exec_sql(query)
+            self.last_hour.setText(f"{result.get("totalqs", 0)} Q/h")
