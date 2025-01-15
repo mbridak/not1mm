@@ -164,11 +164,44 @@ class RateWindow(QDockWidget):
         if self.active:
             query = f"select sum(IsRunQSO) as runs, count(*) as totalqs from dxlog where ContestNR = {self.database.current_contest};"
             result = self.database.exec_sql(query)
-            sandp = result.get("totalqs", 0) - result.get("runs", 0)
-            self.run_qso.setText(f"{result.get("runs", 0)}")
-            self.sandp_qso.setText(f"{sandp}")
-            self.qso_counts.setText(f"{result.get("totalqs", 0)} pts")
+            try:
+                sandp = result.get("totalqs", 0) - result.get("runs", 0)
+                self.run_qso.setText(f"{result.get("runs", 0)}")
+                self.sandp_qso.setText(f"{sandp}")
+                self.qso_counts.setText(f"{result.get("totalqs", 0)} pts")
+            except TypeError:
+                ...
 
             query = f"select count(*) as totalqs from dxlog where ContestNR = {self.database.current_contest} and datetime(TS) > datetime(current_timestamp, '-60 minutes');"
             result = self.database.exec_sql(query)
             self.last_hour.setText(f"{result.get("totalqs", 0)} Q/h")
+
+            query = f"SELECT (julianday(MAX(ts)) -  julianday(MIN(ts))) * 24 * 60 as timespan, count(*) as items FROM DXLOG where ContestNR = {self.database.current_contest} ORDER by ts DESC limit 10;"
+            result = self.database.exec_sql(query)
+            print(f"{result=}\n{query=}")
+            # timespan items
+            if result.get("items", 0) < 2:
+                self.ten_last_qso.setText(str(f"{result.get("items", 0)} Q/h"))
+            else:
+                try:
+                    perhour = (60.0 / result.get("timespan", 60)) * result.get(
+                        "items", 0
+                    )
+                    self.ten_last_qso.setText(str(f"{perhour:.2f} Q/h"))
+                except (ZeroDivisionError, TypeError):
+                    ...
+
+            query = f"SELECT (julianday(MAX(ts)) -  julianday(MIN(ts))) * 24 * 60 as timespan, count(*) as items FROM DXLOG where ContestNR = {self.database.current_contest} ORDER by ts DESC limit 100;"
+            result = self.database.exec_sql(query)
+            print(f"{result=}\n{query=}")
+            # timespan items
+            if result.get("items", 0) < 2:
+                self.hundred_last_qso.setText(str(f"{result.get("items", 0)} Q/h"))
+            else:
+                try:
+                    perhour = (60.0 / result.get("timespan", 60)) * result.get(
+                        "items", 0
+                    )
+                    self.hundred_last_qso.setText(str(f"{perhour:.2f} Q/h"))
+                except (ZeroDivisionError, TypeError):
+                    ...
