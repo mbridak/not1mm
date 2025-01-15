@@ -248,7 +248,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLabel" name="hudred_last_qso">
+        <widget class="QLabel" name="hundred_last_qso">
          <property name="minimumSize">
           <size>
            <width>0</width>
