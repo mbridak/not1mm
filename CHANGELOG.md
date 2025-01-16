@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-1-15] Fix bug in ADIF output where mode showed as CW-R and not CW.
 - [25-1-6] Altered RTTY RU UDP ADIF parse.
 - [25-1-1] Added ARRL RTTY RU.
 - [24-12-29] Add {LOGIT} macro.
