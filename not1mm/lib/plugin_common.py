@@ -89,7 +89,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 hisname = contact.get("Name", "")
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode == "CWR":
+                if themode in ("CWR", "CW-R"):
                     themode = "CW"
                 if cabrillo_name in ("CQ-WW-RTTY", "WEEKLY-RTTY"):
                     themode = "RTTY"
