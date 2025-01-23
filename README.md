@@ -20,7 +20,6 @@
     - [The What](#the-what)
     - [Target Environment](#target-environment)
     - [The Why](#the-why)
-    - [General logging](#general-logging)
   - [Current state](#current-state)
     - [Code maturity](#code-maturity)
     - [Data and RTTY](#data-and-rtty)
@@ -132,11 +131,6 @@ And being a Gentleman of Leisure, needed something to do in my free time.
 I'm a casual contester and could not find any contesting software for Linux that
 I wanted to use. There is [Tucnak](http://tucnak.nagano.cz/) which is very robust
 and mature. It just wasn't for me.
-
-### General logging
-
-In short... Don't. There are much better general purpose QSO logging programs.
-Try QLog or CQRLog.
 
 ## Current state
 
