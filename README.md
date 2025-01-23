@@ -83,6 +83,7 @@
       - [Editing a contact](#editing-a-contact)
     - [The Bandmap Window](#the-bandmap-window)
     - [The Check Window](#the-check-window)
+    - [The Rate Window](#the-rate-window)
     - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
@@ -203,6 +204,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [25-1-23] Added a basic rate window. Changed DB to WAL mode.
 - [25-1-15] Fix bug in ADIF output where mode showed as CW-R and not CW.
 - [25-1-6] Altered RTTY RU UDP ADIF parse.
 - [25-1-1] Added ARRL RTTY RU.
@@ -769,6 +771,14 @@ matches of any length appearing anywhere in the string.
 Clicking on any of these items will change the callsign field.
 
 ![Check Window](https://github.com/mbridak/not1mm/raw/master/pic/checkwindow.png)
+
+### The Rate Window
+
+`Window`>`Rate Window`
+
+This window contains QSO rates and counts.
+
+![Rate Window](https://github.com/mbridak/not1mm/raw/master/pic/rate_window.png)
 
 ### The Remote VFO Window
 
