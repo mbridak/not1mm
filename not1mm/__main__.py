@@ -182,6 +182,7 @@ class MainWindow(QtWidgets.QMainWindow):
     check_window = None
     bandmap_window = None
     vfo_window = None
+    rate_window = None
     lookup_service = None
     fldigi_util = None
     rtc_service = None
@@ -706,7 +707,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionRate_Window.setChecked(self.pref.get("ratewindow", False))
         if self.actionRate_Window.isChecked():
-            print(f"===============ratewindow=============")
             self.rate_window.show()
             self.rate_window.setActive(True)
         else:
@@ -987,6 +987,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_window.msg_from_main(cmd)
         if self.vfo_window:
             self.vfo_window.msg_from_main(cmd)
+        if self.rate_window:
+            self.rate_window.msg_from_main(cmd)
 
         if setdarkmode:
             darkPalette = QPalette()
@@ -1326,6 +1328,8 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["cmd"] = "NEWDB"
             if self.log_window:
                 self.log_window.msg_from_main(cmd)
+            if self.rate_window:
+                self.rate_window.msg_from_main(cmd)
             self.clearinputs()
             self.edit_station_settings()
 
@@ -1363,6 +1367,8 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["cmd"] = "NEWDB"
             if self.log_window:
                 self.log_window.msg_from_main(cmd)
+            if self.rate_window:
+                self.rate_window.msg_from_main(cmd)
             self.clearinputs()
             self.open_contest()
 
@@ -1653,6 +1659,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["cmd"] = "NEWDB"
                 if self.log_window:
                     self.log_window.msg_from_main(cmd)
+                if self.rate_window:
+                    self.rate_window.msg_from_main(cmd)
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
