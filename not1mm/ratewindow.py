@@ -63,8 +63,7 @@ class RateWindow(QDockWidget):
             return
 
         if packet.get("cmd", "") == "NEWDB":
-            ...
-            # self.load_new_db()
+            self.load_pref()
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
@@ -169,9 +168,10 @@ class RateWindow(QDockWidget):
         # Get Q's in the 60 Minutes
         query = f"select (julianday(MAX(ts)) -  julianday(MIN(ts))) * 24 * 60 as timespan, count(*) as items from (select * from dxlog where ContestNR = {self.database.current_contest} and datetime(TS) > datetime(current_timestamp, '-60 minutes'));"
         result = self.database.exec_sql(query)
-
         if result.get("items", 0) < 1:
             self.last_hour.setText("--- Q/h")
+        elif result.get("items", 0) == 1:
+            self.last_hour.setText("1 Q/h")
         else:
             try:
                 perhour = (60.0 / result.get("timespan", 60)) * result.get("items", 0)
