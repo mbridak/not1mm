@@ -179,6 +179,7 @@ class DataBase:
                     ");"
                 )
                 cursor.execute(sql_command)
+                cursor.execute("PRAGMA journal_mode=WAL")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -222,6 +223,7 @@ class DataBase:
                     ");"
                 )
                 cursor.execute(sql_command)
+                cursor.execute("PRAGMA journal_mode=WAL")
                 conn.commit()
 
                 sql_command = "select * from Contest;"
@@ -271,6 +273,7 @@ class DataBase:
                     "TimeCategory NVARCHAR(20));"
                 )
                 cursor.execute(sql_command)
+                cursor.execute("PRAGMA journal_mode=WAL")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -310,6 +313,7 @@ class DataBase:
                     "PRIMARY KEY([Call]));"
                 )
                 cursor.execute(sql_command)
+                cursor.execute("PRAGMA journal_mode=WAL")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
