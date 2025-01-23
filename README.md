@@ -210,7 +210,7 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Flatpak
 
-I've tried for a couple days to get not1mm to build as a flatpak. I've failed.
+I've tried for a couple days to get Not1MM to build as a flatpak. I've failed.
 It keeps failing at building numpy. If you happen to be a flatpak savant, please
 feel free to look at com.github.mbridak.not1mm.yaml and python3-modules.yaml and
 clue me into the black magic needed to get it to work.
@@ -219,7 +219,7 @@ clue me into the black magic needed to get it to work.
 
 ### Prerequisites
 
-not1mm requires:
+Not1MM requires:
 
 - Python 3.9+
 - PyQt6
@@ -231,7 +231,7 @@ You should install these through your distribution's package manager before cont
 ### Common installation recipes for Ubuntu and Fedora
 
 I've taken the time to install some common Linux distributions into a VM and
-noted the minimum steps needed to install not1mm.
+noted the minimum steps needed to install Not1MM.
 
 <details>
 
@@ -355,14 +355,14 @@ python3 -m pipx ensurepath
 
 #### Installing with pipx
 
-Then installing not1mm is as simple as:
+Then installing Not1MM is as simple as:
 
 ```bash
 # Install not1mm
 pipx install not1mm
 ```
 
-If you need to later update not1mm, you can do so with:
+If you need to later update Not1MM, you can do so with:
 
 ```bash
 # Update not1mm
@@ -385,7 +385,7 @@ source rebuild.sh
 ```
 
 from the root directory. This installs a build chain and a local editable copy
-of not1mm.
+of Not1MM.
 
 There's two ways to launch the program from the local editable copy.
 
@@ -588,14 +588,10 @@ On the Options TAB you can:
 
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
-not1mm listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
-No setup is needed to be done on not1mm's side. That's good because I'm lazy.
+Not1MM listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237.
+No setup is needed to be done on Not1MM's side. That's good because I'm lazy.
 
-~~not1mm polls for fldigi QSOs via it's XMLRPC interface. It does this in a rather stupid
-way. It just keeps asking what was the last QSO and compares it to the previous response.
-If it's different, it's new.~~
-
-not1mm watches for fldigi qso's by watching for UDP traffic from fldigi on 127.0.0.1:9876.
+Not1MM watches for fldigi qso's by watching for UDP traffic from fldigi on 127.0.0.1:9876.
 
 ![fldigi configuration dialog](https://github.com/mbridak/not1mm/blob/master/pic/fldigi_adif_udp.png?raw=true)
 
