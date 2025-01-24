@@ -10,13 +10,12 @@ Purpose: not sure yet
 # pylint: disable=logging-fstring-interpolation, line-too-long
 
 import datetime
-import time
 import logging
 import os
 
 from PyQt6 import uic
-from PyQt6.QtWidgets import QLabel, QWidget, QDockWidget
-from PyQt6.QtGui import QMouseEvent, QColorConstants, QPalette, QColor
+from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtCore import pyqtSignal, QTimer
 
 import not1mm.fsutils as fsutils
@@ -24,7 +23,6 @@ from not1mm.lib.database import DataBase
 
 from json import loads
 from json.decoder import JSONDecodeError
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
