@@ -217,9 +217,9 @@ class RateWindow(QDockWidget):
         result = self.database.exec_sql(query)
         try:
             sandp = result.get("totalqs", 0) - result.get("runs", 0)
-            self.run_qso.setText(f"{result.get("runs", 0)}")
+            self.run_qso.setText(f"{result.get('runs', 0)}")
             self.sandp_qso.setText(f"{sandp}")
-            self.qso_counts.setText(f"{result.get("totalqs", 0)} pts")
+            self.qso_counts.setText(f"{result.get('totalqs', 0)} pts")
         except TypeError:
             ...
 
@@ -228,7 +228,7 @@ class RateWindow(QDockWidget):
         result = self.database.exec_sql(query)
         try:
             sandp = result.get("totalqs", 0) - result.get("runs", 0)
-            self.hour_run_qso.setText(f"{result.get("runs", 0)}")
+            self.hour_run_qso.setText(f"{result.get('runs', 0)}")
             self.hour_sandp_qso.setText(f"{sandp}")
         except TypeError:
             ...
