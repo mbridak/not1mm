@@ -398,7 +398,7 @@ def recalculate_mults(self):
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
         cmd["station"] = platform.node()
-        self.multicast_interface.send_as_json(cmd)
+        # self.multicast_interface.send_as_json(cmd)
 
 
 def set_self(the_outie):
