@@ -387,8 +387,8 @@ def recalculate_mults(self):
         self.database.change_contact(contact)
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
-        cmd["station"] = platform.node()
-        # self.multicast_interface.send_as_json(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
