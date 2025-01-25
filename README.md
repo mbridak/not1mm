@@ -244,8 +244,6 @@ noted the minimum steps needed to install Not1MM.
 #### Ubuntu 22.04 LTS
 
 ```bash
-sudo apt update
-sudo apt upgrade
 sudo apt install -y python3-pip python3-numpy libxcb-cursor0 libportaudio2
 python3 -m pip install -U pip
 # Logout and back in
@@ -256,8 +254,6 @@ pip3 install not1mm
 #### Ubuntu 23.04
 
 ```bash
-sudo apt update
-sudo apt upgrade
 sudo apt install -y libportaudio2 pipx libxcb-cursor0
 pipx install not1mm
 pipx ensurepath
@@ -266,11 +262,9 @@ pipx ensurepath
 #### Ubuntu 24.04 LTS
 
 ```bash
-sudo apt update
-sudo apt upgrade
-sudo apt install -y libportaudio2 pyqt6-dev-tools python3-pip
-pip install --break-system-packages not1mm
-source .profile
+sudo apt install -y pipx libportaudio2 libxcb-cursor0
+pipx install not1mm
+pipx ensurepath
 ```
 
 </details>
