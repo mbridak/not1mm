@@ -62,6 +62,11 @@ class RateWindow(QDockWidget):
 
         if packet.get("cmd", "") == "NEWDB":
             self.load_pref()
+            self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+                "current_database", "ham.db"
+            )
+            self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
+            self.database.current_contest = self.pref.get("contest", 0)
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
