@@ -204,6 +204,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [25-1-25] Fix app not following radio mode. Fix crash on recalc mults.
 - [25-1-24] Fix mismatched quotes causing crash.
 - [25-1-23] Added a basic rate window. Changed DB to WAL mode.
 - [25-1-15] Fix bug in ADIF output where mode showed as CW-R and not CW.
