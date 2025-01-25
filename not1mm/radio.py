@@ -35,7 +35,7 @@ class Radio(QObject):
     host = None
     port = None
     modes = ""
-    cw_list = ["CW", "CW-L", "CW-U", "CWR"]
+    cw_list = ["CW", "CW-L", "CW-U", "CWR", "CW-R"]
     rtty_list = [
         "RTTY",
         "DIGI-L",
