@@ -646,3 +646,22 @@ def get_mults(self):
 def just_points(self):
     """Get points for RTC XML"""
     return get_points(self)
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Exch1', '')}")
