@@ -204,6 +204,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [25-1-25-2] Add call history to REF CW and SSB.
 - [25-1-25-1] Fix:ratewindow failed to change stats when contest changed.
 - [25-1-25] Fix app not following radio mode. Fix crash on recalc mults.
 - [25-1-24] Fix mismatched quotes causing crash.
