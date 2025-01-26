@@ -204,6 +204,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes (Polishing the Turd)
 
+- [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
 - [25-1-25-2] Add call history to REF CW and SSB.
 - [25-1-25-1] Fix:ratewindow failed to change stats when contest changed.
 - [25-1-25] Fix app not following radio mode. Fix crash on recalc mults.
@@ -637,6 +638,11 @@ You can include a limited set of substitution instructions.
 | {SENTNR} | Sends whats in the SentNR field. |
 | {EXCH} | Sends what's in the Sent Exchange field when contest is defined. |
 | {LOGIT} | Log the contact after macro pressed. |
+| {MARK} | Mark the current call in the bandmap. |
+| {SPOT} | Spot the current call to the cluster. |
+| {RUN} | Change to Run mode. |
+| {SANDP} | Change to S&P mode. |
+| {WIPE} | Wipe input fields. |
 | '#' | Sends serial number. |
 
 ### Macro use with voice

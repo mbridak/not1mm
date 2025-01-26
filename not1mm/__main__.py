@@ -2774,6 +2774,23 @@ class MainWindow(QtWidgets.QMainWindow):
         if "{LOGIT}" in macro:
             macro = macro.replace("{LOGIT}", "")
             self.save_contact()
+        if "{MARK}" in macro:
+            macro = macro.replace("{MARK}", "")
+            self.mark_spot()
+        if "{SPOT}" in macro:
+            macro = macro.replace("{SPOT}", "")
+            self.spot_dx()
+        if "{RUN}" in macro:
+            macro = macro.replace("{RUN}", "")
+            self.radioButton_run.setChecked(True)
+            self.run_sp_buttons_clicked()
+        if "{SANDP}" in macro:
+            macro = macro.replace("{SANDP}", "")
+            self.radioButton_sp.setChecked(True)
+            self.run_sp_buttons_clicked()
+        if "{WIPE}" in macro:
+            macro = macro.replace("{WIPE}", "")
+            self.clearinputs()
         return macro
 
     def ptt_on(self) -> None:
