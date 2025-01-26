@@ -755,8 +755,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     if "!!Order!!" in lines[0]:
                         item_names = lines[0].strip().split(",")
                         # ['!!Order!!', 'Call', 'Sect', 'State', 'CK', 'UserText', '']
-                        item_names = item_names[1:-1]
-                        # ['Call', 'Sect', 'State', 'CK', 'UserText']
+                        item_names = item_names[1:]
+                        # ['Call', 'Sect', 'State', 'CK', 'UserText', '']
                         lines = lines[1:]
                         group_list = []
                         for line in lines:
