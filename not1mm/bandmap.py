@@ -724,7 +724,7 @@ class BandMapWindow(QDockWidget):
             for items in result:
                 pen_color = self.text_color
                 if items.get("comment") == "MARKED":
-                    pen_color = QColor(47, 47, 255)
+                    pen_color = QColor(254, 194, 17)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:
