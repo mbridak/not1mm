@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-1-27-1] Add LABRE-RS Digi
 - [25-1-27] Update pop up about updates...
 - [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
 - [25-1-25-2] Add call history to REF CW and SSB.
