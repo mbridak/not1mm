@@ -15,22 +15,22 @@
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
 - [Not1MM](#not1mm)
-  - [What and why is Not1MM](#what-and-why-is-not1mm)
-    - [The elephant in the room](#the-elephant-in-the-room)
+  - [What and Why is Not1MM](#what-and-why-is-not1mm)
+    - [The Elephant in the Room](#the-elephant-in-the-room)
     - [The What](#the-what)
     - [Target Environment](#target-environment)
     - [The Why](#the-why)
-  - [Current state](#current-state)
-    - [Code maturity](#code-maturity)
+  - [Current State](#current-state)
+    - [Code Maturity](#code-maturity)
     - [Data and RTTY](#data-and-rtty)
-    - [Other not so supported contests](#other-not-so-supported-contests)
+    - [Other not so Supported Contests](#other-not-so-supported-contests)
   - [Our Code Contributors ✨](#our-code-contributors-)
-  - [List of should be working contests](#list-of-should-be-working-contests)
-  - [Recent Changes (Polishing the Turd)](#recent-changes-polishing-the-turd)
+  - [List of Should be Working Contests](#list-of-should-be-working-contests)
+  - [Recent Changes](#recent-changes)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
-    - [Common installation recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
+    - [Common Installation Recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
       - [Ubuntu 24.04 LTS](#ubuntu-2404-lts)
@@ -41,8 +41,8 @@
     - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
       - [Bootstrapping pipx](#bootstrapping-pipx)
       - [Installing with pipx](#installing-with-pipx)
-    - [Installing from GitHub source](#installing-from-github-source)
-  - [After the install](#after-the-install)
+    - [Installing from GitHub Source](#installing-from-github-source)
+  - [After the Install](#after-the-install)
     - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
     - [Or this fan favorite](#or-this-fan-favorite)
     - [Update your CTY and SCP files](#update-your-cty-and-scp-files)
@@ -105,9 +105,9 @@
       - [The exchange](#the-exchange)
     - [RAEM](#raem)
 
-## What and why is Not1MM
+## What and Why is Not1MM
 
-### The elephant in the room
+### The Elephant in the Room
 
 Not1MM's interface is a blatant ripoff of N1MM. It is NOT N1MM and any problem
 you have with this software should in no way reflect on their software.
@@ -133,9 +133,9 @@ I'm a casual contester and could not find any contesting software for Linux that
 I wanted to use. There is [Tucnak](http://tucnak.nagano.cz/) which is very robust
 and mature. It just wasn't for me.
 
-## Current state
+## Current State
 
-### Code maturity
+### Code Maturity
 
 The current state is "**BETA**".
 
@@ -152,7 +152,7 @@ Day and ARRL VHF. Found it works better if you don't use FlDigi for making the Q
 Rather just using it as a RTTY modem and sending the text for it to send from Not1MM
 using the function keys or ESM.
 
-### Other not so supported contests
+### Other not so Supported Contests
 
 Of note, state QSO parties. I haven't worked any yet. And no one has submitted a PR
 adding one... So there you go. In the near future I'll probably add California, guess
@@ -167,9 +167,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   <img src="https://contrib.rocks/image?repo=mbridak/not1mm" alt="Avatar icons for code contributors." />
 </a>
 
-## List of should be working contests
+## List of Should be Working Contests
 
-- General Logging (There are better general loggers like QLog, KLog, CQRLog)
+- General Logging
 - 10 10 Fall CW
 - 10 10 Spring CW
 - 10 10 Summer Phone
@@ -202,7 +202,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - Weekly RTTY
 - Winter Field Day
 
-## Recent Changes (Polishing the Turd)
+## Recent Changes
 
 - [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
 - [25-1-25-2] Add call history to REF CW and SSB.
@@ -236,7 +236,7 @@ Not1MM requires:
 
 You should install these through your distribution's package manager before continuing.
 
-### Common installation recipes for Ubuntu and Fedora
+### Common Installation Recipes for Ubuntu and Fedora
 
 I've taken the time to install some common Linux distributions into a VM and
 noted the minimum steps needed to install Not1MM.
@@ -374,7 +374,7 @@ pipx upgrade not1mm
 <details>
 <summary><b>Installing from GitHub source.</b></summary>
 
-### Installing from GitHub source
+### Installing from GitHub Source
 
 Since this is packaged for PyPI, if you want to work on your own source branch,
 after cloning from github you would:
@@ -405,7 +405,7 @@ not1mm
 
 </details>
 
-## After the install
+## After the Install
 
 You can now open a new terminal and type `not1mm`. On it's first run, it may or
 may not install a lovely non AI generated icon, which you can later click on to
