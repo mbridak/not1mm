@@ -364,6 +364,11 @@
      </item>
      <item>
       <property name="text">
+       <string>LABRE RS DIGI</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>LZ-DX</string>
       </property>
      </item>
