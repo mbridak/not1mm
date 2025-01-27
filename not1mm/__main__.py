@@ -725,7 +725,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if VersionTest(__version__).test():
                 self.show_message_box(
                     "There is a newer version of not1mm available.\n"
-                    "You can udate to the current version by using:\npip install -U not1mm"
+                    "You can udate to the current version by using:\n\n"
+                    "pip install -U not1mm\n\tor\n"
+                    "pipx upgrade not1mm"
                 )
 
         self.udp_socket = QtNetwork.QUdpSocket()
