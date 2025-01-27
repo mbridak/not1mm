@@ -192,6 +192,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - ICWC MST
 - Japan International DX CW, SSB
 - K1USN Slow Speed Test
+- Labre RS Digi
 - LZ DX
 - NAQP CW, RTTY, SSB
 - Phone Weekly Test
