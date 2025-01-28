@@ -44,7 +44,7 @@ EXCHANGE_HINT = "4-character grid square"
 
 name = "LABRE-RS Digi"
 mode = "RTTY"  # CW SSB BOTH RTTY
-cabrillo_name = "CQWW-DIGI"
+cabrillo_name = "LABRE-DIGI"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -150,8 +150,9 @@ def points(self):
     # QSO Points:   1 point per QSO
     #               1 additional point per QSO with PY3,PU3,ZZ3,PP3,etc
 
-    if self.contact.get("Call", "") in ["PY3", "PU3", "ZZ3", "PP3"]:
-        return 2
+    if len(self.contact.get("Call", "")) > 2:
+        if self.contact.get("Call", "")[:3] in ["PY3", "PU3", "ZZ3", "PP3", "PX3"]:
+            return 2
     return 1
 
 
