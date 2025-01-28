@@ -6,6 +6,7 @@ import logging
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
@@ -183,18 +184,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-#        elif self.current_widget in ["other_1", "other_2"]:
-#            if self.other_2.text() == "" and self.other_1.text() == "":
-#                self.make_button_green(self.esm_dict["AGN"])
-#                buttons_to_send.append(self.esm_dict["AGN"])
-#            else:
-#                self.make_button_green(self.esm_dict["QRZ"])
-#                buttons_to_send.append(self.esm_dict["QRZ"])
-#                buttons_to_send.append("LOGIT")
+        #        elif self.current_widget in ["other_1", "other_2"]:
+        #            if self.other_2.text() == "" and self.other_1.text() == "":
+        #                self.make_button_green(self.esm_dict["AGN"])
+        #                buttons_to_send.append(self.esm_dict["AGN"])
+        #            else:
+        #                self.make_button_green(self.esm_dict["QRZ"])
+        #                buttons_to_send.append(self.esm_dict["QRZ"])
+        #                buttons_to_send.append("LOGIT")
 
         elif self.current_widget in ["other_1", "other_2"]:
             buttons_to_send.append("LOGIT")
-
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -209,18 +209,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-#        elif self.current_widget in ["other_1", "other_2"]:
-#            if self.other_2.text() == "" and self.other_1.text() == "":
-#                self.make_button_green(self.esm_dict["AGN"])
-#                buttons_to_send.append(self.esm_dict["AGN"])
-#            else:
-#                self.make_button_green(self.esm_dict["EXCH"])
-#                buttons_to_send.append(self.esm_dict["EXCH"])
-#                buttons_to_send.append("LOGIT")
+        #        elif self.current_widget in ["other_1", "other_2"]:
+        #            if self.other_2.text() == "" and self.other_1.text() == "":
+        #                self.make_button_green(self.esm_dict["AGN"])
+        #                buttons_to_send.append(self.esm_dict["AGN"])
+        #            else:
+        #                self.make_button_green(self.esm_dict["EXCH"])
+        #                buttons_to_send.append(self.esm_dict["EXCH"])
+        #                buttons_to_send.append("LOGIT")
 
         elif self.current_widget in ["other_1", "other_2"]:
             buttons_to_send.append("LOGIT")
-
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -248,3 +247,90 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_1.text() == "":
             self.other_1.setText(f"{result.get('Name', '')}")
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+        'FREQ': '7.029500',
+        'CALL': 'DL2DSL',
+        'MODE': 'RTTY',
+        'NAME': 'BOB',
+        'QSO_DATE': '20240904',
+        'QSO_DATE_OFF': '20240904',
+        'TIME_OFF': '212825',
+        'TIME_ON': '212800',
+        'RST_RCVD': '599',
+        'RST_SENT': '599',
+        'BAND': '40M',
+        'COUNTRY': 'FED. REP. OF GERMANY',
+        'CQZ': '14',
+        'STX': '000',
+        'STX_STRING': '1D ORG',
+        'CLASS': '1D',
+        'ARRL_SECT': 'DX',
+        'TX_PWR': '0',
+        'OPERATOR': 'K6GTE',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'MY_CITY': 'ANAHEIM, CA',
+        'MY_STATE': 'CA'
+    }
+
+    """
+    # print(f"\n{the_packet=}\n")
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        my_grid = the_packet.get("MY_GRIDSQUARE", "")
+        if my_grid:
+            if len(my_grid) > 4:
+                my_grid = my_grid[:4]
+        their_grid = the_packet.get("GRIDSQUARE", "")
+        if their_grid:
+            if len(their_grid) > 4:
+                their_grid = their_grid[:4]
+        ALTEREGO.contact["NR"] = their_grid
+        if the_packet.get("SUBMODE"):
+            ALTEREGO.contact["Mode"] = the_packet.get("SUBMODE", "ERR")
+        else:
+            ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        # print(f"\n{ALTEREGO.contact=}\n")
+        # ALTEREGO.other_1.setText(my_grid)
+        # ALTEREGO.other_2.setText(their_grid)
+        ALTEREGO.save_contact()
