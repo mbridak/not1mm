@@ -308,17 +308,15 @@ def ft8_handler(the_packet: dict):
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
-        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "59")
+        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "59")
         my_grid = the_packet.get("MY_GRIDSQUARE", "")
         if my_grid:
             if len(my_grid) > 4:
                 my_grid = my_grid[:4]
         their_grid = the_packet.get("GRIDSQUARE", "")
         if their_grid:
-            if len(their_grid) > 4:
-                their_grid = their_grid[:4]
-        ALTEREGO.contact["NR"] = their_grid
+            ALTEREGO.contact["GridSquare"] = their_grid
         if the_packet.get("SUBMODE"):
             ALTEREGO.contact["Mode"] = the_packet.get("SUBMODE", "ERR")
         else:
@@ -330,7 +328,4 @@ def ft8_handler(the_packet: dict):
         ALTEREGO.contact["Band"] = get_logged_band(
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
-        # print(f"\n{ALTEREGO.contact=}\n")
-        # ALTEREGO.other_1.setText(my_grid)
-        # ALTEREGO.other_2.setText(their_grid)
         ALTEREGO.save_contact()

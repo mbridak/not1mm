@@ -205,6 +205,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-1-27-3] Add ft8 adif parser to the general logger.
 - [25-1-27-1] Add LABRE-RS Digi
 - [25-1-27] Update pop up about updates...
 - [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
