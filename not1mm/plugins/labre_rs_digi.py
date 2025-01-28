@@ -477,8 +477,8 @@ def ft8_handler(the_packet: dict):
     if ALTEREGO is not None:
         ALTEREGO.callsign.setText(the_packet.get("CALL"))
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
-        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "59")
+        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "59")
         my_grid = the_packet.get("MY_GRIDSQUARE", "")
         if my_grid:
             if len(my_grid) > 4:
