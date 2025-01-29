@@ -806,20 +806,27 @@
        <string>Cluster</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="5" column="0">
-        <spacer name="horizontalSpacer_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="cluster_port_field">
+         <property name="accessibleName">
+          <string>port</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
+         <property name="accessibleDescription">
+          <string>network port of the d x cluster server.</string>
          </property>
-        </spacer>
+        </widget>
        </item>
-       <item row="6" column="1">
+       <item row="4" column="1" colspan="5">
+        <widget class="QLineEdit" name="cluster_filter">
+         <property name="accessibleName">
+          <string>filter</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>cluster filter.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
         <spacer name="verticalSpacer_7">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -832,47 +839,18 @@
          </property>
         </spacer>
        </item>
-       <item row="5" column="4">
-        <spacer name="horizontalSpacer_11">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Port:</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-        </spacer>
+        </widget>
        </item>
-       <item row="5" column="3">
-        <spacer name="horizontalSpacer_9">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="5">
-        <spacer name="horizontalSpacer_10">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="5" column="1">
-        <spacer name="horizontalSpacer_8">
+       <item row="6" column="0">
+        <spacer name="horizontalSpacer_7">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -897,17 +875,20 @@
          </property>
         </spacer>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_21">
-         <property name="text">
-          <string>Mode:</string>
+       <item row="6" column="5">
+        <spacer name="horizontalSpacer_10">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="label_20">
          <property name="text">
           <string>Filter:</string>
@@ -917,15 +898,41 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_8">
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_21">
          <property name="text">
-          <string>Port:</string>
+          <string>Mode:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
+       </item>
+       <item row="6" column="3">
+        <spacer name="horizontalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="6" column="1">
+        <spacer name="horizontalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_5">
@@ -937,27 +944,20 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="5">
-        <widget class="QLineEdit" name="cluster_server_field">
-         <property name="accessibleName">
-          <string>server</string>
+       <item row="6" column="4">
+        <spacer name="horizontalSpacer_11">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="accessibleDescription">
-          <string>address of d x cluster server.</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-        </widget>
+        </spacer>
        </item>
-       <item row="3" column="1" colspan="5">
-        <widget class="QLineEdit" name="cluster_filter">
-         <property name="accessibleName">
-          <string>filter</string>
-         </property>
-         <property name="accessibleDescription">
-          <string>cluster filter.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="2">
+       <item row="5" column="1" colspan="2">
         <widget class="QComboBox" name="cluster_mode">
          <property name="accessibleName">
           <string>mode</string>
@@ -977,13 +977,33 @@
          </item>
         </widget>
        </item>
-       <item row="2" column="1" colspan="2">
-        <widget class="QLineEdit" name="cluster_port_field">
+       <item row="1" column="1" colspan="5">
+        <widget class="QLineEdit" name="cluster_server_field">
          <property name="accessibleName">
-          <string>port</string>
+          <string>server</string>
          </property>
          <property name="accessibleDescription">
-          <string>network port of the d x cluster server.</string>
+          <string>address of d x cluster server.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_29">
+         <property name="text">
+          <string>Password:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="cluster_password_field">
+         <property name="echoMode">
+          <enum>QLineEdit::EchoMode::Password</enum>
+         </property>
+         <property name="placeholderText">
+          <string>Only If Needed</string>
          </property>
         </widget>
        </item>
@@ -1613,7 +1633,7 @@
         <rect>
          <x>5</x>
          <y>25</y>
-         <width>636</width>
+         <width>639</width>
          <height>376</height>
         </rect>
        </property>
