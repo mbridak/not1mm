@@ -164,11 +164,15 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_password_field.setText(
+            str(self.preference.get("cluster_password", ""))
+        )
         self.cluster_filter.setText(self.preference.get("cluster_filter", ""))
         value = self.preference.get("cluster_mode", "")
         index = self.cluster_mode.findText(value)
         if index != -1:
             self.cluster_mode.setCurrentIndex(index)
+
         self.activate_160m.setChecked(bool("160" in self.preference.get("bands", [])))
         self.activate_80m.setChecked(bool("80" in self.preference.get("bands", [])))
         self.activate_60m.setChecked(bool("60" in self.preference.get("bands", [])))
@@ -277,7 +281,11 @@ class Settings(QtWidgets.QDialog):
         self.preference["n1mm_lookupport"] = self.n1mm_lookupport.text()
         self.preference["n1mm_scoreport"] = self.n1mm_scoreport.text()
         self.preference["cluster_server"] = self.cluster_server_field.text()
-        self.preference["cluster_port"] = int(self.cluster_port_field.text())
+        try:
+            self.preference["cluster_port"] = int(self.cluster_port_field.text())
+        except:
+            ...
+        self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
         bandlist = list()

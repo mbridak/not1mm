@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-1-29] Add password field for cluster signin.
 - [25-1-27-3] Add ft8 adif parser to the general logger.
 - [25-1-27-1] Add LABRE-RS Digi
 - [25-1-27] Update pop up about updates...

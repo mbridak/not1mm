@@ -814,6 +814,7 @@ class BandMapWindow(QDockWidget):
         """Process waiting bytes"""
         while self.socket.bytesAvailable():
             data = self.socket.readLine(1000)
+
             try:
                 data = str(data, "utf-8").strip()
             except UnicodeDecodeError:
@@ -821,14 +822,15 @@ class BandMapWindow(QDockWidget):
 
             if "login:" in data or "call:" in data or "callsign:" in data:
                 self.send_command(self.callsignField.text())
-                self.send_command(self.settings.get("cluster_filter", ""))
-                self.send_command("set dx extension Section")
-                self.send_command(
-                    "set dx mode " + self.settings.get("cluster_mode", "OPEN")
-                )
                 return
+
+            if "password:" in data:
+                self.send_command(self.settings.get("cluster_password", ""))
+                return
+
             if "BEACON" in data:
                 return
+
             if "DX de" in data:
                 parts = data.split()
                 spotter = parts[2]
@@ -848,8 +850,14 @@ class BandMapWindow(QDockWidget):
                 except ValueError:
                     logger.debug(f"couldn't parse freq from datablock {data}")
                 return
-            if self.callsignField.text().upper() in data:
+
+            if "HELLO" in data.upper():
                 self.connectButton.setText("Connected")
+                self.send_command(self.settings.get("cluster_filter", ""))
+                self.send_command("set dx extension Section")
+                self.send_command(
+                    "set dx mode " + self.settings.get("cluster_mode", "OPEN")
+                )
                 logger.debug(f"callsign login acknowledged {data}")
 
     def maybeconnected(self) -> None:
