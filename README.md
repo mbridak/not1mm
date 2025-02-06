@@ -205,19 +205,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-1-29] Add password field for cluster signin.
-- [25-1-27-3] Add ft8 adif parser to the general logger.
-- [25-1-27-1] Add LABRE-RS Digi
-- [25-1-27] Update pop up about updates...
-- [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
-- [25-1-25-2] Add call history to REF CW and SSB.
-- [25-1-25-1] Fix:ratewindow failed to change stats when contest changed.
-- [25-1-25] Fix app not following radio mode. Fix crash on recalc mults.
-- [25-1-24] Fix mismatched quotes causing crash.
-- [25-1-23] Added a basic rate window. Changed DB to WAL mode.
-- [25-1-15] Fix bug in ADIF output where mode showed as CW-R and not CW.
-- [25-1-6] Altered RTTY RU UDP ADIF parse.
-- [25-1-1] Added ARRL RTTY RU.
+- [25-2-6] Trimmed out newer tags from UI files, 'cause stuff be old sometimes.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
