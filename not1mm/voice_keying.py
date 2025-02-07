@@ -25,7 +25,7 @@ import soundfile as sf
 
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 
-logger = logging.getLogger("cat_interface")
+logger = logging.getLogger("voice_keying")
 
 
 class Voice(QObject):
