@@ -27,12 +27,6 @@ from shutil import copyfile
 
 import notctyparser
 
-try:
-    import sounddevice as sd
-except OSError as exception:
-    print(exception)
-    print("portaudio is not installed")
-    sd = None
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
 from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
