@@ -6,8 +6,6 @@ from PyQt6 import QtWidgets, uic
 try:
     import sounddevice as sd
 except OSError as exception:
-    print(exception)
-    print("portaudio is not installed")
     sd = None
 
 
