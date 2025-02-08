@@ -663,7 +663,7 @@ Hopefully not in an idiots voice.
 When a callsign is entered, a look up is first done in a cty.dat file to
 determin the country of origin, geographic center, cq zone and ITU region.
 Great circle calculations are done to determin the heading and distance from
-your gridsquare to the grographic center. This information then displayed at the
+your gridsquare to the geographic center. This information then displayed at the
 bottom left.
 
 ![snapshot of heading and distance](https://github.com/mbridak/not1mm/raw/master/pic/heading_distance.png)
