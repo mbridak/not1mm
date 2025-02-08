@@ -655,7 +655,7 @@ files in your own voice.
 Aside from the `[filename]` wav files, there are also NATO phonetic wav files
 for each letter and number. So if your macro key holds
 `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during
-CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3.
+CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9, 3.
 Hopefully not in an idiots voice.
 
 ## cty.dat and QRZ lookups for distance and bearing
