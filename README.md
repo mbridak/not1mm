@@ -197,6 +197,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - NAQP CW, RTTY, SSB
 - Phone Weekly Test
 - RAEM
+- RandomGram
 - RAC Canada Day
 - REF CW, SSB
 - Stew Perry Topband
@@ -205,6 +206,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
 - [25-2-6] Trimmed out newer tags from UI files, 'cause stuff be old sometimes.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
