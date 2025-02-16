@@ -1745,6 +1745,9 @@
      <family>JetBrains Mono ExtraLight</family>
     </font>
    </property>
+   <property name="shortcut">
+    <string>Alt+L</string>
+   </property>
    <property name="autoRepeat">
     <bool>false</bool>
    </property>
@@ -1913,6 +1916,9 @@
      <family>JetBrains Mono ExtraLight</family>
     </font>
    </property>
+   <property name="shortcut">
+    <string>Alt+B</string>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="text">
@@ -1961,6 +1967,9 @@
      <family>JetBrains Mono ExtraLight</family>
     </font>
    </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
+   </property>
   </action>
   <action name="actionRate_Window">
    <property name="checkable">
@@ -1974,6 +1983,9 @@
      <family>JetBrains Mono ExtraLight</family>
     </font>
    </property>
+   <property name="shortcut">
+    <string>Alt+R</string>
+   </property>
   </action>
   <action name="actionVFO">
    <property name="checkable">
@@ -1986,6 +1998,9 @@
     <font>
      <family>JetBrains Mono ExtraLight</family>
     </font>
+   </property>
+   <property name="shortcut">
+    <string>Alt+V</string>
    </property>
   </action>
   <action name="actionDark_Mode_2">
