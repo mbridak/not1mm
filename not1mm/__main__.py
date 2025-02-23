@@ -183,6 +183,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     current_widget = None
 
+    auto_cq = False
+    auto_cq_time = datetime.datetime.now()
+    auto_cq_delay = 15000
+
     def __init__(self, splash):
         super().__init__()
         logger.info("MainWindow: __init__")
@@ -773,8 +777,6 @@ class MainWindow(QtWidgets.QMainWindow):
                                         group[item] = ""
                                     count += 1
                                 group_list.append(group)
-                                # database.add_callhistory_item(group)
-                                # print(f"{group=}")
                             except IndexError:
                                 ...
                         self.database.add_callhistory_items(group_list)
@@ -2024,6 +2026,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def stop_cw(self):
         """"""
+        self.auto_cq = False
         if self.cw is not None:
             if self.cw.servertype == 1:
                 self.cw.sendcw("\x1b4")
@@ -2080,9 +2083,6 @@ class MainWindow(QtWidgets.QMainWindow):
         ABCDEFGHIJKLMNOPQRSTUVWXY
         """
         modifier = event.modifiers()
-        # the_key = event.key()
-
-        # print(f"Modifier is {modifier=} Key is {the_key=}")
 
         if (
             event.key() == Qt.Key.Key_Equal
@@ -2143,16 +2143,17 @@ class MainWindow(QtWidgets.QMainWindow):
             event.key() == Qt.Key.Key_Escape
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
-            if self.cw is not None:
-                if self.cw.servertype == 1:
-                    self.cw.sendcw("\x1b4")
-                    return
-            if self.rig_control:
-                if self.rig_control.online:
-                    if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                        if self.rig_control.interface == "flrig":
-                            self.rig_control.cat.set_flrig_cw_send(False)
-                            self.rig_control.cat.set_flrig_cw_send(True)
+            self.stop_cw()
+            # if self.cw is not None:
+            #     if self.cw.servertype == 1:
+            #         self.cw.sendcw("\x1b4")
+            #         return
+            # if self.rig_control:
+            #     if self.rig_control.online:
+            #         if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+            #             if self.rig_control.interface == "flrig":
+            #                 self.rig_control.cat.set_flrig_cw_send(False)
+            #                 self.rig_control.cat.set_flrig_cw_send(True)
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
@@ -2268,27 +2269,43 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.end(False)
                 return
         if event.key() == Qt.Key.Key_F1:
+            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                self.auto_cq = True
+                self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
+                    milliseconds=self.auto_cq_delay
+                )
             self.process_function_key(self.F1)
+            return
         if event.key() == Qt.Key.Key_F2:
             self.process_function_key(self.F2)
+            return
         if event.key() == Qt.Key.Key_F3:
             self.process_function_key(self.F3)
+            return
         if event.key() == Qt.Key.Key_F4:
             self.process_function_key(self.F4)
+            return
         if event.key() == Qt.Key.Key_F5:
             self.process_function_key(self.F5)
+            return
         if event.key() == Qt.Key.Key_F6:
             self.process_function_key(self.F6)
+            return
         if event.key() == Qt.Key.Key_F7:
             self.process_function_key(self.F7)
+            return
         if event.key() == Qt.Key.Key_F8:
             self.process_function_key(self.F8)
+            return
         if event.key() == Qt.Key.Key_F9:
             self.process_function_key(self.F9)
+            return
         if event.key() == Qt.Key.Key_F10:
             self.process_function_key(self.F10)
+            return
         if event.key() == Qt.Key.Key_F11:
             self.process_function_key(self.F11)
+            return
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
@@ -2991,12 +3008,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rtc_pass = self.pref.get("rtc_pass", "")
         self.rtc_interval = self.pref.get("rtc_interval", 2)
 
+        try:
+            self.auto_cq_delay = int(self.pref.get("auto_cq_interval", 15)) * 1000
+        except ValueError:
+            self.auto_cq_delay = 15000
+
         if self.pref.get("send_rtc_scores", False):
             self.rtc_service = RTCService()
             self.rtc_service.moveToThread(self.rtc_thread)
             self.rtc_thread.started.connect(self.rtc_service.run)
             self.rtc_thread.finished.connect(self.rtc_service.deleteLater)
-            # self.rtc_service.poll_callback.connect(self.rtc_result)
             self.rtc_thread.start()
             self.rtc_service.rtc_callback.connect(self.rtc_response)
 
@@ -3330,6 +3351,8 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+        if self.auto_cq is True:
+            self.stop_cw()
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -3690,6 +3713,12 @@ class MainWindow(QtWidgets.QMainWindow):
         Passing in a dictionary object with the
         vfo freq, mode, bandwidth, and online state of the radio.
         """
+        if self.auto_cq is True:
+            if datetime.datetime.now() > self.auto_cq_time:
+                self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
+                    milliseconds=self.auto_cq_delay
+                )
+                self.process_function_key(self.F1)
         logger.debug(f"{the_dict=}")
         self.set_radio_icon(0)
         info_dirty = False

@@ -52,6 +52,8 @@ class Settings(QtWidgets.QDialog):
         self.rtc_pass.setText(str(self.preference.get("rtc_pass", "")))
         self.rtc_interval.setText(str(self.preference.get("rtc_interval", "2")))
 
+        self.auto_cq_delay.setText(str(self.preference.get("auto_cq_interval", "15")))
+
         self.use_call_history.setChecked(
             bool(self.preference.get("use_call_history", False))
         )
@@ -218,6 +220,13 @@ class Settings(QtWidgets.QDialog):
             self.preference["rtc_interval"] = int(self.rtc_interval.text())
         except ValueError:
             self.preference["rtc_interval"] = 2
+
+        try:
+            self.preference["auto_cq_interval"] = int(self.auto_cq_delay.text())
+        except ValueError:
+            self.preference["auto_cq_interval"] = 15
+
+        self.auto_cq_delay.setText(str(self.preference.get("auto_cq_interval", "15")))
 
         self.preference["use_call_history"] = self.use_call_history.isChecked()
         self.preference["use_esm"] = self.use_esm.isChecked()
