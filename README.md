@@ -71,7 +71,10 @@
     - [Options](#options)
   - [Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts](#logging-wsjt-x-ft8ft4etc-and-fldigi-rtty-contacts)
   - [Sending CW](#sending-cw)
-  - [Editing macro keys](#editing-macro-keys)
+    - [Sending CW Macros](#sending-cw-macros)
+    - [Auto CQ](#auto-cq)
+    - [Sending CW Free Form](#sending-cw-free-form)
+    - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
     - [Macro use with voice](#macro-use-with-voice)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
@@ -206,6 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-2-22] Add Auto CQ.
 - [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
 - [25-2-6] Trimmed out newer tags from UI files, 'cause stuff be old sometimes.
 
@@ -602,15 +606,27 @@ Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 
 ## Sending CW
 
+### Sending CW Macros
+
 Other than sending CW by hand, you can also send predefined CW text messages by
-pressing F1 - F12. See next section on Editing macro keys. 
+pressing F1 - F12. See next section on Editing macro keys.
+
+### Auto CQ
+
+If you press `SHIFT-F1` The Auto CQ mode will be activated and the F1 macro will be resent
+after each Auto CQ Delay interval has passed. The delay can be changed by going to the
+`Options` TAB in the Configuration dialog.
+
+The auto CQ can be cancelled by either typing in the call sign field, or by pressing ESC.
+
+### Sending CW Free Form
 
 If you need to send something freeform, you can press `CTRL-SHIFT-K`, this will
 expose an entry field at the bottom of the window which you can type directly into.
 When you're done you can either press CTRL-SHIFT-K again, or press the Enter Key to
 close the field.
 
-## Editing macro keys
+### Editing macro keys
 
 To edit the macros, choose `File` > `Edit Macros`. This will open your systems
 registered text editor with current macros loaded. When your done just save the
