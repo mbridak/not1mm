@@ -2270,6 +2270,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                self.radioButton_run.setChecked(True)
+                self.run_sp_buttons_clicked()
                 self.auto_cq = True
                 self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
@@ -3713,12 +3715,16 @@ class MainWindow(QtWidgets.QMainWindow):
         Passing in a dictionary object with the
         vfo freq, mode, bandwidth, and online state of the radio.
         """
+        # This section has nothing to do with polling the radio
+        # It's here because it gets called often enough to be useful.
         if self.auto_cq is True:
             if datetime.datetime.now() > self.auto_cq_time:
                 self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
                 )
                 self.process_function_key(self.F1)
+
+        # The following pertains to radio polling.
         logger.debug(f"{the_dict=}")
         self.set_radio_icon(0)
         info_dirty = False

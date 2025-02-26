@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-2-26] Switch to a Run state if engaging auto_cq.
 - [25-2-22] Add Auto CQ.
 - [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
 - [25-2-6] Trimmed out newer tags from UI files, 'cause stuff be old sometimes.
