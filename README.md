@@ -209,6 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-1] Add {OTHER1} and {OTHER2} macros.
 - [25-2-26] Switch to a Run state if engaging auto_cq.
 - [25-2-22] Add Auto CQ.
 - [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
@@ -649,6 +650,8 @@ You can include a limited set of substitution instructions.
 | {SNT} | Sends 5nn (cw) or 599 (ssb) |
 | {SENTNR} | Sends whats in the SentNR field. |
 | {EXCH} | Sends what's in the Sent Exchange field when contest is defined. |
+| {OTHER1} | Sends whats in the SentNR/Name field without altering it. |
+| {OTHER2} | Sends whats in the Comment field without altering it. |
 | {LOGIT} | Log the contact after macro pressed. |
 | {MARK} | Mark the current call in the bandmap. |
 | {SPOT} | Spot the current call to the cluster. |

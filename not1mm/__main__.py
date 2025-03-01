@@ -2773,6 +2773,8 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
+        macro = macro.replace("{OTHER1}", self.other_1.text())
+        macro = macro.replace("{OTHER2}", self.other_2.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
         else:

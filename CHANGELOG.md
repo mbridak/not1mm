@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-3-1] Add {OTHER1} and {OTHER2} macros.
 - [25-2-26] Switch to a Run state if engaging auto_cq.
 - [25-2-22] Add Auto CQ.
 - [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
