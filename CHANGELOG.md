@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
 - [25-3-1] Add {OTHER1} and {OTHER2} macros.
 - [25-2-26] Switch to a Run state if engaging auto_cq.
 - [25-2-22] Add Auto CQ.
