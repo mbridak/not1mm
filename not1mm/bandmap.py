@@ -877,7 +877,6 @@ class BandMapWindow(QDockWidget):
         """Send a command to the cluster."""
         cmd += "\r\n"
         tosend = bytes(cmd, encoding="ascii")
-        logger.debug("%s", f"{tosend}")
         if self.socket:
             if self.socket.isOpen():
                 self.socket.write(tosend)
