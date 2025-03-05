@@ -692,8 +692,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionBandmap.setChecked(self.pref.get("bandmapwindow", False))
         if self.actionBandmap.isChecked():
             self.bandmap_window.show()
+            self.bandmap_window.setActive(True)
         else:
             self.bandmap_window.hide()
+            self.bandmap_window.setActive(False)
 
         self.actionCheck_Window.setChecked(self.pref.get("checkwindow", False))
         if self.actionCheck_Window.isChecked():
@@ -1854,8 +1856,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         if self.actionBandmap.isChecked():
             self.bandmap_window.show()
+            self.bandmap_window.setActive(True)
         else:
             self.bandmap_window.hide()
+            self.bandmap_window.setActive(False)
 
     def launch_check_window(self) -> None:
         """Launch the check window"""
@@ -3733,6 +3737,8 @@ class MainWindow(QtWidgets.QMainWindow):
         vfo = the_dict.get("vfoa", "")
         mode = the_dict.get("mode", "")
         bw = the_dict.get("bw", "")
+        if bw == "NONE":
+            bw = "0"
         online = the_dict.get("online", False)
 
         if online is False:
@@ -3763,7 +3769,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if mode in ("CW", "CW-U", "CW-L", "CWR"):
             self.setmode(mode)
-        if mode == "LSB" or mode == "USB":
+        if mode in ("LSB", "USB", "FM", "AM"):
             self.setmode("SSB")
         if mode in (
             "RTTY",
@@ -3774,20 +3780,23 @@ class MainWindow(QtWidgets.QMainWindow):
             "FM-D",
             "DIGI-U",
             "DIGI-L",
+            "DIG",
             "RTTYR",
             "PKTLSB",
             "PKTUSB",
+            "FSK",
+            "PKT",
         ):
             self.setmode("RTTY")
 
-        cmd = {}
-        cmd["cmd"] = "RADIO_STATE"
-        cmd["band"] = band
-        cmd["vfoa"] = vfo
-        cmd["mode"] = mode
-        cmd["bw"] = bw
-        if self.bandmap_window:
-            self.bandmap_window.msg_from_main(cmd)
+        # cmd = {}
+        # cmd["cmd"] = "RADIO_STATE"
+        # cmd["band"] = band
+        # cmd["vfoa"] = vfo
+        # cmd["mode"] = mode
+        # cmd["bw"] = bw
+        # if self.bandmap_window:
+        #     self.bandmap_window.msg_from_main(cmd)
         if info_dirty:
             try:
                 logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
@@ -3895,10 +3904,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         macro_file = self.get_macro_filename()
-
         try:
             with open(macro_file, "r", encoding="utf-8") as file_descriptor:
                 for line in file_descriptor:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if line.startswith("#"):
+                        continue
                     mode, fkey, buttonname, cwtext = line.split("|")
                     if mode.strip().upper() == "R" and self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
