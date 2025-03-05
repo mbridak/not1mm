@@ -339,6 +339,7 @@ class BandMapWindow(QDockWidget):
 
     def __init__(self):
         super().__init__()
+        self.active = False
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
@@ -373,6 +374,9 @@ class BandMapWindow(QDockWidget):
         self.request_workedlist()
         self.request_contest()
 
+    def setActive(self, mode: bool):
+        self.active = bool(mode)
+
     def get_settings(self) -> dict:
         """Get the settings."""
         if os.path.exists(fsutils.CONFIG_FILE):
@@ -381,6 +385,8 @@ class BandMapWindow(QDockWidget):
 
     def msg_from_main(self, packet):
         """"""
+        if self.active is False:
+            return
         if packet.get("cmd", "") == "RADIO_STATE":
             self.set_band(packet.get("band") + "m", False)
             try:
@@ -577,6 +583,8 @@ class BandMapWindow(QDockWidget):
             self.update_timer.setInterval(UPDATE_INTERVAL)
         except AttributeError:
             ...
+        # if self.active is False:
+        #     return
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -709,6 +717,8 @@ class BandMapWindow(QDockWidget):
     def update_stations(self):
         """doc"""
         self.update_timer.setInterval(UPDATE_INTERVAL)
+        if self.active is False:
+            return
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
