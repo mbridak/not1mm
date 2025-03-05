@@ -209,6 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-5] Added checks for blank/comment lines in the macros
 - [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
 - [25-3-1] Add {OTHER1} and {OTHER2} macros.
 
