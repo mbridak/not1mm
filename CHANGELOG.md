@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-3-10] Slight change to adif header. Slight change to CAT status icon state.
 - [25-3-5] Added checks for blank/comment lines in the macros
 - [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
 - [25-3-1] Add {OTHER1} and {OTHER2} macros.
