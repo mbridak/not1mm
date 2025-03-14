@@ -102,6 +102,7 @@
       - [If no exchange entered send AGN](#if-no-exchange-entered-send-agn)
       - [With exchange entered, send your exchange and log it](#with-exchange-entered-send-your-exchange-and-log-it)
   - [Call History Files](#call-history-files)
+    - [Creating your own Call History files](#creating-your-own-call-history-files)
   - [Contest specific notes](#contest-specific-notes)
     - [ARRL Sweekstakes](#arrl-sweekstakes)
       - [The exchange parser](#the-exchange-parser)
@@ -889,12 +890,15 @@ QRZ (for Run) or Exchange (for S&P) is sent.
 
 ## Call History Files
 
-I've started work on using 'call history files'. To test it, you can
-go to `FILE -> Configuration Settings`
+To use Call History files, go to `FILE -> Configuration Settings`
 
 ![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_options.png)
 
 Place a check in the `Use Call History` box. Call history files are very specific to the contest you are working. Example files can be obtained from [n1mm's](https://n1mmwp.hamdocs.com/mmfiles/categories/callhistory/?) website. They have a searchbox so you can find the contest you are looking for. If you are feeling masocistic, you can craft your own. The general makeup of the file is a header defining the fields to be used, followed by by lines of comma separated data.
+
+### Creating your own Call History files
+
+You can use [adif2callhistory](https://github.com/mbridak/adif2callhistory) to generate your own call history file from your ADIF files. You can use a list of call history keys used for each contest [here](https://github.com/mbridak/not1mm/blob/master/call_history_keys.md).
 
 An example file excerpt looks like:
 
