@@ -210,6 +210,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-14] Add call history support to ARR Field Day.
 - [25-3-10] Slight change to adif header. Slight change to CAT status icon state.
 - [25-3-5] Added checks for blank/comment lines in the macros
 - [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
