@@ -6,7 +6,7 @@
 | ARRL 10M | Call, State, UserText |
 | ARRL 160 | Call, Exch1, UserText |
 | ARRL DX | Call, State, Power, UserText |
-| ARRL Field Day | None |
+| ARRL Field Day | Call, Sect, Exch1, UserText |
 | ARRL RTTY Roundup | Call, State, UserText |
 | ARRL Sweepstakes CW | Call, CK, Sect, UserText |
 | ARRL Sweepstakes Phone | None |
