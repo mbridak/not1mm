@@ -108,6 +108,7 @@
       - [The exchange parser](#the-exchange-parser)
       - [The exchange](#the-exchange)
     - [RAEM](#raem)
+    - [RandomGram](#randomgram)
 
 ## What and Why is Not1MM
 
@@ -985,3 +986,7 @@ For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
 
 In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon.
 for me 33N117W. And in the exchange macro put `# {EXCH}`.
+
+### RandomGram
+
+This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in the user's home directory to populate the next group in the sent exchange field.
