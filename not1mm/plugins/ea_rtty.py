@@ -719,7 +719,7 @@ def ft8_handler(the_packet: dict):
             ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")
             ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))
 
-        rx_string = the_packet.get("STATE", "")
+        rx_string = the_packet.get("SRX_STRING", "")
         if rx_string != "":
             ALTEREGO.contact["NR"] = rx_string
             ALTEREGO.other_2.setText(str(rx_string))
