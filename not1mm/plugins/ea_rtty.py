@@ -217,7 +217,13 @@ def show_mults(self, rtc=None) -> int:
     eadx100 = 0
 
     # Each EADX100 entity once per band
-    # Dunno what that is...
+    sql = (
+        "select count(DISTINCT(CountryPrefix || ':' || Band)) as mult_count "
+        f"from dxlog where ContestNR = {self.database.current_contest};"
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        eadx100 = result.get("mult_count", 0)
 
     # Each EA province once per band
     sql = (
