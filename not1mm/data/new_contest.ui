@@ -324,6 +324,11 @@
      </item>
      <item>
       <property name="text">
+       <string>EA MAJISTAD CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>EA RTTY</string>
       </property>
      </item>

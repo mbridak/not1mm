@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-3-18] Add His Maj King of Spain CW
 - [25-3-17] Add EA RTTY contest.
 - [25-3-14] Add call history support to ARR Field Day.
 - [25-3-10] Slight change to adif header. Slight change to CAT status icon state.
