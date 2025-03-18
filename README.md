@@ -191,6 +191,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - CQ World Wide CW, RTTY, SSB
 - CWOps CWT
 - DARC Xmas
+- EA Majistad CW
+- EA RTTY
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
