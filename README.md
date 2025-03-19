@@ -191,6 +191,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - CQ World Wide CW, RTTY, SSB
 - CWOps CWT
 - DARC Xmas
+- DARC VHF
 - EA Majistad CW
 - EA RTTY
 - Helvetia
@@ -213,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-19] Merged PR from @DD5ML Adding DARC VHF.
 - [25-3-18] Add His Maj King of Spain CW
 - [25-3-17] Add EA RTTY contest.
 - [25-3-14] Add call history support to ARR Field Day.
