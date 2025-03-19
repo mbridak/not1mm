@@ -1,10 +1,10 @@
 """
-His Maj. King of Spain Contest, CW
+His Maj. King of Spain Contest, SSB
 Status:	            Active
 Geographic Focus:	Worldwide
 Participation:	    Worldwide
 Awards:	            Worldwide
-Mode:	            CW
+Mode:	            SSB
 Bands:	            160, 80, 40, 20, 15, 10m
 Classes:	        Single Op All Band (QRP/Low/High)
                     Single Op All Band Youth
@@ -24,8 +24,8 @@ Score Calculation:	Total score = total QSO points x total mults
 E-mail logs to:	    (none)
 Upload log at:	    https://concursos.ure.es/en/logs/
 Mail logs to:	    (none)
-Find rules at:	    https://concursos.ure.es/en/s-m-el-rey-de-espana-cw/bases/
-Cabrillo name:	    EA-MAJESTAD-CW
+Find rules at:	    https://concursos.ure.es/en/s-m-el-rey-de-espana-ssb/bases/
+Cabrillo name:	    EA-MAJESTAD-SSB
 """
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
@@ -55,9 +55,9 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "Province or #"
 
-name = "His Maj. King of Spain Contest, CW"
-mode = "CW"  # CW SSB BOTH RTTY
-cabrillo_name = "EA-MAJESTAD-CW"
+name = "His Maj. King of Spain Contest, SSB"
+mode = "SSB"  # CW SSB BOTH RTTY
+cabrillo_name = "EA-MAJESTAD-SSB"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -229,15 +229,6 @@ def show_mults(self, rtc=None) -> int:
     result = self.database.exec_sql(sql)
     if result:
         ea_provinces = result.get("mult_count", 0)
-
-    # # Each USA, VE, JA or VK call area once per band
-    # sql = (
-    #     "select count(DISTINCT(CountryPrefix || ':' || substr(WPXPrefix, -1) || ':' || Band)) as mult_count "
-    #     f"from dxlog where CountryPrefix in ('K', 'VE', 'VK', 'JA') and ContestNR = {self.database.current_contest};"
-    # )
-    # result = self.database.exec_sql(sql)
-    # if result:
-    #     dx = result.get("mult_count", 0)
 
     # Each QSO with EF0F/8 once per band
     sql = (
