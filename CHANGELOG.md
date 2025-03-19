@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-3-19-1] Add EA His Maj King of Spain SSB.
 - [25-3-19] Merged PR from @DD5ML Adding DARC VHF.
 - [25-3-18] Add His Maj King of Spain CW
 - [25-3-17] Add EA RTTY contest.
