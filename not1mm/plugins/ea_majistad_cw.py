@@ -272,7 +272,7 @@ def calc_score(self) -> int:
 
 def adif(self) -> None:
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name)
+    gen_adif(self, cabrillo_name, contest_id=cabrillo_name)
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
