@@ -12,7 +12,7 @@
 #   Classes:	Single Op, Multi OP, Trainee
 #   Max power:	100 watts
 #   Exchange:	RST + Locator
-#   Work stations:	Once per band 
+#   Work stations:	Once per band
 #   Points:	1 point per km distance between stations
 #   Multipliers:	no multis
 #   Score Calculation:	Total score = sum of all points
@@ -49,11 +49,11 @@ columns = [
     "SentNr",
     "RcvNr",
     "Exchange1",
-    "PTS"
+    "PTS",
 ]
 cabrillo_name = "DARC VHF"
 
-advance_on_space = [True, True, True,True, False]
+advance_on_space = [True, True, True, True, False]
 call_parse_exchange_on_edit = True
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
@@ -86,6 +86,7 @@ def reset_label(self):
     """reset label after field cleared"""
     self.exch_label.setText("# Grid")
 
+
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
@@ -106,20 +107,20 @@ def set_tab_prev(self):
         self.other_1: self.receive,
         self.other_2: self.other_1,
     }
- 
+
 
 def set_contact_vars(self):
-    """Contest Specific"""    
+    """Contest Specific"""
     sn, grid = parse_exchange(self)
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text()    
-    self.contact["NR"]= sn
-    self.contact["Exchange1"] =grid
-    
-    
+    self.contact["SentNr"] = self.other_1.text()
+    self.contact["NR"] = sn
+    self.contact["Exchange1"] = grid
+
+
 def parse_exchange(self):
-    """Parse exchange..."""    
+    """Parse exchange..."""
     exchange = self.other_2.text()
     exchange = exchange.upper()
     sn = ""
@@ -160,15 +161,14 @@ def points(self):
     """Calc point"""
     _points = 1
     _kilometers = 0
-    _their_grid = self.contact["Exchange1"] .upper()
+    _their_grid = self.contact["Exchange1"].upper()
     _kilometers = distance(self.station.get("GridSquare", ""), _their_grid)
-    _points =  max(1,_kilometers)
+    _points = max(1, _kilometers)
     return _points
 
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-
 
 
 def show_qso(self):
@@ -187,7 +187,7 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        return contest_points 
+        return contest_points
     return 0
 
 
@@ -197,8 +197,8 @@ def adif(self):
 
 
 def edi(self):
-    """ Generate an edi file """
-    file_encoding="ascii"
+    """Generate an edi file"""
+    file_encoding = "ascii"
     logger.debug("******EDI*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
@@ -212,7 +212,7 @@ def edi(self):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding=file_encoding) as file_descriptor:
+        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
             output_cabrillo_line(
                 "[REG1TEST;1]",
                 "\r\n",
@@ -229,7 +229,7 @@ def edi(self):
             loggedyear = value[0:4]
             loggedmonth = value[5:7]
             loggedday = value[8:10]
-            loggeddate = loggedyear + loggedmonth +loggedday        
+            loggeddate = loggedyear + loggedmonth + loggedday
             output_cabrillo_line(
                 f"TDate: {loggeddate}",
                 "\r\n",
@@ -271,8 +271,8 @@ def edi(self):
                 "\r\n",
                 file_descriptor,
                 file_encoding,
-            ) 
-            BandInMHz = bandinMHz(self.contest_settings.get('BandCategory',''))
+            )
+            BandInMHz = bandinMHz(self.contest_settings.get("BandCategory", ""))
             output_cabrillo_line(
                 f"PBand:{BandInMHz}",
                 "\r\n",
@@ -320,7 +320,7 @@ def edi(self):
                 "\r\n",
                 file_descriptor,
                 file_encoding,
-            )            
+            )
             output_cabrillo_line(
                 f"RCoun:{self.station.get('Country', '')} ",
                 "\r\n",
@@ -350,7 +350,7 @@ def edi(self):
                 "\r\n",
                 file_descriptor,
                 file_encoding,
-            )            
+            )
             output_cabrillo_line(
                 f"STXEq:{self.station.get('stationtxrx', '')}",
                 "\r\n",
@@ -387,7 +387,7 @@ def edi(self):
                 "\r\n",
                 file_descriptor,
                 file_encoding,
-            )           
+            )
             output_cabrillo_line(
                 f"CQSOP:{calc_score(self)}",
                 "\r\n",
@@ -447,7 +447,7 @@ def edi(self):
                 "\r\n",
                 file_descriptor,
                 file_encoding,
-            )            
+            )
             output_cabrillo_line(
                 f"[QSORecords;{NumberOfQsos}]",
                 "\r\n",
@@ -457,25 +457,25 @@ def edi(self):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                modeCode=0
-                if themode == "LSB" or themode == "USB" or themode=="SSB":
+                modeCode = 0
+                if themode == "LSB" or themode == "USB" or themode == "SSB":
                     modeCode = 1
-                if themode == "CW" or themode == "CWL" or themode=="CWU":
+                if themode == "CW" or themode == "CWL" or themode == "CWU":
                     modeCode = 2
-                frequency = str(int(contact.get("Freq", "0"))).rjust(5)                
+                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
                 loggedyear = the_date_and_time[2:4]
                 loggedmonth = the_date_and_time[5:7]
                 loggedday = the_date_and_time[8:10]
-                loggeddate = loggedyear + loggedmonth +loggedday
+                loggeddate = loggedyear + loggedmonth + loggedday
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                NumberSend = contact.get('SentNr', '')
-                NumberReceived = contact.get('NR', '')
+                NumberSend = contact.get("SentNr", "")
+                NumberReceived = contact.get("NR", "")
                 output_cabrillo_line(
                     f"{loggeddate};"
                     f"{loggedtime};"
                     f"{contact.get('Call', '')};"
                     f"{modeCode};"
-                    f"{str(contact.get('SNT', ''))};"                    
+                    f"{str(contact.get('SNT', ''))};"
                     f"{NumberSend:03d};"
                     f"{str(contact.get('RCV', ''))};"
                     f"{NumberReceived:03d};"
@@ -495,14 +495,14 @@ def edi(self):
 
 
 def bandinMHz(band):
-    switch={
-            "6M": "50 MHz",
-            "4M": "70 MHz",
-            "2M": "144 MHz",
-            "70cm": "432 MHz",
-            "23cm": "1,3 GHz",
-      }
-    return switch.get(band,"Invalid input {band}")
+    switch = {
+        "6M": "50 MHz",
+        "4M": "70 MHz",
+        "2M": "144 MHz",
+        "70cm": "432 MHz",
+        "23cm": "1,3 GHz",
+    }
+    return switch.get(band, "Invalid input {band}")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -530,7 +530,7 @@ def cabrillo(self, file_encoding):
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
-        with open(filename, "w", encoding=file_encoding) as file_descriptor:
+        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
             output_cabrillo_line(
                 "START-OF-LOG: 3.0",
                 "\r\n",
@@ -714,9 +714,9 @@ def recalculate_mults(self):
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
         # recalculate points
-        _their_grid = contact.get("Exchange1") .upper()
+        _their_grid = contact.get("Exchange1").upper()
         _kilometers = distance(self.station.get("GridSquare", ""), _their_grid)
-        _points =  max(1,_kilometers)
+        _points = max(1, _kilometers)
         contact["Points"] = _points
 
         self.database.change_contact(contact)
