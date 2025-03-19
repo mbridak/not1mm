@@ -249,6 +249,7 @@ class MainWindow(QtWidgets.QMainWindow):
             lambda x: self.generate_cabrillo("utf-8")
         )
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
+        self. actionGenerate_EDI.triggered.connect(self.generate_edi)
 
         self.actionConfiguration_Settings.triggered.connect(
             self.edit_configuration_settings
@@ -3331,6 +3332,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if "ARRL Sweepstakes" in self.contest.name:
                 self.contest.parse_exchange(self)
                 return
+            if hasattr(self.contest, "call_parse_exchange_on_edit"):	
+                if self.contest.advance_on_space:
+                    self.contest.parse_exchange(self)
             if hasattr(self.contest, "advance_on_space"):
                 if self.contest.advance_on_space[4]:
                     text = self.other_2.text()
@@ -3977,6 +3981,22 @@ class MainWindow(QtWidgets.QMainWindow):
         # https://www.adif.org/315/ADIF_315.htm
         logger.debug("******ADIF*****")
         self.contest.adif(self)
+
+    def generate_edi(self) -> None:
+        """
+        Calls the contest EDI file generator.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        logger.debug("******EDI*****")
+        self.contest.edi(self)
 
     def generate_cabrillo(self, file_encoding: str) -> None:
         """

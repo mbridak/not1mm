@@ -1480,6 +1480,7 @@
     <addaction name="actionGenerate_ADIF"/>
     <addaction name="actionGenerate_Cabrillo_ASCII"/>
     <addaction name="actionGenerate_Cabrillo_UTF8"/>
+    <addaction name="actionGenerate_EDI"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
@@ -1761,6 +1762,28 @@
   <action name="actionGenerate_ADIF">
    <property name="text">
     <string>Generate ADIF</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono ExtraLight</family>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
+   </property>
+  </action>  
+  <action name="actionGenerate_EDI">
+   <property name="text">
+    <string>Generate EDI</string>
    </property>
    <property name="font">
     <font>
