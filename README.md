@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-24] Add CW, PH, DI counts to the statistics window.
 - [25-3-23] Add a statistics window.
 - [25-3-19-1] Add EA His Maj King of Spain SSB.
 - [25-3-19] Merged PR from @DD5ML Adding DARC VHF.
