@@ -1511,10 +1511,11 @@
     <property name="title">
      <string>Window</string>
     </property>
-    <addaction name="actionLog_Window"/>
     <addaction name="actionBandmap"/>
     <addaction name="actionCheck_Window"/>
+    <addaction name="actionLog_Window"/>
     <addaction name="actionRate_Window"/>
+    <addaction name="actionStatistics"/>
     <addaction name="actionVFO"/>
    </widget>
    <widget class="QMenu" name="menuOther">
@@ -1780,7 +1781,7 @@
    <property name="shortcutVisibleInContextMenu">
     <bool>false</bool>
    </property>
-  </action>  
+  </action>
   <action name="actionGenerate_EDI">
    <property name="text">
     <string>Generate EDI</string>
@@ -2055,6 +2056,22 @@
    </property>
    <property name="text">
     <string>Command Buttons</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Statistics</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono ExtraLight</family>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
    </property>
   </action>
  </widget>

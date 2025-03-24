@@ -68,6 +68,7 @@ from not1mm.checkwindow import CheckWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 from not1mm.ratewindow import RateWindow
+from not1mm.statistics import StatsWindow
 from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
 from not1mm.lookupservice import LookupService
@@ -132,6 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "checkwindow": False,
         "vfowindow": False,
         "ratewindow": False,
+        "statisticswindow": False,
         "darkmode": True,
     }
     appstarted = False
@@ -177,6 +179,8 @@ class MainWindow(QtWidgets.QMainWindow):
     bandmap_window = None
     vfo_window = None
     rate_window = None
+    statistics_window = None
+    settings = None
     lookup_service = None
     fldigi_util = None
     rtc_service = None
@@ -238,6 +242,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
         self.actionRate_Window.triggered.connect(self.launch_rate_window)
+        self.actionStatistics.triggered.connect(self.launch_stats_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
@@ -249,7 +254,7 @@ class MainWindow(QtWidgets.QMainWindow):
             lambda x: self.generate_cabrillo("utf-8")
         )
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
-        self. actionGenerate_EDI.triggered.connect(self.generate_edi)
+        self.actionGenerate_EDI.triggered.connect(self.generate_edi)
 
         self.actionConfiguration_Settings.triggered.connect(
             self.edit_configuration_settings
@@ -654,6 +659,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rate_window.hide()
         self.rate_window.message.connect(self.dockwidget_message)
 
+        self.show_splash_msg("Setting up StatisticsWindow.")
+        self.statistics_window = StatsWindow()
+        self.statistics_window.setObjectName("statistics-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.statistics_window.setFeatures(dockfeatures)
+        self.addDockWidget(
+            Qt.DockWidgetArea.RightDockWidgetArea, self.statistics_window
+        )
+        self.statistics_window.hide()
+        self.statistics_window.message.connect(self.dockwidget_message)
+
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
@@ -713,6 +729,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.rate_window.hide()
             self.rate_window.setActive(False)
+
+        self.actionStatistics.setChecked(self.pref.get("statisticswindow", False))
+        if self.actionStatistics.isChecked():
+            self.statistics_window.show()
+            self.statistics_window.setActive(True)
+            self.statistics_window.get_run_and_total_qs()
+        else:
+            self.statistics_window.hide()
+            self.statistics_window.setActive(False)
 
         self.actionVFO.setChecked(self.pref.get("vfowindow", False))
         if self.actionVFO.isChecked():
@@ -990,6 +1015,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.msg_from_main(cmd)
         if self.rate_window:
             self.rate_window.msg_from_main(cmd)
+        if self.statistics_window:
+            self.statistics_window.msg_from_main(cmd)
 
         if setdarkmode:
             darkPalette = QPalette()
@@ -1331,6 +1358,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.log_window.msg_from_main(cmd)
             if self.rate_window:
                 self.rate_window.msg_from_main(cmd)
+            if self.statistics_window:
+                self.statistics_window.msg_from_main(cmd)
+
             self.clearinputs()
             self.edit_station_settings()
 
@@ -1370,6 +1400,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.log_window.msg_from_main(cmd)
             if self.rate_window:
                 self.rate_window.msg_from_main(cmd)
+            if self.statistics_window:
+                self.statistics_window.msg_from_main(cmd)
+
             self.clearinputs()
             self.open_contest()
 
@@ -1662,6 +1695,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.log_window.msg_from_main(cmd)
                 if self.rate_window:
                     self.rate_window.msg_from_main(cmd)
+                if self.statistics_window:
+                    self.statistics_window.msg_from_main(cmd)
+
                 if hasattr(self.contest, "columns"):
                     cmd = {}
                     cmd["cmd"] = "SHOWCOLUMNS"
@@ -1883,6 +1919,17 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.rate_window.hide()
             self.rate_window.setActive(False)
+
+    def launch_stats_window(self) -> None:
+        """Launch the check window"""
+        self.pref["statisticswindow"] = self.actionStatistics.isChecked()
+        self.write_preference()
+        if self.actionStatistics.isChecked():
+            self.statistics_window.show()
+            self.statistics_window.setActive(True)
+        else:
+            self.statistics_window.hide()
+            self.statistics_window.setActive(False)
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
@@ -2535,6 +2582,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
+        if self.statistics_window:
+            self.statistics_window.msg_from_main(cmd)
 
     def update_rtc_xml(self):
         """Update RTC XML"""
@@ -3332,7 +3381,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if "ARRL Sweepstakes" in self.contest.name:
                 self.contest.parse_exchange(self)
                 return
-            if hasattr(self.contest, "call_parse_exchange_on_edit"):	
+            if hasattr(self.contest, "call_parse_exchange_on_edit"):
                 if self.contest.advance_on_space:
                     self.contest.parse_exchange(self)
             if hasattr(self.contest, "advance_on_space"):
