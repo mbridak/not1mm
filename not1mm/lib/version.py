@@ -1,3 +1,3 @@
 """It's the version"""
 
-__version__ = "25.3.23"
+__version__ = "25.3.24"

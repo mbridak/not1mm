@@ -6,9 +6,9 @@ import os
 
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtCore import pyqtSignal, QTimer
 
 # from PyQt6.QtGui import QColorConstants, QPalette, QColor
-from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -43,6 +43,9 @@ class StatsWindow(QDockWidget):
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         uic.loadUi(fsutils.APP_DATA_PATH / "statistics.ui", self)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.get_run_and_total_qs)
+        self.timer.start(5000)
 
     def msg_from_main(self, packet):
         """"""
@@ -100,9 +103,13 @@ class StatsWindow(QDockWidget):
 
     def get_run_and_total_qs(self):
         """get numbers"""
+        if self.active is False:
+            return
         self.tableWidget.clear()
-        self.tableWidget.setColumnCount(4)
-        self.tableWidget.setHorizontalHeaderLabels(["BAND", "QSO", "CALLS", "POINTS"])
+        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setHorizontalHeaderLabels(
+            ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "PTS"]
+        )
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setEditTriggers(
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
@@ -128,7 +135,19 @@ class StatsWindow(QDockWidget):
             self.tableWidget.setItem(row, 2, item)
             item = QtWidgets.QTableWidgetItem(str(result["points"]))
             item.setTextAlignment(0x0002)
+            self.tableWidget.setItem(row, 6, item)
+            query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE Mode WHEN 'LSB' THEN 'PH' WHEN 'USB' THEN 'PH' WHEN 'CW' THEN 'CW' WHEN 'RTTY' THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
+            result = self.database.exec_sql(query)
+            item = QtWidgets.QTableWidgetItem(str(result["CW"]))
+            item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 3, item)
+            item = QtWidgets.QTableWidgetItem(str(result["PH"]))
+            item.setTextAlignment(0x0002)
+            self.tableWidget.setItem(row, 4, item)
+            item = QtWidgets.QTableWidgetItem(str(result["DI"]))
+            item.setTextAlignment(0x0002)
+            self.tableWidget.setItem(row, 5, item)
+
             row += 1
         query = f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
         result = self.database.exec_sql(query)
@@ -143,7 +162,19 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setItem(row, 2, item)
         item = QtWidgets.QTableWidgetItem(str(result["points"]))
         item.setTextAlignment(0x0002)
+        self.tableWidget.setItem(row, 6, item)
+
+        query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE Mode WHEN 'LSB' THEN 'PH' WHEN 'USB' THEN 'PH' WHEN 'CW' THEN 'CW' WHEN 'RTTY' THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
+        result = self.database.exec_sql(query)
+        item = QtWidgets.QTableWidgetItem(str(result["CW"]))
+        item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 3, item)
+        item = QtWidgets.QTableWidgetItem(str(result["PH"]))
+        item.setTextAlignment(0x0002)
+        self.tableWidget.setItem(row, 4, item)
+        item = QtWidgets.QTableWidgetItem(str(result["DI"]))
+        item.setTextAlignment(0x0002)
+        self.tableWidget.setItem(row, 5, item)
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.resizeRowsToContents()
 
