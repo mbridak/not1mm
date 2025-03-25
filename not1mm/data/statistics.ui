@@ -10,34 +10,18 @@
     <height>192</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>JetBrains Mono ExtraLight</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Stats</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="2">
-     <widget class="QTableWidget" name="tableWidget">
-      <column>
-       <property name="text">
-        <string>Band</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>QSO's</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Calls</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Points</string>
-       </property>
-      </column>
-     </widget>
+     <widget class="QTableWidget" name="tableWidget"/>
     </item>
    </layout>
   </widget>
