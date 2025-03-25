@@ -8,7 +8,7 @@ from PyQt6 import uic, QtWidgets
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import pyqtSignal, QTimer
 
-# from PyQt6.QtGui import QColorConstants, QPalette, QColor
+from PyQt6.QtGui import QColorConstants, QPalette, QColor
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -74,6 +74,46 @@ class StatsWindow(QDockWidget):
 
     def setDarkMode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
+
+        if dark:
+            darkPalette = QPalette()
+            darkColor = QColor(56, 56, 56)
+            disabledColor = QColor(127, 127, 127)
+            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
+            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
+            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
+            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
+            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
+            darkPalette.setColor(
+                QPalette.ColorRole.HighlightedText, QColorConstants.Black
+            )
+            darkPalette.setColor(
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.ButtonText,
+                disabledColor,
+            )
+            darkPalette.setColor(
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.HighlightedText,
+                disabledColor,
+            )
+            darkPalette.setColor(
+                QPalette.ColorGroup.Disabled,
+                QPalette.ColorRole.Text,
+                disabledColor,
+            )
+
+            self.setPalette(darkPalette)
+            self.current_palette = darkPalette
+        else:
+            palette = self.style().standardPalette()
+            self.setPalette(palette)
+            self.current_palette = palette
 
     def load_pref(self) -> None:
         """
