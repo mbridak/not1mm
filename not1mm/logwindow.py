@@ -4,7 +4,7 @@ not1mm Contest logger
 Email: michael.bridak@gmail.com
 GPL V3
 Class: LogWindow
-Purpose: Onscreen widget to show and edit logged contacts. 
+Purpose: Onscreen widget to show and edit logged contacts.
 """
 # pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, too-many-lines
@@ -164,6 +164,11 @@ class LogWindow(QDockWidget):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
+        self.generalLog.resizeColumnsToContents()
+        self.generalLog.resizeRowsToContents()
+        self.focusedLog.resizeColumnsToContents()
+        self.focusedLog.resizeRowsToContents()
+
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
         self.message.emit(cmd)
@@ -927,6 +932,10 @@ class LogWindow(QDockWidget):
             )
         self.generalLog.blockSignals(False)
         self.focusedLog.blockSignals(False)
+        self.generalLog.resizeColumnsToContents()
+        self.generalLog.resizeRowsToContents()
+        self.focusedLog.resizeColumnsToContents()
+        self.focusedLog.resizeRowsToContents()
 
     def show_like_calls(self, call: str) -> None:
         """
