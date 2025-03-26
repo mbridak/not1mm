@@ -160,6 +160,10 @@ def points(self):
     - Different-country contacts within any continent (not just North America) get 2 or 4 points
     - Same-country contacts get 2 points on the low bands
     """
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():

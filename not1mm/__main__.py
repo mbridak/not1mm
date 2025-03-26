@@ -140,6 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contact = {}
     contest = None
     contest_settings = {}
+    contact_is_dupe = False
     pref = None
     station = {}
     current_op = ""
@@ -3672,6 +3673,7 @@ class MainWindow(QtWidgets.QMainWindow):
             result = {"isdupe": False}
         debugline = f"{result}"
         logger.debug("%s", debugline)
+        self.contact_is_dupe = result.get("isdupe", False)
         return result.get("isdupe", False)
 
     def setmode(self, mode: str) -> None:

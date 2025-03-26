@@ -102,6 +102,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     # Each contact between W/VE stations counts for two (2) QSO points. Each contact with a DX station counts five (5) QSO points
     call = self.contact.get("Call", "")
     dupe_check = self.database.check_dupe(call)

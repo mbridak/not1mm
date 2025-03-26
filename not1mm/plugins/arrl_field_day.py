@@ -104,6 +104,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     _mode = self.contact.get("Mode", "")
     if _mode in "SSB, USB, LSB, FM, AM":
         return 1

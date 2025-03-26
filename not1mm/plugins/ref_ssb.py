@@ -219,6 +219,8 @@ def points(self):
     self.contact["Continent"]
     """
 
+    if self.contact_is_dupe > 0:
+        return 0
     # Just incase the cty lookup fails
     my_country = None
     my_continent = None

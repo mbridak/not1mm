@@ -134,6 +134,10 @@ def prefill(self):
 def points(self):
     """Calc point"""
     # Maritime Mobile
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     if "/MM" in self.contact.get("Call", ""):
         return 5
 

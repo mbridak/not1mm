@@ -118,6 +118,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     exchange = self.other_2.text().upper().split()
     if len(exchange) == 3:
         try:

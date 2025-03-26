@@ -180,6 +180,9 @@ def points(self) -> int:
     # non-EA: 3 points per QSO with EA
     # non-EA: 1 point per QSO with non-EA
 
+    if self.contact_is_dupe > 0:
+        return 0
+
     ea_prefixes = ["EA", "EA1", "EA2", "EA3", "EA4", "EA5", "EA6", "EA7", "EA8", "EA9"]
 
     me = None

@@ -150,6 +150,9 @@ def points(self):
     # QSO Points:   1 point per QSO
     #               1 additional point per QSO with PY3,PU3,ZZ3,PP3,etc
 
+    if self.contact_is_dupe > 0:
+        return 0
+
     if len(self.contact.get("Call", "")) > 2:
         if self.contact.get("Call", "")[:3] in ["PY3", "PU3", "ZZ3", "PP3", "PX3"]:
             return 2
