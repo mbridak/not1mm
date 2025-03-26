@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-25-1] Improved process messaging.
 - [25-3-25] Use safer dict key access in the stats window.
 - [25-3-24] Add CW, PH, DI counts to the statistics window.
 - [25-3-23] Add a statistics window.
