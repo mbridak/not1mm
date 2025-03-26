@@ -130,6 +130,9 @@ def points(self):
     # 3 points per 902 or 1296 MHz QSO
     # 4 points per 2.3 GHz or higher QSO
 
+    if self.contact_is_dupe > 0:
+        return 0
+
     _band = self.contact.get("Band", "")
     if _band in ["50", "144"]:
         return 1

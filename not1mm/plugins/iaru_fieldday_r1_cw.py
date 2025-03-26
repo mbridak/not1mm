@@ -154,6 +154,9 @@ def points(self):
     # portable stations outside Europe: 6 points
     """
 
+    if self.contact_is_dupe > 0:
+        return 0
+
     their_portable = False
     im_portable = False
     their_continent = self.contact.get("Continent", "")

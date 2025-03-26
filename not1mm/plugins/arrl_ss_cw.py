@@ -140,6 +140,10 @@ def check_call_history(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     return 2
 
 

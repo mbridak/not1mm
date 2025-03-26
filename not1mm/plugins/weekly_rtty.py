@@ -133,6 +133,8 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+    if self.contact_is_dupe > 0:
+        return 0
     return 1
 
 

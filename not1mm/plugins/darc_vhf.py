@@ -159,6 +159,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     _points = 1
     _kilometers = 0
     _their_grid = self.contact["Exchange1"].upper()

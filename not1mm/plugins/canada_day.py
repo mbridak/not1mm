@@ -150,6 +150,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
+
+    if self.contact_is_dupe > 0:
+        return 0
+
     call = self.contact.get("Call", "")
     if call in RAC_OFFICIAL_STATIONS:
         return 20

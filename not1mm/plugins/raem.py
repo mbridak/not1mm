@@ -214,6 +214,8 @@ def points(self):
     # QSO with Polar station: 100 points additional
     # QSO with RAEM Memorial Station: 300 points additional
 
+    if self.contact_is_dupe > 0:
+        return 0
     points = 50
     morepoints, ispolar = latlondif(self, self.other_2.text())
     points += morepoints

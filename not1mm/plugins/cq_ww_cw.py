@@ -140,14 +140,10 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
-    # @awandahl Retrieve callsign and band information
-    call = self.contact.get("Call", "")
-    band = float(get_logged_band(str(int(self.contact.get("Freq", 0.0) * 1000))))
 
-    # @awandahl Check if the contact is a duplicate on the current band
-    dupe_check = self.database.check_dupe_on_band(call, band)
-    if dupe_check.get("isdupe", 0) > 0:
-        return 0  # @awandahl Return zero points for duplicates
+    if self.contact_is_dupe > 0:
+        return 0
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():

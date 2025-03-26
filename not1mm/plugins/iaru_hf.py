@@ -126,6 +126,9 @@ def points(self):
                 5 points per QSO with different zone on different continent
     """
 
+    if self.contact_is_dupe > 0:
+        return 0
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
         for item in result.items():
