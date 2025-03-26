@@ -864,6 +864,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def dockwidget_message(self, msg):
         """signal from bandmap"""
         if msg:
+            if msg.get("cmd", "") == "CONTACTCHANGED":
+                if self.statistics_window:
+                    self.statistics_window.msg_from_main(msg)
             if msg.get("cmd", "") == "GETCOLUMNS":
                 if hasattr(self.contest, "columns"):
                     cmd = {}

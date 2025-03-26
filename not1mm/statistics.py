@@ -6,7 +6,7 @@ import os
 
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal, QTimer
+from PyQt6.QtCore import pyqtSignal
 
 from PyQt6.QtGui import QColorConstants, QPalette, QColor
 
@@ -43,9 +43,6 @@ class StatsWindow(QDockWidget):
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         uic.loadUi(fsutils.APP_DATA_PATH / "statistics.ui", self)
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.get_run_and_total_qs)
-        self.timer.start(5000)
 
     def msg_from_main(self, packet):
         """"""
@@ -54,6 +51,10 @@ class StatsWindow(QDockWidget):
             return
 
         if self.active is False:
+            return
+
+        if packet.get("cmd", "") == "CONTACTCHANGED":
+            self.get_run_and_total_qs()
             return
 
         if packet.get("cmd", "") == "UPDATELOG":
@@ -68,6 +69,7 @@ class StatsWindow(QDockWidget):
             )
             self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
             self.database.current_contest = self.pref.get("contest", 0)
+            self.get_run_and_total_qs()
 
     def setActive(self, mode: bool) -> None:
         self.active = bool(mode)

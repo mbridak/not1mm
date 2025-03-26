@@ -409,6 +409,10 @@ class LogWindow(QDockWidget):
         }
         self.database.change_contact(db_record)
 
+        cmd = {}
+        cmd["cmd"] = "CONTACTCHANGED"
+        self.message.emit(cmd)
+
         if self.n1mm.send_contact_packets:
             self.n1mm.contact_info["timestamp"] = db_record["TS"]
             self.n1mm.contact_info["contestname"] = self.contact["ContestName"].replace(
@@ -521,6 +525,10 @@ class LogWindow(QDockWidget):
             "ID": self.focusedLog.item(row, self.get_column("UUID")).text(),
         }
         self.database.change_contact(db_record)
+
+        cmd = {}
+        cmd["cmd"] = "CONTACTCHANGED"
+        self.message.emit(cmd)
 
         if self.n1mm.send_contact_packets:
             self.n1mm.contact_info["timestamp"] = db_record["TS"]
@@ -736,6 +744,9 @@ class LogWindow(QDockWidget):
 
         self.database.change_contact(self.contact)
         self.get_log()
+        cmd = {}
+        cmd["cmd"] = "CONTACTCHANGED"
+        self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
 
     def delete_contact(self) -> None:
@@ -763,6 +774,9 @@ class LogWindow(QDockWidget):
                 self.n1mm.send_contact_delete()
         self.edit_contact_dialog.close()
         self.get_log()
+        cmd = {}
+        cmd["cmd"] = "CONTACTCHANGED"
+        self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
 
     def get_log(self) -> None:
