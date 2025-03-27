@@ -178,7 +178,7 @@ class StatsWindow(QDockWidget):
             item = QtWidgets.QTableWidgetItem(str(result.get("points", "0")))
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 6, item)
-            query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE Mode WHEN 'LSB' THEN 'PH' WHEN 'USB' THEN 'PH' WHEN 'CW' THEN 'CW' WHEN 'RTTY' THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
+            query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
             result = self.database.exec_sql(query)
             item = QtWidgets.QTableWidgetItem(str(result.get("CW", "0")))
             item.setTextAlignment(0x0002)
@@ -206,7 +206,7 @@ class StatsWindow(QDockWidget):
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 6, item)
 
-        query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE Mode WHEN 'LSB' THEN 'PH' WHEN 'USB' THEN 'PH' WHEN 'CW' THEN 'CW' WHEN 'RTTY' THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
+        query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
         result = self.database.exec_sql(query)
         item = QtWidgets.QTableWidgetItem(str(result.get("CW", "0")))
         item.setTextAlignment(0x0002)
