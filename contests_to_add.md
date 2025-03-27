@@ -178,3 +178,33 @@ The log upload takes place exclusively via https://www.schwaben-contest.de
 deadline January 31, 2024
 results list Publication on https://www.schwaben-contest.de
 ```
+
+
+```text
+Commonwealth (BERU) Contest
+ 	Status:	Active
+ 	Geographic Focus:	Commonwealth countries and territories
+ 	Participation:	Commonwealth countries and territories
+ 	Awards:	Commonwealth countries and territories
+ 	Mode:	CW
+ 	Bands:	80, 40, 20, 15, 10m
+ 	Classes:	Single Op (12/24)(Assisted/Unassisted)(Low/High)
+Single Op Remote (12/24)
+Single Op QRP (Assisted/Unassisted)
+Multi-Op
+HQ
+ 	Max power:	High: >100 watts
+Low: 100 watts
+QRP: 5 watts
+ 	Exchange:	RST + Serial No.
+ 	QSO Points:	5 points per QSO with same continent
+10 points per QSO with different continent
+20 additional points for each of first three QSOs with a Commonwealth Area or HQ station per band
+ 	Multipliers:	(none)
+ 	Score Calculation:	Total score = total QSO points
+ 	Upload log at:	http://www.rsgbcc.org/cgi-bin/hfenter.pl
+ 	Mail logs to:	(none)
+ 	Find rules at:	https://www.rsgbcc.org/hf/rules/2025/rcwc.shtml
+ 	Cabrillo name:	RSGB-COMMONWEALTH
+ 	Cabrillo name aliases:	RSGB-BERU
+```
