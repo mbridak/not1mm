@@ -212,6 +212,11 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
         self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
+        QApplication.instance().styleHints().colorSchemeChanged.connect(
+            self.dark_watcher
+        )
+        self.dark_watcher(QApplication.instance().styleHints().colorScheme())
+
         self.inputs_dict = {
             self.callsign: "callsign",
             self.sent: "sent",
@@ -235,7 +240,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
-        self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
+        # self.actionDark_Mode_2.hide()
+        # self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
         self.actionCommand_Buttons_2.triggered.connect(
             self.command_buttons_state_change
         )
@@ -770,6 +776,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.udp_socket.pendingDatagramSize()
         )
         self.fldigi_qso(datagram.decode())
+
+    def is_it_dark(self) -> bool:
+        """Returns if the DE has a dark theme active."""
+        hints = QtGui.QGuiApplication.styleHints()
+        scheme = hints.colorScheme()
+        return scheme == Qt.ColorScheme.Dark
+
+    def dark_watcher(self, color_scheme):
+        """..."""
+        self.setDarkMode(setdarkmode=color_scheme == Qt.ColorScheme.Dark)
 
     def load_call_history(self) -> None:
         """Display filepicker and load chosen call history file."""
@@ -3046,12 +3062,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.lookup_service:
             self.lookup_service.msg_from_main(cmd)
 
-        if self.pref.get("darkmode"):
-            self.actionDark_Mode_2.setChecked(True)
-            self.setDarkMode(True)
-        else:
-            self.setDarkMode(False)
-            self.actionDark_Mode_2.setChecked(False)
+        # if self.pref.get("darkmode"):
+        # self.actionDark_Mode_2.setChecked(True)
+        # self.setDarkMode(True)
+        # else:
+        # self.setDarkMode(False)
+        # self.actionDark_Mode_2.setChecked(False)
 
         try:
             if self.rtc_thread.isRunning():
@@ -3235,9 +3251,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def dark_mode_state_changed(self) -> None:
         """Called when the Dark Mode menu state is changed."""
-        self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
-        self.write_preference()
-        self.setDarkMode(self.actionDark_Mode_2.isChecked())
+        # self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
+        # self.write_preference()
+        # # self.setDarkMode(self.actionDark_Mode_2.isChecked())
 
     def rtc_response(self, response):
         print(f"{response=}")

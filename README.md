@@ -215,7 +215,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-3-27] Add more DI and PH modeto stats window.
+- [25-3-27-1] Detect system dark mode.
+- [25-3-27] Add more DI and PH mode to stats window.
 - [25-3-26] Record 0 points on dupes for each contest, excluding RandomGram.
 - [25-3-25-1] Improved process messaging.
 - [25-3-25] Use safer dict key access in the stats window.
