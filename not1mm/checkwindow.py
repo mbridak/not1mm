@@ -99,7 +99,7 @@ class CheckWindow(QDockWidget):
 
     def setDarkMode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
-
+        return
         if dark:
             darkPalette = QPalette()
             darkColor = QColor(56, 56, 56)

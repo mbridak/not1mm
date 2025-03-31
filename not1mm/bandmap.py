@@ -21,7 +21,7 @@ from json import loads
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal
 
 import not1mm.fsutils as fsutils
 
@@ -369,7 +369,7 @@ class BandMapWindow(QDockWidget):
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
-        self.setDarkMode(self.settings.get("darkmode", False))
+        self.setDarkMode()
         self.update()
         self.request_workedlist()
         self.request_contest()
@@ -486,51 +486,22 @@ class BandMapWindow(QDockWidget):
                 self.callsignField.setText(packet.get("operator", "").upper())
             return
         if packet.get("cmd", "") == "DARKMODE":
-            self.setDarkMode(packet.get("state", False))
+            self.setDarkMode()
 
-    def setDarkMode(self, setdarkmode=False):
+    def is_it_dark(self) -> bool:
+        """Returns if the DE has a dark theme active."""
+        hints = QtGui.QGuiApplication.styleHints()
+        scheme = hints.colorScheme()
+        return scheme == Qt.ColorScheme.Dark
+
+    def setDarkMode(self):
         """Set dark mode"""
-        if setdarkmode:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            self.text_color = QColorConstants.White
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
 
-            self.setPalette(darkPalette)
-            self.callsignField.setPalette(darkPalette)
+        setdarkmode = self.is_it_dark()
+        if setdarkmode is True:
+            self.text_color = QColorConstants.White
             self.update()
         else:
-            palette = self.style().standardPalette()
-            self.setPalette(palette)
-            self.callsignField.setPalette(palette)
             self.text_color = QColorConstants.Black
             self.update()
 

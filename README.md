@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-3-31] Maybe try and do something useful with the detection of the systems dark mode.
 - [25-3-27-1] Detect system dark mode.
 - [25-3-27] Add more DI and PH mode to stats window.
 - [25-3-26] Record 0 points on dupes for each contest, excluding RandomGram.
