@@ -194,6 +194,7 @@ class LogWindow(QDockWidget):
                 self.generalLog.setColumnHidden(self.get_column(column), False)
                 self.focusedLog.setColumnHidden(self.get_column(column), False)
         if msg.get("cmd", "") == "DARKMODE":
+            print(f".................{msg.get("state", False)=}")
             self.set_dark_mode(msg.get("state", False))
 
     def resize_headers_to_match(self) -> None:
