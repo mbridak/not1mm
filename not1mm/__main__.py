@@ -1027,8 +1027,8 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["state"] = setdarkmode
         # if self.log_window:
         #     self.log_window.msg_from_main(cmd)
-        # if self.bandmap_window:
-        #     self.bandmap_window.msg_from_main(cmd)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
         # if self.check_window:
         #     self.check_window.msg_from_main(cmd)
         # if self.vfo_window:
