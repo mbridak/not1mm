@@ -21,7 +21,7 @@ from json import loads
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal
 
 import not1mm.fsutils as fsutils
 
@@ -488,8 +488,17 @@ class BandMapWindow(QDockWidget):
         if packet.get("cmd", "") == "DARKMODE":
             self.setDarkMode(packet.get("state", False))
 
+    def is_it_dark(self) -> bool:
+        """Returns if the DE has a dark theme active."""
+        hints = QtGui.QGuiApplication.styleHints()
+        scheme = hints.colorScheme()
+        return scheme == Qt.ColorScheme.Dark
+
     def setDarkMode(self, setdarkmode=False):
         """Set dark mode"""
+
+        print(f".................{setdarkmode=}")
+        setdarkmode = self.is_it_dark()
         print(f".................{setdarkmode=}")
         if setdarkmode is True:
             self.text_color = QColorConstants.White
