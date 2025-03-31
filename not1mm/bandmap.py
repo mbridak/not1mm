@@ -490,6 +490,7 @@ class BandMapWindow(QDockWidget):
 
     def setDarkMode(self, setdarkmode=False):
         """Set dark mode"""
+        return
         if setdarkmode:
             darkPalette = QPalette()
             darkColor = QColor(56, 56, 56)
