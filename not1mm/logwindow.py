@@ -204,6 +204,7 @@ class LogWindow(QDockWidget):
 
     def set_dark_mode(self, dark: bool) -> None:
         """Forces a darkmode palette."""
+        return
 
         if dark:
             darkPalette = QPalette()
