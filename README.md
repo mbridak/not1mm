@@ -232,7 +232,7 @@ clue me into the black magic needed to get it to work.
 
 Not1MM requires:
 
-- Python 3.9+
+- Python 3.10+
 - PyQt6
 - libportaudio2
 - libxcb-cursor0 (maybe... Depends on the distro)
