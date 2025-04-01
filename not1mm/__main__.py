@@ -240,8 +240,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
-        # self.actionDark_Mode_2.hide()
-        # self.actionDark_Mode_2.triggered.connect(self.dark_mode_state_changed)
         self.actionCommand_Buttons_2.triggered.connect(
             self.command_buttons_state_change
         )
@@ -1025,18 +1023,9 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd = {}
         cmd["cmd"] = "DARKMODE"
         cmd["state"] = setdarkmode
-        # if self.log_window:
-        #     self.log_window.msg_from_main(cmd)
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
-        # if self.check_window:
-        #     self.check_window.msg_from_main(cmd)
-        # if self.vfo_window:
-        #     self.vfo_window.msg_from_main(cmd)
-        # if self.rate_window:
-        #     self.rate_window.msg_from_main(cmd)
-        # if self.statistics_window:
-        #     self.statistics_window.msg_from_main(cmd)
+
 
         if setdarkmode:
             darkPalette = QPalette()
@@ -3038,22 +3027,22 @@ class MainWindow(QtWidgets.QMainWindow):
         except (IOError, TypeError, ValueError) as exception:
             logger.critical("Error: %s", exception)
 
-        if self.pref.get("run_state"):
+        if self.pref.get("run_state", False) is True:
             self.radioButton_run.setChecked(True)
         else:
             self.radioButton_sp.setChecked(True)
 
-        if self.pref.get("command_buttons"):
+        if self.pref.get("command_buttons", False) is True:
             self.actionCommand_Buttons.setChecked(True)
         else:
             self.actionCommand_Buttons.setChecked(False)
 
-        if self.pref.get("cw_macros"):
+        if self.pref.get("cw_macros", False) is True:
             self.actionCW_Macros.setChecked(True)
         else:
             self.actionCW_Macros.setChecked(False)
 
-        if self.pref.get("bands_modes"):
+        if self.pref.get("bands_modes", False) is True:
             self.actionMode_and_Bands.setChecked(True)
         else:
             self.actionMode_and_Bands.setChecked(False)
@@ -3062,13 +3051,6 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["cmd"] = "REFRESH_LOOKUP"
         if self.lookup_service:
             self.lookup_service.msg_from_main(cmd)
-
-        # if self.pref.get("darkmode"):
-        # self.actionDark_Mode_2.setChecked(True)
-        # self.setDarkMode(True)
-        # else:
-        # self.setDarkMode(False)
-        # self.actionDark_Mode_2.setChecked(False)
 
         try:
             if self.rtc_thread.isRunning():
@@ -3092,7 +3074,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except ValueError:
             self.auto_cq_delay = 15000
 
-        if self.pref.get("send_rtc_scores", False):
+        if self.pref.get("send_rtc_scores", False) is True:
             self.rtc_service = RTCService()
             self.rtc_service.moveToThread(self.rtc_thread)
             self.rtc_thread.started.connect(self.rtc_service.run)
@@ -3112,7 +3094,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rig_control = None
         self.fldigi_util = FlDigi_Comm()
 
-        if self.pref.get("useflrig", False):
+        if self.pref.get("useflrig", False) is True:
             logger.debug(
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
@@ -3129,7 +3111,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rig_control.poll_callback.connect(self.poll_radio)
             self.radio_thread.start()
 
-        elif self.pref.get("userigctld", False):
+        elif self.pref.get("userigctld", False) is True:
             logger.debug(
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
@@ -3250,12 +3232,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.update_rtc_xml()
 
-    def dark_mode_state_changed(self) -> None:
-        """Called when the Dark Mode menu state is changed."""
-        # self.pref["darkmode"] = self.actionDark_Mode_2.isChecked()
-        # self.write_preference()
-        # # self.setDarkMode(self.actionDark_Mode_2.isChecked())
-
     def rtc_response(self, response):
         print(f"{response=}")
 
@@ -3326,7 +3302,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         """
 
-        if self.pref.get("command_buttons"):
+        if self.pref.get("command_buttons", False) is True:
             self.Command_Buttons.show()
         else:
             self.Command_Buttons.hide()
