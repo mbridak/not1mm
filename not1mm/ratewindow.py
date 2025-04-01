@@ -15,7 +15,6 @@ import os
 
 from PyQt6 import uic
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtCore import pyqtSignal, QTimer
 
 import not1mm.fsutils as fsutils
@@ -46,16 +45,12 @@ class RateWindow(QDockWidget):
         self.database.current_contest = self.pref.get("contest", 0)
 
         uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
-        self.hide_unused()
         self.timer = QTimer()
         self.timer.timeout.connect(self.get_run_and_total_qs)
         self.timer.start(1000)
 
     def msg_from_main(self, packet):
         """"""
-        if packet.get("cmd", "") == "DARKMODE":
-            self.setDarkMode(packet.get("state", False))
-            return
 
         if self.active is False:
             return
@@ -70,47 +65,6 @@ class RateWindow(QDockWidget):
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
-
-    def setDarkMode(self, dark: bool) -> None:
-        """Forces a darkmode palette."""
-        return
-        if dark:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
-
-            self.setPalette(darkPalette)
-        else:
-            palette = self.style().standardPalette()
-            self.setPalette(palette)
 
     def load_pref(self) -> None:
         """
@@ -136,7 +90,6 @@ class RateWindow(QDockWidget):
 
         except (IOError, JSONDecodeError) as exception:
             logger.critical("Error: %s", exception)
-        self.setDarkMode(self.pref.get("darkmode", False))
 
     def get_run_and_total_qs(self):
         """get numbers"""
@@ -222,7 +175,6 @@ class RateWindow(QDockWidget):
             sandp = result.get("totalqs", 0) - result.get("runs", 0)
             self.run_qso.setText(f"{result.get('runs', 0)}")
             self.sandp_qso.setText(f"{sandp}")
-            self.qso_counts.setText(f"{result.get('totalqs', 0)} pts")
         except TypeError:
             ...
 
@@ -235,32 +187,3 @@ class RateWindow(QDockWidget):
             self.hour_sandp_qso.setText(f"{sandp}")
         except TypeError:
             ...
-
-    def hide_unused(self):
-        self.line.hide()
-        self.label_10.hide()
-        self.time_on.hide()
-        self.label_12.hide()
-        self.time_off.hide()
-
-        self.band_mode.hide()
-        self.label_23.hide()
-        self.avg_km.hide()
-        self.label_25.hide()
-        self.avg_pts.hide()
-        self.best_dx.hide()
-        self.label_26.hide()
-
-        self.line_5.hide()
-        self.label_29.hide()
-        self.label_30.hide()
-        self.time_by_mult.hide()
-        self.label_32.hide()
-        self.qso_counts.hide()
-        self.label_34.hide()
-        self.mult_counts.hide()
-        self.label_35.hide()
-        self.mult_worth.hide()
-
-        self.line_6.hide()
-        self.label_38.hide()
