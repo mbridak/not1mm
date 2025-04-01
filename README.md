@@ -215,24 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-3-31-1] Recolor rate window lables.
-- [25-3-31] Maybe try and do something useful with the detection of the systems dark mode.
-- [25-3-27-1] Detect system dark mode.
-- [25-3-27] Add more DI and PH mode to stats window.
-- [25-3-26] Record 0 points on dupes for each contest, excluding RandomGram.
-- [25-3-25-1] Improved process messaging.
-- [25-3-25] Use safer dict key access in the stats window.
-- [25-3-24] Add CW, PH, DI counts to the statistics window.
-- [25-3-23] Add a statistics window.
-- [25-3-19-1] Add EA His Maj King of Spain SSB.
-- [25-3-19] Merged PR from @DD5ML Adding DARC VHF.
-- [25-3-18] Add His Maj King of Spain CW
-- [25-3-17] Add EA RTTY contest.
-- [25-3-14] Add call history support to ARR Field Day.
-- [25-3-10] Slight change to adif header. Slight change to CAT status icon state.
-- [25-3-5] Added checks for blank/comment lines in the macros
-- [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
-- [25-3-1] Add {OTHER1} and {OTHER2} macros.
+- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

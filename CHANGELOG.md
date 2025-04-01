@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
 - [25-3-31-1] Recolor rate window lables.
 - [25-3-31] Maybe try and do something useful with the detection of the systems dark mode.
 - [25-3-27-1] Detect system dark mode.
