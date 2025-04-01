@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "25.3.31"
+version = "25.3.31.1"
 description = "NOT1MM Logger"
 license = { text = "GPL-3.0-or-later" }
 readme = "README.md"
