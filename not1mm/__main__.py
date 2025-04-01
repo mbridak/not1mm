@@ -1947,6 +1947,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionStatistics.isChecked():
             self.statistics_window.show()
             self.statistics_window.setActive(True)
+            self.statistics_window.get_run_and_total_qs()
         else:
             self.statistics_window.hide()
             self.statistics_window.setActive(False)
