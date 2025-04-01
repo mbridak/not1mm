@@ -585,11 +585,17 @@ appear. Those without will not.
 
 On the Options TAB you can:
 
-- Select to use Enter Sends Message (ESM), and configure it's function keys.
-- Select whether or not to use Call History info.
+- Select to use Enter Sends Message ([ESM](#esm)), and configure it's function keys.
+- Select whether or not to use [Call History](#call-history-files) info.
 - Select whether or not to send XML score info to online scoreboards.
 
 ![Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
+
+Three realtime score boards are supported:
+
+- Real Time Contest Server at hamscore.com
+- Contest Online ScoreBoard at contestonlinescore.com
+- LiveScore at contest.run
 
 ## Logging WSJT-X FT8/FT4/ETC and FLDIGI RTTY contacts
 
