@@ -2,7 +2,6 @@ not1mm/.vscode
 /.venv
 /dist
 /not1mm.egg-info
-/publish.sh
 /.flatpak-builder
 /builddir
 /.pytest_cache
