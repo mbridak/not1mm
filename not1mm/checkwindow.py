@@ -17,7 +17,7 @@ import Levenshtein
 
 from PyQt6 import uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
-from PyQt6.QtGui import QMouseEvent, QColorConstants, QPalette, QColor
+from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
@@ -62,9 +62,7 @@ class CheckWindow(QDockWidget):
 
     def msg_from_main(self, packet):
         """"""
-        if packet.get("cmd", "") == "DARKMODE":
-            self.setDarkMode(packet.get("state", False))
-            return
+
         if packet.get("cmd", "") == "UPDATELOG":
             self.clear_lists()
             return
@@ -97,47 +95,6 @@ class CheckWindow(QDockWidget):
             cmd["call"] = item
             self.message.emit(cmd)
 
-    def setDarkMode(self, dark: bool) -> None:
-        """Forces a darkmode palette."""
-        return
-        if dark:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
-
-            self.setPalette(darkPalette)
-        else:
-            palette = self.style().standardPalette()
-            self.setPalette(palette)
-
     def load_pref(self) -> None:
         """
         Load preference file to get current db filename and sets the initial darkmode state.
@@ -162,7 +119,6 @@ class CheckWindow(QDockWidget):
 
         except IOError as exception:
             logger.critical("Error: %s", exception)
-        self.setDarkMode(self.pref.get("darkmode", False))
 
     def clear_lists(self) -> None:
         """

@@ -20,7 +20,6 @@ import math
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QItemSelectionModel
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QColorConstants, QPalette, QColor
 from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
@@ -193,58 +192,11 @@ class LogWindow(QDockWidget):
                     column = "Freq (Khz)"
                 self.generalLog.setColumnHidden(self.get_column(column), False)
                 self.focusedLog.setColumnHidden(self.get_column(column), False)
-        if msg.get("cmd", "") == "DARKMODE":
-            print(f".................{msg.get("state", False)=}")
-            self.set_dark_mode(msg.get("state", False))
 
     def resize_headers_to_match(self) -> None:
         """"""
         for i in range(self.generalLog.columnCount()):
             self.focusedLog.setColumnWidth(i, self.generalLog.columnWidth(i))
-
-    def set_dark_mode(self, dark: bool) -> None:
-        """Forces a darkmode palette."""
-        return
-
-        if dark:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
-
-            self.setPalette(darkPalette)
-            self.current_palette = darkPalette
-        else:
-            palette = self.style().standardPalette()
-            self.setPalette(palette)
-            self.current_palette = palette
 
     def get_column(self, name: str) -> int:
         """
@@ -303,7 +255,6 @@ class LogWindow(QDockWidget):
         self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
         self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
         self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
-        self.set_dark_mode(self.pref.get("darkmode", False))
 
     def load_new_db(self) -> None:
         """

@@ -20,7 +20,6 @@ import serial
 from PyQt6 import QtCore, QtWidgets, uic
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QColorConstants, QPalette, QColor
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
@@ -54,50 +53,6 @@ class VfoWindow(QDockWidget):
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
         self.visibilityChanged.connect(self.window_state_changed)
-
-    def setDarkMode(self, dark: bool) -> None:
-        """Forces a darkmode palette."""
-        return
-        if dark:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
-
-            self.current_palette = darkPalette
-            self.setPalette(darkPalette)
-            self.text_color = QColorConstants.White
-        else:
-            palette = self.style().standardPalette()
-            self.current_palette = palette
-            self.setPalette(palette)
 
     def load_pref(self) -> None:
         """
@@ -137,7 +92,6 @@ class VfoWindow(QDockWidget):
                 int(self.pref.get("CAT_port", 4532)),
             )
             self.timer.start(100)
-        self.setDarkMode(self.pref.get("darkmode", False))
 
     def discover_device(self) -> str:
         """
@@ -222,8 +176,6 @@ class VfoWindow(QDockWidget):
             except AttributeError:
                 logger.critical("Unable to write to serial device.")
             return
-        if msg_dict.get("cmd", "") == "DARKMODE":
-            self.setDarkMode(msg_dict.get("state", False))
 
     def showNumber(self, the_number) -> None:
         """Display vfo value with dots"""
