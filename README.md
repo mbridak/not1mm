@@ -626,7 +626,8 @@ pressing F1 - F12. See next section on Editing macro keys.
 
 If you press `SHIFT-F1` The Auto CQ mode will be activated and the F1 macro will be resent
 after each Auto CQ Delay interval has passed. The delay can be changed by going to the
-`Options` TAB in the Configuration dialog.
+`Options` TAB in the Configuration dialog. If you are in S&P mode, you will be automatically
+switched into RUN mode.
 
 The auto CQ can be cancelled by either typing in the call sign field, or by pressing ESC.
 
