@@ -26,7 +26,7 @@
    </font>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::FocusPolicy::NoFocus</enum>
+   <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Not1MM</string>
@@ -46,7 +46,7 @@
     <bool>true</bool>
    </property>
    <property name="focusPolicy">
-    <enum>Qt::FocusPolicy::NoFocus</enum>
+    <enum>Qt::NoFocus</enum>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -747,7 +747,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>callsign</string>
@@ -791,7 +791,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>RST Sent</string>
@@ -832,7 +832,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>RST Received</string>
@@ -867,7 +867,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
@@ -908,7 +908,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::FocusPolicy::ClickFocus</enum>
+                  <enum>Qt::ClickFocus</enum>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
@@ -955,7 +955,7 @@
             <item>
              <widget class="QRadioButton" name="radioButton_run">
               <property name="focusPolicy">
-               <enum>Qt::FocusPolicy::NoFocus</enum>
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="accessibleName">
                <string>Run Mode</string>
@@ -968,7 +968,7 @@
             <item>
              <widget class="QRadioButton" name="radioButton_sp">
               <property name="focusPolicy">
-               <enum>Qt::FocusPolicy::NoFocus</enum>
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="accessibleName">
                <string>Search and Pounce</string>
@@ -987,7 +987,10 @@
                </sizepolicy>
               </property>
               <property name="focusPolicy">
-               <enum>Qt::FocusPolicy::NoFocus</enum>
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="toolTip">
+               <string>CW Keyer Speed</string>
               </property>
               <property name="wrapping">
                <bool>false</bool>
@@ -1074,7 +1077,7 @@
              <item>
               <widget class="QPushButton" name="F1">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F1</string>
@@ -1087,7 +1090,7 @@
              <item>
               <widget class="QPushButton" name="F2">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F2</string>
@@ -1100,7 +1103,7 @@
              <item>
               <widget class="QPushButton" name="F3">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F3</string>
@@ -1113,7 +1116,7 @@
              <item>
               <widget class="QPushButton" name="F4">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F4</string>
@@ -1126,7 +1129,7 @@
              <item>
               <widget class="QPushButton" name="F5">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F5</string>
@@ -1139,7 +1142,7 @@
              <item>
               <widget class="QPushButton" name="F6">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F6</string>
@@ -1173,7 +1176,7 @@
              <item>
               <widget class="QPushButton" name="F7">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F7</string>
@@ -1186,7 +1189,7 @@
              <item>
               <widget class="QPushButton" name="F8">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F8</string>
@@ -1199,7 +1202,7 @@
              <item>
               <widget class="QPushButton" name="F9">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F9</string>
@@ -1212,7 +1215,7 @@
              <item>
               <widget class="QPushButton" name="F10">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F10</string>
@@ -1225,7 +1228,7 @@
              <item>
               <widget class="QPushButton" name="F11">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F11</string>
@@ -1238,7 +1241,7 @@
              <item>
               <widget class="QPushButton" name="F12">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F12</string>
@@ -1269,7 +1272,7 @@
              <item>
               <widget class="QPushButton" name="esc_stop">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Esc: STOP</string>
@@ -1279,7 +1282,7 @@
              <item>
               <widget class="QPushButton" name="wipe">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Wipe</string>
@@ -1289,7 +1292,7 @@
              <item>
               <widget class="QPushButton" name="log_it">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Log It</string>
@@ -1299,7 +1302,7 @@
              <item>
               <widget class="QPushButton" name="edit">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1309,7 +1312,7 @@
              <item>
               <widget class="QPushButton" name="mark">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Mark</string>
@@ -1319,7 +1322,7 @@
              <item>
               <widget class="QPushButton" name="store">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1329,7 +1332,7 @@
              <item>
               <widget class="QPushButton" name="spot_it">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Spot It</string>
@@ -1339,7 +1342,7 @@
              <item>
               <widget class="QPushButton" name="qrz">
                <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::NoFocus</enum>
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1407,6 +1410,9 @@
         </item>
         <item>
          <widget class="QLabel" name="mults">
+          <property name="toolTip">
+           <string>QSOs/Mults</string>
+          </property>
           <property name="text">
            <string>mults</string>
           </property>
@@ -1427,6 +1433,9 @@
         </item>
         <item>
          <widget class="QLabel" name="score">
+          <property name="toolTip">
+           <string>Points</string>
+          </property>
           <property name="text">
            <string>Score</string>
           </property>
