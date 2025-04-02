@@ -65,6 +65,9 @@
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="toolTip">
+         <string>Connect to DX cluster.</string>
+        </property>
         <property name="accessibleName">
          <string>connect</string>
         </property>
@@ -97,8 +100,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>326</width>
-         <height>512</height>
+         <width>328</width>
+         <height>565</height>
         </rect>
        </property>
        <property name="font">
@@ -144,20 +147,23 @@
       </property>
       <item>
        <widget class="QPushButton" name="clearButton">
+        <property name="maximumSize">
+         <size>
+          <width>1110</width>
+          <height>27</height>
+         </size>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="toolTip">
+         <string>Erase All Spots</string>
         </property>
         <property name="accessibleName">
          <string>clear spots</string>
         </property>
         <property name="accessibleDescription">
          <string>clear spots</string>
-        </property>
-        <property name="maximumSize">
-         <size>
-         <width>1110</width>
-          <height>27</height>
-         </size>
         </property>
         <property name="text">
          <string>🗑 Spots</string>
@@ -174,12 +180,15 @@
         </property>
         <property name="maximumSize">
          <size>
-         <width>1110</width>
+          <width>1110</width>
           <height>27</height>
          </size>
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="toolTip">
+         <string>Erase Marked Spots</string>
         </property>
         <property name="text">
          <string>🗑 Marked</string>
@@ -197,6 +206,9 @@
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="toolTip">
+         <string>Zoom In</string>
+        </property>
         <property name="accessibleName">
          <string>zoom in</string>
         </property>
@@ -204,7 +216,7 @@
          <string>zoom in</string>
         </property>
         <property name="text">
-         <string>➕</string>
+         <string>+</string>
         </property>
        </widget>
       </item>
@@ -219,6 +231,9 @@
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="toolTip">
+         <string>Zoom Out</string>
+        </property>
         <property name="accessibleName">
          <string>zoom out</string>
         </property>
@@ -226,7 +241,7 @@
          <string>zoom out</string>
         </property>
         <property name="text">
-         <string>➖</string>
+         <string>-</string>
         </property>
        </widget>
       </item>
@@ -257,6 +272,9 @@
        <widget class="QSpinBox" name="clear_spot_olderSpinBox">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="toolTip">
+         <string>Clear spots older than x minutes old</string>
         </property>
         <property name="accessibleName">
          <string>clear spots older than</string>
