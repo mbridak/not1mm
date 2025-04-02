@@ -309,7 +309,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="label_18">
           <property name="text">
-           <string>   Hour Run QSO:</string>
+           <string> Hour Run QSO:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -335,7 +335,7 @@
         <item row="3" column="0">
          <widget class="QLabel" name="label_17">
           <property name="text">
-           <string>   Hour S&amp;P QSO:</string>
+           <string> Hour S&amp;P QSO:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

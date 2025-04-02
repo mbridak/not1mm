@@ -160,11 +160,11 @@ class RateWindow(QDockWidget):
                 ...
 
         # Get rate for the current hour
-        query = f"SELECT strftime('%Y-%m-%d %H:00:00','now') as limit_stamp, strftime('%H:00:00','now') as current_hour, count(*) as items FROM DXLOG where ContestNR = {self.database.current_contest} and datetime(TS) > limit_stamp;"
+        query = f"SELECT strftime('%Y-%m-%d %H:00:00','now') as limit_stamp, strftime('%H00','now') as current_hour, count(*) as items FROM DXLOG where ContestNR = {self.database.current_contest} and datetime(TS) > limit_stamp;"
         result = self.database.exec_sql(query)
 
         self.since_lasthour_label.setText(
-            f"Since {result.get('current_hour', '00:00:00')}z:"
+            f"Since {result.get('current_hour', '0000')}z:"
         )
         self.since_lasthour.setText(f"{result.get('items', '0')} QSO")
 
