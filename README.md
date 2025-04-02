@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
 - [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
