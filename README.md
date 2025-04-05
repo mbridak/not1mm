@@ -209,6 +209,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - RandomGram
 - RAC Canada Day
 - REF CW, SSB
+- SPDX
 - Stew Perry Topband
 - Weekly RTTY
 - Winter Field Day
