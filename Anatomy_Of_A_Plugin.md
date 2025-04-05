@@ -91,4 +91,44 @@ if result:
 
 ## Making a new plugin by modifying an old one
 
-A usually easy path to making a new contest plugin is finding an existing plug in for another contest that has the same exchange, then modifying it for the points and multipliers. [here](./contest_exchanges.md) is a pretty good list or contests and their exchange types.
+Usually the easiest path to making a new contest plugin is finding an existing plug in for another contest that has the same exchange, then modifying it for the points and multipliers. [Here](./contest_exchanges.md) is a pretty good list of contests and their exchange types.
+
+## Inserting a new contest so it appears in the dropdown list
+
+To insert the contest in the list of available contests, load the new_contest.ui file. This is an XML file, fine the section of the file containing the contest names. It will look something like this:
+
+```xml
+     <item>
+      <property name="text">
+       <string>REF SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>STEW PERRY TOPBAND</string>
+      </property>
+     </item>    
+```
+
+Copy a snippet enclosed in the `<item>...</item>` tags and insert it and modify it with your contest name.
+
+```xml
+     <item>
+      <property name="text">
+       <string>REF SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SOME CONTEST NAME</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>STEW PERRY TOPBAND</string>
+      </property>
+     </item>
+```
+
+When someone selects `SOME CONTEST NAME` from the dropdown. It will convert the name to lowercase, and replace any spaces with underscores and tack a `.py` to the end of it. It will then try and load it from the `plugins` directory. In this case `some_contest_name.py`
+
