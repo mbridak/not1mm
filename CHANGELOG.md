@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-5] Add SPDX.
 - [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
 - [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
 - [25-3-31-1] Recolor rate window lables.
