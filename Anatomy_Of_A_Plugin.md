@@ -51,3 +51,44 @@ There are 5 text entry boxes on the main screen. These are paired with a text la
 `cabrillo()` Generates a Cabrillo file, filling out the usual fields from Station and Contest settings. Usually needs to be tweaked for each contest.
 
 `recalculate_mult()` Often if a contact is edited after it had been logged. It may change the contacts possible multiplier status. This method can be called from the main window to recalculate all of the logged contacts multiplier status.
+
+## Getting Station and Contact Locations
+
+Often you may need to know if a contact or the station is located in particular country or continent or other information for the purpose of scoring. You can get this information with the following code snippet.
+
+```python
+mycountry = ""
+mycontinent = ""
+mycqzone = ""
+myituzone = ""
+myprimary_pfx = ""
+
+hiscountry = ""
+hiscontinent = ""
+hiscqzone = ""
+hisituzone = ""
+hisprimary_pfx = ""
+
+result = self.cty_lookup(self.station.get("Call", ""))
+if result:
+    for item in result.items():
+        mycountry = item[1].get("entity", "")
+        mycontinent = item[1].get("continent", "")
+        mycqzone = item[1].get("cq", "")
+        myituzone = item[1].get("itu", "")
+        myprimary_pfx = item[1].get("primary_pfx", "")
+
+
+result = self.cty_lookup(self.contact.get("Call", ""))
+if result:
+    for item in result.items():
+        hiscountry = item[1].get("entity", "")
+        hiscontinent = item[1].get("continent", "")
+        hiscqzone = item[1].get("cq", "")
+        hisituzone = item[1].get("itu", "")
+        hisprimary_pfx = item[1].get("primary_pfx", "")
+```
+
+## Making a new plugin by modifying an old one
+
+A usually easy path to making a new contest plugin is finding an existing plug in for another contest that has the same exchange, then modifying it for the points and multipliers. [here](./contest_exchanges.md) is a pretty good list or contests and their exchange types.
