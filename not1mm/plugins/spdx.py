@@ -1,4 +1,4 @@
-"""rac canada day"""
+"""sp dx contest"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -192,7 +192,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "RAC-CANADA-DAY")
+    gen_adif(self, cabrillo_name, "SPDXContest")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
