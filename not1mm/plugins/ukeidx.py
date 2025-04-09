@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "# or # And Dist"
 
-name = "UKEICC"
-cabrillo_name = "UKEICC"
+name = "UKEI-DX"
+cabrillo_name = "UKEI-DX"
 mode = "BOTH"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [
