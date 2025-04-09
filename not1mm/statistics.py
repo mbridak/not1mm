@@ -6,7 +6,7 @@ import os
 
 from PyQt6 import uic, QtWidgets
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -98,6 +98,7 @@ class StatsWindow(QDockWidget):
         if self.active is False:
             return
         self.tableWidget.clear()
+        self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setHorizontalHeaderLabels(
             ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "PTS"]
