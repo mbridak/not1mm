@@ -1,6 +1,8 @@
 # Changelog
 
 - [25-4-9] Added UKEI DX
+- [25-4-8] Remove focus from statistics table widget.
+- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
 - [25-4-5] Add SPDX.
 - [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
 - [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
