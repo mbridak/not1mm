@@ -795,12 +795,20 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 with open(filename, "rt", encoding="utf-8") as file_descriptor:
                     lines = file_descriptor.readlines()
-                    if "!!Order!!" in lines[0]:
-                        item_names = lines[0].strip().split(",")
+                    substring_to_find = "!!Order!!"
+                    found_index = -1  # Initialize to -1 to indicate not found
+
+                    for index, item in enumerate(lines):
+                        if substring_to_find in item:
+                            found_index = index
+                            break  # Exit the loop once found
+
+                    if found_index != -1:
+                        item_names = lines[found_index].strip().split(",")
                         # ['!!Order!!', 'Call', 'Sect', 'State', 'CK', 'UserText', '']
                         item_names = item_names[1:]
                         # ['Call', 'Sect', 'State', 'CK', 'UserText', '']
-                        lines = lines[1:]
+                        lines = lines[found_index + 1 :]
                         group_list = []
                         for line in lines:
                             if line.startswith("#"):
@@ -1025,7 +1033,6 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd["state"] = setdarkmode
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
-
 
         if setdarkmode:
             darkPalette = QPalette()
