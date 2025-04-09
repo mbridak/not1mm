@@ -63,8 +63,6 @@ def interface(self):
     self.field1.setAccessibleName("RST Sent")
     self.other_label.setText("Sent Nr")
     self.field2.setAccessibleName("Sent Number")
-
-    # label = self.field4.findChild(QtWidgets.QLabel)
     self.exch_label.setText("# and Dist")
     self.field4.setAccessibleName("Number and District")
 
@@ -97,11 +95,7 @@ def set_tab_prev(self):
 
 def validate(self):
     """doc"""
-    # exchange = self.other_2.text().upper().split()
-    # if len(exchange) == 2:
-    #     if exchange[0].isdigit() and exchange[2].isalpha():
-    #         return True
-    # return False
+    return True
 
 
 def set_contact_vars(self):
@@ -110,12 +104,6 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
-    # exchange = self.other_2.text().upper().split()
-    # if len(exchange) == 3:
-    #     self.contact["Name"] = exchange[0]
-    #     self.contact["Comment"] = name
-    # if validate(self) is False:
-    #     self.show_message_box("The exchange was invalid.")
 
 
 def predupe(self):
@@ -227,7 +215,16 @@ def points(self):
 
 def show_mults(self):
     """Return display string for mults"""
-    return 0
+
+    query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
+    result = self.database.exec_sql(query)
+    dxcc_count = result.get("dxcc_count", 0)
+
+    query = f"SELECT COUNT(DISTINCT SUBSTR(NR, LENGTH(NR) - 1)) as code_count FROM DXLOG WHERE ContestNR = {self.pref.get('contest', '1')}  and typeof(NR) = 'text';"
+    result = self.database.exec_sql(query)
+    code_count = result.get("code_count", 0)
+
+    return dxcc_count + code_count
 
 
 def show_qso(self):
@@ -246,7 +243,8 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        return contest_points
+        mults = show_mults(self)
+        return contest_points * mults
     return 0
 
 
@@ -448,7 +446,10 @@ def cabrillo(self, file_encoding):
                 if len(nr) == 2:
                     nr = nr[0].zfill(3) + " " + nr[1]
                 else:
-                    nr = nr[0].zfill(3) + " --"
+                    if nr[0][-2:].isalpha():
+                        nr = nr[0][:-2].zfill(3) + " " + nr[0][-2:]
+                    else:
+                        nr = nr[0].zfill(3) + " --"
 
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
