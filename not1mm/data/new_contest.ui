@@ -444,6 +444,11 @@
      </item>
      <item>
       <property name="text">
+       <string>UKEIDX</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>WEEKLY RTTY</string>
       </property>
      </item>

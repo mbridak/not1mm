@@ -109,6 +109,7 @@
       - [The exchange](#the-exchange)
     - [RAEM](#raem)
     - [RandomGram](#randomgram)
+    - [UKEI DX](#ukei-dx)
 
 ## What and Why is Not1MM
 
@@ -211,11 +212,13 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - REF CW, SSB
 - SPDX
 - Stew Perry Topband
+- UK/EI DX
 - Weekly RTTY
 - Winter Field Day
 
 ## Recent Changes
 
+- [25-4-9] Added UKEI DX
 - [25-4-8] Remove focus from statistics table widget.
 - [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
 - [25-4-5] Add SPDX.
@@ -1002,3 +1005,8 @@ for me 33N117W. And in the exchange macro put `# {EXCH}`.
 ### RandomGram
 
 This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in the user's home directory to populate the next group in the sent exchange field.
+
+### UKEI DX
+
+For the Run exchange macro I'd put '{SNT} # {EXCH}'
+

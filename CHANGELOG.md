@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-9] Added UKEI DX
 - [25-4-8] Remove focus from statistics table widget.
 - [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
 - [25-4-5] Add SPDX.
