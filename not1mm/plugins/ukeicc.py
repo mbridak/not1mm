@@ -13,7 +13,7 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Name + 10-10# + SPC"
+EXCHANGE_HINT = "# or # And Dist"
 
 name = "UKEICC"
 cabrillo_name = "UKEICC"
@@ -46,13 +46,16 @@ def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
+    self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
+    self.other_label.setText("Sent Nr")
+    self.field2.setAccessibleName("Sent Number")
+
     # label = self.field4.findChild(QtWidgets.QLabel)
-    self.exch_label.setText("Name 1010# SPC")
-    self.field4.setAccessibleName("Name 10 10 # SPC")
+    self.exch_label.setText("# and Dist")
+    self.field4.setAccessibleName("Number and District")
 
 
 def reset_label(self):
@@ -64,8 +67,8 @@ def set_tab_next(self):
     self.tab_next = {
         self.callsign: self.sent,
         self.sent: self.receive,
-        self.receive: self.other_2,
-        self.other_1: self.callsign,
+        self.receive: self.other_1,
+        self.other_1: self.other_2,
         self.other_2: self.callsign,
     }
 
@@ -77,17 +80,17 @@ def set_tab_prev(self):
         self.sent: self.callsign,
         self.receive: self.sent,
         self.other_1: self.receive,
-        self.other_2: self.receive,
+        self.other_2: self.other_1,
     }
 
 
 def validate(self):
     """doc"""
-    exchange = self.other_2.text().upper().split()
-    if len(exchange) == 3:
-        if exchange[0].isalpha() and exchange[1].isdigit() and exchange[2].isalpha():
-            return True
-    return False
+    # exchange = self.other_2.text().upper().split()
+    # if len(exchange) == 2:
+    #     if exchange[0].isdigit() and exchange[2].isalpha():
+    #         return True
+    # return False
 
 
 def set_contact_vars(self):
@@ -95,7 +98,7 @@ def set_contact_vars(self):
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    self.contact["SentNr"] = self.other_1.text()
     exchange = self.other_2.text().upper().split()
     if len(exchange) == 3:
         self.contact["Name"] = exchange[0]
@@ -110,7 +113,13 @@ def predupe(self):
 
 def prefill(self):
     """Fill sentnr"""
-    self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
+    exch = str(self.contest_settings.get("SentExchange", 0))
+    result = self.database.get_serial()
+    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    if serial_nr == "None":
+        serial_nr = "001"
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(exch.replace("#", serial_nr))
 
 
 def points(self):
@@ -344,14 +353,26 @@ def cabrillo(self, file_encoding):
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+                sentnr = str(contact.get("SentNr", "")).upper().split()
+                if len(sentnr) == 2:
+                    sentnr = sentnr[0].zfill(3) + " " + sentnr[1]
+                else:
+                    sentnr = sentnr[0].zfill(3) + " --"
+
+                nr = str(contact.get("NR", "")).upper().split()
+                if len(nr) == 2:
+                    nr = nr[0].zfill(3) + " " + nr[1]
+                else:
+                    nr = nr[0].zfill(3) + " --"
+
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
+                    f"{sentnr} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{nr}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
