@@ -15,6 +15,17 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "# or # And Dist"
 
+ukei_pfx = [
+    "G",
+    "GD",
+    "GJ",
+    "GM",
+    "GI",
+    "GW",
+    "GU",
+    "EI",
+]
+
 name = "UKEI-DX"
 cabrillo_name = "UKEI-DX"
 mode = "BOTH"  # CW SSB BOTH RTTY
@@ -99,12 +110,12 @@ def set_contact_vars(self):
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
-    exchange = self.other_2.text().upper().split()
-    if len(exchange) == 3:
-        self.contact["Name"] = exchange[0]
-        self.contact["Comment"] = name
-    if validate(self) is False:
-        self.show_message_box("The exchange was invalid.")
+    # exchange = self.other_2.text().upper().split()
+    # if len(exchange) == 3:
+    #     self.contact["Name"] = exchange[0]
+    #     self.contact["Comment"] = name
+    # if validate(self) is False:
+    #     self.show_message_box("The exchange was invalid.")
 
 
 def predupe(self):
@@ -125,18 +136,92 @@ def prefill(self):
 def points(self):
     """Calc point"""
 
+    # UK/EI stations contacting :
+    # UK/EI/Europe 80m, 40m - 4 points 20m, 15m, 10m - 2 points
+    # DX (Outside Europe) 80m, 40m - 8 points 20m, 15m, 10m - 4 points
+
+    # Note : For UK/EI stations only, all QSOs will score double points between the hours of 0100z and 0459z.
+
+    # European stations contacting :
+    # UK/EI 80m, 40m - 4 points 20m, 15m, 10m - 2 points
+    # Europe 80m, 40m - 2 points 20m, 15m, 10m - 1 points
+    # DX (Outside Europe) 80m, 40m - 4 points 20m, 15m, 10m - 2 points
+
+    # DX (Outside Europe) contacting :
+    # UK/EI 80m, 40m - 8 points 20m, 15m, 10m - 4 points
+    # Europe 80m, 40m - 4 points 20m, 15m, 10m - 2 points
+    # DX (Outside Europe) 80m, 40m - 2 points 20m, 15m, 10m - 1 points
+
+    # f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
+
     if self.contact_is_dupe > 0:
         return 0
 
-    exchange = self.other_2.text().upper().split()
-    if len(exchange) == 3:
-        try:
-            tentennumber = exchange[1]
-            if int(tentennumber) > 0:
+    myprimary_pfx = ""
+    # mycountry = ""
+    mycontinent = ""
+    hisprimary_pfx = ""
+    # hiscountry = ""
+    hiscontinent = ""
+
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if result:
+        for item in result.items():
+            myprimary_pfx = item[1].get("primary_pfx", "")
+            # mycountry = item[1].get("entity", "")
+            mycontinent = item[1].get("continent", "")
+
+    result = self.cty_lookup(self.contact.get("Call", ""))
+    if result:
+        for item in result.items():
+            hisprimary_pfx = item[1].get("primary_pfx", "")
+            # hiscountry = item[1].get("entity", "")
+            hiscontinent = item[1].get("continent", "")
+
+    st = 100
+    et = 459
+    zt = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[11:16]
+    ct = int(zt[0:2]) * 100 + int(zt[3:5])
+    double_window = st <= ct <= et
+
+    # UK/EI stations:
+    if myprimary_pfx in ukei_pfx:
+        if hiscontinent == "EU":
+            if self.contact.get("Band", 0) in ["3.5", "7"]:
+                return 4 + (4 * double_window)
+            return 2 + (2 * double_window)
+        if self.contact.get("Band", 0) in ["3.5", "7"]:
+            return 8 + (8 * double_window)
+        return 4 + (4 * double_window)
+
+    # European stations:
+    if mycontinent == "EU":
+        if hisprimary_pfx in ukei_pfx:
+            if self.contact.get("Band", 0) in ["3.5", "7"]:
+                return 4
+            return 2
+        elif hiscontinent == "EU":
+            if self.contact.get("Band", 0) in ["3.5", "7"]:
                 return 2
             return 1
-        except ValueError:
-            ...
+        if self.contact.get("Band", 0) in ["3.5", "7"]:
+            return 4
+        return 2
+
+    # DX (Outside Europe)
+    if mycontinent != "EU":
+        if hisprimary_pfx in ukei_pfx:
+            if self.contact.get("Band", "") in ["3.5", "7"]:
+                return 8
+            return 4
+        elif hiscontinent == "EU":
+            if self.contact.get("Band", "") in ["3.5", "7"]:
+                return 4
+            return 2
+        if self.contact.get("Band", "") in ["3.5", "7"]:
+            return 2
+        return 1
+
     return 0
 
 
