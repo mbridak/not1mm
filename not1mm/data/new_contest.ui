@@ -214,6 +214,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ARI 40 80</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ARRL 10M</string>
       </property>
      </item>
