@@ -2223,16 +2223,6 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             self.stop_cw()
-            # if self.cw is not None:
-            #     if self.cw.servertype == 1:
-            #         self.cw.sendcw("\x1b4")
-            #         return
-            # if self.rig_control:
-            #     if self.rig_control.online:
-            #         if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-            #             if self.rig_control.interface == "flrig":
-            #                 self.rig_control.cat.set_flrig_cw_send(False)
-            #                 self.rig_control.cat.set_flrig_cw_send(True)
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
