@@ -218,6 +218,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-10] Add Auto CQ visual indicator.
 - [25-4-9] Added UKEI DX
 - [25-4-8] Remove focus from statistics table widget.
 - [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
@@ -632,9 +633,13 @@ pressing F1 - F12. See next section on Editing macro keys.
 ### Auto CQ
 
 If you press `SHIFT-F1` The Auto CQ mode will be activated and the F1 macro will be resent
-after each Auto CQ Delay interval has passed. The delay can be changed by going to the
-`Options` TAB in the Configuration dialog. If you are in S&P mode, you will be automatically
-switched into RUN mode.
+after each Auto CQ Delay interval has passed. An indicator will appear to the upper left of
+the F1 macro key as a visual reminder that your Auto CQ is active.
+
+![Auto CQ Visual Indicator](https://github.com/mbridak/not1mm/raw/master/pic/auto_cq_indicator.png)
+
+The delay can be changed by going to the `Options` TAB in the Configuration dialog. If you are in
+S&P mode when you enable Auto CQ, you will be automatically switched into RUN mode.
 
 The auto CQ can be cancelled by either typing in the call sign field, or by pressing ESC.
 

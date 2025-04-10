@@ -840,6 +840,15 @@ class MainWindow(QtWidgets.QMainWindow):
             if hasattr(self.contest, "process_esm"):
                 self.contest.process_esm(self, new_focused_widget=new)
 
+    def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
+        """Takes supplied QPushButton object and turns it blue."""
+        if the_button is not None:
+            pal = QPalette()
+            pal.isCopyOf(self.current_palette)
+            blueColor = QColor(0, 0, 128)
+            pal.setBrush(QPalette.ColorRole.Button, blueColor)
+            the_button.setPalette(pal)
+
     def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it green."""
         if the_button is not None:
@@ -2096,6 +2105,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def stop_cw(self):
         """"""
         self.auto_cq = False
+        self.leftdot.hide()
         if self.cw is not None:
             if self.cw.servertype == 1:
                 self.cw.sendcw("\x1b4")
@@ -2341,6 +2351,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 self.radioButton_run.setChecked(True)
                 self.run_sp_buttons_clicked()
+                # self.make_button_blue(self.F1)
+                self.leftdot.show()
                 self.auto_cq = True
                 self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
@@ -2896,8 +2908,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("PTT On")
         if self.rig_control:
-            self.leftdot.setPixmap(self.greendot)
-            app.processEvents()
+            # self.leftdot.setPixmap(self.greendot)
+            # app.processEvents()
             self.rig_control.ptt_on()
 
     def ptt_off(self) -> None:
@@ -2915,8 +2927,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("PTT Off")
         if self.rig_control:
-            self.leftdot.setPixmap(self.reddot)
-            app.processEvents()
+            # self.leftdot.setPixmap(self.reddot)
+            # app.processEvents()
             self.rig_control.ptt_off()
 
     def process_function_key(self, function_key, rttysendrx=True) -> None:
