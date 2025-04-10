@@ -2213,6 +2213,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.bandmap_window.msg_from_main(cmd)
             return
         if (
+            event.key() == Qt.Key.Key_R
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):  # pylint: disable=no-member
+            self.toggle_run_sp()
+            return
+        if (
             event.key() == Qt.Key.Key_W
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):  # pylint: disable=no-member
@@ -2960,6 +2966,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
                 return
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
+
+    def toggle_run_sp(self) -> None:
+        """Toggles the radioButton_run and radioButton_sp."""
+        if self.radioButton_run.isChecked():
+            self.radioButton_sp.setChecked(True)
+        else:
+            self.radioButton_run.setChecked(True)
+        self.run_sp_buttons_clicked()
 
     def run_sp_buttons_clicked(self) -> None:
         """

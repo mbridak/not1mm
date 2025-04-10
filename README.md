@@ -746,6 +746,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [SPACE] | When in the callsign field, will move the input to the first field needed for the exchange. |
 | [Enter] | Submits the fields to the log. Unless ESM is enabled. |
 | [F1-F12] | Send (CW/RTTY/Voice) macros. |
+| [CTRL-R] | Toggle between Run and S&P modes. |
 | [CTRL-S] | Spot Callsign to the cluster. |
 | [CTRL-M] | Mark Callsign to the bandmap window to work later. |
 | [CTRL-G] | Tune to a spot matching partial text in the callsign entry field (CAT Required). |
