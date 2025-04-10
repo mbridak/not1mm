@@ -1853,6 +1853,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "[CTRL-SHIFT-K] Open CW text input field.\n"
             "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
             "[CTRL-W]\tClears the input fields of any text.\n"
+            "[CTRL-R]\tToggle the Run state.\n"
         )
 
     def filepicker(self, action: str) -> str:
