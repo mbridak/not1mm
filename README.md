@@ -73,6 +73,8 @@
   - [Sending CW](#sending-cw)
     - [Sending CW Macros](#sending-cw-macros)
     - [Auto CQ](#auto-cq)
+      - [Setting the delay](#setting-the-delay)
+      - [Cancelling the Auto CQ](#cancelling-the-auto-cq)
     - [Sending CW Free Form](#sending-cw-free-form)
     - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
@@ -85,7 +87,7 @@
     - [The Log Window](#the-log-window)
       - [Editing a contact](#editing-a-contact)
     - [The Bandmap Window](#the-bandmap-window)
-    - [The Check Window](#the-check-window)
+    - [The Check Partial Window](#the-check-partial-window)
     - [The Rate Window](#the-rate-window)
     - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
@@ -224,9 +226,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - [25-4-11-2] Fixed a crash.
 - [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
 - [25-4-11] Add Scandinavian Activity Contest
-- [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
+- [25-4-10-1] Add ARI 40/80 contest. Add CTRL-R to toggle Run state.
 - [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX
+- [25-4-9] Added UKEI DX Contest.
 - [25-4-8] Remove focus from statistics table widget.
 - [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
 - [25-4-5] Add SPDX.
@@ -639,14 +641,22 @@ pressing F1 - F12. See next section on Editing macro keys.
 
 ### Auto CQ
 
-If you press `SHIFT-F1` The Auto CQ mode will be activated and the F1 macro will be resent
-after each Auto CQ Delay interval has passed. An indicator will appear to the upper left of
-the F1 macro key as a visual reminder that your Auto CQ is active.
+If you press `SHIFT-F1` The Auto CQ mode will be activated, you will be placed in a Run state
+and the F1 macro will be resent after each Auto CQ Delay interval has passed.
+An indicator will appear to the upper left of the F1 macro key as a visual reminder that your
+Auto CQ is active. With it to the right, you will see a small progress bar giving you a visual
+indication as to when F1 will fire next.
 
 ![Auto CQ Visual Indicator](https://github.com/mbridak/not1mm/raw/master/pic/auto_cq_indicator.png)
 
+#### Setting the delay
+
 The delay can be changed by going to the `Options` TAB in the Configuration dialog. If you are in
-S&P mode when you enable Auto CQ, you will be automatically switched into RUN mode.
+S&P mode when you enable Auto CQ, you will be automatically switched into RUN mode. To properly set
+the delay you should time how long your F1 macro takes to key, then add how many seconds of pause
+you would like. This is your delay value.
+
+#### Cancelling the Auto CQ
 
 The auto CQ can be cancelled by either typing in the call sign field, or by pressing ESC.
 
@@ -727,6 +737,8 @@ is this has happened, since the gridsquare will replace the word "Regional".
 
 ## Other uses for the call field
 
+**You must press the SPACE bar after entering any of the below.**
+
 - [A Frequency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
 - [CW, SSB, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
 - [OPON] Change the operator currently logging.
@@ -743,9 +755,9 @@ is this has happened, since the gridsquare will replace the word "Regional".
 
 | Key | Result |
 | -------------- | --- |
-| [Esc] | Stops cwdaemon from sending Morse. |
-| [PgUp] | Increases the cw sending speed. |
-| [PgDown] | Decreases the cw sending speed. |
+| [Esc] | Stops sending CW. |
+| [PgUp] | Increases the CW sending speed. |
+| [PgDown] | Decreases the CW sending speed. |
 | [Arrow-Up] | Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). |
 | [Arrow-Down] | Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required). |
 | [TAB] | Move cursor to the right one field. |
@@ -760,6 +772,12 @@ is this has happened, since the gridsquare will replace the word "Regional".
 | [CTRL-SHIFT-K] | Open CW text input field. |
 | [CTRL-=] | Log the contact without sending the ESM macros.|
 | [CTRL-W] | Clears the input fields of any text. |
+| [ALT-B] | Toggles the BandMap window. |
+| [ALT-C] | Toggles the Check Partial window. |
+| [ALT-L] | Toggles the QSO Log window. |
+| [ALT-R] | Toggles the Rate window. |
+| [ALT-S] | Toggles the Statistics window. |
+| [ALT-V] | Toggles the VFO window. |
 
 ### The Log Window
 
@@ -807,9 +825,9 @@ blue rectangle shows the receivers bandwidth if one is reported.
 Clicked on spots now tune the radio and set the callsign field. Previously
 worked calls are displayed in red.
 
-### The Check Window
+### The Check Partial Window
 
-`Window`>`Check Window`
+`Window`>`Check Partial Window`
 
 As you enter a callsign, the Check Window will show probable matches to calls
 either in the MASTER.SCP file, your local log or the recent telnet spots. The
@@ -873,8 +891,12 @@ change.
 
 ## ESM
 
-I caved and started working on ESM or Enter Sends Message. To test it out you can
-go to `FILE -> Configuration Settings`
+ESM or Enter Sends Message. ESM is a feature in which the logging program will automatically
+send the right function key macros based on the information present in the input fields and
+which input field is active when you press the Enter key. You can see a common flow in the
+examples below.
+
+To test it out you can go to `FILE -> Configuration Settings`
 
 ![Config Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_options.png)
 
