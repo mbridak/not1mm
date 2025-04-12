@@ -130,3 +130,21 @@ class CW:
                 logger.info(
                     "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
                 )
+
+    def winkeyer_stop(self):
+        """doc"""
+        if not self.__check_sane_ip(self.host):
+            logger.critical(f"Bad IP: {self.host}")
+            return
+        with ServerProxy(f"http://{self.host}:{self.port}") as proxy:
+            try:
+                if "clearbuffer" in self.winkeyer_functions:
+                    proxy.clearbuffer()
+            except Error as exception:
+                logger.info(
+                    "http://%s:%s, xmlrpc error: %s", self.host, self.port, exception
+                )
+            except ConnectionRefusedError:
+                logger.info(
+                    "http://%s:%s, xmlrpc Connection Refused", self.host, self.port
+                )
