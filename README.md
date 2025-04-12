@@ -219,6 +219,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-11-2] Fixed a crash.
 - [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
 - [25-4-11] Add Scandinavian Activity Contest
 - [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
