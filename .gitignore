@@ -27,3 +27,5 @@ not1mm/playsoundtest.py
 not1mm/lib/playsound.py
 not1mm/.DS_Store
 uv.lock
+not1mm/testing/inject_cabrillo.py
+not1mm/testing/readqso.py

@@ -210,6 +210,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - RandomGram
 - RAC Canada Day
 - REF CW, SSB
+- SAC CW, SSB
 - SPDX
 - Stew Perry Topband
 - UK/EI DX
@@ -218,6 +219,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-11] Add Scandinavian Activity Contest
 - [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
 - [25-4-10] Add Auto CQ visual indicator.
 - [25-4-9] Added UKEI DX
