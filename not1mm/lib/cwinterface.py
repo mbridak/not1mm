@@ -66,9 +66,9 @@ class CW:
         if texttosend:
             if self.servertype == 2:
                 self._sendcw_xmlrpc(texttosend)
-            if self.servertype == 1:
+            elif self.servertype == 1:
                 self._sendcw_udp(texttosend)
-            if self.servertype == 3:
+            elif self.servertype == 3:
                 self._sendcwcat(texttosend)
 
     def _sendcw_xmlrpc(self, texttosend):

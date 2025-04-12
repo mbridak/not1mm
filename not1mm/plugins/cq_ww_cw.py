@@ -38,7 +38,7 @@
 
 import datetime
 import logging
-
+import time
 from pathlib import Path
 
 from PyQt6 import QtWidgets
@@ -496,6 +496,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+                    time.sleep(0.2)
     else:
         if self.current_widget == "callsign":
             if len(self.callsign.text()) > 2:
@@ -521,6 +522,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
+                    time.sleep(0.2)
 
 
 def populate_history_info_line(self):

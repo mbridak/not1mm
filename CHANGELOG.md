@@ -1,5 +1,7 @@
 # Changelog
 
+- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
+- [25-4-11-2] Fixed a crash.
 - [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
 - [25-4-11] Add Scandinavian Activity Contest CW
 - [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
