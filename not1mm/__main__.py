@@ -2220,6 +2220,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.toggle_run_sp()
             return
         if (
+            event.key() == Qt.Key.Key_T
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):  # pylint: disable=no-member
+            if hasattr(self.contest, "add_test_data"):
+                self.contest.add_test_data(self)
+            return
+
+        if (
             event.key() == Qt.Key.Key_W
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):  # pylint: disable=no-member

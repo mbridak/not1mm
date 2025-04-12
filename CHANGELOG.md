@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-11] Add Scandinavian Activity Contest CW
 - [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
 - [25-4-10] Add Auto CQ visual indicator.
 - [25-4-9] Added UKEI DX

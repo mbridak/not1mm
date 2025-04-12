@@ -439,6 +439,16 @@
      </item>
      <item>
       <property name="text">
+       <string>SAC CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SAC SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>SPDX</string>
       </property>
      </item>
