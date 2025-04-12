@@ -189,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_widget = None
 
     auto_cq = False
+    auto_cq_then = datetime.datetime.now()
     auto_cq_time = datetime.datetime.now()
     auto_cq_delay = 15000
 
@@ -226,6 +227,7 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         self.cw_entry.hide()
         self.leftdot.hide()
+        self.cwprogressBar.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
         self.ft8 = FT8Watcher()
@@ -2107,6 +2109,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """"""
         self.auto_cq = False
         self.leftdot.hide()
+        self.cwprogressBar.hide()
         if self.cw is not None:
             if self.cw.servertype == 1:
                 self.cw.sendcw("\x1b4")
@@ -2361,7 +2364,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.run_sp_buttons_clicked()
                 # self.make_button_blue(self.F1)
                 self.leftdot.show()
+                self.cwprogressBar.setValue(100)
+                self.cwprogressBar.show()
                 self.auto_cq = True
+                self.auto_cq_then = datetime.datetime.now()
                 self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
                 )
@@ -3813,7 +3819,18 @@ class MainWindow(QtWidgets.QMainWindow):
         # This section has nothing to do with polling the radio
         # It's here because it gets called often enough to be useful.
         if self.auto_cq is True:
+            total_duration = self.auto_cq_time - self.auto_cq_then
+            elapsed_duration = datetime.datetime.now() - self.auto_cq_then
+            if total_duration.total_seconds() > 0:
+                percentage_complete = int(
+                    (elapsed_duration.total_seconds() / total_duration.total_seconds())
+                    * 100
+                )
+                percentage_complete = min(100, percentage_complete)
+                self.cwprogressBar.setValue(100 - percentage_complete)
+
             if datetime.datetime.now() > self.auto_cq_time:
+                self.auto_cq_then = datetime.datetime.now()
                 self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
                 )
