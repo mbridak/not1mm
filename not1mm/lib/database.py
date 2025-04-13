@@ -1217,3 +1217,63 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
             return ()
+
+    def check_dupe_on_period_1_mode(
+        self, call, band, mode, contest_start_time, contest_time_period_1
+    ) -> dict:
+        """Checks if a call is dupe on band/mode"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}' and ContestNR = {self.current_contest} AND TS >= '{contest_start_time}' AND TS <= '{contest_time_period_1}';"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def check_dupe_on_period_2_mode(
+        self,
+        call,
+        band,
+        mode,
+        contest_start_time,
+        contest_time_period_1,
+        contest_time_period_2,
+    ) -> dict:
+        """Checks if a call is dupe on band/mode"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}' and ContestNR = {self.current_contest} AND TS >= '{contest_time_period_1}' AND TS <= '{contest_time_period_2}';"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def check_dupe_on_period_3_mode(
+        self,
+        call,
+        band,
+        mode,
+        contest_start_time,
+        contest_time_period_2,
+        contest_time_period_3,
+    ) -> dict:
+        """Checks if a call is dupe on band/mode"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}' and ContestNR = {self.current_contest} AND TS >= '{contest_time_period_2}' AND TS <= '{contest_time_period_3}';"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
