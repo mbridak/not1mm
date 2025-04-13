@@ -14,7 +14,7 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Canton or #"
+EXCHANGE_HINT = "#"
 
 name = "ES LL KV"
 cabrillo_name = "ES-LL-KV"
@@ -36,38 +36,8 @@ columns = [
 
 advance_on_space = [True, True, True, True, True]
 
-# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
+# 5 Contest specific dupe check.
 dupe_type = 5
-
-cantons = [
-    "AG",
-    "AI",
-    "AR",
-    "BE",
-    "BL",
-    "BS",
-    "CH",
-    "FR",
-    "GE",
-    "GL",
-    "GR",
-    "JU",
-    "LU",
-    "NE",
-    "NW",
-    "OW",
-    "SG",
-    "SH",
-    "SO",
-    "SZ",
-    "TG",
-    "TI",
-    "UR",
-    "VD",
-    "VS",
-    "ZG",
-    "ZH",
-]
 
 
 def specific_contest_check_dupe(self, call):
@@ -249,47 +219,14 @@ def prefill(self):
 
 
 def points(self):
-    """
-    Scoring:
-    Contact with a station within the same continent: 1 point
-    Contact with a station outside the operator’s continent: 3 points
-    Contact with a station in Switzerland: 10 points
-    self.contact["CountryPrefix"]
-    self.contact["Continent"]
-    """
+    """ """
 
-    # if self.contact_is_dupe > 0:
-    #     return 0
-
-    # result = self.cty_lookup(self.station.get("Call", ""))
-    # if result:
-    #     for item in result.items():
-    #         my_continent = item[1].get("continent", "")
-    # result = self.cty_lookup(self.contact.get("Call", ""))
-    # if result:
-    #     for item in result.items():
-    #         their_country = item[1].get("entity", "")
-    #         their_continent = item[1].get("continent", "")
-
-    #         if their_country == "Switzerland":
-    #             return 10
-
-    #         if my_continent != their_continent:
-    #             return 3
-
-    #         return 1
-    # Something wrong
     return 0
 
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    # one = int(self.database.fetch_mult_count(1).get("count", 0))
-    # two = int(self.database.fetch_mult_count(2).get("count", 0))
-    # if rtc is not None:
-    #     return (two, one)
 
-    # return one + two
     return 0
 
 
@@ -303,58 +240,12 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
-    # result = self.database.fetch_points()
-    # if result is not None:
-    #     score = result.get("Points", "0")
-    #     if score is None:
-    #         score = "0"
-    #     contest_points = int(score)
-    #     mults = show_mults(self)
-    #     return contest_points * mults
+
     return 0
 
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-
-    # all_contacts = self.database.fetch_all_contacts_asc()
-    # for contact in all_contacts:
-
-    #     contact["IsMultiplier1"] = 0
-    #     contact["IsMultiplier2"] = 0
-
-    #     time_stamp = contact.get("TS", "")
-    #     canton = contact.get("NR", "")
-    #     dxcc = contact.get("CountryPrefix", "")
-    #     band = contact.get("Band", "")
-    #     if dxcc == "HB" and canton.isalpha():
-    #         query = (
-    #             f"select count(*) as canton_count from dxlog where  TS < '{time_stamp}' "
-    #             f"and NR = '{canton.upper()}' "
-    #             f"and Band = '{band}' "
-    #             f"and ContestNR = {self.pref.get('contest', '1')};"
-    #         )
-    #         result = self.database.exec_sql(query)
-    #         count = int(result.get("canton_count", 0))
-    #         if count == 0:
-    #             contact["IsMultiplier1"] = 1
-
-    #     if dxcc:
-    #         query = (
-    #             f"select count(*) as dxcc_count from dxlog where TS < '{time_stamp}' "
-    #             f"and CountryPrefix = '{dxcc}' "
-    #             f"and Band = '{band}' "
-    #             f"and ContestNR = {self.pref.get('contest', '1')};"
-    #         )
-    #         result = self.database.exec_sql(query)
-    #         if not result.get("dxcc_count", ""):
-    #             contact["IsMultiplier2"] = 1
-
-    #     self.database.change_contact(contact)
-    # cmd = {}
-    # cmd["cmd"] = "UPDATELOG"
-    # if self.log_window:
-    #     self.log_window.msg_from_main(cmd)
 
 
 def adif(self):
