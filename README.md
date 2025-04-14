@@ -198,6 +198,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - EA Majistad CW
 - EA Majistad SSB
 - EA RTTY
+- ES OPEN HF
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
@@ -221,6 +222,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-14] Add ES Open HF Chanmpionship.
 - [25-4-13] Fix crash in JIDX Cabrillo output.
 - [25-4-12] Added an Auto CQ time to fire progress bar.
 - [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.

@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-14] Add ES Open HF Chanmpionship.
 - [25-4-13] Fix crash in JIDX Cabrillo output.
 - [25-4-12] Added an Auto CQ time to fire progress bar.
 - [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
