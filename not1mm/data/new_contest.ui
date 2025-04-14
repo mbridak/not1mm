@@ -349,6 +349,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ES OPEN</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
