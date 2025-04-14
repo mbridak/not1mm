@@ -10,14 +10,15 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, get_points
 
+from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "#"
 
-name = "ES LL KV"
-cabrillo_name = "ES-LL-KV"
+name = "ES OPEN"
+cabrillo_name = "ES-OPEN"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -29,8 +30,6 @@ columns = [
     "Rcv",
     "SentNr",
     "RcvNr",
-    "M1",
-    "M2",
     "PTS",
 ]
 
@@ -169,36 +168,6 @@ def set_contact_vars(self):
     self.contact["IsMultiplier1"] = 0
     self.contact["IsMultiplier2"] = 0
 
-    # if (
-    #     self.contact.get("CountryPrefix", "") == "HB"
-    #     and self.contact.get("NR", "").isalpha()
-    # ):
-    #     canton = self.contact.get("NR", "").upper()
-    #     band = self.contact.get("Band", "")
-    #     query = (
-    #         f"select count(*) as canton_count from dxlog where "
-    #         f"NR = '{canton}' "
-    #         f"and Band = '{band}' "
-    #         f"and ContestNR = {self.pref.get('contest', '1')};"
-    #     )
-    #     result = self.database.exec_sql(query)
-    #     count = int(result.get("canton_count", 0))
-    #     if count == 0:
-    #         self.contact["IsMultiplier1"] = 1
-
-    # if self.contact.get("CountryPrefix", ""):
-    #     dxcc = self.contact.get("CountryPrefix", "")
-    #     band = self.contact.get("Band", "")
-    #     query = (
-    #         f"select count(*) as dxcc_count from dxlog where "
-    #         f"CountryPrefix = '{dxcc}' "
-    #         f"and Band = '{band}' "
-    #         f"and ContestNR = {self.pref.get('contest', '1')};"
-    #     )
-    #     result = self.database.exec_sql(query)
-    #     if not result.get("dxcc_count", ""):
-    #         self.contact["IsMultiplier2"] = 1
-
 
 def predupe(self):
     """called after callsign entered"""
@@ -220,13 +189,26 @@ def prefill(self):
 
 def points(self):
     """ """
+    if self.contact_is_dupe > 0:
+        return 0
+
+    _mode = self.contact.get("Mode", "")
+    if _mode in "SSB, USB, LSB, FM, AM":
+        return 1
+    if _mode in "CW":
+        return 2
 
     return 0
 
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-
+    our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
+    query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
+    result = self.database.exec_sql(query)
+    if result:
+        mult_count = result.get("mults", 0)
+        return mult_count
     return 0
 
 
@@ -240,7 +222,14 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
-
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        contest_points = int(score)
+        mults = show_mults(self)
+        return contest_points * (mults + 1)
     return 0
 
 
@@ -250,7 +239,7 @@ def recalculate_mults(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "ES LL KV")
+    gen_adif(self, cabrillo_name, "ES OPEN")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
