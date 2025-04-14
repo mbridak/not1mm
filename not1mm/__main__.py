@@ -4100,7 +4100,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("******EDI*****")
-        self.contest.edi(self)
+        if hasattr(self.contest, "edi"):
+            self.contest.edi(self)
 
     def generate_cabrillo(self, file_encoding: str) -> None:
         """
