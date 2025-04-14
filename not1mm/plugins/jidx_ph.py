@@ -304,14 +304,25 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"ADDRESS: {self.station.get('City', '')}, {self.station.get('State', '')} ",
-                f"{self.station.get('Zip', '')}",
+                f"ADDRESS-CITY: {self.station.get('City', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Country', '')}",
+                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
+                "\r\n",
+                file_descriptor,
+                file_encoding,
+            )
+            output_cabrillo_line(
+                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
+                "\r\n",
+                file_descriptor,
+                file_encoding,
+            )
+            output_cabrillo_line(
+                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
