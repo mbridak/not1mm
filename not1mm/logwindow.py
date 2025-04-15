@@ -71,7 +71,7 @@ class LogWindow(QDockWidget):
     columns = {
         0: "YYYY-MM-DD HH:MM:SS",
         1: "Call",
-        2: "Freq (Khz)",
+        2: "Freq (KHz)",
         3: "Mode",
         4: "Snt",
         5: "Rcv",
@@ -189,7 +189,7 @@ class LogWindow(QDockWidget):
             columns_to_show = msg.get("COLUMNS", [])
             for column in columns_to_show:
                 if column == "Freq":
-                    column = "Freq (Khz)"
+                    column = "Freq (KHz)"
                 self.generalLog.setColumnHidden(self.get_column(column), False)
                 self.focusedLog.setColumnHidden(self.get_column(column), False)
 
@@ -320,7 +320,7 @@ class LogWindow(QDockWidget):
             self.generalLog.item(row, self.get_column("UUID")).text()
         )
         try:
-            _ = float(self.generalLog.item(row, self.get_column("Freq (Khz)")).text())
+            _ = float(self.generalLog.item(row, self.get_column("Freq (KHz)")).text())
         except ValueError:
             self.show_message_box("An invalid value has been entered for frequency.")
             self.get_log()
@@ -331,7 +331,7 @@ class LogWindow(QDockWidget):
                 row, self.get_column("YYYY-MM-DD HH:MM:SS")
             ).text(),
             "Call": self.generalLog.item(row, self.get_column("Call")).text().upper(),
-            "Freq": self.generalLog.item(row, self.get_column("Freq (Khz)")).text(),
+            "Freq": self.generalLog.item(row, self.get_column("Freq (KHz)")).text(),
             "Mode": self.generalLog.item(row, self.get_column("Mode")).text(),
             "SNT": self.generalLog.item(row, self.get_column("Snt")).text(),
             "RCV": self.generalLog.item(row, self.get_column("Rcv")).text(),
@@ -437,7 +437,7 @@ class LogWindow(QDockWidget):
             self.focusedLog.item(row, self.get_column("UUID")).text()
         )
         try:
-            _ = float(self.focusedLog.item(row, self.get_column("Freq (Khz)")).text())
+            _ = float(self.focusedLog.item(row, self.get_column("Freq (KHz)")).text())
         except ValueError:
             self.show_message_box("An invalid value has been entered for frequency.")
             self.get_log()
@@ -448,7 +448,7 @@ class LogWindow(QDockWidget):
                 row, self.get_column("YYYY-MM-DD HH:MM:SS")
             ).text(),
             "Call": self.focusedLog.item(row, self.get_column("Call")).text().upper(),
-            "Freq": self.focusedLog.item(row, self.get_column("Freq (Khz)")).text(),
+            "Freq": self.focusedLog.item(row, self.get_column("Freq (KHz)")).text(),
             "Mode": self.focusedLog.item(row, self.get_column("Mode")).text(),
             "SNT": self.focusedLog.item(row, self.get_column("Snt")).text(),
             "RCV": self.focusedLog.item(row, self.get_column("Rcv")).text(),
@@ -793,7 +793,7 @@ class LogWindow(QDockWidget):
                 widget = QtWidgets.QTableWidgetItem(str(round(0.0, 2)))
             self.generalLog.setItem(
                 number_of_rows,
-                self.get_column("Freq (Khz)"),
+                self.get_column("Freq (KHz)"),
                 widget,
             )
             self.generalLog.setItem(
@@ -955,7 +955,7 @@ class LogWindow(QDockWidget):
                 widget = QtWidgets.QTableWidgetItem(str(round(0.0, 2)))
             self.focusedLog.setItem(
                 number_of_rows,
-                self.get_column("Freq (Khz)"),
+                self.get_column("Freq (KHz)"),
                 widget,
             )
             self.focusedLog.setItem(
