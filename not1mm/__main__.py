@@ -3711,7 +3711,7 @@ class MainWindow(QtWidgets.QMainWindow):
             result = {"isdupe": False}
         if self.contest.dupe_type == 5:
             result = {"isdupe": False}  # in case contest has no function.
-            if hasattr(self.contest, "check_dupe"):
+            if hasattr(self.contest, "specific_contest_check_dupe"):
                 result = self.contest.specific_contest_check_dupe(self, call)
 
         debugline = f"{result}"
