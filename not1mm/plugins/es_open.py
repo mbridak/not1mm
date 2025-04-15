@@ -40,7 +40,7 @@ dupe_type = 5
 
 
 def specific_contest_check_dupe(self, call):
-    """"""
+    """Dupe checking specific to just this contest."""
 
     # constant to split the contest
     contest_length_in_minutes = 60
@@ -53,7 +53,9 @@ def specific_contest_check_dupe(self, call):
     self.contest_start_date = start_date_init.split(" ")[0]
     self.contest_start_time = start_date_init.split(" ")[1]
 
-    start_date_init_date = datetime.strptime(start_date_init, "%Y-%m-%d %H:%M:%S")
+    start_date_init_date = datetime.datetime.strptime(
+        start_date_init, "%Y-%m-%d %H:%M:%S"
+    )
 
     # Create time periods dynamically based on period count
     time_periods = []
@@ -68,8 +70,11 @@ def specific_contest_check_dupe(self, call):
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
 
     # get current time in UTC
-    iso_current_time = datetime.now(datetime.timezone.utc)
+    iso_current_time = datetime.datetime.now(datetime.timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
+
+    result = {}
+    result["isdupe"] = False
 
     if current_time < time_period_1:
         start_date_init = self.contest_start_date + " " + self.contest_start_time
@@ -82,7 +87,7 @@ def specific_contest_check_dupe(self, call):
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_2 and current_time >= time_period_1:
+    elif current_time < time_period_2 and current_time >= time_period_1:
         start_date_init = self.contest_start_date + " " + self.contest_start_time
 
         result = self.database.check_dupe_on_period_2_mode(
@@ -94,7 +99,7 @@ def specific_contest_check_dupe(self, call):
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_3 and current_time >= time_period_2:
+    elif current_time < time_period_3 and current_time >= time_period_2:
         start_date_init = self.contest_start_date + " " + self.contest_start_time
 
         result = self.database.check_dupe_on_period_3_mode(
@@ -105,10 +110,7 @@ def specific_contest_check_dupe(self, call):
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
         )
-    else:
-        result = self.database.check_dupe_on_period_mode(
-            call, self.contact.get("Band", ""), mode, start_date_init
-        )
+
     return result
 
 
