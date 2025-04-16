@@ -948,8 +948,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
 
             if msg.get("cmd", "") == "CHANGECALL":
+                self.activateWindow()
                 self.callsign.setText(msg.get("call", ""))
                 self.callsign.setFocus()
+                self.callsign_changed()
 
             if msg.get("cmd", "") == "CHECKSPOTS":
                 if self.check_window:
