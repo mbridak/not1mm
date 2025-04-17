@@ -2908,6 +2908,46 @@ class MainWindow(QtWidgets.QMainWindow):
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
+        if "{VOICE1}" in macro:
+            macro = macro.replace("{VOICE1}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=1)
+        if "{VOICE2}" in macro:
+            macro = macro.replace("{VOICE2}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=2)
+        if "{VOICE3}" in macro:
+            macro = macro.replace("{VOICE3}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=3)
+        if "{VOICE4}" in macro:
+            macro = macro.replace("{VOICE4}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=4)
+        if "{VOICE5}" in macro:
+            macro = macro.replace("{VOICE5}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=5)
+        if "{VOICE6}" in macro:
+            macro = macro.replace("{VOICE6}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=6)
+        if "{VOICE7}" in macro:
+            macro = macro.replace("{VOICE7}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=7)
+        if "{VOICE8}" in macro:
+            macro = macro.replace("{VOICE8}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=8)
+        if "{VOICE9}" in macro:
+            macro = macro.replace("{VOICE9}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=9)
+        if "{VOICE10}" in macro:
+            macro = macro.replace("{VOICE10}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=10)
         return macro
 
     def ptt_on(self) -> None:

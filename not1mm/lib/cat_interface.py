@@ -156,6 +156,24 @@ class CAT:
         self.rigctrlsocket.settimeout(0.5)
         return dump
 
+    def sendvoicememory(self, memoryspot=1):
+        """..."""
+        if self.interface == "rigctld":
+            return self.__sendvoicememory_rigctld(memoryspot)
+
+    def __sendvoicememory_rigctld(self, memoryspot=1):
+        """..."""
+        try:
+            self.online = True
+            self.rigctrlsocket.send(bytes(f"+\send_voice_mem {memoryspot}\n", "utf-8"))
+            _ = self.__get_serial_string()
+            return
+        except socket.error as exception:
+            self.online = False
+            logger.debug("%s", f"{exception}")
+            self.rigctrlsocket = None
+            return
+
     def sendcw(self, texttosend):
         """..."""
         logger.debug(f"{texttosend=} {self.interface=}")

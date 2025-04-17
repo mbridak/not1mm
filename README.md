@@ -222,6 +222,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
 - [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
 - [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
 - [25-4-14] Add ES Open HF Chanmpionship.

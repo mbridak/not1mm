@@ -131,6 +131,11 @@ class Radio(QObject):
         if the_mode in cwmodes:
             self.last_cw_mode = the_mode
 
+    def sendvoicememory(self, memoryspot=1):
+        """..."""
+        if self.cat:
+            self.cat.sendvoicememory(memoryspot)
+
     def sendcw(self, texttosend):
         """..."""
         logger.debug(f"Send CW: {texttosend}")
