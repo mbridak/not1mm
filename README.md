@@ -79,6 +79,8 @@
     - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
     - [Macro use with voice](#macro-use-with-voice)
+      - [{VOICE1} - {VOICE10}](#voice1---voice10)
+      - [Voice macro wave files](#voice-macro-wave-files)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [The Windows](#the-windows)
@@ -704,8 +706,16 @@ You can include a limited set of substitution instructions.
 | {SANDP} | Change to S&P mode. |
 | {WIPE} | Wipe input fields. |
 | '#' | Sends serial number. |
+| {VOICE1} - {VOICE10} | Uses rigctld to send voice macros stored in the radio. |
 
 ### Macro use with voice
+
+#### {VOICE1} - {VOICE10}
+
+If you use rigctld and your radio supports it you can use the macros {VOICE1},
+{VOICE2} etc to send the voice messages stored in your radio.
+
+#### Voice macro wave files
 
 The macros when used with voice, will also accept filenames of WAV files to
 play, excluding the file extension. The filename must be enclosed by brackets.
