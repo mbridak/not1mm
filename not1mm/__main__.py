@@ -3913,7 +3913,7 @@ class MainWindow(QtWidgets.QMainWindow):
             info_dirty = True
             self.radio_state["vfoa"] = vfo
             if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
-                if max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 50:
+                if max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 500:
                     self.clearinputs()
         band = getband(str(vfo))
         self.radio_state["band"] = band

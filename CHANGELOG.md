@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
 - [25-4-18] Option to clear input fields when QSY in S&P mode.
 - [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
 - [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
