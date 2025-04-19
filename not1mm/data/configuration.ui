@@ -2308,6 +2308,20 @@
            </layout>
           </item>
           <item>
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="qsy_on_change">
+            <property name="text">
+             <string>S&amp;&amp;P QSY on Freq Change</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_8">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -2441,7 +2455,7 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
