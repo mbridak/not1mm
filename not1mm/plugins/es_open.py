@@ -83,7 +83,7 @@ def specific_contest_check_dupe(self, call):
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init,
+            start_date_init_date,
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
@@ -113,8 +113,8 @@ def specific_contest_check_dupe(self, call):
             call,
             self.contact.get("Band", ""),
             mode,
-            time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+            time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
         )
     # just for band and mode if outside of time period
     else:
