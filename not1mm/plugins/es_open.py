@@ -77,7 +77,7 @@ def specific_contest_check_dupe(self, call):
     result = {}
     result["isdupe"] = False
 
-    if current_time < time_period_1 and current_time >= start_date_init:
+    if current_time < time_period_1 and current_time >= start_date_init_date:
 
         result = self.database.check_dupe_on_period_mode(
             call,
