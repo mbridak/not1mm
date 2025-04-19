@@ -170,6 +170,7 @@ class MainWindow(QtWidgets.QMainWindow):
     use_esm = False
     use_call_history = False
     esm_dict = {}
+    sandpfreq = 0
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -3498,6 +3499,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.auto_cq is True:
             self.stop_cw()
+        if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
+            self.sandpfreq = int(self.radio_state.get("vfoa", 0))
+            print(f"{self.sandpfreq=}")
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -3908,6 +3912,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.radio_state.get("vfoa") != vfo:
             info_dirty = True
             self.radio_state["vfoa"] = vfo
+            if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
+                if max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 50:
+                    self.clearinputs()
         band = getband(str(vfo))
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))

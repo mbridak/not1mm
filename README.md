@@ -224,6 +224,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-18] Option to clear input fields when QSY in S&P mode.
 - [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
 - [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
 - [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
@@ -614,6 +615,7 @@ On the Options TAB you can:
 - Select to use Enter Sends Message ([ESM](#esm)), and configure it's function keys.
 - Select whether or not to use [Call History](#call-history-files) info.
 - Select whether or not to send XML score info to online scoreboards.
+- Select whether or not to clear input fields when you QSY while in S&P mode.
 
 ![Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
 

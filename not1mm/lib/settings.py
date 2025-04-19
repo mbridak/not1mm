@@ -58,6 +58,8 @@ class Settings(QtWidgets.QDialog):
             bool(self.preference.get("use_call_history", False))
         )
 
+        self.qsy_on_change.setChecked(bool(self.preference.get("sandpqsy", False)))
+
         self.use_esm.setChecked(bool(self.preference.get("use_esm", False)))
 
         value = self.preference.get("esm_agn", "DISABLED")
@@ -229,6 +231,9 @@ class Settings(QtWidgets.QDialog):
         self.auto_cq_delay.setText(str(self.preference.get("auto_cq_interval", "15")))
 
         self.preference["use_call_history"] = self.use_call_history.isChecked()
+
+        self.preference["sandpqsy"] = self.qsy_on_change.isChecked()
+
         self.preference["use_esm"] = self.use_esm.isChecked()
         self.preference["esm_cq"] = self.esm_cq.currentText()
         self.preference["esm_agn"] = self.esm_agn.currentText()
