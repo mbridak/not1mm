@@ -224,6 +224,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
 - [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
 - [25-4-18] Option to clear input fields when QSY in S&P mode.
 - [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
@@ -759,7 +760,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 **You must press the SPACE bar after entering any of the below.**
 
 - [A Frequency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
-- [CW, SSB, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+- [CW, SSB, FM, AM, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
 - [OPON] Change the operator currently logging.
 
 **You must press the SPACE bar after entering any of the above.**

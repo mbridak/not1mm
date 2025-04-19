@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
 - [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
 - [25-4-18] Option to clear input fields when QSY in S&P mode.
 - [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.

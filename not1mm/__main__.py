@@ -3006,7 +3006,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("Function Key: %s", function_key.text())
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB", "FM", "AM"]:
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
@@ -3501,7 +3501,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.stop_cw()
         if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
             self.sandpfreq = int(self.radio_state.get("vfoa", 0))
-            print(f"{self.sandpfreq=}")
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -3510,13 +3509,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setCursorPosition(position)
 
         if " " in text:
-            if stripped_text == "CW":
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "RTTY":
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "SSB":
+            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM"]:
                 self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
@@ -3675,6 +3668,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rig_control.set_mode(self.radio_state.get("mode"))
             else:
                 self.setmode("SSB")
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
+            self.set_window_title()
+            self.clearinputs()
+            self.read_macros()
+            return
+        if mode in ["AM", "FM"]:
+            if self.rig_control:
+                if self.rig_control.online:
+                    self.rig_control.set_mode(mode)
+            else:
+                self.setmode(mode)
                 band = getband(str(self.radio_state.get("vfoa", "0.0")))
                 self.set_band_indicator(band)
             self.set_window_title()
