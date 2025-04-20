@@ -3509,7 +3509,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setCursorPosition(position)
 
         if " " in text:
-            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM"]:
+            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
                 self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
@@ -3674,7 +3674,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.read_macros()
             return
-        if mode in ["AM", "FM"]:
+        if mode in ["AM", "FM", "LSB", "USB"]:
             if self.rig_control:
                 if self.rig_control.online:
                     self.rig_control.set_mode(mode)
