@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
 - [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
 - [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
 - [25-4-18] Option to clear input fields when QSY in S&P mode.
