@@ -154,6 +154,7 @@ class CAT:
         except (socket.error, UnicodeDecodeError):
             ...
         self.rigctrlsocket.settimeout(0.5)
+        logger.debug("%s", dump)
         return dump
 
     def sendvoicememory(self, memoryspot=1):
@@ -165,7 +166,7 @@ class CAT:
         """..."""
         try:
             self.online = True
-            self.rigctrlsocket.send(bytes(f"+\send_voice_mem {memoryspot}\n", "utf-8"))
+            self.rigctrlsocket.send(bytes(f"+\\send_voice_mem {memoryspot}\n", "utf-8"))
             _ = self.__get_serial_string()
             return
         except socket.error as exception:
@@ -633,6 +634,7 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
+                logger.debug(f"\nM {mode} 0\n")
                 self.rigctrlsocket.send(bytes(f"\nM {mode} 0\n", "utf-8"))
                 if self.__get_serial_string() != "RPRT 0\n":
                     self.rigctrlsocket.send(bytes(f"\nM {mode} 0\n", "utf-8"))
