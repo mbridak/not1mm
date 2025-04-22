@@ -118,9 +118,8 @@ class RateWindow(QDockWidget):
 
         # WHERE datetime(timestamp) > datetime(current_timestamp, '-60 minutes')
 
-        if not self.active:
+        if not self.active or not self.isVisible():
             return
-
         # Get Q's in the 60 Minutes
         query = f"select (julianday(MAX(ts)) -  julianday(MIN(ts))) * 24 * 60 as timespan, count(*) as items from (select * from dxlog where ContestNR = {self.database.current_contest} and datetime(TS) > datetime(current_timestamp, '-60 minutes'));"
         result = self.database.exec_sql(query)
