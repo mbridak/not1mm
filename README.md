@@ -224,6 +224,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-22] Mostly code cleanup. Not running some code when not needed.
 - [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
 - [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
 - [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
