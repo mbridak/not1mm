@@ -385,7 +385,7 @@ class BandMapWindow(QDockWidget):
 
     def msg_from_main(self, packet):
         """"""
-        if self.active is False:
+        if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
             self.set_band(packet.get("band") + "m", False)
@@ -688,7 +688,7 @@ class BandMapWindow(QDockWidget):
     def update_stations(self):
         """doc"""
         self.update_timer.setInterval(UPDATE_INTERVAL)
-        if self.active is False:
+        if self.active is False or not self.isVisible():
             return
         self.clear_all_callsign_from_scene()
         self.spot_aging()
