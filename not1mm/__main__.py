@@ -3192,12 +3192,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+            # self.rig_control.moveToThread(self.radio_thread)
+            # self.radio_thread.started.connect(self.rig_control.run)
+            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
+            # self.rig_control.poll_callback.connect(self.poll_radio)
+            # self.radio_thread.start()
 
         elif self.pref.get("userigctld", False) is True:
             logger.debug(
@@ -3209,24 +3209,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+            # self.rig_control.moveToThread(self.radio_thread)
+            # self.radio_thread.started.connect(self.rig_control.run)
+            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
+            # self.rig_control.poll_callback.connect(self.poll_radio)
+            # self.radio_thread.start()
         else:
             self.rig_control = Radio(
                 "fake",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 0000)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+        self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+        self.rig_control.moveToThread(self.radio_thread)
+        self.radio_thread.started.connect(self.rig_control.run)
+        self.radio_thread.finished.connect(self.rig_control.deleteLater)
+        self.rig_control.poll_callback.connect(self.poll_radio)
+        self.radio_thread.start()
 
         self.cw = None
         if (
@@ -3925,9 +3925,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_band_indicator(band)
 
-        if self.rig_control:
-            if self.rig_control.online:
-                self.rig_control.get_modes()
+        # if self.rig_control:
+        #     if self.rig_control.online:
+        #         print(f"{self.rig_control.get_modes()=}=======================")
 
         if self.radio_state.get("mode") != mode:
             info_dirty = True
@@ -3959,26 +3959,26 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             self.setmode("RTTY")
 
-        cmd = {}
-        cmd["cmd"] = "RADIO_STATE"
-        cmd["band"] = band
-        cmd["vfoa"] = vfo
-        cmd["mode"] = mode
-        cmd["bw"] = bw
         if self.bandmap_window:
+            cmd = {}
+            cmd["cmd"] = "RADIO_STATE"
+            cmd["band"] = band
+            cmd["vfoa"] = vfo
+            cmd["mode"] = mode
+            cmd["bw"] = bw
             self.bandmap_window.msg_from_main(cmd)
         if info_dirty:
             try:
                 logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
                 self.set_window_title()
-                cmd = {}
-                cmd["cmd"] = "RADIO_STATE"
-                cmd["band"] = band
-                cmd["vfoa"] = vfo
-                cmd["mode"] = mode
-                cmd["bw"] = bw
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
+                # cmd = {}
+                # cmd["cmd"] = "RADIO_STATE"
+                # cmd["band"] = band
+                # cmd["vfoa"] = vfo
+                # cmd["mode"] = mode
+                # cmd["bw"] = bw
+                # if self.bandmap_window:
+                #     self.bandmap_window.msg_from_main(cmd)
                 if self.n1mm:
                     self.n1mm.radio_info["Freq"] = vfo[:-1]
                     self.n1mm.radio_info["TXFreq"] = vfo[:-1]
