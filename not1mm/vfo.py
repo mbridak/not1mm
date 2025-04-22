@@ -189,6 +189,8 @@ class VfoWindow(QDockWidget):
         Poll radio via CAT asking for VFO state.
         If it's with in the HAM bands set the vfo knob to match the radio.
         """
+        if not self.isVisible():
+            return
         if self.rig_control:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
