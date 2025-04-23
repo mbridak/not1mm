@@ -3925,13 +3925,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_band_indicator(band)
 
-        # if self.rig_control:
-        #     if self.rig_control.online:
-        #         print(f"{self.rig_control.get_modes()=}=======================")
-
         if self.radio_state.get("mode") != mode:
             info_dirty = True
-            self.radio_state["mode"] = mode
+            if "set_freq:" not in mode:
+                self.radio_state["mode"] = mode
 
         if self.radio_state.get("bw") != bw:
             info_dirty = True
