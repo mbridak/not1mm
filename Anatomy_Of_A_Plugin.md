@@ -20,8 +20,6 @@ This file gives a brief overview of the methods/functions in a plugin. If you ar
 
 `self.contact.get("Call", "")` holds the contacts callsign.
 
-## Some interface background
-
 There can be up to 5 text entry boxes on the main screen. These are paired with a text label above them. Each entry box and text label are held in a field container. The first field named `field0` holds the callsign and is always displayed. `Sent RST` is in `field1` and `Received RST` is in `field2`. There are two free variables `field3` and `field4` that hold `other_1` and `other_2`. These are specified to meet the individual exchange requirements of the various contests.
 
 ## The functions or methods
@@ -52,7 +50,7 @@ There can be up to 5 text entry boxes on the main screen. These are paired with 
 
 `recalculate_mult()` This may be used to update the points/multiplier arithmetic when a logged contact is edited. 
 
-## Getting Station and Contact Locations
+## Retrieving contact station information
 
 Often you may need to know if the contact station is located in particular country, continent, or other information for the purpose of scoring. You can get this information with the following code snippet.
 
@@ -95,7 +93,7 @@ A straightforward way to create a new contest plugin is finding an existing plug
 
 ## Inserting a new contest so it appears in the dropdown list
 
-To add a new contest into the list of available contests, the new_contest XML file located in the data directory must be edited. This can be illustrated with the following example using a snippet of the XML code for two sequential dropdown selections `REF SSB` and `STEW PERRY TOPBAND`:
+Each contest plugin is linked to a corresponding entry in the contest dropdown list. To add a new contest into the list of available contests, the `new_contest.ui` XML file located in the Data directory must be manually edited. This can be illustrated with the following example using a snippet of the XML code for two sequential dropdown selections `REF SSB` and `STEW PERRY TOPBAND`:
 
 ```xml
      <item>
