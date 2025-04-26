@@ -272,6 +272,11 @@
        <string>ARRL VHF SEP</string>
       </property>
      </item>
+      <item>
+      <property name="text">
+       <string>VHF SPRINT</string>
+      </property>
+     </item>
      <item>
       <property name="text">
        <string>CANADA DAY</string>

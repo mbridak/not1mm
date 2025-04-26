@@ -1,7 +1,8 @@
-"""ARRL Sep VHF"""
+"""VHF SPRINT"""
 
-# Cabrillo name:	ARRL-VHF-SEP
-# Cabrillo name aliases:	ARRL-VHF
+# Single band VHF Sprint. Exchange is 4-digit grid square.
+# 1 point per each valid QSO multiplied by number of grid squares worked.
+# Cabrillo name:	VHF-SPRINT
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
@@ -20,9 +21,9 @@ logger = logging.getLogger(__name__)
 ALTEREGO = None
 EXCHANGE_HINT = "4-character grid square"
 
-name = "ARRL VHF SEP"
+name = "VHF SPRINT"
 mode = "BOTH"  # CW SSB BOTH RTTY
-cabrillo_name = "ARRL-VHF"
+cabrillo_name = "VHF-SPRINT"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -37,7 +38,7 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
+dupe_type = 3
 
 
 def init_contest(self):
@@ -60,6 +61,9 @@ def interface(self):
     self.field3.setAccessibleName("Sent Grid")
     self.exch_label.setText("Grid")
     self.field4.setAccessibleName("Gridsquare")
+
+
+modifying
 
 
 def reset_label(self):
@@ -121,10 +125,7 @@ def prefill(self):
 def points(self):
     """Calc point"""
 
-    # QSO Points:	1 point per 50 or 144 MHz QSO
-    # 2 points per 222 or 432 MHz QSO
-    # 3 points per 902 or 1296 MHz QSO
-    # 4 points per 2.3 GHz or higher QSO
+    # QSO Points:	1 point per QSO
 
     if self.contact_is_dupe > 0:
         return 0
@@ -133,11 +134,11 @@ def points(self):
     if _band in ["50", "144"]:
         return 1
     if _band in ["222", "432"]:
-        return 2
+        return 1
     if _band in ["902", "1296"]:
-        return 3
+        return 1
     if _band in ["2300+"]:
-        return 4
+        return 1
     return 0
 
 
