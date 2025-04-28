@@ -224,6 +224,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
 - [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
 - [25-4-22] Mostly code cleanup. Not running some code when not needed.
 - [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
