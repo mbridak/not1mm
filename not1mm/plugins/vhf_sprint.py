@@ -63,9 +63,6 @@ def interface(self):
     self.field4.setAccessibleName("Gridsquare")
 
 
-modifying
-
-
 def reset_label(self):
     """reset label after field cleared"""
 
