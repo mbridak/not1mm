@@ -202,6 +202,22 @@ class CAT:
                 return False
         self.__initialize_rigctrld()
         return False
+        
+    def stopcwrigctl(self):
+        """Send text via rigctld"""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes(f"\\stop_morse","utf-8"))
+                _ = self.__get_serial_string()
+                return True
+            except socket.error as exception:
+                self.online = False
+                logger.debug("setvfo_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return False
+        self.__initialize_rigctrld()
+        return False
 
     def set_rigctl_cw_speed(self, speed):
         """Set CW speed via rigctld"""
