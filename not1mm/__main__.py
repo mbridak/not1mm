@@ -17,6 +17,7 @@ import locale
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+import queue
 import socket
 import sys
 import uuid
@@ -40,6 +41,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
+from not1mm.lib.multicast import Multicast
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -187,6 +189,10 @@ class MainWindow(QtWidgets.QMainWindow):
     lookup_service = None
     fldigi_util = None
     rtc_service = None
+    rtc_interval = 2
+    rtc_user = ""
+    rtc_url = ""
+    rtc_pass = ""
 
     current_widget = None
 
@@ -194,6 +200,8 @@ class MainWindow(QtWidgets.QMainWindow):
     auto_cq_then = datetime.datetime.now()
     auto_cq_time = datetime.datetime.now()
     auto_cq_delay = 15000
+
+    server_commands = []
 
     def __init__(self, splash):
         super().__init__()
@@ -219,7 +227,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dark_watcher
         )
         self.dark_watcher(QApplication.instance().styleHints().colorScheme())
-
+        self.udp_fifo = queue.Queue()
+        self.server_message_watch_timer = QtCore.QTimer()
+        self.server_message_watch_timer.timeout.connect(self.check_udp_queue)
+        self.server_message_watch_timer.start(1000)
         self.inputs_dict = {
             self.callsign: "callsign",
             self.sent: "sent",
@@ -232,6 +243,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cwprogressBar.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
+        self.server_channel = Multicast(
+            multicast_group="239.1.1.1", multicast_port=2239, interface_ip="0.0.0.0"
+        )
+        self.server_channel.ready_read_connect(self.server_message)
         self.ft8 = FT8Watcher()
         self.ft8.set_callback(None)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
@@ -583,7 +598,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
         except (IOError, JSONDecodeError, TypeError):
-            logging.CRITICAL("There was an error parsing the BigCity file.")
+            logging.critical("There was an error parsing the BigCity file.")
 
         self.show_splash_msg("Starting LookUp Service.")
 
@@ -633,7 +648,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if int(x[0]) >= 6 and int(x[1]) >= 8:
                 old_Qt = False
 
-        # Featureset for wayland if pyqt is older that 6.8
+        # Featureset for wayland if pyqt is older than 6.8
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
@@ -760,7 +775,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if VersionTest(__version__).test():
                 self.show_message_box(
                     "There is a newer version of not1mm available.\n"
-                    "You can udate to the current version by using:\n\n"
+                    "You can update to the current version by using:\n\n"
                     "pip install -U not1mm\n\tor\n"
                     "pipx upgrade not1mm"
                 )
@@ -771,6 +786,153 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         logger.info(f"bind {b_result}")
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
+
+    # Server stuff
+
+    def resolve_dirty_records(self):
+        """Go through dirty records and submit them to the server."""
+        if True:
+            records = self.database.fetch_all_dirty_contacts()
+            print(f"Resolving {len(records)} unsent contacts.\n")
+            if records:
+                for dirty_contact in records:
+                    contact = {}
+                    contact["cmd"] = "POST"
+                    contact["station"] = "K6GTE"
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    contact["expire"] = stale.isoformat()
+                    contact["unique_id"] = dirty_contact.get("unique_id")
+                    contact["hiscall"] = dirty_contact.get("callsign")
+                    contact["class"] = dirty_contact.get("class")
+                    contact["section"] = dirty_contact.get("section")
+                    contact["date_and_time"] = dirty_contact.get("date_time")
+                    contact["frequency"] = dirty_contact.get("frequency")
+                    contact["band"] = dirty_contact.get("band")
+                    contact["mode"] = dirty_contact.get("mode")
+                    contact["power"] = dirty_contact.get("power")
+                    contact["grid"] = dirty_contact.get("grid")
+                    contact["opname"] = dirty_contact.get("opname")
+                    self.server_commands.append(contact)
+                    self.server_channel.send_as_json(contact)
+
+                    time.sleep(0.1)  # Do I need this?
+                    print(".")
+
+    def clear_dirty_flag(self, unique_id):
+        """clear the dirty flag on record once response is returned from server."""
+        self.database.clear_dirty_flag(unique_id)
+        # show_dirty_records()
+
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            print(f"Server Commands: {item=}")
+            if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
+                "subject"
+            ):
+                self.server_commands.pop(index)
+                self.clear_dirty_flag(data.get("unique_id"))
+                print(f"Confirmed {data.get('subject')}")
+
+    def check_for_stale_commands(self):
+        """
+        Check through server commands to see if there has not been a reply in 30 seconds.
+        Resubmits those that are stale.
+        """
+        if True:
+            for index, item in enumerate(self.server_commands):
+                expired = datetime.datetime.strptime(
+                    item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f"
+                )
+                if datetime.datetime.now() > expired:
+                    newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    self.server_commands[index]["expire"] = newexpire.isoformat()
+                    bytesToSend = bytes(dumps(item), encoding="ascii")
+                    try:
+                        self.server_channel.sendto(
+                            bytesToSend,
+                            (self.multicast_group, int(self.multicast_port)),
+                        )
+                    except OSError as err:
+                        logging.warning("%s", err)
+
+    def server_message(self):
+        msg = self.server_channel.getpacket()
+        if msg:
+            self.udp_fifo.put(msg)
+
+    def check_udp_queue(self):
+        """checks the UDP datagram queue."""
+
+        while not self.udp_fifo.empty():
+            datagram = self.udp_fifo.get()
+            try:
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logger.info(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logger.info(the_error)
+                continue
+            logger.info("%s", json_data)
+
+            if json_data.get("cmd") == "PING":
+                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # if json_data.get("station"):
+                #     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                #     if self.people.get(json_data.get("station")) != band_mode:
+                #         self.people[json_data.get("station")] = band_mode
+                #     self.show_people()
+                # if json_data.get("host"):
+                #     self.server_seen = datetime.now() + datetime.timedelta(seconds=30)
+                #     self.group_call_indicator.setStyleSheet("border: 1px solid green;")
+                continue
+
+            if json_data.get("cmd") == "RESPONSE":
+                if json_data.get("recipient") == socket.gethostname():
+                    if json_data.get("subject") == "HOSTINFO":
+                        # self.groupcall = json_data.get("groupcall", "")
+                        # self.myclassEntry.setText(str(json_data.get("groupclass", "")))
+                        # self.mysectionEntry.setText(
+                        #     str(json_data.get("groupsection", ""))
+                        # )
+                        # self.group_call_indicator.setText(self.groupcall.center(14))
+                        # self.changemyclass()
+                        # self.changemysection()
+                        # self.mycallEntry.hide()
+                        # self.server_seen = datetime.now() + timedelta(seconds=30)
+                        # self.group_call_indicator.setStyleSheet(
+                        #     "border: 1px solid green;"
+                        # )
+                        return
+                    if json_data.get("subject") == "LOG":
+                        ...
+                        # self.infoline.setText("Server Generated Log.")
+
+                    if json_data.get("subject") == "DUPE":
+                        ...
+                        # if json_data.get("isdupe") != 0:
+                        #     if json_data.get("contact") == self.callsign_entry.text():
+                        #         self.flash()
+                        #         self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
+                        #         self.infobox.insertPlainText(
+                        #             f"{json_data.get('contact')}: " "Server DUPE\n"
+                        #         )
+                    if json_data.get("subject") == "POST":
+                        self.remove_confirmed_commands(json_data)
+                continue
+
+            if json_data.get("cmd") == "CHAT":
+                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # self.display_chat(json_data.get("sender"), json_data.get("message"))
+                continue
+
+            if json_data.get("cmd") == "GROUPQUERY":
+                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # if self.groupcall:
+                #     self.send_status_udp()
 
     def fldigi_on_udp_socket_ready_read(self):
         """"""
@@ -900,7 +1062,21 @@ class MainWindow(QtWidgets.QMainWindow):
     def dockwidget_message(self, msg):
         """signal from bandmap"""
         if msg:
-            if msg.get("cmd", "") == "CONTACTCHANGED":
+            if msg.get("cmd", "") == "DELETED":
+                if True:
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    self.contact["cmd"] = "DELETE"
+                    self.contact["expire"] = stale.isoformat()
+                    self.contact["unique_id"] = msg.get("id")
+                    self.server_commands.append(self.contact)
+                    # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
+                    try:
+                        self.server_channel.send_as_json(self.contact)
+                        # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+                    except OSError as err:
+                        logging.warning("%s", err)
+                ...
+            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETED"]:
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(msg)
             if msg.get("cmd", "") == "GETCOLUMNS":
@@ -1777,11 +1953,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     ) as ctyfile:
                         self.ctyfile = loads(ctyfile.read())
                 except (IOError, JSONDecodeError, TypeError) as err:
-                    logging.CRITICAL(
+                    logging.critical(
                         f"There was an error {err} parsing the BigCity file."
                     )
             else:
-                self.show_message_box("An Error occured updating file.")
+                self.show_message_box("An Error occurred updating file.")
         else:
             self.show_message_box("CTY file is up to date.")
 
@@ -2619,6 +2795,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        if True:
+            stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+            self.contact["cmd"] = "POST"
+            self.contact["expire"] = stale.isoformat()
+            self.server_commands.append(self.contact)
+            # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
+            try:
+                self.server_channel.send_as_json(self.contact)
+                # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+            except OSError as err:
+                logging.warning("%s", err)
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
