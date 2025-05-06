@@ -484,7 +484,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
-            return ()
+            return []
 
     def log_contact(self, contact: dict) -> None:
         """
@@ -543,6 +543,18 @@ class DataBase:
             except sqlite3.Error as exception:
                 logger.info("DataBase delete_contact: %s", exception)
 
+    def clear_dirty_flag(self, unique_id) -> None:
+        """Clears the dirty flag."""
+        if unique_id:
+            try:
+                with sqlite3.connect(self.database) as conn:
+                    sql = f"update dxlog set dirty=0 where ID='{unique_id}';"
+                    cursor = conn.cursor()
+                    cursor.execute(sql)
+                    conn.commit()
+            except sqlite3.Error as exception:
+                logger.critical("%s", exception)
+
     def delete_callhistory(self) -> None:
         """Deletes all info from callhistory table."""
         try:
@@ -592,6 +604,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
+            return []
 
     def fetch_last_contact(self) -> dict:
         """returns a list of dicts with last contact in the database."""
@@ -1216,7 +1229,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
-            return ()
+            return []
 
     def check_dupe_on_period_1_mode(
         self, call, band, mode, contest_start_time, contest_time_period_1
