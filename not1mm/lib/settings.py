@@ -138,6 +138,8 @@ class Settings(QtWidgets.QDialog):
             self.set_winkeyer_port_hint()
         elif self.preference.get("cwtype") == 3:
             self.set_catforcw_port_hint()
+        self.cwpaddingchar_field.setText(self.preference.get("cwpaddingchar", "T"))
+        self.cwpaddinglength_field.setText(str(self.preference.get("cwpaddinglength", "3")))
 
         self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
         self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
@@ -266,6 +268,8 @@ class Settings(QtWidgets.QDialog):
         except ValueError:
             self.preference["cwport"] = None
             ...
+        self.preference["cwpaddingchar"] = self.cwpaddingchar_field.text()
+        self.preference["cwpaddinglength"] = int(self.cwpaddinglength_field.text())
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1

@@ -799,6 +799,86 @@
          </property>
         </spacer>
        </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_31">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>CW Sent Nr Padding:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="cwpaddingchar_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="accessibleName">
+          <string>c w padding character</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>padding character when sending c w exchange number.</string>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
+         </property>
+         <property name="text">
+          <string>T</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_32">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>CW Sent Nr Padding Length:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="cwpaddinglength_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono ExtraLight</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="accessibleName">
+          <string>c w padding character</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>number of padding characters to send when sending c w exchange number.</string>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
+         </property>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="cluster_tab">
