@@ -204,11 +204,11 @@ class CAT:
         return False
 
     def stopcwrigctl(self):
-        """ Stop CW via rigctld"""
+        """Stop CW via rigctld"""
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"\\stop_morse","utf-8"))
+                self.rigctrlsocket.send(bytes(f"\\stop_morse", "utf-8"))
                 _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
@@ -218,7 +218,6 @@ class CAT:
                 return False
         self.__initialize_rigctrld()
         return False
-
 
     def set_rigctl_cw_speed(self, speed):
         """Set CW speed via rigctld"""
