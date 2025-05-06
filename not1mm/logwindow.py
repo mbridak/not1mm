@@ -696,6 +696,21 @@ class LogWindow(QDockWidget):
         self.contact["RoverLocation"] = self.edit_contact_dialog.rover_qth.text()
 
         self.database.change_contact(self.contact)
+
+        # if connect_to_server:
+        #     stale = datetime.now() + timedelta(seconds=30)
+        #     command = {}
+        #     command["cmd"] = "DELETE"
+        #     command["unique_id"] = unique_id.get("unique_id")
+        #     command["station"] = dict_str(preference, "mycall").upper()
+        #     command["expire"] = stale.isoformat()
+        #     server_commands.append(command)
+        #     bytesToSend = bytes(dumps(command), encoding="ascii")
+        #     try:
+        #         server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+        #     except OSError as err:
+        #         logging.warning("%s", err)
+
         self.get_log()
         cmd = {}
         cmd["cmd"] = "CONTACTCHANGED"
@@ -715,6 +730,21 @@ class LogWindow(QDockWidget):
         None
         """
         self.database.delete_contact(self.contact.get("ID", ""))
+
+        # if connect_to_server:
+        #     stale = datetime.now() + timedelta(seconds=30)
+        #     command = {}
+        #     command["cmd"] = "DELETE"
+        #     command["unique_id"] = unique_id.get("unique_id")
+        #     command["station"] = dict_str(preference, "mycall").upper()
+        #     command["expire"] = stale.isoformat()
+        #     server_commands.append(command)
+        #     bytesToSend = bytes(dumps(command), encoding="ascii")
+        #     try:
+        #         server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+        #     except OSError as err:
+        #         logging.warning("%s", err)
+
         if self.n1mm:
             if self.n1mm.send_contact_packets:
                 self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
@@ -728,7 +758,8 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.close()
         self.get_log()
         cmd = {}
-        cmd["cmd"] = "CONTACTCHANGED"
+        cmd["cmd"] = "DELETED"
+        cmd["id"] = self.contact.get("ID", "")
         self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
 
