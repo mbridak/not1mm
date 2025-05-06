@@ -3059,7 +3059,7 @@ class MainWindow(QtWidgets.QMainWindow):
             next_serial = "1"
         macro = macro.upper()
         if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("#", next_serial.rjust(3, "T"))
+            macro = macro.replace("#", next_serial.rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]))
         else:
             macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
@@ -3072,7 +3072,7 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SNT}", self.sent.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace(
-                "{SENTNR}", self.other_1.text().lstrip("0").rjust(3, "T")
+                "{SENTNR}", self.other_1.text().lstrip("0").rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"])
             )
         else:
             macro = macro.replace("{SENTNR}", self.other_1.text())
