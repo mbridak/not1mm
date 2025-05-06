@@ -2121,6 +2121,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
                 return
+            if self.cw.servertype == 3:
+                self.rig_control.cat.stopcwrigctl()
+                return
         if self.rig_control:
             if self.rig_control.online:
                 if self.pref.get("cwtype") == 3 and self.rig_control is not None:
