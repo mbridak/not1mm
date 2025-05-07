@@ -879,7 +879,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.info("%s", json_data)
 
             if json_data.get("cmd") == "PING":
-                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # print(f"Got {json_data.get('cmd')} {json_data=}")
                 # if json_data.get("station"):
                 #     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
                 #     if self.people.get(json_data.get("station")) != band_mode:
@@ -923,6 +923,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     if json_data.get("subject") == "POST":
                         self.remove_confirmed_commands(json_data)
                     if json_data.get("subject") == "DELETE":
+                        self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "CONTACTCHANGED":
                         self.remove_confirmed_commands(json_data)
 
                 continue
@@ -1065,6 +1067,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def dockwidget_message(self, msg):
         """incomming signals from widgets"""
         if msg:
+            # Pass delete message from log window to server.
             if msg.get("cmd", "") == "DELETED":
                 if True:
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
@@ -1073,13 +1076,23 @@ class MainWindow(QtWidgets.QMainWindow):
                     msg["station"] = socket.gethostname()
                     msg["unique_id"] = msg.get("ID")
                     self.server_commands.append(msg)
-                    # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
                     try:
                         self.server_channel.send_as_json(msg)
-                        # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
                     except OSError as err:
                         logging.warning("%s", err)
-                ...
+
+            if msg.get("cmd", "") == "CONTACTCHANGED":
+                if True:
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    msg["expire"] = stale.isoformat()
+                    msg["station"] = socket.gethostname()
+                    msg["unique_id"] = msg.get("ID")
+                    self.server_commands.append(msg)
+                    try:
+                        self.server_channel.send_as_json(msg)
+                    except OSError as err:
+                        logging.warning("%s", err)
+
             if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE"]:
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(msg)

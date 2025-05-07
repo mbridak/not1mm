@@ -697,22 +697,8 @@ class LogWindow(QDockWidget):
 
         self.database.change_contact(self.contact)
 
-        # if connect_to_server:
-        #     stale = datetime.now() + timedelta(seconds=30)
-        #     command = {}
-        #     command["cmd"] = "DELETE"
-        #     command["unique_id"] = unique_id.get("unique_id")
-        #     command["station"] = dict_str(preference, "mycall").upper()
-        #     command["expire"] = stale.isoformat()
-        #     server_commands.append(command)
-        #     bytesToSend = bytes(dumps(command), encoding="ascii")
-        #     try:
-        #         server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
-        #     except OSError as err:
-        #         logging.warning("%s", err)
-
         self.get_log()
-        cmd = {}
+        cmd = self.contact.copy()
         cmd["cmd"] = "CONTACTCHANGED"
         self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
@@ -730,20 +716,6 @@ class LogWindow(QDockWidget):
         None
         """
         self.database.delete_contact(self.contact.get("ID", ""))
-
-        # if connect_to_server:
-        #     stale = datetime.now() + timedelta(seconds=30)
-        #     command = {}
-        #     command["cmd"] = "DELETE"
-        #     command["unique_id"] = unique_id.get("unique_id")
-        #     command["station"] = dict_str(preference, "mycall").upper()
-        #     command["expire"] = stale.isoformat()
-        #     server_commands.append(command)
-        #     bytesToSend = bytes(dumps(command), encoding="ascii")
-        #     try:
-        #         server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
-        #     except OSError as err:
-        #         logging.warning("%s", err)
 
         if self.n1mm:
             if self.n1mm.send_contact_packets:
