@@ -826,7 +826,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def remove_confirmed_commands(self, data):
         """Removed confirmed commands from the sent commands list."""
         for index, item in enumerate(self.server_commands):
-            print(f"Server Commands: {item=}")
+            print(f"Server Commands: {item=} {data=}")
             if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
                 "subject"
             ):
@@ -922,6 +922,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         #         )
                     if json_data.get("subject") == "POST":
                         self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "DELETE":
+                        self.remove_confirmed_commands(json_data)
+
                 continue
 
             if json_data.get("cmd") == "CHAT":
@@ -1060,23 +1063,24 @@ class MainWindow(QtWidgets.QMainWindow):
         QCoreApplication.processEvents()
 
     def dockwidget_message(self, msg):
-        """signal from bandmap"""
+        """incomming signals from widgets"""
         if msg:
             if msg.get("cmd", "") == "DELETED":
                 if True:
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
-                    self.contact["cmd"] = "DELETE"
-                    self.contact["expire"] = stale.isoformat()
-                    self.contact["unique_id"] = msg.get("id")
-                    self.server_commands.append(self.contact)
+                    msg["cmd"] = "DELETE"
+                    msg["expire"] = stale.isoformat()
+                    msg["station"] = socket.gethostname()
+                    msg["unique_id"] = msg.get("ID")
+                    self.server_commands.append(msg)
                     # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
                     try:
-                        self.server_channel.send_as_json(self.contact)
+                        self.server_channel.send_as_json(msg)
                         # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
                     except OSError as err:
                         logging.warning("%s", err)
                 ...
-            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETED"]:
+            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE"]:
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(msg)
             if msg.get("cmd", "") == "GETCOLUMNS":
@@ -3059,7 +3063,12 @@ class MainWindow(QtWidgets.QMainWindow):
             next_serial = "1"
         macro = macro.upper()
         if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("#", next_serial.rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]))
+            macro = macro.replace(
+                "#",
+                next_serial.rjust(
+                    self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]
+                ),
+            )
         else:
             macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
@@ -3072,7 +3081,10 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SNT}", self.sent.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace(
-                "{SENTNR}", self.other_1.text().lstrip("0").rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"])
+                "{SENTNR}",
+                self.other_1.text()
+                .lstrip("0")
+                .rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]),
             )
         else:
             macro = macro.replace("{SENTNR}", self.other_1.text())

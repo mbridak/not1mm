@@ -759,7 +759,7 @@ class LogWindow(QDockWidget):
         self.get_log()
         cmd = {}
         cmd["cmd"] = "DELETED"
-        cmd["id"] = self.contact.get("ID", "")
+        cmd["ID"] = self.contact.get("ID", "")
         self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
 
