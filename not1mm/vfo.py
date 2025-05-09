@@ -12,6 +12,7 @@ Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
+import datetime
 import logging
 import os
 from json import loads
@@ -37,6 +38,7 @@ class VfoWindow(QDockWidget):
     multicast_interface = None
     current_palette = None
     device_reconnect = False
+    stale = datetime.datetime.now()
 
     def __init__(self):
         super().__init__()
@@ -191,6 +193,8 @@ class VfoWindow(QDockWidget):
         """
         if not self.isVisible():
             return
+        if datetime.datetime.now() < self.stale:
+            return
         if self.rig_control:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
@@ -227,6 +231,7 @@ class VfoWindow(QDockWidget):
                 while self.pico.in_waiting:
                     result = self.pico.read(self.pico.in_waiting)
                     result = result.decode().strip()
+                    self.stale = datetime.datetime.now() + datetime.timedelta(seconds=1)
                     if self.old_pico != result:
                         self.old_pico = result
                         if self.rig_control:
