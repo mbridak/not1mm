@@ -592,6 +592,20 @@ class DataBase:
             logger.debug("%s", exception)
             return ()
 
+    def fetch_all_dirty_contacts(self) -> list:
+        """returns a list of dicts of contacts with dirty flag set in the database."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select * from dxlog where ContestNR = {self.current_contest} and dirty = 1;"
+                )
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return ()
+
     def fetch_all_contacts_desc(self) -> list:
         """returns a list of dicts with contacts in the database."""
         try:
