@@ -231,9 +231,12 @@ class VfoWindow(QDockWidget):
                 while self.pico.in_waiting:
                     result = self.pico.read(self.pico.in_waiting)
                     result = result.decode().strip()
-                    self.stale = datetime.datetime.now() + datetime.timedelta(seconds=1)
+
                     if self.old_pico != result:
                         self.old_pico = result
+                        self.stale = datetime.datetime.now() + datetime.timedelta(
+                            seconds=1
+                        )
                         if self.rig_control:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
