@@ -786,32 +786,21 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         logger.info(f"bind {b_result}")
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
+        self.resolve_dirty_records()
 
     # Server stuff
 
     def resolve_dirty_records(self):
         """Go through dirty records and submit them to the server."""
-        if True:
+        if self.pref.get("useserver", False) is True and hasattr(self, "database"):
             records = self.database.fetch_all_dirty_contacts()
             print(f"Resolving {len(records)} unsent contacts.\n")
             if records:
-                for dirty_contact in records:
-                    contact = {}
+                for contact in records:
                     contact["cmd"] = "POST"
-                    contact["station"] = "K6GTE"
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     contact["expire"] = stale.isoformat()
-                    contact["unique_id"] = dirty_contact.get("unique_id")
-                    contact["hiscall"] = dirty_contact.get("callsign")
-                    contact["class"] = dirty_contact.get("class")
-                    contact["section"] = dirty_contact.get("section")
-                    contact["date_and_time"] = dirty_contact.get("date_time")
-                    contact["frequency"] = dirty_contact.get("frequency")
-                    contact["band"] = dirty_contact.get("band")
-                    contact["mode"] = dirty_contact.get("mode")
-                    contact["power"] = dirty_contact.get("power")
-                    contact["grid"] = dirty_contact.get("grid")
-                    contact["opname"] = dirty_contact.get("opname")
+
                     self.server_commands.append(contact)
                     self.server_channel.send_as_json(contact)
 
@@ -830,7 +819,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
                 "subject"
             ):
-                self.server_commands.pop(index)
+                self.server_commands.pop(index, None)
                 self.clear_dirty_flag(data.get("unique_id"))
                 print(f"Confirmed {data.get('subject')}")
 
@@ -839,7 +828,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Check through server commands to see if there has not been a reply in 30 seconds.
         Resubmits those that are stale.
         """
-        if True:
+        print("check for stale")
+        if self.pref.get("useserver", False) is True:
             for index, item in enumerate(self.server_commands):
                 expired = datetime.datetime.strptime(
                     item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f"
@@ -847,14 +837,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 if datetime.datetime.now() > expired:
                     newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     self.server_commands[index]["expire"] = newexpire.isoformat()
-                    bytesToSend = bytes(dumps(item), encoding="ascii")
                     try:
-                        self.server_channel.sendto(
-                            bytesToSend,
-                            (self.multicast_group, int(self.multicast_port)),
-                        )
+                        self.server_channel.send_as_json(self.server_commands[index])
                     except OSError as err:
                         logging.warning("%s", err)
+            print(f"{self.server_commands=}")
 
     def server_message(self):
         msg = self.server_channel.getpacket()
@@ -864,6 +851,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_udp_queue(self):
         """checks the UDP datagram queue."""
 
+        self.check_for_stale_commands()
         while not self.udp_fifo.empty():
             datagram = self.udp_fifo.get()
             try:
@@ -1069,7 +1057,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if msg:
             # Pass delete message from log window to server.
             if msg.get("cmd", "") == "DELETED":
-                if True:
+                if self.pref.get("useserver", False) is True:
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     msg["cmd"] = "DELETE"
                     msg["expire"] = stale.isoformat()
@@ -1082,7 +1070,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         logging.warning("%s", err)
 
             if msg.get("cmd", "") == "CONTACTCHANGED":
-                if True:
+                if self.pref.get("useserver", False) is True:
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     msg["expire"] = stale.isoformat()
                     msg["station"] = socket.gethostname()
@@ -2815,7 +2803,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
-        if True:
+        if self.pref.get("useserver", False) is True:
             stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
             self.contact["cmd"] = "POST"
             self.contact["expire"] = stale.isoformat()
