@@ -323,6 +323,8 @@ class MainWindow(QtWidgets.QMainWindow):
         icon_path = fsutils.APP_DATA_PATH
         self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
+        self.redserver = QtGui.QPixmap(str(icon_path / "cloud_red.png"))
+        self.greenserver = QtGui.QPixmap(str(icon_path / "cloud_green.png"))
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
 
@@ -606,6 +608,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lookup_service.message.connect(self.dockwidget_message)
         self.lookup_service.hide()
 
+        self.server_seen = datetime.datetime.now()
+
         self.show_splash_msg("Reading preferences.")
         self.readpreferences()
 
@@ -819,7 +823,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
                 "subject"
             ):
-                self.server_commands.pop(index, None)
+                self.server_commands.pop(index)
                 self.clear_dirty_flag(data.get("unique_id"))
                 print(f"Confirmed {data.get('subject')}")
 
@@ -828,7 +832,6 @@ class MainWindow(QtWidgets.QMainWindow):
         Check through server commands to see if there has not been a reply in 30 seconds.
         Resubmits those that are stale.
         """
-        print("check for stale")
         if self.pref.get("useserver", False) is True:
             for index, item in enumerate(self.server_commands):
                 expired = datetime.datetime.strptime(
@@ -841,7 +844,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.server_channel.send_as_json(self.server_commands[index])
                     except OSError as err:
                         logging.warning("%s", err)
-            print(f"{self.server_commands=}")
 
     def server_message(self):
         msg = self.server_channel.getpacket()
@@ -873,9 +875,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 #     if self.people.get(json_data.get("station")) != band_mode:
                 #         self.people[json_data.get("station")] = band_mode
                 #     self.show_people()
-                # if json_data.get("host"):
-                #     self.server_seen = datetime.now() + datetime.timedelta(seconds=30)
-                #     self.group_call_indicator.setStyleSheet("border: 1px solid green;")
+                if json_data.get("host"):
+                    self.server_seen = datetime.datetime.now() + datetime.timedelta(
+                        seconds=15
+                    )
+                    self.server_icon.setPixmap(self.greenserver)
                 continue
 
             if json_data.get("cmd") == "RESPONSE":
@@ -3523,6 +3527,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.update_rtc_xml()
 
+        if self.pref.get("useserver", False) is True:
+            self.server_icon.show()
+            self.server_icon.setPixmap(self.redserver)
+        else:
+            self.server_icon.hide()
+
     def rtc_response(self, response):
         print(f"{response=}")
 
@@ -4098,6 +4108,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     milliseconds=self.auto_cq_delay
                 )
                 self.process_function_key(self.F1)
+            if datetime.datetime.now() > self.server_seen:
+                self.server_icon.setPixmap(self.redserver)
 
         # The following pertains to radio polling.
         logger.debug(f"{the_dict=}")
