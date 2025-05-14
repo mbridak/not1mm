@@ -1,6 +1,7 @@
 not1mm/.vscode
 /.venv
 /dist
+/build
 /not1mm.egg-info
 /.flatpak-builder
 /builddir
