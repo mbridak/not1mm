@@ -30,6 +30,7 @@
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
+    - [The Easy and Fast way to always run the latest version](#the-easy-and-fast-way-to-always-run-the-latest-version)
     - [Common Installation Recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
@@ -224,31 +225,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
-- [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
-- [25-4-22] Mostly code cleanup. Not running some code when not needed.
-- [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
-- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
-- [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
-- [25-4-18] Option to clear input fields when QSY in S&P mode.
-- [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
-- [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
-- [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
-- [25-4-14] Add ES Open HF Chanmpionship.
-- [25-4-13] Fix crash in JIDX Cabrillo output.
-- [25-4-12] Added an Auto CQ time to fire progress bar.
-- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
-- [25-4-11-2] Fixed a crash.
-- [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
-- [25-4-11] Add Scandinavian Activity Contest
-- [25-4-10-1] Add ARI 40/80 contest. Add CTRL-R to toggle Run state.
-- [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX Contest.
-- [25-4-8] Remove focus from statistics table widget.
-- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
-- [25-4-5] Add SPDX.
-- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
-- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
+- [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -271,6 +248,40 @@ Not1MM requires:
 - libxcb-cursor0 (maybe... Depends on the distro)
 
 You should install these through your distribution's package manager before continuing.
+
+### The Easy and Fast way to always run the latest version
+
+- Step 1. Visit [Astral](https://docs.astral.sh/uv/) and install uv.
+
+In short you run this in your terminal:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+- Step 2. Tell it to run not1mm:
+
+```bash
+uv tool run not1mm
+```
+
+That's it... It will go out, fetch the latest version of not1mm, setup a python virtual environment, get all the needed python libraries, cache everything and run not1mm. The first time takes a minute, but each time after, it's lightning quick and it will automatically check for updates and run the latest version.
+
+But wait... There's more. If your distro is old and you're stuck with an older version of python... Say 3.10. And you want to see what all the cool kids are using. But you don't want to corrupt your broke ol' system by downloading the newest Python version. No problem. You can tell uv to run not1mm with any version of Python you'd like. Let's say 3.14.
+
+```bash
+uv tool run --python 3.14 not1mm
+```
+
+It'll download Python 3.14 into you virtual environment and run not1mm.
+
+Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem.
+
+```bash
+uv tool run --python 3.10 not1mm==23.5.19
+```
+
+Pow! Enjoy the pain... If uv is not your cuppa, you can follow the more traditional route below.
 
 ### Common Installation Recipes for Ubuntu and Fedora
 
@@ -373,7 +384,7 @@ all the details from:
 In short, You should install stuff into a Python virtual environment. Newer
 Linux distros will make you do this unless you include a command line argument
 akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
-But... **Use pipx**.
+But... **Use pipx**. Or better visit the [section above](#the-easy-and-fast-way-to-always-run-the-latest-version) on using uv.
 
 #### Bootstrapping pipx
 
