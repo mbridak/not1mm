@@ -224,31 +224,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
-- [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
-- [25-4-22] Mostly code cleanup. Not running some code when not needed.
-- [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
-- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
-- [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
-- [25-4-18] Option to clear input fields when QSY in S&P mode.
-- [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
-- [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
-- [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
-- [25-4-14] Add ES Open HF Chanmpionship.
-- [25-4-13] Fix crash in JIDX Cabrillo output.
-- [25-4-12] Added an Auto CQ time to fire progress bar.
-- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
-- [25-4-11-2] Fixed a crash.
-- [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
-- [25-4-11] Add Scandinavian Activity Contest
-- [25-4-10-1] Add ARI 40/80 contest. Add CTRL-R to toggle Run state.
-- [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX Contest.
-- [25-4-8] Remove focus from statistics table widget.
-- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
-- [25-4-5] Add SPDX.
-- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
-- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
+- [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
