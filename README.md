@@ -30,6 +30,7 @@
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
+    - [The Easy and Fast way to always run the latest version](#the-easy-and-fast-way-to-always-run-the-latest-version)
     - [Common Installation Recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
@@ -248,6 +249,40 @@ Not1MM requires:
 
 You should install these through your distribution's package manager before continuing.
 
+### The Easy and Fast way to always run the latest version
+
+- Step 1. Visit [Astral](https://docs.astral.sh/uv/) and install uv.
+
+In short you run this in your terminal:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+- Step 2. Tell it to run not1mm:
+
+```bash
+uv tool run not1mm
+```
+
+That's it... It will go out, fetch the latest version of not1mm, setup a python virtual environment, get all the needed python libraries, cache everything and run not1mm. The first time takes a minute, but each time after, it's lightning quick and it will automatically check for updates and run the latest version.
+
+But wait... There's more. If your distro is old and you're stuck with an older version of python... Say 3.10. And you want to see what all the cool kids are using. But you don't want to corrupt your broke ol' system by downloading the newest Python version. No problem. You can tell uv to run not1mm with any version of Python you'd like. Let's say 3.14.
+
+```bash
+uv tool run --python 3.14 not1mm
+```
+
+It'll download Python 3.14 into you virtual environment and run not1mm.
+
+Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem.
+
+```bash
+uv tool run --python 3.10 not1mm==23.5.19
+```
+
+Pow! Enjoy the pain... If uv is not your cuppa, you can follow the more traditional route below.
+
 ### Common Installation Recipes for Ubuntu and Fedora
 
 I've taken the time to install some common Linux distributions into a VM and
@@ -349,7 +384,7 @@ all the details from:
 In short, You should install stuff into a Python virtual environment. Newer
 Linux distros will make you do this unless you include a command line argument
 akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
-But... **Use pipx**.
+But... **Use pipx**. Or better visit the [section above](#the-easy-and-fast-way-to-always-run-the-latest-version) on using uv.
 
 #### Bootstrapping pipx
 
