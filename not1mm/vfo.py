@@ -248,6 +248,8 @@ class VfoWindow(QDockWidget):
         except AttributeError:
             logger.critical("Unable to write to serial device.")
             self.pico = None
+        except KeyboardInterrupt:
+            ...
 
     def show_message_box(self, message: str) -> None:
         """
