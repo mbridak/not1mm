@@ -705,7 +705,7 @@ class BandMapWindow(QDockWidget):
 
         entity = ""
         if result:
-            # ⌾ ⦿ 🗼 ⛯
+            # ⌾ ⦿ 🗼 ⛯ ⊕ ⊞ ⁙ ⁘ ⁕ ⌖ Ⓟ ✦ 🄿 🄿 Ⓢ 🅂 🏔
             min_y = 0.0
             for items in result:
                 flag = " @"
@@ -713,10 +713,19 @@ class BandMapWindow(QDockWidget):
                     flag = " ○"
                 if "NCDXF B" in items.get("comment"):
                     flag = " 🗼"
+                if "BCN " in items.get("comment"):
+                    flag = " 🗼"
                 if "FT8" in items.get("comment"):
+                    flag = " ⦿"
+                if "FT4" in items.get("comment"):
                     flag = " ⦿"
                 if "RTTY" in items.get("comment"):
                     flag = " ⌾"
+                if "POTA" in items.get("comment"):
+                    flag += "[P]"
+                if "SOTA" in items.get("comment"):
+                    flag += "[S]"
+
                 pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QColor(254, 194, 17)
