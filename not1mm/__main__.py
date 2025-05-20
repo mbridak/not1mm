@@ -222,8 +222,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+
         if sys.platform == "darwin":
-            def_font_size = 12
+            QApplication.setStyle("Fusion")
+            def_font_size = 13
 
             QApplication.instance().setFont(QFont(self.fontfamily, def_font_size))
             self.F1.setFont(QFont(self.fontfamily, def_font_size))
