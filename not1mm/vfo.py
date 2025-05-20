@@ -16,6 +16,7 @@ import datetime
 import logging
 import os
 from json import loads
+import sys
 
 import serial
 from PyQt6 import QtCore, QtWidgets, uic
@@ -104,13 +105,25 @@ class VfoWindow(QDockWidget):
         Return the device ID if it is, or None if not found.
         """
 
-        devices = None
+        devices = self.get_devices()
         data = None
-        try:
-            devices = os.listdir("/dev/serial/by-id")
-        except FileNotFoundError:
-            return None
 
+        if sys.platform == "darwin":
+            for device in devices:
+                if "usb" in device:
+                    print(f"{device=}")
+                    try:
+                        with serial.Serial("/dev/" + device, 115200) as ser:
+                            ser.timeout = 1000
+                            ser.write(b"whatareyou\r")
+                            data = ser.readline()
+                    except serial.serialutil.SerialException:
+                        return None
+                    print(f"{data.decode().strip()=}")
+                    if "vfoknob" in data.decode().strip():
+                        print(f"found {device=}")
+                        return "/dev/" + device
+            return None
         for device in devices:
             if "usb-Raspberry_Pi_Pico" in device:
                 try:
@@ -121,7 +134,16 @@ class VfoWindow(QDockWidget):
                 except serial.serialutil.SerialException:
                     return None
                 if "vfoknob" in data.decode().strip():
-                    return device
+                    return "/dev/serial/by-id/" + device
+
+    def get_devices(self):
+        try:
+            if sys.platform != "darwin":
+                return os.listdir("/dev/serial/by-id")
+            return os.listdir("/dev/")
+        except FileNotFoundError:
+            return None
+        return None
 
     def window_state_changed(self):
         """Setup vfo knob if window is toggled on"""
@@ -141,7 +163,7 @@ class VfoWindow(QDockWidget):
         device = self.discover_device()
         if device:
             try:
-                self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
+                self.pico = serial.Serial(device, 115200)
                 self.pico.timeout = 100
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
                 self.device_reconnect = True
