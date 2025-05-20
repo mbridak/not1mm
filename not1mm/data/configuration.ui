@@ -1439,32 +1439,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2" colspan="4">
-        <widget class="QLineEdit" name="n1mm_contactport">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono ExtraLight</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="accessibleName">
-          <string>contact packet address and port</string>
-         </property>
-         <property name="accessibleDescription">
-          <string>contact packet address and port</string>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="5">
         <widget class="QLineEdit" name="n1mm_operator">
          <property name="font">
@@ -2497,7 +2471,6 @@
   <tabstop>n1mm_operator</tabstop>
   <tabstop>send_n1mm_packets</tabstop>
   <tabstop>n1mm_radioport</tabstop>
-  <tabstop>n1mm_contactport</tabstop>
   <tabstop>n1mm_lookupport</tabstop>
   <tabstop>n1mm_scoreport</tabstop>
  </tabstops>
