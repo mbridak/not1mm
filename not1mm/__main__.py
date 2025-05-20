@@ -1993,7 +1993,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         "font-family: JetBrains Mono; color: black;"
                     )
                 else:
-                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
+                    indicator.setStyleSheet(
+                        "font-family: JetBrains Mono; color: white;"
+                    )
 
     def set_band_indicator(self, band: str) -> None:
         """
