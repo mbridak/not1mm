@@ -1990,12 +1990,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: black;"
+                        "font-family: JetBrains Mono; color: black;"
                     )
                 else:
-                    indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: white"
-                    )
+                    indicator.setStyleSheet("font-family: JetBrains Mono; color: white")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2016,9 +2014,7 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
-                indicator.setStyleSheet(
-                    "font-family: JetBrains Mono ExtraLight; color: green;"
-                )
+                indicator.setStyleSheet("font-family: JetBrains Mono; color: green;")
 
     def closeEvent(self, _event) -> None:
         """
@@ -2872,7 +2868,12 @@ class MainWindow(QtWidgets.QMainWindow):
             next_serial = "1"
         macro = macro.upper()
         if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("#", next_serial.rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]))
+            macro = macro.replace(
+                "#",
+                next_serial.rjust(
+                    self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]
+                ),
+            )
         else:
             macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
@@ -2885,7 +2886,10 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SNT}", self.sent.text())
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace(
-                "{SENTNR}", self.other_1.text().lstrip("0").rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"])
+                "{SENTNR}",
+                self.other_1.text()
+                .lstrip("0")
+                .rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]),
             )
         else:
             macro = macro.replace("{SENTNR}", self.other_1.text())
@@ -4192,10 +4196,12 @@ def load_fonts_from_dir(directory: str) -> set:
     set
     A set of font families installed in the directory.
     """
+    print(f"{directory=}")
     font_families = set()
     for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
         _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
         font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+    print(f"{font_families=}")
     return font_families
 
 

@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono ExtraLight</family>
+    <family>JetBrains Mono</family>
    </font>
   </property>
   <property name="windowTitle">
@@ -742,7 +742,7 @@
         <widget class="QPushButton" name="delete_2">
          <property name="font">
           <font>
-           <family>JetBrains Mono ExtraLight</family>
+           <family>JetBrains Mono</family>
           </font>
          </property>
          <property name="accessibleName">
@@ -772,7 +772,7 @@
         <widget class="QDialogButtonBox" name="buttonBox">
          <property name="font">
           <font>
-           <family>JetBrains Mono ExtraLight</family>
+           <family>JetBrains Mono</family>
           </font>
          </property>
          <property name="accessibleName">
