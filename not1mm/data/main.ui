@@ -21,7 +21,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono ExtraLight</family>
+    <family>JetBrains Mono Light</family>
     <pointsize>11</pointsize>
    </font>
   </property>
@@ -742,7 +742,7 @@
                 <widget class="QLineEdit" name="callsign">
                  <property name="font">
                   <font>
-                   <family>JetBrains Mono ExtraLight</family>
+                   <family>JetBrains Mono Light</family>
                    <pointsize>20</pointsize>
                   </font>
                  </property>
@@ -786,7 +786,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>JetBrains Mono ExtraLight</family>
+                   <family>JetBrains Mono Light</family>
                    <pointsize>20</pointsize>
                   </font>
                  </property>
@@ -827,7 +827,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>JetBrains Mono ExtraLight</family>
+                   <family>JetBrains Mono Light</family>
                    <pointsize>20</pointsize>
                   </font>
                  </property>
@@ -862,7 +862,7 @@
                 <widget class="QLineEdit" name="other_1">
                  <property name="font">
                   <font>
-                   <family>JetBrains Mono ExtraLight</family>
+                   <family>JetBrains Mono Light</family>
                    <pointsize>20</pointsize>
                   </font>
                  </property>
@@ -903,7 +903,7 @@
                 <widget class="QLineEdit" name="other_2">
                  <property name="font">
                   <font>
-                   <family>JetBrains Mono ExtraLight</family>
+                   <family>JetBrains Mono Light</family>
                    <pointsize>20</pointsize>
                   </font>
                  </property>
@@ -1075,7 +1075,7 @@
               </property>
               <property name="font">
                <font>
-                <family>JetBrains Mono ExtraLight</family>
+                <family>JetBrains Mono Light</family>
                 <pointsize>20</pointsize>
                 <bold>true</bold>
                </font>
@@ -1516,7 +1516,7 @@
    <widget class="QMenu" name="menuFile">
     <property name="font">
      <font>
-      <family>JetBrains Mono ExtraLight</family>
+      <family>JetBrains Mono Light</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -1594,7 +1594,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1625,7 +1625,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1650,7 +1650,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1675,7 +1675,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -1691,7 +1691,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1710,7 +1710,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1729,7 +1729,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -1739,7 +1739,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1758,7 +1758,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1777,7 +1777,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1799,7 +1799,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -1821,7 +1821,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -1843,7 +1843,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -1865,7 +1865,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1884,7 +1884,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1903,7 +1903,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1922,7 +1922,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1941,7 +1941,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1960,7 +1960,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1979,7 +1979,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -1992,7 +1992,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -2010,7 +2010,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -2025,7 +2025,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -2043,7 +2043,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -2059,7 +2059,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -2075,7 +2075,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">
@@ -2094,7 +2094,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
   </action>
@@ -2125,7 +2125,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono ExtraLight</family>
+     <family>JetBrains Mono Light</family>
     </font>
    </property>
    <property name="shortcut">

@@ -31,7 +31,7 @@ import notctyparser
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
-from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
+from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap, QFont
 from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
@@ -220,7 +220,45 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        if sys.platform == "darwin":
+            def_font_size = 12
+
+            QApplication.instance().setFont(QFont(self.fontfamily, def_font_size))
+            self.F1.setFont(QFont(self.fontfamily, def_font_size))
+            self.F2.setFont(QFont(self.fontfamily, def_font_size))
+            self.F3.setFont(QFont(self.fontfamily, def_font_size))
+            self.F4.setFont(QFont(self.fontfamily, def_font_size))
+            self.F5.setFont(QFont(self.fontfamily, def_font_size))
+            self.F6.setFont(QFont(self.fontfamily, def_font_size))
+            self.F7.setFont(QFont(self.fontfamily, def_font_size))
+            self.F8.setFont(QFont(self.fontfamily, def_font_size))
+            self.F9.setFont(QFont(self.fontfamily, def_font_size))
+            self.F10.setFont(QFont(self.fontfamily, def_font_size))
+            self.F11.setFont(QFont(self.fontfamily, def_font_size))
+            self.F12.setFont(QFont(self.fontfamily, def_font_size))
+            self.radioButton_run.setFont(QFont(self.fontfamily, def_font_size))
+            self.radioButton_sp.setFont(QFont(self.fontfamily, def_font_size))
+            self.cw_speed.setFont(QFont(self.fontfamily, def_font_size))
+            self.callsign_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.snt_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.rcv_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.other_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.exch_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.heading_distance.setFont(QFont(self.fontfamily, def_font_size))
+            self.history_info.setFont(QFont(self.fontfamily, def_font_size))
+            self.dx_entity.setFont(QFont(self.fontfamily, def_font_size))
+            self.score.setFont(QFont(self.fontfamily, def_font_size))
+            self.mults.setFont(QFont(self.fontfamily, def_font_size))
+
+            self.callsign.setFont(QFont(self.fontfamily, 20))
+            self.sent.setFont(QFont(self.fontfamily, 20))
+            self.receive.setFont(QFont(self.fontfamily, 20))
+            self.other_1.setFont(QFont(self.fontfamily, 20))
+            self.other_2.setFont(QFont(self.fontfamily, 20))
+            self.dupe_indicator.setFont(QFont(self.fontfamily, 20))
+
         self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
         QApplication.instance().styleHints().colorSchemeChanged.connect(
@@ -2175,11 +2213,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: black;"
+                        f"font-family: {self.fontfamily}; color: black;"
                     )
                 else:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: white"
+                        f"font-family: {self.fontfamily}; color: white;"
                     )
 
     def set_band_indicator(self, band: str) -> None:
@@ -2202,7 +2240,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet(
-                    "font-family: JetBrains Mono ExtraLight; color: green;"
+                    f"font-family: {self.fontfamily}; color: green;"
                 )
 
     def closeEvent(self, _event) -> None:
@@ -4389,26 +4427,26 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("******Cabrillo*****")
         self.contest.cabrillo(self, file_encoding)
 
+    def load_fonts_from_dir(self, directory: str) -> str:
+        """
+        Well it loads fonts from a directory...
 
-def load_fonts_from_dir(directory: str) -> set:
-    """
-    Well it loads fonts from a directory...
+        Parameters
+        ----------
+        directory : str
+        The directory to load fonts from.
 
-    Parameters
-    ----------
-    directory : str
-    The directory to load fonts from.
-
-    Returns
-    -------
-    set
-    A set of font families installed in the directory.
-    """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
+        Returns
+        -------
+        set
+        A set of font families installed in the directory.
+        """
+        font_families = set()
+        for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+            _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+            font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+        result = set((max(font_families, key=len),))
+        return list(result)[0]
 
 
 def install_icons() -> None:
@@ -4464,8 +4502,8 @@ def run() -> None:
     )
     QCoreApplication.processEvents()
 
-    families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-    logger.info(f"font families {families}")
+    # families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
+    # logger.info(f"font families {families}")
     window = MainWindow(splash)
     window.callsign.setFocus()
     splash.finish(window)

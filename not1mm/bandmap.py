@@ -19,7 +19,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QFont, QColor
+from PyQt6.QtGui import QColorConstants, QFont, QColor, QFont
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -343,6 +343,8 @@ class BandMapWindow(QDockWidget):
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+        self.thefont = QFont()
+        self.thefont.setFamily("JetBrains Mono")
         self.settings = self.get_settings()
         self.clear_spot_olderSpinBox.setValue(
             int(self.settings.get("cluster_expire", 1))
@@ -584,7 +586,7 @@ class BandMapWindow(QDockWidget):
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
-                self.something.setFont(self.font)
+                self.something.setFont(self.thefont)
                 self.something.setDefaultTextColor(self.text_color)
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
@@ -749,6 +751,7 @@ class BandMapWindow(QDockWidget):
                     + " "
                     + items.get("ts").split()[1][:-3]
                 )
+                text.setFont(self.thefont)
                 text.document().setDocumentMargin(0)
                 text.setPos(60, text_y - (text.boundingRect().height() / 2))
                 text.setFlags(
