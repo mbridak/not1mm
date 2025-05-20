@@ -1251,26 +1251,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="n1mm_operator">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="accessibleName">
-          <string>send contact packets</string>
-         </property>
-         <property name="accessibleDescription">
-          <string>send n 1 m m contact packets.</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1" colspan="3">
         <widget class="QLineEdit" name="n1mm_station_name">
          <property name="font">
@@ -2468,7 +2448,6 @@
   <tabstop>multicast_port</tabstop>
   <tabstop>interface_ip</tabstop>
   <tabstop>n1mm_station_name</tabstop>
-  <tabstop>n1mm_operator</tabstop>
   <tabstop>send_n1mm_packets</tabstop>
   <tabstop>n1mm_radioport</tabstop>
   <tabstop>n1mm_lookupport</tabstop>
@@ -2527,7 +2506,7 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
  </buttongroups>
 </ui>
