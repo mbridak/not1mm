@@ -24,7 +24,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono ExtraLight</family>
+    <family>JetBrains Mono</family>
    </font>
   </property>
   <property name="windowTitle">
@@ -56,7 +56,7 @@
         </property>
         <property name="font">
          <font>
-          <family>JetBrains Mono ExtraLight</family>
+          <family>JetBrains Mono</family>
           <bold>true</bold>
          </font>
         </property>

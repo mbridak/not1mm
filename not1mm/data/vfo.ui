@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono ExtraLight</family>
+    <family>JetBrains Mono</family>
    </font>
   </property>
   <property name="features">
@@ -42,7 +42,7 @@
          </property>
          <property name="font">
           <font>
-           <family>JetBrains Mono ExtraLight</family>
+           <family>JetBrains Mono</family>
            <pointsize>25</pointsize>
           </font>
          </property>
