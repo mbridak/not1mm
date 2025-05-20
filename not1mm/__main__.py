@@ -4203,8 +4203,10 @@ def load_fonts_from_dir(directory: str) -> set:
     for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
         _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
         font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    print(f"{font_families=}")
-    return font_families
+
+    result = set((max(font_families, key=len),))
+    print(f"{result=}")
+    return result
 
 
 def install_icons() -> None:
