@@ -5,7 +5,7 @@ from PyQt6 import QtWidgets, uic
 
 try:
     import sounddevice as sd
-except OSError as exception:
+except OSError:
     sd = None
 
 
