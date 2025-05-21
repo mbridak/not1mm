@@ -2913,7 +2913,8 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace(
                 "#",
                 next_serial.rjust(
-                    self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
                 ),
             )
         else:
@@ -2931,7 +2932,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 "{SENTNR}",
                 self.other_1.text()
                 .lstrip("0")
-                .rjust(self.pref["cwpaddinglength"], self.pref["cwpaddingchar"]),
+                .rjust(
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
+                ),
             )
         else:
             macro = macro.replace("{SENTNR}", self.other_1.text())
