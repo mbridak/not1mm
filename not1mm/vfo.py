@@ -112,7 +112,6 @@ class VfoWindow(QDockWidget):
         if sys.platform == "darwin":
             for device in devices:
                 if "usb" in device:
-                    print(f"{device=}")
                     try:
                         with serial.Serial("/dev/" + device, 115200) as ser:
                             ser.timeout = 1000
@@ -120,9 +119,7 @@ class VfoWindow(QDockWidget):
                             data = ser.readline()
                     except serial.serialutil.SerialException:
                         return None
-                    print(f"{data.decode().strip()=}")
                     if "vfoknob" in data.decode().strip():
-                        print(f"found {device=}")
                         return "/dev/" + device
             return None
         for device in devices:
