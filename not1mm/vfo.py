@@ -107,7 +107,8 @@ class VfoWindow(QDockWidget):
 
         devices = self.get_devices()
         data = None
-
+        if devices is None:
+            return None
         if sys.platform == "darwin":
             for device in devices:
                 if "usb" in device:
