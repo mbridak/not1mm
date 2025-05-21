@@ -1,5 +1,6 @@
 # Changelog
 
+-[25-5-21] Fix crash from unsafe dict key access when processing F1-F12.
 - [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
 - [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
 - [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
