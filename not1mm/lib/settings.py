@@ -274,7 +274,10 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwport"] = None
             ...
         self.preference["cwpaddingchar"] = self.cwpaddingchar_field.text()
-        self.preference["cwpaddinglength"] = int(self.cwpaddinglength_field.text())
+        try:
+            self.preference["cwpaddinglength"] = int(self.cwpaddinglength_field.text())
+        except ValueError:
+            self.preference["cwpaddinglength"] = 3
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1
