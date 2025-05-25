@@ -52,9 +52,6 @@ class RateWindow(QDockWidget):
     def msg_from_main(self, packet):
         """"""
 
-        if self.active is False:
-            return
-
         if packet.get("cmd", "") == "NEWDB":
             self.load_pref()
             self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
