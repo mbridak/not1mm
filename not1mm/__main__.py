@@ -3106,6 +3106,8 @@ class MainWindow(QtWidgets.QMainWindow):
         next_serial = str(result.get("serial_nr", "1"))
         if next_serial == "None":
             next_serial = "1"
+        result = self.database.get_last_serial()
+        prev_serial = str(result.get("serial_nr", "1")).zfill(3)
         macro = macro.upper()
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace(
@@ -3125,6 +3127,9 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
         else:
             macro = macro.replace("{SNT}", self.sent.text())
+        macro = macro.replace(
+            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
+        )
         if self.radio_state.get("mode") == "CW":
             macro = macro.replace(
                 "{SENTNR}",
@@ -3135,11 +3140,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.pref.get("cwpaddingchar", "T"),
                 ),
             )
+            macro = macro.replace(
+                "{PREVNR}",
+                str(prev_serial)
+                .lstrip("0")
+                .rjust(
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
+                ),
+            )
         else:
             macro = macro.replace("{SENTNR}", self.other_1.text())
-        macro = macro.replace(
-            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
-        )
+            macro = macro.replace("{PREVNR}", str(prev_serial))
+
         if "{LOGIT}" in macro:
             macro = macro.replace("{LOGIT}", "")
             self.save_contact()

@@ -225,6 +225,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-5-25] Added {PREVNR} macro to resend last logged serial number.
 - [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
