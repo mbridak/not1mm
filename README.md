@@ -132,8 +132,10 @@ and SQLite for the database.
 ### Target Environment
 
 The primary target for this application is Linux. It may be able to run on other
-platforms, BSD, Mac and Windows. But I don't have a way, or desire, to directly
-support them.
+platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
+
+I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
+
 
 ### The Why
 
@@ -226,6 +228,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 ## Recent Changes
 
 - [25-5-25] Added {PREVNR} macro to resend last logged serial number.
+  - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
+  - Made tuning with the VFO knob smoother.
+  - Add MacOS support for VFO knob.
+  - Forced style to Fusion on MacOS, 'cause it looked like ass.
 - [25-5-22] Trap possible ValueError exception in settings.py
 - [25-5-21] Fix crash from unsafe dict key access when processing F1-F12.
 - [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
