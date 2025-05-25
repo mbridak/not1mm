@@ -1115,6 +1115,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def get_last_serial(self) -> dict:
+        """Return next serial number"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select max(SentNR) as serial_nr from DXLOG where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def get_empty(self) -> dict:
         """Return a dictionary object with keys and no values."""
         return self.empty_contact
