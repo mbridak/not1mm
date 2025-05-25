@@ -208,7 +208,7 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"\\stop_morse", "utf-8"))
+                self.rigctrlsocket.send(bytes("\\stop_morse", "utf-8"))
                 _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
@@ -332,7 +332,7 @@ class CAT:
                 if "get_freq:|" in report and "RPRT 0" in report:
                     seg_rpt = report.split("|")
                     return seg_rpt[1].split(" ")[1]
-            except socket.error as exception:
+            except (socket.error, IndexError) as exception:
                 self.online = False
                 logger.debug(f"{exception=}")
                 self.rigctrlsocket = None

@@ -12,9 +12,11 @@ Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
 
+import datetime
 import logging
 import os
 from json import loads
+import sys
 
 import serial
 from PyQt6 import QtCore, QtWidgets, uic
@@ -37,6 +39,7 @@ class VfoWindow(QDockWidget):
     multicast_interface = None
     current_palette = None
     device_reconnect = False
+    stale = datetime.datetime.now()
 
     def __init__(self):
         super().__init__()
@@ -102,13 +105,23 @@ class VfoWindow(QDockWidget):
         Return the device ID if it is, or None if not found.
         """
 
-        devices = None
+        devices = self.get_devices()
         data = None
-        try:
-            devices = os.listdir("/dev/serial/by-id")
-        except FileNotFoundError:
+        if devices is None:
             return None
-
+        if sys.platform == "darwin":
+            for device in devices:
+                if "usb" in device:
+                    try:
+                        with serial.Serial("/dev/" + device, 115200) as ser:
+                            ser.timeout = 1000
+                            ser.write(b"whatareyou\r")
+                            data = ser.readline()
+                    except serial.serialutil.SerialException:
+                        return None
+                    if "vfoknob" in data.decode().strip():
+                        return "/dev/" + device
+            return None
         for device in devices:
             if "usb-Raspberry_Pi_Pico" in device:
                 try:
@@ -119,7 +132,16 @@ class VfoWindow(QDockWidget):
                 except serial.serialutil.SerialException:
                     return None
                 if "vfoknob" in data.decode().strip():
-                    return device
+                    return "/dev/serial/by-id/" + device
+
+    def get_devices(self):
+        try:
+            if sys.platform != "darwin":
+                return os.listdir("/dev/serial/by-id")
+            return os.listdir("/dev/")
+        except FileNotFoundError:
+            return None
+        return None
 
     def window_state_changed(self):
         """Setup vfo knob if window is toggled on"""
@@ -139,7 +161,7 @@ class VfoWindow(QDockWidget):
         device = self.discover_device()
         if device:
             try:
-                self.pico = serial.Serial("/dev/serial/by-id/" + device, 115200)
+                self.pico = serial.Serial(device, 115200)
                 self.pico.timeout = 100
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
                 self.device_reconnect = True
@@ -191,6 +213,8 @@ class VfoWindow(QDockWidget):
         """
         if not self.isVisible():
             return
+        if datetime.datetime.now() < self.stale:
+            return
         if self.rig_control:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
@@ -227,8 +251,12 @@ class VfoWindow(QDockWidget):
                 while self.pico.in_waiting:
                     result = self.pico.read(self.pico.in_waiting)
                     result = result.decode().strip()
+
                     if self.old_pico != result:
                         self.old_pico = result
+                        self.stale = datetime.datetime.now() + datetime.timedelta(
+                            seconds=1
+                        )
                         if self.rig_control:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
@@ -240,6 +268,8 @@ class VfoWindow(QDockWidget):
         except AttributeError:
             logger.critical("Unable to write to serial device.")
             self.pico = None
+        except KeyboardInterrupt:
+            ...
 
     def show_message_box(self, message: str) -> None:
         """

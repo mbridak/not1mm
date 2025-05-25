@@ -696,8 +696,9 @@ class LogWindow(QDockWidget):
         self.contact["RoverLocation"] = self.edit_contact_dialog.rover_qth.text()
 
         self.database.change_contact(self.contact)
+
         self.get_log()
-        cmd = {}
+        cmd = self.contact.copy()
         cmd["cmd"] = "CONTACTCHANGED"
         self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
@@ -715,6 +716,7 @@ class LogWindow(QDockWidget):
         None
         """
         self.database.delete_contact(self.contact.get("ID", ""))
+
         if self.n1mm:
             if self.n1mm.send_contact_packets:
                 self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
@@ -728,7 +730,8 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.close()
         self.get_log()
         cmd = {}
-        cmd["cmd"] = "CONTACTCHANGED"
+        cmd["cmd"] = "DELETED"
+        cmd["ID"] = self.contact.get("ID", "")
         self.message.emit(cmd)
         self.show_like_calls(self.contact.get("Call", ""))
 

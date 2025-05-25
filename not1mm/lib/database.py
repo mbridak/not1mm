@@ -484,7 +484,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
-            return ()
+            return []
 
     def log_contact(self, contact: dict) -> None:
         """
@@ -543,6 +543,18 @@ class DataBase:
             except sqlite3.Error as exception:
                 logger.info("DataBase delete_contact: %s", exception)
 
+    def clear_dirty_flag(self, unique_id) -> None:
+        """Clears the dirty flag."""
+        if unique_id:
+            try:
+                with sqlite3.connect(self.database) as conn:
+                    sql = f"update dxlog set dirty=0 where ID='{unique_id}';"
+                    cursor = conn.cursor()
+                    cursor.execute(sql)
+                    conn.commit()
+            except sqlite3.Error as exception:
+                logger.critical("%s", exception)
+
     def delete_callhistory(self) -> None:
         """Deletes all info from callhistory table."""
         try:
@@ -580,6 +592,20 @@ class DataBase:
             logger.debug("%s", exception)
             return ()
 
+    def fetch_all_dirty_contacts(self) -> list:
+        """returns a list of dicts of contacts with dirty flag set in the database."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select * from dxlog where ContestNR = {self.current_contest} and dirty = 1;"
+                )
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return ()
+
     def fetch_all_contacts_desc(self) -> list:
         """returns a list of dicts with contacts in the database."""
         try:
@@ -592,6 +618,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
+            return []
 
     def fetch_last_contact(self) -> dict:
         """returns a list of dicts with last contact in the database."""
@@ -1088,6 +1115,20 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def get_last_serial(self) -> dict:
+        """Return next serial number"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"select max(SentNR) as serial_nr from DXLOG where ContestNR = {self.current_contest};"
+                )
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def get_empty(self) -> dict:
         """Return a dictionary object with keys and no values."""
         return self.empty_contact
@@ -1216,7 +1257,7 @@ class DataBase:
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
-            return ()
+            return []
 
     def check_dupe_on_period_1_mode(
         self, call, band, mode, contest_start_time, contest_time_period_1

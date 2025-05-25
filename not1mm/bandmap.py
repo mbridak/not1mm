@@ -19,7 +19,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QPalette, QColor, QFont
+from PyQt6.QtGui import QColorConstants, QFont, QColor, QFont
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -357,7 +357,9 @@ class BandMapWindow(QDockWidget):
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
+        self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
+        self.bandmap_scene.setFont(self.font)
         self.socket = QtNetwork.QTcpSocket()
         self.socket.readyRead.connect(self.receive)
         self.socket.connected.connect(self.maybeconnected)
@@ -563,11 +565,12 @@ class BandMapWindow(QDockWidget):
         self.clear_freq_mark(self.txMark)
         self.clear_freq_mark(self.bandwidth_mark)
         self.bandmap_scene.clear()
-
+        self.bandmap_scene.setFont(self.font)
         step, _digits = self.determine_step_digits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
+        self.graphicsView.setFont(self.font)
         for i in range(steps):  # Draw tickmarks
             length = 10
             if i % 5 == 0:
@@ -704,8 +707,27 @@ class BandMapWindow(QDockWidget):
 
         entity = ""
         if result:
+            # ⌾ ⦿ 🗼 ⛯ ⊕ ⊞ ⁙ ⁘ ⁕ ⌖ Ⓟ ✦ 🄿 🄿 Ⓢ 🅂 🏔
             min_y = 0.0
             for items in result:
+                flag = " @"
+                if "CW" in items.get("comment"):
+                    flag = " ○"
+                if "NCDXF B" in items.get("comment"):
+                    flag = " 🗼"
+                if "BCN " in items.get("comment"):
+                    flag = " 🗼"
+                if "FT8" in items.get("comment"):
+                    flag = " ⦿"
+                if "FT4" in items.get("comment"):
+                    flag = " ⦿"
+                if "RTTY" in items.get("comment"):
+                    flag = " ⌾"
+                if "POTA" in items.get("comment"):
+                    flag += "[P]"
+                if "SOTA" in items.get("comment"):
+                    flag += "[S]"
+
                 pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QColor(254, 194, 17)
@@ -724,7 +746,7 @@ class BandMapWindow(QDockWidget):
                 )
                 text = self.bandmap_scene.addText(
                     items.get("callsign")
-                    + " @ "
+                    + flag
                     + entity
                     + " "
                     + items.get("ts").split()[1][:-3]
