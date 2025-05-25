@@ -900,12 +900,13 @@ class LogWindow(QDockWidget):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
-        self.generalLog.blockSignals(False)
-        self.focusedLog.blockSignals(False)
+
         self.generalLog.resizeColumnsToContents()
         self.generalLog.resizeRowsToContents()
         self.focusedLog.resizeColumnsToContents()
         self.focusedLog.resizeRowsToContents()
+        self.generalLog.blockSignals(False)
+        self.focusedLog.blockSignals(False)
 
     def show_like_calls(self, call: str) -> None:
         """
