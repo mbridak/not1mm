@@ -30,6 +30,7 @@
   - [Flatpak](#flatpak)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
+    - [The Easy and Fast way to always run the latest version](#the-easy-and-fast-way-to-always-run-the-latest-version)
     - [Common Installation Recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
       - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
       - [Ubuntu 23.04](#ubuntu-2304)
@@ -79,6 +80,8 @@
     - [Editing macro keys](#editing-macro-keys)
     - [Macro substitutions](#macro-substitutions)
     - [Macro use with voice](#macro-use-with-voice)
+      - [{VOICE1} - {VOICE10}](#voice1---voice10)
+      - [Voice macro wave files](#voice-macro-wave-files)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [The Windows](#the-windows)
@@ -129,8 +132,10 @@ and SQLite for the database.
 ### Target Environment
 
 The primary target for this application is Linux. It may be able to run on other
-platforms, BSD, Mac and Windows. But I don't have a way, or desire, to directly
-support them.
+platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
+
+I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
+
 
 ### The Why
 
@@ -182,6 +187,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- ARI 40 80
+- ARI DX
 - ARRL 10M
 - ARRL 160M
 - ARRL DX CW, SSB
@@ -222,22 +229,15 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
-- [25-4-14] Add ES Open HF Chanmpionship.
-- [25-4-13] Fix crash in JIDX Cabrillo output.
-- [25-4-12] Added an Auto CQ time to fire progress bar.
-- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
-- [25-4-11-2] Fixed a crash.
-- [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
-- [25-4-11] Add Scandinavian Activity Contest
-- [25-4-10-1] Add ARI 40/80 contest. Add CTRL-R to toggle Run state.
-- [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX Contest.
-- [25-4-8] Remove focus from statistics table widget.
-- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
-- [25-4-5] Add SPDX.
-- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
-- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
+- [25-5-26] Add ARI DX contest, Fix Canada Day mults.
+- [25-5-25] Added {PREVNR} macro to resend last logged serial number.
+  - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
+  - Made tuning with the VFO knob smoother.
+  - Add MacOS support for VFO knob.
+  - Forced style to Fusion on MacOS, 'cause it looked like ass.
+- [25-5-22] Trap possible ValueError exception in settings.py
+- [25-5-21] Fix crash from unsafe dict key access when processing F1-F12.
+- [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -260,6 +260,40 @@ Not1MM requires:
 - libxcb-cursor0 (maybe... Depends on the distro)
 
 You should install these through your distribution's package manager before continuing.
+
+### The Easy and Fast way to always run the latest version
+
+- Step 1. Visit [Astral](https://docs.astral.sh/uv/) and install uv.
+
+In short you run this in your terminal:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+- Step 2. Tell it to run not1mm:
+
+```bash
+uv tool run not1mm
+```
+
+That's it... It will go out, fetch the latest version of not1mm, setup a python virtual environment, get all the needed python libraries, cache everything and run not1mm. The first time takes a minute, but each time after, it's lightning quick and it will automatically check for updates and run the latest version.
+
+But wait... There's more. If your distro is old and you're stuck with an older version of python... Say 3.10. And you want to see what all the cool kids are using. But you don't want to corrupt your broke ol' system by downloading the newest Python version. No problem. You can tell uv to run not1mm with any version of Python you'd like. Let's say 3.14.
+
+```bash
+uv tool run --python 3.14 not1mm
+```
+
+It'll download Python 3.14 into you virtual environment and run not1mm.
+
+Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem.
+
+```bash
+uv tool run --python 3.10 not1mm==23.5.19
+```
+
+Pow! Enjoy the pain... If uv is not your cuppa, you can follow the more traditional route below.
 
 ### Common Installation Recipes for Ubuntu and Fedora
 
@@ -362,7 +396,7 @@ all the details from:
 In short, You should install stuff into a Python virtual environment. Newer
 Linux distros will make you do this unless you include a command line argument
 akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
-But... **Use pipx**.
+But... **Use pipx**. Or better visit the [section above](#the-easy-and-fast-way-to-always-run-the-latest-version) on using uv.
 
 #### Bootstrapping pipx
 
@@ -610,6 +644,7 @@ On the Options TAB you can:
 - Select to use Enter Sends Message ([ESM](#esm)), and configure it's function keys.
 - Select whether or not to use [Call History](#call-history-files) info.
 - Select whether or not to send XML score info to online scoreboards.
+- Select whether or not to clear input fields when you QSY while in S&P mode.
 
 ![Options Screen](https://github.com/mbridak/not1mm/blob/master/pic/configuration_options.png?raw=true)
 
@@ -702,8 +737,16 @@ You can include a limited set of substitution instructions.
 | {SANDP} | Change to S&P mode. |
 | {WIPE} | Wipe input fields. |
 | '#' | Sends serial number. |
+| {VOICE1} - {VOICE10} | Uses rigctld to send voice macros stored in the radio. |
 
 ### Macro use with voice
+
+#### {VOICE1} - {VOICE10}
+
+If you use rigctld and your radio supports it you can use the macros {VOICE1},
+{VOICE2} etc to send the voice messages stored in your radio.
+
+#### Voice macro wave files
 
 The macros when used with voice, will also accept filenames of WAV files to
 play, excluding the file extension. The filename must be enclosed by brackets.
@@ -744,7 +787,7 @@ is this has happened, since the gridsquare will replace the word "Regional".
 **You must press the SPACE bar after entering any of the below.**
 
 - [A Frequency] You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
-- [CW, SSB, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+- [CW, SSB, FM, AM, RTTY] You can set the mode logged. If you have CAT control this will also change the mode on the radio.
 - [OPON] Change the operator currently logging.
 
 **You must press the SPACE bar after entering any of the above.**
@@ -826,8 +869,26 @@ blue rectangle shows the receivers bandwidth if one is reported.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
-Clicked on spots now tune the radio and set the callsign field. Previously
-worked calls are displayed in red.
+Clicking on a spots tunes the radio to the spot frequency and sets the callsign field.
+
+Previously worked calls are displayed in Red.
+
+Callsigns that were marked with CTRL-M to work later are displayed in a Yellow-ish color.
+
+In between the spots call and time is now a little icon to visually tell you what kind of spot it is.
+
+![Bandmap Icons](https://github.com/mbridak/not1mm/raw/master/pic/bandmap_icons.png)
+
+- ○ CW
+- ⦿ FT*
+- ⌾ RTTY
+- 🗼 Beacons
+- @ Everything else
+
+Secondary Icons:
+
+- [P] POTA
+- [S] SOTA
 
 ### The Check Partial Window
 
@@ -855,7 +916,9 @@ This window contains QSO rates and counts.
 
 You can control the VFO on a remote rig by following the directions listed in
 the link below. It's a small hardware project with a BOM of under $20, and
-consisting of two parts.
+consisting of two parts. The VFO knob is now detectable on MacOS. I've made the
+operation of the knob smoother by having the knob ignore frequency updates from
+the radio while it's in rotation.
 
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`

@@ -44,6 +44,15 @@ class StatsWindow(QDockWidget):
 
     def msg_from_main(self, packet):
         """"""
+        if packet.get("cmd", "") == "NEWDB":
+            self.load_pref()
+            self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+                "current_database", "ham.db"
+            )
+            self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
+            self.database.current_contest = self.pref.get("contest", 0)
+            self.get_run_and_total_qs()
+
         if self.active is False:
             return
 
@@ -55,15 +64,6 @@ class StatsWindow(QDockWidget):
             logger.debug("External refresh command.")
             self.get_run_and_total_qs()
             return
-
-        if packet.get("cmd", "") == "NEWDB":
-            self.load_pref()
-            self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
-                "current_database", "ham.db"
-            )
-            self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
-            self.database.current_contest = self.pref.get("contest", 0)
-            self.get_run_and_total_qs()
 
     def setActive(self, mode: bool) -> None:
         self.active = bool(mode)

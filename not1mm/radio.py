@@ -15,7 +15,7 @@ import logging
 from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
 from not1mm.lib.cat_interface import CAT
 
-logger = logging.getLogger("cat_interface")
+logger = logging.getLogger("radio")
 
 
 class Radio(QObject):
@@ -103,7 +103,7 @@ class Radio(QObject):
                 except QEventLoop:
                     ...
             # QThread.msleep(int(self.delta / 2))
-            QThread.msleep(1)
+            QThread.msleep(100)
 
     def store_last_data_mode(self, the_mode: str = ""):
         """if the last mode is a data mode, save it."""
@@ -130,6 +130,11 @@ class Radio(QObject):
 
         if the_mode in cwmodes:
             self.last_cw_mode = the_mode
+
+    def sendvoicememory(self, memoryspot=1):
+        """..."""
+        if self.cat:
+            self.cat.sendvoicememory(memoryspot)
 
     def sendcw(self, texttosend):
         """..."""

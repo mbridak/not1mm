@@ -12,7 +12,7 @@
   </property>
   <property name="font">
    <font>
-    <family>JetBrains Mono ExtraLight</family>
+    <family>JetBrains Mono</family>
    </font>
   </property>
   <property name="focusPolicy">
@@ -33,7 +33,7 @@
       </property>
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>12</pointsize>
        </font>
       </property>
@@ -70,7 +70,7 @@
       </property>
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>12</pointsize>
        </font>
       </property>
@@ -107,7 +107,7 @@
       </property>
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>12</pointsize>
        </font>
       </property>
@@ -141,7 +141,7 @@
      <widget class="QLabel" name="logListLabel">
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>10</pointsize>
        </font>
       </property>
@@ -154,7 +154,7 @@
      <widget class="QLabel" name="masterListLabel">
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>10</pointsize>
        </font>
       </property>
@@ -167,7 +167,7 @@
      <widget class="QLabel" name="telnetListLabel">
       <property name="font">
        <font>
-        <family>JetBrains Mono ExtraLight</family>
+        <family>JetBrains Mono</family>
         <pointsize>10</pointsize>
        </font>
       </property>

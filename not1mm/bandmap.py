@@ -19,7 +19,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QPalette, QColor
+from PyQt6.QtGui import QColorConstants, QFont, QColor, QFont
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -343,6 +343,8 @@ class BandMapWindow(QDockWidget):
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+        self.thefont = QFont()
+        self.thefont.setFamily("JetBrains Mono")
         self.settings = self.get_settings()
         self.clear_spot_olderSpinBox.setValue(
             int(self.settings.get("cluster_expire", 1))
@@ -355,7 +357,9 @@ class BandMapWindow(QDockWidget):
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
+        self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
+        self.bandmap_scene.setFont(self.font)
         self.socket = QtNetwork.QTcpSocket()
         self.socket.readyRead.connect(self.receive)
         self.socket.connected.connect(self.maybeconnected)
@@ -385,7 +389,7 @@ class BandMapWindow(QDockWidget):
 
     def msg_from_main(self, packet):
         """"""
-        if self.active is False:
+        if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
             self.set_band(packet.get("band") + "m", False)
@@ -561,11 +565,12 @@ class BandMapWindow(QDockWidget):
         self.clear_freq_mark(self.txMark)
         self.clear_freq_mark(self.bandwidth_mark)
         self.bandmap_scene.clear()
-
+        self.bandmap_scene.setFont(self.font)
         step, _digits = self.determine_step_digits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
+        self.graphicsView.setFont(self.font)
         for i in range(steps):  # Draw tickmarks
             length = 10
             if i % 5 == 0:
@@ -581,6 +586,7 @@ class BandMapWindow(QDockWidget):
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
                 self.something = self.bandmap_scene.addText(text)
+                self.something.setFont(self.thefont)
                 self.something.setDefaultTextColor(self.text_color)
                 self.something.setPos(
                     -(self.something.boundingRect().width()) + 10,
@@ -688,7 +694,7 @@ class BandMapWindow(QDockWidget):
     def update_stations(self):
         """doc"""
         self.update_timer.setInterval(UPDATE_INTERVAL)
-        if self.active is False:
+        if self.active is False or not self.isVisible():
             return
         self.clear_all_callsign_from_scene()
         self.spot_aging()
@@ -701,8 +707,27 @@ class BandMapWindow(QDockWidget):
 
         entity = ""
         if result:
+            # ⌾ ⦿ 🗼 ⛯ ⊕ ⊞ ⁙ ⁘ ⁕ ⌖ Ⓟ ✦ 🄿 🄿 Ⓢ 🅂 🏔
             min_y = 0.0
             for items in result:
+                flag = " @"
+                if "CW" in items.get("comment"):
+                    flag = " ○"
+                if "NCDXF B" in items.get("comment"):
+                    flag = " 🗼"
+                if "BCN " in items.get("comment"):
+                    flag = " 🗼"
+                if "FT8" in items.get("comment"):
+                    flag = " ⦿"
+                if "FT4" in items.get("comment"):
+                    flag = " ⦿"
+                if "RTTY" in items.get("comment"):
+                    flag = " ⌾"
+                if "POTA" in items.get("comment"):
+                    flag += "[P]"
+                if "SOTA" in items.get("comment"):
+                    flag += "[S]"
+
                 pen_color = self.text_color
                 if items.get("comment") == "MARKED":
                     pen_color = QColor(254, 194, 17)
@@ -721,11 +746,12 @@ class BandMapWindow(QDockWidget):
                 )
                 text = self.bandmap_scene.addText(
                     items.get("callsign")
-                    + " @ "
+                    + flag
                     + entity
                     + " "
                     + items.get("ts").split()[1][:-3]
                 )
+                text.setFont(self.thefont)
                 text.document().setDocumentMargin(0)
                 text.setPos(60, text_y - (text.boundingRect().height() / 2))
                 text.setFlags(
