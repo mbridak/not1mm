@@ -866,8 +866,26 @@ blue rectangle shows the receivers bandwidth if one is reported.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
-Clicked on spots now tune the radio and set the callsign field. Previously
-worked calls are displayed in red.
+Clicking on a spots tunes the radio to the spot frequency and sets the callsign field.
+
+Previously worked calls are displayed in Red.
+
+Callsigns that were marked with CTRL-M to work later are displayed in a Yellow-ish color.
+
+In between the spots call and time is now a little icon to visually tell you what kind of spot it is.
+
+![Bandmap Icons](https://github.com/mbridak/not1mm/raw/master/pic/bandmap_icons.png)
+
+- ○ CW
+- ⦿ FT*
+- ⌾ RTTY
+- 🗼 Beacons
+- @ Everything else
+
+Secondary Icons:
+
+- [P] POTA
+- [S] SOTA
 
 ### The Check Partial Window
 
