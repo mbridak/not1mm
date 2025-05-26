@@ -556,3 +556,129 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
             self.other_2.setText(f"{result.get('Sect', '')}")
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    print(f"{the_packet=}")
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+        'CALL': 'K5TUS', 
+        'MODE': 'RTTY', 
+        'FREQ': '14.068415', 
+        'BAND': '20M', 
+        'QSO_DATE': '20250103', 
+        'TIME_ON': '2359', 
+        'QSO_DATE_OFF': '20250103', 
+        'TIME_OFF': '2359', 
+        'NAME': '', 
+        'QTH': '', 
+        'STATE': 'ORG', 
+        'VE_PROV': '', 
+        'COUNTRY': 'USA', 
+        'RST_SENT': '599', 
+        'RST_RCVD': '599', 
+        'TX_PWR': '0', 
+        'CNTY': '', 
+        'DXCC': '', 
+        'CQZ': '5', 
+        'IOTA': '', 
+        'CONT': '', 
+        'ITUZ': '', 
+        'GRIDSQUARE': '', 
+        'QSLRDATE': '', 
+        'QSLSDATE': '', 
+        'EQSLRDATE': '', 
+        'EQSLSDATE': '', 
+        'LOTWRDATE': '', 
+        'LOTWSDATE': '', 
+        'QSL_VIA': '', 
+        'NOTES': '', 
+        'SRX': '', 
+        'STX': '000', 
+        'SRX_STRING': '', 
+        'STX_STRING': 'CA', 
+
+
+        'SRX': '666', 
+        'STX': '000', 
+        'SRX_STRING': '', 
+        'STX_STRING': 'CA',
+
+        'SRX': '004', 'STX': '000', 'SRX_STRING': '', 'STX_STRING': '#',
+
+        'CLASS': '', 
+        'ARRL_SECT': '', 
+        'OPERATOR': 'K6GTE', 
+        'STATION_CALLSIGN': 'K6GTE', 
+        'MY_GRIDSQUARE': 'DM13AT', 
+        'MY_CITY': 'ANAHEIM, CA', 
+        'CHECK': '', 
+        'AGE': '', 
+        'TEN_TEN': '', 
+        'CWSS_PREC': '', 
+        'CWSS_SECTION': '', 
+        'CWSS_SERNO': '', 
+        'CWSS_CHK': ''
+    }
+
+    """
+    logger.debug(f"{the_packet=}")
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "599")
+        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "599")
+
+        sent_string = the_packet.get("STX_STRING", "")
+        if sent_string != "":
+            ALTEREGO.contact["SentNr"] = sent_string
+            ALTEREGO.other_1.setText(str(sent_string))
+        else:
+            ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")
+            ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))
+
+        rx_string = the_packet.get("STATE", "")
+        if rx_string != "":
+            ALTEREGO.contact["NR"] = rx_string
+            ALTEREGO.other_2.setText(str(rx_string))
+        else:
+            ALTEREGO.contact["NR"] = the_packet.get("SRX", "000")
+            ALTEREGO.other_2.setText(str(the_packet.get("SRX", "000")))
+
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+
+        ALTEREGO.save_contact()
