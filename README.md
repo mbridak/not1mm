@@ -913,7 +913,9 @@ This window contains QSO rates and counts.
 
 You can control the VFO on a remote rig by following the directions listed in
 the link below. It's a small hardware project with a BOM of under $20, and
-consisting of two parts.
+consisting of two parts. The VFO knob is now detectable on MacOS. I've made the
+operation of the knob smoother by having the knob ignore frequency updates from
+the radio while it's in rotation.
 
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`
