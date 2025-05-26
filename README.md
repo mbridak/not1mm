@@ -227,6 +227,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-5-26] Add ARI DX contest, Fix Canada Day mults.
 - [25-5-25] Added {PREVNR} macro to resend last logged serial number.
   - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
   - Made tuning with the VFO knob smoother.
