@@ -67,7 +67,7 @@ class SCP:
         """         
         try:
             with open(
-                Path(self.app_data_path) / "MASTER_ES_LV_LT.SCP", "r", encoding="utf-8"
+                Path(self.app_data_path) / "MASTER.SCP", "r", encoding="utf-8"
             ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))
