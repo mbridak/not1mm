@@ -425,7 +425,7 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).upper().ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('Exchange1', '')).upper().ljust(6)}",
+                    f"{str(contact.get('NR', '')).upper().ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
