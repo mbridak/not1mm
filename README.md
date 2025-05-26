@@ -206,6 +206,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - EA Majistad SSB
 - EA RTTY
 - ES OPEN HF
+- ES FIELD DAY HF
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF

@@ -362,6 +362,11 @@
        <string>ES OPEN</string>
       </property>
      </item>
+          <item>
+      <property name="text">
+       <string>ES FIELD DAY</string>
+      </property>
+     </item>
      <item>
       <property name="text">
        <string>HELVETIA</string>
