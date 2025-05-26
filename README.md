@@ -187,6 +187,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- ARI 40 80
+- ARI DX
 - ARRL 10M
 - ARRL 160M
 - ARRL DX CW, SSB
