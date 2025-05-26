@@ -1,5 +1,11 @@
 """ARI International DX Contest"""
 
+# pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
+# pyright: ignore[reportUndefinedVariable]
+# pylance: disable=reportUndefinedVariable
+# ruff: noqa: F821
+# ruff: noqa: F401
+
 # Status:	            Active
 # Geographic Focus:     Worldwide
 # Participation:        Worldwide
@@ -30,8 +36,6 @@
 # Cabrillo name:	    ARI-DX
 
 
-# pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
-
 import datetime
 import logging
 import platform
@@ -40,6 +44,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif
 from not1mm.lib.version import __version__
 
@@ -154,7 +159,7 @@ def points(self) -> int:
     if result:
         for item in result.items():
             mycountry = item[1].get("primary_pfx", "")
-            myentity = item[1].get("entity", "")
+            # myentity = item[1].get("entity", "")
             mycontinent = item[1].get("continent", "")
 
     result = self.cty_lookup(self.contact.get("Call", ""))
@@ -162,7 +167,7 @@ def points(self) -> int:
     if result:
         for item in result.items():
             hiscountry = item[1].get("primary_pfx", "")
-            hisentity = item[1].get("entity", "")
+            # hisentity = item[1].get("entity", "")
             hiscontinent = item[1].get("continent", "")
 
     _points = 0
@@ -649,36 +654,36 @@ def ft8_handler(the_packet: dict):
 
     """
     logger.debug(f"{the_packet=}")
-    if ALTEREGO is not None:
-        ALTEREGO.callsign.setText(the_packet.get("CALL"))
-        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "599")
-        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "599")
+    if ALTEREGO is not None:  # type: ignore
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))  # type: ignore
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")  # type: ignore
+        ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "599")  # type: ignore
+        ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "599")  # type: ignore
 
         sent_string = the_packet.get("STX_STRING", "")
         if sent_string != "":
-            ALTEREGO.contact["SentNr"] = sent_string
-            ALTEREGO.other_1.setText(str(sent_string))
+            ALTEREGO.contact["SentNr"] = sent_string  # type: ignore
+            ALTEREGO.other_1.setText(str(sent_string))  # type: ignore
         else:
-            ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")
-            ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))
+            ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")  # type: ignore
+            ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))  # type: ignore
 
         rx_string = the_packet.get("STATE", "")
         if rx_string != "":
-            ALTEREGO.contact["NR"] = rx_string
-            ALTEREGO.other_2.setText(str(rx_string))
+            ALTEREGO.contact["NR"] = rx_string  # type: ignore
+            ALTEREGO.other_2.setText(str(rx_string))  # type: ignore
         else:
-            ALTEREGO.contact["NR"] = the_packet.get("SRX", "000")
-            ALTEREGO.other_2.setText(str(the_packet.get("SRX", "000")))
+            ALTEREGO.contact["NR"] = the_packet.get("SRX", "000")  # type: ignore
+            ALTEREGO.other_2.setText(str(the_packet.get("SRX", "000")))  # type: ignore
 
-        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
-        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
-        ALTEREGO.contact["QSXFreq"] = round(
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")  # type: ignore
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)  # type: ignore
+        ALTEREGO.contact["QSXFreq"] = round(  # type: ignore
             float(the_packet.get("FREQ", "0.0")) * 1000, 2
         )
-        ALTEREGO.contact["Band"] = get_logged_band(
+        ALTEREGO.contact["Band"] = get_logged_band(  # type: ignore
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
-        logger.debug(f"{ALTEREGO.contact=}")
+        logger.debug(f"{ALTEREGO.contact=}")  # type: ignore
 
-        ALTEREGO.save_contact()
+        ALTEREGO.save_contact()  # type: ignore
