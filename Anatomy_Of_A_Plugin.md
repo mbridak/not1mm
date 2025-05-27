@@ -68,23 +68,23 @@ hisituzone = ""
 hisprimary_pfx = ""
 
 result = self.cty_lookup(self.station.get("Call", ""))
-if result:
-    for item in result.items():
-        mycountry = item[1].get("entity", "")
-        mycontinent = item[1].get("continent", "")
-        mycqzone = item[1].get("cq", "")
-        myituzone = item[1].get("itu", "")
-        myprimary_pfx = item[1].get("primary_pfx", "")
+if result is not None:
+    item = result.get(next(iter(result)))
+    mycountry = item.get("entity", "")
+    mycontinent = item.get("continent", "")
+    mycqzone = item.get("cq", "")
+    myituzone = item.get("itu", "")
+    myprimary_pfx = item.get("primary_pfx", "")
 
 
 result = self.cty_lookup(self.contact.get("Call", ""))
-if result:
-    for item in result.items():
-        hiscountry = item[1].get("entity", "")
-        hiscontinent = item[1].get("continent", "")
-        hiscqzone = item[1].get("cq", "")
-        hisituzone = item[1].get("itu", "")
-        hisprimary_pfx = item[1].get("primary_pfx", "")
+if result is not None:
+    item = result.get(next(iter(result)))
+    hiscountry = item.get("entity", "")
+    hiscontinent = item.get("continent", "")
+    hiscqzone = item.get("cq", "")
+    hisituzone = item.get("itu", "")
+    hisprimary_pfx = item.get("primary_pfx", "")
 ```
 
 ## Making a new plugin by modifying an existing one

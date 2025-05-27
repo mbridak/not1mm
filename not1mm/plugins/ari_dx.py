@@ -156,19 +156,19 @@ def points(self) -> int:
         return 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycountry = item[1].get("primary_pfx", "")
-            # myentity = item[1].get("entity", "")
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item.get("primary_pfx", "")
+        # myentity = item.get("entity", "")
+        mycontinent = item.get("continent", "")
 
     result = self.cty_lookup(self.contact.get("Call", ""))
-
-    if result:
-        for item in result.items():
-            hiscountry = item[1].get("primary_pfx", "")
-            # hisentity = item[1].get("entity", "")
-            hiscontinent = item[1].get("continent", "")
+    print(f"{result=}")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        hiscountry = item.get("primary_pfx", "")
+        # hisentity = item.get("entity", "")
+        hiscontinent = item.get("continent", "")
 
     _points = 0
 
