@@ -13,6 +13,8 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, get_points
 
+# import not1mm.lib.edit_station import EditStation
+
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
 
@@ -22,6 +24,9 @@ EXCHANGE_HINT = "#"
 
 sent_region_code = "TL"
 
+
+
+# station_region_code = station.get("State", "")
 
 name = "ES FIELD DAY"
 cabrillo_name = "ES-FIELD-DAY"
@@ -43,6 +48,26 @@ advance_on_space = [True, True, True, True, True]
 
 # 5 Contest specific dupe check.
 dupe_type = 5
+
+
+estonian_regions = [
+    "HM",
+    "HR",
+    "IV",
+    "JG",
+    "JR",
+    "LN",
+    "LV",
+    "PL",
+    "PU",
+    "RP",
+    "SR",
+    "TA",
+    "TL",
+    "VC",
+    "VO",
+    "VP"
+]
 
 
 def specific_contest_check_dupe(self, call):
@@ -202,17 +227,34 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    # get received number and region code
+    # result = self.contact.self.contact.get("NR", "")
+
+    # only_letters = ''.join(char for char in result if char.isalpha())
+
+    check_call = self.contact.get("Call", "")
+
+    if "/p" in check_call.lower():
+        return 3
+    elif "/qrp" in check_call.lower():
+        return 5
+    else:
         return 1
-    if _mode in "CW":
-        return 2
-
-    return 0
-
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
+
+    # implement here multipliers checks
+        # get received number and region code
+
+    call_result = str(self.contact.get("NR", ""))
+
+    only_letters = ''.join(char for char in call_result if char.isalpha())
+
+    if only_letters in estonian_regions:
+        result = self.database.fetch_country_band_count()
+        mult_count = result.get("cb_count", 0)
+
     our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
     query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
     result = self.database.exec_sql(query)
