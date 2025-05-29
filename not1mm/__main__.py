@@ -958,6 +958,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.remove_confirmed_commands(json_data)
                     if json_data.get("subject") == "CONTACTCHANGED":
                         self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "NEWDB":
+                        self.remove_confirmed_commands(json_data)
 
                 continue
 
@@ -1953,6 +1955,22 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rate_window.msg_from_main(cmd)
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(cmd)
+                # server
+                if self.pref.get("useserver", False) is True:
+                    cmd = self.contest_settings.copy()
+                    cmd["cmd"] = "NEWDB"
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    cmd["expire"] = stale.isoformat()
+                    cmd["NetBiosName"] = socket.gethostname()
+                    cmd["Operator"] = self.current_op
+                    cmd["ID"] = uuid.uuid4().hex
+                    self.server_commands.append(cmd)
+                    # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
+                    try:
+                        self.server_channel.send_as_json(cmd)
+                        # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+                    except OSError as err:
+                        logging.warning("%s", err)
 
                 if hasattr(self.contest, "columns"):
                     cmd = {}
@@ -2847,6 +2865,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        # server
         if self.pref.get("useserver", False) is True:
             stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
             self.contact["cmd"] = "POST"
@@ -3976,7 +3995,10 @@ class MainWindow(QtWidgets.QMainWindow):
         debug_result = f"{result=}"
         logger.debug("%s", debug_result)
         if result is not None:
-            a = result.get(next(iter(result)))
+            try:
+                a = result.get(next(iter(result)))
+            except (StopIteration, AttributeError):
+                return
             entity = a.get("entity", "")
             cq = a.get("cq", "")
             itu = a.get("itu", "")
