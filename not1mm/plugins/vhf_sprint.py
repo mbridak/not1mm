@@ -1,33 +1,35 @@
-""" """
+"""VHF SPRINT"""
+
+# Single band VHF Sprint. Exchange is 4-digit grid square.
+# 1 point per each valid QSO multiplied by number of grid squares worked.
+# Cabrillo name:	VHF-SPRINT
+
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
 import datetime
 import logging
-import platform
 
 from pathlib import Path
-
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
-
-from not1mm.lib.ham_utility import calculate_wpx_prefix
+from not1mm.lib.ham_utility import get_logged_band
+from not1mm.lib.plugin_common import gen_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "#"
+ALTEREGO = None
+EXCHANGE_HINT = "4-character grid square"
 
-name = "ES OPEN"
-cabrillo_name = "ES-OPEN"
+name = "VHF SPRINT"
 mode = "BOTH"  # CW SSB BOTH RTTY
+cabrillo_name = "VHF-SPRINT"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
     "Mode",
-    "Snt",
-    "Rcv",
     "SentNr",
     "RcvNr",
     "PTS",
@@ -35,81 +37,8 @@ columns = [
 
 advance_on_space = [True, True, True, True, True]
 
-# 5 Contest specific dupe check.
-dupe_type = 5
-
-
-def specific_contest_check_dupe(self, call):
-    """"""
-
-    # constant to split the contest
-    contest_length_in_minutes = 60
-    split_contest_by_minutes = 20
-
-    period_count = int(contest_length_in_minutes / split_contest_by_minutes)
-
-    # think about generic solution by splitting the contest to n different periods
-    start_date_init = self.contest_settings.get("StartDate", "")
-    self.contest_start_date = start_date_init.split(" ")[0]
-    self.contest_start_time = start_date_init.split(" ")[1]
-
-    start_date_init_date = datetime.strptime(start_date_init, "%Y-%m-%d %H:%M:%S")
-
-    # Create time periods dynamically based on period count
-    time_periods = []
-    for i in range(period_count):
-        minutes_to_add = split_contest_by_minutes * (i + 1)
-        time_period = start_date_init_date + datetime.timedelta(minutes=minutes_to_add)
-        time_periods.append(time_period)
-
-    # Assign to variables for backwards compatibility
-    time_period_1 = time_periods[0] if len(time_periods) > 0 else None
-    time_period_2 = time_periods[1] if len(time_periods) > 1 else None
-    time_period_3 = time_periods[2] if len(time_periods) > 2 else None
-
-    # get current time in UTC
-    iso_current_time = datetime.now(datetime.timezone.utc)
-    current_time = iso_current_time.replace(tzinfo=None)
-
-    if current_time < time_period_1:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
-
-        result = self.database.check_dupe_on_period_1_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            start_date_init,
-            time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-
-    if current_time < time_period_2 and current_time >= time_period_1:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
-
-        result = self.database.check_dupe_on_period_2_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            start_date_init,
-            time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-
-    if current_time < time_period_3 and current_time >= time_period_2:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
-
-        result = self.database.check_dupe_on_period_3_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            start_date_init,
-            time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-    else:
-        result = self.database.check_dupe_on_period_mode(
-            call, self.contact.get("Band", ""), mode, start_date_init
-        )
-    return result
+# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
+dupe_type = 3
 
 
 def init_contest(self):
@@ -122,14 +51,16 @@ def init_contest(self):
 
 def interface(self):
     """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
+    self.field1.hide()
+    self.field2.hide()
     self.field3.show()
     self.field4.show()
-    self.other_label.setText("Sent")
-    self.field3.setAccessibleName("Sent")
-    self.exch_label.setText("SN")
-    self.field4.setAccessibleName("SN")
+    self.snt_label.setText("SNT")
+    self.field1.setAccessibleName("RST Sent")
+    self.other_label.setText("Sent Grid")
+    self.field3.setAccessibleName("Sent Grid")
+    self.exch_label.setText("Grid")
+    self.field4.setAccessibleName("Gridsquare")
 
 
 def reset_label(self):
@@ -140,8 +71,6 @@ def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
         self.callsign: self.other_1,
-        self.sent: self.other_1,
-        self.receive: self.other_1,
         self.other_1: self.other_2,
         self.other_2: self.callsign,
     }
@@ -151,22 +80,27 @@ def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
         self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.callsign,
-        self.other_1: self.callsign,
         self.other_2: self.other_1,
+        self.other_1: self.callsign,
     }
+
+
+def validate(self):
+    """doc"""
+    # exchange = self.other_2.text().upper().split()
+    # if len(exchange) == 3:
+    #     if exchange[0].isalpha() and exchange[1].isdigit() and exchange[2].isalpha():
+    #         return True
+    # return False
+    return True
 
 
 def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text().upper()
     self.contact["NR"] = self.other_2.text().upper()
-
-    self.contact["IsMultiplier1"] = 0
-    self.contact["IsMultiplier2"] = 0
+    self.contact["SentNr"] = self.other_1.text()
 
 
 def predupe(self):
@@ -174,42 +108,53 @@ def predupe(self):
 
 
 def prefill(self):
-    """Fill SentNR"""
-    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
-    if sent_sxchange_setting.strip() == "#":
-        result = self.database.get_serial()
-        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(serial_nr)
-    else:
-        self.other_1.setText(sent_sxchange_setting)
+    """Fill sentnr"""
+    result = self.database.get_serial()
+    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    if serial_nr == "None":
+        serial_nr = "001"
+
+    exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(exchange)
 
 
 def points(self):
-    """ """
+    """Calc point"""
+
+    # QSO Points:	1 point per QSO
+
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    _band = self.contact.get("Band", "")
+    if _band in ["50", "144"]:
         return 1
-    if _mode in "CW":
-        return 2
-
+    if _band in ["222", "432"]:
+        return 1
+    if _band in ["902", "1296"]:
+        return 1
+    if _band in ["2300+"]:
+        return 1
     return 0
 
 
-def show_mults(self, rtc=None):
+def show_mults(self):
     """Return display string for mults"""
-    our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
-    query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
-    result = self.database.exec_sql(query)
+    # Multipliers:	Grid squares once per band
+
+    dx = 0
+
+    sql = (
+        "select count(DISTINCT(NR || ':' || Band)) as mult_count "
+        f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+    )
+    result = self.database.exec_sql(sql)
+
     if result:
-        mult_count = result.get("mults", 0)
-        return mult_count
-    return 0
+        dx = result.get("mult_count", 0)
+
+    return dx
 
 
 def show_qso(self):
@@ -222,24 +167,18 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
-    result = self.database.fetch_points()
-    if result is not None:
-        score = result.get("Points", "0")
-        if score is None:
-            score = "0"
-        contest_points = int(score)
-        mults = show_mults(self)
-        return contest_points * (mults + 1)
-    return 0
-
-
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
+    # Multipliers: Each US State + DC once per mode
+    _points = get_points(self)
+    _mults = show_mults(self)
+    _power_mult = 1
+    # if self.contest_settings.get("PowerCategory", "") == "QRP":
+    #     _power_mult = 2
+    return _points * _power_mult * _mults
 
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "ES OPEN")
+    gen_adif(self, cabrillo_name)
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -419,19 +358,33 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode == "LSB" or themode == "USB":
+                if themode in ("LSB", "USB", "AM"):
                     themode = "PH"
-                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+                if themode in (
+                    "FT8",
+                    "FT4",
+                    "RTTY",
+                    "PSK31",
+                    "FSK441",
+                    "MSK144",
+                    "JT65",
+                    "JT9",
+                    "Q65",
+                ):
+                    themode = "DG"
+                freq = int(contact.get("Freq", "0")) / 1000
+
+                frequency = str(int(freq)).rjust(4)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
+                    # f"{str(contact.get('SNT', '')).ljust(3)} "
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
+                    # f"{str(contact.get('RCV', '')).ljust(3)} "
                     f"{str(contact.get('NR', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
@@ -445,24 +398,96 @@ def cabrillo(self, file_encoding):
         return
 
 
-# def populate_history_info_line(self):
-#     result = self.database.fetch_call_history(self.callsign.text())
-#     if result:
-#         self.history_info.setText(
-#             f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
-#         )
-#     else:
-#         self.history_info.setText("")
+def recalculate_mults(self):
+    """Recalculates multipliers after change in logged qso."""
 
 
-# def check_call_history(self):
-#     """"""
-#     result = self.database.fetch_call_history(self.callsign.text())
-#     print(f"{result=}")
-#     if result:
-#         self.history_info.setText(f"{result.get('UserText','')}")
-#         if self.other_2.text() == "":
-#             self.other_2.setText(f"{result.get('Exch1', '')}")
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process FT8 QSO packets
+    FT8
+    {
+        'CALL': 'KE0OG',
+        'GRIDSQUARE': 'DM10AT',
+        'MODE': 'FT8',
+        'RST_SENT': '',
+        'RST_RCVD': '',
+        'QSO_DATE': '20210329',
+        'TIME_ON': '183213',
+        'QSO_DATE_OFF': '20210329',
+        'TIME_OFF': '183213',
+        'BAND': '20M',
+        'FREQ': '14.074754',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'CONTEST_ID': 'ARRL-FIELD-DAY',
+        'SRX_STRING': '1D UT',
+        'CLASS': '1D',
+        'ARRL_SECT': 'UT'
+    }
+    FlDigi
+    {
+        'FREQ': '7.029500',
+        'CALL': 'DL2DSL',
+        'MODE': 'RTTY',
+        'NAME': 'BOB',
+        'QSO_DATE': '20240904',
+        'QSO_DATE_OFF': '20240904',
+        'TIME_OFF': '212825',
+        'TIME_ON': '212800',
+        'RST_RCVD': '599',
+        'RST_SENT': '599',
+        'BAND': '40M',
+        'COUNTRY': 'FED. REP. OF GERMANY',
+        'CQZ': '14',
+        'STX': '000',
+        'STX_STRING': '1D ORG',
+        'CLASS': '1D',
+        'ARRL_SECT': 'DX',
+        'TX_PWR': '0',
+        'OPERATOR': 'K6GTE',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_GRIDSQUARE': 'DM13AT',
+        'MY_CITY': 'ANAHEIM, CA',
+        'MY_STATE': 'CA'
+    }
+
+    """
+    logger.debug(f"{the_packet=}")
+    if ALTEREGO is not None:
+        ALTEREGO.callsign.setText(the_packet.get("CALL"))
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        my_grid = the_packet.get("MY_GRIDSQUARE", "")
+        if my_grid:
+            if len(my_grid) > 4:
+                my_grid = my_grid[:4]
+        their_grid = the_packet.get("GRIDSQUARE", "")
+        if their_grid:
+            if len(their_grid) > 4:
+                their_grid = their_grid[:4]
+        ALTEREGO.contact["NR"] = their_grid
+        # ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
+        if the_packet.get("SUBMODE"):
+            ALTEREGO.contact["Mode"] = the_packet.get("SUBMODE", "ERR")
+        else:
+            ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+        ALTEREGO.other_1.setText(my_grid)
+        ALTEREGO.other_2.setText(their_grid)
+        ALTEREGO.save_contact()
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -516,7 +541,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget == "other_2":
+        elif self.current_widget in ["other_2"]:
             if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
@@ -538,7 +563,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget == "other_2":
+        elif self.current_widget in ["other_2"]:
             if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
@@ -556,13 +581,41 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
 
 
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Loc1', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Loc1', '')}")
+
+
+# !!Order!!,Call,Name,Loc1,UserText,
+# gridsquare
 def get_mults(self):
-    """Get mults for RTC XML"""
+    """"""
+
     mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
+    mults["gridsquare"] = show_mults(self)
     return mults
 
 
 def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
+    """"""
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        return int(score)
+    return 0

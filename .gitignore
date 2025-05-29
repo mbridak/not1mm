@@ -1,6 +1,7 @@
 not1mm/.vscode
 /.venv
 /dist
+/build
 /not1mm.egg-info
 /.flatpak-builder
 /builddir
@@ -29,3 +30,4 @@ not1mm/.DS_Store
 uv.lock
 not1mm/testing/inject_cabrillo.py
 not1mm/testing/readqso.py
+.DS_Store

@@ -17,6 +17,7 @@ import locale
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+import queue
 import socket
 import sys
 import uuid
@@ -30,7 +31,7 @@ import notctyparser
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
-from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap
+from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap, QFont
 from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
@@ -40,6 +41,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_station import EditStation
+from not1mm.lib.multicast import Multicast
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
@@ -170,6 +172,7 @@ class MainWindow(QtWidgets.QMainWindow):
     use_esm = False
     use_call_history = False
     esm_dict = {}
+    sandpfreq = 0
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -186,6 +189,10 @@ class MainWindow(QtWidgets.QMainWindow):
     lookup_service = None
     fldigi_util = None
     rtc_service = None
+    rtc_interval = 2
+    rtc_user = ""
+    rtc_url = ""
+    rtc_pass = ""
 
     current_widget = None
 
@@ -193,6 +200,8 @@ class MainWindow(QtWidgets.QMainWindow):
     auto_cq_then = datetime.datetime.now()
     auto_cq_time = datetime.datetime.now()
     auto_cq_delay = 15000
+
+    server_commands = []
 
     def __init__(self, splash):
         super().__init__()
@@ -211,14 +220,57 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+
+        if sys.platform == "darwin":
+            QApplication.setStyle("Fusion")
+            def_font_size = 13
+
+            QApplication.instance().setFont(QFont(self.fontfamily, def_font_size))
+            self.F1.setFont(QFont(self.fontfamily, def_font_size))
+            self.F2.setFont(QFont(self.fontfamily, def_font_size))
+            self.F3.setFont(QFont(self.fontfamily, def_font_size))
+            self.F4.setFont(QFont(self.fontfamily, def_font_size))
+            self.F5.setFont(QFont(self.fontfamily, def_font_size))
+            self.F6.setFont(QFont(self.fontfamily, def_font_size))
+            self.F7.setFont(QFont(self.fontfamily, def_font_size))
+            self.F8.setFont(QFont(self.fontfamily, def_font_size))
+            self.F9.setFont(QFont(self.fontfamily, def_font_size))
+            self.F10.setFont(QFont(self.fontfamily, def_font_size))
+            self.F11.setFont(QFont(self.fontfamily, def_font_size))
+            self.F12.setFont(QFont(self.fontfamily, def_font_size))
+            self.radioButton_run.setFont(QFont(self.fontfamily, def_font_size))
+            self.radioButton_sp.setFont(QFont(self.fontfamily, def_font_size))
+            self.cw_speed.setFont(QFont(self.fontfamily, def_font_size))
+            self.callsign_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.snt_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.rcv_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.other_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.exch_label.setFont(QFont(self.fontfamily, def_font_size))
+            self.heading_distance.setFont(QFont(self.fontfamily, def_font_size))
+            self.history_info.setFont(QFont(self.fontfamily, def_font_size))
+            self.dx_entity.setFont(QFont(self.fontfamily, def_font_size))
+            self.score.setFont(QFont(self.fontfamily, def_font_size))
+            self.mults.setFont(QFont(self.fontfamily, def_font_size))
+
+            self.callsign.setFont(QFont(self.fontfamily, 20))
+            self.sent.setFont(QFont(self.fontfamily, 20))
+            self.receive.setFont(QFont(self.fontfamily, 20))
+            self.other_1.setFont(QFont(self.fontfamily, 20))
+            self.other_2.setFont(QFont(self.fontfamily, 20))
+            self.dupe_indicator.setFont(QFont(self.fontfamily, 20))
+
         self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
         QApplication.instance().styleHints().colorSchemeChanged.connect(
             self.dark_watcher
         )
         self.dark_watcher(QApplication.instance().styleHints().colorScheme())
-
+        self.udp_fifo = queue.Queue()
+        self.server_message_watch_timer = QtCore.QTimer()
+        self.server_message_watch_timer.timeout.connect(self.check_udp_queue)
+        self.server_message_watch_timer.start(1000)
         self.inputs_dict = {
             self.callsign: "callsign",
             self.sent: "sent",
@@ -231,6 +283,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cwprogressBar.hide()
         self.rightdot.hide()
         self.n1mm = N1MM()
+        self.server_channel = Multicast(
+            multicast_group="239.1.1.1", multicast_port=2239, interface_ip="0.0.0.0"
+        )
+        self.server_channel.ready_read_connect(self.server_message)
         self.ft8 = FT8Watcher()
         self.ft8.set_callback(None)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
@@ -307,6 +363,8 @@ class MainWindow(QtWidgets.QMainWindow):
         icon_path = fsutils.APP_DATA_PATH
         self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
+        self.redserver = QtGui.QPixmap(str(icon_path / "cloud_red.png"))
+        self.greenserver = QtGui.QPixmap(str(icon_path / "cloud_green.png"))
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
 
@@ -582,13 +640,15 @@ class MainWindow(QtWidgets.QMainWindow):
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
         except (IOError, JSONDecodeError, TypeError):
-            logging.CRITICAL("There was an error parsing the BigCity file.")
+            logging.critical("There was an error parsing the BigCity file.")
 
         self.show_splash_msg("Starting LookUp Service.")
 
         self.lookup_service = LookupService()
         self.lookup_service.message.connect(self.dockwidget_message)
         self.lookup_service.hide()
+
+        self.server_seen = datetime.datetime.now()
 
         self.show_splash_msg("Reading preferences.")
         self.readpreferences()
@@ -632,7 +692,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if int(x[0]) >= 6 and int(x[1]) >= 8:
                 old_Qt = False
 
-        # Featureset for wayland if pyqt is older that 6.8
+        # Featureset for wayland if pyqt is older than 6.8
         dockfeatures = (
             QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
             | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
@@ -759,7 +819,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if VersionTest(__version__).test():
                 self.show_message_box(
                     "There is a newer version of not1mm available.\n"
-                    "You can udate to the current version by using:\n\n"
+                    "You can update to the current version by using:\n\n"
                     "pip install -U not1mm\n\tor\n"
                     "pipx upgrade not1mm"
                 )
@@ -770,6 +830,146 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         logger.info(f"bind {b_result}")
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
+        self.resolve_dirty_records()
+
+    # Server stuff
+
+    def resolve_dirty_records(self):
+        """Go through dirty records and submit them to the server."""
+        if self.pref.get("useserver", False) is True and hasattr(self, "database"):
+            records = self.database.fetch_all_dirty_contacts()
+            print(f"Resolving {len(records)} unsent contacts.\n")
+            if records:
+                for contact in records:
+                    contact["cmd"] = "POST"
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    contact["expire"] = stale.isoformat()
+
+                    self.server_commands.append(contact)
+                    self.server_channel.send_as_json(contact)
+
+                    time.sleep(0.1)  # Do I need this?
+                    print(".")
+
+    def clear_dirty_flag(self, unique_id):
+        """clear the dirty flag on record once response is returned from server."""
+        self.database.clear_dirty_flag(unique_id)
+        # show_dirty_records()
+
+    def remove_confirmed_commands(self, data):
+        """Removed confirmed commands from the sent commands list."""
+        for index, item in enumerate(self.server_commands):
+            print(f"Server Commands: {item=} {data=}")
+            if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
+                "subject"
+            ):
+                self.server_commands.pop(index)
+                self.clear_dirty_flag(data.get("unique_id"))
+                print(f"Confirmed {data.get('subject')}")
+
+    def check_for_stale_commands(self):
+        """
+        Check through server commands to see if there has not been a reply in 30 seconds.
+        Resubmits those that are stale.
+        """
+        if self.pref.get("useserver", False) is True:
+            for index, item in enumerate(self.server_commands):
+                expired = datetime.datetime.strptime(
+                    item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f"
+                )
+                if datetime.datetime.now() > expired:
+                    newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    self.server_commands[index]["expire"] = newexpire.isoformat()
+                    try:
+                        self.server_channel.send_as_json(self.server_commands[index])
+                    except OSError as err:
+                        logging.warning("%s", err)
+
+    def server_message(self):
+        msg = self.server_channel.getpacket()
+        if msg:
+            self.udp_fifo.put(msg)
+
+    def check_udp_queue(self):
+        """checks the UDP datagram queue."""
+
+        self.check_for_stale_commands()
+        while not self.udp_fifo.empty():
+            datagram = self.udp_fifo.get()
+            try:
+                json_data = loads(datagram.decode())
+            except UnicodeDecodeError as err:
+                the_error = f"Not Unicode: {err}\n{datagram}"
+                logger.info(the_error)
+                continue
+            except JSONDecodeError as err:
+                the_error = f"Not JSON: {err}\n{datagram}"
+                logger.info(the_error)
+                continue
+            logger.info("%s", json_data)
+
+            if json_data.get("cmd") == "PING":
+                # print(f"Got {json_data.get('cmd')} {json_data=}")
+                # if json_data.get("station"):
+                #     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
+                #     if self.people.get(json_data.get("station")) != band_mode:
+                #         self.people[json_data.get("station")] = band_mode
+                #     self.show_people()
+                if json_data.get("host"):
+                    self.server_seen = datetime.datetime.now() + datetime.timedelta(
+                        seconds=15
+                    )
+                    self.server_icon.setPixmap(self.greenserver)
+                continue
+
+            if json_data.get("cmd") == "RESPONSE":
+                if json_data.get("recipient") == socket.gethostname():
+                    if json_data.get("subject") == "HOSTINFO":
+                        # self.groupcall = json_data.get("groupcall", "")
+                        # self.myclassEntry.setText(str(json_data.get("groupclass", "")))
+                        # self.mysectionEntry.setText(
+                        #     str(json_data.get("groupsection", ""))
+                        # )
+                        # self.group_call_indicator.setText(self.groupcall.center(14))
+                        # self.changemyclass()
+                        # self.changemysection()
+                        # self.mycallEntry.hide()
+                        # self.server_seen = datetime.now() + timedelta(seconds=30)
+                        # self.group_call_indicator.setStyleSheet(
+                        #     "border: 1px solid green;"
+                        # )
+                        return
+                    if json_data.get("subject") == "LOG":
+                        ...
+                        # self.infoline.setText("Server Generated Log.")
+
+                    if json_data.get("subject") == "DUPE":
+                        ...
+                        # if json_data.get("isdupe") != 0:
+                        #     if json_data.get("contact") == self.callsign_entry.text():
+                        #         self.flash()
+                        #         self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
+                        #         self.infobox.insertPlainText(
+                        #             f"{json_data.get('contact')}: " "Server DUPE\n"
+                        #         )
+                    if json_data.get("subject") == "POST":
+                        self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "DELETE":
+                        self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "CONTACTCHANGED":
+                        self.remove_confirmed_commands(json_data)
+
+                continue
+
+            if json_data.get("cmd") == "CHAT":
+                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # self.display_chat(json_data.get("sender"), json_data.get("message"))
+                continue
+
+            if json_data.get("cmd") == "GROUPQUERY":
+                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # if self.groupcall:
+                #     self.send_status_udp()
 
     def fldigi_on_udp_socket_ready_read(self):
         """"""
@@ -897,9 +1097,35 @@ class MainWindow(QtWidgets.QMainWindow):
         QCoreApplication.processEvents()
 
     def dockwidget_message(self, msg):
-        """signal from bandmap"""
+        """incomming signals from widgets"""
         if msg:
+            # Pass delete message from log window to server.
+            if msg.get("cmd", "") == "DELETED":
+                if self.pref.get("useserver", False) is True:
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    msg["cmd"] = "DELETE"
+                    msg["expire"] = stale.isoformat()
+                    msg["station"] = socket.gethostname()
+                    msg["unique_id"] = msg.get("ID")
+                    self.server_commands.append(msg)
+                    try:
+                        self.server_channel.send_as_json(msg)
+                    except OSError as err:
+                        logging.warning("%s", err)
+
             if msg.get("cmd", "") == "CONTACTCHANGED":
+                if self.pref.get("useserver", False) is True:
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    msg["expire"] = stale.isoformat()
+                    msg["station"] = socket.gethostname()
+                    msg["unique_id"] = msg.get("ID")
+                    self.server_commands.append(msg)
+                    try:
+                        self.server_channel.send_as_json(msg)
+                    except OSError as err:
+                        logging.warning("%s", err)
+
+            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE"]:
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(msg)
             if msg.get("cmd", "") == "GETCOLUMNS":
@@ -948,8 +1174,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
 
             if msg.get("cmd", "") == "CHANGECALL":
+                self.activateWindow()
                 self.callsign.setText(msg.get("call", ""))
                 self.callsign.setFocus()
+                self.callsign_changed()
 
             if msg.get("cmd", "") == "CHECKSPOTS":
                 if self.check_window:
@@ -1774,11 +2002,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     ) as ctyfile:
                         self.ctyfile = loads(ctyfile.read())
                 except (IOError, JSONDecodeError, TypeError) as err:
-                    logging.CRITICAL(
+                    logging.critical(
                         f"There was an error {err} parsing the BigCity file."
                     )
             else:
-                self.show_message_box("An Error occured updating file.")
+                self.show_message_box("An Error occurred updating file.")
         else:
             self.show_message_box("CTY file is up to date.")
 
@@ -1987,11 +2215,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: black;"
+                        f"font-family: {self.fontfamily}; color: black;"
                     )
                 else:
                     indicator.setStyleSheet(
-                        "font-family: JetBrains Mono ExtraLight; color: white"
+                        f"font-family: {self.fontfamily}; color: white;"
                     )
 
     def set_band_indicator(self, band: str) -> None:
@@ -2014,7 +2242,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet(
-                    "font-family: JetBrains Mono ExtraLight; color: green;"
+                    f"font-family: {self.fontfamily}; color: green;"
                 )
 
     def closeEvent(self, _event) -> None:
@@ -2117,6 +2345,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
+                return
+            if self.cw.servertype == 3:
+                self.rig_control.cat.stopcwrigctl()
                 return
         if self.rig_control:
             if self.rig_control.online:
@@ -2616,6 +2847,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        if self.pref.get("useserver", False) is True:
+            stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+            self.contact["cmd"] = "POST"
+            self.contact["expire"] = stale.isoformat()
+            self.server_commands.append(self.contact)
+            # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
+            try:
+                self.server_channel.send_as_json(self.contact)
+                # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+            except OSError as err:
+                logging.warning("%s", err)
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
@@ -2864,9 +3106,17 @@ class MainWindow(QtWidgets.QMainWindow):
         next_serial = str(result.get("serial_nr", "1"))
         if next_serial == "None":
             next_serial = "1"
+        result = self.database.get_last_serial()
+        prev_serial = str(result.get("serial_nr", "1")).zfill(3)
         macro = macro.upper()
         if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("#", next_serial.rjust(3, "T"))
+            macro = macro.replace(
+                "#",
+                next_serial.rjust(
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
+                ),
+            )
         else:
             macro = macro.replace("#", next_serial)
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
@@ -2877,15 +3127,32 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
         else:
             macro = macro.replace("{SNT}", self.sent.text())
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace(
-                "{SENTNR}", self.other_1.text().lstrip("0").rjust(3, "T")
-            )
-        else:
-            macro = macro.replace("{SENTNR}", self.other_1.text())
         macro = macro.replace(
             "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
         )
+        if self.radio_state.get("mode") == "CW":
+            macro = macro.replace(
+                "{SENTNR}",
+                self.other_1.text()
+                .lstrip("0")
+                .rjust(
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
+                ),
+            )
+            macro = macro.replace(
+                "{PREVNR}",
+                str(prev_serial)
+                .lstrip("0")
+                .rjust(
+                    self.pref.get("cwpaddinglength", 3),
+                    self.pref.get("cwpaddingchar", "T"),
+                ),
+            )
+        else:
+            macro = macro.replace("{SENTNR}", self.other_1.text())
+            macro = macro.replace("{PREVNR}", str(prev_serial))
+
         if "{LOGIT}" in macro:
             macro = macro.replace("{LOGIT}", "")
             self.save_contact()
@@ -2906,6 +3173,46 @@ class MainWindow(QtWidgets.QMainWindow):
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
+        if "{VOICE1}" in macro:
+            macro = macro.replace("{VOICE1}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=1)
+        if "{VOICE2}" in macro:
+            macro = macro.replace("{VOICE2}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=2)
+        if "{VOICE3}" in macro:
+            macro = macro.replace("{VOICE3}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=3)
+        if "{VOICE4}" in macro:
+            macro = macro.replace("{VOICE4}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=4)
+        if "{VOICE5}" in macro:
+            macro = macro.replace("{VOICE5}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=5)
+        if "{VOICE6}" in macro:
+            macro = macro.replace("{VOICE6}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=6)
+        if "{VOICE7}" in macro:
+            macro = macro.replace("{VOICE7}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=7)
+        if "{VOICE8}" in macro:
+            macro = macro.replace("{VOICE8}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=8)
+        if "{VOICE9}" in macro:
+            macro = macro.replace("{VOICE9}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=9)
+        if "{VOICE10}" in macro:
+            macro = macro.replace("{VOICE10}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=10)
         return macro
 
     def ptt_on(self) -> None:
@@ -2963,7 +3270,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("Function Key: %s", function_key.text())
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB"]:
+        if self.radio_state.get("mode") in ["LSB", "USB", "SSB", "FM", "AM"]:
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
@@ -3149,12 +3456,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+            # self.rig_control.moveToThread(self.radio_thread)
+            # self.radio_thread.started.connect(self.rig_control.run)
+            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
+            # self.rig_control.poll_callback.connect(self.poll_radio)
+            # self.radio_thread.start()
 
         elif self.pref.get("userigctld", False) is True:
             logger.debug(
@@ -3166,24 +3473,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+            # self.rig_control.moveToThread(self.radio_thread)
+            # self.radio_thread.started.connect(self.rig_control.run)
+            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
+            # self.rig_control.poll_callback.connect(self.poll_radio)
+            # self.radio_thread.start()
         else:
             self.rig_control = Radio(
                 "fake",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 0000)),
             )
-            self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            self.rig_control.moveToThread(self.radio_thread)
-            self.radio_thread.started.connect(self.rig_control.run)
-            self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            self.rig_control.poll_callback.connect(self.poll_radio)
-            self.radio_thread.start()
+        self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
+        self.rig_control.moveToThread(self.radio_thread)
+        self.radio_thread.started.connect(self.rig_control.run)
+        self.radio_thread.finished.connect(self.rig_control.deleteLater)
+        self.rig_control.poll_callback.connect(self.poll_radio)
+        self.radio_thread.start()
 
         self.cw = None
         if (
@@ -3276,6 +3583,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.esm_dict["QSOB4"] = fkey_dict.get(self.pref.get("esm_qsob4", "DISABLED"))
 
         self.update_rtc_xml()
+
+        if self.pref.get("useserver", False) is True:
+            self.server_icon.show()
+            self.server_icon.setPixmap(self.redserver)
+        else:
+            self.server_icon.hide()
 
     def rtc_response(self, response):
         print(f"{response=}")
@@ -3456,6 +3769,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.auto_cq is True:
             self.stop_cw()
+        if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
+            self.sandpfreq = int(self.radio_state.get("vfoa", 0))
         text = self.callsign.text()
         text = text.upper()
         position = self.callsign.cursorPosition()
@@ -3464,13 +3779,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setCursorPosition(position)
 
         if " " in text:
-            if stripped_text == "CW":
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "RTTY":
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "SSB":
+            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
                 self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
@@ -3508,11 +3817,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
-        self.check_callsign(stripped_text)
-        if self.check_dupe(stripped_text):
-            self.dupe_indicator.show()
-        else:
-            self.dupe_indicator.hide()
+        if len(stripped_text) >= 3:
+            self.check_callsign(stripped_text)
+        # self.check_callsign(stripped_text)
+            if self.check_dupe(stripped_text):
+                self.dupe_indicator.show()
+            else:
+                self.dupe_indicator.hide()
         if self.contest:
             if self.use_call_history and hasattr(
                 self.contest, "populate_history_info_line"
@@ -3634,6 +3945,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_window_title()
             self.clearinputs()
             self.read_macros()
+            return
+        if mode in ["AM", "FM", "LSB", "USB"]:
+            if self.rig_control:
+                if self.rig_control.online:
+                    self.rig_control.set_mode(mode)
+            else:
+                self.setmode(mode)
+                band = getband(str(self.radio_state.get("vfoa", "0.0")))
+                self.set_band_indicator(band)
+            self.set_window_title()
+            self.clearinputs()
+            self.read_macros()
 
     def check_callsign(self, callsign) -> None:
         """
@@ -3711,7 +4034,7 @@ class MainWindow(QtWidgets.QMainWindow):
             result = {"isdupe": False}
         if self.contest.dupe_type == 5:
             result = {"isdupe": False}  # in case contest has no function.
-            if hasattr(self.contest, "check_dupe"):
+            if not hasattr(self.contest, "check_dupe"):
                 result = self.contest.specific_contest_check_dupe(self, call)
 
         debugline = f"{result}"
@@ -3844,6 +4167,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     milliseconds=self.auto_cq_delay
                 )
                 self.process_function_key(self.F1)
+            if datetime.datetime.now() > self.server_seen:
+                self.server_icon.setPixmap(self.redserver)
 
         # The following pertains to radio polling.
         logger.debug(f"{the_dict=}")
@@ -3866,18 +4191,18 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.radio_state.get("vfoa") != vfo:
             info_dirty = True
             self.radio_state["vfoa"] = vfo
+            if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
+                if max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 500:
+                    self.clearinputs()
         band = getband(str(vfo))
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))
         self.set_band_indicator(band)
 
-        if self.rig_control:
-            if self.rig_control.online:
-                self.rig_control.get_modes()
-
         if self.radio_state.get("mode") != mode:
             info_dirty = True
-            self.radio_state["mode"] = mode
+            if "set_freq:" not in mode:
+                self.radio_state["mode"] = mode
 
         if self.radio_state.get("bw") != bw:
             info_dirty = True
@@ -3905,26 +4230,26 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             self.setmode("RTTY")
 
-        cmd = {}
-        cmd["cmd"] = "RADIO_STATE"
-        cmd["band"] = band
-        cmd["vfoa"] = vfo
-        cmd["mode"] = mode
-        cmd["bw"] = bw
         if self.bandmap_window:
+            cmd = {}
+            cmd["cmd"] = "RADIO_STATE"
+            cmd["band"] = band
+            cmd["vfoa"] = vfo
+            cmd["mode"] = mode
+            cmd["bw"] = bw
             self.bandmap_window.msg_from_main(cmd)
         if info_dirty:
             try:
                 logger.debug("VFO: %s  MODE: %s BW: %s", vfo, mode, bw)
                 self.set_window_title()
-                cmd = {}
-                cmd["cmd"] = "RADIO_STATE"
-                cmd["band"] = band
-                cmd["vfoa"] = vfo
-                cmd["mode"] = mode
-                cmd["bw"] = bw
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
+                # cmd = {}
+                # cmd["cmd"] = "RADIO_STATE"
+                # cmd["band"] = band
+                # cmd["vfoa"] = vfo
+                # cmd["mode"] = mode
+                # cmd["bw"] = bw
+                # if self.bandmap_window:
+                #     self.bandmap_window.msg_from_main(cmd)
                 if self.n1mm:
                     self.n1mm.radio_info["Freq"] = vfo[:-1]
                     self.n1mm.radio_info["TXFreq"] = vfo[:-1]
@@ -4123,26 +4448,26 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("******Cabrillo*****")
         self.contest.cabrillo(self, file_encoding)
 
+    def load_fonts_from_dir(self, directory: str) -> str:
+        """
+        Well it loads fonts from a directory...
 
-def load_fonts_from_dir(directory: str) -> set:
-    """
-    Well it loads fonts from a directory...
+        Parameters
+        ----------
+        directory : str
+        The directory to load fonts from.
 
-    Parameters
-    ----------
-    directory : str
-    The directory to load fonts from.
-
-    Returns
-    -------
-    set
-    A set of font families installed in the directory.
-    """
-    font_families = set()
-    for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
-        _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
-        font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-    return font_families
+        Returns
+        -------
+        set
+        A set of font families installed in the directory.
+        """
+        font_families = set()
+        for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
+            _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
+            font_families |= set(QFontDatabase.applicationFontFamilies(_id))
+        result = set((max(font_families, key=len),))
+        return list(result)[0]
 
 
 def install_icons() -> None:
@@ -4198,8 +4523,8 @@ def run() -> None:
     )
     QCoreApplication.processEvents()
 
-    families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-    logger.info(f"font families {families}")
+    # families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
+    # logger.info(f"font families {families}")
     window = MainWindow(splash)
     window.callsign.setFocus()
     splash.finish(window)
