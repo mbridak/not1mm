@@ -245,24 +245,21 @@ def show_mults(self, rtc=None):
     """Return display string for mults"""
 
     # implement here multipliers checks
-        # get received number and region code
+    # get received number and region code
 
     call_result = str(self.contact.get("NR", ""))
-
-    only_letters = ''.join(char for char in call_result if char.isalpha())
-
-    if only_letters in estonian_regions:
-        result = self.database.fetch_country_band_count()
-        mult_count = result.get("cb_count", 0)
-
-    our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
-    query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
-    result = self.database.exec_sql(query)
+    # create placeholders
+    placeholders = ','.join(['?'] * len(estonian_regions)) 
+    # main query to filter by regions
+    query = f"SELECT count(distinct(SUBSTR(NR, -2)) || ':' || Band || ':' || Mode) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND NR GLOB '*[A-Z]*' AND substr(NR,-2) IN ({placeholders});"
+    # apply params
+    params = estonian_regions
+    
+    result = self.database.exec_sql_params_mult(query, params)
     if result:
         mult_count = result.get("mults", 0)
         return mult_count
     return 0
-
 
 def show_qso(self):
     """Return qso count"""

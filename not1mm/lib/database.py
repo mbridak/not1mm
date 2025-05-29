@@ -1234,6 +1234,18 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
             return {}
+        
+    def exec_sql_params_mult(self, query: str, params=None) -> dict:
+        """Exec one off queries returning one dict"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(query, params)
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
 
     def exec_sql(self, query: str) -> dict:
         """Exec one off queries returning one dict"""
