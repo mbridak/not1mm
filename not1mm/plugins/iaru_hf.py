@@ -130,9 +130,9 @@ def points(self):
         return 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycontinent = item.get("continent", "")
     our_itu = int(self.station.get("IARUZone", 0))
 
     try:

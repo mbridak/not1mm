@@ -146,13 +146,13 @@ def points(self):
     mycontinent = ""
     hiscontinent = ""
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycontinent = item.get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            hiscontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        hiscontinent = item.get("continent", "")
     if mycontinent == "NA" or hiscontinent == "NA":
         return 1
     return 0

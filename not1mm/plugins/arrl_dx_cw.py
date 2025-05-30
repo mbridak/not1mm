@@ -103,14 +103,14 @@ def prefill(self):
     #     self.other_2.setText(str(self.contact.get("ZN", "")))
     self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
 
-    location = self.cty_lookup(self.station.get("Call", ""))
-    if location:
-        for item in location.items():
-            mycountry = item[1].get("primary_pfx", "")
-            if mycountry in ["K", "VE"]:
-                query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and CountryPrefix='{self.contact.get('CountryPrefix','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-            else:
-                query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and NR='{self.contact.get('NR','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item.get("primary_pfx", "")
+        if mycountry in ["K", "VE"]:
+            query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and CountryPrefix='{self.contact.get('CountryPrefix','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+        else:
+            query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and NR='{self.contact.get('NR','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
 
     result = self.database.exec_sql(query)
     count = result.get("prefix_count", 0)
@@ -127,20 +127,20 @@ def points(self):
         return 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycountry = item[1].get("primary_pfx", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item.get("primary_pfx", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            entity = item[1].get("primary_pfx", "")
-            if mycountry in ["K", "VE"]:
-                if entity in ["K", "VE"]:
-                    return 0
-                return 3
+    if result is not None:
+        item = result.get(next(iter(result)))
+        entity = item.get("primary_pfx", "")
+        if mycountry in ["K", "VE"]:
             if entity in ["K", "VE"]:
-                return 3
-            return 0
+                return 0
+            return 3
+        if entity in ["K", "VE"]:
+            return 3
+        return 0
     return 0
 
 
@@ -148,17 +148,17 @@ def show_mults(self, rtc=None):
     """Return display string for mults"""
     location = self.cty_lookup(self.station.get("Call", ""))
     _country, _state = 0, 0
-    if location:
-        for item in location.items():
-            mycountry = item[1].get("primary_pfx", "")
-            if mycountry in ["K", "VE"]:
-                result = self.database.fetch_arrldx_country_band_count()
-                if result:
-                    _country = int(result.get("cb_count", 0))
-            else:
-                result = self.database.fetch_arrldx_state_prov_count()
-                if result:
-                    _state = int(result.get("cb_count", 0))
+    if location is not None:
+        item = location.get(next(iter(location)))
+        mycountry = item.get("primary_pfx", "")
+        if mycountry in ["K", "VE"]:
+            result = self.database.fetch_arrldx_country_band_count()
+            if result:
+                _country = int(result.get("cb_count", 0))
+        else:
+            result = self.database.fetch_arrldx_state_prov_count()
+            if result:
+                _state = int(result.get("cb_count", 0))
     if rtc is not None:
         return (_country, _state)
     return _country + _state
@@ -400,23 +400,23 @@ def recalculate_mults(self):
 
     for contact in all_contacts:
         time_stamp = contact.get("TS", "")
-        entity = contact.get("CountryPrefix", "")
+        # entity = contact.get("CountryPrefix", "")
         location = self.cty_lookup(self.station.get("Call", ""))
-        if location:
-            for item in location.items():
-                mycountry = item[1].get("primary_pfx", "")
-                if mycountry in ["K", "VE"]:
-                    query = (
-                        f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
-                        f"and CountryPrefix='{contact.get('CountryPrefix','')}' "
-                        f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-                    )
-                else:
-                    query = (
-                        f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
-                        f"and NR='{contact.get('NR','')}' "
-                        f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-                    )
+        if location is not None:
+            item = location.get(next(iter(location)))
+            mycountry = item.get("primary_pfx", "")
+            if mycountry in ["K", "VE"]:
+                query = (
+                    f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
+                    f"and CountryPrefix='{contact.get('CountryPrefix','')}' "
+                    f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+                )
+            else:
+                query = (
+                    f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
+                    f"and NR='{contact.get('NR','')}' "
+                    f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
+                )
         result = self.database.exec_sql(query)
         logger.debug("contact: %s", contact)
         logger.debug("query: %s", query)

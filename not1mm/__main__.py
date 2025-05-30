@@ -958,6 +958,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.remove_confirmed_commands(json_data)
                     if json_data.get("subject") == "CONTACTCHANGED":
                         self.remove_confirmed_commands(json_data)
+                    if json_data.get("subject") == "NEWDB":
+                        self.remove_confirmed_commands(json_data)
 
                 continue
 
@@ -1953,6 +1955,22 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rate_window.msg_from_main(cmd)
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(cmd)
+                # server
+                if self.pref.get("useserver", False) is True:
+                    cmd = self.contest_settings.copy()
+                    cmd["cmd"] = "NEWDB"
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    cmd["expire"] = stale.isoformat()
+                    cmd["NetBiosName"] = socket.gethostname()
+                    cmd["Operator"] = self.current_op
+                    cmd["ID"] = uuid.uuid4().hex
+                    self.server_commands.append(cmd)
+                    # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
+                    try:
+                        self.server_channel.send_as_json(cmd)
+                        # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
+                    except OSError as err:
+                        logging.warning("%s", err)
 
                 if hasattr(self.contest, "columns"):
                     cmd = {}
@@ -2281,7 +2299,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.lookup_service.msg_from_main(cmd)
         self.write_preference()
 
-    def cty_lookup(self, callsign: str) -> list:
+    def cty_lookup(self, callsign: str) -> dict:
         """Lookup callsign in cty.dat file.
 
         Parameters
@@ -2291,8 +2309,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         Returns
         -------
-        return : list
-        list of dicts containing the callsign and the station.
+        return : dict
+        {'entity': 'European Russia', 'cq': 16, 'itu': 29, 'continent': 'EU', 'lat': 53.65, 'long': -41.37, 'tz': 4.0, 'len': 2, 'primary_pfx': 'UA', 'exact_match': False}
         """
         callsign = callsign.upper()
         for count in reversed(range(len(callsign))):
@@ -2847,6 +2865,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        # server
         if self.pref.get("useserver", False) is True:
             stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
             self.contact["cmd"] = "POST"
@@ -3975,42 +3994,43 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         result = self.cty_lookup(callsign)
-        debug_result = f"{result}"
+        debug_result = f"{result=}"
         logger.debug("%s", debug_result)
-        if result:
-            for a in result.items():
-                entity = a[1].get("entity", "")
-                cq = a[1].get("cq", "")
-                itu = a[1].get("itu", "")
-                continent = a[1].get("continent")
-                lat = float(a[1].get("lat", "0.0"))
-                lon = float(a[1].get("long", "0.0"))
-                lon = lon * -1  # cty.dat file inverts longitudes
-                primary_pfx = a[1].get("primary_pfx", "")
-                heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
-                kilometers = distance_with_latlon(
-                    self.station.get("GridSquare"), lat, lon
-                )
-                self.heading_distance.setText(
-                    f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
-                    f"distance {int(kilometers*0.621371)}mi {kilometers}km"
-                )
-                self.contact["CountryPrefix"] = primary_pfx
-                self.contact["ZN"] = int(cq)
+        if result is not None:
+            try:
+                a = result.get(next(iter(result)))
+            except (StopIteration, AttributeError):
+                return
+            entity = a.get("entity", "")
+            cq = a.get("cq", "")
+            itu = a.get("itu", "")
+            continent = a.get("continent")
+            lat = float(a.get("lat", "0.0"))
+            lon = float(a.get("long", "0.0"))
+            lon = lon * -1  # cty.dat file inverts longitudes
+            primary_pfx = a.get("primary_pfx", "")
+            heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
+            kilometers = distance_with_latlon(self.station.get("GridSquare"), lat, lon)
+            self.heading_distance.setText(
+                f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
+                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+            )
+            self.contact["CountryPrefix"] = primary_pfx
+            self.contact["ZN"] = int(cq)
+            if self.contest:
+                if self.contest.name in ("IARU HF", "LZ DX"):
+                    self.contact["ZN"] = int(itu)
+            self.contact["Continent"] = continent
+            self.dx_entity.setText(
+                f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
+            )
+            if len(callsign) > 2:
                 if self.contest:
-                    if self.contest.name in ("IARU HF", "LZ DX"):
-                        self.contact["ZN"] = int(itu)
-                self.contact["Continent"] = continent
-                self.dx_entity.setText(
-                    f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
-                )
-                if len(callsign) > 2:
-                    if self.contest:
-                        if (
-                            "CQ WW" not in self.contest.name
-                            and "IARU HF" not in self.contest.name
-                        ):
-                            self.contest.prefill(self)
+                    if (
+                        "CQ WW" not in self.contest.name
+                        and "IARU HF" not in self.contest.name
+                    ):
+                        self.contest.prefill(self)
 
     def check_dupe(self, call: str) -> bool:
         """Checks if a callsign is a dupe on current band/mode."""
