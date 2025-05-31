@@ -336,3 +336,14 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
             self.show_message_box(f"ADIF saved to: {filename}")
     except IOError as error:
         self.show_message_box(f"Error saving ADIF file: {error}")
+
+
+def get_station_region_code(self):
+    # get the station Estonian region code for ARRL Section in station settings
+    query = f"SELECT ARRLSection as sent_region_code from Station;"
+    # run query
+    result = self.database.exec_sql(query)
+    if result:
+        sent_region_code = result.get("sent_region_code", "")
+        return sent_region_code
+    return ""

@@ -6,14 +6,11 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points
-
-# import not1mm.lib.edit_station import EditStation
+from not1mm.lib.plugin_common import gen_adif, get_points, get_station_region_code
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -21,12 +18,6 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "#"
-
-sent_region_code = "TL"
-
-
-
-# station_region_code = station.get("State", "")
 
 name = "ES FIELD DAY"
 cabrillo_name = "ES-FIELD-DAY"
@@ -49,7 +40,6 @@ advance_on_space = [True, True, True, True, True]
 # 5 Contest specific dupe check.
 dupe_type = 5
 
-
 estonian_regions = [
     "HM",
     "HR",
@@ -68,7 +58,6 @@ estonian_regions = [
     "VO",
     "VP"
 ]
-
 
 def specific_contest_check_dupe(self, call):
     """"""
@@ -150,7 +139,6 @@ def init_contest(self):
     self.next_field = self.other_2
 
 
-
 def interface(self):
     """Setup user interface"""
     """Setup user interface"""
@@ -207,12 +195,13 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
+ 
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if sent_sxchange_setting.strip() == "#":
         result = self.database.get_serial()
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-
-        serial_nr = serial_nr + " " + sent_region_code 
+        # get station region code from setup ARRLSection field
+        serial_nr = serial_nr + " " + get_station_region_code(self) 
 
         if serial_nr == "None":
             serial_nr = "001"
@@ -228,14 +217,12 @@ def points(self):
         return 0
 
     # get received number and region code
-    # result = self.contact.self.contact.get("NR", "")
-
-    # only_letters = ''.join(char for char in result if char.isalpha())
 
     check_call = self.contact.get("Call", "")
-
+    # all stations with /p give 3 points
     if "/p" in check_call.lower():
         return 3
+    # all stations with /qrp give 5 points
     elif "/qrp" in check_call.lower():
         return 5
     else:
@@ -254,7 +241,7 @@ def show_mults(self, rtc=None):
     query = f"SELECT count(distinct(SUBSTR(NR, -2)) || ':' || Band || ':' || Mode) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND NR GLOB '*[A-Z]*' AND substr(NR,-2) IN ({placeholders});"
     # apply params
     params = estonian_regions
-    
+    # run query
     result = self.database.exec_sql_params_mult(query, params)
     if result:
         mult_count = result.get("mults", 0)
