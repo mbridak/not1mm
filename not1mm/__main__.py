@@ -3836,11 +3836,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
-        self.check_callsign(stripped_text)
-        if self.check_dupe(stripped_text):
-            self.dupe_indicator.show()
-        else:
-            self.dupe_indicator.hide()
+        if len(stripped_text) >= 3:
+            self.check_callsign(stripped_text)
+        # self.check_callsign(stripped_text)
+            if self.check_dupe(stripped_text):
+                self.dupe_indicator.show()
+            else:
+                self.dupe_indicator.hide()
         if self.contest:
             if self.use_call_history and hasattr(
                 self.contest, "populate_history_info_line"
@@ -4052,7 +4054,7 @@ class MainWindow(QtWidgets.QMainWindow):
             result = {"isdupe": False}
         if self.contest.dupe_type == 5:
             result = {"isdupe": False}  # in case contest has no function.
-            if hasattr(self.contest, "specific_contest_check_dupe"):
+            if not hasattr(self.contest, "check_dupe"):
                 result = self.contest.specific_contest_check_dupe(self, call)
 
         debugline = f"{result}"
