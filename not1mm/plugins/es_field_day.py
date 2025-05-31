@@ -13,6 +13,8 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, get_points
 
+# import not1mm.lib.edit_station import EditStation
+
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
 
@@ -20,9 +22,14 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "#"
 
+sent_region_code = "TL"
 
-name = "ES OPEN"
-cabrillo_name = "ES-OPEN"
+
+
+# station_region_code = station.get("State", "")
+
+name = "ES FIELD DAY"
+cabrillo_name = "ES-FIELD-DAY"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -43,14 +50,34 @@ advance_on_space = [True, True, True, True, True]
 dupe_type = 5
 
 
+estonian_regions = [
+    "HM",
+    "HR",
+    "IV",
+    "JG",
+    "JR",
+    "LN",
+    "LV",
+    "PL",
+    "PU",
+    "RP",
+    "SR",
+    "TA",
+    "TL",
+    "VC",
+    "VO",
+    "VP"
+]
+
+
 def specific_contest_check_dupe(self, call):
     """"""
     # get mode from radio state
     mode = self.radio_state.get("mode", "")
     """Dupe checking specific to just this contest."""
     # constant to split the contest - correct ES Open Contest length is 4 hours
-    contest_length_in_minutes = 240
-    split_contest_by_minutes = 60
+    contest_length_in_minutes = 90
+    split_contest_by_minutes = 30
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
 
@@ -69,8 +96,7 @@ def specific_contest_check_dupe(self, call):
     time_period_1 = time_periods[0] if len(time_periods) > 0 else None
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
-    time_period_4 = time_periods[3] if len(time_periods) > 3 else None
-
+ 
     # get current time in UTC
     iso_current_time = datetime.now(timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
@@ -108,15 +134,6 @@ def specific_contest_check_dupe(self, call):
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_4 and current_time >= time_period_3:
-
-        result = self.database.check_dupe_on_period_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
-        )
     # just for band and mode if outside of time period
     else:
         result = self.database.check_dupe_on_band_mode(
@@ -133,7 +150,9 @@ def init_contest(self):
     self.next_field = self.other_2
 
 
+
 def interface(self):
+    """Setup user interface"""
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
@@ -192,6 +211,9 @@ def prefill(self):
     if sent_sxchange_setting.strip() == "#":
         result = self.database.get_serial()
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+
+        serial_nr = serial_nr + " " + sent_region_code 
+
         if serial_nr == "None":
             serial_nr = "001"
         if len(self.other_1.text()) == 0:
@@ -205,25 +227,39 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    # get received number and region code
+    # result = self.contact.self.contact.get("NR", "")
+
+    # only_letters = ''.join(char for char in result if char.isalpha())
+
+    check_call = self.contact.get("Call", "")
+
+    if "/p" in check_call.lower():
+        return 3
+    elif "/qrp" in check_call.lower():
+        return 5
+    else:
         return 1
-    if _mode in "CW":
-        return 2
-
-    return 0
-
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
-    query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
-    result = self.database.exec_sql(query)
+
+    # implement here multipliers checks
+    # get received number and region code
+
+    call_result = str(self.contact.get("NR", ""))
+    # create placeholders
+    placeholders = ','.join(['?'] * len(estonian_regions)) 
+    # main query to filter by regions
+    query = f"SELECT count(distinct(SUBSTR(NR, -2)) || ':' || Band || ':' || Mode) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND NR GLOB '*[A-Z]*' AND substr(NR,-2) IN ({placeholders});"
+    # apply params
+    params = estonian_regions
+    
+    result = self.database.exec_sql_params_mult(query, params)
     if result:
         mult_count = result.get("mults", 0)
         return mult_count
     return 0
-
 
 def show_qso(self):
     """Return qso count"""
@@ -270,7 +306,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.now()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
