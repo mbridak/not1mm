@@ -119,7 +119,6 @@ platforms, BSD and Windows. But I don't have a way, or desire, to directly suppo
 
 I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
 
-
 ### The Why
 
 **Currently this exists for my own personal amusement**. I've recently retired
@@ -213,6 +212,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-5-31] Merged PR from @term73, Adding ES Field Day and changes to ES open.
 - [25-5-26] Add ARI DX contest, Fix Canada Day mults.
 - [25-5-25] Added {PREVNR} macro to resend last logged serial number.
   - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
@@ -851,4 +851,3 @@ This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in th
 ### UKEI DX
 
 For the Run exchange macro I'd put '{SNT} # {EXCH}'
-
