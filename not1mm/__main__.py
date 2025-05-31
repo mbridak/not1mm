@@ -1964,6 +1964,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["NetBiosName"] = socket.gethostname()
                     cmd["Operator"] = self.current_op
                     cmd["ID"] = uuid.uuid4().hex
+                    cmd["Station"] = self.station
                     self.server_commands.append(cmd)
                     # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
                     try:
