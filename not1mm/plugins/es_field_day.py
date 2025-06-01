@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points, get_station_region_code
+from not1mm.lib.plugin_common import gen_adif, get_points, get_station_state_code, get_station_arrlsection_code
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -201,7 +201,7 @@ def prefill(self):
         result = self.database.get_serial()
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
         # get station region code from setup ARRLSection field
-        serial_nr = serial_nr + " " + get_station_region_code(self) 
+        serial_nr = serial_nr + " " + get_station_state_code(self) 
 
         if serial_nr == "None":
             serial_nr = "001"
