@@ -142,26 +142,26 @@ def points(self):
         return 5
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycountry = item[1].get("entity", "")
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item.get("entity", "")
+        mycontinent = item.get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            entity = item[1].get("entity", "")
-            continent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        entity = item.get("entity", "")
+        continent = item.get("continent", "")
 
-            # Both in same country
-            if mycountry.upper() == entity.upper():
-                return 2
+        # Both in same country
+        if mycountry.upper() == entity.upper():
+            return 2
 
-            # Same Continent
-            if mycontinent == continent:
-                return 5
+        # Same Continent
+        if mycontinent == continent:
+            return 5
 
-            # Different Continent
-            return 10
+        # Different Continent
+        return 10
     return 0
 
 

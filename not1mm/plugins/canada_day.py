@@ -159,12 +159,12 @@ def points(self):
         return 20
 
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            entity = item[1].get("entity", "")
-            # continent = item[1].get("continent", "")
-            if entity == "Canada":
-                return 10
+    if result is not None:
+        item = result.get(next(iter(result)))
+        entity = item.get("entity", "")
+        # continent = item[1].get("continent", "")
+        if entity == "Canada":
+            return 10
 
     return 2
 

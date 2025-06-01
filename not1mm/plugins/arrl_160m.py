@@ -112,18 +112,18 @@ def points(self):
     if dupe_check.get("isdupe", 0) > 0:
         return 0
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mypfx = item[1].get("primary_pfx", "")
-            # mycountry = item[1].get("entity", "")
-            # mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mypfx = item.get("primary_pfx", "")
+        # mycountry = item[1].get("entity", "")
+        # mycontinent = item[1].get("continent", "")
 
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            pfx = item[1].get("primary_pfx", "")
-            # entity = item[1].get("entity", "")
-            # continent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        pfx = item.get("primary_pfx", "")
+        # entity = item[1].get("entity", "")
+        # continent = item[1].get("continent", "")
 
     # Both in same country
 
@@ -221,10 +221,10 @@ def calc_score(self):
 def can_claim_dxcc(self):
     """"""
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
+    if result is not None:
         mypfx = ""
-        for item in result.items():
-            mypfx = item[1].get("primary_pfx", "")
+        item = result.get(next(iter(result)))
+        mypfx = item.get("primary_pfx", "")
         if mypfx in [
             "K",
             "KL",

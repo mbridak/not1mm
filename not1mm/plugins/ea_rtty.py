@@ -189,14 +189,14 @@ def points(self) -> int:
     him = None
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            me = item[1].get("primary_pfx", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        me = item.get("primary_pfx", "")
 
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            him = item[1].get("primary_pfx", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        him = item.get("primary_pfx", "")
 
     if me is not None and him is not None:
         if me in ea_prefixes and him in ea_prefixes:
