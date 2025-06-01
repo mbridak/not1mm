@@ -112,6 +112,8 @@ class LogWindow(QDockWidget):
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )
+        self.generalLog.setAlternatingRowColors(True)
+        self.focusedLog.setAlternatingRowColors(True)
         self.generalLog.setColumnCount(len(self.columns))
         self.focusedLog.setColumnCount(len(self.columns))
 
@@ -1064,6 +1066,8 @@ class LogWindow(QDockWidget):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
+        self.focusedLog.resizeColumnsToContents()
+        self.focusedLog.resizeRowsToContents()
         self.focusedLog.blockSignals(False)
 
     def show_message_box(self, message: str) -> None:

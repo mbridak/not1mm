@@ -98,6 +98,7 @@ class StatsWindow(QDockWidget):
         if self.active is False:
             return
         self.tableWidget.clear()
+        self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setHorizontalHeaderLabels(
