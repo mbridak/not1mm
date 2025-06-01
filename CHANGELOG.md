@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-6-1] Merged changes from @term73, updating ES Field Day.
 - [25-5-31] Merged PR from @term73, Adding ES Field Day and changes to ES open.
 - [25-5-26] Add ARI DX contest, Fix Canada Day mults.
 - [25-5-25] Added {PREVNR} macro to resend last logged serial number.
