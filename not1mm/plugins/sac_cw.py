@@ -175,15 +175,15 @@ def points(self):
 
     result = self.cty_lookup(self.station.get("Call", ""))
     if result:
-        for item in result.items():
-            myprimary_pfx = item[1].get("primary_pfx", "")
-            mycontinent = item[1].get("continent", "")
+        item = result.get(next(iter(result)))
+        myprimary_pfx = item.get("primary_pfx", "")
+        mycontinent = item.get("continent", "")
 
     result = self.cty_lookup(self.contact.get("Call", ""))
     if result:
-        for item in result.items():
-            hisprimary_pfx = item[1].get("primary_pfx", "")
-            hiscontinent = item[1].get("continent", "")
+        item = result.get(next(iter(result)))
+        hisprimary_pfx = item.get("primary_pfx", "")
+        hiscontinent = item.get("continent", "")
 
     if (
         myprimary_pfx in scandinavian_prefixes
@@ -213,9 +213,9 @@ def show_mults(self):
     mult_count = 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            myprimary_pfx = item[1].get("primary_pfx", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        myprimary_pfx = item.get("primary_pfx", "")
 
     if myprimary_pfx in scandinavian_prefixes:
         result = self.database.fetch_country_band_count()

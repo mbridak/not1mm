@@ -50,13 +50,13 @@ def init_contest(self):
 
 def interface(self):
     """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
+    self.field1.hide()
+    self.field2.hide()
     self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("SentNR")
+    self.other_label.setText("Sent Grid")
     self.field3.setAccessibleName("Sent Grid")
     self.exch_label.setText("Grid")
     self.field4.setAccessibleName("Gridsquare")
@@ -69,9 +69,7 @@ def reset_label(self):
 def set_tab_next(self):
     """Set TAB Advances"""
     self.tab_next = {
-        self.callsign: self.sent,
-        self.sent: self.receive,
-        self.receive: self.other_1,
+        self.callsign: self.other_1,
         self.other_1: self.other_2,
         self.other_2: self.callsign,
     }
@@ -81,10 +79,8 @@ def set_tab_prev(self):
     """Set TAB Advances"""
     self.tab_prev = {
         self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.sent,
-        self.other_1: self.receive,
         self.other_2: self.other_1,
+        self.other_1: self.callsign,
     }
 
 

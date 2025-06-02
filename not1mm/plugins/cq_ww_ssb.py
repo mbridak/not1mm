@@ -144,29 +144,29 @@ def points(self):
         return 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycountry = item[1].get("entity", "")
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item.get("entity", "")
+        mycontinent = item.get("continent", "")
     result = self.cty_lookup(self.contact.get("Call", ""))
-    if result:
-        for item in result.items():
-            entity = item[1].get("entity", "")
-            continent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        entity = item.get("entity", "")
+        continent = item.get("continent", "")
 
-            # Contacts between stations on different continents count three (3) points.
-            if mycontinent != continent:
-                return 3
+        # Contacts between stations on different continents count three (3) points.
+        if mycontinent != continent:
+            return 3
 
-            # Exception: Contacts between stations in different countries within the North American boundaries count two (2) points.
-            if (mycontinent == "NA" and continent == "NA") and mycountry != entity:
-                return 2
+        # Exception: Contacts between stations in different countries within the North American boundaries count two (2) points.
+        if (mycontinent == "NA" and continent == "NA") and mycountry != entity:
+            return 2
 
-            # Contacts between stations on the same continent but in different countries count one (1) point.
-            if mycountry.upper() != entity.upper():
-                return 1
+        # Contacts between stations on the same continent but in different countries count one (1) point.
+        if mycountry.upper() != entity.upper():
+            return 1
 
-            # Contacts between stations in the same country have zero (0) QSO point value, but count for zone and country multiplier credit.
+        # Contacts between stations in the same country have zero (0) QSO point value, but count for zone and country multiplier credit.
 
     return 0
 

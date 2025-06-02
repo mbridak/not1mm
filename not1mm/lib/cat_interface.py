@@ -203,6 +203,22 @@ class CAT:
         self.__initialize_rigctrld()
         return False
 
+    def stopcwrigctl(self):
+        """Stop CW via rigctld"""
+        if self.rigctrlsocket:
+            try:
+                self.online = True
+                self.rigctrlsocket.send(bytes("\\stop_morse", "utf-8"))
+                _ = self.__get_serial_string()
+                return True
+            except socket.error as exception:
+                self.online = False
+                logger.debug("setvfo_rigctld: %s", f"{exception}")
+                self.rigctrlsocket = None
+                return False
+        self.__initialize_rigctrld()
+        return False
+
     def set_rigctl_cw_speed(self, speed):
         """Set CW speed via rigctld"""
         if self.rigctrlsocket:
@@ -316,7 +332,7 @@ class CAT:
                 if "get_freq:|" in report and "RPRT 0" in report:
                     seg_rpt = report.split("|")
                     return seg_rpt[1].split(" ")[1]
-            except socket.error as exception:
+            except (socket.error, IndexError) as exception:
                 self.online = False
                 logger.debug(f"{exception=}")
                 self.rigctrlsocket = None

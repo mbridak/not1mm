@@ -227,10 +227,10 @@ def cabrillo(self, file_encoding):
     )
     logger.debug("%s", filename)
     result = self.cty_lookup(self.station.get("Call", ""))
-    if result:
-        for item in result.items():
-            mycountry = item[1].get("entity", "")
-            mycontinent = item[1].get("continent", "")
+    if result is not None:
+        item = result.get(next(iter(result)))
+        mycountry = item[1].get("entity", "")
+        # mycontinent = item[1].get("continent", "")
     category = ""
     band = self.contest_settings.get("BandCategory", "")
     if self.contest_settings.get("OperatorCategory", "") == "SINGLE-OP":

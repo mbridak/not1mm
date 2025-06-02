@@ -29,23 +29,7 @@
   - [Recent Changes](#recent-changes)
   - [Flatpak](#flatpak)
   - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Common Installation Recipes for Ubuntu and Fedora](#common-installation-recipes-for-ubuntu-and-fedora)
-      - [Ubuntu 22.04 LTS](#ubuntu-2204-lts)
-      - [Ubuntu 23.04](#ubuntu-2304)
-      - [Ubuntu 24.04 LTS](#ubuntu-2404-lts)
-      - [Fedora 38 \& 39](#fedora-38--39)
-      - [Fedora 40](#fedora-40)
-      - [Manjaro](#manjaro)
-      - [Mint](#mint)
-    - [Python, PyPI, pip and pipx](#python-pypi-pip-and-pipx)
-      - [Bootstrapping pipx](#bootstrapping-pipx)
-      - [Installing with pipx](#installing-with-pipx)
-    - [Installing from GitHub Source](#installing-from-github-source)
-  - [After the Install](#after-the-install)
-    - [You may or may not get a warning message like](#you-may-or-may-not-get-a-warning-message-like)
-    - [Or this fan favorite](#or-this-fan-favorite)
-    - [Update your CTY and SCP files](#update-your-cty-and-scp-files)
+  - [Update your CTY and SCP files](#update-your-cty-and-scp-files)
   - [Various data file locations](#various-data-file-locations)
     - [Data](#data)
     - [Config](#config)
@@ -131,8 +115,9 @@ and SQLite for the database.
 ### Target Environment
 
 The primary target for this application is Linux. It may be able to run on other
-platforms, BSD, Mac and Windows. But I don't have a way, or desire, to directly
-support them.
+platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
+
+I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
 
 ### The Why
 
@@ -184,6 +169,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- ARI 40 80
+- ARI DX
 - ARRL 10M
 - ARRL 160M
 - ARRL DX CW, SSB
@@ -201,6 +188,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - EA Majistad SSB
 - EA RTTY
 - ES OPEN HF
+- ES FIELD DAY HF
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
@@ -224,29 +212,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-4-22] Mostly code cleanup. Not running some code when not needed.
-- [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
-- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
-- [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
-- [25-4-18] Option to clear input fields when QSY in S&P mode.
-- [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
-- [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
-- [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
-- [25-4-14] Add ES Open HF Chanmpionship.
-- [25-4-13] Fix crash in JIDX Cabrillo output.
-- [25-4-12] Added an Auto CQ time to fire progress bar.
-- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
-- [25-4-11-2] Fixed a crash.
-- [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
-- [25-4-11] Add Scandinavian Activity Contest
-- [25-4-10-1] Add ARI 40/80 contest. Add CTRL-R to toggle Run state.
-- [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX Contest.
-- [25-4-8] Remove focus from statistics table widget.
-- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
-- [25-4-5] Add SPDX.
-- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
-- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
+- [25-6-1] Merged changes from @term73, updating ES Field Day.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -259,220 +225,10 @@ clue me into the black magic needed to get it to work.
 
 ## Installation
 
-### Prerequisites
+The README is getting a bit long. So I'll start breaking out the following subsections into
+their own markdown files. The first will be the [installation](INSTALL.md) section.
 
-Not1MM requires:
-
-- Python 3.10+
-- PyQt6
-- libportaudio2
-- libxcb-cursor0 (maybe... Depends on the distro)
-
-You should install these through your distribution's package manager before continuing.
-
-### Common Installation Recipes for Ubuntu and Fedora
-
-I've taken the time to install some common Linux distributions into a VM and
-noted the minimum steps needed to install Not1MM.
-
-<details>
-
-<summary><b>Ubuntu 22.04 LTS, 23.04 and 24.04 LTS</b></summary>
-
-#### Ubuntu 22.04 LTS
-
-```bash
-sudo apt install -y python3-pip python3-numpy libxcb-cursor0 libportaudio2
-python3 -m pip install -U pip
-# Logout and back in
-pip3 install PyQt6
-pip3 install not1mm
-```
-
-#### Ubuntu 23.04
-
-```bash
-sudo apt install -y libportaudio2 pipx libxcb-cursor0
-pipx install not1mm
-pipx ensurepath
-```
-
-#### Ubuntu 24.04 LTS
-
-```bash
-sudo apt install -y pipx libportaudio2 libxcb-cursor0
-pipx install not1mm
-pipx ensurepath
-```
-
-</details>
-
-<details>REQUIRED
-
-<summary><b>Fedora 38, 39 and 40</b></summary>
-
-#### Fedora 38 & 39
-
-```bash
-sudo dnf upgrade --refresh
-sudo dnf install python3-pip pipx portaudio
-pipx install not1mm
-pipx ensurepath
-```
-
-#### Fedora 40
-
-```bash
-sudo dnf upgrade --refresh
-sudo dnf install python3-pip pipx python3-pyqt6 portaudio
-pipx install not1mm
-pipx ensurepath
-```
-
-</details>
-
-<details>
-
-<summary><b>Manjaro</b></summary>
-
-#### Manjaro
-
-```bash
-pamac build not1mm-git 
-```
-
-</details>
-
-<details>
-
-<summary><b>Mint 22</b></summary>
-
-#### Mint
-
-```bash
-sudo apt install python3-pip pipx libxcb-cursor0 
-pipx install not1mm
-pipx ensurepath
-```
-
-</details>
-<br>
-
-### Python, PyPI, pip and pipx
-
-This software is a Python package hosted on PyPI, and installable with the pip
-or pipx command. If this is your first exposure to Python packaging you can get
-all the details from:
-
-- [The PyPA](https://packaging.python.org/en/latest/tutorials/installing-packages/)
-- [Install packages in a virtual environment using pip and venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)
-- [Installing stand alone command line tools](https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/)
-
-In short, You should install stuff into a Python virtual environment. Newer
-Linux distros will make you do this unless you include a command line argument
-akin to '--break-my-system' when using pip. I'm not telling you to use pipx.
-But... **Use pipx**.
-
-#### Bootstrapping pipx
-
-Assuming you have only Python installed, your path to pipx is:
-
-```bash
-# First get pip installed. Either with apt or dnf, or the ensurepip command.
-python3 -m ensurepip
-
-# Update the pip that was just installed.
-python3 -m pip install --upgrade pip
-
-# Install pipx
-python3 -m pip install --user pipx
-python3 -m pipx ensurepath
-```
-
-#### Installing with pipx
-
-Then installing Not1MM is as simple as:
-
-```bash
-# Install not1mm
-pipx install not1mm
-```
-
-If you need to later update Not1MM, you can do so with:
-
-```bash
-# Update not1mm
-pipx upgrade not1mm
-```
-
-<details>
-<summary><b>Installing from GitHub source.</b></summary>
-
-### Installing from GitHub Source
-
-Since this is packaged for PyPI, if you want to work on your own source branch,
-after cloning from github you would:
-
-```bash
-pip install --upgrade pip
-pip install setuptools
-pip install build
-source rebuild.sh
-```
-
-from the root directory. This installs a build chain and a local editable copy
-of Not1MM.
-
-There's two ways to launch the program from the local editable copy.
-
-You can either be in the root of the source directory and type:
-
-```bash
-python not1mm
-```
-
-or be in some other directory and just type:
-
-```bash
-not1mm
-```
-
-</details>
-
-## After the Install
-
-You can now open a new terminal and type `not1mm`. On it's first run, it may or
-may not install a lovely non AI generated icon, which you can later click on to
-launch the application.
-
-### You may or may not get a warning message like
-
-```text
-WARNING: The script not1mm is installed in '/home/mbridak/.local/bin' which is not on PATH.
-Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
-```
-
-If you do, just logout and back in, or reboot.
-
-### Or this fan favorite
-
-```text
-Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
-qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
-This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
-```
-
-You can use your package manager to load libxcb-cursor0.
-
-If that's not an option, you can export an environment variable and launch the app like this:
-
-`mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm`
-
-For a more permanent solution you can place the line
-`export QT_QPA_PLATFORM=wayland` in your home directories .bashrc file. Then
-after logging out and back in you should be able to launch it normally.
-
-### Update your CTY and SCP files
+## Update your CTY and SCP files
 
 After all the configuration stuff below and before operating in a contest, you
 might want to update the CTY and SCP files. You can do this by choosing FILE->Update CTY and FILE->Update MASTER.SCP
@@ -844,8 +600,26 @@ blue rectangle shows the receivers bandwidth if one is reported.
 
 ![Bandmap Window](https://github.com/mbridak/not1mm/raw/master/pic/VFO_and_bandwidth_markers.png)
 
-Clicked on spots now tune the radio and set the callsign field. Previously
-worked calls are displayed in red.
+Clicking on a spots tunes the radio to the spot frequency and sets the callsign field.
+
+Previously worked calls are displayed in Red.
+
+Callsigns that were marked with CTRL-M to work later are displayed in a Yellow-ish color.
+
+In between the spots call and time is now a little icon to visually tell you what kind of spot it is.
+
+![Bandmap Icons](https://github.com/mbridak/not1mm/raw/master/pic/bandmap_icons.png)
+
+- ○ CW
+- ⦿ FT*
+- ⌾ RTTY
+- 🗼 Beacons
+- @ Everything else
+
+Secondary Icons:
+
+- [P] POTA
+- [S] SOTA
 
 ### The Check Partial Window
 
@@ -873,7 +647,9 @@ This window contains QSO rates and counts.
 
 You can control the VFO on a remote rig by following the directions listed in
 the link below. It's a small hardware project with a BOM of under $20, and
-consisting of two parts.
+consisting of two parts. The VFO knob is now detectable on MacOS. I've made the
+operation of the knob smoother by having the knob ignore frequency updates from
+the radio while it's in rotation.
 
 1. Making the [VFO](https://github.com/mbridak/not1mm/blob/master/usb_vfo_knob/vfo.md)...
 2. Then... `Window`>`VFO`
@@ -1066,4 +842,3 @@ This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in th
 ### UKEI DX
 
 For the Run exchange macro I'd put '{SNT} # {EXCH}'
-

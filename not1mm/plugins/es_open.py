@@ -1,8 +1,11 @@
 """ """
 
-import datetime
 import logging
 import platform
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+
 
 from pathlib import Path
 
@@ -16,6 +19,7 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "#"
+
 
 name = "ES OPEN"
 cabrillo_name = "ES-OPEN"
@@ -40,79 +44,86 @@ dupe_type = 5
 
 
 def specific_contest_check_dupe(self, call):
+    """"""
+    # get mode from radio state
+    mode = self.radio_state.get("mode", "")
     """Dupe checking specific to just this contest."""
-
-    # constant to split the contest
-    contest_length_in_minutes = 60
-    split_contest_by_minutes = 20
+    # constant to split the contest - correct ES Open Contest length is 4 hours
+    contest_length_in_minutes = 240
+    split_contest_by_minutes = 60
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
 
     # think about generic solution by splitting the contest to n different periods
     start_date_init = self.contest_settings.get("StartDate", "")
-    self.contest_start_date = start_date_init.split(" ")[0]
-    self.contest_start_time = start_date_init.split(" ")[1]
-
-    start_date_init_date = datetime.datetime.strptime(
-        start_date_init, "%Y-%m-%d %H:%M:%S"
-    )
+    start_date_init_date = datetime.strptime(start_date_init, "%Y-%m-%d %H:%M:%S")
 
     # Create time periods dynamically based on period count
     time_periods = []
     for i in range(period_count):
         minutes_to_add = split_contest_by_minutes * (i + 1)
-        time_period = start_date_init_date + datetime.timedelta(minutes=minutes_to_add)
+        time_period = start_date_init_date + timedelta(minutes=minutes_to_add)
         time_periods.append(time_period)
 
     # Assign to variables for backwards compatibility
     time_period_1 = time_periods[0] if len(time_periods) > 0 else None
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
+    time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
     # get current time in UTC
-    iso_current_time = datetime.datetime.now(datetime.timezone.utc)
+    iso_current_time = datetime.now(timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
 
     result = {}
     result["isdupe"] = False
 
-    if current_time < time_period_1:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
+    if current_time < time_period_1 and current_time >= start_date_init_date:
 
-        result = self.database.check_dupe_on_period_1_mode(
+        result = self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init,
+            start_date_init_date,
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    elif current_time < time_period_2 and current_time >= time_period_1:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
+    if current_time < time_period_2 and current_time >= time_period_1:
 
-        result = self.database.check_dupe_on_period_2_mode(
+        result = self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init,
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    elif current_time < time_period_3 and current_time >= time_period_2:
-        start_date_init = self.contest_start_date + " " + self.contest_start_time
+    if current_time < time_period_3 and current_time >= time_period_2:
 
-        result = self.database.check_dupe_on_period_3_mode(
+        result = self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init,
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    return result
+    if current_time < time_period_4 and current_time >= time_period_3:
 
+        result = self.database.check_dupe_on_period_mode(
+            call,
+            self.contact.get("Band", ""),
+            mode,
+            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+            time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+    # just for band and mode if outside of time period
+    else:
+        result = self.database.check_dupe_on_band_mode(
+            call, self.contact.get("Band", ""), mode
+        )
+
+    return result
 
 def init_contest(self):
     """setup plugin"""

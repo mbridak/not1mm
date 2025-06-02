@@ -1,5 +1,18 @@
 # Changelog
 
+- [25-6-1] Merged changes from @term73, updating ES Field Day.
+- [25-5-31] Merged PR from @term73, Adding ES Field Day and changes to ES open.
+- [25-5-26] Add ARI DX contest, Fix Canada Day mults.
+- [25-5-25] Added {PREVNR} macro to resend last logged serial number.
+  - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
+  - Made tuning with the VFO knob smoother.
+  - Add MacOS support for VFO knob.
+  - Forced style to Fusion on MacOS, 'cause it looked like ass.
+- [25-5-22] Trap possible ValueError exception in settings.py
+- [25-5-21] Fix crash from unsafe dict key access when processing F1-F12.
+- [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
+- [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
+- [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
 - [25-4-22] Mostly code cleanup. Not running some code when not needed.
 - [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
 - [25-4-19-1] Add FM and AM as input-able commands to the callsign field.

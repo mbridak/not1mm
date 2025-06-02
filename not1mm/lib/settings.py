@@ -5,7 +5,7 @@ from PyQt6 import QtWidgets, uic
 
 try:
     import sounddevice as sd
-except OSError as exception:
+except OSError:
     sd = None
 
 
@@ -17,7 +17,7 @@ class Settings(QtWidgets.QDialog):
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
         uic.loadUi(app_data_path / "configuration.ui", self)
-        self.tabWidget.setTabVisible(5, False)
+        # self.tabWidget.setTabVisible(5, False)
         # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
@@ -53,6 +53,8 @@ class Settings(QtWidgets.QDialog):
         self.rtc_interval.setText(str(self.preference.get("rtc_interval", "2")))
 
         self.auto_cq_delay.setText(str(self.preference.get("auto_cq_interval", "15")))
+
+        self.connect_to_server.setChecked(bool(self.preference.get("useserver", False)))
 
         self.use_call_history.setChecked(
             bool(self.preference.get("use_call_history", False))
@@ -138,8 +140,12 @@ class Settings(QtWidgets.QDialog):
             self.set_winkeyer_port_hint()
         elif self.preference.get("cwtype") == 3:
             self.set_catforcw_port_hint()
+        self.cwpaddingchar_field.setText(self.preference.get("cwpaddingchar", "T"))
+        self.cwpaddinglength_field.setText(
+            str(self.preference.get("cwpaddinglength", "3"))
+        )
 
-        self.connect_to_server.setChecked(bool(self.preference.get("useserver")))
+        self.connect_to_server.setChecked(bool(self.preference.get("useserver", False)))
         self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
         self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
         self.interface_ip.setText(str(self.preference.get("interface_ip", "")))
@@ -214,6 +220,7 @@ class Settings(QtWidgets.QDialog):
         """
         Write preferences to json file.
         """
+        self.preference["useserver"] = self.connect_to_server.isChecked()
         self.preference["send_rtc_scores"] = self.send_rtc_scores.isChecked()
         self.preference["rtc_url"] = self.rtc_url.currentText()
         self.preference["rtc_user"] = self.rtc_user.text()
@@ -266,6 +273,11 @@ class Settings(QtWidgets.QDialog):
         except ValueError:
             self.preference["cwport"] = None
             ...
+        self.preference["cwpaddingchar"] = self.cwpaddingchar_field.text()
+        try:
+            self.preference["cwpaddinglength"] = int(self.cwpaddinglength_field.text())
+        except ValueError:
+            self.preference["cwpaddinglength"] = 3
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1
