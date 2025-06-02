@@ -144,7 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contest = None
     contest_settings = {}
     contact_is_dupe = False
-    pref = None
+    pref = {}
     station = {}
     current_op = ""
     current_mode = ""
@@ -3839,7 +3839,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_window.msg_from_main(cmd)
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
-        # self.check_callsign(stripped_text)
+            # self.check_callsign(stripped_text)
             if self.check_dupe(stripped_text):
                 self.dupe_indicator.show()
             else:

@@ -212,6 +212,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-2] Crash Fix. Change initial self.pref from None to a dict.
 - [25-6-1] Merged changes from @term73, updating ES Field Day.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
