@@ -1,6 +1,6 @@
 # Changelog
 
-- [25-6-3] Fix creash caused by SSL cert expiration from supercheckpartial.com.
+- [25-6-3] Fix crash caused by SSL cert expiration from supercheckpartial.com.
 - [25-6-2] Crash Fix. Change initial self.pref from None to a dict.
 - [25-6-1] Merged changes from @term73, updating ES Field Day.
 - [25-5-31] Merged PR from @term73, Adding ES Field Day and changes to ES open.
