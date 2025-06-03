@@ -317,7 +317,7 @@ parameters.
 
 ## Configuration Settings
 
-To setup your CAT control, CW keyer, Callsign lookups, select
+To setup your CAT control, CW keyer, and callsign lookups, select
 `File` > `Configuration Settings`
 
 The tabs for groups and n1mm are disabled and are for future expansion.
@@ -326,31 +326,36 @@ The tabs for groups and n1mm are disabled and are for future expansion.
 
 ### Lookup
 
-For callsign lookup, Two services are supported. QRZ and HamQTH. They require a
-username and password, Enter it here.
+For callsign lookup, two services are supported: QRZ and HamQTH. They require a
+username and password. Enter that information here.
 
 ### Soundcard
 
-Choose the sound output device for the voice keyer.
+Choose the appropriate sound output device for the voice keyer.
 
 ### CAT Control
 
-Under the `CAT` TAB, you can choose either `rigctld` normally with an IP of
-`127.0.0.1` and a port of `4532`. Or `flrig`, IP normally of `127.0.0.1` and a
+Under the `CAT` tab, you can choose either: `rigctld` normally with an IP of
+`127.0.0.1` and a port of `4532` or `flrig` with an IP normally of `127.0.0.1` and a
 port of `12345`. `None` is always an option, but is it really? There's an
 onscreen icon for CAT status. Green good, Red bad, Grey neither.
 
-### CW Keyer interface
+### CW Keyer Interface
 
-Under the `CW` TAB, There are three options. `cwdaemon`, which normally uses IP
-`127.0.0.1`port `6789`. `pywinkeyer` which normally uses IP `127.0.0.1` port `8000` and
-`CAT` which if your radio supports it, sends Morse characters via rigctld.
+Under the `CW` tab, there are three options: i) `cwdaemon` that normally uses IP address
+`127.0.0.1`port `6789`, ii) `pywinkeyer` that normally uses IP address `127.0.0.1` port `8000`, and
+iii) `CAT` that sends Morse characters via rigctld if your radio supports it.
+
+For contests that require a serial number as part of the exchange, there is an option to pad it with leading zeroes,
+typically represented by the cut number "T". For example, serial number "001" can be sent as "TT1". The user can 
+configure the `CW Sent Nr Padding` character (default: T) and `CW Sent Nr Padding 
+Length` (default: 3) or specify no padding by entering length "0".
 
 ### Cluster
 
 ![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
 
-Under the `Cluster` TAB you can change the default AR Cluster server, port and
+Under the `Cluster` tab you can change the default AR Cluster server, port, and
 filter settings used for the bandmap window.
 
 ### N1MM Packets
