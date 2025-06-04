@@ -1572,6 +1572,7 @@
     <addaction name="actionRate_Window"/>
     <addaction name="actionStatistics"/>
     <addaction name="actionVFO"/>
+    <addaction name="actionDXCC"/>
    </widget>
    <widget class="QMenu" name="menuOther">
     <property name="title">
@@ -2130,6 +2131,17 @@
    </property>
    <property name="shortcut">
     <string>Alt+S</string>
+   </property>
+  </action>
+  <action name="actionDXCC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DXCC</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+D</string>
    </property>
   </action>
  </widget>
