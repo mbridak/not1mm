@@ -34,12 +34,6 @@ class StatsWindow(QDockWidget):
         )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        self.load_pref()
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
-            "current_database", "ham.db"
-        )
-        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
-        self.database.current_contest = self.pref.get("contest", 0)
         uic.loadUi(fsutils.APP_DATA_PATH / "statistics.ui", self)
 
     def msg_from_main(self, packet):
@@ -56,12 +50,7 @@ class StatsWindow(QDockWidget):
         if self.active is False:
             return
 
-        if packet.get("cmd", "") == "CONTACTCHANGED":
-            self.get_run_and_total_qs()
-            return
-
-        if packet.get("cmd", "") == "UPDATELOG":
-            logger.debug("External refresh command.")
+        if packet.get("cmd", "") in ("CONTACTCHANGED", "UPDATELOG", "DELETED"):
             self.get_run_and_total_qs()
             return
 
