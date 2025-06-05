@@ -37,7 +37,7 @@ class DXCCWindow(QDockWidget):
         super().__init__()
         self.active = False
         uic.loadUi(fsutils.APP_DATA_PATH / "dxcc_tracker.ui", self)
-        self.setWindowTitle("DXCC Multiplier Tracker")
+        self.setWindowTitle("DXCC Tracker")
         self.load_pref()
         self.db = QSqlDatabase.addDatabase("QSQLITE")
         self.tableView.verticalHeader().setVisible(False)
@@ -120,7 +120,6 @@ class DXCCWindow(QDockWidget):
         if not self.db.open():
             print("Error: Could not open database")
             return
-        self.setWindowTitle("DXCC Tracker")
 
     def msg_from_main(self, msg):
         """"""
