@@ -49,7 +49,7 @@ class DXCCWindow(QDockWidget):
         self.model = CustomSqlModel(self)
         query = QSqlQuery(self.db)
         query.prepare(
-            """
+            f"""
             SELECT CountryPrefix,
                 SUM(CASE WHEN Band = 1.8 THEN 1 ELSE 0 END) AS '160m',
                 SUM(CASE WHEN Band = 3.5 THEN 1 ELSE 0 END) AS '80m',
@@ -58,7 +58,7 @@ class DXCCWindow(QDockWidget):
                 SUM(CASE WHEN Band = 21.0 THEN 1 ELSE 0 END) AS '15m',
                 SUM(CASE WHEN Band = 28.0 THEN 1 ELSE 0 END) AS '10m',
                 COUNT(*) AS Total
-            FROM DXLOG
+            FROM DXLOG where ContestNR = {self.pref.get('contest', 1)} 
             GROUP BY CountryPrefix
             ORDER BY Total DESC
             """
