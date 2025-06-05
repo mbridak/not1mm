@@ -121,7 +121,7 @@ class DXCCWindow(QDockWidget):
             print("Error: Could not open database")
             return
         self.setWindowTitle(
-            f"Log Display - {self.pref.get('current_database', 'ham.db')}"
+            f"DXCC Tracker - {self.pref.get('current_database', 'ham.db')}"
         )
 
     def msg_from_main(self, msg):
