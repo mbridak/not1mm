@@ -107,27 +107,41 @@ class StatsWindow(QDockWidget):
         for band in result:
             query = f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}';"
             result = self.database.exec_sql(query)
-            item = QtWidgets.QTableWidgetItem(str(band.get("band", "")))
+            item = QtWidgets.QTableWidgetItem(
+                str(band.get("band", "")).replace("None", "")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 0, item)
-            item = QtWidgets.QTableWidgetItem(str(result.get("qs", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("qs", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(result.get("calls", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("calls", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 2, item)
-            item = QtWidgets.QTableWidgetItem(str(result.get("points", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("points", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 6, item)
             query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
             result = self.database.exec_sql(query)
-            item = QtWidgets.QTableWidgetItem(str(result.get("CW", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("CW", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 3, item)
-            item = QtWidgets.QTableWidgetItem(str(result.get("PH", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("PH", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 4, item)
-            item = QtWidgets.QTableWidgetItem(str(result.get("DI", "0")))
+            item = QtWidgets.QTableWidgetItem(
+                str(result.get("DI", "0")).replace("None", "0")
+            )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 5, item)
 
@@ -137,25 +151,37 @@ class StatsWindow(QDockWidget):
         item = QtWidgets.QTableWidgetItem("TOTAL")
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 0, item)
-        item = QtWidgets.QTableWidgetItem(str(result.get("qs", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("qs", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(result.get("calls", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("calls", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 2, item)
-        item = QtWidgets.QTableWidgetItem(str(result.get("points", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("points", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 6, item)
 
         query = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
         result = self.database.exec_sql(query)
-        item = QtWidgets.QTableWidgetItem(str(result.get("CW", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("CW", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 3, item)
-        item = QtWidgets.QTableWidgetItem(str(result.get("PH", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("PH", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 4, item)
-        item = QtWidgets.QTableWidgetItem(str(result.get("DI", "0")))
+        item = QtWidgets.QTableWidgetItem(
+            str(result.get("DI", "0")).replace("None", "0")
+        )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 5, item)
         self.tableWidget.resizeColumnsToContents()
