@@ -48,7 +48,7 @@
     - [Lookup](#lookup)
     - [Soundcard](#soundcard)
     - [CAT Control](#cat-control)
-    - [CW Keyer interface](#cw-keyer-interface)
+    - [CW Keyer Interface](#cw-keyer-interface)
     - [Cluster](#cluster)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
@@ -75,6 +75,7 @@
     - [The Bandmap Window](#the-bandmap-window)
     - [The Check Partial Window](#the-check-partial-window)
     - [The Rate Window](#the-rate-window)
+    - [The DXCC window](#the-dxcc-window)
     - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
@@ -650,6 +651,14 @@ Clicking on any of these items will change the callsign field.
 This window contains QSO rates and counts.
 
 ![Rate Window](https://github.com/mbridak/not1mm/raw/master/pic/rate_window.png)
+
+### The DXCC window
+
+`Window`>`DXCC`
+
+This window shows you a grid of DXCC entities you've aquired and on what bands.
+
+![DXCC Window](https://github.com/mbridak/not1mm/raw/master/pic/dxcc_window.png)
 
 ### The Remote VFO Window
 
