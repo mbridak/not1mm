@@ -1,10 +1,10 @@
-from PyQt6.QtWidgets import QDockWidget, QTableView
-from PyQt6.QtSql import QSqlDatabase, QSqlQueryModel, QSqlQuery
+from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import pyqtSignal
-from PyQt6 import uic
+from PyQt6 import uic, QtWidgets
 import not1mm.fsutils as fsutils
+from not1mm.lib.database import DataBase
 import os
 from json import loads
 
@@ -13,17 +13,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class CustomSqlModel(QSqlQueryModel):
-    def data(self, index, role):
-        if role == Qt.ItemDataRole.BackgroundRole:
-            column = index.column()
-            if column < 7:  # Columns 0-6 (CountryPrefix and band columns)
-                value = super().data(index, Qt.ItemDataRole.DisplayRole)
-                if value and isinstance(value, (int, float)) and value > 0:
-                    return QBrush(QColor(44, 138, 44))  # Light green color
-                elif value == 0:
-                    return QBrush(QColor(155, 100, 100))  # Light red color
-        return super().data(index, role)
+# class CustomSqlModel(QSqlQueryModel):
+#     def data(self, index, role):
+#         if role == Qt.ItemDataRole.BackgroundRole:
+#             column = index.column()
+#             if column < 7:  # Columns 0-6 (CountryPrefix and band columns)
+#                 value = super().data(index, Qt.ItemDataRole.DisplayRole)
+#                 if value and isinstance(value, (int, float)) and value > 0:
+#                     return QBrush(QColor(44, 138, 44))  # Light green color
+#                 elif value == 0:
+#                     return QBrush(QColor(155, 100, 100))  # Light red color
+#         return super().data(index, role)
 
 
 class DXCCWindow(QDockWidget):
@@ -32,47 +32,66 @@ class DXCCWindow(QDockWidget):
     db = None
     model = None
     pref = {}
+    columns = {
+        0: "DXCC",
+        1: "160m",
+        2: "80m",
+        3: "40m",
+        4: "20m",
+        5: "15m",
+        6: "10m",
+        7: "Total",
+    }
 
     def __init__(self):
         super().__init__()
         self.active = False
         uic.loadUi(fsutils.APP_DATA_PATH / "dxcc_tracker.ui", self)
+        self.dxcc_table.setColumnCount(len(self.columns))
+        for column_number, column_name in self.columns.items():
+            self.dxcc_table.setHorizontalHeaderItem(
+                column_number, QtWidgets.QTableWidgetItem(column_name)
+            )
         self.setWindowTitle("DXCC Tracker")
         self.load_pref()
-        self.db = QSqlDatabase.addDatabase("QSQLITE")
-        self.tableView.verticalHeader().setVisible(False)
+
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
+        self.database = DataBase(self.dbname, fsutils.USER_DATA_PATH)
+
+        self.database.current_contest = self.pref.get("contest", 0)
+
+        self.get_log()
+        self.dxcc_table.resizeColumnsToContents()
+        self.dxcc_table.resizeRowsToContents()
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
 
-    def update_model(self):
-        self.model = CustomSqlModel(self)
-        query = QSqlQuery(self.db)
-        query.prepare(
-            f"""
-            SELECT CountryPrefix,
-                SUM(CASE WHEN Band = 1.8 THEN 1 ELSE 0 END) AS '160m',
-                SUM(CASE WHEN Band = 3.5 THEN 1 ELSE 0 END) AS '80m',
-                SUM(CASE WHEN Band = 7.0 THEN 1 ELSE 0 END) AS '40m',
-                SUM(CASE WHEN Band = 14.0 THEN 1 ELSE 0 END) AS '20m',
-                SUM(CASE WHEN Band = 21.0 THEN 1 ELSE 0 END) AS '15m',
-                SUM(CASE WHEN Band = 28.0 THEN 1 ELSE 0 END) AS '10m',
-                COUNT(*) AS Total
-            FROM DXLOG where ContestNR = {self.pref.get('contest', 1)} 
-            GROUP BY CountryPrefix
-            ORDER BY Total DESC
-            """
-        )
-        if not query.exec():
-            print("Query failed:", query.lastError().text())
-        else:
-            self.model.setQuery(query)
-            headers = ["DXCC", "160m", "80m", "40m", "20m", "15m", "10m", "Total"]
-            for i, header in enumerate(headers):
-                self.model.setHeaderData(i, Qt.Orientation.Horizontal, header)
-            self.tableView.setModel(self.model)
-            self.tableView.resizeColumnsToContents()
-            self.tableView.resizeRowsToContents()
+    def get_log(self):
+        """dxcc_table"""
+
+        # result=[
+        # {'CountryPrefix': 'K', '160m': 0, '80m': 0, '40m': 0, '20m': 7, '15m': 0, '10m': 0, 'Total': 7},
+        # {'CountryPrefix': 'XE', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1},
+        # {'CountryPrefix': 'G', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1}
+        # ]
+
+        result = self.database.fetch_dxcc_by_band_count()
+        self.dxcc_table.setRowCount(0)
+        for row_number, row_data in enumerate(result):
+            self.dxcc_table.insertRow(row_number)
+            for column, data in enumerate(row_data.values()):
+                item = QtWidgets.QTableWidgetItem(str(data))
+                if column > 0 and column < 7:
+                    if data == 0:
+                        item.setBackground(QBrush(QColor(44, 138, 44)))
+                    else:
+                        item.setBackground(QBrush(QColor(155, 100, 100)))
+                self.dxcc_table.setItem(row_number, column, item)
+        self.dxcc_table.resizeColumnsToContents()
+        self.dxcc_table.resizeRowsToContents()
 
     def load_pref(self) -> None:
         """
@@ -115,18 +134,18 @@ class DXCCWindow(QDockWidget):
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
-
-        self.db.setDatabaseName(f"{self.dbname}")
-        if not self.db.open():
-            print("Error: Could not open database")
-            return
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
+        self.database.current_contest = self.pref.get("contest", 0)
+        self.contact = self.database.empty_contact
+        self.get_log()
 
     def msg_from_main(self, msg):
         """"""
-        if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
-            ...
-            self.update_model()
-        if msg.get("cmd", "") == "NEWDB":
-            ...
-            self.load_new_db()
-            self.update_model()
+        if self.active is True:
+            if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
+                ...
+                self.get_log()
+            if msg.get("cmd", "") == "NEWDB":
+                ...
+                self.load_new_db()
+                self.get_log()
