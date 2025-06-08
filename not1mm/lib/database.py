@@ -179,7 +179,7 @@ class DataBase:
                     ");"
                 )
                 cursor.execute(sql_command)
-                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA journal_mode=DELETE")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -223,7 +223,7 @@ class DataBase:
                     ");"
                 )
                 cursor.execute(sql_command)
-                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA journal_mode=DELETE")
                 conn.commit()
 
                 sql_command = "select * from Contest;"
@@ -273,7 +273,7 @@ class DataBase:
                     "TimeCategory NVARCHAR(20));"
                 )
                 cursor.execute(sql_command)
-                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA journal_mode=DELETE")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -313,7 +313,7 @@ class DataBase:
                     "PRIMARY KEY([Call]));"
                 )
                 cursor.execute(sql_command)
-                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA journal_mode=DELETE")
                 conn.commit()
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
@@ -1234,7 +1234,7 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
             return {}
-        
+
     def exec_sql_params_mult(self, query: str, params=None) -> dict:
         """Exec one off queries returning one dict"""
         try:
@@ -1271,9 +1271,7 @@ class DataBase:
             logger.debug("%s", exception)
             return []
 
-    def check_dupe_on_period_mode(
-        self, call, band, mode, period_1, period_2
-    ) -> dict:
+    def check_dupe_on_period_mode(self, call, band, mode, period_1, period_2) -> dict:
         """Checks if a call is dupe on band/mode"""
         try:
             with sqlite3.connect(self.database) as conn:
@@ -1286,4 +1284,3 @@ class DataBase:
         except sqlite3.OperationalError as exception:
             logger.debug("%s", exception)
             return {}
-

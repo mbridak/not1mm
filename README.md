@@ -213,6 +213,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-8] Revmoved SQLite WAL mode.
 - [25-6-7] Fix focus issue when dxcc widget is active.
 - [25-6-4] Add a DXCC/Band widget.
 - [25-6-3] Fix crash caused by SSL cert expiration from supercheckpartial.com.
