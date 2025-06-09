@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QBrush, QColor
-from PyQt6.QtCore import Qt
+
+# from PyQt6.QtCore import Qt
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import uic, QtWidgets
 import not1mm.fsutils as fsutils
@@ -11,19 +12,6 @@ from json import loads
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-# class CustomSqlModel(QSqlQueryModel):
-#     def data(self, index, role):
-#         if role == Qt.ItemDataRole.BackgroundRole:
-#             column = index.column()
-#             if column < 7:  # Columns 0-6 (CountryPrefix and band columns)
-#                 value = super().data(index, Qt.ItemDataRole.DisplayRole)
-#                 if value and isinstance(value, (int, float)) and value > 0:
-#                     return QBrush(QColor(44, 138, 44))  # Light green color
-#                 elif value == 0:
-#                     return QBrush(QColor(155, 100, 100))  # Light red color
-#         return super().data(index, role)
 
 
 class DXCCWindow(QDockWidget):
