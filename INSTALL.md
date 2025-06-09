@@ -29,6 +29,12 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uvx not1mm
 ```
 
+or
+
+```bash
+uvx not1mm@latest
+```
+
 That's it... It will go out, fetch the latest version of not1mm, setup a python virtual environment, get all the needed python libraries, cache everything and run not1mm. The first time takes a minute, but each time after, it's lightning quick and it will automatically check for updates and run the latest version.
 
 But wait... There's more. If your distro is old and you're stuck with an older version of python... Say 3.10. And you want to see what all the cool kids are using. But you don't want to corrupt your broke ol' system by downloading the newest Python version. No problem. You can tell uv to run not1mm with any version of Python you'd like. Let's say 3.14.
