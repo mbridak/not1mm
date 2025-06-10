@@ -11,9 +11,10 @@ from PyQt6.QtGui import (
     QResizeEvent,
 )
 
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6 import uic
 
+from not1mm.lib.rot_interface import RotatorInterface
 import not1mm.fsutils as fsutils
 import math
 import logging
@@ -38,7 +39,18 @@ class RotatorWindow(QDockWidget):
         self.requestedAzimuth = None
         self.antennaAzimuth = None
         uic.loadUi(fsutils.APP_DATA_PATH / "rotator.ui", self)
+        self.north_button.clicked.connect(self.set_north_azimuth)
+        self.south_button.clicked.connect(self.set_south_azimuth)
+        self.east_button.clicked.connect(self.set_east_azimuth)
+        self.west_button.clicked.connect(self.set_west_azimuth)
+        self.move_button.clicked.connect(self.the_eye_of_sauron)
         self.redrawMap()
+        self.rotator = RotatorInterface()
+        self.antennaAzimuth, _ = self.rotator.get_position()
+        self.set_antenna_azimuth(self.antennaAzimuth)
+        self.watch_timer = QTimer()
+        self.watch_timer.timeout.connect(self.check_rotator)
+        self.watch_timer.start(1000)
 
     def msg_from_main(self, msg: dict) -> None:
         """"""
@@ -68,6 +80,31 @@ class RotatorWindow(QDockWidget):
             self.antennaNeedle.show()
         else:
             self.antennaNeedle.hide()
+
+    def set_north_azimuth(self) -> None:
+        """Point the antenna North."""
+        if self.rotator.connected:
+            self.rotator.set_position(0.0)
+
+    def set_south_azimuth(self) -> None:
+        """Point the antenna South."""
+        if self.rotator.connected:
+            self.rotator.set_position(180.0)
+
+    def set_east_azimuth(self) -> None:
+        """Point the antenna East."""
+        if self.rotator.connected:
+            self.rotator.set_position(90.0)
+
+    def set_west_azimuth(self) -> None:
+        """Point the antenna West."""
+        if self.rotator.connected:
+            self.rotator.set_position(270.0)
+
+    def the_eye_of_sauron(self) -> None:
+        """Move the antennas azimuth to match the contacts."""
+        if self.rotator.connected:
+            self.rotator.set_position(self.requestedAzimuth)
 
     def redrawMap(self) -> None:
         """"""
@@ -122,8 +159,8 @@ class RotatorWindow(QDockWidget):
         path2.closeSubpath()
 
         self.requestedAzimuthNeedle = self.compassScene.addPath(
-            QPainterPath(path2),
-            QPen(Qt.PenStyle.NoPen),
+            path,
+            QPen(QColor(0, 0, 0, 150)),
             QBrush(QColor(255, 0, 0), Qt.BrushStyle.SolidPattern),
         )
 
@@ -265,3 +302,11 @@ class RotatorWindow(QDockWidget):
         self.compassView.fitInView(
             self.compassScene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio
         )
+
+    def check_rotator(self) -> None:
+        """Check the rotator"""
+        if self.rotator.connected:
+            self.antennaAzimuth, _ = self.rotator.get_position()
+            self.set_antenna_azimuth(self.antennaAzimuth)
+        else:
+            self.rotator.connect()
