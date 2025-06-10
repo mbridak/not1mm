@@ -18,7 +18,7 @@ def calculate_wpx_prefix(the_call: str) -> str:
         return ""
     suffix_to_ignore = ["M", "MM", "P", "QRP", "A", "J", "LH", "LGT", "LS", "NLD", "T", "R", "TR" ]
     for suffix in suffix_to_ignore:
-        the_call = the_call.replace("/"+suffix, "")
+        the_call = re.sub("/" + suffix + "$", "", the_call)
     result = None
     working_call = the_call.split("/")
     if len(working_call) > 1:
