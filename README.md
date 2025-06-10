@@ -76,6 +76,7 @@
     - [The Check Partial Window](#the-check-partial-window)
     - [The Rate Window](#the-rate-window)
     - [The DXCC window](#the-dxcc-window)
+    - [The Rotator Window (Work In Progress)](#the-rotator-window-work-in-progress)
     - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
@@ -662,6 +663,15 @@ This window contains QSO rates and counts.
 This window shows you a grid of DXCC entities you've aquired and on what bands.
 
 ![DXCC Window](https://github.com/mbridak/not1mm/raw/master/pic/dxcc_window.png)
+
+### The Rotator Window (Work In Progress)
+
+`Window`>`Rotator`
+
+The Rotator window is a work in progress. It does not do much of anything useful
+yet. Just shows the heading of the contact.
+
+![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rotator_window.png)
 
 ### The Remote VFO Window
 
