@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>358</width>
-    <height>233</height>
+    <width>352</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,12 +60,34 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="pushButton_2">
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="text">
-         <string>North</string>
+         <string>N</string>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -75,7 +97,7 @@
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="text">
-         <string>South</string>
+         <string>S</string>
         </property>
        </widget>
       </item>
@@ -85,7 +107,7 @@
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="text">
-         <string>West</string>
+         <string>W</string>
         </property>
        </widget>
       </item>
@@ -95,9 +117,22 @@
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="text">
-         <string>East</string>
+         <string>E</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>
