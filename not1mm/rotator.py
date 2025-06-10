@@ -11,18 +11,11 @@ from PyQt6.QtGui import (
     QResizeEvent,
 )
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal
-
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6 import uic
 
 import not1mm.fsutils as fsutils
 import math
-
-# from not1mm.lib.database import DataBase
-# import os
-# from json import loads
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -31,7 +24,7 @@ logger = logging.getLogger(__name__)
 class RotatorWindow(QDockWidget):
     message = pyqtSignal(dict)
     pref = {}
-    MAP_RESOLUTION = 1000
+    MAP_RESOLUTION = 600
     GLOBE_RADIUS = 100.0
     AZIMUTH_DEAD_BAND = 2
     requestedAzimuthNeedle = None
@@ -42,29 +35,41 @@ class RotatorWindow(QDockWidget):
         self.active = False
         self.compassScene = None
         self.mygrid = "DM13at"
-        self.requestedAzimuth = 72.0
-        self.antennaAzimuth = 0
+        self.requestedAzimuth = None
+        self.antennaAzimuth = None
         uic.loadUi(fsutils.APP_DATA_PATH / "rotator.ui", self)
         self.redrawMap()
 
-    def msg_from_main(self, msg):
+    def msg_from_main(self, msg: dict) -> None:
         """"""
-        if self.active is True:
+        if self.active is True and isinstance(msg, dict):
             if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
                 ...
             if msg.get("cmd", "") == "NEWDB":
                 ...
 
-    def setActive(self, active):
-        self.active = active
+    def setActive(self, active: bool) -> None:
+        """"""
+        if isinstance(active, bool):
+            self.active = active
 
-    def set_requested_azimuth(self, azimuth: float):
-        print("called")
-        self.requestedAzimuth = azimuth
-        self.requestedAzimuthNeedle.setRotation(self.requestedAzimuth)
-        print(f"{self.requestedAzimuth=}")
+    def set_requested_azimuth(self, azimuth: float) -> None:
+        if isinstance(azimuth, float):
+            self.requestedAzimuth = azimuth
+            self.requestedAzimuthNeedle.setRotation(self.requestedAzimuth)
+            self.requestedAzimuthNeedle.show()
+        else:
+            self.requestedAzimuthNeedle.hide()
 
-    def redrawMap(self):
+    def set_antenna_azimuth(self, azimuth: float) -> None:
+        if isinstance(azimuth, float):
+            self.antennaAzimuth = azimuth
+            self.antennaNeedle.setRotation(self.antennaAzimuth)
+            self.antennaNeedle.show()
+        else:
+            self.antennaNeedle.hide()
+
+    def redrawMap(self) -> None:
         """"""
         self.compassScene = QGraphicsScene()
         self.compassView.setScene(self.compassScene)
@@ -122,8 +127,9 @@ class RotatorWindow(QDockWidget):
             QBrush(QColor(255, 255, 255), Qt.BrushStyle.SolidPattern),
         )
 
-        if self.requestedAzimuth:
+        if isinstance(self.requestedAzimuth, float):
             self.requestedAzimuthNeedle.setRotation(self.requestedAzimuth)
+            self.requestedAzimuthNeedle.show()
         else:
             self.requestedAzimuthNeedle.hide()
 
@@ -132,11 +138,13 @@ class RotatorWindow(QDockWidget):
             QPen(QColor(0, 0, 0, 150)),
             QBrush(QColor(255, 191, 0), Qt.BrushStyle.SolidPattern),
         )
-        self.antennaNeedle.setRotation(self.antennaAzimuth)
-        # if not self.gotoButton.isEnabled():
-        #     antennaNeedle.hide()
+        if isinstance(self.antennaAzimuth, float):
+            self.antennaNeedle.setRotation(self.antennaAzimuth)
+            self.antennaNeedle.show()
+        else:
+            self.antennaNeedle.hide()
 
-    def gridtolatlon(self, maiden):
+    def gridtolatlon(self, maiden: str) -> tuple[float, float]:
         """
         Converts a maidenhead gridsquare to a latitude longitude pair.
         """
@@ -171,7 +179,7 @@ class RotatorWindow(QDockWidget):
 
             return lat, lon
         except IndexError:
-            return 0, 0
+            return 0.0, 0.0
 
     def equirectangular_to_azimuthal_equidistant(
         self,
@@ -180,6 +188,7 @@ class RotatorWindow(QDockWidget):
         center_lon_deg: float,
         output_size: int = 600,
     ) -> QImage:
+        """This does some super magic"""
 
         width, height = source_img.width(), source_img.height()
         dest_img = QImage(output_size, output_size, QImage.Format.Format_ARGB32)
@@ -201,7 +210,7 @@ class RotatorWindow(QDockWidget):
                 rho = math.sqrt(dx * dx + dy * dy)
                 if rho > 1.0:
                     # Outside the projection circle
-                    dest_img.setPixelColor(x, y, QColor(0, 0, 0))
+                    dest_img.setPixelColor(x, y, QColor(0, 0, 0, 0))
                     continue
 
                 c = (
@@ -245,16 +254,14 @@ class RotatorWindow(QDockWidget):
 
         return dest_img
 
-    def showEvent(self, event: QShowEvent):
-        """ """
+    def showEvent(self, event: QShowEvent) -> None:
+        """Make the globe fit in the widget when widget is shown."""
         self.compassView.fitInView(
             self.compassScene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio
         )
-        # self.showEvent(event)
 
-    def resizeEvent(self, event: QResizeEvent):
-        """"""
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Make globe fit in widget when widget is resized."""
         self.compassView.fitInView(
             self.compassScene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio
         )
-        # self.resizeEvent(event)
