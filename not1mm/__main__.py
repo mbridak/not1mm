@@ -69,6 +69,7 @@ import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.dxcc_tracker import DXCCWindow
+from not1mm.rotator import RotatorWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 from not1mm.ratewindow import RateWindow
@@ -187,6 +188,8 @@ class MainWindow(QtWidgets.QMainWindow):
     rate_window = None
     statistics_window = None
     dxcc_window = None
+    rotator_window = None
+    voice_window = None
     settings = None
     lookup_service = None
     fldigi_util = None
@@ -311,6 +314,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionStatistics.triggered.connect(self.launch_stats_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionDXCC.triggered.connect(self.launch_dxcc_window)
+        self.actionRotator.triggered.connect(self.launch_rotator_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
 
@@ -750,6 +754,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dxcc_window.hide()
         self.dxcc_window.message.connect(self.dockwidget_message)
 
+        self.show_splash_msg("Setting up RotatorWindow.")
+        self.rotator_window = RotatorWindow()
+        self.rotator_window.setObjectName("rotator-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.rotator_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rotator_window)
+        self.rotator_window.hide()
+        self.rotator_window.message.connect(self.dockwidget_message)
+
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
         self.vfo_window.setObjectName("vfo-window")
@@ -823,10 +836,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionDXCC.isChecked():
             self.dxcc_window.show()
             self.dxcc_window.setActive(True)
-            # self.dxcc_window.get_run_and_total_qs()
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
+
+        self.actionRotator.setChecked(self.pref.get("rotatorwindow", False))
+        if self.actionRotator.isChecked():
+            self.rotator_window.show()
+            self.rotator_window.setActive(True)
+        else:
+            self.rotator_window.hide()
+            self.rotator_window.setActive(False)
 
         self.actionVFO.setChecked(self.pref.get("vfowindow", False))
         if self.actionVFO.isChecked():
@@ -1237,6 +1257,8 @@ class MainWindow(QtWidgets.QMainWindow):
                             f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                         )
+                        print("Setting heading")
+                        self.rotator_window.set_requested_azimuth(float(heading))
 
     def cluster_expire_updated(self, number):
         """signal from bandmap"""
@@ -2245,10 +2267,20 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionDXCC.isChecked():
             self.dxcc_window.show()
             self.dxcc_window.setActive(True)
-            # self.dxcc_window.get_run_and_total_qs()
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
+
+    def launch_rotator_window(self) -> None:
+        """Launch the rotator window"""
+        self.pref["rotatorwindow"] = self.actionRotator.isChecked()
+        self.write_preference()
+        if self.actionRotator.isChecked():
+            self.rotator_window.show()
+            self.rotator_window.setActive(True)
+        else:
+            self.rotator_window.hide()
+            self.rotator_window.setActive(False)
 
     def launch_vfo(self) -> None:
         """Launch the VFO window"""
@@ -4060,6 +4092,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
             )
+            self.rotator_window.set_requested_azimuth(float(heading))
             self.contact["CountryPrefix"] = primary_pfx
             self.contact["ZN"] = int(cq)
             if self.contest:
