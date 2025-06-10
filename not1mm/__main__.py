@@ -1236,6 +1236,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.heading_distance.setText(
                             f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                            f" {msg.get('result', {}).get('name_fmt', '')}"
                         )
 
     def cluster_expire_updated(self, number):
