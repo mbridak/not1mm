@@ -357,3 +357,13 @@ def get_station_state_code(self):
         state = result.get("state", "")
         return state
     return ""
+
+def get_station_license_class(self):
+    # get the station licence class in station settings
+    query = f"SELECT LicenseClass as LicenseClass from Station;"
+    # run query
+    result = self.database.exec_sql(query)
+    if result:
+        license_class = result.get("LicenseClass", "")
+        return license_class
+    return ""
