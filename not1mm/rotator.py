@@ -124,7 +124,7 @@ class RotatorWindow(QDockWidget):
         self.requestedAzimuthNeedle = self.compassScene.addPath(
             QPainterPath(path2),
             QPen(Qt.PenStyle.NoPen),
-            QBrush(QColor(255, 255, 255), Qt.BrushStyle.SolidPattern),
+            QBrush(QColor(255, 0, 0), Qt.BrushStyle.SolidPattern),
         )
 
         if isinstance(self.requestedAzimuth, float):
