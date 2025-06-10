@@ -353,8 +353,8 @@ Under the `CW` tab, there are three options: i) `cwdaemon` that normally uses IP
 iii) `CAT` that sends Morse characters via rigctld if your radio supports it.
 
 For contests that require a serial number as part of the exchange, there is an option to pad it with leading zeroes,
-typically represented by the cut number "T". For example, serial number "001" can be sent as "TT1". The user can 
-configure the `CW Sent Nr Padding` character (default: T) and `CW Sent Nr Padding 
+typically represented by the cut number "T". For example, serial number "001" can be sent as "TT1". The user can
+configure the `CW Sent Nr Padding` character (default: T) and `CW Sent Nr Padding
 Length` (default: 3) or specify no padding by entering length "0".
 
 ### Cluster
