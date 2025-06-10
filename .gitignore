@@ -31,3 +31,4 @@ uv.lock
 not1mm/testing/inject_cabrillo.py
 not1mm/testing/readqso.py
 .DS_Store
+not1mm/rotator.cpp

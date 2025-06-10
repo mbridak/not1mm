@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
 - [25-6-8] Revmoved SQLite WAL mode.
   - Rewrote DXCC tracker.
 - [25-6-7] Fix focus issue when dxcc widget is active.
