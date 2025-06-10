@@ -75,7 +75,7 @@ class RotatorInterface:
                 logger.warning(f"Invalid response from rotator: {response}")
         return None, None
 
-    def set_position(self, azimuth, elevation) -> bool:
+    def set_position(self, azimuth, elevation=0.0) -> bool:
         """Set the azimuth and elevation on the rotator."""
         response = self.send_command(f"P {azimuth} {elevation}")
         return response is not None
