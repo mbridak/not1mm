@@ -214,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-11] Added a rotator control widget.
 - [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
 - [25-6-8] Revmoved SQLite WAL mode.
   - Rewrote DXCC tracker.
@@ -669,10 +670,13 @@ This window shows you a grid of DXCC entities you've aquired and on what bands.
 
 `Window`>`Rotator`
 
-The Rotator window is a work in progress. It does not do much of anything useful
-yet. Just shows the heading of the contact.
+The Rotator window is a work in progress. Currently it blindly connects to a rigctld
+instance on it's default port of 4533.
 
 ![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rotator_window.png)
+
+I myself don't have a rotator to test with. I'm a QRP wires in the trees, if only I
+had a tree, kind of guy. So we're kind of hoping this works. If not, don't use it.
 
 ### The Remote VFO Window
 
