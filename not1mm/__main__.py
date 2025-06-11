@@ -1261,7 +1261,6 @@ class MainWindow(QtWidgets.QMainWindow):
                             f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                             f" {msg.get('result', {}).get('name_fmt', '')}"
                         )
-                        print("Setting heading")
                         self.rotator_window.set_requested_azimuth(float(heading))
 
     def cluster_expire_updated(self, number):

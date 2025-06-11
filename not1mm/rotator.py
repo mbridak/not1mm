@@ -118,7 +118,7 @@ class RotatorWindow(QDockWidget):
         self.compassScene = QGraphicsScene()
         self.compassView.setScene(self.compassScene)
         self.compassView.setStyleSheet("background-color: transparent;")
-        file = fsutils.APP_DATA_PATH / "nasabluemarble.jpg"
+        file = fsutils.APP_DATA_PATH / "map3.png"
         source = QImage()
         source.load(str(file))
         the_map = QImage(
@@ -127,8 +127,8 @@ class RotatorWindow(QDockWidget):
         the_map.fill(QColor(0, 0, 0, 0))
         lat, lon = self.gridtolatlon(self.mygrid)
 
-        if os.path.exists(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png"):
-            the_map.load(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png")
+        if os.path.exists(f"{fsutils.USER_DATA_PATH}/{self.mygrid}v2.png"):
+            the_map.load(f"{fsutils.USER_DATA_PATH}/{self.mygrid}v2.png")
         else:
             the_map = self.equirectangular_to_azimuthal_equidistant(
                 source, lat, lon, output_size=self.MAP_RESOLUTION
@@ -157,9 +157,9 @@ class RotatorWindow(QDockWidget):
             QBrush(QColor(0, 0, 0), Qt.BrushStyle.SolidPattern),
         )
         path = QPainterPath()
-        path.lineTo(-2, 0)
+        path.lineTo(-4, 0)
         path.lineTo(0, -90)
-        path.lineTo(2, 0)
+        path.lineTo(4, 0)
         path.closeSubpath()
 
         path2 = QPainterPath()
@@ -171,7 +171,7 @@ class RotatorWindow(QDockWidget):
         self.requestedAzimuthNeedle = self.compassScene.addPath(
             path,
             QPen(QColor(0, 0, 0, 150)),
-            QBrush(QColor(255, 0, 0), Qt.BrushStyle.SolidPattern),
+            QBrush(QColor(0, 0, 255), Qt.BrushStyle.SolidPattern),
         )
 
         if isinstance(self.requestedAzimuth, float):
@@ -299,7 +299,7 @@ class RotatorWindow(QDockWidget):
                 color = source_img.pixelColor(src_x, src_y)
                 dest_img.setPixelColor(x, y, color)
 
-        dest_img.save(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png", "PNG")
+        dest_img.save(f"{fsutils.USER_DATA_PATH}/{self.mygrid}v2.png", "PNG")
         return dest_img
 
     def showEvent(self, event: QShowEvent) -> None:
