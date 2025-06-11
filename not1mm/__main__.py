@@ -683,6 +683,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
+        if self.rotator_window is not None:
+            self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
         self.contact = self.database.empty_contact.copy()
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
@@ -762,6 +764,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rotator_window)
         self.rotator_window.hide()
         self.rotator_window.message.connect(self.dockwidget_message)
+        self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
 
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow()
@@ -1653,6 +1656,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
+            if self.rotator_window is not None:
+                self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
             self.current_op = self.station.get("Call", "")
             self.voice_process.current_op = self.current_op
             self.make_op_dir()
@@ -1695,6 +1700,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
+            if self.rotator_window is not None:
+                self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
             if self.station.get("Call", "") == "":
                 self.edit_station_settings()
             self.current_op = self.station.get("Call", "")
@@ -3131,6 +3138,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.station["Club"] = self.settings_dialog.Club.text()
         self.station["Email"] = self.settings_dialog.Email.text()
         self.database.add_station(self.station)
+        if self.rotator_window is not None:
+            self.rotator_window.set_mygrid(self.settings_dialog.GridSquare.text())
         self.settings_dialog.close()
         if self.current_op == "":
             self.current_op = self.station.get("Call", "")
@@ -4092,7 +4101,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
             )
-            self.rotator_window.set_requested_azimuth(float(heading))
+            if self.rotator_window is not None:
+                self.rotator_window.set_requested_azimuth(float(heading))
             self.contact["CountryPrefix"] = primary_pfx
             self.contact["ZN"] = int(cq)
             if self.contest:

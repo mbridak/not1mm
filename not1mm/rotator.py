@@ -18,6 +18,7 @@ from not1mm.lib.rot_interface import RotatorInterface
 import not1mm.fsutils as fsutils
 import math
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,12 @@ class RotatorWindow(QDockWidget):
                 ...
             if msg.get("cmd", "") == "NEWDB":
                 ...
+
+    def set_mygrid(self, mygrid: str) -> None:
+        """"""
+        if isinstance(mygrid, str):
+            self.mygrid = mygrid
+            self.redrawMap()
 
     def setActive(self, active: bool) -> None:
         """"""
@@ -120,9 +127,12 @@ class RotatorWindow(QDockWidget):
         the_map.fill(QColor(0, 0, 0, 0))
         lat, lon = self.gridtolatlon(self.mygrid)
 
-        the_map = self.equirectangular_to_azimuthal_equidistant(
-            source, lat, lon, output_size=self.MAP_RESOLUTION
-        )
+        if os.path.exists(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png"):
+            the_map.load(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png")
+        else:
+            the_map = self.equirectangular_to_azimuthal_equidistant(
+                source, lat, lon, output_size=self.MAP_RESOLUTION
+            )
 
         pixMapItem = self.compassScene.addPixmap(QPixmap.fromImage(the_map))
         pixMapItem.moveBy(-self.MAP_RESOLUTION / 2, -self.MAP_RESOLUTION / 2)
@@ -289,6 +299,7 @@ class RotatorWindow(QDockWidget):
                 color = source_img.pixelColor(src_x, src_y)
                 dest_img.setPixelColor(x, y, color)
 
+        dest_img.save(f"{fsutils.USER_DATA_PATH}/{self.mygrid}.png", "PNG")
         return dest_img
 
     def showEvent(self, event: QShowEvent) -> None:
