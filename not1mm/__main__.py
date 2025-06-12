@@ -1250,18 +1250,19 @@ class MainWindow(QtWidgets.QMainWindow):
                             elif name:
                                 self.other_1.setText(name)
 
-                    if grid:
+                    if isinstance(grid, str) and len(grid) > 0:
                         self.contact["GridSquare"] = grid
-                    # _theircountry = response.get("country", "")
-                    if self.station.get("GridSquare", ""):
-                        heading = bearing(self.station.get("GridSquare", ""), grid)
-                        kilometers = distance(self.station.get("GridSquare", ""), grid)
-                        self.heading_distance.setText(
-                            f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
-                            f"distance {int(kilometers*0.621371)}mi {kilometers}km"
-                            f" {msg.get('result', {}).get('name_fmt', '')}"
-                        )
-                        self.rotator_window.set_requested_azimuth(float(heading))
+                        if self.station.get("GridSquare", ""):
+                            heading = bearing(self.station.get("GridSquare", ""), grid)
+                            kilometers = distance(
+                                self.station.get("GridSquare", ""), grid
+                            )
+                            self.heading_distance.setText(
+                                f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                                f" {msg.get('result', {}).get('name_fmt', '')}"
+                            )
+                            self.rotator_window.set_requested_azimuth(float(heading))
 
     def cluster_expire_updated(self, number):
         """signal from bandmap"""

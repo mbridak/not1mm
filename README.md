@@ -214,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-12] Account for no gridsquare being returned from lookup service.
 - [25-6-11] Added a rotator control widget.
 - [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
 - [25-6-8] Revmoved SQLite WAL mode.
