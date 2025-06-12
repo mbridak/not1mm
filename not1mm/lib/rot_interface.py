@@ -13,13 +13,13 @@ class RotatorInterface:
     """
 
     def __init__(self, host="127.0.0.1", port=4533):
-        self.host = host
-        self.port = port
-        self.socket = None
-        self.connected = False
+        self.host: str = host
+        self.port: int = port
+        self.socket: socket.socket | None = None
+        self.connected: bool = False
         self.connect()
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect to the rotator control program."""
         try:
             self.socket = socket.create_connection((self.host, self.port), timeout=1)
@@ -32,9 +32,9 @@ class RotatorInterface:
             )
             self.socket = None
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect from the rotator control program."""
-        if self.socket:
+        if isinstance(self.socket, socket.socket):
             try:
                 self.socket.close()
                 logger.info("Disconnected from rotator")
@@ -43,11 +43,11 @@ class RotatorInterface:
             self.socket = None
             self.connected = False
 
-    def send_command(self, command):
+    def send_command(self, command) -> str | None:
         """Send a command to the rotator control program and return the response."""
-        if not self.connected or not self.socket:
+        if self.connected is False or self.socket is None:
             self.connect()
-            if not self.connected or not self.socket:
+            if self.connected is False or self.socket is None:
                 logger.warning("Not connected to rotator. Command not sent.")
                 return None
 
@@ -61,11 +61,11 @@ class RotatorInterface:
             self.disconnect()
             return None
 
-    def get_position(self):
+    def get_position(self) -> tuple[float, float] | None:
         """Get the current azimuth and elevation from the rotator."""
         response = self.send_command("p")
         logger.debug(f"get_position response: {response}")
-        if response:
+        if response is not None:
             if response == "RPRT -1":
                 return None, None
             try:
