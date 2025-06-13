@@ -30,12 +30,61 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QPushButton" name="stop_button">
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="move_button">
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
+        </property>
         <property name="text">
          <string>Move</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="park_button">
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Park</string>
         </property>
        </widget>
       </item>
@@ -74,8 +123,17 @@
       </item>
       <item>
        <widget class="QPushButton" name="north_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
         </property>
         <property name="text">
          <string>N</string>
@@ -85,6 +143,12 @@
           <width>16</width>
           <height>16</height>
          </size>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
         </property>
         <property name="flat">
          <bool>false</bool>
@@ -96,6 +160,9 @@
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
+        </property>
         <property name="text">
          <string>S</string>
         </property>
@@ -106,6 +173,9 @@
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
+        </property>
         <property name="text">
          <string>W</string>
         </property>
@@ -115,6 +185,9 @@
        <widget class="QPushButton" name="east_button">
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
         </property>
         <property name="text">
          <string>E</string>

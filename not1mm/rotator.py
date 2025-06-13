@@ -49,6 +49,8 @@ class RotatorWindow(QDockWidget):
         self.east_button.clicked.connect(self.set_east_azimuth)
         self.west_button.clicked.connect(self.set_west_azimuth)
         self.move_button.clicked.connect(self.the_eye_of_sauron)
+        self.stop_button.clicked.connect(lambda x: self.rotator.send_command("S"))
+        self.park_button.clicked.connect(lambda x: self.rotator.send_command("K"))
         self.redrawMap()
         self.rotator: RotatorInterface = RotatorInterface()
         self.antennaAzimuth, _ = self.rotator.get_position()
