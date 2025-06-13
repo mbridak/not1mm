@@ -1,4 +1,9 @@
-from PyQt6.QtWidgets import QDockWidget, QGraphicsScene
+from PyQt6.QtWidgets import (
+    QDockWidget,
+    QGraphicsScene,
+    QGraphicsPathItem,
+    QGraphicsPixmapItem,
+)
 
 from PyQt6.QtGui import (
     QImage,
@@ -24,21 +29,20 @@ logger = logging.getLogger(__name__)
 
 
 class RotatorWindow(QDockWidget):
-    message = pyqtSignal(dict)
-    pref = {}
-    MAP_RESOLUTION = 600
-    GLOBE_RADIUS = 100.0
-    AZIMUTH_DEAD_BAND = 2
-    requestedAzimuthNeedle = None
-    antennaNeedle = None
+    message: pyqtSignal = pyqtSignal(dict)
+    pref: dict = {}
+    MAP_RESOLUTION: int = 600
+    GLOBE_RADIUS: float = 100.0
+    requestedAzimuthNeedle: QGraphicsPathItem | None = None
+    antennaNeedle: QGraphicsPathItem | None = None
 
     def __init__(self):
         super().__init__()
-        self.active = False
-        self.compassScene = None
-        self.mygrid = "DM13at"
-        self.requestedAzimuth = None
-        self.antennaAzimuth = None
+        self.active: bool = False
+        self.compassScene: QGraphicsScene | None = None
+        self.mygrid: str = "DM13at"
+        self.requestedAzimuth: float | None = None
+        self.antennaAzimuth: float | None = None
         uic.loadUi(fsutils.APP_DATA_PATH / "rotator.ui", self)
         self.north_button.clicked.connect(self.set_north_azimuth)
         self.south_button.clicked.connect(self.set_south_azimuth)
@@ -46,10 +50,10 @@ class RotatorWindow(QDockWidget):
         self.west_button.clicked.connect(self.set_west_azimuth)
         self.move_button.clicked.connect(self.the_eye_of_sauron)
         self.redrawMap()
-        self.rotator = RotatorInterface()
+        self.rotator: RotatorInterface = RotatorInterface()
         self.antennaAzimuth, _ = self.rotator.get_position()
         self.set_antenna_azimuth(self.antennaAzimuth)
-        self.watch_timer = QTimer()
+        self.watch_timer: QTimer = QTimer()
         self.watch_timer.timeout.connect(self.check_rotator)
         self.watch_timer.start(1000)
 
@@ -115,13 +119,13 @@ class RotatorWindow(QDockWidget):
 
     def redrawMap(self) -> None:
         """"""
-        self.compassScene = QGraphicsScene()
+        self.compassScene: QGraphicsScene = QGraphicsScene()
         self.compassView.setScene(self.compassScene)
         self.compassView.setStyleSheet("background-color: transparent;")
         file = fsutils.APP_DATA_PATH / "map3.png"
-        source = QImage()
+        source: QImage = QImage()
         source.load(str(file))
-        the_map = QImage(
+        the_map: QImage = QImage(
             self.MAP_RESOLUTION, self.MAP_RESOLUTION, QImage.Format.Format_ARGB32
         )
         the_map.fill(QColor(0, 0, 0, 0))
@@ -134,12 +138,17 @@ class RotatorWindow(QDockWidget):
                 source, lat, lon, output_size=self.MAP_RESOLUTION
             )
 
-        pixMapItem = self.compassScene.addPixmap(QPixmap.fromImage(the_map))
-        pixMapItem.moveBy(-self.MAP_RESOLUTION / 2, -self.MAP_RESOLUTION / 2)
-        pixMapItem.setTransformOriginPoint(
-            self.MAP_RESOLUTION / 2, self.MAP_RESOLUTION / 2
+        pixMapItem: QGraphicsPixmapItem | None = self.compassScene.addPixmap(
+            QPixmap.fromImage(the_map)
         )
-        pixMapItem.setScale(self.GLOBE_RADIUS * 2 / self.MAP_RESOLUTION)
+        if pixMapItem is None:
+            logging.error("Unable to add pixmap to scene")
+        else:
+            pixMapItem.moveBy(-self.MAP_RESOLUTION / 2, -self.MAP_RESOLUTION / 2)
+            pixMapItem.setTransformOriginPoint(
+                self.MAP_RESOLUTION / 2, self.MAP_RESOLUTION / 2
+            )
+            pixMapItem.setScale(self.GLOBE_RADIUS * 2 / self.MAP_RESOLUTION)
         self.compassScene.addEllipse(
             -100,
             -100,
@@ -156,36 +165,41 @@ class RotatorWindow(QDockWidget):
             QPen(Qt.PenStyle.NoPen),
             QBrush(QColor(0, 0, 0), Qt.BrushStyle.SolidPattern),
         )
-        path = QPainterPath()
+        path: QPainterPath = QPainterPath()
         path.lineTo(-4, 0)
         path.lineTo(0, -90)
         path.lineTo(4, 0)
         path.closeSubpath()
 
-        path2 = QPainterPath()
-        path2.lineTo(-1, 0)
-        path2.lineTo(0, -90)
-        path2.lineTo(1, 0)
-        path2.closeSubpath()
+        # path2: QPainterPath = QPainterPath()
+        # path2.lineTo(-1, 0)
+        # path2.lineTo(0, -90)
+        # path2.lineTo(1, 0)
+        # path2.closeSubpath()
 
-        self.requestedAzimuthNeedle = self.compassScene.addPath(
-            path,
-            QPen(QColor(0, 0, 0, 150)),
-            QBrush(QColor(0, 0, 255), Qt.BrushStyle.SolidPattern),
+        self.requestedAzimuthNeedle: QGraphicsPathItem | None = (
+            self.compassScene.addPath(
+                path,
+                QPen(QColor(0, 0, 0, 150)),
+                QBrush(QColor(0, 0, 255), Qt.BrushStyle.SolidPattern),
+            )
         )
 
-        if isinstance(self.requestedAzimuth, float):
+        if (
+            isinstance(self.requestedAzimuth, float)
+            and self.requestedAzimuthNeedle is not None
+        ):
             self.requestedAzimuthNeedle.setRotation(self.requestedAzimuth)
             self.requestedAzimuthNeedle.show()
         else:
             self.requestedAzimuthNeedle.hide()
 
-        self.antennaNeedle = self.compassScene.addPath(
+        self.antennaNeedle: QGraphicsPathItem | None = self.compassScene.addPath(
             path,
             QPen(QColor(0, 0, 0, 150)),
             QBrush(QColor(255, 191, 0), Qt.BrushStyle.SolidPattern),
         )
-        if isinstance(self.antennaAzimuth, float):
+        if isinstance(self.antennaAzimuth, float) and self.antennaNeedle is not None:
             self.antennaNeedle.setRotation(self.antennaAzimuth)
             self.antennaNeedle.show()
         else:
@@ -196,11 +210,11 @@ class RotatorWindow(QDockWidget):
         Converts a maidenhead gridsquare to a latitude longitude pair.
         """
         try:
-            maiden = str(maiden).strip().upper()
+            maiden: str = str(maiden).strip().upper()
 
-            chars_in_grid_square = len(maiden)
+            chars_in_grid_square: int = len(maiden)
             if not 8 >= chars_in_grid_square >= 2 and chars_in_grid_square % 2 == 0:
-                return 0, 0
+                return 0.0, 0.0
             lon = (ord(maiden[0]) - 65) * 20 - 180
             lat = (ord(maiden[1]) - 65) * 10 - 90
             if chars_in_grid_square >= 4:
@@ -224,7 +238,7 @@ class RotatorWindow(QDockWidget):
                 lon += 10
                 lat += 5
 
-            return lat, lon
+            return float(lat), float(lon)
         except IndexError:
             return 0.0, 0.0
 
@@ -238,16 +252,16 @@ class RotatorWindow(QDockWidget):
         """This does some super magic"""
 
         width, height = source_img.width(), source_img.height()
-        dest_img = QImage(output_size, output_size, QImage.Format.Format_ARGB32)
+        dest_img: QImage = QImage(output_size, output_size, QImage.Format.Format_ARGB32)
 
         # Convert center point to radians
-        lat0 = math.radians(center_lat_deg)
-        lon0 = math.radians(center_lon_deg)
+        lat0: float = math.radians(center_lat_deg)
+        lon0: float = math.radians(center_lon_deg)
 
-        sin_lat = math.sin(lat0)
-        cos_lat = math.cos(lat0)
+        sin_lat: float = math.sin(lat0)
+        cos_lat: float = math.cos(lat0)
 
-        R = output_size / 2
+        R: float = output_size / 2
         for y in range(output_size):
             for x in range(output_size):
                 # Convert pixel coordinate to normalized cartesian coordinate in range [-1, 1]
