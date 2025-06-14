@@ -1,6 +1,7 @@
 # Changelog
 
 - [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
+  - Add mouse press event handling to RotatorWindow for position setting.
 - [25-6-12] Account for no gridsquare being returned from lookup service.
 - [25-6-11] Added a rotator control widget.
 - [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.

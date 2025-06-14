@@ -215,6 +215,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 ## Recent Changes
 
 - [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
+  - Add mouse press event handling to RotatorWindow for position setting.
+- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
 - [25-6-12] Account for no gridsquare being returned from lookup service.
 - [25-6-11] Added a rotator control widget.
 - [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
@@ -697,7 +699,10 @@ Stop: Stops the current movement.
 
 Park: Parks the antenna.
 
-N,S,W,E: Points the antenna to one of the 4 cardinal directions. 
+N,S,W,E: Points the antenna to one of the 4 cardinal directions.
+
+You can also move the rotator by clicking in the globe where you want the
+antenna to point.
 
 ### The Remote VFO Window
 
