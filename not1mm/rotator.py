@@ -14,6 +14,7 @@ from PyQt6.QtGui import (
     QPainterPath,
     QShowEvent,
     QResizeEvent,
+    QMouseEvent,
 )
 
 from PyQt6.QtCore import Qt, pyqtSignal, QTimer
@@ -329,6 +330,23 @@ class RotatorWindow(QDockWidget):
         self.compassView.fitInView(
             self.compassScene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio
         )
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Catch mouse clicks in the widget"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            clickPos = self.compassView.mapToScene(
+                self.compassView.mapFromGlobal(event.globalPosition().toPoint())
+            )
+            dx: float = clickPos.x()
+            dy: float = -1 * clickPos.y()
+            if math.sqrt(math.pow(dx, 2) + math.pow(dy, 2)) <= self.GLOBE_RADIUS:
+
+                angle: float = math.degrees(math.atan2(dx, dy))
+
+                if angle < 0:
+                    angle += 360
+
+                self.rotator.set_position(angle)
 
     def check_rotator(self) -> None:
         """Check the rotator"""
