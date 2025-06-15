@@ -31,6 +31,9 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="stop_button">
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
         </property>
@@ -80,6 +83,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="park_button">
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
         </property>
