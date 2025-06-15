@@ -380,6 +380,7 @@ class BandMapWindow(QDockWidget):
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
+        self.request_workedlist()
 
     def get_settings(self) -> dict:
         """Get the settings."""
