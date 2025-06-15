@@ -65,7 +65,8 @@ class DXCCWindow(QDockWidget):
         # {'CountryPrefix': 'XE', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1},
         # {'CountryPrefix': 'G', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1}
         # ]
-
+        if not self.isVisible():
+            return
         result = self.database.fetch_dxcc_by_band_count()
         self.dxcc_table.setRowCount(0)
         for row_number, row_data in enumerate(result):
@@ -129,7 +130,8 @@ class DXCCWindow(QDockWidget):
 
     def msg_from_main(self, msg):
         """"""
-        if self.active is True:
+
+        if self.active is True and self.isVisible():
             if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
                 ...
                 self.get_log()
