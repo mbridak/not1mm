@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-6-15] Corrected tab focus of rotator windows buttons.
 - [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
   - Add mouse press event handling to RotatorWindow for position setting.
 - [25-6-12] Account for no gridsquare being returned from lookup service.
