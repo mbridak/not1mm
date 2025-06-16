@@ -194,7 +194,9 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
         #                buttons_to_send.append("LOGIT")
 
         elif self.current_widget in ["other_1", "other_2"]:
-            buttons_to_send.append("LOGIT")
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -219,7 +221,9 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
         #                buttons_to_send.append("LOGIT")
 
         elif self.current_widget in ["other_1", "other_2"]:
-            buttons_to_send.append("LOGIT")
+                self.make_button_green(self.esm_dict["QRZ"])
+                buttons_to_send.append(self.esm_dict["QRZ"])
+                buttons_to_send.append("LOGIT")
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
