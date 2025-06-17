@@ -184,19 +184,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        #        elif self.current_widget in ["other_1", "other_2"]:
-        #            if self.other_2.text() == "" and self.other_1.text() == "":
-        #                self.make_button_green(self.esm_dict["AGN"])
-        #                buttons_to_send.append(self.esm_dict["AGN"])
-        #            else:
-        #                self.make_button_green(self.esm_dict["QRZ"])
-        #                buttons_to_send.append(self.esm_dict["QRZ"])
-        #                buttons_to_send.append("LOGIT")
-
         elif self.current_widget in ["other_1", "other_2"]:
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
+            self.make_button_green(self.esm_dict["QRZ"])
+            buttons_to_send.append(self.esm_dict["QRZ"])
+            buttons_to_send.append("LOGIT")
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -211,19 +202,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        #        elif self.current_widget in ["other_1", "other_2"]:
-        #            if self.other_2.text() == "" and self.other_1.text() == "":
-        #                self.make_button_green(self.esm_dict["AGN"])
-        #                buttons_to_send.append(self.esm_dict["AGN"])
-        #            else:
-        #                self.make_button_green(self.esm_dict["EXCH"])
-        #                buttons_to_send.append(self.esm_dict["EXCH"])
-        #                buttons_to_send.append("LOGIT")
-
         elif self.current_widget in ["other_1", "other_2"]:
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
+            self.make_button_green(self.esm_dict["QRZ"])
+            buttons_to_send.append(self.esm_dict["QRZ"])
+            buttons_to_send.append("LOGIT")
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
