@@ -3398,9 +3398,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
                 return
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
-            if self.pref.get("cwtype") == 2:
-                time.sleep(0.2)
-            return
+            # if self.pref.get("cwtype") == 2:
+            time.sleep(0.3)
+            # return
 
     def toggle_run_sp(self) -> None:
         """Toggles the radioButton_run and radioButton_sp."""
