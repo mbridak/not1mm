@@ -78,7 +78,11 @@ def specific_contest_check_dupe(self, call):
     result = {}
     result["isdupe"] = False
 
-    if current_time < time_period_1 and current_time >= start_date_init_date:
+    if (
+        time_period_1 is not None
+        and current_time < time_period_1
+        and current_time >= start_date_init_date
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -88,7 +92,12 @@ def specific_contest_check_dupe(self, call):
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_2 and current_time >= time_period_1:
+    if (
+        time_period_1 is not None
+        and time_period_2 is not None
+        and current_time < time_period_2
+        and current_time >= time_period_1
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -98,7 +107,12 @@ def specific_contest_check_dupe(self, call):
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_3 and current_time >= time_period_2:
+    if (
+        time_period_2 is not None
+        and time_period_3 is not None
+        and current_time < time_period_3
+        and current_time >= time_period_2
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -108,7 +122,12 @@ def specific_contest_check_dupe(self, call):
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_4 and current_time >= time_period_3:
+    if (
+        time_period_3 is not None
+        and time_period_4 is not None
+        and current_time < time_period_4
+        and current_time >= time_period_3
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -124,6 +143,7 @@ def specific_contest_check_dupe(self, call):
         )
 
     return result
+
 
 def init_contest(self):
     """setup plugin"""
@@ -270,7 +290,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.now()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -569,13 +589,13 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
 
 
-def get_mults(self):
-    """Get mults for RTC XML"""
-    mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
-    return mults
+# def get_mults(self):
+#     """Get mults for RTC XML"""
+#     mults = {}
+#     mults["country"], mults["state"] = show_mults(self, rtc=True)
+#     return mults
 
 
-def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
+# def just_points(self):
+#     """Get points for RTC XML"""
+#     return get_points(self)
