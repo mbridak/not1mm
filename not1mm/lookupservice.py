@@ -40,14 +40,14 @@ class LookupService(QDockWidget):
 
             if self.settings.get("useqrz"):
                 self.look_up = QRZlookup(
-                    self.settings.get("lookupusername"),
-                    self.settings.get("lookuppassword"),
+                    self.settings.get("lookupusername", ""),
+                    self.settings.get("lookuppassword", ""),
                 )
 
             if self.settings.get("usehamqth"):
                 self.look_up = HamQTH(
-                    self.settings.get("lookupusername"),
-                    self.settings.get("lookuppassword"),
+                    self.settings.get("lookupusername", ""),
+                    self.settings.get("lookuppassword", ""),
                 )
 
     def get_settings(self) -> dict:
@@ -55,6 +55,7 @@ class LookupService(QDockWidget):
         if os.path.exists(fsutils.CONFIG_FILE):
             with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
                 return loads(file_descriptor.read())
+        return {}
 
     def msg_from_main(self, packet):
         """"""
@@ -74,12 +75,12 @@ class LookupService(QDockWidget):
             self.look_up = None
             if self.settings.get("useqrz"):
                 self.look_up = QRZlookup(
-                    self.settings.get("lookupusername"),
-                    self.settings.get("lookuppassword"),
+                    self.settings.get("lookupusername", ""),
+                    self.settings.get("lookuppassword", ""),
                 )
 
             if self.settings.get("usehamqth"):
                 self.look_up = HamQTH(
-                    self.settings.get("lookupusername"),
-                    self.settings.get("lookuppassword"),
+                    self.settings.get("lookupusername", ""),
+                    self.settings.get("lookuppassword", ""),
                 )
