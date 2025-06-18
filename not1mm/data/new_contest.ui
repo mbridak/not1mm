@@ -369,6 +369,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ES MANUAL KEY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
