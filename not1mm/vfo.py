@@ -19,40 +19,40 @@ from json import loads
 import sys
 
 import serial
-from PyQt6 import QtCore, QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import QTimer
 from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtGui import QPalette
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class VfoWindow(QDockWidget):
     """The VFO window."""
 
-    pref = {}
-    old_vfo = ""
-    old_pico = ""
-    message_shown = False
-    multicast_interface = None
-    current_palette = None
-    device_reconnect = False
-    stale = datetime.datetime.now()
+    pref: dict = {}
+    old_vfo: str = ""
+    old_pico: str = ""
+    message_shown: bool = False
+    current_palette: QPalette | None = None
+    device_reconnect: bool = False
+    stale: datetime.datetime = datetime.datetime.now()
 
     def __init__(self):
         super().__init__()
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-        self.rig_control = None
-        self.timer = QTimer()
+        self.rig_control: CAT | None = None
+        self.timer: QTimer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
         self.lcdNumber.display(0)
-        self.pico = None
+        self.pico: serial.Serial | None = None
         self.setup_serial()
-        self.poll_rig_timer = QtCore.QTimer()
+        self.poll_rig_timer: QTimer = QTimer()
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
         self.visibilityChanged.connect(self.window_state_changed)
@@ -67,7 +67,7 @@ class VfoWindow(QDockWidget):
                 with open(
                     fsutils.CONFIG_FILE, "rt", encoding="utf-8"
                 ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
+                    self.pref: dict = loads(file_descriptor.read())
                     logger.info("%s", self.pref)
 
         except IOError as exception:
@@ -78,7 +78,7 @@ class VfoWindow(QDockWidget):
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control = CAT(
+            self.rig_control: CAT | None = CAT(
                 "flrig",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
@@ -89,7 +89,7 @@ class VfoWindow(QDockWidget):
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control = CAT(
+            self.rig_control: CAT | None = CAT(
                 "rigctld",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
@@ -105,8 +105,8 @@ class VfoWindow(QDockWidget):
         Return the device ID if it is, or None if not found.
         """
 
-        devices = self.get_devices()
-        data = None
+        devices: list[str] | None = self.get_devices()
+        data: bytes | None = None
         if devices is None:
             return None
         if sys.platform == "darwin":
@@ -134,7 +134,7 @@ class VfoWindow(QDockWidget):
                 if "vfoknob" in data.decode().strip():
                     return "/dev/serial/by-id/" + device
 
-    def get_devices(self):
+    def get_devices(self) -> list[str] | None:
         try:
             if sys.platform != "darwin":
                 return os.listdir("/dev/serial/by-id")
@@ -143,7 +143,7 @@ class VfoWindow(QDockWidget):
             return None
         return None
 
-    def window_state_changed(self):
+    def window_state_changed(self) -> None:
         """Setup vfo knob if window is toggled on"""
 
         if self.isVisible():
@@ -158,23 +158,23 @@ class VfoWindow(QDockWidget):
         if not self.isVisible():
             return
 
-        device = self.discover_device()
-        if device:
+        device: str | None = self.discover_device()
+        if device is not None:
             try:
-                self.pico = serial.Serial(device, 115200)
+                self.pico: serial.Serial = serial.Serial(device, 115200)
                 self.pico.timeout = 100
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
-                self.device_reconnect = True
+                self.device_reconnect: bool = True
             except OSError:
                 if self.message_shown is False and supress_msg is False:
-                    self.message_shown = True
+                    self.message_shown: bool = True
                     self.show_message_box(
                         "Unable to locate or open the VFO knob serial device."
                     )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
         else:
             if self.message_shown is False and supress_msg is False:
-                self.message_shown = True
+                self.message_shown: bool = True
                 self.show_message_box(
                     "Unable to locate or open the VFO knob serial device."
                 )
@@ -187,11 +187,13 @@ class VfoWindow(QDockWidget):
         """
         if msg_dict.get("cmd", "") == "TUNE":
             # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
-            vfo = msg_dict.get("freq")
-            vfo = float(vfo) * 1000000
-            changefreq = f"F {int(vfo)}\r"
             try:
-                if self.pico:
+                vfo: float = float(msg_dict.get("freq")) * 1000000
+            except ValueError:
+                return
+            changefreq: str = f"F {int(vfo)}\r"
+            try:
+                if self.pico is not None:
                     self.pico.write(changefreq.encode())
             except OSError:
                 logger.critical("Unable to write to serial device.")
@@ -199,11 +201,11 @@ class VfoWindow(QDockWidget):
                 logger.critical("Unable to write to serial device.")
             return
 
-    def showNumber(self, the_number) -> None:
+    def showNumber(self, the_number: int | str) -> None:
         """Display vfo value with dots"""
-        dvfo = str(the_number)
+        dvfo: str = str(the_number)
         if len(dvfo) > 6:
-            dnum = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
+            dnum: str = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
 
     def poll_radio(self) -> None:
@@ -215,25 +217,24 @@ class VfoWindow(QDockWidget):
             return
         if datetime.datetime.now() < self.stale:
             return
-        if self.rig_control:
+        if self.rig_control is not None:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
             if self.rig_control.online:
-                vfo = self.rig_control.get_vfo()
                 try:
-                    vfo = int(vfo)
+                    vfo: int = int(self.rig_control.get_vfo())
                 except ValueError:
                     return
                 if vfo < 1700000 or vfo > 60000000:
                     return
                 if vfo != self.old_vfo or self.device_reconnect is True:
-                    self.old_vfo = vfo
+                    self.old_vfo: int = vfo
                     logger.debug(f"{vfo}")
                     self.showNumber(vfo)
-                    cmd = f"F {vfo}\r"
+                    cmd: str = f"F {vfo}\r"
                     self.device_reconnect = False
                     try:
-                        if self.pico:
+                        if self.pico is not None:
                             self.pico.write(cmd.encode())
                     except OSError:
                         logger.critical("Unable to write to serial device.")
@@ -246,28 +247,28 @@ class VfoWindow(QDockWidget):
         Set the radio's VFO to match if it has changed.
         """
         try:
-            if self.pico:
+            if self.pico is not None:
                 self.pico.write(b"f\r")
                 while self.pico.in_waiting:
-                    result = self.pico.read(self.pico.in_waiting)
-                    result = result.decode().strip()
+                    result: str = self.pico.read(self.pico.in_waiting).decode().strip()
+                    # result = result.decode().strip()
 
                     if self.old_pico != result:
-                        self.old_pico = result
-                        self.stale = datetime.datetime.now() + datetime.timedelta(
-                            seconds=1
+                        self.old_pico: str = result
+                        self.stale: datetime.datetime = (
+                            datetime.datetime.now() + datetime.timedelta(seconds=1)
                         )
-                        if self.rig_control:
+                        if self.rig_control is not None:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)
             else:
                 self.setup_serial(supress_msg=True)
         except OSError:
             logger.critical("Unable to write to serial device.")
-            self.pico = None
+            self.pico: serial.Serial | None = None
         except AttributeError:
             logger.critical("Unable to write to serial device.")
-            self.pico = None
+            self.pico: serial.Serial | None = None
         except KeyboardInterrupt:
             ...
 
@@ -275,8 +276,8 @@ class VfoWindow(QDockWidget):
         """
         Display an alert box with the supplied message.
         """
-        message_box = QtWidgets.QMessageBox()
-        if self.current_palette:
+        message_box: QtWidgets.QMessageBox = QtWidgets.QMessageBox()
+        if self.current_palette is not None:
             message_box.setPalette(self.current_palette)
         message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
         message_box.setText(message)

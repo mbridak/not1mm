@@ -26,13 +26,15 @@ logger = logging.getLogger(__name__)
 
 
 class RTCService(QObject):
-    """The RTC Service class."""
+    """The Real Time Score Reporting Service class."""
 
-    rtc_callback = pyqtSignal(dict)
-    delta = 2  # two minutes
-    poll_time = datetime.datetime.now() + datetime.timedelta(minutes=delta)
-    time_to_quit = False
-    xml = ""
+    rtc_callback: pyqtSignal = pyqtSignal(dict)
+    delta: int = 2  # two minutes
+    poll_time: datetime.datetime = datetime.datetime.now() + datetime.timedelta(
+        minutes=delta
+    )
+    time_to_quit: bool = False
+    xml: str = ""
 
     def __init__(self):
         super().__init__()

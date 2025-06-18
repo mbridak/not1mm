@@ -76,6 +76,7 @@
     - [The Check Partial Window](#the-check-partial-window)
     - [The Rate Window](#the-rate-window)
     - [The DXCC window](#the-dxcc-window)
+    - [The Rotator Window (Work In Progress)](#the-rotator-window-work-in-progress)
     - [The Remote VFO Window](#the-remote-vfo-window)
   - [Cabrillo](#cabrillo)
   - [ADIF](#adif)
@@ -213,6 +214,14 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
+- [25-6-15] Corrected tab focus of rotator windows buttons.
+- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
+  - Add mouse press event handling to RotatorWindow for position setting.
+- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
+- [25-6-12] Account for no gridsquare being returned from lookup service.
+- [25-6-11] Added a rotator control widget.
+- [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
 - [25-6-8] Revmoved SQLite WAL mode.
   - Rewrote DXCC tracker.
 - [25-6-7] Fix focus issue when dxcc widget is active.
@@ -352,8 +361,8 @@ Under the `CW` tab, there are three options: i) `cwdaemon` that normally uses IP
 iii) `CAT` that sends Morse characters via rigctld if your radio supports it.
 
 For contests that require a serial number as part of the exchange, there is an option to pad it with leading zeroes,
-typically represented by the cut number "T". For example, serial number "001" can be sent as "TT1". The user can 
-configure the `CW Sent Nr Padding` character (default: T) and `CW Sent Nr Padding 
+typically represented by the cut number "T". For example, serial number "001" can be sent as "TT1". The user can
+configure the `CW Sent Nr Padding` character (default: T) and `CW Sent Nr Padding
 Length` (default: 3) or specify no padding by entering length "0".
 
 ### Cluster
@@ -662,6 +671,40 @@ This window contains QSO rates and counts.
 This window shows you a grid of DXCC entities you've aquired and on what bands.
 
 ![DXCC Window](https://github.com/mbridak/not1mm/raw/master/pic/dxcc_window.png)
+
+### The Rotator Window (Work In Progress)
+
+`Window`>`Rotator`
+
+The Rotator window is a work in progress. The Rotator window relies on the functionality
+of the rotctld daemon. It connects to rotctld over it's default port of 4533. If started
+and there is no connection, you will see this:
+
+![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rot1.png)
+
+Once there is a connection to rotctld, the current azimuth of the antenna is obtained and
+you will see a direction needle apear:
+
+![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rot2.png)
+
+Once a call is entered and the bearing to contact is calculated you will see another needle
+appear:
+
+![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rot3.png)
+
+At this time you can click on the 'Move' button to point your antenna at the contact. A list
+of other buttons follows below.
+
+Move: Rotates the antenna at the target.
+
+Stop: Stops the current movement.
+
+Park: Parks the antenna.
+
+N,S,W,E: Points the antenna to one of the 4 cardinal directions.
+
+You can also move the rotator by clicking in the globe where you want the
+antenna to point.
 
 ### The Remote VFO Window
 

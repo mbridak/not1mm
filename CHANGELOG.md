@@ -1,5 +1,12 @@
 # Changelog
 
+- [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
+- [25-6-15] Corrected tab focus of rotator windows buttons.
+- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
+  - Add mouse press event handling to RotatorWindow for position setting.
+- [25-6-12] Account for no gridsquare being returned from lookup service.
+- [25-6-11] Added a rotator control widget.
+- [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
 - [25-6-8] Revmoved SQLite WAL mode.
   - Rewrote DXCC tracker.
 - [25-6-7] Fix focus issue when dxcc widget is active.
