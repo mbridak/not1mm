@@ -74,27 +74,30 @@ class HamDBlookup:
             if root:
                 messages = root.get("messages")
                 callsign = root.get("callsign")
-            if messages:
-                error_text = messages.get("status")
-                logger.debug("HamDB: %s", error_text)
-                if error_text != "OK":
-                    self.error = False
-            if callsign:
-                logger.debug("HamDB: found callsign field")
-                if callsign.get("grid"):
-                    grid = callsign.get("grid")
-                if callsign.get("fname"):
-                    name = callsign.get("fname")
-                if callsign.get("name"):
-                    if not name:
-                        name = callsign.get("name")
-                    else:
-                        name = f"{name} {callsign.get('name')}"
-                if callsign.get("nickname"):
-                    nickname = callsign.get("nickname")
+                if messages is not None:
+                    error_text = messages.get("status")
+                    logger.debug("HamDB: %s", error_text)
+                    if error_text != "OK":
+                        self.error = False
+                if callsign is not None:
+                    logger.debug("HamDB: found callsign field")
+                    if callsign.get("grid"):
+                        grid = callsign.get("grid")
+                    if callsign.get("fname"):
+                        name = callsign.get("fname")
+                    if callsign.get("name"):
+                        if not name:
+                            name = callsign.get("name")
+                        else:
+                            name = f"{name} {callsign.get('name')}"
+                    if callsign.get("nickname"):
+                        nickname = callsign.get("nickname")
         else:
             self.error = True
             error_text = str(query_result.status_code)
+            logger.critical(
+                "HamDB-lookup: %s %s %s %s", grid, name, nickname, error_text
+            )
         logger.info("HamDB-lookup: %s %s %s %s", grid, name, nickname, error_text)
         return grid, name, nickname, error_text
 
@@ -166,12 +169,20 @@ class QRZlookup:
             )
 
             logger.info("\n\n%s\n\n", root)
-            logger.info(
-                "key:%s error:%s message:%s",
-                self.session,
-                self.error,
-                self.message,
-            )
+            if self.error:
+                logger.critical(
+                    "key:%s error:%s message:%s",
+                    self.session,
+                    self.error,
+                    self.message,
+                )
+            else:
+                logger.info(
+                    "key:%s error:%s message:%s",
+                    self.session,
+                    self.error,
+                    self.message,
+                )
         except requests.exceptions.RequestException as exception:
             logger.info("%s", exception)
             self.session = False
@@ -209,7 +220,7 @@ class QRZlookup:
                     )
                     baseroot = xmltodict.parse(query_result.text)
                     root = baseroot.get("QRZDatabase", {})
-        return root.get("Callsign")
+        return root.get("Callsign", {})
 
 
 class HamQTH:
