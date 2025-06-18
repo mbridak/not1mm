@@ -2,16 +2,14 @@
 
 import logging
 import platform
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+import datetime
 
 
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points, get_station_license_class
+from not1mm.lib.plugin_common import gen_adif, get_points
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -56,13 +54,15 @@ def specific_contest_check_dupe(self, call):
 
     # think about generic solution by splitting the contest to n different periods
     start_date_init = self.contest_settings.get("StartDate", "")
-    start_date_init_date = datetime.strptime(start_date_init, "%Y-%m-%d %H:%M:%S")
+    start_date_init_date = datetime.datetime.strptime(
+        start_date_init, "%Y-%m-%d %H:%M:%S"
+    )
 
     # Create time periods dynamically based on period count
     time_periods = []
     for i in range(period_count):
         minutes_to_add = split_contest_by_minutes * (i + 1)
-        time_period = start_date_init_date + timedelta(minutes=minutes_to_add)
+        time_period = start_date_init_date + datetime.timedelta(minutes=minutes_to_add)
         time_periods.append(time_period)
 
     # Assign to variables for backwards compatibility
@@ -71,13 +71,17 @@ def specific_contest_check_dupe(self, call):
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
 
     # get current time in UTC
-    iso_current_time = datetime.now(timezone.utc)
+    iso_current_time = datetime.datetime.now(datetime.timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
 
     result = {}
     result["isdupe"] = False
 
-    if current_time < time_period_1 and current_time >= start_date_init_date:
+    if (
+        time_period_1 is not None
+        and current_time < time_period_1
+        and current_time >= start_date_init_date
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -87,7 +91,12 @@ def specific_contest_check_dupe(self, call):
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_2 and current_time >= time_period_1:
+    if (
+        time_period_2 is not None
+        and time_period_1 is not None
+        and current_time < time_period_2
+        and current_time >= time_period_1
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -97,7 +106,12 @@ def specific_contest_check_dupe(self, call):
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_3 and current_time >= time_period_2:
+    if (
+        time_period_3 is not None
+        and time_period_2 is not None
+        and current_time < time_period_3
+        and current_time >= time_period_2
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -114,6 +128,7 @@ def specific_contest_check_dupe(self, call):
         )
 
     return result
+
 
 def init_contest(self):
     """setup plugin"""
@@ -187,23 +202,27 @@ def prefill(self):
             serial_nr_last3 = "001"
         # get station license class from setup LicenseClass field - use it for seniority
         # how many years from the first QSO using club station or individual station
-        serial_nr = get_station_license_class(self) + serial_nr_last3 
+
+        # The LicenseClass should already be available in the self.station object
+        # serial_nr = get_station_license_class(self) + serial_nr_last3
+        serial_nr = self.station.get("LicenseClass", "") + serial_nr_last3
 
         if len(self.other_1.text()) == 0:
             self.other_1.setText(serial_nr)
     else:
         self.other_1.setText(sent_sxchange_setting)
 
-# Points are awarded for each communication/qso according to the correspondent's broadcasting 
-# experience/seniority 
-# (i.e. the first two numbers of the received report). 
+
+# Points are awarded for each communication/qso according to the correspondent's broadcasting
+# experience/seniority
+# (i.e. the first two numbers of the received report).
 # To obtain the total number of points, the experience/seniority points for all communications/qsos
-#  (including repeated communications) are added together, 
+#  (including repeated communications) are added together,
 # to which the competitor's own experience/seniority points
-#  for each period worked are added, i.e. 3 times. 
-# To motivate competitors with less experience, operators with up to 10 years of experience 
-# (inclusive) are awarded an additional 20 points for each communication/qso, 
-# and for operators with an experience range of 11-20 years, an additional 10 points. 
+#  for each period worked are added, i.e. 3 times.
+# To motivate competitors with less experience, operators with up to 10 years of experience
+# (inclusive) are awarded an additional 20 points for each communication/qso,
+# and for operators with an experience range of 11-20 years, an additional 10 points.
 # The competitor must also add the same points 3 times to his/her total to obtain the final result.
 
 
@@ -217,20 +236,23 @@ def points(self):
     if _mode in "CW":
 
         call_result = str(self.contact.get("NR", "")).strip()
-        
+
         # get call seniority
-        seniority = int(call_result[:2])
+        try:
+            seniority = int(call_result[:2])
+        except ValueError:
+            seniority = 0
 
-        # get call age
-        age = call_result[2:4]
+        # get call age (this is not used, so commenting out)
+        # age = call_result[2:4]
 
-        # get call serial number
-        call_serial_nr = call_result[4:6]
+        # get call serial number (this is not used, so commenting out)
+        # call_serial_nr = call_result[4:6]
 
         if seniority < 10:
             points = seniority + 20
         elif seniority > 10 and seniority <= 20:
-            points = seniority + 10    
+            points = seniority + 10
         else:
             points = seniority
         return points
@@ -256,16 +278,18 @@ def show_qso(self):
         return int(result.get("qsos", 0))
     return 0
 
-# Points are awarded for each communication/qso according to the correspondent's broadcasting experience/seniority 
-# (i.e. the first two numbers of the received report). 
+
+# Points are awarded for each communication/qso according to the correspondent's broadcasting experience/seniority
+# (i.e. the first two numbers of the received report).
 # To obtain the total number of points, the experience/seniority points for all communications/qsos
-#  (including repeated communications) are added together, 
+#  (including repeated communications) are added together,
 # to which the competitor's own experience/seniority points
-#  for each period worked are added, i.e. 3 times. 
-# To motivate competitors with less experience, operators with up to 10 years of experience 
-# (inclusive) are awarded an additional 20 points for each communication/qso, 
-# and for operators with an experience range of 11-20 years, an additional 10 points. 
+#  for each period worked are added, i.e. 3 times.
+# To motivate competitors with less experience, operators with up to 10 years of experience
+# (inclusive) are awarded an additional 20 points for each communication/qso,
+# and for operators with an experience range of 11-20 years, an additional 10 points.
 # The competitor must also add the same points 3 times to his/her total to obtain the final result.
+
 
 def calc_score(self):
     """Return calculated score"""
@@ -277,9 +301,13 @@ def calc_score(self):
         contest_points = int(score)
 
         # egt station seniority number
-        station_seniority = get_station_license_class(self)
+        station_seniority = self.station.get("LicenseClass", "")
         # calc station seniority
-        station_seniority_multiplier = 3 * int(station_seniority.strip()[:2]) 
+        try:
+            station_seniority_multiplier = 3 * int(station_seniority.strip()[:2])
+        except ValueError:
+            station_seniority_multiplier = 3
+
         # always add 3 times your own seniority to the overall score
         contest_points = contest_points + station_seniority_multiplier
 
@@ -611,13 +639,13 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
 
 
-def get_mults(self):
-    """Get mults for RTC XML"""
-    mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
-    return mults
+# def get_mults(self):
+#     """Get mults for RTC XML"""
+#     mults = {}
+#     mults["country"], mults["state"] = show_mults(self, rtc=True)
+#     return mults
 
 
-def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
+# def just_points(self):
+#     """Get points for RTC XML"""
+#     return get_points(self)
