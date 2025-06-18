@@ -10,9 +10,11 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points, get_station_state_code, get_station_arrlsection_code
+from not1mm.lib.plugin_common import (
+    gen_adif,
+    get_points,
+)
 
-from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -56,8 +58,9 @@ estonian_regions = [
     "TL",
     "VC",
     "VO",
-    "VP"
+    "VP",
 ]
+
 
 def specific_contest_check_dupe(self, call):
     """"""
@@ -85,7 +88,7 @@ def specific_contest_check_dupe(self, call):
     time_period_1 = time_periods[0] if len(time_periods) > 0 else None
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
- 
+
     # get current time in UTC
     iso_current_time = datetime.now(timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
@@ -93,7 +96,11 @@ def specific_contest_check_dupe(self, call):
     result = {}
     result["isdupe"] = False
 
-    if current_time < time_period_1 and current_time >= start_date_init_date:
+    if (
+        time_period_1 is not None
+        and current_time < time_period_1
+        and current_time >= start_date_init_date
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -103,7 +110,12 @@ def specific_contest_check_dupe(self, call):
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_2 and current_time >= time_period_1:
+    if (
+        time_period_1 is not None
+        and time_period_2 is not None
+        and current_time < time_period_2
+        and current_time >= time_period_1
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -113,7 +125,12 @@ def specific_contest_check_dupe(self, call):
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
-    if current_time < time_period_3 and current_time >= time_period_2:
+    if (
+        time_period_2 is not None
+        and time_period_3 is not None
+        and current_time < time_period_3
+        and current_time >= time_period_2
+    ):
 
         result = self.database.check_dupe_on_period_mode(
             call,
@@ -130,6 +147,7 @@ def specific_contest_check_dupe(self, call):
         )
 
     return result
+
 
 def init_contest(self):
     """setup plugin"""
@@ -195,13 +213,13 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
- 
+
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if sent_sxchange_setting.strip() == "#":
         result = self.database.get_serial()
         serial_nr = str(result.get("serial_nr", "1")).zfill(3)
         # get station region code from setup ARRLSection field
-        serial_nr = serial_nr + " " + get_station_state_code(self) 
+        serial_nr = serial_nr + " " + self.station.get("State", "")
 
         if serial_nr == "None":
             serial_nr = "001"
@@ -228,15 +246,17 @@ def points(self):
     else:
         return 1
 
+
 def show_mults(self, rtc=None):
     """Return display string for mults"""
 
     # implement here multipliers checks
     # get received number and region code
 
-    call_result = str(self.contact.get("NR", ""))
+    # call_result never used, so commenting it out.
+    # call_result = str(self.contact.get("NR", ""))
     # create placeholders
-    placeholders = ','.join(['?'] * len(estonian_regions)) 
+    placeholders = ",".join(["?"] * len(estonian_regions))
     # main query to filter by regions
     query = f"SELECT count(distinct(SUBSTR(NR, -2)) || ':' || Band || ':' || Mode) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND NR GLOB '*[A-Z]*' AND substr(NR,-2) IN ({placeholders});"
     # apply params
@@ -247,6 +267,7 @@ def show_mults(self, rtc=None):
         mult_count = result.get("mults", 0)
         return mult_count
     return 0
+
 
 def show_qso(self):
     """Return qso count"""
@@ -592,13 +613,13 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
 
 
-def get_mults(self):
-    """Get mults for RTC XML"""
-    mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
-    return mults
+# def get_mults(self):
+#     """Get mults for RTC XML"""
+#     mults = {}
+#     mults["country"], mults["state"] = show_mults(self, rtc=True)
+#     return mults
 
 
-def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
+# def just_points(self):
+#     """Get points for RTC XML"""
+#     return get_points(self)
