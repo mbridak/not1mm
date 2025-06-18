@@ -181,12 +181,13 @@ def prefill(self):
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if sent_sxchange_setting.strip() == "#":
         result = self.database.get_serial()
-        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
+        serial_nr = str(result.get("serial_nr", "1"))
+        serial_nr_last3 = serial_nr[-3:].zfill(3)
+        if serial_nr_last3 == "None":
+            serial_nr_last3 = "001"
         # get station license class from setup LicenseClass field - use it for seniority
         # how many years from the first QSO using club station or individual station
-        serial_nr = get_station_license_class(self) + " " + serial_nr 
+        serial_nr = get_station_license_class(self) + serial_nr_last3 
 
         if len(self.other_1.text()) == 0:
             self.other_1.setText(serial_nr)
