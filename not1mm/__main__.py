@@ -757,7 +757,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dxcc_window.message.connect(self.dockwidget_message)
 
         self.show_splash_msg("Setting up RotatorWindow.")
-        self.rotator_window = RotatorWindow()
+        self.rotator_window = RotatorWindow(
+            host=self.pref.get("rotctld_address", "127.0.0.1"),
+            port=self.pref.get("rotctld_port", 4533),
+        )
+
         self.rotator_window.setObjectName("rotator-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.rotator_window.setFeatures(dockfeatures)
@@ -3695,6 +3699,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.server_icon.setPixmap(self.redserver)
         else:
             self.server_icon.hide()
+
+        if isinstance(self.rotator_window, RotatorWindow):
+            self.rotator_window.set_host_port(
+                host=self.pref.get(
+                    "rotctld_address",
+                    "127.0.0.1",
+                ),
+                port=self.pref.get("rotctld_port", 4533),
+            )
 
     def rtc_response(self, response):
         print(f"{response=}")

@@ -12,11 +12,18 @@ class RotatorInterface:
     A class to interface with a rotator control program (like rotctld).
     """
 
-    def __init__(self, host="127.0.0.1", port=4533):
+    def __init__(self, host: str = "127.0.0.1", port: int = 4533):
         self.host: str = host
         self.port: int = port
         self.socket: socket.socket | None = None
         self.connected: bool = False
+        self.connect()
+
+    def set_host_port(self, host: str, port: int) -> None:
+        """Set the host and port of the rotator control program."""
+        self.host = host
+        self.port = port
+        self.disconnect()
         self.connect()
 
     def connect(self) -> None:

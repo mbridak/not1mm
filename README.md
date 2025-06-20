@@ -214,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-20] Added a Rotator tab in the configuration dialog.
 - [25-6-18] Merged changes from @term73, Adding ES Manual Key contest.
 - [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
 - [25-6-15] Corrected tab focus of rotator windows buttons.
@@ -678,7 +679,8 @@ This window shows you a grid of DXCC entities you've aquired and on what bands.
 `Window`>`Rotator`
 
 The Rotator window is a work in progress. The Rotator window relies on the functionality
-of the rotctld daemon. It connects to rotctld over it's default port of 4533. If started
+of the rotctld daemon. It connects to rotctld on address 127.0.0.1 and port 4533. You can
+change this if needed in the configuration dialog under the rotator tab. If started
 and there is no connection, you will see this:
 
 ![Rotator Window](https://github.com/mbridak/not1mm/raw/master/pic/rot1.png)

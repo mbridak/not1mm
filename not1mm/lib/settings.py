@@ -120,6 +120,9 @@ class Settings(QtWidgets.QDialog):
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
 
+        self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
+        self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
+
         self.cwip_field.setText(str(self.preference.get("cwip", "")))
         if self.preference.get("cwport", ""):
             self.cwport_field.setText(str(self.preference.get("cwport", "")))
@@ -267,6 +270,13 @@ class Settings(QtWidgets.QDialog):
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
+
+        self.preference["rotctld_address"] = self.rotctld_address.text()
+        try:
+            self.preference["rotctld_port"] = int(self.rotctld_port.text())
+        except ValueError:
+            self.preference["rotctld_port"] = 4533
+
         self.preference["cwip"] = self.cwip_field.text()
         try:
             self.preference["cwport"] = int(self.cwport_field.text())

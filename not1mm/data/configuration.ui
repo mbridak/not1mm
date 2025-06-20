@@ -809,7 +809,7 @@
           </font>
          </property>
          <property name="text">
-          <string>CW Sent Nr Padding:</string>
+          <string>CW Sent Nr Pad Character:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -849,7 +849,7 @@
           </font>
          </property>
          <property name="text">
-          <string>CW Sent Nr Padding Length:</string>
+          <string>CW Sent Nr Pad Length:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -876,6 +876,41 @@
          </property>
          <property name="text">
           <string>3</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="rotator_tab">
+      <attribute name="title">
+       <string>Rotator</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_12">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_33">
+         <property name="text">
+          <string>rotctld address:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="rotctld_address">
+         <property name="placeholderText">
+          <string>127.0.0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_34">
+         <property name="text">
+          <string>rotctld port:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="rotctld_port">
+         <property name="placeholderText">
+          <string>4533</string>
          </property>
         </widget>
        </item>
@@ -1104,72 +1139,7 @@
        <string>Group</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0" colspan="2" alignment="Qt::AlignHCenter">
-        <widget class="QCheckBox" name="connect_to_server">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Connect to server</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Multicast Group:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="multicast_group">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>224.1.1.1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_9">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Multicast Port:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QLineEdit" name="multicast_port">
          <property name="font">
           <font>
@@ -1186,7 +1156,38 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="multicast_group">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>224.1.1.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2" alignment="Qt::AlignHCenter">
+        <widget class="QCheckBox" name="connect_to_server">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Connect to server</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
         <widget class="QLabel" name="label_12">
          <property name="font">
           <font>
@@ -1203,7 +1204,24 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Multicast Port:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
         <widget class="QLineEdit" name="interface_ip">
          <property name="font">
           <font>
@@ -1214,6 +1232,40 @@
          </property>
          <property name="text">
           <string>0.0.0.0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Multicast Group:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label_35">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>14</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: red;</string>
+         </property>
+         <property name="text">
+          <string>This is not functional ignore this tab, Just move along.</string>
          </property>
         </widget>
        </item>

@@ -37,8 +37,10 @@ class RotatorWindow(QDockWidget):
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
     antennaNeedle: QGraphicsPathItem | None = None
 
-    def __init__(self):
+    def __init__(self, host: str = "127.0.0.1", port: int = 4533):
         super().__init__()
+        self.host = host
+        self.port = port
         self.active: bool = False
         self.compassScene: QGraphicsScene | None = None
         self.mygrid: str = "DM13at"
@@ -53,12 +55,19 @@ class RotatorWindow(QDockWidget):
         self.stop_button.clicked.connect(lambda x: self.rotator.send_command("S"))
         self.park_button.clicked.connect(lambda x: self.rotator.send_command("K"))
         self.redrawMap()
-        self.rotator: RotatorInterface = RotatorInterface()
+        self.rotator: RotatorInterface = RotatorInterface(self.host, self.port)
         self.antennaAzimuth, _ = self.rotator.get_position()
         self.set_antenna_azimuth(self.antennaAzimuth)
         self.watch_timer: QTimer = QTimer()
         self.watch_timer.timeout.connect(self.check_rotator)
         self.watch_timer.start(1000)
+
+    def set_host_port(self, host: str, port: int) -> None:
+        """"""
+        self.host = host
+        self.port = port
+        self.rotator.set_host_port(self.host, self.port)
+        self.redrawMap()
 
     def msg_from_main(self, msg: dict) -> None:
         """"""
