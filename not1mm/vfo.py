@@ -34,7 +34,7 @@ class VfoWindow(QDockWidget):
     """The VFO window."""
 
     pref: dict = {}
-    old_vfo: str = ""
+    old_vfo: int = 0
     old_pico: str = ""
     message_shown: bool = False
     current_palette: QPalette | None = None
@@ -96,7 +96,7 @@ class VfoWindow(QDockWidget):
             )
             self.timer.start(100)
 
-    def discover_device(self) -> str:
+    def discover_device(self) -> str | None:
         """
         Poll all serial devices looking for correct one.
 
@@ -220,13 +220,13 @@ class VfoWindow(QDockWidget):
         if self.rig_control is not None:
             if self.rig_control.online is False:
                 self.rig_control.reinit()
-            if self.rig_control.online:
+            if self.rig_control.online is True:
                 try:
                     vfo: int = int(self.rig_control.get_vfo())
                 except ValueError:
                     return
-                if vfo < 1700000 or vfo > 60000000:
-                    return
+                # if vfo < 1700000 or vfo > 60000000:
+                #     return
                 if vfo != self.old_vfo or self.device_reconnect is True:
                     self.old_vfo: int = vfo
                     logger.debug(f"{vfo}")

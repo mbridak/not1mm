@@ -214,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-6-21] Remove range check on vfo display.
 - [25-6-20] Added a Rotator tab in the configuration dialog.
 - [25-6-18] Merged changes from @term73, Adding ES Manual Key contest.
 - [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
