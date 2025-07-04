@@ -97,7 +97,7 @@ class Radio(QObject):
                             "vfoa": self.vfoa,
                             "mode": self.mode,
                             "bw": self.bw,
-                            "online": self.online,
+                            "online": self.cat.online,
                         }
                     )
                 except QEventLoop:

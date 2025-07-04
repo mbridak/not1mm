@@ -214,24 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-6-21] Remove range check on vfo display.
-- [25-6-20] Added a Rotator tab in the configuration dialog.
-- [25-6-18] Merged changes from @term73, Adding ES Manual Key contest.
-- [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
-- [25-6-15] Corrected tab focus of rotator windows buttons.
-- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
-  - Add mouse press event handling to RotatorWindow for position setting.
-- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
-- [25-6-12] Account for no gridsquare being returned from lookup service.
-- [25-6-11] Added a rotator control widget.
-- [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
-- [25-6-8] Revmoved SQLite WAL mode.
-  - Rewrote DXCC tracker.
-- [25-6-7] Fix focus issue when dxcc widget is active.
-- [25-6-4] Add a DXCC/Band widget.
-- [25-6-3] Fix crash caused by SSL cert expiration from supercheckpartial.com.
-- [25-6-2] Crash Fix. Change initial self.pref from None to a dict.
-- [25-6-1] Merged changes from @term73, updating ES Field Day.
+- [25-7-3] Fixed CAT online indicator.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
