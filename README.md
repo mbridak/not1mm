@@ -466,6 +466,7 @@ You can include a limited set of substitution instructions.
 | {SNT} | Sends 5nn (cw) or 599 (ssb) |
 | {SENTNR} | Sends whats in the SentNR field. |
 | {EXCH} | Sends what's in the Sent Exchange field when contest is defined. |
+| {PREVNR} | Sends the previous serial number. |
 | {OTHER1} | Sends whats in the SentNR/Name field without altering it. |
 | {OTHER2} | Sends whats in the Comment field without altering it. |
 | {LOGIT} | Log the contact after macro pressed. |
