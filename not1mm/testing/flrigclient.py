@@ -1,4 +1,5 @@
 """Fake client to test flrig"""
+
 import xmlrpc.client
 
 TARGET = "http://localhost:12345"
