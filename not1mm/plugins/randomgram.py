@@ -35,6 +35,7 @@ try:
 except:
     rgGroups = []
 
+
 def init_contest(self):
     """setup plugin"""
     set_tab_next(self)

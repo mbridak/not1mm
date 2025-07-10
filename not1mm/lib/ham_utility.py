@@ -16,7 +16,21 @@ def calculate_wpx_prefix(the_call: str) -> str:
         return ""
     if the_call in ["OPON", "CW", "SSB", "RTTY"]:
         return ""
-    suffix_to_ignore = ["M", "MM", "P", "QRP", "A", "J", "LH", "LGT", "LS", "NLD", "T", "R", "TR" ]
+    suffix_to_ignore = [
+        "M",
+        "MM",
+        "P",
+        "QRP",
+        "A",
+        "J",
+        "LH",
+        "LGT",
+        "LS",
+        "NLD",
+        "T",
+        "R",
+        "TR",
+    ]
     for suffix in suffix_to_ignore:
         the_call = re.sub("/" + suffix + "$", "", the_call)
     result = None

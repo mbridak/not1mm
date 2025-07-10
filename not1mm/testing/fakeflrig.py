@@ -1,4 +1,5 @@
 """Main PC does not have radio attached. So we'll make a fake flrig server."""
+
 import logging
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
