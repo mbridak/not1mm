@@ -13,11 +13,12 @@ from dataclasses import dataclass
 import logging
 import os
 import queue
+from typing import Optional
 from json import loads
 import Levenshtein
 
 from PyQt6 import QtGui, uic
-from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget, QApplication
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtCore import pyqtSignal
 
@@ -32,6 +33,14 @@ logger = logging.getLogger(__name__)
 class CheckWindow(QDockWidget):
     """The check window. Shows list or probable stations."""
 
+    @dataclass
+    class BackgroundColors:
+        """Background color data for the checkpartial call signs."""
+
+        character_remove_color: str
+        character_add_color: str
+        character_match_color: str
+
     message = pyqtSignal(dict)
     dbname = None
     pref = {}
@@ -39,6 +48,7 @@ class CheckWindow(QDockWidget):
     masterLayout: QVBoxLayout = None
     dxcLayout: QVBoxLayout = None
     qsoLayout: QVBoxLayout = None
+    background_colors_cache: Optional[BackgroundColors] = None
 
     masterScrollWidget: QWidget = None
 
@@ -56,6 +66,13 @@ class CheckWindow(QDockWidget):
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
+
+        def invalidate_background_colors_cache_on_mode_change():
+            self.background_colors_cache = None
+
+        QApplication.instance().styleHints().colorSchemeChanged.connect(
+            invalidate_background_colors_cache_on_mode_change
+        )
 
     def msg_from_main(self, packet):
         """"""
@@ -230,37 +247,30 @@ class CheckWindow(QDockWidget):
             layout.addWidget(label)
         layout.addStretch(0)
 
-    @dataclass
-    class BackgroundColors:
-        """Background color data for the checkpartial call signs."""
-
-        character_remove_color: str
-        character_add_color: str
-        character_match_color: str
-
     def background_colors_for_mode(self) -> "CheckWindow.BackgroundColors":
         """Returns appropriate background colors depending on dark or light mode.
 
         These are used for the checkpartial call signs.
         """
-
-        palette = self.widget.palette()
-        text_lightness = palette.windowText().color().lightness()
-        background_lightness = palette.window().color().lightness()
-        if background_lightness < text_lightness:
-            # dark mode
-            return CheckWindow.BackgroundColors(
-                character_remove_color="#dd3333",
-                character_add_color="#3333dd",
-                character_match_color="#33bb33",
-            )
-        else:
-            # light mode
-            return CheckWindow.BackgroundColors(
-                character_remove_color="#ffcccc",
-                character_add_color="#ccccff",
-                character_match_color="#ccffcc",
-            )
+        if self.background_colors_cache is None:
+            palette = self.widget.palette()
+            text_lightness = palette.windowText().color().lightness()
+            background_lightness = palette.window().color().lightness()
+            if background_lightness < text_lightness:
+                # dark mode
+                self.background_colors_cache = CheckWindow.BackgroundColors(
+                    character_remove_color="#dd3333",
+                    character_add_color="#3333dd",
+                    character_match_color="#33bb33",
+                )
+            else:
+                # light mode
+                self.background_colors_cache = CheckWindow.BackgroundColors(
+                    character_remove_color="#ffcccc",
+                    character_add_color="#ccccff",
+                    character_match_color="#ccffcc",
+                )
+        return self.background_colors_cache
 
 
 class CallLabel(QLabel):
