@@ -9,13 +9,14 @@ Purpose: Onscreen widget to show possible matches to callsigns entered in the ma
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, line-too-long
 
+from dataclasses import dataclass
 import logging
 import os
 import queue
 from json import loads
 import Levenshtein
 
-from PyQt6 import uic
+from PyQt6 import QtGui, uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtCore import pyqtSignal
@@ -38,10 +39,6 @@ class CheckWindow(QDockWidget):
     masterLayout: QVBoxLayout = None
     dxcLayout: QVBoxLayout = None
     qsoLayout: QVBoxLayout = None
-
-    character_remove_color = "#dd3333"
-    character_add_color = "#3333dd"
-    character_match_color = "#33bb33"
 
     masterScrollWidget: QWidget = None
 
@@ -198,6 +195,7 @@ class CheckWindow(QDockWidget):
                 layout.itemAt(i).widget().setParent(None)
             else:
                 layout.removeItem(layout.itemAt(i))
+        background_colors = self.background_colors_for_mode()
         call_items = []
         for call in call_list:
             if call:
@@ -209,15 +207,15 @@ class CheckWindow(QDockWidget):
                             label_text += call[i1:i2]
                             continue
                         elif tag == "replace":
-                            label_text += f"<span style='background-color: {self.character_remove_color};'>{call[i1:i2]}</span>"
+                            label_text += f"<span style='background-color: {background_colors.character_remove_color};'>{call[i1:i2]}</span>"
                             diff_score += max((i2 - i1), (j2 - j1)) * (
                                 len(call) + 1 - i2
                             )
                         elif tag == "insert" or tag == "delete":
-                            label_text += f"<span style='background-color: {self.character_add_color};'>{call[i1:i2]}</span>"
+                            label_text += f"<span style='background-color: {background_colors.character_add_color};'>{call[i1:i2]}</span>"
                             diff_score += max((i2 - i1), (j2 - j1)) * (len(call) - i2)
                     if call == self.call:
-                        label_text = f"<span style='background-color: {self.character_match_color};'>{call}</span>"
+                        label_text = f"<span style='background-color: {background_colors.character_match_color};'>{call}</span>"
                     call_items.append((diff_score, label_text, call))
 
         call_items = sorted(call_items, key=lambda x: x[0])
@@ -231,6 +229,38 @@ class CheckWindow(QDockWidget):
             label = CallLabel(label_text, call=call, callback=self.item_clicked)
             layout.addWidget(label)
         layout.addStretch(0)
+
+    @dataclass
+    class BackgroundColors:
+        """Background color data for the checkpartial call signs."""
+
+        character_remove_color: str
+        character_add_color: str
+        character_match_color: str
+
+    def background_colors_for_mode(self) -> "CheckWindow.BackgroundColors":
+        """Returns appropriate background colors depending on dark or light mode.
+
+        These are used for the checkpartial call signs.
+        """
+
+        palette = self.widget.palette()
+        text_lightness = palette.windowText().color().lightness()
+        background_lightness = palette.window().color().lightness()
+        if background_lightness < text_lightness:
+            # dark mode
+            return CheckWindow.BackgroundColors(
+                character_remove_color="#dd3333",
+                character_add_color="#3333dd",
+                character_match_color="#33bb33",
+            )
+        else:
+            # light mode
+            return CheckWindow.BackgroundColors(
+                character_remove_color="#ffcccc",
+                character_add_color="#ccccff",
+                character_match_color="#ccffcc",
+            )
 
 
 class CallLabel(QLabel):
