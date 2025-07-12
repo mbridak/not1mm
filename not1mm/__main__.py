@@ -879,6 +879,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.info(f"bind {b_result}")
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
         self.resolve_dirty_records()
+        self.dark_watcher(QApplication.instance().styleHints().colorScheme())
 
     # Server stuff
 
