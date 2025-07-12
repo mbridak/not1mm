@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-7-12] Add Mode column to log window for IARU Field Day.
 - [25-7-10] Improved checkpartial contrast if not using dark mode.
 - [25-7-3] Fixed CAT online indicator.
 - [25-6-21] Remove range check on vfo display.
