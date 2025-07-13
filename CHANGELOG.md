@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
 - [25-7-13] Ensure mode is not set to a numeric value.
 - [25-7-12] Add Mode column to log window for IARU Field Day.
 - [25-7-10] Improved checkpartial contrast if not using dark mode.
