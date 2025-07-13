@@ -4324,7 +4324,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.radio_state.get("mode") != mode:
             info_dirty = True
-            if "set_freq:" not in mode:
+            if "set_freq:" not in mode and not mode.isnumeric():
                 self.radio_state["mode"] = mode
 
         if self.radio_state.get("bw") != bw:
