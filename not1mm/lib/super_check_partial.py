@@ -75,6 +75,7 @@ class SCP:
             ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
                 self.scp = list(map(lambda x: x.strip(), self.scp))
+                self.scp = [x for x in self.scp if not x.startswith("#")]
         except IOError as exception:
             logger.critical("read_scp: read error: %s", exception)
 

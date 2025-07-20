@@ -164,8 +164,7 @@ class CheckWindow(QDockWidget):
         None
         """
         self.populate_layout(self.masterLayout, [])
-        results = self.mscp.super_check(call)
-        self.populate_layout(self.masterLayout, filter(lambda x: "#" not in x, results))
+        self.populate_layout(self.masterLayout, self.mscp.super_check(call))
 
     def log_list(self, call: str) -> None:
         """
