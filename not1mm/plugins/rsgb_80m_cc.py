@@ -131,7 +131,7 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
-    
+
     if self.contact_is_dupe > 0:
         return 0
     else:
@@ -357,7 +357,7 @@ def cabrillo(self, file_encoding):
         return
 
 
-def recalculate_mults(self):    # pylint: disable=unused-argument
+def recalculate_mults(self):  # pylint: disable=unused-argument
     """Recalculates multipliers after change in logged qso."""
 
 
