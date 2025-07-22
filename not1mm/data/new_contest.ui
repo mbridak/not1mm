@@ -464,6 +464,11 @@
      </item>
      <item>
       <property name="text">
+       <string>RSGB 80M CC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>SAC CW</string>
       </property>
      </item>
