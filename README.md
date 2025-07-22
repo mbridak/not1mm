@@ -214,6 +214,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-7-22] Merged PR RSGB 80m Club Championship Contests from digitaltheology.
 - [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
 - [25-7-13] Ensure mode is not set to a numeric value.
 - [25-7-12] Add Mode column to log window for IARU Field Day.
