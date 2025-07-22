@@ -1,4 +1,4 @@
-"""RSGB CC CW plugin"""
+"""RSGB 80M CC plugin"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "#"
 
-name = "RSGB CC CW"
+name = "RSGB 80M CC"
 cabrillo_name = "RSGB-80M-CC"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 9, 11, 15]
