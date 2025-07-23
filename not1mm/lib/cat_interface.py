@@ -208,7 +208,7 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes("\\stop_morse", "utf-8"))
+                self.rigctrlsocket.send(bytes("\\stop_morse\n", "utf-8"))
                 _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
