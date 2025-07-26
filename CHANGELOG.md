@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-7-26] Merged PR from @digitaltheology, adding CW Ops CW Open contest.
 - [25-7-22] Merged PR RSGB 80m Club Championship Contests from digitaltheology.
 - [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
 - [25-7-13] Ensure mode is not set to a numeric value.

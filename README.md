@@ -100,6 +100,7 @@
     - [RAEM](#raem)
     - [RandomGram](#randomgram)
     - [UKEI DX](#ukei-dx)
+    - [CWO Open Contest](#cwo-open-contest)
 
 ## What and Why is Not1MM
 
@@ -183,7 +184,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
 - CQ World Wide CW, RTTY, SSB
-- CWOps CWT
+- CWOps CWT, CWO
 - DARC Xmas
 - DARC VHF
 - EA Majistad CW
@@ -214,7 +215,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-7-22] Merged PR RSGB 80m Club Championship Contests from digitaltheology.
+- [25-7-26] Merged PR from @digitaltheology, adding CW Ops CW Open contest.
+- [25-7-22] Merged PR RSGB 80m Club Championship Contests from @digitaltheology.
 - [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
 - [25-7-13] Ensure mode is not set to a numeric value.
 - [25-7-12] Add Mode column to log window for IARU Field Day.
@@ -898,3 +900,8 @@ This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in th
 ### UKEI DX
 
 For the Run exchange macro I'd put '{SNT} # {EXCH}'
+
+### CWO Open Contest
+
+Note: when completing the "Recd Number and Name" field, place a space between the received serial number and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disabled for this field.)
+
