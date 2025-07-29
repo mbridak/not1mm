@@ -316,6 +316,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionDXCC.triggered.connect(self.launch_dxcc_window)
         self.actionRotator.triggered.connect(self.launch_rotator_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
+        self.actionMark_Contacts_Dirty.triggered.connect(self.mark_all_dirty)
         self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
 
         self.actionGenerate_Cabrillo_ASCII.triggered.connect(
@@ -884,8 +885,12 @@ class MainWindow(QtWidgets.QMainWindow):
     # Server stuff
 
     def resolve_dirty_records(self):
-        """Go through dirty records and submit them to the server."""
-        if self.pref.get("useserver", False) is True and hasattr(self, "database"):
+        """Go through dirty records and submit them to the server queue."""
+        if (
+            self.pref.get("useserver", False) is True
+            and hasattr(self, "database")
+            and datetime.datetime.now() < self.server_seen
+        ):
             records = self.database.fetch_all_dirty_contacts()
             print(f"Resolving {len(records)} unsent contacts.\n")
             if records:
@@ -895,10 +900,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     contact["expire"] = stale.isoformat()
 
                     self.server_commands.append(contact)
-                    self.server_channel.send_as_json(contact)
+                    # self.server_channel.send_as_json(contact)
 
-                    time.sleep(0.1)  # Do I need this?
-                    print(".")
+                    # time.sleep(0.1)  # Do I need this?
+                    # print(".")
 
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
@@ -2218,6 +2223,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """Recalculate Multipliers"""
         self.contest.recalculate_mults(self)
         self.clearinputs()
+
+    def mark_all_dirty(self) -> None:
+        """Mark all contacts dirty"""
+        self.database.make_all_dirty()
 
     def launch_log_window(self) -> None:
         """Launch the log window"""

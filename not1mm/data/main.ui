@@ -1580,6 +1580,7 @@
      <string>Misc</string>
     </property>
     <addaction name="actionRecalculate_Mults"/>
+    <addaction name="actionMark_Contacts_Dirty"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -2154,6 +2155,25 @@
    </property>
    <property name="shortcut">
     <string>Alt+P</string>
+   </property>
+  </action>
+  <action name="actionMark_Contacts_Dirty">
+   <property name="text">
+    <string>Mark Contacts Dirty</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono Light</family>
+    </font>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
