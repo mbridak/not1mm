@@ -1,6 +1,7 @@
 """Common function(s) for all contest plugins"""
 
 import datetime
+import re
 from decimal import Decimal
 from pathlib import Path
 from not1mm.lib.ham_utility import get_adif_band
@@ -292,9 +293,18 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if len(grid) > 1:
+                    result = re.match(
+                        "[A-R][A-R]([0-9][0-9][A-X][A-X])*([0-9][0-9])?",
+                        grid,
+                        re.IGNORECASE,
+                    )
+                    grid = ""
+                    if result:
+                        grid = result.group()
+
+                    if len(grid[:8]) > 1:
                         print(
-                            f"<GRIDSQUARE:{len(grid)}>{grid}",
+                            f"<GRIDSQUARE:{len(grid[:8])}>{grid[:8]}",
                             end="\r\n",
                             file=file_descriptor,
                         )
