@@ -3946,13 +3946,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.check_window:
             self.check_window.msg_from_main(cmd)
+        self.dupe_indicator.hide()
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
             # self.check_callsign(stripped_text)
             if self.check_dupe(stripped_text):
                 self.dupe_indicator.show()
-            else:
-                self.dupe_indicator.hide()
+            # else:
+            #     self.dupe_indicator.hide()
         if self.contest:
             if self.use_call_history and hasattr(
                 self.contest, "populate_history_info_line"
