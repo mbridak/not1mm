@@ -555,6 +555,17 @@ class DataBase:
             except sqlite3.Error as exception:
                 logger.critical("%s", exception)
 
+    def make_all_dirty(self) -> None:
+        """Set the dirty flag."""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                sql = f"update dxlog set dirty=1 where ContestNR = {self.current_contest};"
+                cursor = conn.cursor()
+                cursor.execute(sql)
+                conn.commit()
+        except sqlite3.Error as exception:
+            logger.critical("%s", exception)
+
     def delete_callhistory(self) -> None:
         """Deletes all info from callhistory table."""
         try:
@@ -1038,7 +1049,23 @@ class DataBase:
                 conn.row_factory = self.row_factory
                 cursor = conn.cursor()
                 cursor.execute(
-                    f"select count(*) as isdupe from dxlog where Call = '{call}' and Mode = '{mode}' and Band = '{band}' and ContestNR = {self.current_contest};"
+                    f"""
+                    select 
+                    count(*) as isdupe
+                    from (
+                            select
+                                CASE 
+                                    WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' 
+                                    WHEN Mode like 'CW%' THEN 'CW' 
+                                    WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65', 'PKTUSB', 'PKTLSB') THEN 'DI' 
+                                    ELSE 'OTHER' 
+                                END mode,
+                                *
+                            from DXLOG
+                            ) as sortedmode
+
+                    where sortedmode.Call = '{call}' and sortedmode.mode = '{mode}' and sortedmode.Band = '{band}' and sortedmode.ContestNR = {self.current_contest};
+                    """
                 )
                 return cursor.fetchone()
         except sqlite3.OperationalError as exception:
