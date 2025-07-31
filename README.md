@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-7-31] Improved error handling in QRZ and HamQTH lookups; ensure robust XML parsing and status code checks.
 - [25-7-29] Enhanced duplicate check query in DataBase class.
   - Fixed dupe check on calls of 3 characters or less.
   - Enhance grid square validation in gen_adif method using regex.
