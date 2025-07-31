@@ -359,6 +359,8 @@ class RotatorWindow(QDockWidget):
 
     def check_rotator(self) -> None:
         """Check the rotator"""
+        if self.active is False:
+            return
         if self.rotator.connected:
             self.antennaAzimuth, _ = self.rotator.get_position()
             self.set_antenna_azimuth(self.antennaAzimuth)

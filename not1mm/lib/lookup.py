@@ -153,7 +153,13 @@ class QRZlookup:
         try:
             payload = {"username": self.username, "password": self.password}
             query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
-            baseroot = xmltodict.parse(query_result.text)
+            if query_result.status_code == 200:
+                try:
+                    baseroot = xmltodict.parse(query_result.text)
+                except xmltodict.expat.ExpatError:
+                    baseroot = {}
+            else:
+                baseroot = {}
             root = baseroot.get("QRZDatabase", {})
             self.session = (
                 baseroot.get("QRZDatabase", {}).get("Session", {}).get("Key", "")
@@ -205,7 +211,13 @@ class QRZlookup:
             ) as exception:
                 self.error = True
                 return {"error": exception}
-            baseroot = xmltodict.parse(query_result.text)
+            if query_result.status_code == 200:
+                try:
+                    baseroot = xmltodict.parse(query_result.text)
+                except xmltodict.expat.ExpatError:
+                    baseroot = {}
+            else:
+                baseroot = {}
             logger.debug(f"xml lookup {baseroot}\n")
             root = baseroot.get("QRZDatabase", {})
             session = baseroot.get("QRZDatabase", {}).get("Session", {})
@@ -247,7 +259,15 @@ class HamQTH:
             self.error = True
             return
         logger.info("resultcode: %s", query_result.status_code)
-        baseroot = xmltodict.parse(query_result.text)
+
+        if query_result.status_code == 200:
+            try:
+                baseroot = xmltodict.parse(query_result.text)
+            except xmltodict.expat.ExpatError:
+                baseroot = {}
+        else:
+            baseroot = {}
+
         root = baseroot.get("HamQTH", {})
         session = root.get("session")
         if session:
@@ -276,6 +296,14 @@ class HamQTH:
                 self.error = True
                 return the_result
             logger.info("resultcode: %s", query_result.status_code)
+
+            if query_result.status_code == 200:
+                try:
+                    query_dict = xmltodict.parse(query_result.text)
+                except xmltodict.expat.ExpatError:
+                    query_dict = {}
+            else:
+                query_dict = {}
 
             query_dict = xmltodict.parse(query_result.text)
             the_result["grid"] = (

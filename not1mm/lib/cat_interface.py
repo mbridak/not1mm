@@ -124,7 +124,7 @@ class CAT:
         try:
             logger.debug("Connecting to rigctrld")
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.5)
+            self.rigctrlsocket.settimeout(0.1)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
@@ -148,14 +148,17 @@ class CAT:
         """Gets any serial data waiting"""
         dump = ""
         thegrab = ""
-        self.rigctrlsocket.settimeout(0.1)
-        try:
-            while True:
-                thegrab += self.rigctrlsocket.recv(1024).decode()
-                dump += thegrab
-        except (socket.error, UnicodeDecodeError):
-            ...
-        self.rigctrlsocket.settimeout(0.5)
+        if self.rigctrlsocket is None:
+            return ""
+        if hasattr(self.rigctrlsocket, "settimeout"):
+            self.rigctrlsocket.settimeout(0.1)
+            try:
+                while True and hasattr(self.rigctrlsocket, "recv"):
+                    thegrab += self.rigctrlsocket.recv(1024).decode()
+                    dump += thegrab
+            except (socket.error, UnicodeDecodeError):
+                ...
+            self.rigctrlsocket.settimeout(0.1)
         # logger.debug("%s", dump)
         return dump
 
@@ -188,10 +191,15 @@ class CAT:
 
     def sendcwrigctl(self, texttosend):
         """Send text via rigctld"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return False
                 info = self.__get_serial_string()
                 logger.debug("%s", info)
                 return True
@@ -205,10 +213,15 @@ class CAT:
 
     def stopcwrigctl(self):
         """Stop CW via rigctld"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes("\\stop_morse\n", "utf-8"))
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(bytes("\\stop_morse\n", "utf-8"))
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return False
                 _ = self.__get_serial_string()
                 return True
             except socket.error as exception:
@@ -221,10 +234,15 @@ class CAT:
 
     def set_rigctl_cw_speed(self, speed):
         """Set CW speed via rigctld"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"L KEYSPD {speed}\n", "utf-8"))
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(bytes(f"L KEYSPD {speed}\n", "utf-8"))
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return
                 info = self.__get_serial_string()
                 logger.debug("%s", info)
                 return
@@ -323,10 +341,15 @@ class CAT:
 
     def __getvfo_rigctld(self) -> str:
         """Returns VFO freq returned from rigctld"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"|f\n")
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(b"|f\n")
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return ""
                 report = self.__get_serial_string().strip()
                 logger.debug("%s", report)
                 if "get_freq:|" in report and "RPRT 0" in report:
@@ -377,10 +400,15 @@ class CAT:
         """Returns mode vai rigctld"""
         # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"|m\n")
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(b"|m\n")
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return ""
                 # get_mode:|Mode: CW|Passband: 500|RPRT 0
                 report = self.__get_serial_string().strip()
                 logger.debug("%s", report)
@@ -429,26 +457,6 @@ class CAT:
     def __getbw_rigctld(self):
         """return bandwidth"""
         return self.rigctld_bw
-        # if self.rigctrlsocket:
-        #     try:
-        #         self.online = True
-        #         self.rigctrlsocket.send(b"|m\n")
-        #         # get_mode:|Mode: CW|Passband: 500|RPRT 0
-        #         report = self.__get_serial_string().strip()
-        #         logger.debug("%s", report)
-        #         if "get_mode:|" in report and "RPRT 0" in report:
-        #             seg_rpt = report.split("|")
-        #             return seg_rpt[2].split(" ")[1]
-
-        #     except IndexError as exception:
-        #         logger.debug("%s", f"{exception}")
-        #     except socket.error as exception:
-        #         self.online = False
-        #         logger.debug("%s", f"{exception}")
-        #         self.rigctrlsocket = None
-        #     return ""
-        # self.__initialize_rigctrld()
-        # return ""
 
     def get_power(self):
         """Get power level from rig"""
@@ -475,10 +483,15 @@ class CAT:
             return ""
 
     def __getpower_rigctld(self):
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"|l RFPOWER\n")
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(b"|l RFPOWER\n")
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return ""
                 # get_level: RFPOWER|0.000000|RPRT 0
                 report = self.__get_serial_string().strip()
                 logger.debug("%s", report)
@@ -517,10 +530,15 @@ class CAT:
 
     def __getptt_rigctld(self):
         """Returns ptt state via rigctld"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"t\n")
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(b"t\n")
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return "0"
                 ptt = self.__get_serial_string()
                 logger.debug("%s", ptt)
                 ptt = ptt.strip()
@@ -566,7 +584,12 @@ class CAT:
         if self.rigctrlsocket:
             try:
                 self.online = True
-                self.rigctrlsocket.send(b"1\n")
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(b"1\n")
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return ""
                 dump = self.__get_serial_string()
                 for line in dump.splitlines():
                     if "Mode list:" in line:
@@ -612,10 +635,15 @@ class CAT:
 
     def __setvfo_rigctld(self, freq: str) -> bool:
         """sets the radios vfo"""
-        if self.rigctrlsocket:
+        if self.rigctrlsocket is not None:
             try:
                 self.online = True
-                self.rigctrlsocket.send(bytes(f"|F {freq}\n", "utf-8"))
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(bytes(f"|F {freq}\n", "utf-8"))
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return False
                 info = self.__get_serial_string()
                 logger.debug("%s", info)
                 return True
@@ -663,9 +691,12 @@ class CAT:
             try:
                 self.online = True
                 # logger.debug(f"\nM {mode} 0\n")
-                self.rigctrlsocket.send(bytes(f"\n|M {mode} 0\n", "utf-8"))
-                # if self.__get_serial_string() != "RPRT 0\n":
-                #     self.rigctrlsocket.send(bytes(f"\n|M {mode} 0\n", "utf-8"))
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(bytes(f"\n|M {mode} 0\n", "utf-8"))
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return False
                 info = self.__get_serial_string()
                 logger.debug("%s", info)
                 return True
@@ -708,7 +739,12 @@ class CAT:
             rig_cmd = bytes(f"|L RFPOWER {str(float(power) / 100)}\n", "utf-8")
             try:
                 self.online = True
-                self.rigctrlsocket.send(rig_cmd)
+                if hasattr(self.rigctrlsocket, "send"):
+                    self.rigctrlsocket.send(rig_cmd)
+                else:
+                    self.rigctrlsocket = None
+                    self.online = False
+                    return
                 info = self.__get_serial_string()
                 logger.debug("%s", info)
             except socket.error:
@@ -740,7 +776,12 @@ class CAT:
         logger.debug("%s", f"{rig_cmd}")
         try:
             self.online = True
-            self.rigctrlsocket.send(rig_cmd)
+            if hasattr(self.rigctrlsocket, "send"):
+                self.rigctrlsocket.send(rig_cmd)
+            else:
+                self.rigctrlsocket = None
+                self.online = False
+                return
             info = self.__get_serial_string()
             logger.debug("%s", info)
         except socket.error:
@@ -780,7 +821,12 @@ class CAT:
         logger.debug("%s", f"{rig_cmd}")
         try:
             self.online = True
-            self.rigctrlsocket.send(rig_cmd)
+            if hasattr(self.rigctrlsocket, "send"):
+                self.rigctrlsocket.send(rig_cmd)
+            else:
+                self.rigctrlsocket = None
+                self.online = False
+                return
             into = self.__get_serial_string()
             logger.debug("%s", into)
         except socket.error:
