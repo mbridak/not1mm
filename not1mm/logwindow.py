@@ -146,6 +146,9 @@ class LogWindow(QDockWidget):
         self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         self.focusedLog.cellChanged.connect(self.focused_cell_changed)
 
+        self.generalLog.horizontalHeader().setStyleSheet("color: orange")
+        self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
+        
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
 
