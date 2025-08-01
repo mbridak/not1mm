@@ -91,6 +91,7 @@ class LogWindow(QDockWidget):
         19: "PTS",
         20: "Comment",
         21: "UUID",
+        22: "Operator",
     }
 
     def __init__(self):
@@ -162,6 +163,7 @@ class LogWindow(QDockWidget):
             log.setColumnWidth(self.get_column("Name"), 75)
             log.setColumnWidth(self.get_column("Comment"), 200)
             log.setColumnHidden(self.get_column("UUID"), True)
+            log.setColumnWidth(self.get_column("Operator"), 50)
             log.verticalHeader().setVisible(False)
 
         self.get_log()
@@ -361,6 +363,7 @@ class LogWindow(QDockWidget):
             "Name": self.generalLog.item(row, self.get_column("Name")).text(),
             "Comment": self.generalLog.item(row, self.get_column("Comment")).text(),
             "ID": self.generalLog.item(row, self.get_column("UUID")).text(),
+            "Operator": self.generalLog.item(row, self.get_column("Operator")).text(),
         }
         self.database.change_contact(db_record)
 
@@ -412,6 +415,7 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["name"] = db_record["Name"]
             self.n1mm.contact_info["misctext"] = db_record["Comment"]
             self.n1mm.contact_info["ID"] = db_record["ID"]
+            self.n1mm.contact_info["operator"] = db_record["Operator"]
             self.n1mm.send_contactreplace()
 
         self.get_log()
@@ -478,6 +482,7 @@ class LogWindow(QDockWidget):
             "Name": self.focusedLog.item(row, self.get_column("Name")).text(),
             "Comment": self.focusedLog.item(row, self.get_column("Comment")).text(),
             "ID": self.focusedLog.item(row, self.get_column("UUID")).text(),
+            "Operator": self.focusedLog.item(row, self.get_column("Operator")).text(),
         }
         self.database.change_contact(db_record)
 
@@ -529,6 +534,7 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["name"] = db_record["Name"]
             self.n1mm.contact_info["misctext"] = db_record["Comment"]
             self.n1mm.contact_info["ID"] = db_record["ID"]
+            self.n1mm.contact_info["operator"] = db_record["Operator"]
             self.n1mm.send_contactreplace()
 
         self.get_log()
@@ -902,7 +908,12 @@ class LogWindow(QDockWidget):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
-
+            self.generalLog.setItem(
+                number_of_rows,
+                self.get_column("Operator"),
+                QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
+            )
+        
         self.generalLog.resizeColumnsToContents()
         self.generalLog.resizeRowsToContents()
         self.focusedLog.resizeColumnsToContents()
@@ -1066,6 +1077,12 @@ class LogWindow(QDockWidget):
                 self.get_column("UUID"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("ID", ""))),
             )
+            self.focusedLog.setItem(
+                number_of_rows,
+                self.get_column("Operator"),
+                QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
+            )
+        
         self.focusedLog.resizeColumnsToContents()
         self.focusedLog.resizeRowsToContents()
         self.focusedLog.blockSignals(False)
