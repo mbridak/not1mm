@@ -93,6 +93,7 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setHorizontalHeaderLabels(
             ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "PTS"]
         )
+        self.tableWidget.horizontalHeader().setStyleSheet("color: orange")
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setEditTriggers(
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
