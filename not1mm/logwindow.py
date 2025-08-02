@@ -93,8 +93,9 @@ class LogWindow(QDockWidget):
         21: "UUID",
     }
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.table_loading = True
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -1091,3 +1092,6 @@ class LogWindow(QDockWidget):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False)
