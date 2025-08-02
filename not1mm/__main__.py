@@ -759,9 +759,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show_splash_msg("Setting up RotatorWindow.")
         self.rotator_window = RotatorWindow(
+            self.actionRotator,
             host=self.pref.get("rotctld_address", "127.0.0.1"),
             port=self.pref.get("rotctld_port", 4533),
-            self.actionRotator,
         )
 
         self.rotator_window.setObjectName("rotator-window")
