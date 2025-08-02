@@ -41,8 +41,9 @@ class VfoWindow(QDockWidget):
     device_reconnect: bool = False
     stale: datetime.datetime = datetime.datetime.now()
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
         self.rig_control: CAT | None = None
@@ -284,3 +285,6 @@ class VfoWindow(QDockWidget):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
         _ = message_box.exec()
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 

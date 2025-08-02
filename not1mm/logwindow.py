@@ -94,8 +94,9 @@ class LogWindow(QDockWidget):
         22: "Operator",
     }
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.table_loading = True
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -147,6 +148,9 @@ class LogWindow(QDockWidget):
         self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         self.focusedLog.cellChanged.connect(self.focused_cell_changed)
 
+        self.generalLog.horizontalHeader().setStyleSheet("color: orange")
+        self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
+        
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
 
@@ -1105,3 +1109,6 @@ class LogWindow(QDockWidget):
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
         _ = message_box.exec_()
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False)
