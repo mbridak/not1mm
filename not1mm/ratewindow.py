@@ -34,8 +34,9 @@ class RateWindow(QDockWidget):
     pref = {}
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.active = False
         self.load_pref()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
@@ -183,3 +184,6 @@ class RateWindow(QDockWidget):
             self.hour_sandp_qso.setText(f"{sandp}")
         except TypeError:
             ...
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 
