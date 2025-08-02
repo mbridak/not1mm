@@ -781,7 +781,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vfo_window.hide()
 
         self.show_splash_msg("Setting up LogWindow.")
-        self.log_window = LogWindow()
+        self.log_window = LogWindow(self.actionLog_Window)
         self.log_window.setObjectName("log-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.log_window.setFeatures(dockfeatures)
