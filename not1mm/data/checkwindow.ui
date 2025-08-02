@@ -10,11 +10,6 @@
     <height>374</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>JetBrains Mono</family>
-   </font>
-  </property>
   <property name="focusPolicy">
    <enum>Qt::NoFocus</enum>
   </property>
@@ -22,6 +17,11 @@
    <string>CheckPartial</string>
   </property>
   <widget class="QWidget" name="widget">
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <layout class="QGridLayout" name="checkpartialgridlayout">
     <property name="margin" stdset="0">
      <number>2</number>
