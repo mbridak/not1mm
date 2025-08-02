@@ -148,9 +148,9 @@ class LogWindow(QDockWidget):
         self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         self.focusedLog.cellChanged.connect(self.focused_cell_changed)
 
-        self.generalLog.horizontalHeader().setStyleSheet("color: orange")
-        self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
-        
+        # self.generalLog.horizontalHeader().setStyleSheet("color: orange")
+        # self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
+
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
 
@@ -917,7 +917,7 @@ class LogWindow(QDockWidget):
                 self.get_column("Operator"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
             )
-        
+
         self.generalLog.resizeColumnsToContents()
         self.generalLog.resizeRowsToContents()
         self.focusedLog.resizeColumnsToContents()
@@ -1086,7 +1086,7 @@ class LogWindow(QDockWidget):
                 self.get_column("Operator"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
             )
-        
+
         self.focusedLog.resizeColumnsToContents()
         self.focusedLog.resizeRowsToContents()
         self.focusedLog.blockSignals(False)
