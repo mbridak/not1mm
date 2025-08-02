@@ -37,8 +37,9 @@ class RotatorWindow(QDockWidget):
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
     antennaNeedle: QGraphicsPathItem | None = None
 
-    def __init__(self, host: str = "127.0.0.1", port: int = 4533):
+    def __init__(self, action, host: str = "127.0.0.1", port: int = 4533):
         super().__init__()
+        self.action = action
         self.host = host
         self.port = port
         self.active: bool = False
@@ -366,3 +367,6 @@ class RotatorWindow(QDockWidget):
             self.set_antenna_azimuth(self.antennaAzimuth)
         else:
             self.rotator.connect()
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 
