@@ -31,8 +31,9 @@ class DXCCWindow(QDockWidget):
         7: "Total",
     }
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.active = False
         uic.loadUi(fsutils.APP_DATA_PATH / "dxcc_tracker.ui", self)
         self.dxcc_table.setColumnCount(len(self.columns))
@@ -139,3 +140,6 @@ class DXCCWindow(QDockWidget):
                 ...
                 self.load_new_db()
                 self.get_log()
+
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 

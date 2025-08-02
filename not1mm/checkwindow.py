@@ -52,8 +52,9 @@ class CheckWindow(QDockWidget):
 
     masterScrollWidget: QWidget = None
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.active = False
         self.load_pref()
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
@@ -271,6 +272,8 @@ class CheckWindow(QDockWidget):
                 )
         return self.background_colors_cache
 
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 
 
 class CallLabel(QLabel):
     call: str = None

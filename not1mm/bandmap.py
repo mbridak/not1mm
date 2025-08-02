@@ -337,8 +337,9 @@ class BandMapWindow(QDockWidget):
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.active = False
         self._udpwatch = None
 
@@ -917,3 +918,4 @@ class BandMapWindow(QDockWidget):
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes."""
         self.close_cluster()
+        self.action.setChecked(False)

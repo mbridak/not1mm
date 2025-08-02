@@ -25,8 +25,9 @@ class StatsWindow(QDockWidget):
     pref = {}
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
-    def __init__(self):
+    def __init__(self, action):
         super().__init__()
+        self.action = action
         self.active: bool = False
         self.load_pref()
         self.dbname: str = fsutils.USER_DATA_PATH / self.pref.get(
@@ -193,6 +194,8 @@ class StatsWindow(QDockWidget):
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.resizeRowsToContents()
 
+    def closeEvent(self, event) -> None:
+        self.action.setChecked(False) 
 
 if __name__ == "__main__":
     print("This is not a program.\nTry Again.")

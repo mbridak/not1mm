@@ -709,7 +709,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
 
         self.show_splash_msg("Setting up BandMapWindow.")
-        self.bandmap_window = BandMapWindow()
+        self.bandmap_window = BandMapWindow(self.actionBandmap)
         self.bandmap_window.setObjectName("bandmap-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.bandmap_window.setFeatures(dockfeatures)
@@ -720,7 +720,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_window.callsignField.setText(self.current_op)
 
         self.show_splash_msg("Setting up CheckWindow.")
-        self.check_window = CheckWindow()
+        self.check_window = CheckWindow(self.actionCheck_Window)
         self.check_window.setObjectName("check-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.check_window.setFeatures(dockfeatures)
@@ -729,7 +729,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.check_window.message.connect(self.dockwidget_message)
 
         self.show_splash_msg("Setting up RateWindow.")
-        self.rate_window = RateWindow()
+        self.rate_window = RateWindow(self.actionRate_Window)
         self.rate_window.setObjectName("rate-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.rate_window.setFeatures(dockfeatures)
@@ -738,7 +738,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rate_window.message.connect(self.dockwidget_message)
 
         self.show_splash_msg("Setting up StatisticsWindow.")
-        self.statistics_window = StatsWindow()
+        self.statistics_window = StatsWindow(self.actionStatistics)
         self.statistics_window.setObjectName("statistics-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.statistics_window.setFeatures(dockfeatures)
@@ -749,7 +749,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statistics_window.message.connect(self.dockwidget_message)
 
         self.show_splash_msg("Setting up DXCCWindow.")
-        self.dxcc_window = DXCCWindow()
+        self.dxcc_window = DXCCWindow(self.actionDXCC)
         self.dxcc_window.setObjectName("dxcc-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.dxcc_window.setFeatures(dockfeatures)
@@ -759,6 +759,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show_splash_msg("Setting up RotatorWindow.")
         self.rotator_window = RotatorWindow(
+            self.actionRotator,
             host=self.pref.get("rotctld_address", "127.0.0.1"),
             port=self.pref.get("rotctld_port", 4533),
         )
@@ -772,7 +773,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
 
         self.show_splash_msg("Setting up VFOWindow.")
-        self.vfo_window = VfoWindow()
+        self.vfo_window = VfoWindow(self.actionVFO)
         self.vfo_window.setObjectName("vfo-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.vfo_window.setFeatures(dockfeatures)
@@ -780,7 +781,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vfo_window.hide()
 
         self.show_splash_msg("Setting up LogWindow.")
-        self.log_window = LogWindow()
+        self.log_window = LogWindow(self.actionLog_Window)
         self.log_window.setObjectName("log-window")
         if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
             self.log_window.setFeatures(dockfeatures)
