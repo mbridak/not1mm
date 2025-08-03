@@ -215,17 +215,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-7-31] Improved error handling in QRZ and HamQTH lookups; ensure robust XML parsing and status code checks.
-- [25-7-29] Enhanced duplicate check query in DataBase class.
-  - Fixed dupe check on calls of 3 characters or less.
-  - Enhance grid square validation in gen_adif method using regex.
-- [25-7-26] Merged PR from @digitaltheology, adding CW Ops CW Open contest.
-- [25-7-22] Merged PR RSGB 80m Club Championship Contests from @digitaltheology.
-- [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
-- [25-7-13] Ensure mode is not set to a numeric value.
-- [25-7-12] Add Mode column to log window for IARU Field Day.
-- [25-7-10] Improved checkpartial contrast if not using dark mode.
-- [25-7-3] Fixed CAT online indicator.
+- [25-8-3] Merge PR from @ki4mcw, Adding frequency precision to bandmap window.
+  - Allowing lowercase in general logging.
+- [25-8-2] Merge PR from @ki4mcw, Unchecking window view state when window closed via [x].
+- [25-8-1] Merge PR from @ki4mcw, Adding Operator field to log window.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -810,7 +803,7 @@ Place a check in the `Use Call History` box. Call history files are very specifi
 
 ### Creating your own Call History files
 
-You can use [adif2callhistory](https://github.com/mbridak/adif2callhistory) to generate your own call history file from your ADIF files. You can use a list of call history keys used for each contest [here](https://github.com/mbridak/not1mm/blob/master/call_history_keys.md).
+You can use [adif2callhistory](https://github.com/mbridak/adif2callhistory) to generate your own call history file from your ADIF files. You can use a [list of call history keys](https://github.com/mbridak/not1mm/blob/master/call_history_keys.md) used for each contest.
 
 An example file excerpt looks like:
 
@@ -908,4 +901,3 @@ For the Run exchange macro I'd put '{SNT} # {EXCH}'
 ### CWO Open Contest
 
 Note: when completing the "Recd Number and Name" field, place a space between the received serial number and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disabled for this field.)
-
