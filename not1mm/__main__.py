@@ -1960,6 +1960,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     self.database.current_contest = self.pref.get("contest")
                     if self.contest_settings.get("ContestName"):
+                        """Reset these in case a contest disabled them"""
+                        self.other_1.setStyleSheet("text-transform: uppercase;")
+                        self.other_2.setStyleSheet("text-transform: uppercase;")
                         self.contest = doimp(self.contest_settings.get("ContestName"))
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
