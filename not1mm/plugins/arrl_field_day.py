@@ -30,6 +30,7 @@ columns = [
     "Exchange1",
     "Sect",
     "PTS",
+    "Operator",
 ]
 
 advance_on_space = [True, True, True, True, True]
