@@ -586,7 +586,8 @@ class BandMapWindow(QDockWidget):
             )
             if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
-                text = f"{freq:.3f}"
+                #text = f"{freq:.3f}"
+                text = "{1:.{0}f}".format(_digits, freq)
                 self.something = self.bandmap_scene.addText(text)
                 self.something.setFont(self.thefont)
                 self.something.setDefaultTextColor(self.text_color)
@@ -770,13 +771,13 @@ class BandMapWindow(QDockWidget):
     def determine_step_digits(self):
         """doc"""
         return_zoom = {
-            1: (0.0001, 4),
-            2: (0.00025, 4),
-            3: (0.0005, 4),
-            4: (0.001, 3),
-            5: (0.0025, 3),
+            1: (0.0001, 5),
+            2: (0.00025, 5),
+            3: (0.0005, 5),
+            4: (0.001, 5),
+            5: (0.0025, 5),
             6: (0.005, 3),
-            7: (0.01, 2),
+            7: (0.01, 3),
         }
         step, digits = return_zoom.get(self.zoom, (0.0001, 4))
 
