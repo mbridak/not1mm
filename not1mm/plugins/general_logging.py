@@ -51,6 +51,9 @@ def interface(self):
     self.field3.setAccessibleName("Name")
     self.exch_label.setText("Comment")
     self.field4.setAccessibleName("Comment")
+    """Disable forced uppercase from main.ui"""
+    self.other_1.setStyleSheet("text-transform: none;")
+    self.other_2.setStyleSheet("text-transform: none;")
 
 
 def reset_label(self):
