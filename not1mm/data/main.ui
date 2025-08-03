@@ -736,6 +736,9 @@
                  <property name="text">
                   <string>Callsign</string>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                 </property> 
                 </widget>
                </item>
                <item>

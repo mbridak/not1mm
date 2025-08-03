@@ -1,5 +1,9 @@
 # Changelog
 
+- [25-8-3] Merge PR from @ki4mcw, Adding frequency precision to bandmap window.
+  - Allowing lowercase in general logging.
+- [25-8-2] Merge PR from @ki4mcw, Unchecking window view state when window closed via [x].
+- [25-8-1] Merge PR from @ki4mcw, Adding Operator field to log window.
 - [25-7-31] Improved error handling in QRZ and HamQTH lookups; ensure robust XML parsing and status code checks.
 - [25-7-29] Enhanced duplicate check query in DataBase class.
   - Fixed dupe check on calls of 3 characters or less.
