@@ -344,8 +344,9 @@ class BandMapWindow(QDockWidget):
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
-        self.thefont = QFont()
-        self.thefont.setFamily("JetBrains Mono")
+        #self.thefont = QFont()
+        #self.thefont.setFamily("JetBrains Mono")
+        self.thefont = QFont("JetBrains Mono", 10)
         self.settings = self.get_settings()
         self.clear_spot_olderSpinBox.setValue(
             int(self.settings.get("cluster_expire", 1))
@@ -358,7 +359,7 @@ class BandMapWindow(QDockWidget):
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
-        self.font = QFont("JetBrains Mono ExtraLight", 10)
+        #self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
         self.bandmap_scene.setFont(self.font)
         self.socket = QtNetwork.QTcpSocket()
@@ -567,12 +568,14 @@ class BandMapWindow(QDockWidget):
         self.clear_freq_mark(self.txMark)
         self.clear_freq_mark(self.bandwidth_mark)
         self.bandmap_scene.clear()
-        self.bandmap_scene.setFont(self.font)
+        #self.bandmap_scene.setFont(self.font)
+        self.bandmap_scene.setFont(self.thefont)
         step, _digits = self.determine_step_digits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
-        self.graphicsView.setFont(self.font)
+        #self.graphicsView.setFont(self.font)
+        self.graphicsView.setFont(self.thefont)
         for i in range(steps):  # Draw tickmarks
             length = 10
             if i % 5 == 0:
