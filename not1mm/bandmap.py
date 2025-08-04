@@ -361,7 +361,7 @@ class BandMapWindow(QDockWidget):
         self.spots = Database()
         #self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
-        self.bandmap_scene.setFont(self.font)
+        self.bandmap_scene.setFont(self.thefont)
         self.socket = QtNetwork.QTcpSocket()
         self.socket.readyRead.connect(self.receive)
         self.socket.connected.connect(self.maybeconnected)
