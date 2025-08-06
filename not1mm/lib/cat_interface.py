@@ -853,32 +853,26 @@ class CAT:
     def send_cat_string(self, cmdstr=""):
         """send a raw cat string to radio"""
         cmdstr = cmdstr.strip()
-        test = cmdstr.replace(' ', '')
-        if test == "":
-            return True    
-        elif self.interface == "flrig":
-            return self.__send_cat_string_flrig(cmdstr)
-        else:
+        test1 = cmdstr.replace(' ', '')
+        if test1 == "":
             return True
-            
-    def __send_cat_string_flrig(self, cmdstr):
-        """convert string to flrig format, send to flrig"""
         working = cmdstr
-        test1 = [" ", " x", " X", "\\"]
-        test2 = "0123456789ABCDEFabcdef "  # trailing space
+        test2 = [" ", " x", " X", "\\"]
+        test3 = "0123456789ABCDEF "  # trailing space
         ishex = False
         # does this look like hex?
-        for c1 in test1:
-            if c1 in working:
+        for c2 in test2:
+            if c2 in working:
                 ishex = True
         if ishex:
-            working = working.replace('x', '') ;
-            working = working.replace('X', '') ;
-            working = working.replace('\\', '') ;
+            working = working.replace('x', '') 
+            working = working.replace('X', '') 
+            working = working.replace('\\', '')
+            working = working.upper()
             # should be space-delimited now
             # any illegal chars?
-            for c2 in working:
-                if c2 not in test2:
+            for c3 in working:
+                if c3 not in test3:
                     logger.debug(f"Bad char in command string: [{cmdstr}]")
                     return True
             # hex checks out so far
@@ -890,14 +884,27 @@ class CAT:
             if not spacesok:
                 logger.debug(f"Bad delimiters in cmd string: [{cmdstr}]")
                 return True
-            # should be good now; make it " x" delimited (again) for flrig
-            working = "x" + working
-            working = working.replace(' ', " x")
         else:
-            # not hex, but plain ascii text
-            working = cmdstr
+            """not hex, but plain ascii text - do nothing"""
+        
+        if self.interface == "flrig":
+            return self.__send_cat_string_flrig(working, ishex)
+        elif self.interface == "rigctld":
+            return self.__send_cat_string_rigctld(working, ishex)    
+        else:
+            return True
+            
+    def __send_cat_string_flrig(self, cmd, thisishex):
+        """convert string to flrig format, send to flrig"""
+        if thisishex:
+            # make string " x" delimited (again) for flrig
+            cmd = "x" + cmd
+            cmd = cmd.replace(' ', " x")
+        else:
+            """ascii - do nothing"""
+        logger.debug("%s", f"Sending rig command: [{cmd}]")
         try:
-            return self.server.rig.cat_string(working)
+            return self.server.rig.cat_string(cmd)
         except (
             ConnectionRefusedError,
             xmlrpc.client.Fault,
@@ -909,3 +916,27 @@ class CAT:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
+        
+    def __send_cat_string_rigctld(self, cmd, thisishex):
+        """convert string to rigctld format, send to rigctld"""
+        if not self.rigctrlsocket:
+            return 0
+        if thisishex:
+            # make string "\0x" delimited for rigctld
+            cmd = cmd.replace(' ', '\\0x')
+            cmd = '|w \\0x' + cmd
+        else:
+            cmd = "|w " + cmd
+        bcmd = bytes(cmd, "utf-8")
+        logger.debug("%s", f"Sending rig command: [{bcmd}]")
+        
+        try:
+            if hasattr(self.rigctrlsocket, "send"):
+                self.rigctrlsocket.send(bcmd)
+        except socket.error:
+            print("Socket error!")
+            logger.debug("Socket error!")
+            self.online = False
+            self.rigctrlsocket = None
+            return 0
+            
