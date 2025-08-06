@@ -523,8 +523,8 @@ would be "RI BC01;". To do the same on an Icom 7300, your command would be
 something like "RI FE FE 94 E0 16 41 01 FD". Please refer to your radio's 
 manual or online sources to determine the commands you need. 
 
-Please note that CAT/CI-V command macros are currently only available when
-using FLRig for rig control. 
+Please note that CAT/CI-V command macros are only available if you are using
+either FLRig or rigctld for rig control.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
