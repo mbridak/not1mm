@@ -65,6 +65,7 @@
     - [Macro use with voice](#macro-use-with-voice)
       - [{VOICE1} - {VOICE10}](#voice1---voice10)
       - [Voice macro wave files](#voice-macro-wave-files)
+    - [Macro control of radio functions](#macro-control-of-radio-functions)
   - [cty.dat and QRZ lookups for distance and bearing](#ctydat-and-qrz-lookups-for-distance-and-bearing)
   - [Other uses for the call field](#other-uses-for-the-call-field)
   - [The Windows](#the-windows)
@@ -508,6 +509,22 @@ for each letter and number. So if your macro key holds
 `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during
 CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9, 3.
 Hopefully not in an idiots voice.
+
+### Macros to control radio functions
+
+Macros can also be used to send CAT/CI-V control codes to your radio. To make 
+use of this feature, start your command with the letters "RI" and a space, 
+followed by the command you would like to send. If your command is ASCII text
+(for example, for Yaesu radios), just enter the text after "RI ". For binary
+codes, enter hexadecimal values separated by spaces. 
+
+For example, to enable the auto-notch filter on a Yaesu FT-710, your command 
+would be "RI BC01;". To do the same on an Icom 7300, your command would be
+something like "RI FE FE 94 E0 16 41 01 FD". Please refer to your radio's 
+manual or online sources to determine the commands you need. 
+
+Please note that CAT/CI-V command macros are currently only available when
+using FLRig for rig control. 
 
 ## cty.dat and QRZ lookups for distance and bearing
 
