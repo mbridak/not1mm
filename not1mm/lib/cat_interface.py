@@ -849,3 +849,63 @@ class CAT:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
+
+    def send_cat_string(self, cmdstr=""):
+        """send a raw cat string to radio"""
+        cmdstr = cmdstr.strip()
+        test = cmdstr.replace(' ', '')
+        if test == "":
+            return True    
+        elif self.interface == "flrig":
+            return self.__send_cat_string_flrig(cmdstr)
+        else:
+            return True
+            
+    def __send_cat_string_flrig(self, cmdstr):
+        """convert string to flrig format, send to flrig"""
+        working = cmdstr
+        test1 = [" ", " x", " X", "\\"]
+        test2 = "0123456789ABCDEFabcdef "  # trailing space
+        ishex = False
+        # does this look like hex?
+        for c1 in test1:
+            if c1 in working:
+                ishex = True
+        if ishex:
+            working = working.replace('x', '') ;
+            working = working.replace('X', '') ;
+            working = working.replace('\\', '') ;
+            # should be space-delimited now
+            # any illegal chars?
+            for c2 in working:
+                if c2 not in test2:
+                    logger.debug(f"Bad char in command string: [{cmdstr}]")
+                    return True
+            # hex checks out so far
+            spacesok = True
+            for i in range(len(working)):
+                if (i + 1) % 3 == 0:  # every 3rd char
+                    if working[i] != ' ':
+                        spacesok = False
+            if not spacesok:
+                logger.debug(f"Bad delimiters in cmd string: [{cmdstr}]")
+                return True
+            # should be good now; make it " x" delimited (again) for flrig
+            working = "x" + working
+            working = working.replace(' ', " x")
+        else:
+            # not hex, but plain ascii text
+            working = cmdstr
+        try:
+            return self.server.rig.cat_string(working)
+        except (
+            ConnectionRefusedError,
+            xmlrpc.client.Fault,
+            http.client.BadStatusLine,
+            http.client.CannotSendRequest,
+            http.client.ResponseNotReady,
+            AttributeError,
+        ) as exception:
+            self.online = False
+            logger.debug("%s", f"{exception}")
+        return "0"
