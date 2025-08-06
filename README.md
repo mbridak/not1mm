@@ -510,7 +510,7 @@ for each letter and number. So if your macro key holds
 CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9, 3.
 Hopefully not in an idiots voice.
 
-### Macros to control radio functions
+### Macro control of radio functions
 
 Macros can also be used to send CAT/CI-V control codes to your radio. To make 
 use of this feature, start your command with the letters "RI" and a space, 
