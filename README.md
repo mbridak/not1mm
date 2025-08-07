@@ -513,18 +513,18 @@ Hopefully not in an idiots voice.
 ### Macro control of radio functions
 
 Macros can also be used to send CAT/CI-V control codes to your radio. To make 
-use of this feature, start your command with the letters "RI" and a space, 
+use of this feature, start your command with the letters "RI" and a colon, 
 followed by the command you would like to send. If your command is ASCII text
-(for example, for Yaesu radios), just enter the text after "RI ". For binary
+(for example, for Yaesu radios), just enter the text after "RI:". For binary
 codes, enter hexadecimal values separated by spaces. 
 
 For example, to enable the auto-notch filter on a Yaesu FT-710, your command 
-would be "RI BC01;". To do the same on an Icom 7300, your command would be
-something like "RI FE FE 94 E0 16 41 01 FD". Please refer to your radio's 
+would be "RI:BC01;". To do the same on an Icom 7300, your command would be
+something like "RI:FE FE 94 E0 16 41 01 FD". Please refer to your radio's 
 manual or online sources to determine the commands you need. 
 
 Please note that CAT/CI-V command macros are only available if you are using
-either FLRig or rigctld for rig control.
+either FLRig or rigctld (HamLib) for rig control.
 
 ## cty.dat and QRZ lookups for distance and bearing
 
