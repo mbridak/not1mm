@@ -10,15 +10,15 @@
     <height>192</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>JetBrains Mono</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>Stats</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="2">
      <widget class="QTableWidget" name="tableWidget"/>

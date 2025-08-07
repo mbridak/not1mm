@@ -22,15 +22,15 @@
     <height>200</height>
    </size>
   </property>
-  <property name="font">
-   <font>
-    <family>JetBrains Mono</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>RateWindow</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <property name="sizePolicy">
     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
      <horstretch>0</horstretch>

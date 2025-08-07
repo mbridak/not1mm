@@ -10,15 +10,15 @@
     <height>700</height>
    </rect>
   </property>
-  <property name="font">
-   <font>
-    <family>JetBrains Mono</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>BandMap</string>
   </property>
   <widget class="QWidget" name="widget">
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
      <number>6</number>
