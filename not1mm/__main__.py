@@ -3395,6 +3395,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Function Key: %s", function_key.text())
+        if function_key.toolTip()[0:3] == "RI:":
+            self.rig_control.cat.send_cat_string(function_key.toolTip()[3:])
+            return
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self.radio_state.get("mode") in ["LSB", "USB", "SSB", "FM", "AM"]:
