@@ -4410,7 +4410,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # falling back to the default ones.
         # If user selects menu option to edit the current macro file, make the previous checks, if the
         # specific one does not exist, copy the default to the contest directory and edit that copy.
-        if self.radio_state.get("mode") in ("CW", "CW-L", "CW-R", "CWR"):
+        if self.radio_state.get("mode") in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
             "RTTY",
