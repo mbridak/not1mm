@@ -1964,8 +1964,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.other_1.setStyleSheet("text-transform: uppercase;")
                         self.other_2.setStyleSheet("text-transform: uppercase;")
                         """Inform check window in case this is a change of contest"""
-                        self.check_window.database.current_contest = (self.pref.get("contest"))
-                        
+                        self.check_window.database.current_contest = self.pref.get(
+                            "contest"
+                        )
+
                         self.contest = doimp(self.contest_settings.get("ContestName"))
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
@@ -2468,15 +2470,14 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
                 return
-            if self.cw.servertype == 3:
-                self.rig_control.cat.stopcwrigctl()
-                return
         if self.rig_control:
             if self.rig_control.online:
                 if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                     if self.rig_control.interface == "flrig":
                         self.rig_control.cat.set_flrig_cw_send(False)
                         self.rig_control.cat.set_flrig_cw_send(True)
+                    if self.rig_control.interface == "rigctld":
+                        self.rig_control.cat.stopcwrigctl()
 
     def mark_spot(self):
         """"""
