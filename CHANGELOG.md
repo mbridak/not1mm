@@ -1,5 +1,7 @@
 # Changelog
 
+- [25-8-9] Fix lockup if rigctld daemon dies.
+  - Changed ADIF version number to 3.1.5
 - [25-8-7] Merged PR from @ki4mcw, adding a macro for rig specific codes.
 - [25-8-3] Merge PR from @ki4mcw, Adding frequency precision to bandmap window.
   - Allowing lowercase in general logging.
