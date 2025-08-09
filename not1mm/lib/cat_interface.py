@@ -158,7 +158,7 @@ class CAT:
                     dump += thegrab
             except (socket.error, UnicodeDecodeError):
                 ...
-            self.rigctrlsocket.settimeout(0.1)
+            # self.rigctrlsocket.settimeout(0.1)
         # logger.debug("%s", dump)
         return dump
 
@@ -853,7 +853,7 @@ class CAT:
     def send_cat_string(self, cmdstr=""):
         """send a raw cat string to radio"""
         cmdstr = cmdstr.strip()
-        test1 = cmdstr.replace(' ', '')
+        test1 = cmdstr.replace(" ", "")
         if test1 == "":
             return True
         working = cmdstr
@@ -865,9 +865,9 @@ class CAT:
             if c2 in working:
                 ishex = True
         if ishex:
-            working = working.replace('x', '') 
-            working = working.replace('X', '') 
-            working = working.replace('\\', '')
+            working = working.replace("x", "")
+            working = working.replace("X", "")
+            working = working.replace("\\", "")
             working = working.upper()
             # should be space-delimited now
             # any illegal chars?
@@ -879,27 +879,27 @@ class CAT:
             spacesok = True
             for i in range(len(working)):
                 if (i + 1) % 3 == 0:  # every 3rd char
-                    if working[i] != ' ':
+                    if working[i] != " ":
                         spacesok = False
             if not spacesok:
                 logger.debug(f"Bad delimiters in cmd string: [{cmdstr}]")
                 return True
         else:
             """not hex, but plain ascii text - do nothing"""
-        
+
         if self.interface == "flrig":
             return self.__send_cat_string_flrig(working, ishex)
         elif self.interface == "rigctld":
-            return self.__send_cat_string_rigctld(working, ishex)    
+            return self.__send_cat_string_rigctld(working, ishex)
         else:
             return True
-            
+
     def __send_cat_string_flrig(self, cmd, thisishex):
         """convert string to flrig format, send to flrig"""
         if thisishex:
             # make string " x" delimited (again) for flrig
             cmd = "x" + cmd
-            cmd = cmd.replace(' ', " x")
+            cmd = cmd.replace(" ", " x")
         else:
             """ascii - do nothing"""
         logger.debug("%s", f"Sending rig command: [{cmd}]")
@@ -916,20 +916,20 @@ class CAT:
             self.online = False
             logger.debug("%s", f"{exception}")
         return "0"
-        
+
     def __send_cat_string_rigctld(self, cmd, thisishex):
         """convert string to rigctld format, send to rigctld"""
         if not self.rigctrlsocket:
             return 0
         if thisishex:
             # make string "\0x" delimited for rigctld
-            cmd = cmd.replace(' ', '\\0x')
-            cmd = '|w \\0x' + cmd
+            cmd = cmd.replace(" ", "\\0x")
+            cmd = "|w \\0x" + cmd
         else:
             cmd = "|w " + cmd
         bcmd = bytes(cmd, "utf-8")
         logger.debug("%s", f"Sending rig command: [{bcmd}]")
-        
+
         try:
             if hasattr(self.rigctrlsocket, "send"):
                 self.rigctrlsocket.send(bcmd)
@@ -939,4 +939,3 @@ class CAT:
             self.online = False
             self.rigctrlsocket = None
             return 0
-            
