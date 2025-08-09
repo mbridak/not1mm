@@ -346,25 +346,3 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
             self.show_message_box(f"ADIF saved to: {filename}")
     except IOError as error:
         self.show_message_box(f"Error saving ADIF file: {error}")
-
-
-# def get_station_arrlsection_code(self):
-#     # get the station ARRL Section in station settings
-#     query = f"SELECT ARRLSection as arrlsection from Station;"
-#     # run query
-#     result = self.database.exec_sql(query)
-#     if result:
-#         arrlsection = result.get("arrlsection", "")
-#         return arrlsection
-#     return ""
-
-
-# def get_station_state_code(self):
-#     # get the station state code in station settings
-#     query = f"SELECT state as state from Station;"
-#     # run query
-#     result = self.database.exec_sql(query)
-#     if result:
-#         state = result.get("state", "")
-#         return state
-#     return ""
