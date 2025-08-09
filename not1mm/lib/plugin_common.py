@@ -84,7 +84,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     try:
         with open(filename, "w", encoding="utf-8", newline="") as file_descriptor:
             print("Not1MM ADIF export", end="\r\n", file=file_descriptor)
-            print("<ADIF_VER:5>2.2.0", end="\r\n", file=file_descriptor)
+            print("<ADIF_VER:5>3.1.5", end="\r\n", file=file_descriptor)
             print("<EOH>", end="\r\n", file=file_descriptor)
             for contact in log:
                 hiscall = contact.get("Call", "")
