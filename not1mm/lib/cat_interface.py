@@ -154,8 +154,10 @@ class CAT:
             self.rigctrlsocket.settimeout(0.1)
             try:
                 while True and hasattr(self.rigctrlsocket, "recv"):
-                    thegrab += self.rigctrlsocket.recv(1024).decode()
+                    thegrab = self.rigctrlsocket.recv(1024).decode()
                     dump += thegrab
+                    if thegrab == "":
+                        break
             except (socket.error, UnicodeDecodeError):
                 ...
             # self.rigctrlsocket.settimeout(0.1)
@@ -934,7 +936,6 @@ class CAT:
             if hasattr(self.rigctrlsocket, "send"):
                 self.rigctrlsocket.send(bcmd)
         except socket.error:
-            print("Socket error!")
             logger.debug("Socket error!")
             self.online = False
             self.rigctrlsocket = None
