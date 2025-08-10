@@ -11,9 +11,11 @@ class FlDigi_Comm:
         self, message: str = None, nlbefore: bool = True, rxafter: bool = True
     ):
         """send string"""
+        nl = chr(10)
         try:
             server = xmlrpc.client.ServerProxy(self.target)
             server.main.tx()
+            message = message.replace("^M", nl)
             if nlbefore:
                 message = f"\n{message}"
             if rxafter:
