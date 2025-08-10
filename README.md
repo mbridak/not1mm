@@ -10,7 +10,6 @@
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Made With:PyQt6](https://img.shields.io/badge/Made%20with-PyQt6-blue)](https://pypi.org/project/PyQt6/)
 [![Code Maturity:Snot Nosed](https://img.shields.io/badge/Code%20Maturity-Snot%20Nosed-red)](https://xkcd.com/1695/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/not1mm)](https://pypi.org/project/not1mm/)
 
 ![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
 
@@ -216,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-8-10] Allow '^M' in RTTY macros to allow newline.
 - [25-8-9] Fix lockup if rigctld daemon dies.
   - Changed ADIF version number to 3.1.5
 - [25-8-7] Merged PR from @ki4mcw, adding a macro for rig specific codes.
@@ -485,7 +485,8 @@ You can include a limited set of substitution instructions.
 | {WIPE} | Wipe input fields. |
 | '#' | Sends serial number. |
 | {VOICE1} - {VOICE10} | Uses rigctld to send voice macros stored in the radio. |
-| {RI:} | Send Rig specific codes. See [Macro control of radio functions](#macro-control-of-radio-functions) |
+| RI: | Send Rig specific codes. See [Macro control of radio functions](#macro-control-of-radio-functions) |
+| ^M | in a RTTY macro will be replaced with a newline character. |
 
 ### Macro use with voice
 

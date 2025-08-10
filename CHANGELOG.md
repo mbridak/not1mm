@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-8-10] Allow '^M' in RTTY macros to allow newline.
 - [25-8-9] Fix lockup if rigctld daemon dies.
   - Changed ADIF version number to 3.1.5
 - [25-8-7] Merged PR from @ki4mcw, adding a macro for rig specific codes.
