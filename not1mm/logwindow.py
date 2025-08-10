@@ -148,6 +148,8 @@ class LogWindow(QDockWidget):
         self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         self.focusedLog.cellChanged.connect(self.focused_cell_changed)
 
+        self.generalLog.setSortingEnabled(True)
+        
         # self.generalLog.horizontalHeader().setStyleSheet("color: orange")
         # self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
 
