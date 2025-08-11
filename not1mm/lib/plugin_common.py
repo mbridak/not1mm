@@ -376,10 +376,7 @@ def imp_adif(self):
     for q in qsos_sorted:
         this_contact = self.database.get_empty()
         
-        # this adds timezone data
-        #this_contact["TS"] = adif_io.time_on(q)
         try:
-            temp = ""
             temp = adif_io.time_on(q)
             this_contact["TS"] = temp.strftime("%Y-%m-%d %H:%M:%S")
         except KeyError:
@@ -462,10 +459,22 @@ def imp_adif(self):
             this_contact["SentNr"] = q["SENTNR"]
         except KeyError:
             this_contact["SentNr"] = ""
+
+        try:
+            this_contact["Points"] = q["APP_N1MM_POINTS"]
+        except KeyError:
+            this_contact["Points"] = ""
+
+        try:
+            this_contact["IsMultiplier1"] = q["APP_N1MM_MULT1"]
+        except KeyError:    
+            this_contact["IsMultiplier1"] = 0
+
+        try:
+            this_contact["IsMultiplier2"] = q["APP_N1MM_MULT2"]
+        except KeyError:        
+            this_contact["IsMultiplier2"] = 0
             
-        this_contact["Points"] = 0
-        this_contact["IsMultiplier1"] = 0
-        this_contact["IsMultiplier2"] = 0
         this_contact["Power"] = 0
         
         # ADIF Band is in Meters (eg, "20m"), not1mm is in MHz
@@ -498,23 +507,53 @@ def imp_adif(self):
             
         this_contact["RadioNR"] = ""
         this_contact["ContestNR"] = self.pref.get("contest", "0")
-        this_contact["isMultiplier3"] = 0
+
+        try:
+            this_contact["isMultiplier3"] = q["APP_N1MM_MULT3"]
+        except KeyError:
+            this_contact["isMultiplier3"] = 0
+            
         this_contact["MiscText"] = ""
         this_contact["IsRunQSO"] = ""
         this_contact["ContactType"] = ""
-        this_contact["Run1Run2"] = ""
+
+        try:
+            this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
+        except KeyError:    
+            this_contact["Run1Run2"] = ""
+        
         this_contact["GridSquare"] = ""
         
         try:
-            this_contact["Operator"] = q["OPERATOR"]
+            temp = q["OPERATOR"]
         except KeyError:
-            this_contact["Operator"] = ""
-                
-        this_contact["Continent"] = ""
+            temp = ""
+        if temp:
+            this_contact["Operator"] = temp
+        else:    
+            try:
+                temp = q["STATION_CALLSIGN"]
+            except KeyError:
+                temp = ""
+            if temp:
+                this_contact["Operator"] = temp
+            else:
+                this_contact["Operator"] = ""
+
+        try:
+            this_contact["Continent"] = q["APP_N1MM_CONTINENT"]
+        except KeyError:    
+            this_contact["Continent"] = ""
+            
         this_contact["RoverLocation"] = ""
         this_contact["RadioInterfaced"] = ""
         this_contact["NetworkedCompNr"] = 1
-        this_contact["NetBiosName"] = ""
+
+        try:
+            this_contact["NetBiosName"] = q["APP_N1MM_NETBIOSNAME"]
+        except KeyError:
+            this_contact["NetBiosName"] = ""
+
         this_contact["IsOriginal"] = 0
         this_contact["ID"] = uuid.uuid4().hex
         this_contact["CLAIMEDQSO"] = 1
@@ -524,18 +563,21 @@ def imp_adif(self):
         q_num = q_num + 1
     
     # All records mapped. Now save them to the database.  
-    print("Mapped contacts to be saved:") 
-    print(contacts)
+    #print("Mapped contacts to be saved:") 
+    #print(contacts)
     
     for my_contact in contacts:
         self.database.log_contact(my_contact) 
         
     # update everything
     self.log_window.get_log()
+    
     if self.actionStatistics.isChecked():
         self.statistics_window.get_run_and_total_qs()
+    
     score = self.contest.calc_score(self)   
     self.score.setText(str(score))
+    
     mults = self.contest.show_mults(self)
     qsos = self.contest.show_qso(self)
     multstring = f"{qsos}/{mults}"
