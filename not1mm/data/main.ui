@@ -1540,6 +1540,7 @@
     <addaction name="actionGenerate_Cabrillo_ASCII"/>
     <addaction name="actionGenerate_Cabrillo_UTF8"/>
     <addaction name="actionGenerate_EDI"/>
+    <addaction name="actionImport_ADIF"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
     <addaction name="separator"/>
@@ -1865,6 +1866,28 @@
     <bool>false</bool>
    </property>
   </action>
+  <action name="actionImport_ADIF">
+   <property name="text">
+    <string>Import ADIF</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono Light</family>
+    </font>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+   <property name="autoRepeat">
+    <bool>false</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>false</bool>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
+   </property>
+  </action> 
   <action name="actionRecalculate_Mults">
    <property name="text">
     <string>Recalculate Mults</string>
