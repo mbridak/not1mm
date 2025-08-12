@@ -754,9 +754,16 @@ between ARRL Field Day and Canada Day.
 
 `File` > `Generate ADIF`
 
-Boom... ADIF
+Boom... you have just exported ADIF to:
 
 `StationCall`\_`ContestName`\_`Date`\_`Time`.adi
+
+`File` > `Import ADIF`
+
+Bang... you have just imported ADIF data from a file of your choice into the current 
+contest. Note that records with the same Timestamp and Callsign cannot appear in the
+same database twice - any such dupes will not be imported. Note also that the data 
+to be imported should resemble the current contest, or mismatched data will follow.
 
 ## Recalulate Mults
 

@@ -2,9 +2,12 @@
 
 import datetime
 import re
+import uuid
+import adif_io
+
 from decimal import Decimal
 from pathlib import Path
-from not1mm.lib.ham_utility import get_adif_band
+from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band
 from not1mm.lib.version import __version__
 
 
@@ -207,7 +210,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if cabrillo_name in ("WFD", "ARRL-FD"):
+                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY"):
                         sent = self.contest_settings.get("SentExchange", "")
                         if sent:
                             print(
@@ -246,7 +249,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 file=file_descriptor,
                             )
                     # ----------Field Days------------
-                    elif cabrillo_name in ("WFD", "ARRL-FD"):
+                    elif cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY"):
                         rcv = (
                             f"{contact.get('Exchange1', '')} {contact.get('Sect', '')}"
                         )
@@ -346,3 +349,249 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
             self.show_message_box(f"ADIF saved to: {filename}")
     except IOError as error:
         self.show_message_box(f"Error saving ADIF file: {error}")
+
+
+def imp_adif(self):
+    """
+    Imports an ADIF file into the current contest.
+    """
+    
+    filename = self.filepicker("other")
+    if not filename:
+        return
+    try:
+        qsos_raw, adif_header = adif_io.read_from_file(filename)
+        qsos_sorted = sorted(qsos_raw, key = adif_io.time_on)
+    except FileNotFoundError as err:
+        self.show_message_box(f"{err}")    
+        return 
+    num_qsos = len(qsos_sorted) 
+    self.show_message_box(f"Found {num_qsos} QSOs in\n{filename}")
+
+    # Read all records from ADIF file and map them to not1mm fields.
+    # If a mandatory field is missing, abort mapping and skip import.
+    q_num = 0
+    contacts = [] 
+    dupes = 0 
+    
+    for q in qsos_sorted:
+        this_contact = self.database.get_empty()
+        
+        try:
+            temp = adif_io.time_on(q)
+            this_contact["TS"] = temp.strftime("%Y-%m-%d %H:%M:%S")
+        except KeyError:
+            self.show_message_box(f"Date/time not found in QSO #{q_num+1}.\nImport cancelled.")
+            return
+            
+        try:
+            this_contact["Call"] = q["CALL"]
+        except KeyError:
+            self.show_message_box(f"Callsign not found in QSO #{q_num+1}.\nImport cancelled.")
+            return
+            
+        # ADIF freq is in MHz, not1mm is in kHz
+        try:
+            this_contact["Freq"] = float(q["FREQ"]) * 1000.0 
+        except (ValueError, TypeError, KeyError):
+            self.show_message_box(f"Valid Frequency not found in QSO #{q_num+1}.\nImport cancelled.")
+            return    
+            
+        this_contact["QSXFreq"] = ""
+        
+        try:
+            temp = q["MODE"]
+        except KeyError:
+            temp = ""   
+        try:
+            temp2 = q["SUBMODE"]
+        except KeyError:
+            temp2 = ""   
+        if temp:
+            this_contact["Mode"] = temp
+        elif temp2:
+            this_contact["Mode"] = temp2
+        else:
+            self.show_message_box(f"Valid Mode not found in QSO #{q_num+1}.\nImport cancelled.")
+            return
+                
+        this_contact["ContestName"] = self.contest.name
+        
+        try:
+            this_contact["SNT"] = q["RST_SENT"]
+        except KeyError:
+            this_contact["SNT"] = ""
+            
+        try:
+            this_contact["RCV"] = q["RST_RCVD"]
+        except KeyError:
+            this_contact["RCV"] = ""
+            
+        try:
+            this_contact["CountryPrefix"] = q["PFX"]
+        except KeyError:
+            this_contact["CountryPrefix"] = ""
+            
+        this_contact["StationPrefix"] = ""
+        this_contact["QTH"] = ""
+        
+        try:
+            this_contact["Name"] = q["NAME"]
+        except KeyError:
+            this_contact["Name"] = ""
+            
+        try:        
+            this_contact["Comment"] = q["COMMENT"]
+        except KeyError:
+            this_contact["Comment"] = ""
+                
+        this_contact["NR"] = 0
+        
+        try:
+            this_contact["Sect"] = q["ARRL_SECT"]
+        except KeyError:
+            this_contact["Sect"] = ""
+            
+        this_contact["Prec"] = ""
+        this_contact["CK"] = 0
+        this_contact["ZN"] = 0
+        
+        try: 
+            this_contact["SentNr"] = q["SENTNR"]
+        except KeyError:
+            this_contact["SentNr"] = ""
+
+        try:
+            this_contact["Points"] = q["APP_N1MM_POINTS"]
+        except KeyError:
+            this_contact["Points"] = ""
+
+        try:
+            this_contact["IsMultiplier1"] = q["APP_N1MM_MULT1"]
+        except KeyError:    
+            this_contact["IsMultiplier1"] = 0
+
+        try:
+            this_contact["IsMultiplier2"] = q["APP_N1MM_MULT2"]
+        except KeyError:        
+            this_contact["IsMultiplier2"] = 0
+            
+        this_contact["Power"] = 0
+        
+        # ADIF Band is in Meters (eg, "20m"), not1mm is in MHz
+        try:
+            temp = q["BAND"]
+            temp = temp.lower()
+            this_contact["Band"] = get_not1mm_band(temp)
+        except KeyError:
+            self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
+            return
+
+        try:
+            this_contact["WPXPrefix"] = q["WPXPREFIX"]
+        except KeyError:
+            this_contact["WPXPrefix"] = ""
+            
+        try:
+            temp = q["CLASS"]
+        except KeyError:
+            temp = ""
+        try:                            
+            temp2 = q["EXCHANGE1"]
+        except KeyError:
+            temp2 = ""
+        try:
+            temp3 = q["APP_N1MM_EXCHANGE1"]
+        except KeyError:
+            temp3 = ""
+        this_contact["Exchange1"] = temp + temp2 + temp3
+            
+        this_contact["RadioNR"] = ""
+        this_contact["ContestNR"] = self.pref.get("contest", "0")
+
+        try:
+            this_contact["isMultiplier3"] = q["APP_N1MM_MULT3"]
+        except KeyError:
+            this_contact["isMultiplier3"] = 0
+            
+        this_contact["MiscText"] = ""
+        this_contact["IsRunQSO"] = ""
+        this_contact["ContactType"] = ""
+
+        try:
+            this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
+        except KeyError:    
+            this_contact["Run1Run2"] = ""
+        
+        this_contact["GridSquare"] = ""
+        
+        try:
+            temp = q["OPERATOR"]
+        except KeyError:
+            temp = ""
+        if temp:
+            this_contact["Operator"] = temp
+        else:    
+            try:
+                temp = q["STATION_CALLSIGN"]
+            except KeyError:
+                temp = ""
+            if temp:
+                this_contact["Operator"] = temp
+            else:
+                this_contact["Operator"] = ""
+
+        try:
+            this_contact["Continent"] = q["APP_N1MM_CONTINENT"]
+        except KeyError:    
+            this_contact["Continent"] = ""
+            
+        this_contact["RoverLocation"] = ""
+        this_contact["RadioInterfaced"] = ""
+        this_contact["NetworkedCompNr"] = 1
+
+        try:
+            this_contact["NetBiosName"] = q["APP_N1MM_NETBIOSNAME"]
+        except KeyError:
+            this_contact["NetBiosName"] = ""
+
+        this_contact["IsOriginal"] = 0
+        this_contact["ID"] = uuid.uuid4().hex
+        this_contact["CLAIMEDQSO"] = 1
+        
+       # is this record a dupe?
+        theTS = this_contact["TS"]
+        thecall = this_contact["Call"]
+        temp = self.database.exec_sql(f"select count(*) as isdupe from dxlog where TS = '{theTS}' and call = '{thecall}'")
+        if temp["isdupe"] > 0:
+            dupes = dupes + 1
+        else:
+            contacts.append(this_contact.copy())
+        this_contact.clear()
+        q_num = q_num + 1
+    
+    # All ADIF records have now been mapped.
+    if dupes > 0:
+        self.show_message_box(f"NOTE: Found {dupes} duplicate records, which will not be saved.")
+    saves = 0 
+    for my_contact in contacts:
+        self.database.log_contact(my_contact) 
+        saves = saves + 1 
+    if saves > 0:
+        # update everything
+        self.log_window.get_log()
+    
+        if self.actionStatistics.isChecked():
+            self.statistics_window.get_run_and_total_qs()
+    
+        score = self.contest.calc_score(self)   
+        self.score.setText(str(score))
+    
+        mults = self.contest.show_mults(self)
+        qsos = self.contest.show_qso(self)
+        multstring = f"{qsos}/{mults}"
+        self.mults.setText(multstring)
+    
+    self.show_message_box(f"Saved {saves} ADIF records to this contest.")
+        
+    return 

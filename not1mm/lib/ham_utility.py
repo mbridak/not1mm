@@ -250,6 +250,44 @@ def get_adif_band(freq: Decimal) -> str:
     return "0m"
 
 
+def get_not1mm_band(band: str) -> float:
+    bandfreqs = {
+        "2190m": 0.137,
+        "630m": 0.472,
+        "560m": 0.501,
+        "160m": 1.8,
+        "80m": 3.5,
+        "60m": 5.0,
+        "40m": 7.0,
+        "30m": 10.1,
+        "20m": 14.0,
+        "17m": 18.068,
+        "15m": 21.0,
+        "12m": 24.890,
+        "10m": 28.0,
+        "8m": 40.0,
+        "6m": 50.0,
+        "5m": 54.0,
+        "4m": 70.0,
+        "2m": 144.0,
+        "1.25m": 222.0,
+        "70cm": 420.0,
+        "33cm":	902.0,
+        "23cm":	1240.0,
+        "13cm":	2300.0,
+        "9cm": 3300.0,
+        "6cm": 5650.0,
+        "3cm": 10000.0,
+        "1.25cm": 24000.0,
+        "6mm": 47000.0,
+        "4mm": 75500.0,
+        "2.5mm": 119980.0,
+        "2mm": 134000.0,
+        "1mm": 241000.0,
+    }    
+    return bandfreqs[band] 
+
+
 def fakefreq(band: str, mode: str) -> str:
     """
     If unable to obtain a frequency from the rig,

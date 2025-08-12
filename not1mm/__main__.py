@@ -327,6 +327,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.actionGenerate_ADIF.triggered.connect(self.generate_adif)
         self.actionGenerate_EDI.triggered.connect(self.generate_edi)
+        self.actionImport_ADIF.triggered.connect(self.import_adif)
 
         self.actionConfiguration_Settings.triggered.connect(
             self.edit_configuration_settings
@@ -4591,6 +4592,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("******Cabrillo*****")
         self.contest.cabrillo(self, file_encoding)
+
+    def import_adif(self) -> None:
+        """
+        Calls the contest ADIF file importer.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        # https://www.adif.org/315/ADIF_315.htm
+        try:
+            logger.debug("******ADIF IMPORT*****")
+            self.contest.imp_adif(self)
+        except AttributeError:
+            self.show_message_box(f"Contest plugin '{self.contest.name}'\n" \
+                "has no ADIF import routine.\nCancelling import.")
 
     def load_fonts_from_dir(self, directory: str) -> str:
         """
