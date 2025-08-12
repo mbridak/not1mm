@@ -372,6 +372,7 @@ def imp_adif(self):
     # If a mandatory field is missing, abort mapping and skip import.
     q_num = 0
     contacts = [] 
+    dupes = 0 
     
     for q in qsos_sorted:
         this_contact = self.database.get_empty()
