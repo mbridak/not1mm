@@ -558,30 +558,39 @@ def imp_adif(self):
         this_contact["ID"] = uuid.uuid4().hex
         this_contact["CLAIMEDQSO"] = 1
         
-        contacts.append(this_contact.copy())
+       # is this record a dupe?
+        theTS = this_contact["TS"]
+        thecall = this_contact["Call"]
+        temp = self.database.exec_sql(f"select count(*) as isdupe from dxlog where TS = '{theTS}' and call = '{thecall}'")
+        if temp["isdupe"] > 0:
+            dupes = dupes + 1
+        else:
+            contacts.append(this_contact.copy())
         this_contact.clear()
         q_num = q_num + 1
     
-    # All records mapped. Now save them to the database.  
-    #print("Mapped contacts to be saved:") 
-    #print(contacts)
-    
+    # All ADIF records have now been mapped.
+    if dupes > 0:
+        self.show_message_box(f"NOTE: Found {dupes} duplicate records, which will not be saved.")
+    saves = 0 
     for my_contact in contacts:
         self.database.log_contact(my_contact) 
+        saves = saves + 1 
+    if saves > 0:
+        # update everything
+        self.log_window.get_log()
+    
+        if self.actionStatistics.isChecked():
+            self.statistics_window.get_run_and_total_qs()
+    
+        score = self.contest.calc_score(self)   
+        self.score.setText(str(score))
+    
+        mults = self.contest.show_mults(self)
+        qsos = self.contest.show_qso(self)
+        multstring = f"{qsos}/{mults}"
+        self.mults.setText(multstring)
+    
+    self.show_message_box(f"Saved {saves} ADIF records to this contest.")
         
-    # update everything
-    self.log_window.get_log()
-    
-    if self.actionStatistics.isChecked():
-        self.statistics_window.get_run_and_total_qs()
-    
-    score = self.contest.calc_score(self)   
-    self.score.setText(str(score))
-    
-    mults = self.contest.show_mults(self)
-    qsos = self.contest.show_qso(self)
-    multstring = f"{qsos}/{mults}"
-    self.mults.setText(multstring)
-    
-    self.show_message_box(f"ADIF data saved.")
     return 
