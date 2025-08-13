@@ -169,16 +169,16 @@ class VfoWindow(QDockWidget):
             except OSError:
                 if self.message_shown is False and supress_msg is False:
                     self.message_shown: bool = True
-                    self.show_message_box(
-                        "Unable to locate or open the VFO knob serial device."
-                    )
+                    # self.show_message_box(
+                    #     "Unable to locate or open the VFO knob serial device."
+                    # )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
         else:
             if self.message_shown is False and supress_msg is False:
                 self.message_shown: bool = True
-                self.show_message_box(
-                    "Unable to locate or open the VFO knob serial device."
-                )
+                # self.show_message_box(
+                #     "Unable to locate or open the VFO knob serial device."
+                # )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
     def msg_from_main(self, msg_dict) -> None:
@@ -287,4 +287,4 @@ class VfoWindow(QDockWidget):
         _ = message_box.exec()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False) 
+        self.action.setChecked(False)
