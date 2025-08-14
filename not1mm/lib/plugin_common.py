@@ -7,7 +7,7 @@ import adif_io
 
 from decimal import Decimal
 from pathlib import Path
-from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band
+from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_band_xlog
 from not1mm.lib.version import __version__
 
 
@@ -366,7 +366,7 @@ def imp_adif(self):
         self.show_message_box(f"{err}")    
         return 
     num_qsos = len(qsos_sorted) 
-    self.show_message_box(f"Found {num_qsos} QSOs in\n{filename}")
+    self.show_message_box(f"Found {num_qsos} QSOs in\n'{filename}'.")
 
     # Read all records from ADIF file and map them to not1mm fields.
     # If a mandatory field is missing, abort mapping and skip import.
@@ -478,14 +478,30 @@ def imp_adif(self):
             
         this_contact["Power"] = 0
         
-        # ADIF Band is in Meters (eg, "20m"), not1mm is in MHz
+        # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
+        # xlog does not export a Band field, so Band should not be mandatory
+        # 1st attempt: Band like "18m"
+        temp = 0.0
         try:
-            temp = q["BAND"]
-            temp = temp.lower()
-            this_contact["Band"] = get_not1mm_band(temp)
+            temp = get_not1mm_band(q["BAND"].lower())
         except KeyError:
-            self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
-            return
+            #self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
+            """ """
+        # 2nd attempt: no Band field, Freq like "18.160", double-convert
+        temp2 = get_adif_band(float(q["FREQ"]))
+        temp2 = temp2.lower()
+        temp3 = get_not1mm_band(temp2)
+        # 3rd attempt: Freq like "18" (ie, from xlog)
+        temp4 = get_not1mm_band_xlog(q["FREQ"])
+        if temp != 0.0:
+            this_contact["Band"] = temp
+        elif temp3 != 0.0:
+            this_contact["Band"] = temp3
+        elif temp4 != 0.0:
+            this_contact["Band"] = temp4
+        else:
+            # Well, we tried.    
+            this_contact["Band"] = 0.0
 
         try:
             this_contact["WPXPrefix"] = q["WPXPREFIX"]
@@ -522,9 +538,12 @@ def imp_adif(self):
             this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
         except KeyError:    
             this_contact["Run1Run2"] = ""
-        
-        this_contact["GridSquare"] = ""
-        
+
+        try:
+            this_contact["GridSquare"] = q["GRIDSQUARE"]
+        except KeyError:
+            this_contact["GridSquare"] = ""
+            
         try:
             temp = q["OPERATOR"]
         except KeyError:

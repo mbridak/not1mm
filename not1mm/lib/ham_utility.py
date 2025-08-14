@@ -94,39 +94,39 @@ def getband(freq: str) -> str:
     # logger.info("getband: %s %s", type(freq), freq)
     if freq.isnumeric():
         frequency = int(float(freq))
-        if 2000000 > frequency > 1800000:
+        if 2000000 >= frequency >= 1800000:
             return "160"
-        if 4000000 > frequency > 3500000:
+        if 4000000 >= frequency >= 3500000:
             return "80"
-        if 5406000 > frequency > 5330000:
+        if 5406000 >= frequency >= 5330000:
             return "60"
-        if 7300000 > frequency > 7000000:
+        if 7300000 >= frequency >= 7000000:
             return "40"
-        if 10150000 > frequency > 10100000:
+        if 10150000 >= frequency >= 10100000:
             return "30"
-        if 14350000 > frequency > 14000000:
+        if 14350000 >= frequency >= 14000000:
             return "20"
-        if 18168000 > frequency > 18068000:
+        if 18168000 >= frequency >= 18068000:
             return "17"
-        if 21450000 > frequency > 21000000:
+        if 21450000 >= frequency >= 21000000:
             return "15"
-        if 24990000 > frequency > 24890000:
+        if 24990000 >= frequency >= 24890000:
             return "12"
-        if 29700000 > frequency > 28000000:
+        if 29700000 >= frequency >= 28000000:
             return "10"
-        if 54000000 > frequency > 50000000:
+        if 54000000 >= frequency >= 50000000:
             return "6"
-        if 70500000 > frequency > 70000000:
+        if 70500000 >= frequency >= 70000000:
             return "4"
-        if 148000000 > frequency > 144000000:
+        if 148000000 >= frequency >= 144000000:
             return "2"
-        if 225000000 > frequency > 222000000:
+        if 225000000 >= frequency >= 222000000:
             return "1.25"
-        if 450000000 > frequency > 420000000:
+        if 450000000 >= frequency >= 420000000:
             return "70cm"
-        if 928000000 > frequency > 902000000:
+        if 928000000 >= frequency >= 902000000:
             return "33cm"
-        if 1300000000 > frequency > 1240000000:
+        if 1300000000 >= frequency >= 1240000000:
             return "23cm"
     return "0"
 
@@ -140,152 +140,246 @@ def get_logged_band(freq: str) -> str:
 
     if freq.isnumeric():
         frequency = int(float(freq))
-        if 2000000 > frequency > 1800000:
+        if 2000000 >= frequency >= 1800000:
             return "1.8"
-        if 4000000 > frequency > 3500000:
+        if 4000000 >= frequency >= 3500000:
             return "3.5"
-        if 5406000 > frequency > 5330000:
+        if 5406000 >= frequency >= 5330000:
             return "5"
-        if 7300000 > frequency > 7000000:
+        if 7300000 >= frequency >= 7000000:
             return "7"
-        if 10150000 > frequency > 10100000:
+        if 10150000 >= frequency >= 10100000:
             return "10"
-        if 14350000 > frequency > 14000000:
+        if 14350000 >= frequency >= 14000000:
             return "14"
-        if 18168000 > frequency > 18068000:
+        if 18168000 >= frequency >= 18068000:
             return "18"
-        if 21450000 > frequency > 21000000:
+        if 21450000 >= frequency >= 21000000:
             return "21"
-        if 24990000 > frequency > 24890000:
+        if 24990000 >= frequency >= 24890000:
             return "24"
-        if 29700000 > frequency > 28000000:
+        if 29700000 >= frequency >= 28000000:
             return "28"
-        if 54000000 > frequency > 50000000:
+        if 54000000 >= frequency >= 50000000:
             return "50"
-        if 70500000 > frequency > 70000000:
+        if 70500000 >= frequency >= 70000000:
             return "70"
-        if 148000000 > frequency > 144000000:
+        if 148000000 >= frequency >= 144000000:
             return "144"
-        if 225000000 > frequency > 222000000:
+        if 225000000 >= frequency >= 222000000:
             return "222"
-        if 450000000 > frequency > 420000000:
+        if 450000000 >= frequency >= 420000000:
             return "432"
-        if 928000000 > frequency > 902000000:
+        if 928000000 >= frequency >= 902000000:
             return "902"
-        if 1300000000 > frequency > 1240000000:
+        if 1300000000 >= frequency >= 1240000000:
             return "1296"
-        if 10500000000 > frequency > 2300000000:
+        if 10500000000 >= frequency >= 2300000000:
             return "2300+"
     return "0"
 
 
 def get_adif_band(freq: Decimal) -> str:
     """xxx"""
-    if 7500000 > freq > 300000:
+    if 7500000 >= freq >= 300000:
         return "submm"
-    if 250000 > freq > 241000:
+    if 250000 >= freq >= 241000:
         return "1mm"
-    if 149000 > freq > 134000:
+    if 149000 >= freq >= 134000:
         return "2mm"
-    if 123000 > freq > 119980:
+    if 123000 >= freq >= 119980:
         return "2.5mm"
-    if 81000 > freq > 75500:
+    if 81000 >= freq >= 75500:
         return "4mm"
-    if 47200 > freq > 47000:
+    if 47200 >= freq >= 47000:
         return "6mm"
-    if 24250 > freq > 24000:
+    if 24250 >= freq >= 24000:
         return "1.25cm"
-    if 10500 > freq > 10000:
+    if 10500 >= freq >= 10000:
         return "3cm"
-    if 5925 > freq > 5650:
+    if 5925 >= freq >= 5650:
         return "6cm"
-    if 3500 > freq > 3300:
+    if 3500 >= freq >= 3300:
         return "9cm"
-    if 2450 > freq > 2300:
+    if 2450 >= freq >= 2300:
         return "13cm"
-    if 1300 > freq > 1240:
+    if 1300 >= freq >= 1240:
         return "23cm"
-    if 928 > freq > 902:
+    if 928 >= freq >= 902:
         return "33cm"
-    if 450 > freq > 420:
+    if 450 >= freq >= 420:
         return "70cm"
-    if 225 > freq > 222:
+    if 225 >= freq >= 222:
         return "1.25m"
-    if 148 > freq > 144:
+    if 148 >= freq >= 144:
         return "2m"
-    if 71 > freq > 70:
+    if 71 >= freq >= 70:
         return "4m"
-    if 69.9 > freq > 54.000001:
+    if 69.9 >= freq >= 54.000001:
         return "5m"
-    if 54 > freq > 50:
+    if 54 >= freq >= 50:
         return "6m"
-    if 45 > freq > 40:
+    if 45 >= freq >= 40:
         return "8m"
-    if 29.7 > freq > 28.0:
+    if 29.7 >= freq >= 28.0:
         return "10m"
-    if 24.99 > freq > 24.890:
+    if 24.99 >= freq >= 24.890:
         return "12m"
-    if 21.45 > freq > 21.0:
+    if 21.45 >= freq >= 21.0:
         return "15m"
-    if 18.168 > freq > 18.068:
+    if 18.168 >= freq >= 18.068:
         return "17m"
-    if 14.35 > freq > 14.0:
+    if 14.35 >= freq >= 14.0:
         return "20m"
-    if 10.15 > freq > 10.1:
+    if 10.15 >= freq >= 10.1:
         return "30m"
-    if 7.3 > freq > 7.0:
+    if 7.3 >= freq >= 7.0:
         return "40m"
-    if 5.45 > freq > 5.06:
+    if 5.45 >= freq >= 5.06:
         return "60m"
-    if 4.0 > freq > 3.5:
+    if 4.0 >= freq >= 3.5:
         return "80m"
-    if 2.0 > freq > 1.8:
+    if 2.0 >= freq >= 1.8:
         return "160m"
-    if 0.504 > freq > 0.501:
+    if 0.504 >= freq >= 0.501:
         return "560m"
-    if 0.479 > freq > 0.472:
+    if 0.479 >= freq >= 0.472:
         return "630m"
-    if 0.1378 > freq > 0.1357:
+    if 0.1378 >= freq >= 0.1357:
         return "2190m"
     return "0m"
 
 
 def get_not1mm_band(band: str) -> float:
-    bandfreqs = {
-        "2190m": 0.137,
-        "630m": 0.472,
-        "560m": 0.501,
-        "160m": 1.8,
-        "80m": 3.5,
-        "60m": 5.0,
-        "40m": 7.0,
-        "30m": 10.1,
-        "20m": 14.0,
-        "17m": 18.068,
-        "15m": 21.0,
-        "12m": 24.890,
-        "10m": 28.0,
-        "8m": 40.0,
-        "6m": 50.0,
-        "5m": 54.0,
-        "4m": 70.0,
-        "2m": 144.0,
-        "1.25m": 222.0,
-        "70cm": 420.0,
-        "33cm":	902.0,
-        "23cm":	1240.0,
-        "13cm":	2300.0,
-        "9cm": 3300.0,
-        "6cm": 5650.0,
-        "3cm": 10000.0,
-        "1.25cm": 24000.0,
-        "6mm": 47000.0,
-        "4mm": 75500.0,
-        "2.5mm": 119980.0,
-        "2mm": 134000.0,
-        "1mm": 241000.0,
-    }    
-    return bandfreqs[band] 
+    if band == "2190m": 
+        return 0.137
+    if band == "630m": 
+        return 0.472
+    if band == "560m": 
+        return 0.501
+    if band == "160m": 
+        return 1.8
+    if band == "80m": 
+        return 3.5
+    if band == "60m": 
+        return 5.0
+    if band == "40m": 
+        return 7.0
+    if band == "30m": 
+        return 10.1
+    if band == "20m": 
+        return 14.0
+    if band == "17m": 
+        return 18.068
+    if band == "15m": 
+        return 21.0
+    if band == "12m": 
+        return 24.890
+    if band == "10m": 
+        return 28.0
+    if band == "8m": 
+        return 40.0
+    if band == "6m": 
+        return 50.0
+    if band == "5m": 
+        return 54.0
+    if band == "4m": 
+        return 70.0
+    if band == "2m": 
+        return 144.0
+    if band == "1.25m": 
+        return 222.0
+    if band == "70cm": 
+        return 420.0
+    if band == "33cm": 
+        return 902.0
+    if band == "23cm": 
+        return 1240.0
+    if band == "13cm": 
+        return 2300.0
+    if band == "9cm": 
+        return 3300.0
+    if band == "6cm": 
+        return 5650.0
+    if band == "3cm": 
+        return 10000.0
+    if band == "1.25cm": 
+        return 24000.0
+    if band == "6mm": 
+        return 47000.0
+    if band == "4mm": 
+        return 75500.0
+    if band == "2.5mm": 
+        return 119980.0
+    if band == "2mm": 
+        return 134000.0
+    if band == "1mm": 
+        return 241000.0
+    return 0.0
+
+
+def get_not1mm_band_xlog(band: str) -> float:
+    if band == "0.136":
+        return 0.137
+    if band == "0.472":
+        return 0.472
+    if band == "0.501":
+        return 0.501
+    if band == "1.8":
+        return 1.8
+    if band == "3.5":
+        return 3.5
+    if band == "5":
+        return 5.0
+    if band == "7":
+        return 7.0
+    if band == "10":
+        return 10.1
+    if band == "14":
+        return 14.0
+    if band == "18":
+        return 18.068
+    if band == "21":
+        return 21.0
+    if band == "24":
+        return 24.890
+    if band == "28":
+        return 28.0
+    if band == "50":
+        return 50.0
+    if band == "70":
+        return 70.0
+    if band == "144":
+        return 144.0
+    if band == "222":
+        return 222.0
+    if band == "420":
+        return 420.0
+    if band == "902":
+        return 902.0
+    if band == "1240":
+        return 1240.0
+    if band == "2300":
+        return 2300.0
+    if band == "3300":
+        return 3300.0
+    if band == "5650":
+        return 5650.0
+    if band == "10000":
+        return 10000.0
+    if band == "24000":
+        return 24000.0
+    if band == "47000":
+        return 47000.0
+    if band == "75500":
+        return 75500.0
+    if band == "120000":
+        return 119980.0
+    if band == "142000":
+        return 134000.0
+    if band == "241000":
+        return 241000.0
+    return "0"
 
 
 def fakefreq(band: str, mode: str) -> str:
