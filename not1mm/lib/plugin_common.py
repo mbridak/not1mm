@@ -492,10 +492,10 @@ def imp_adif(self):
         temp2 = temp2.lower()
         temp3 = get_not1mm_band(temp2)
         # 3rd attempt: Freq like "18" (ie, from xlog)
-        temp4 = get_not1mm_band(q["FREQ"])
+        temp4 = get_not1mm_band_xlog(q["FREQ"])
         if temp != 0.0:
             this_contact["Band"] = temp
-        if temp3 != 0.0:
+        elif temp3 != 0.0:
             this_contact["Band"] = temp3
         elif temp4 != 0.0:
             this_contact["Band"] = temp4
