@@ -366,7 +366,7 @@ def imp_adif(self):
         self.show_message_box(f"{err}")    
         return 
     num_qsos = len(qsos_sorted) 
-    self.show_message_box(f"Found {num_qsos} QSOs in\n{filename}")
+    self.show_message_box(f"Found {num_qsos} QSOs in\n'{filename}'.")
 
     # Read all records from ADIF file and map them to not1mm fields.
     # If a mandatory field is missing, abort mapping and skip import.
@@ -479,13 +479,24 @@ def imp_adif(self):
         this_contact["Power"] = 0
         
         # ADIF Band is in Meters (eg, "20m"), not1mm is in MHz
+        # xlog does not export a Band field, so Band should not be mandatory
         try:
             temp = q["BAND"]
             temp = temp.lower()
             this_contact["Band"] = get_not1mm_band(temp)
         except KeyError:
-            self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
-            return
+            #self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
+            temp2 = get_adif_band(float(q["FREQ"]))
+            temp2 = temp2.lower()
+            temp3 = get_not1mm_band(temp2)
+            temp4 = get_not1mm_band(q["FREQ"])
+            if temp3 != 0.0:
+                this_contact["Band"] = temp3
+            elif temp4 != 0:
+                this_contact["Band"] = temp4
+            else:
+                # Well, we tried.    
+                this_contact["Band"] = ""
 
         try:
             this_contact["WPXPrefix"] = q["WPXPREFIX"]
