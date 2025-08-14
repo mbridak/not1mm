@@ -538,9 +538,12 @@ def imp_adif(self):
             this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
         except KeyError:    
             this_contact["Run1Run2"] = ""
-        
-        this_contact["GridSquare"] = ""
-        
+
+        try:
+            this_contact["GridSquare"] = q["GRIDSQUARE"]
+        except KeyError:
+            this_contact["GridSquare"] = ""
+            
         try:
             temp = q["OPERATOR"]
         except KeyError:
