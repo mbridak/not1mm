@@ -7,7 +7,7 @@ import adif_io
 
 from decimal import Decimal
 from pathlib import Path
-from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band
+from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_band_xlog
 from not1mm.lib.version import __version__
 
 
