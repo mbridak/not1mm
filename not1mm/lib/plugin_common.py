@@ -478,25 +478,30 @@ def imp_adif(self):
             
         this_contact["Power"] = 0
         
-        # ADIF Band is in Meters (eg, "20m"), not1mm is in MHz
+        # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
         # xlog does not export a Band field, so Band should not be mandatory
+        # 1st attempt: Band like "18m"
+        temp = 0.0
         try:
-            temp = q["BAND"]
-            temp = temp.lower()
-            this_contact["Band"] = get_not1mm_band(temp)
+            temp = get_not1mm_band(q["BAND"].lower())
         except KeyError:
             #self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
-            temp2 = get_adif_band(float(q["FREQ"]))
-            temp2 = temp2.lower()
-            temp3 = get_not1mm_band(temp2)
-            temp4 = get_not1mm_band(q["FREQ"])
-            if temp3 != 0.0:
-                this_contact["Band"] = temp3
-            elif temp4 != 0:
-                this_contact["Band"] = temp4
-            else:
-                # Well, we tried.    
-                this_contact["Band"] = ""
+            """ """
+        # 2nd attempt: no Band field, Freq like "18.160", double-convert
+        temp2 = get_adif_band(float(q["FREQ"]))
+        temp2 = temp2.lower()
+        temp3 = get_not1mm_band(temp2)
+        # 3rd attempt: Freq like "18" (ie, from xlog)
+        temp4 = get_not1mm_band(q["FREQ"])
+        if temp != 0.0:
+            this_contact["Band"] = temp
+        if temp3 != 0.0:
+            this_contact["Band"] = temp3
+        elif temp4 != 0.0:
+            this_contact["Band"] = temp4
+        else:
+            # Well, we tried.    
+            this_contact["Band"] = 0.0
 
         try:
             this_contact["WPXPrefix"] = q["WPXPREFIX"]
