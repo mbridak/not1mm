@@ -12,7 +12,7 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import (
     gen_adif,
-    imp_adif, 
+    imp_adif,
     get_points,
 )
 

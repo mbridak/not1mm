@@ -24,7 +24,6 @@
 #  	Cabrillo name:	CW-OPS-CWO
 
 
-
 import datetime
 import logging
 
@@ -131,6 +130,7 @@ def prefill(self):
         serial_nr = "001"
     if len(self.other_1.text()) == 0:
         self.other_1.setText(serial_nr)
+
 
 def points(self):
     """Calc point"""

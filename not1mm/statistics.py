@@ -195,7 +195,8 @@ class StatsWindow(QDockWidget):
         self.tableWidget.resizeRowsToContents()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False) 
+        self.action.setChecked(False)
+
 
 if __name__ == "__main__":
     print("This is not a program.\nTry Again.")

@@ -273,7 +273,8 @@ class CheckWindow(QDockWidget):
         return self.background_colors_cache
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False) 
+        self.action.setChecked(False)
+
 
 class CallLabel(QLabel):
     call: str = None

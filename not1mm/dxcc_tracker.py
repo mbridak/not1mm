@@ -142,4 +142,4 @@ class DXCCWindow(QDockWidget):
                 self.get_log()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False) 
+        self.action.setChecked(False)

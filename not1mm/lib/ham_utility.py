@@ -251,69 +251,69 @@ def get_adif_band(freq: Decimal) -> str:
 
 
 def get_not1mm_band(band: str) -> float:
-    if band == "2190m": 
+    if band == "2190m":
         return 0.137
-    if band == "630m": 
+    if band == "630m":
         return 0.472
-    if band == "560m": 
+    if band == "560m":
         return 0.501
-    if band == "160m": 
+    if band == "160m":
         return 1.8
-    if band == "80m": 
+    if band == "80m":
         return 3.5
-    if band == "60m": 
+    if band == "60m":
         return 5.0
-    if band == "40m": 
+    if band == "40m":
         return 7.0
-    if band == "30m": 
+    if band == "30m":
         return 10.1
-    if band == "20m": 
+    if band == "20m":
         return 14.0
-    if band == "17m": 
+    if band == "17m":
         return 18.068
-    if band == "15m": 
+    if band == "15m":
         return 21.0
-    if band == "12m": 
+    if band == "12m":
         return 24.890
-    if band == "10m": 
+    if band == "10m":
         return 28.0
-    if band == "8m": 
+    if band == "8m":
         return 40.0
-    if band == "6m": 
+    if band == "6m":
         return 50.0
-    if band == "5m": 
+    if band == "5m":
         return 54.0
-    if band == "4m": 
+    if band == "4m":
         return 70.0
-    if band == "2m": 
+    if band == "2m":
         return 144.0
-    if band == "1.25m": 
+    if band == "1.25m":
         return 222.0
-    if band == "70cm": 
+    if band == "70cm":
         return 420.0
-    if band == "33cm": 
+    if band == "33cm":
         return 902.0
-    if band == "23cm": 
+    if band == "23cm":
         return 1240.0
-    if band == "13cm": 
+    if band == "13cm":
         return 2300.0
-    if band == "9cm": 
+    if band == "9cm":
         return 3300.0
-    if band == "6cm": 
+    if band == "6cm":
         return 5650.0
-    if band == "3cm": 
+    if band == "3cm":
         return 10000.0
-    if band == "1.25cm": 
+    if band == "1.25cm":
         return 24000.0
-    if band == "6mm": 
+    if band == "6mm":
         return 47000.0
-    if band == "4mm": 
+    if band == "4mm":
         return 75500.0
-    if band == "2.5mm": 
+    if band == "2.5mm":
         return 119980.0
-    if band == "2mm": 
+    if band == "2mm":
         return 134000.0
-    if band == "1mm": 
+    if band == "1mm":
         return 241000.0
     return 0.0
 

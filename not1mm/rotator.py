@@ -369,4 +369,4 @@ class RotatorWindow(QDockWidget):
             self.rotator.connect()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False) 
+        self.action.setChecked(False)
