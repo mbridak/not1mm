@@ -9,6 +9,8 @@ import adif_io
 from decimal import Decimal
 from pathlib import Path
 
+# from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton, QMainWindow, QProgressDialog
+# from PyQt6.QtCore import QThread, pyqtSignal, Qt, QCoreApplication
 from PyQt6.QtWidgets import QApplication, QDialog, QPushButton, QProgressDialog
 from PyQt6.QtCore import QCoreApplication
 
@@ -16,6 +18,7 @@ from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_ba
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
 
 def online_score_xml(self):
     """generate online xml"""
@@ -368,23 +371,23 @@ def imp_adif(self):
     try:
         logger.debug(f"Selected file '{filename}' to import from")
         qsos_raw, adif_header = adif_io.read_from_file(filename)
-        qsos_sorted = sorted(qsos_raw, key = adif_io.time_on)
+        qsos_sorted = sorted(qsos_raw, key=adif_io.time_on)
     except FileNotFoundError as err:
-        self.show_message_box(f"{err}")    
-        return 
+        self.show_message_box(f"{err}")
+        return
     num_qsos = len(qsos_sorted)
     logger.debug(f"Found {num_qsos} QSOs to import")
     self.show_message_box(f"Found {num_qsos} QSOs in\n'{filename}'.")
     if num_qsos == 0:
         return
-        
+
     self.progress_dialog = QProgressDialog("Validating...", "Cancel", 0, num_qsos, self)
-    #self.progress_dialog.setWindowModality(Qt.WindowModal)
+    # self.progress_dialog.setWindowModality(Qt.WindowModal)
     self.progress_dialog.show()
-    
+
     q_num = 0
-    contacts = [] 
-    dupes = 0 
+    contacts = []
+    dupes = 0
 
     for q in qsos_sorted:
         QCoreApplication.processEvents()
@@ -392,45 +395,51 @@ def imp_adif(self):
             self.progress_dialog.close()
             self.show_message_box("Cancelling import.")
             return
-            
+
         this_contact = self.database.get_empty()
-        
+
         try:
             temp = adif_io.time_on(q)
             this_contact["TS"] = temp.strftime("%Y-%m-%d %H:%M:%S")
         except KeyError:
             logger.debug("Date/time not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_message_box(f"Date/time not found in QSO #{q_num+1}.\nImport cancelled.")
+            self.show_message_box(
+                f"Date/time not found in QSO #{q_num+1}.\nImport cancelled."
+            )
             return
-            
+
         try:
             this_contact["Call"] = q["CALL"]
         except KeyError:
             logger.debug("Callsign not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_message_box(f"Callsign not found in QSO #{q_num+1}.\nImport cancelled.")
+            self.show_message_box(
+                f"Callsign not found in QSO #{q_num+1}.\nImport cancelled."
+            )
             return
-                
+
         # ADIF freq is in MHz, not1mm is in kHz
         try:
-            this_contact["Freq"] = float(q["FREQ"]) * 1000.0 
+            this_contact["Freq"] = float(q["FREQ"]) * 1000.0
         except (ValueError, TypeError, KeyError):
             logger.debug("Frequency not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_msgbox(f"Valid Frequency not found in QSO #{q_num+1}.\nImport cancelled.")
+            self.show_msgbox(
+                f"Valid Frequency not found in QSO #{q_num+1}.\nImport cancelled."
+            )
             return
-            
+
         this_contact["QSXFreq"] = ""
-        
+
         try:
             temp = q["MODE"]
         except KeyError:
-            temp = ""   
+            temp = ""
         try:
             temp2 = q["SUBMODE"]
         except KeyError:
-            temp2 = ""   
+            temp2 = ""
         if temp:
             this_contact["Mode"] = temp
         elif temp2:
@@ -438,53 +447,55 @@ def imp_adif(self):
         else:
             logger.debug("Mode not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_message_box(f"Valid Mode not found in QSO #{q_num+1}.\nImport cancelled.")
-            return                    
-                
+            self.show_message_box(
+                f"Valid Mode not found in QSO #{q_num+1}.\nImport cancelled."
+            )
+            return
+
         this_contact["ContestName"] = self.contest.name
-        
+
         try:
             this_contact["SNT"] = q["RST_SENT"]
         except KeyError:
             this_contact["SNT"] = ""
-         
+
         try:
             this_contact["RCV"] = q["RST_RCVD"]
         except KeyError:
             this_contact["RCV"] = ""
-            
+
         try:
             this_contact["CountryPrefix"] = q["PFX"]
         except KeyError:
             this_contact["CountryPrefix"] = ""
-            
+
         this_contact["StationPrefix"] = ""
         this_contact["QTH"] = ""
-        
+
         try:
             this_contact["Name"] = q["NAME"]
         except KeyError:
             this_contact["Name"] = ""
-            
-        try:        
+
+        try:
             this_contact["Comment"] = q["COMMENT"]
         except KeyError:
             this_contact["Comment"] = ""
-                
+
         this_contact["NR"] = 0
-        
+
         try:
             this_contact["Sect"] = q["ARRL_SECT"]
         except KeyError:
             this_contact["Sect"] = ""
-        
+
         QCoreApplication.processEvents()
-        
+
         this_contact["Prec"] = ""
         this_contact["CK"] = 0
         this_contact["ZN"] = 0
-        
-        try: 
+
+        try:
             this_contact["SentNr"] = q["SENTNR"]
         except KeyError:
             this_contact["SentNr"] = ""
@@ -496,16 +507,16 @@ def imp_adif(self):
 
         try:
             this_contact["IsMultiplier1"] = q["APP_N1MM_MULT1"]
-        except KeyError:    
+        except KeyError:
             this_contact["IsMultiplier1"] = 0
 
         try:
             this_contact["IsMultiplier2"] = q["APP_N1MM_MULT2"]
-        except KeyError:        
+        except KeyError:
             this_contact["IsMultiplier2"] = 0
-            
+
         this_contact["Power"] = 0
-           
+
         # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
         # xlog does not export a Band field, so Band should not be mandatory
         # 1st attempt: Band like "18m"
@@ -513,7 +524,7 @@ def imp_adif(self):
         try:
             temp = get_not1mm_band(q["BAND"].lower())
         except KeyError:
-            #self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
+            # self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
             """ """
         # 2nd attempt: no Band field, so take a Freq like "18.160" and double-convert
         temp2 = get_adif_band(float(q["FREQ"]))
@@ -528,19 +539,19 @@ def imp_adif(self):
         elif temp4 != 0.0:
             this_contact["Band"] = temp4
         else:
-            # Well, we tried.    
+            # Well, we tried.
             this_contact["Band"] = 0.0
 
         try:
             this_contact["WPXPrefix"] = q["WPXPREFIX"]
         except KeyError:
             this_contact["WPXPrefix"] = ""
-            
+
         try:
             temp = q["CLASS"]
         except KeyError:
             temp = ""
-        try:                            
+        try:
             temp2 = q["EXCHANGE1"]
         except KeyError:
             temp2 = ""
@@ -549,7 +560,7 @@ def imp_adif(self):
         except KeyError:
             temp3 = ""
         this_contact["Exchange1"] = temp + temp2 + temp3
-            
+
         this_contact["RadioNR"] = ""
         this_contact["ContestNR"] = self.pref.get("contest", "0")
 
@@ -557,30 +568,30 @@ def imp_adif(self):
             this_contact["isMultiplier3"] = q["APP_N1MM_MULT3"]
         except KeyError:
             this_contact["isMultiplier3"] = 0
-          
+
         this_contact["MiscText"] = ""
         this_contact["IsRunQSO"] = ""
         this_contact["ContactType"] = ""
 
         QCoreApplication.processEvents()
-        
+
         try:
             this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
-        except KeyError:    
+        except KeyError:
             this_contact["Run1Run2"] = ""
 
         try:
             this_contact["GridSquare"] = q["GRIDSQUARE"]
         except KeyError:
             this_contact["GridSquare"] = ""
-            
+
         try:
             temp = q["OPERATOR"]
         except KeyError:
             temp = ""
         if temp:
             this_contact["Operator"] = temp
-        else:    
+        else:
             try:
                 temp = q["STATION_CALLSIGN"]
             except KeyError:
@@ -592,9 +603,9 @@ def imp_adif(self):
 
         try:
             this_contact["Continent"] = q["APP_N1MM_CONTINENT"]
-        except KeyError:    
+        except KeyError:
             this_contact["Continent"] = ""
-        
+
         this_contact["RoverLocation"] = ""
         this_contact["RadioInterfaced"] = ""
         this_contact["NetworkedCompNr"] = 1
@@ -607,53 +618,59 @@ def imp_adif(self):
         this_contact["IsOriginal"] = 0
         this_contact["ID"] = uuid.uuid4().hex
         this_contact["CLAIMEDQSO"] = 1
-        
+
         # is this record a dupe?
         theTS = this_contact["TS"]
         thecall = this_contact["Call"]
-        temp = self.database.exec_sql(f"select count(*) as isdupe from dxlog where TS = '{theTS}' and call = '{thecall}'")
+        temp = self.database.exec_sql(
+            f"select count(*) as isdupe from dxlog where TS = '{theTS}' and call = '{thecall}'"
+        )
         if temp["isdupe"] > 0:
             dupes = dupes + 1
         else:
             contacts.append(this_contact.copy())
-            
+
         this_contact.clear()
         q_num = q_num + 1
         self.progress_dialog.setValue(q_num)
         QCoreApplication.processEvents()
-            
+
     # All ADIF records have now been mapped.
     self.progress_dialog.close()
     logger.debug(f"Found {dupes} duplicate records")
     if dupes > 0:
-        self.show_message_box(f"NOTE: Found {dupes} duplicate records, which will not be saved.")
-        
-    self.progress_dialog = QProgressDialog("Saving...", "Cancel", 0, len(contacts), self)
-    #self.progress_dialog.setWindowModality(Qt.WindowModal)
+        self.show_message_box(
+            f"NOTE: Found {dupes} duplicate records, which will not be saved."
+        )
+
+    self.progress_dialog = QProgressDialog(
+        "Saving...", "Cancel", 0, len(contacts), self
+    )
+    # self.progress_dialog.setWindowModality(Qt.WindowModal)
     self.progress_dialog.setValue(0)
     self.progress_dialog.show()
-    saves = 0 
+    saves = 0
     for my_contact in contacts:
         QCoreApplication.processEvents()
         if self.progress_dialog.wasCanceled():
             self.progress_dialog.close()
             self.show_message_box("Cancelling import in progress.")
             return
-            
-        self.database.log_contact(my_contact) 
-        
-        saves = saves + 1 
+
+        self.database.log_contact(my_contact)
+
+        saves = saves + 1
         self.progress_dialog.setValue(saves)
         QCoreApplication.processEvents()
-        
+
     self.progress_dialog.close()
     # update everything
     self.log_window.get_log()
-    
+
     if self.actionStatistics.isChecked():
         self.statistics_window.get_run_and_total_qs()
-    
-    score = self.contest.calc_score(self)   
+
+    score = self.contest.calc_score(self)
     self.score.setText(str(score))
 
     mults = self.contest.show_mults(self)
@@ -661,6 +678,6 @@ def imp_adif(self):
     multstring = f"{qsos}/{mults}"
     self.mults.setText(multstring)
 
-    logger.debug(f"Saved {saves} ADIF records to contest {self.contest.name}")    
+    logger.debug(f"Saved {saves} ADIF records to contest {self.contest.name}")
     self.show_message_box(f"Saved {saves} ADIF records to this contest.")
     return
