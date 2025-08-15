@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-8-14] Merge bugfix PR for ADIF import.
 - [25-8-13] Supress popup if knob not found.
   - Merge PR from @ki4mcw, Adding ADIF import support.
 - [25-8-10] Allow '^M' in RTTY macros to allow newline.
