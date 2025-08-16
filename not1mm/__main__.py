@@ -4607,14 +4607,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         # https://www.adif.org/315/ADIF_315.htm
-        try:
-            logger.debug("******ADIF IMPORT*****")
-            self.contest.imp_adif(self)
-        except AttributeError:
-            self.show_message_box(
-                f"Contest plugin '{self.contest.name}'\n"
-                "has no ADIF import routine.\nCancelling import."
-            )
+        logger.debug("******ADIF IMPORT*****")
+        self.contest.imp_adif(self)
+
 
     def load_fonts_from_dir(self, directory: str) -> str:
         """
