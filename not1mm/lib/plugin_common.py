@@ -448,34 +448,34 @@ def imp_adif(self):
             return
 
         this_contact["ContestName"] = self.contest.name
-        
+
         if q.get("SNT"):
             this_contact["SNT"] = q.get("SNT")
         elif q.get("RST_SENT"):
             this_contact["SNT"] = q.get("RST_SENT")
-                    
+
         if q.get("RCV"):
             this_contact["RCV"] = q.get("RCV")
         elif q.get("RST_RCVD"):
             this_contact["RCV"] = q.get("RST_RCVD")
-        
-        if q.get("COUNTRYPREFIX"):    
+
+        if q.get("COUNTRYPREFIX"):
             this_contact["CountryPrefix"] = q.get("COUNTRYPREFIX")
         elif q.get("PFX"):
             this_contact["CountryPrefix"] = q.get("PFX")
-    
+
         if q.get("STATIONPREFIX"):
             this_contact["StationPrefix"] = q.get("STATIONPREFIX")
-            
-        if q.get("QTH"):    
+
+        if q.get("QTH"):
             this_contact["QTH"] = q.get("QTH")
-        
+
         if q.get("NAME"):
             this_contact["Name"] = q.get("NAME")
-        
+
         if q.get("COMMENT"):
             this_contact["Comment"] = q.get("COMMENT")
-        
+
         if q.get("NR"):
             this_contact["NR"] = q.get("NR")
 
@@ -488,7 +488,7 @@ def imp_adif(self):
 
         if q.get("PREC"):
             this_contact["Prec"] = q.get("PREC")
-        
+
         if q.get("CK"):
             this_contact["CK"] = q.get("CK")
 
@@ -507,13 +507,13 @@ def imp_adif(self):
 
         if q.get("APP_N1MM_MULT1"):
             this_contact["IsMultiplier1"] = q.get("APP_N1MM_MULT1")
-            
+
         if q.get("APP_N1MM_MULT2"):
             this_contact["IsMultiplier2"] = q.get("APP_N1MM_MULT2")
-            
+
         if q.get("POWER"):
             this_contact["Power"] = q.get("POWER")
-        elif q.get("TX_PWR")
+        elif q.get("TX_PWR"):
             this_contact["Power"] = q.get("TX_PWR")
 
         # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
@@ -523,7 +523,7 @@ def imp_adif(self):
         temp = get_not1mm_band(temp.lower())
         # 2nd attempt: no Band field, so take a Freq like "18.160" and double-convert
         temp2 = get_adif_band(float(q.get("FREQ")))  # returns like "18m"
-        temp3 = get_not1mm_band(temp2.lower())       # returns like "18.068"
+        temp3 = get_not1mm_band(temp2.lower())  # returns like "18.068"
         # 3rd attempt: abbreviated Freq like "18" (ie, from xlog)
         temp4 = get_not1mm_band_xlog(q.get("FREQ"))
         if temp != 0.0:
@@ -548,11 +548,11 @@ def imp_adif(self):
 
         if q.get("RADIONR"):
             this_contact["RadioNR"] = q.get("RADIONR")
-        elif q.get("APP_N1MM_RADIONR"):    
+        elif q.get("APP_N1MM_RADIONR"):
             this_contact["RadioNR"] = q.get("APP_N1MM_RADIONR")
         else:
             this_contact["RadioNR"] = 1
-                    
+
         this_contact["ContestNR"] = self.pref.get("contest", "0")
 
         if q.get("ISMULTIPLIER3"):
@@ -562,10 +562,10 @@ def imp_adif(self):
 
         if q.get("MISCTEXT"):
             this_contact["MiscText"] = q.get("MISCTEXT")
-            
+
         if q.get("ISRUNQSO"):
             this_contact["IsRunQSO"] = q.get("ISRUNQSO")
-            
+
         if q.get("CONTACTTYPE"):
             this_contact["ContactType"] = q.get("CONTACTTYPE")
 
@@ -575,9 +575,9 @@ def imp_adif(self):
             this_contact["Run1Run2"] = q.get("RUN1RUN2")
         elif q.get("APP_N1MM_RUN1RUN2"):
             this_contact["Run1Run2"] = q.get("APP_N1MM_RUN1RUN2")
-        else:    
+        else:
             this_contact["Run1Run2"] = 1
-    
+
         if q.get("GRIDSQUARE"):
             this_contact["GridSquare"] = q.get("GRIDSQUARE")
 
@@ -598,7 +598,7 @@ def imp_adif(self):
             this_contact["RadioInterfaced"] = q.get("RADIOINTERFACED")
         elif q.get("APP_N1MM_RADIOINTERFACED"):
             this_contact["RadioInterfaced"] = q.get("APP_N1MM_RADIOINTERFACED")
-        
+
         if q.get("NETWORKEDCOMPNR"):
             this_contact["NetworkedCompNr"] = q.get("NETWORKEDCOMPNR")
 
@@ -612,7 +612,7 @@ def imp_adif(self):
         if q.get("ISORIGINAL"):
             this_contact["IsOriginal"] = q.get("ISORIGINAL")
         elif q.get("APP_N1MM_ISORIGINAL"):
-            this_contact["IsOriginal"] = q.get("APP_N1MM_ISORIGINAL")    
+            this_contact["IsOriginal"] = q.get("APP_N1MM_ISORIGINAL")
 
         this_contact["ID"] = uuid.uuid4().hex
 
@@ -665,7 +665,7 @@ def imp_adif(self):
         self.progress_dialog.setValue(saves)
         QCoreApplication.processEvents()
     self.progress_dialog.close()
-    
+
     # update everything
     self.log_window.get_log()
 
