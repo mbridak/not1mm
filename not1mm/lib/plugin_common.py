@@ -9,8 +9,6 @@ import adif_io
 from decimal import Decimal
 from pathlib import Path
 
-# from PyQt6.QtWidgets import QApplication, QDialog, QLabel, QVBoxLayout, QPushButton, QMainWindow, QProgressDialog
-# from PyQt6.QtCore import QThread, pyqtSignal, Qt, QCoreApplication
 from PyQt6.QtWidgets import QApplication, QDialog, QPushButton, QProgressDialog
 from PyQt6.QtCore import QCoreApplication, Qt
 
