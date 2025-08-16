@@ -430,7 +430,7 @@ def imp_adif(self):
             )
             return
 
-        this_contact["QSXFreq"] = q.get("QSXFREQ")"
+        this_contact["QSXFreq"] = q.get("QSXFREQ")
 
         if q.get("MODE"):
             this_contact["Mode"] = q.get("MODE")
@@ -537,7 +537,7 @@ def imp_adif(self):
         if q.get("CONTINENT"):
             this_contact["Continent"] = q.get("CONTINENT")
         else:    
-            this_contact["Continent"] = q["APP_N1MM_CONTINENT"]
+            this_contact["Continent"] = q.get("APP_N1MM_CONTINENT")
         
         this_contact["RoverLocation"] = q.get("ROVERLOCATION")
         this_contact["RadioInterfaced"] = q.get("RADIOINTERFACED")
