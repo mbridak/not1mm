@@ -409,9 +409,9 @@ def imp_adif(self):
             )
             return
 
-        try:
-            this_contact["Call"] = q["CALL"]
-        except KeyError:
+        if q.get("CALL"):
+            this_contact["Call"] = q.get("CALL")
+        else:
             logger.debug("Callsign not found in QSO #{q_num+1}")
             self.progress_dialog.close()
             self.show_message_box(
@@ -420,9 +420,9 @@ def imp_adif(self):
             return
 
         # ADIF freq is in MHz, not1mm is in kHz
-        try:
-            this_contact["Freq"] = float(q["FREQ"]) * 1000.0
-        except (ValueError, TypeError, KeyError):
+        if q.get("FREQ"):
+            this_contact["Freq"] = float(q.get("FREQ")) * 1000.0
+        else:
             logger.debug("Frequency not found in QSO #{q_num+1}")
             self.progress_dialog.close()
             self.show_msgbox(
@@ -430,20 +430,12 @@ def imp_adif(self):
             )
             return
 
-        this_contact["QSXFreq"] = ""
+        this_contact["QSXFreq"] = q.get("QSXFREQ")"
 
-        try:
-            temp = q["MODE"]
-        except KeyError:
-            temp = ""
-        try:
-            temp2 = q["SUBMODE"]
-        except KeyError:
-            temp2 = ""
-        if temp:
-            this_contact["Mode"] = temp
-        elif temp2:
-            this_contact["Mode"] = temp2
+        if q.get("MODE"):
+            this_contact["Mode"] = q.get("MODE")
+        elif q.get("SUBMODE"):
+            this_contact["Mode"] = q.get("SUBMODE")
         else:
             logger.debug("Mode not found in QSO #{q_num+1}")
             self.progress_dialog.close()
@@ -453,85 +445,50 @@ def imp_adif(self):
             return
 
         this_contact["ContestName"] = self.contest.name
+        this_contact["SNT"] = q.get("RST_SENT")
+        this_contact["RCV"] = q.get("RST_RCVD")
+        this_contact["CountryPrefix"] = q.get("PFX")
+        this_contact["StationPrefix"] = q.get("STATIONPREFIX")
+        this_contact["QTH"] = q.get("QTH")
+        this_contact["Name"] = q.get("NAME")
+        this_contact["Comment"] = q.get("COMMENT")
+        this_contact["NR"] = q.get("NR")
 
-        try:
-            this_contact["SNT"] = q["RST_SENT"]
-        except KeyError:
-            this_contact["SNT"] = ""
-
-        try:
-            this_contact["RCV"] = q["RST_RCVD"]
-        except KeyError:
-            this_contact["RCV"] = ""
-
-        try:
-            this_contact["CountryPrefix"] = q["PFX"]
-        except KeyError:
-            this_contact["CountryPrefix"] = ""
-
-        this_contact["StationPrefix"] = ""
-        this_contact["QTH"] = ""
-
-        try:
-            this_contact["Name"] = q["NAME"]
-        except KeyError:
-            this_contact["Name"] = ""
-
-        try:
-            this_contact["Comment"] = q["COMMENT"]
-        except KeyError:
-            this_contact["Comment"] = ""
-
-        this_contact["NR"] = 0
-
-        try:
-            this_contact["Sect"] = q["ARRL_SECT"]
-        except KeyError:
-            this_contact["Sect"] = ""
+        if q.get("SECT"):
+            this_contact["Sect"] = q.get("SECT")
+        else:    
+            this_contact["Sect"] = q.get("ARRL_SECT")
 
         QCoreApplication.processEvents()
 
-        this_contact["Prec"] = ""
-        this_contact["CK"] = 0
-        this_contact["ZN"] = 0
+        this_contact["Prec"] = q.get("PREC")
+        this_contact["CK"] = q.get("CK")
 
-        try:
-            this_contact["SentNr"] = q["SENTNR"]
-        except KeyError:
-            this_contact["SentNr"] = ""
+        if q.get("ZN"):
+            this_contact["ZN"] = q.get("ZN")
+        else:
+            this_contact["ZN"] = q.get("CQZ")
 
-        try:
-            this_contact["Points"] = q["APP_N1MM_POINTS"]
-        except KeyError:
-            this_contact["Points"] = ""
+        this_contact["SentNr"] = q.get("SENTNR")
+        
+        if q.get("POINTS"):
+            this_contact["Points"] = q.get("POINTS")
+        else:
+            this_contact["Points"] = q.get("APP_N1MM_POINTS")
 
-        try:
-            this_contact["IsMultiplier1"] = q["APP_N1MM_MULT1"]
-        except KeyError:
-            this_contact["IsMultiplier1"] = 0
-
-        try:
-            this_contact["IsMultiplier2"] = q["APP_N1MM_MULT2"]
-        except KeyError:
-            this_contact["IsMultiplier2"] = 0
-
-        this_contact["Power"] = 0
+        this_contact["IsMultiplier1"] = q.get("APP_N1MM_MULT1")
+        this_contact["IsMultiplier2"] = q.get("APP_N1MM_MULT2")
+        this_contact["Power"] = q.get("POWER")
 
         # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
         # xlog does not export a Band field, so Band should not be mandatory
         # 1st attempt: Band like "18m"
-        temp = 0.0
-        try:
-            temp = get_not1mm_band(q["BAND"].lower())
-        except KeyError:
-            # self.show_message_box(f"Valid Band not found in QSO #{q_num+1}.\nImport cancelled.")
-            """ """
+        temp = get_not1mm_band(q.get("BAND").lower())
         # 2nd attempt: no Band field, so take a Freq like "18.160" and double-convert
-        temp2 = get_adif_band(float(q["FREQ"]))
-        temp2 = temp2.lower()
-        temp3 = get_not1mm_band(temp2)
+        temp2 = get_adif_band(float(q.get("FREQ")))
+        temp3 = get_not1mm_band(temp2.lower())
         # 3rd attempt: Freq like "18" (ie, from xlog)
-        temp4 = get_not1mm_band_xlog(q["FREQ"])
+        temp4 = get_not1mm_band_xlog(q.get("FREQ"))
         if temp != 0.0:
             this_contact["Band"] = temp
         elif temp3 != 0.0:
@@ -542,83 +499,65 @@ def imp_adif(self):
             # Well, we tried.
             this_contact["Band"] = 0.0
 
-        try:
-            this_contact["WPXPrefix"] = q["WPXPREFIX"]
-        except KeyError:
-            this_contact["WPXPrefix"] = ""
-
-        try:
-            temp = q["CLASS"]
-        except KeyError:
-            temp = ""
-        try:
-            temp2 = q["EXCHANGE1"]
-        except KeyError:
-            temp2 = ""
-        try:
-            temp3 = q["APP_N1MM_EXCHANGE1"]
-        except KeyError:
-            temp3 = ""
-        this_contact["Exchange1"] = temp + temp2 + temp3
-
-        this_contact["RadioNR"] = ""
+        this_contact["WPXPrefix"] = q.get("WPXPREFIX")
+        
+        if q.get("EXCHANGE1"):
+            this_contact["Exchange1"] = q.get("EXCHANGE1")
+        elif q.get("CLASS"):
+            this_contact["Exchange1"] = q.get("CLASS")
+        else:
+            this_contact["Exchange1"] = q.get("APP_N1MM_EXCHANGE1")
+        
+        this_contact["RadioNR"] = q.get("RADIONR")
         this_contact["ContestNR"] = self.pref.get("contest", "0")
 
-        try:
-            this_contact["isMultiplier3"] = q["APP_N1MM_MULT3"]
-        except KeyError:
-            this_contact["isMultiplier3"] = 0
-
-        this_contact["MiscText"] = ""
-        this_contact["IsRunQSO"] = ""
-        this_contact["ContactType"] = ""
+        if q.get("ISMULTIPLIER3"):
+            this_contact["isMultiplier3"] = q.get("ISMULTIPLIER3")
+        else:    
+            this_contact["isMultiplier3"] = q.get("APP_N1MM_MULT3")
+        
+        this_contact["MiscText"] = q.get("MISCTEXT")
+        this_contact["IsRunQSO"] = q.get("ISRUNQSO")
+        this_contact["ContactType"] = q.get("CONTACTTYPE")
 
         QCoreApplication.processEvents()
 
-        try:
-            this_contact["Run1Run2"] = q["APP_N1MM_RUN1RUN2"]
-        except KeyError:
-            this_contact["Run1Run2"] = ""
-
-        try:
-            this_contact["GridSquare"] = q["GRIDSQUARE"]
-        except KeyError:
-            this_contact["GridSquare"] = ""
-
-        try:
-            temp = q["OPERATOR"]
-        except KeyError:
-            temp = ""
-        if temp:
-            this_contact["Operator"] = temp
+        if q.get("RUN1RUN2"):
+            this_contact["Run1Run2"] = q.get("RUN1RUN2")
+        else:    
+            this_contact["Run1Run2"] = q.get("APP_N1MM_RUN1RUN2")
+        
+        this_contact["GridSquare"] = q.get("GRIDSQUARE")
+        
+        if q.get("OPERATOR"):
+            this_contact["Operator"] = q.get("OPERATOR")
         else:
-            try:
-                temp = q["STATION_CALLSIGN"]
-            except KeyError:
-                temp = ""
-            if temp:
-                this_contact["Operator"] = temp
-            else:
-                this_contact["Operator"] = ""
+            this_contact["Operator"] = q.get("STATION_CALLSIGN")
 
-        try:
+        if q.get("CONTINENT"):
+            this_contact["Continent"] = q.get("CONTINENT")
+        else:    
             this_contact["Continent"] = q["APP_N1MM_CONTINENT"]
-        except KeyError:
-            this_contact["Continent"] = ""
+        
+        this_contact["RoverLocation"] = q.get("ROVERLOCATION")
+        this_contact["RadioInterfaced"] = q.get("RADIOINTERFACED")
+        this_contact["NetworkedCompNr"] = q.get("NETWORKEDCOMPNR")
 
-        this_contact["RoverLocation"] = ""
-        this_contact["RadioInterfaced"] = ""
-        this_contact["NetworkedCompNr"] = 1
+        if q.get("NETBIOSNAME"):
+            this_contact["NetBiosName"] = q.get("NETBIOSNAME")
+        elif q.get("APP_N1MM_NETBIOSNAME")    
+            this_contact["NetBiosName"] = q.get("APP_N1MM_NETBIOSNAME")
+        else:
+            this_contact["NetBiosName"] = q.get("N3FJP_COMPUTERNAME")
 
-        try:
-            this_contact["NetBiosName"] = q["APP_N1MM_NETBIOSNAME"]
-        except KeyError:
-            this_contact["NetBiosName"] = ""
-
-        this_contact["IsOriginal"] = 0
+        this_contact["IsOriginal"] = q.get("ISORIGINAL")
         this_contact["ID"] = uuid.uuid4().hex
-        this_contact["CLAIMEDQSO"] = 1
 
+        if q.get("CLAIMEDQSO"):
+            this_contact["CLAIMEDQSO"] = q.get("CLAIMEDQSO")
+        else:
+            this_contact["CLAIMEDQSO"] = 1
+            
         # is this record a dupe?
         theTS = this_contact["TS"]
         thecall = this_contact["Call"]
