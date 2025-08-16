@@ -513,6 +513,8 @@ def imp_adif(self):
             
         if q.get("POWER"):
             this_contact["Power"] = q.get("POWER")
+        elif q.get("TX_PWR")
+            this_contact["Power"] = q.get("TX_PWR")
 
         # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
         # xlog does not export a Band field, so Band should not be mandatory
