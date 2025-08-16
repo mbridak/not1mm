@@ -545,7 +545,7 @@ def imp_adif(self):
 
         if q.get("NETBIOSNAME"):
             this_contact["NetBiosName"] = q.get("NETBIOSNAME")
-        elif q.get("APP_N1MM_NETBIOSNAME")    
+        elif q.get("APP_N1MM_NETBIOSNAME"):
             this_contact["NetBiosName"] = q.get("APP_N1MM_NETBIOSNAME")
         else:
             this_contact["NetBiosName"] = q.get("N3FJP_COMPUTERNAME")
