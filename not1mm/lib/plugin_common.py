@@ -381,7 +381,7 @@ def imp_adif(self):
 
     self.progress_dialog = QProgressDialog("Validating...", "Cancel", 0, num_qsos, self)
     self.progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
-    self.progress_dialog.show()
+    # using .show() breaks modality - just start updating
 
     q_num = 0
     contacts = []
@@ -636,19 +636,21 @@ def imp_adif(self):
         QCoreApplication.processEvents()
 
     # All ADIF records have now been mapped.
-    self.progress_dialog.close()
+    # setting to max value forces progress_dialog to close
+    self.progress_dialog.setValue(num_qsos)
+
     logger.debug(f"Found {dupes} duplicate records")
     if dupes > 0:
         self.show_message_box(
             f"NOTE: Found {dupes} duplicate records, which will not be saved."
         )
 
+    # open new progress_dialog for Save progress.
     self.progress_dialog = QProgressDialog(
         "Saving...", "Cancel", 0, len(contacts), self
     )
-    # self.progress_dialog.setWindowModality(Qt.WindowModal)
-    self.progress_dialog.setValue(0)
-    self.progress_dialog.show()
+    self.progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
+
     saves = 0
     for my_contact in contacts:
         QCoreApplication.processEvents()
@@ -662,8 +664,8 @@ def imp_adif(self):
         saves = saves + 1
         self.progress_dialog.setValue(saves)
         QCoreApplication.processEvents()
-    self.progress_dialog.close()
 
+    self.progress_dialog.setValue(len(contacts))  # forces close
     # update everything
     self.log_window.get_log()
 
