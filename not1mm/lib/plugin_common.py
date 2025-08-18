@@ -366,13 +366,25 @@ def imp_adif(self):
     filename = self.filepicker("other")
     if not filename:
         return
+    logger.debug(f"Selected file '{filename}' to import from")
+
+    # read in content in binary mode (in case of illegal characters)
     try:
-        logger.debug(f"Selected file '{filename}' to import from")
-        qsos_raw, adif_header = adif_io.read_from_file(filename)
-        qsos_sorted = sorted(qsos_raw, key=adif_io.time_on)
-    except FileNotFoundError as err:
-        self.show_message_box(f"{err}")
+        with open(filename, "rb") as file:
+            file_content = file.read()
+    except Exception as e:
+        self.show_message_box(f"Error: {e}")
         return
+
+    # filter out anything beyond 7-bit ASCII
+    ascii_content = str("")
+    for b in file_content:
+        if b < 128:
+            ascii_content = ascii_content + chr(b)
+
+    qsos_raw, adif_header = adif_io.read_from_string(ascii_content)
+    qsos_sorted = sorted(qsos_raw, key=adif_io.time_on)
+
     num_qsos = len(qsos_sorted)
     logger.debug(f"Found {num_qsos} QSOs to import")
     self.show_message_box(f"Found {num_qsos} QSOs in\n'{filename}'.")
