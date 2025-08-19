@@ -2977,10 +2977,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contact["cmd"] = "POST"
             self.contact["expire"] = stale.isoformat()
             self.server_commands.append(self.contact)
-            # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
             try:
                 self.server_channel.send_as_json(self.contact)
-                # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
             except OSError as err:
                 logging.warning("%s", err)
         self.worked_list = self.database.get_calls_and_bands()
@@ -4609,7 +4607,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # https://www.adif.org/315/ADIF_315.htm
         logger.debug("******ADIF IMPORT*****")
         self.contest.imp_adif(self)
-
 
     def load_fonts_from_dir(self, directory: str) -> str:
         """
