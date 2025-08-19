@@ -6,8 +6,8 @@ import time
 import threading
 import queue
 
-multicast_port = 2237
-multicast_group = "224.0.0.1"
+multicast_port = 2239
+multicast_group = "224.1.1.1"
 interface_ip = "0.0.0.0"
 
 print(f"\n\nListening on multicast group {multicast_group} port {multicast_port}\n\n")
