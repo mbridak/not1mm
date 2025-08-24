@@ -2058,7 +2058,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["Operator"] = self.current_op
                     cmd["ID"] = uuid.uuid4().hex
                     cmd["Station"] = self.station
-                    self.server_commands.append(cmd)
+                    # self.server_commands.append(cmd)
                     # bytesToSend = bytes(dumps(self.contact), encoding="ascii")
                     try:
                         self.server_channel.send_as_json(cmd)
