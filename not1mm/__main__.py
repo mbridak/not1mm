@@ -1188,6 +1188,10 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.statistics_window.msg_from_main(msg)
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(msg)
+                if self.check_dupe(self.callsign.text()):
+                    self.dupe_indicator.show()
+                else:
+                    self.dupe_indicator.hide()
 
             if msg.get("cmd", "") == "GETCOLUMNS":
                 if hasattr(self.contest, "columns"):
