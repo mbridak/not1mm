@@ -978,6 +978,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.server_icon.setPixmap(self.greenserver)
                 continue
 
+            if json_data.get("cmd") == "CONTEST_REQUEST":
+                # {"cmd": "CONTEST_REQUEST", "host": "server"}
+                cmd = {}
+                cmd["cmd"] = "CONTEST_RESPONSE"
+                cmd["ContestName"] = self.contest_settings.get("ContestName", "")
+                cmd["host"] = socket.gethostname()
+                self.server_channel.send_as_json(cmd)
+                continue
+
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == socket.gethostname():
                     if json_data.get("subject") == "HOSTINFO":
