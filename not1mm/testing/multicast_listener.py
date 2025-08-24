@@ -5,12 +5,15 @@ import socket
 import time
 import threading
 import queue
+import os
+from rich import print
 
 multicast_port = 2239
 multicast_group = "224.1.1.1"
 interface_ip = "0.0.0.0"
 
-print(f"\n\nListening on multicast group {multicast_group} port {multicast_port}\n\n")
+os.system('clear')
+print(f"Listening on multicast group {multicast_group} port {multicast_port}\n\n")
 
 fifo = queue.Queue()
 
@@ -44,5 +47,5 @@ while 1:
     # print("Waiting...")
     while not fifo.empty():
         timestamp = time.strftime("%H:%M:%S", time.gmtime())
-        print(f"[{timestamp}] {fifo.get()=}\n")
+        print(f"[{timestamp}] {fifo.get().decode()}")
     time.sleep(1)
