@@ -888,6 +888,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def resolve_dirty_records(self):
         """Go through dirty records and submit them to the server queue."""
+
         if (
             self.pref.get("useserver", False) is True
             and hasattr(self, "database")
@@ -915,13 +916,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def remove_confirmed_commands(self, data):
         """Removed confirmed commands from the sent commands list."""
         for index, item in enumerate(self.server_commands):
-            print(f"Server Commands: {item=} {data=}")
             if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
                 "subject"
             ):
                 self.server_commands.pop(index)
                 self.clear_dirty_flag(data.get("unique_id"))
-                print(f"Confirmed {data.get('subject')}")
 
     def check_for_stale_commands(self):
         """
@@ -937,6 +936,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     self.server_commands[index]["expire"] = newexpire.isoformat()
                     try:
+                        # print(f"Resending {self.server_commands[index]=}")
                         self.server_channel.send_as_json(self.server_commands[index])
                     except OSError as err:
                         logging.warning("%s", err)
@@ -965,12 +965,6 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.info("%s", json_data)
 
             if json_data.get("cmd") == "PING":
-                # print(f"Got {json_data.get('cmd')} {json_data=}")
-                # if json_data.get("station"):
-                #     band_mode = f"{json_data.get('band')} {json_data.get('mode')}"
-                #     if self.people.get(json_data.get("station")) != band_mode:
-                #         self.people[json_data.get("station")] = band_mode
-                #     self.show_people()
                 if json_data.get("host"):
                     self.server_seen = datetime.datetime.now() + datetime.timedelta(
                         seconds=15
@@ -979,12 +973,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
 
             if json_data.get("cmd") == "CONTEST_REQUEST":
-                # {"cmd": "CONTEST_REQUEST", "host": "server"}
-                cmd = {}
-                cmd["cmd"] = "CONTEST_RESPONSE"
-                cmd["ContestName"] = self.contest_settings.get("ContestName", "")
-                cmd["host"] = socket.gethostname()
-                self.server_channel.send_as_json(cmd)
+                if self.pref.get("useserver", False) is True:
+                    cmd = self.contest_settings.copy()
+                    cmd["cmd"] = "NEWDB"
+                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    cmd["expire"] = stale.isoformat()
+                    cmd["NetBiosName"] = socket.gethostname()
+                    cmd["Operator"] = self.current_op
+                    cmd["ID"] = uuid.uuid4().hex
+                    cmd["Station"] = self.station
+                    try:
+                        self.server_channel.send_as_json(cmd)
+                    except OSError as err:
+                        logging.warning("%s", err)
                 continue
 
             if json_data.get("cmd") == "RESPONSE":
@@ -1029,12 +1030,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
 
             if json_data.get("cmd") == "CHAT":
-                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # print(f"Got {json_data.get('cmd')} {json_data=}")
                 # self.display_chat(json_data.get("sender"), json_data.get("message"))
                 continue
 
             if json_data.get("cmd") == "GROUPQUERY":
-                print(f"Got {json_data.get('cmd')} {json_data=}")
+                # print(f"Got {json_data.get('cmd')} {json_data=}")
                 # if self.groupcall:
                 #     self.send_status_udp()
 
@@ -2250,6 +2251,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def mark_all_dirty(self) -> None:
         """Mark all contacts dirty"""
         self.database.make_all_dirty()
+        self.resolve_dirty_records()
 
     def launch_log_window(self) -> None:
         """Launch the log window"""
