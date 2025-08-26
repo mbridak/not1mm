@@ -1035,6 +1035,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
 
             if json_data.get("cmd") == "GROUPQUERY":
+                ...
                 # print(f"Got {json_data.get('cmd')} {json_data=}")
                 # if self.groupcall:
                 #     self.send_status_udp()
