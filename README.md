@@ -215,6 +215,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-8-25] Work on talking to aggregation server.
+- [25-8-21] Merge bugfix for dupe indicator from @ki4mcw
 - [25-8-14] Merge bugfix PR for ADIF import.
 - [25-8-13] Supress popup if knob not found.
   - Merge PR from @ki4mcw, Adding ADIF import support.
