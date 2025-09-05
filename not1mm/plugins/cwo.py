@@ -503,14 +503,24 @@ def populate_history_info_line(self):
 
 
 def check_call_history(self):
-    """"""
+    """Fill fields from call history correctly for CWO plugin, with space after Name."""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
-        self.history_info.setText(f"{result.get('UserText','')}")
-        if self.other_1.text() == "":
-            self.other_1.setText(f"{result.get('Name', '')}")
+        # Show notes in the history line
+        self.history_info.setText(f"{result.get('UserText', '')}")
+
+        # Put Name into Recd Number + Name (other_2)
         if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+            name = result.get("Name", "")
+            exch = result.get("Exch1", "")
+            # Build the text with a trailing space after name if present
+            if exch and name:
+                self.other_2.setText(f"{exch} {name} ")
+            elif name:
+                self.other_2.setText(f"{name} ")
+            elif exch:
+                self.other_2.setText(f"{exch} ")
+
 
 
 # --------RTC Stuff-----------
