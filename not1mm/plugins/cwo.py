@@ -104,11 +104,19 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific"""
+    """Contest Specific: split 'Recd Number and Name' into RcvNr and Name."""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
-    self.contact["NR"] = self.other_2.text().upper()
+
+    recvd = self.other_2.text().strip()
+    parts = recvd.split(maxsplit=1)
+
+    # First part is the received number
+    self.contact["RcvNr"] = parts[0].upper() if parts else ""
+    # Second part is the name (if present)
+    self.contact["Name"] = parts[1] if len(parts) > 1 else ""
+
     result = self.database.fetch_call_exists(self.callsign.text().upper())
     logger.debug("%s", f"{result}")
     if result:
@@ -116,6 +124,7 @@ def set_contact_vars(self):
             self.contact["IsMultiplier1"] = 1
             return
     self.contact["IsMultiplier1"] = 0
+
 
 
 def predupe(self):
