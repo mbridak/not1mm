@@ -104,18 +104,18 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific: split 'Recd Number and Name' into RcvNr and Name."""
+    """Contest Specific: split 'Recd Number and Name' into Name and RcvNr."""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
 
+    # Split the "Recd Number and Name" field
     recvd = self.other_2.text().strip()
     parts = recvd.split(maxsplit=1)
 
-    # First part is the received number
-    self.contact["RcvNr"] = parts[0].upper() if parts else ""
-    # Second part is the name (if present)
-    self.contact["Name"] = parts[1] if len(parts) > 1 else ""
+    # First token is Name, rest is RcvNr (Name first as requested)
+    self.contact["Name"] = parts[0].capitalize() if parts else ""
+    self.contact["RcvNr"] = parts[1].upper() if len(parts) > 1 else ""
 
     result = self.database.fetch_call_exists(self.callsign.text().upper())
     logger.debug("%s", f"{result}")
@@ -373,7 +373,8 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{str(self.station.get('Name','')).partition(' ')[0]} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{str(contact.get('Name', '')).ljust(10)} "  # Name first
+                    f"{str(contact.get('RcvNr', '')).ljust(6)}",  # RcvNr after Name
                     "\r\n",
                     file_descriptor,
                     file_encoding,
