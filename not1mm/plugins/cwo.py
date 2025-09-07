@@ -104,19 +104,23 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific: split 'Recd Number and Name' into Name and RcvNr."""
+    """Contest Specific: split 'Recd Number and Name' into RcvNr and Name, but keep NR for compatibility."""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
 
-    # Split the "Recd Number and Name" field
+    # Get text from the 'Recd Number and Name' field
     recvd = self.other_2.text().strip()
     parts = recvd.split(maxsplit=1)
 
-    # First token is Name, rest is RcvNr (Name first as requested)
-    self.contact["Name"] = parts[0].capitalize() if parts else ""
-    self.contact["RcvNr"] = parts[1].upper() if len(parts) > 1 else ""
+    # New structured fields
+    self.contact["RcvNr"] = parts[0].upper() if parts else ""
+    self.contact["Name"] = parts[1] if len(parts) > 1 else ""
 
+    # Keep old NR field populated for backward compatibility
+    self.contact["NR"] = recvd.upper()
+
+    # Check if this call is a new multiplier
     result = self.database.fetch_call_exists(self.callsign.text().upper())
     logger.debug("%s", f"{result}")
     if result:
@@ -124,6 +128,7 @@ def set_contact_vars(self):
             self.contact["IsMultiplier1"] = 1
             return
     self.contact["IsMultiplier1"] = 0
+
 
 
 
