@@ -215,19 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-8-25] Work on talking to aggregation server.
-- [25-8-21] Merge bugfix for dupe indicator from @ki4mcw
-- [25-8-14] Merge bugfix PR for ADIF import.
-- [25-8-13] Supress popup if knob not found.
-  - Merge PR from @ki4mcw, Adding ADIF import support.
-- [25-8-10] Allow '^M' in RTTY macros to allow newline.
-- [25-8-9] Fix lockup if rigctld daemon dies.
-  - Changed ADIF version number to 3.1.5
-- [25-8-7] Merged PR from @ki4mcw, adding a macro for rig specific codes.
-- [25-8-3] Merge PR from @ki4mcw, Adding frequency precision to bandmap window.
-  - Allowing lowercase in general logging.
-- [25-8-2] Merge PR from @ki4mcw, Unchecking window view state when window closed via [x].
-- [25-8-1] Merge PR from @ki4mcw, Adding Operator field to log window.
+- [25-9-7] More work on talking to server.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
