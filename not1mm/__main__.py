@@ -4419,6 +4419,18 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     if self.n1mm.send_radio_packets:
                         self.n1mm.send_radio()
+                # TODO
+                if self.pref.get("useserver", False) is True:
+                    cmd = {}
+                    cmd["cmd"] = "STATION_STATE"
+                    cmd["Band"] = band
+                    cmd["Mode"] = mode
+                    cmd["NetBiosName"] = socket.gethostname()
+                    cmd["Operator"] = self.current_op
+                    try:
+                        self.server_channel.send_as_json(cmd)
+                    except OSError as err:
+                        logging.warning("%s", err)
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
