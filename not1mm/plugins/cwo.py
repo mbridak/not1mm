@@ -373,12 +373,13 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{str(self.station.get('Name','')).partition(' ')[0]} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('Name', '')).ljust(10)} "  # Name first
-                    f"{str(contact.get('RcvNr', '')).ljust(6)}",  # RcvNr after Name
+                    f"{str(contact.get('Name', '')).ljust(10)} "  # Name from DB
+                    f"{str(contact.get('NR', '')).ljust(6)}",    # Received number
                     "\r\n",
                     file_descriptor,
                     file_encoding,
                 )
+
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
     except IOError as exception:
