@@ -104,30 +104,25 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific: split 'Recd Number and Name' into RcvNr and Name, but keep NR for compatibility."""
+    """Contest Specific: correctly save received number into NR and Name into Name."""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
 
-    # Get text from the 'Recd Number and Name' field
+    # Get text from "Recd Number and Name"
     recvd = self.other_2.text().strip()
     parts = recvd.split(maxsplit=1)
 
-    # New structured fields
-    self.contact["RcvNr"] = parts[0].upper() if parts else ""
+    # Save correctly: NR (number) and Name
+    self.contact["NR"] = parts[0].upper() if parts else ""
     self.contact["Name"] = parts[1] if len(parts) > 1 else ""
 
-    # Keep old NR field populated for backward compatibility
-    self.contact["NR"] = recvd.upper()
+    logger.debug("Contact being saved: %s", self.contact)
 
-    # Check if this call is a new multiplier
+    # Multiplier check
     result = self.database.fetch_call_exists(self.callsign.text().upper())
-    logger.debug("%s", f"{result}")
-    if result:
-        if result.get("call_count", 0) == 0:
-            self.contact["IsMultiplier1"] = 1
-            return
-    self.contact["IsMultiplier1"] = 0
+    self.contact["IsMultiplier1"] = 1 if result and result.get("call_count", 0) == 0 else 0
+
 
 
 
