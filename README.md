@@ -215,6 +215,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-9-8] Yet More work on talking to server.
 - [25-9-7] More work on talking to server.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
