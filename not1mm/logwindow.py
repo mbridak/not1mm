@@ -373,9 +373,9 @@ class LogWindow(QDockWidget):
         }
         self.database.change_contact(db_record)
 
-        cmd = {}
-        cmd["cmd"] = "CONTACTCHANGED"
-        self.message.emit(cmd)
+        # cmd = {}
+        db_record["cmd"] = "CONTACTCHANGED"
+        self.message.emit(db_record)
 
         if self.n1mm.send_contact_packets:
             self.n1mm.contact_info["timestamp"] = db_record["TS"]
@@ -492,9 +492,9 @@ class LogWindow(QDockWidget):
         }
         self.database.change_contact(db_record)
 
-        cmd = {}
-        cmd["cmd"] = "CONTACTCHANGED"
-        self.message.emit(cmd)
+        # cmd = {}
+        db_record["cmd"] = "CONTACTCHANGED"
+        self.message.emit(db_record)
 
         if self.n1mm.send_contact_packets:
             self.n1mm.contact_info["timestamp"] = db_record["TS"]
