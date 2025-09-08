@@ -104,18 +104,27 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific"""
+    """Contest Specific: correctly save received number into NR and Name into Name."""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["SentNr"] = self.other_1.text()
-    self.contact["NR"] = self.other_2.text().upper()
+
+    # Get text from "Recd Number and Name"
+    recvd = self.other_2.text().strip()
+    parts = recvd.split(maxsplit=1)
+
+    # Save correctly: NR (number) and Name
+    self.contact["NR"] = parts[0].upper() if parts else ""
+    self.contact["Name"] = parts[1] if len(parts) > 1 else ""
+
+    logger.debug("Contact being saved: %s", self.contact)
+
+    # Multiplier check
     result = self.database.fetch_call_exists(self.callsign.text().upper())
-    logger.debug("%s", f"{result}")
-    if result:
-        if result.get("call_count", 0) == 0:
-            self.contact["IsMultiplier1"] = 1
-            return
-    self.contact["IsMultiplier1"] = 0
+    self.contact["IsMultiplier1"] = 1 if result and result.get("call_count", 0) == 0 else 0
+
+
+
 
 
 def predupe(self):
@@ -364,11 +373,13 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{str(self.station.get('Name','')).partition(' ')[0]} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{str(contact.get('Name', '')).ljust(10)} "  # Name from DB
+                    f"{str(contact.get('NR', '')).ljust(6)}",    # Received number
                     "\r\n",
                     file_descriptor,
                     file_encoding,
                 )
+
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
     except IOError as exception:
@@ -503,14 +514,24 @@ def populate_history_info_line(self):
 
 
 def check_call_history(self):
-    """"""
+    """Fill fields from call history correctly for CWO plugin, with space after Name."""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
-        self.history_info.setText(f"{result.get('UserText','')}")
-        if self.other_1.text() == "":
-            self.other_1.setText(f"{result.get('Name', '')}")
+        # Show notes in the history line
+        self.history_info.setText(f"{result.get('UserText', '')}")
+
+        # Put Name into Recd Number + Name (other_2)
         if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+            name = result.get("Name", "")
+            exch = result.get("Exch1", "")
+            # Build the text with a trailing space after name if present
+            if exch and name:
+                self.other_2.setText(f"{exch} {name} ")
+            elif name:
+                self.other_2.setText(f"{name} ")
+            elif exch:
+                self.other_2.setText(f"{exch} ")
+
 
 
 # --------RTC Stuff-----------
