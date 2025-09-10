@@ -55,6 +55,7 @@ class Settings(QtWidgets.QDialog):
         self.auto_cq_delay.setText(str(self.preference.get("auto_cq_interval", "15")))
 
         self.connect_to_server.setChecked(bool(self.preference.get("useserver", False)))
+        self.be_the_master.setChecked(bool(self.preference.get("im_the_master", False)))
 
         self.use_call_history.setChecked(
             bool(self.preference.get("use_call_history", False))
@@ -149,6 +150,7 @@ class Settings(QtWidgets.QDialog):
         )
 
         self.connect_to_server.setChecked(bool(self.preference.get("useserver", False)))
+        self.be_the_master.setChecked(bool(self.preference.get("im_the_master", False)))
         self.multicast_group.setText(str(self.preference.get("multicast_group", "")))
         self.multicast_port.setText(str(self.preference.get("multicast_port", "")))
         self.interface_ip.setText(str(self.preference.get("interface_ip", "")))
@@ -224,6 +226,7 @@ class Settings(QtWidgets.QDialog):
         Write preferences to json file.
         """
         self.preference["useserver"] = self.connect_to_server.isChecked()
+        self.preference["im_the_master"] = self.be_the_master.isChecked()
         self.preference["send_rtc_scores"] = self.send_rtc_scores.isChecked()
         self.preference["rtc_url"] = self.rtc_url.currentText()
         self.preference["rtc_user"] = self.rtc_user.text()
@@ -296,6 +299,7 @@ class Settings(QtWidgets.QDialog):
         elif self.usecwviacat_radioButton.isChecked():
             self.preference["cwtype"] = 3
         self.preference["useserver"] = self.connect_to_server.isChecked()
+        self.preference["im_the_master"] = self.be_the_master.isChecked()
         self.preference["multicast_group"] = self.multicast_group.text()
         self.preference["multicast_port"] = self.multicast_port.text()
         self.preference["interface_ip"] = self.interface_ip.text()

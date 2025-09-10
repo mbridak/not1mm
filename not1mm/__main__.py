@@ -127,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         "cwport": 6789,
         "cwtype": 0,
         "useserver": False,
+        "im_the_master": False,
         "CAT_port": 4532,
         "cluster_server": "dxc.nc7j.com",
         "cluster_port": 7373,
@@ -973,7 +974,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 continue
 
             if json_data.get("cmd") == "CONTEST_REQUEST":
-                if self.pref.get("useserver", False) is True:
+                if (
+                    self.pref.get("useserver", False) is True
+                    and self.pref.get("im_the_master", False) is True
+                ):
                     cmd = self.contest_settings.copy()
                     cmd["cmd"] = "NEWDB"
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
@@ -2051,7 +2055,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(cmd)
                 # server
-                if self.pref.get("useserver", False) is True:
+                if (
+                    self.pref.get("useserver", False) is True
+                    and self.pref.get("im_the_master", False) is True
+                ):
                     cmd = self.contest_settings.copy()
                     cmd["cmd"] = "NEWDB"
                     stale = datetime.datetime.now() + datetime.timedelta(seconds=30)

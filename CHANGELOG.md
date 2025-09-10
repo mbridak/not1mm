@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-9-10] Yet MORE work on talking to the server.
 - [25-9-8] Yet More work on talking to server.
 - [25-9-7] More work on talking to server.
 - [25-8-25] Work on talking to aggregation server.
