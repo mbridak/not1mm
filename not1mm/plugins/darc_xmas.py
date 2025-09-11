@@ -566,8 +566,8 @@ def check_call_history(self):
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
-        if self.other_1.text() == "":
-            self.other_1.setText(f"{result.get('Exch1', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Exch1', '')}")
 
 
 def get_mults(self):
