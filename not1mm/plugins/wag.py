@@ -4,11 +4,11 @@
 
 #   Worked All Germany Contest
 #   Status:	Active
-#   Geographic Focus:	Germany
+#   Geographic Focus: Germany
 #   Participation:	Worldwide
 #   Awards:	Worldwide
-#   Mode:	CW, SSB
-#   Bands:	80m, 40m, 20m, 15m, 10m
+#   Mode: CW, SSB
+#   Bands: 80m, 40m, 20m, 15m, 10m
 #   Classes:
 #       Single operator, CW, low power
 #       Single operator, CW, high power
@@ -19,23 +19,24 @@
 #       Single operator, mixed, QRP
 #       Multi operator
 #       Trainee (Auszubildende): Participiants with trainee callsign. (Prefixes DN1-DN8 and /T stations.)
-#   Max power:	HP: >100W, LP < 100W, QRP < 5W
-#   Exchange:	RST + DOK
+#   Max power: HP: >100W, LP < 100W, QRP < 5W
+#   Exchange: RST + DOK
 #       non-Member (DL): RST + 'NM' or 'no member'
-#       outside DL:   RST + serial number
-#   Work stations:	Once per band and mode
+#       outside DL: RST + serial number
+#   Work stations: Once per band and mode
 #   QSO Points:	1 point per QSO
 #   Multipliers:
 #       DL: DOK (DARC/VFDB), 'NM' does not count + each DXCC/WAE per band
 #   Score Calculation:	Total score = total QSO points x total mults
-#   Mail logs to:	(none)
+#   Mail logs to: (none)
 #   Find rules at:	https://www.darc.de/der-club/referate/conteste/wag-contest/regeln/
 #   Upload logs at: https://dxhf2.darc.de/~waglog/upload.cgi?form=referat&lang=de
-#   Cabrillo name:	WAG
+#   Cabrillo name: WAG
 
 
 import datetime
 import logging
+import re
 
 from pathlib import Path
 
@@ -61,7 +62,6 @@ columns = [
     "SentNr",
     "RcvNr",
     "M1",
-    "M2",
     "PTS",
 ]
 
@@ -86,7 +86,7 @@ def init_contest(self):
             self.is_german = True
         else:
             self.is_german = False
-    logger.critical(f"Contest station is german: {self.is_german}")
+    logger.debug(f"Contest station is DL: {self.is_german}")
 
 
 def interface(self):
@@ -104,6 +104,9 @@ def interface(self):
 
 def reset_label(self):
     """reset label after field cleared"""
+
+    # Reset the dupe_indicator to his correct text as we used it for warnings.
+    self.dupe_indicator.setText("Dupe!")
 
 
 def set_tab_next(self):
@@ -129,45 +132,69 @@ def set_tab_prev(self):
 
 
 def set_contact_vars(self):
-    """Contest Specific"""
+    """Set contact variables and calculate multis"""
 
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["NR"] = self.other_2.text().upper()
+    self.contact["NR"] = self.other_2.text()
     self.contact["SentNr"] = self.other_1.text()
-    # self.contact["SentNr"] = self.contest_settings.get("SentExchange", "").upper()
-    dok = self.contact["NR"]
 
+    dok = self.contact["NR"].upper()
     dxcc = self.contact.get("CountryPrefix", "")
     band = self.contact.get("Band", "")
+    district = get_district(dok)
 
-    if dxcc == "DL" and not isinstance(dok, int) and dok.upper() != "NM":
+    # Multiplier
+    # non-DL worked DL
+    if dxcc == "DL" and not isinstance(dok, int) and dok != "NM" and not self.is_german:
         query = (
             f"select count(*) as dok_count from dxlog where 1=1 "
-            f"and NR = '{dok.upper()}' "
+            f"and NR like '{district}%' "
             f"and Band = '{band}' "
             f"and ContestNR = {self.pref.get('contest', '1')};"
         )
+        logger.debug(query)
         result = self.database.exec_sql(query)
+        logger.debug(result)
         count = int(result.get("dok_count", 0))
         if count == 0:
-            self.contact["IsMultiplier2"] = 1
-        else:
-            self.contact["IsMultiplier2"] = 0
-
-    if self.contact.get("WPXPrefix", ""):
-        result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
-        if result.get("wpx_count", ""):
-            self.contact["IsMultiplier1"] = 0
-        else:
             self.contact["IsMultiplier1"] = 1
+            logger.critical(f"{self.contact.get("Call")} is a Multi")
+        else:
+            self.contact["IsMultiplier1"] = 0
+            logger.critical(f"{self.contact.get("Call")} is not a Multi")
+
+    # Multiplier
+    # DL worked any station
+    if self.is_german:
+        query = (
+            f"select count(*) as dxcc_count from dxlog where 1=1 "
+            f"and CountryPrefix = '{dxcc}' "
+            f"and Band = '{band}' "
+            f"and ContestNR = {self.pref.get('contest', '1')};"
+        )
+        logger.debug(query)
+        result = self.database.exec_sql(query)
+        logger.debug(result)
+        count = int(result.get("dxcc_count", 0))
+        if count == 0:
+            self.contact["IsMultiplier1"] = 1
+            logger.debug(f"{self.contact.get("Call")} is a Multi")
+        else:
+            self.contact["IsMultiplier1"] = 0
+            logger.debug(f"{self.contact.get("Call")} is not a Multi")
 
 
 def predupe(self):
     """prefill his exchange with last known values"""
-    # result = self.cty_lookup('DL6CQ')
-    # debug_result = f"{result=}"
-    # logger.critical("%s", debug_result)
+
+    # Check if the typed in callsign should be worked (DL only in WAG for non-DL stations!)
+    dxcc = self.contact.get("CountryPrefix", "")
+    if not self.is_german and dxcc != "DL":
+      logger.debug("DL only in WAG!")
+      self.dupe_indicator.setText("DL stations only!")
+      self.dupe_indicator.show()
+      
 
 def prefill(self):
     """Fill SentNR"""
@@ -194,22 +221,40 @@ def prefill(self):
 
 
 def points(self):
-    """Calc point"""
+    """Calculate points"""
 
+    # Dupe
     if self.contact_is_dupe > 0:
         return 0
 
-    return 1
+    # non-DL worked DL
+    # non-DL worked non-DL
+    # DL worked DL
+    # DL worked EU
+    # DL worked DX
+    if not self.is_german and self.contact.get("CountryPrefix", "") == "DL":
+        return 3
+    elif not self.is_german and self.contact.get("CountryPrefix", "") != "DL":
+        return 0
+    elif self.is_german and self.contact.get("CountryPrefix", "") == "DL":
+        return 1
+    elif self.is_german and self.contact.get("Continent", "") == "EU":
+        return 3
+    elif self.is_german and self.contact.get("Continent", "") != "EU":
+        return 5
+    else:
+        return 0
 
 
+
+# TODO
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    _wpx = int(self.database.fetch_mult_count(1).get("count", 0))
-    _dok = int(self.database.fetch_mult_count(2).get("count", 0))
+    _dok = int(self.database.fetch_mult_count(1).get("count", 0))  # Fix this!
     if rtc is not None:
-        return (_dok, _wpx)
+        return (_dok)
 
-    return _wpx + _dok
+    return _dok
 
 
 def show_qso(self):
@@ -440,7 +485,7 @@ def cabrillo(self, file_encoding):
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
 
-
+# TODO
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
@@ -448,7 +493,6 @@ def recalculate_mults(self):
     for contact in all_contacts:
 
         contact["IsMultiplier1"] = 0
-        contact["IsMultiplier2"] = 0
 
         time_stamp = contact.get("TS", "")
         dok = contact.get("NR", "")
@@ -574,10 +618,11 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
 
 def populate_history_info_line(self):
+    """Show history info if available"""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}"
         )
     else:
         self.history_info.setText("")
@@ -589,7 +634,9 @@ def check_call_history(self):
     if result:
         self.history_info.setText(f"{result.get('UserText','')}")
         if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+            # Strip leading whitespace for the case that historyfile is not
+            # well formatted, f.e. CA0LL, DOK instead of CA0LL,DOK
+            self.other_2.setText(f"{result.get('Exch1', '').lstrip()}")
 
 
 def get_mults(self):
@@ -602,3 +649,21 @@ def get_mults(self):
 def just_points(self):
     """Get points for RTC XML"""
     return get_points(self)
+
+
+def get_district(dok):
+    """
+    Get first letter of received DOK (Distrikt)
+    With a SDOK (special DOK) we need the first letter (not character!) of the
+    SDOK as multi.
+
+    :param dok: a DOK or special DOK
+    :type  dok: string
+    :return: district - one letter for the DARC district
+    :rtype: string
+    """
+
+    district = re.search(r"[A-Za-z]", dok)
+    if district:
+        return district.group(0)
+    return None
