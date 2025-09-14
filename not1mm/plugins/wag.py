@@ -159,10 +159,10 @@ def set_contact_vars(self):
         count = int(result.get("dok_count", 0))
         if count == 0:
             self.contact["IsMultiplier1"] = 1
-            logger.critical(f"{self.contact.get("Call")} is a Multi")
+            logger.debug(f"{self.contact.get("Call")} is a Multi")
         else:
             self.contact["IsMultiplier1"] = 0
-            logger.critical(f"{self.contact.get("Call")} is not a Multi")
+            logger.debug(f"{self.contact.get("Call")} is not a Multi")
 
     # Multiplier
     # DL worked any station
@@ -248,13 +248,11 @@ def points(self):
 
 
 # TODO
-def show_mults(self, rtc=None):
+def show_mults(self):
     """Return display string for mults"""
-    _dok = int(self.database.fetch_mult_count(1).get("count", 0))  # Fix this!
-    if rtc is not None:
-        return (_dok)
-
-    return _dok
+    result = self.database.fetch_mult_count(1)
+    count = result.get("count", 0)
+    return count
 
 
 def show_qso(self):
