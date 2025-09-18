@@ -47,6 +47,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+__plugin_version__ = "0.1"
+
 EXCHANGE_HINT = "DOK/NM or #"
 
 name = "WAG"
@@ -247,12 +249,12 @@ def points(self):
 
 
 
-# TODO
 def show_mults(self):
     """Return display string for mults"""
     result = self.database.fetch_mult_count(1)
-    count = result.get("count", 0)
-    return count
+    if result:
+        return int(result.get("count", 0))
+    return 0
 
 
 def show_qso(self):
@@ -314,7 +316,7 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
+                f"CREATED-BY: Not1MM v{__version__} - WAG-Contest-Plugin v{__plugin_version__} by DL6CQ",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
