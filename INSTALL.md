@@ -58,7 +58,7 @@ Pow! Enjoy the pain... If uv is not your cuppa, you can follow the more traditio
 I've taken the time to install some common Linux distributions into a VM and
 noted the minimum steps needed to install Not1MM.
 
-### Ubuntu 22.04 LTS, 23.04 and 24.04 LTS
+### Ubuntu 22.04 LTS, 23.04, 24.04 LTS and 25.04
 
 #### Ubuntu 22.04 LTS
 
@@ -78,12 +78,18 @@ pipx install not1mm
 pipx ensurepath
 ```
 
-#### Ubuntu 24.04 LTS
+#### Ubuntu 24.04 LTS and 25.04
 
 ```bash
 sudo apt install -y pipx libportaudio2 libxcb-cursor0
 pipx install not1mm
 pipx ensurepath
+```
+You may need once to log out and in again to make the new PATH settings to work. Depending on the shell used you may type in
+
+```bash
+source ~/.bashrc
+not1mm
 ```
 
 ### Fedora 38, 39 and 40
