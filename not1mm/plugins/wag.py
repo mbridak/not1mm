@@ -40,8 +40,6 @@ import re
 
 from pathlib import Path
 
-#from PyQt6 import QtWidgets
-
 from not1mm.lib.plugin_common import gen_adif #, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -485,7 +483,7 @@ def cabrillo(self, file_encoding):
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
 
-# TODO
+
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
@@ -518,10 +516,10 @@ def recalculate_mults(self):
             count = int(result.get("dok_count", 0))
             if count == 0:
                 self.contact["IsMultiplier1"] = 1
-                logger.critical(f"{self.contact.get("Call")} is a Multi")
+                logger.debug(f"{self.contact.get("Call")} is a Multi")
             else:
                 self.contact["IsMultiplier1"] = 0
-                logger.critical(f"{self.contact.get("Call")} is not a Multi")
+                logger.debug(f"{self.contact.get("Call")} is not a Multi")
 
         # Multiplier
         # DL worked any station
@@ -533,7 +531,7 @@ def recalculate_mults(self):
                 f"and Band = '{band}' "
                 f"and ContestNR = {self.pref.get('contest', '1')};"
             )
-            logger.critical(query)
+            logger.debug(query)
             result = self.database.exec_sql(query)
             count = int(result.get("dxcc_count", 0))
 
@@ -668,11 +666,6 @@ def check_call_history(self):
 #     mults = {}
 #     mults["state"], mults["wpxprefix"] = show_mults(self, rtc=True)
 #     return mults
-
-
-# def just_points(self):
-#     """Get points for RTC XML"""
-#     return get_points(self)
 
 
 def trigger_update(self):
