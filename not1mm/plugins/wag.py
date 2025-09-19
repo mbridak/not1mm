@@ -40,9 +40,9 @@ import re
 
 from pathlib import Path
 
-from PyQt6 import QtWidgets
+#from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import gen_adif #, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -250,7 +250,7 @@ def points(self):
 
 
 def show_mults(self):
-    """Return display string for mults"""
+    """Return number of multis"""
     result = self.database.fetch_mult_count(1)
     if result:
         return int(result.get("count", 0))
@@ -490,6 +490,9 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    if not all_contacts:
+        return
+
     for contact in all_contacts:
 
         contact["IsMultiplier1"] = 0
@@ -498,28 +501,49 @@ def recalculate_mults(self):
         dok = contact.get("NR", "")
         dxcc = contact.get("CountryPrefix", "")
         band = contact.get("Band", "")
-        wpx = contact.get("WPXPrefix", "")
-        result = self.database.fetch_wpx_exists_before_me(wpx, time_stamp)
-        wpx_count = result.get("wpx_count", 1)
-        if wpx_count == 0:
-            contact["IsMultiplier1"] = 1
-        else:
-            contact["IsMultiplier1"] = 0
+        district = get_district(str(dok))
 
-        if dxcc == "DL" and not isinstance(dok, int) and dok.upper() != "NM":
+        # Multiplier
+        # non-DL worked DL
+        if dxcc == "DL" and not isinstance(dok, int) and dok != "NM" and not self.is_german:
             query = (
-                f"select count(*) as dok_count from dxlog where  TS < '{time_stamp}' "
-                f"and NR = '{dok.upper()}' "
+                f"select count(*) as dok_count from dxlog where 1=1 "
+                f"and NR like '{district}%' "
                 f"and Band = '{band}' "
                 f"and ContestNR = {self.pref.get('contest', '1')};"
             )
+            logger.debug(query)
             result = self.database.exec_sql(query)
+            logger.debug(result)
             count = int(result.get("dok_count", 0))
             if count == 0:
-                contact["IsMultiplier2"] = 1
+                self.contact["IsMultiplier1"] = 1
+                logger.critical(f"{self.contact.get("Call")} is a Multi")
             else:
-                contact["IsMultiplier2"] = 0
+                self.contact["IsMultiplier1"] = 0
+                logger.critical(f"{self.contact.get("Call")} is not a Multi")
+
+        # Multiplier
+        # DL worked any station
+        if self.is_german:
+            query = (
+                f"select count(*) as dxcc_count from dxlog where 1=1 "
+                f"and TS < '{time_stamp}' "
+                f"and CountryPrefix = '{dxcc}' "
+                f"and Band = '{band}' "
+                f"and ContestNR = {self.pref.get('contest', '1')};"
+            )
+            logger.critical(query)
+            result = self.database.exec_sql(query)
+            count = int(result.get("dxcc_count", 0))
+
+            if count == 0:
+                contact["IsMultiplier1"] = 1
+            else:
+                contact["IsMultiplier1"] = 0
+
         self.database.change_contact(contact)
+    trigger_update(self)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -639,16 +663,24 @@ def check_call_history(self):
             self.other_2.setText(f"{result.get('Exch1', '').lstrip()}")
 
 
-def get_mults(self):
-    """Get mults for RTC XML"""
-    mults = {}
-    mults["state"], mults["wpxprefix"] = show_mults(self, rtc=True)
-    return mults
+# def get_mults(self):
+#     """Get mults for RTC XML"""
+#     mults = {}
+#     mults["state"], mults["wpxprefix"] = show_mults(self, rtc=True)
+#     return mults
 
 
-def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
+# def just_points(self):
+#     """Get points for RTC XML"""
+#     return get_points(self)
+
+
+def trigger_update(self):
+    """Triggers the log window to update."""
+    cmd = {}
+    cmd["cmd"] = "UPDATELOG"
+    if self.log_window:
+        self.log_window.msg_from_main(cmd)
 
 
 def get_district(dok):
