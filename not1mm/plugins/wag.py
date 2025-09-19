@@ -506,6 +506,7 @@ def recalculate_mults(self):
         if dxcc == "DL" and not isinstance(dok, int) and dok != "NM" and not self.is_german:
             query = (
                 f"select count(*) as dok_count from dxlog where 1=1 "
+                f"and TS < '{time_stamp}' "
                 f"and NR like '{district}%' "
                 f"and Band = '{band}' "
                 f"and ContestNR = {self.pref.get('contest', '1')};"
@@ -515,11 +516,11 @@ def recalculate_mults(self):
             logger.debug(result)
             count = int(result.get("dok_count", 0))
             if count == 0:
-                self.contact["IsMultiplier1"] = 1
-                logger.debug(f"{self.contact.get("Call")} is a Multi")
+                contact["IsMultiplier1"] = 1
+                logger.debug(f"{contact.get("Call")} is a Multi")
             else:
-                self.contact["IsMultiplier1"] = 0
-                logger.debug(f"{self.contact.get("Call")} is not a Multi")
+                contact["IsMultiplier1"] = 0
+                logger.debug(f"{contact.get("Call")} is not a Multi")
 
         # Multiplier
         # DL worked any station
