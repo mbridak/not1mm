@@ -74,6 +74,7 @@ from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
 from not1mm.ratewindow import RateWindow
 from not1mm.statistics import StatsWindow
+from not1mm.chat import ChatWindow
 from not1mm.radio import Radio
 from not1mm.voice_keying import Voice
 from not1mm.lookupservice import LookupService
@@ -313,6 +314,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
         self.actionRate_Window.triggered.connect(self.launch_rate_window)
         self.actionStatistics.triggered.connect(self.launch_stats_window)
+        self.actionGroup_Chat.triggered.connect(self.launch_chat_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionDXCC.triggered.connect(self.launch_dxcc_window)
         self.actionRotator.triggered.connect(self.launch_rotator_window)
@@ -750,6 +752,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statistics_window.hide()
         self.statistics_window.message.connect(self.dockwidget_message)
 
+        self.show_splash_msg("Setting up GroupChatWindow.")
+        self.chat_window = ChatWindow(self.actionGroup_Chat)
+        self.chat_window.setObjectName("chat-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.chat_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.chat_window)
+        self.chat_window.hide()
+        self.chat_window.message.connect(self.dockwidget_message)
+
         self.show_splash_msg("Setting up DXCCWindow.")
         self.dxcc_window = DXCCWindow(self.actionDXCC)
         self.dxcc_window.setObjectName("dxcc-window")
@@ -817,6 +828,14 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.bandmap_window.hide()
             self.bandmap_window.setActive(False)
+
+        self.actionGroup_Chat.setChecked(self.pref.get("chatwindow", False))
+        if self.actionGroup_Chat.isChecked():
+            self.chat_window.show()
+            self.chat_window.setActive(True)
+        else:
+            self.chat_window.hide()
+            self.chat_window.setActive(False)
 
         self.actionCheck_Window.setChecked(self.pref.get("checkwindow", False))
         if self.actionCheck_Window.isChecked():
@@ -1036,6 +1055,8 @@ class MainWindow(QtWidgets.QMainWindow):
             if json_data.get("cmd") == "CHAT":
                 # print(f"Got {json_data.get('cmd')} {json_data=}")
                 # self.display_chat(json_data.get("sender"), json_data.get("message"))
+                # {"cmd": "CHAT", "sender": "N2CQR", "message": "I worked your mama on 80 meters."}
+                self.chat_window.msg_from_main(json_data)
                 continue
 
             if json_data.get("cmd") == "GROUPQUERY":
@@ -1294,6 +1315,14 @@ class MainWindow(QtWidgets.QMainWindow):
                                 f" {msg.get('result', {}).get('name_fmt', '')}"
                             )
                             self.rotator_window.set_requested_azimuth(float(heading))
+
+            if msg.get("cmd", "") == "CHAT":
+                if self.pref.get("useserver", False) is True:
+                    msg["sender"] = self.current_op
+                    try:
+                        self.server_channel.send_as_json(msg)
+                    except OSError as err:
+                        logging.warning("%s", err)
 
     def cluster_expire_updated(self, number):
         """signal from bandmap"""
@@ -2345,6 +2374,17 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.show()
         else:
             self.vfo_window.hide()
+
+    def launch_chat_window(self) -> None:
+        """Launch the check window"""
+        self.pref["chatwindow"] = self.actionGroup_Chat.isChecked()
+        self.write_preference()
+        if self.actionGroup_Chat.isChecked():
+            self.chat_window.show()
+            self.chat_window.setActive(True)
+        else:
+            self.chat_window.hide()
+            self.chat_window.setActive(False)
 
     def clear_band_indicators(self) -> None:
         """

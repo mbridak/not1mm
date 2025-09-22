@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>886</width>
+    <height>589</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -738,7 +738,7 @@
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-                 </property> 
+                 </property>
                 </widget>
                </item>
                <item>
@@ -1509,8 +1509,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>25</height>
+     <width>886</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -1578,6 +1578,8 @@
     <addaction name="actionVFO"/>
     <addaction name="actionDXCC"/>
     <addaction name="actionRotator"/>
+    <addaction name="separator"/>
+    <addaction name="actionGroup_Chat"/>
    </widget>
    <widget class="QMenu" name="menuOther">
     <property name="title">
@@ -1887,7 +1889,7 @@
    <property name="shortcutVisibleInContextMenu">
     <bool>false</bool>
    </property>
-  </action> 
+  </action>
   <action name="actionRecalculate_Mults">
    <property name="text">
     <string>Recalculate Mults</string>
@@ -2200,6 +2202,14 @@
    </property>
    <property name="shortcutVisibleInContextMenu">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGroup_Chat">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Group Chat</string>
    </property>
   </action>
  </widget>
