@@ -211,6 +211,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - Stew Perry Topband
 - UK/EI DX
 - Weekly RTTY
+- Work All Germany
 - Winter Field Day
 
 ## Recent Changes
