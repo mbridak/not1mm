@@ -47,14 +47,11 @@ class ChatWindow(QDockWidget):
         # if self.preference.get("mycall") in body.upper():
         #     self.chat_history.setTextColor(QtGui.QColor(245, 121, 0))
         self.chat_history.insertPlainText(f"\n{sender}: {body}")
-        self.chat_history.setTextColor(QtGui.QColor(211, 215, 207))
+        # self.chat_history.setTextColor(QtGui.QColor(211, 215, 207))
         self.chat_history.ensureCursorVisible()
 
     def msg_from_main(self, packet):
         """"""
-
-        # if self.active is False:
-        #     return
 
         if packet.get("cmd", "") == "CHAT":
             # {"cmd": "CHAT", "sender": "N2CQR", "message": "I worked your mama on 80 meters."}
