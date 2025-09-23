@@ -21,10 +21,18 @@
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="2">
-     <widget class="QLineEdit" name="chat_input"/>
+     <widget class="QLineEdit" name="chat_input">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+     </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QTextEdit" name="chat_history"/>
+     <widget class="QTextEdit" name="chat_history">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
