@@ -431,7 +431,7 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('ZN', '')).zfill(2)}"
+                    f"{str(contact.get('ZN', '')).zfill(2)} "
                     f"{str(exchange1).ljust(2)}",
                     "\r\n",
                     file_descriptor,
