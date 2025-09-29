@@ -177,6 +177,7 @@ class MainWindow(QtWidgets.QMainWindow):
     use_call_history = False
     esm_dict = {}
     sandpfreq = 0
+    current_sn = None
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -1013,6 +1014,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == socket.gethostname():
+
+                    if json_data.get("subject") == "GET_SN":
+                        # {
+                        #     "cmd": "RESPONSE",
+                        #     "recipient": "NetBiosName",
+                        #     "subject": "GET_SN",
+                        #     "sn": int or None,
+                        # }
+                        self.current_sn = json_data.get("sn")
+                        print(f"{self.current_sn=}")
+                        continue
+
                     if json_data.get("subject") == "HOSTINFO":
                         # self.groupcall = json_data.get("groupcall", "")
                         # self.myclassEntry.setText(str(json_data.get("groupclass", "")))
@@ -2567,6 +2580,30 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.bandmap_window:
                 self.bandmap_window.msg_from_main(cmd)
 
+    def get_sn(self):
+        """Generate a serial number."""
+        # {
+        #     "cmd": "GET_SN",
+        #     "Operator": "K6GTE",
+        #     "NetBiosName": "fredo",
+        # }
+        if self.pref.get("useserver", False) is True:
+            if self.current_sn is None:
+                self.current_sn = "REQUESTED"
+                cmd = {}
+                cmd["cmd"] = "GET_SN"
+                cmd["Operator"] = self.current_op
+                cmd["NetBiosName"] = socket.gethostname()
+                try:
+                    self.server_channel.send_as_json(cmd)
+                except OSError as err:
+                    logging.warning("%s", err)
+        else:
+            result = self.database.get_serial()
+            self.current_sn = str(result.get("serial_nr", "1"))
+            if self.current_sn == "None":
+                self.current_sn = "1"
+
     def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
         """
         This overrides Qt key event.
@@ -3034,6 +3071,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        self.current_sn = None
         # server
         if self.pref.get("useserver", False) is True:
             stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
@@ -3292,10 +3330,13 @@ class MainWindow(QtWidgets.QMainWindow):
         Processed macro.
         """
 
-        result = self.database.get_serial()
-        next_serial = str(result.get("serial_nr", "1"))
-        if next_serial == "None":
-            next_serial = "1"
+        # result = self.database.get_serial()
+        # next_serial = str(result.get("serial_nr", "1"))
+        # if next_serial == "None":
+        #     next_serial = "1"
+        if self.current_sn is not None:
+            next_serial = str(self.current_sn)
+
         result = self.database.get_last_serial()
         prev_serial = str(result.get("serial_nr", "1")).zfill(3)
         macro = macro.upper()
@@ -3971,6 +4012,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.auto_cq is True:
             self.stop_cw()
+        self.get_sn()
         if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
             self.sandpfreq = int(self.radio_state.get("vfoa", 0))
         text = self.callsign.text()
@@ -4178,8 +4220,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         result = self.cty_lookup(callsign)
-        debug_result = f"{result=}"
-        logger.debug("%s", debug_result)
+        # debug_result = f"{result=}"
+        # logger.debug("%s", debug_result)
         if result is not None:
             try:
                 a = result.get(next(iter(result)))
