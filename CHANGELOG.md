@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-9-29] Fix Cabrillo output for CQWW RTTY.
 - [25-9-21] add group chat window.
 - [25-9-19] Merge PR from xentux adding Work All Germany.
 - [25-9-10] Yet MORE work on talking to the server.
