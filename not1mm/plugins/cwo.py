@@ -121,10 +121,9 @@ def set_contact_vars(self):
 
     # Multiplier check
     result = self.database.fetch_call_exists(self.callsign.text().upper())
-    self.contact["IsMultiplier1"] = 1 if result and result.get("call_count", 0) == 0 else 0
-
-
-
+    self.contact["IsMultiplier1"] = (
+        1 if result and result.get("call_count", 0) == 0 else 0
+    )
 
 
 def predupe(self):
@@ -133,8 +132,9 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
-    result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    # result = self.database.get_serial()
+    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    serial_nr = str(self.current_sn).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
     if len(self.other_1.text()) == 0:
@@ -374,7 +374,7 @@ def cabrillo(self, file_encoding):
                     f"{str(self.station.get('Name','')).partition(' ')[0]} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('Name', '')).ljust(10)} "  # Name from DB
-                    f"{str(contact.get('NR', '')).ljust(6)}",    # Received number
+                    f"{str(contact.get('NR', '')).ljust(6)}",  # Received number
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -531,7 +531,6 @@ def check_call_history(self):
                 self.other_2.setText(f"{name} ")
             elif exch:
                 self.other_2.setText(f"{exch} ")
-
 
 
 # --------RTC Stuff-----------

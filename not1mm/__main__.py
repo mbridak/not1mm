@@ -2587,7 +2587,12 @@ class MainWindow(QtWidgets.QMainWindow):
         #     "Operator": "K6GTE",
         #     "NetBiosName": "fredo",
         # }
-        if self.pref.get("useserver", False) is True:
+        if (
+            self.pref.get("useserver", False) is True
+            and self.contest_settings.get("OperatorCategory", "") in ("MULTI-OP")
+            and self.contest_settings.get("TransmitterCategory", "")
+            not in ("ONE", "SWL")
+        ):
             if self.current_sn is None:
                 self.current_sn = "REQUESTED"
                 cmd = {}
