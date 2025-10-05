@@ -219,6 +219,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-10-5] Add Multi Multi dupe checking.
 - [25-9-21] add group chat window.
 - [25-9-19] Merge PR from xentux adding Work All Germany.
 - [25-9-10] Yet MORE work on talking to the server.
