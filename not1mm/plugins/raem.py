@@ -140,8 +140,9 @@ def predupe(self):  # pylint: disable=unused-argument
 def prefill(self):
     """Fill SentNR"""
     field = self.sent
-    result = self.database.get_serial()
-    serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    # result = self.database.get_serial()
+    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    serial_nr = str(self.current_sn).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
     if len(field.text()) == 0:

@@ -1,5 +1,7 @@
 # Changelog
 
+- [25-10-5] Add Multi Multi dupe checking.
+  - Add Multi Multi Serial Number support.
 - [25-9-29] Fix Cabrillo output for CQWW RTTY.
 - [25-9-21] add group chat window.
 - [25-9-19] Merge PR from xentux adding Work All Germany.

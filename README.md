@@ -50,6 +50,8 @@
     - [CAT Control](#cat-control)
     - [CW Keyer Interface](#cw-keyer-interface)
     - [Cluster](#cluster)
+    - [Rotator](#rotator)
+    - [Group (The super sketchy not ready for prime time tab)](#group-the-super-sketchy-not-ready-for-prime-time-tab)
     - [N1MM Packets](#n1mm-packets)
     - [Bands](#bands)
     - [Options](#options)
@@ -217,6 +219,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-10-5] Add Multi Multi dupe checking.
+  - Add Multi Multi Serial Number support.
 - [25-9-29] Fix Cabrillo output for CQWW RTTY.
 - [25-9-21] add group chat window.
 - [25-9-19] Merge PR from xentux adding Work All Germany.
@@ -361,10 +365,22 @@ Length` (default: 3) or specify no padding by entering length "0".
 
 ### Cluster
 
-![Configuration Settings screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
+![Configuration Settings Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_cluster.png)
 
 Under the `Cluster` tab you can change the default AR Cluster server, port, and
 filter settings used for the bandmap window.
+
+### Rotator
+
+![Configuration Rotator Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_rotator.png)
+
+### Group (The super sketchy not ready for prime time tab)
+
+![Configuration Group Screen](https://github.com/mbridak/not1mm/raw/master/pic/configuration_group.png)
+
+The `Group` cluster has settings for talking to the [renfield](https://github.com/mbridak/renfield) server. The server can be used either by a multi op group or a single person. If used by a single person, think of it like back-up logging storage. If your contesting PC dies in the middle of a contest you can save out a Cabrillo log from it.
+
+If your contest settings are for Multi-Multi, Not1MM will pull contest serial numbers from renfield.
 
 ### N1MM Packets
 

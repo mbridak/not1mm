@@ -217,8 +217,9 @@ def prefill(self):
 
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if sent_sxchange_setting.strip() == "#":
-        result = self.database.get_serial()
-        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+        # result = self.database.get_serial()
+        # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+        serial_nr = str(self.current_sn).zfill(3)
         # get station region code from setup ARRLSection field
         serial_nr = serial_nr + " " + self.station.get("State", "")
 
