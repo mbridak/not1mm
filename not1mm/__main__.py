@@ -1045,15 +1045,15 @@ class MainWindow(QtWidgets.QMainWindow):
                         ...
                         # self.infoline.setText("Server Generated Log.")
 
-                    if json_data.get("subject") == "DUPE":
-                        ...
-                        # if json_data.get("isdupe") != 0:
-                        #     if json_data.get("contact") == self.callsign_entry.text():
-                        #         self.flash()
-                        #         self.infobox.setTextColor(QtGui.QColor(245, 121, 0))
-                        #         self.infobox.insertPlainText(
-                        #             f"{json_data.get('contact')}: " "Server DUPE\n"
-                        #         )
+                    if json_data.get("subject") == "ISDUPE":
+                        # TODO
+                        result = json_data.get("isdupe", False)
+                        self.contact_is_dupe = result
+                        if result is not False:
+                            self.dupe_indicator.show()
+                        else:
+                            self.dupe_indicator.hide()
+
                     if json_data.get("subject") == "POST":
                         self.remove_confirmed_commands(json_data)
                     if json_data.get("subject") == "DELETE":
@@ -1237,10 +1237,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.statistics_window.msg_from_main(msg)
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(msg)
-                if self.check_dupe(self.callsign.text()):
-                    self.dupe_indicator.show()
-                else:
-                    self.dupe_indicator.hide()
+                self.check_dupe(self.callsign.text())
 
             if msg.get("cmd", "") == "GETCOLUMNS":
                 if hasattr(self.contest, "columns"):
@@ -2797,10 +2794,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.callsign.hasFocus():
                 logger.debug("From callsign")
                 self.check_callsign(self.callsign.text())
-                if self.check_dupe(self.callsign.text()):
-                    self.dupe_indicator.show()
-                else:
-                    self.dupe_indicator.hide()
+                self.check_dupe(self.callsign.text())
                 if modifier == Qt.KeyboardModifier.ShiftModifier:
                     prev_tab = self.tab_prev.get(self.callsign)
                     prev_tab.setFocus()
@@ -4069,11 +4063,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dupe_indicator.hide()
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
-            # self.check_callsign(stripped_text)
-            if self.check_dupe(stripped_text):
-                self.dupe_indicator.show()
-            # else:
-            #     self.dupe_indicator.hide()
+            self.check_dupe(stripped_text)
         if self.contest:
             if self.use_call_history and hasattr(
                 self.contest, "populate_history_info_line"
@@ -4266,7 +4256,9 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.contest.prefill(self)
 
     def check_dupe(self, call: str) -> bool:
+        # TODO multi multi
         """Checks if a callsign is a dupe on current band/mode."""
+
         if self.contest is None:
             self.show_message_box("You have no contest loaded.")
             return False
@@ -4277,23 +4269,47 @@ class MainWindow(QtWidgets.QMainWindow):
             f"Call: {call} Band: {band} Mode: {mode} Dupetype: {self.contest.dupe_type}"
         )
         logger.debug("%s", debugline)
-        if self.contest.dupe_type == 1:
-            result = self.database.check_dupe(call)
-        if self.contest.dupe_type == 2:
-            result = self.database.check_dupe_on_band(call, band)
-        if self.contest.dupe_type == 3:
-            result = self.database.check_dupe_on_band_mode(call, band, mode)
-        if self.contest.dupe_type == 4:
-            result = {"isdupe": False}
-        if self.contest.dupe_type == 5:
-            result = {"isdupe": False}  # in case contest has no function.
-            if not hasattr(self.contest, "check_dupe"):
-                result = self.contest.specific_contest_check_dupe(self, call)
 
-        debugline = f"{result}"
-        logger.debug("%s", debugline)
-        self.contact_is_dupe = result.get("isdupe", False)
-        return result.get("isdupe", False)
+        if (
+            self.pref.get("useserver", False) is True
+            and self.contest_settings.get("OperatorCategory", "") in ("MULTI-OP")
+            and self.contest_settings.get("TransmitterCategory", "")
+            not in ("ONE", "SWL")
+        ):
+
+            cmd = {}
+            cmd["cmd"] = "ISDUPE"
+            cmd["Operator"] = self.current_op
+            cmd["NetBiosName"] = socket.gethostname()
+            cmd["Call"] = call
+            cmd["Band"] = band
+            cmd["Mode"] = mode
+            try:
+                self.server_channel.send_as_json(cmd)
+            except OSError as err:
+                logging.warning("%s", err)
+        else:
+
+            if self.contest.dupe_type == 1:
+                result = self.database.check_dupe(call)
+            if self.contest.dupe_type == 2:
+                result = self.database.check_dupe_on_band(call, band)
+            if self.contest.dupe_type == 3:
+                result = self.database.check_dupe_on_band_mode(call, band, mode)
+            if self.contest.dupe_type == 4:
+                result = {"isdupe": False}
+            if self.contest.dupe_type == 5:
+                result = {"isdupe": False}  # in case contest has no function.
+                if not hasattr(self.contest, "check_dupe"):
+                    result = self.contest.specific_contest_check_dupe(self, call)
+
+            debugline = f"{result}"
+            logger.debug("%s", debugline)
+            self.contact_is_dupe = result.get("isdupe", False)
+            if result.get("isdupe", False) is not False:
+                self.dupe_indicator.show()
+            else:
+                self.dupe_indicator.hide()
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
@@ -4513,7 +4529,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     if self.n1mm.send_radio_packets:
                         self.n1mm.send_radio()
-                # TODO
                 if self.pref.get("useserver", False) is True:
                     cmd = {}
                     cmd["cmd"] = "STATION_STATE"
