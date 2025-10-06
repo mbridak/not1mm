@@ -19,7 +19,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QFont, QColor, QFont
+from PyQt6.QtGui import QColorConstants, QFont, QColor
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 
