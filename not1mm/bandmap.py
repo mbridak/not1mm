@@ -19,7 +19,7 @@ from decimal import Decimal
 from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QFont, QColor, QFont
+from PyQt6.QtGui import QColorConstants, QFont, QColor
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import Qt, pyqtSignal
 
@@ -36,6 +36,8 @@ UPDATE_INTERVAL = 2000
 class Band:
     """the band"""
 
+    # 432070000 70cm
+
     bands = {
         "160m": (1.8, 2),
         "80m": (3.5, 4),
@@ -50,6 +52,9 @@ class Band:
         "6m": (50.0, 54.0),
         "4m": (70.0, 71.0),
         "2m": (144.0, 148.0),
+        "70cm": (420.0, 450.0),
+        "33cm": (902.0, 928.0),
+        "23cm": (1240.0, 1300.0),
     }
 
     othername = {
@@ -66,6 +71,9 @@ class Band:
         "6m": 50.0,
         "4m": 70.0,
         "2m": 144.0,
+        "70cm": 432.0,
+        "33cm": 932.0,
+        "23cm": 1232.0,
     }
 
     def __init__(self, band: str) -> None:
@@ -395,7 +403,12 @@ class BandMapWindow(QDockWidget):
         if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
-            self.set_band(packet.get("band") + "m", False)
+            target_band_name = packet.get("band", "")
+            if len(target_band_name):
+                if target_band_name[-1:] == "m":
+                    self.set_band(target_band_name, False)
+                else:
+                    self.set_band(packet.get("band") + "m", False)
             try:
                 if self.rx_freq != float(packet.get("vfoa")) / 1000000:
                     self.rx_freq = float(packet.get("vfoa")) / 1000000
