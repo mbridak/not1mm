@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-10-6] Bugfix where 70cm frequency ranges not showing in bandmap.
 - [25-10-5] Add Multi Multi dupe checking.
   - Add Multi Multi Serial Number support.
 - [25-9-29] Fix Cabrillo output for CQWW RTTY.
