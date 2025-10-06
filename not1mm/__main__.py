@@ -3329,12 +3329,10 @@ class MainWindow(QtWidgets.QMainWindow):
         Processed macro.
         """
 
-        # result = self.database.get_serial()
-        # next_serial = str(result.get("serial_nr", "1"))
-        # if next_serial == "None":
-        #     next_serial = "1"
         if self.current_sn is not None:
             next_serial = str(self.current_sn)
+        else:
+            next_serial = ""
 
         result = self.database.get_last_serial()
         prev_serial = str(result.get("serial_nr", "1")).zfill(3)
