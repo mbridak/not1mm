@@ -219,15 +219,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-10-6] Bugfix where 70cm frequency ranges not showing in bandmap.
+- [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
+  - Bugfix: Fix broken dupe checking when not multi-multi.
 - [25-10-5] Add Multi Multi dupe checking.
   - Add Multi Multi Serial Number support.
-- [25-9-29] Fix Cabrillo output for CQWW RTTY.
-- [25-9-21] add group chat window.
-- [25-9-19] Merge PR from xentux adding Work All Germany.
-- [25-9-10] Yet MORE work on talking to the server.
-- [25-9-8] Yet More work on talking to server.
-- [25-9-7] More work on talking to server.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
