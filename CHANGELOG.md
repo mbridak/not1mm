@@ -2,6 +2,7 @@
 
 - [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
   - Bugfix: Fix broken dupe checking when not multi-multi.
+  - Bugfix: Fix sending SN when not fetched.
 - [25-10-5] Add Multi Multi dupe checking.
   - Add Multi Multi Serial Number support.
 - [25-9-29] Fix Cabrillo output for CQWW RTTY.

@@ -221,6 +221,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 - [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
   - Bugfix: Fix broken dupe checking when not multi-multi.
+  - Bugfix: Fix sending SN when not fetched.
 - [25-10-5] Add Multi Multi dupe checking.
   - Add Multi Multi Serial Number support.
 
