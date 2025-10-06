@@ -77,7 +77,6 @@ class Band:
     }
 
     def __init__(self, band: str) -> None:
-        print(f"{band=}")
         self.start, self.end = self.bands.get(band, (0.0, 1.0))
         self.name = band
         self.altname = self.othername.get(band, 0.0)
