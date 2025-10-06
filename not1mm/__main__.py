@@ -4305,8 +4305,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             debugline = f"{result}"
             logger.debug("%s", debugline)
+
             self.contact_is_dupe = result.get("isdupe", False)
-            if result.get("isdupe", False) is not False:
+            if bool(result.get("isdupe", False)) is not False:
                 self.dupe_indicator.show()
             else:
                 self.dupe_indicator.hide()
