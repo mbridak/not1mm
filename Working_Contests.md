@@ -1,0 +1,48 @@
+# <center>List of Should be Working Contests</center>
+
+- General Logging
+- 10 10 Fall CW
+- 10 10 Spring CW
+- 10 10 Summer Phone
+- 10 10 Winter Phone
+- ARI 40 80
+- ARI DX
+- ARRL 10M
+- ARRL 160M
+- ARRL DX CW, SSB
+- ARRL Field Day
+- ARRL RTTY Roundup
+- ARRL Sweepstakes CW, SSB
+- ARRL VHF January, June, September
+- CQ 160 CW, SSB
+- CQ WPX CW, RTTY, SSB
+- CQ World Wide CW, RTTY, SSB
+- CWOps CWT, CWO
+- DARC Xmas
+- DARC VHF
+- EA Majistad CW
+- EA Majistad SSB
+- EA RTTY
+- ES OPEN HF
+- ES FIELD DAY HF
+- Helvetia
+- IARU Fieldday R1 CW, SSB
+- IARU HF
+- ICWC MST
+- Japan International DX CW, SSB
+- K1USN Slow Speed Test
+- Labre RS Digi
+- LZ DX
+- NAQP CW, RTTY, SSB
+- Phone Weekly Test
+- RAEM
+- RandomGram
+- RAC Canada Day
+- REF CW, SSB
+- SAC CW, SSB
+- SPDX
+- Stew Perry Topband
+- UK/EI DX
+- Weekly RTTY
+- Work All Germany
+- Winter Field Day
