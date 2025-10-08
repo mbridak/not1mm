@@ -309,6 +309,41 @@ The F1-F12 function keys be sent to fldigi via XMLRPC. Fldigi will be placed int
 
 Unlike WSJT, fldigi needs to be setup for this to work. The XMLRPC interface needs to be active. And in fldigi's config dialog go to \textbf{CONTESTS >> General >> CONTEST} and select Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 \newpage
+\section{Operating Multi Multi}
+
+Work is underway on Multi Multi contest operations. There is a companion project \textbf{renfield}\\
+\emph{https://github.com/mbridak/renfield} that will be needed for this. The idea is to have a separate slave server running, preferably, on another computer that's on the same network as the contesting PC's. This server will handle all the database CRUD operations. It will also handle the functions of handing out serial numbers and checking of a contact is a dupe. In the end, generating a Cabrillo file.
+
+\vspace{0.5cm}
+\begin{center}
+\includegraphics[width=0.75\linewidth]{pic/renfield_cli.png}
+\end{center}
+\vspace{0.5cm}
+
+This is a very lightweight terminal application and can be easily hosted on a Raspberry Pi or similar device. In a pinch it can be run along side Not1MM on one of the contesting machines. Tho I'd think twick about that.
+
+You could even use this while operating alone as an automated backup. So in case your logging computer should fail, you'd have a copy of the contest log.
+\subsection{Network Settings for Multi Multi}
+In the configuration dialog under the group tab, select Connect to server.
+
+\vspace{0.5cm}
+\begin{center}
+\includegraphics[width=0.5\linewidth]{pic/configuration_group.png}
+\end{center}
+\vspace{0.5cm}
+
+One computer needs to be the master station. The master station will tell the renfield server what contest is being run.
+
+\subsection{Contest Settings for Multi Multi}
+For the settings of the contest, if the Operator is set to "MULTI-OP" and the Transmitter category is not "ONE" or "SWL" Not1MM will ask the renfield server for serial numbers and dupe checks.
+
+\vspace{0.5cm}
+\begin{center}
+\includegraphics[width=0.5\linewidth]{pic/multi_multi.png}
+\end{center}
+\vspace{0.5cm}
+
+\newpage
 \section{Sending CW}
 \subsection{Sending CW Macros}
 Other than sending CW by hand, you can also send predefined CW text messages by pressing F1 - F12. See next section on Editing macro keys.
