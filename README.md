@@ -65,7 +65,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   - Bugfix: Fix broken dupe checking when not multi-multi.
   - Bugfix: Fix sending SN when not fetched.
 - [25-10-5] Add [Multi Multi](Multi-Multi.md) dupe checking.
-  - Add [Multi Multi])(Multi-Multi.md) Serial Number support.
+  - Add [Multi Multi](Multi-Multi.md) Serial Number support.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
