@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{multicol}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{amssymb}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
 \title{Not1MM User Manual}
@@ -293,21 +294,31 @@ On the Options TAB you can:
 \item Select to use Enter Sends Message (ESM), and configure it's function keys.
 \item Select whether or not to use Call History info.
 \item Select whether or not to send XML score info to online scoreboards.
+\item Select whether or not to clear input fields when you QSY while in S\&P mode.
 \end{itemize}
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configuration_options.png}
+\vspace{0.5cm}
+
+Three realtime score boards are supported:
+\begin{itemize}
+\item Real Time Contest Server at hamscore.com
+\item Contest Online ScoreBoard at contestonlinescore.com
+\item iveScore at contest.run
+\end{itemize}
+
 \newpage
 \section{Logging Digital Contacts}
-Not1MM listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237. No setup is needed to be done on Not1MM's side. That's good because I'm lazy. Not1MM watches for fldigi qso's by watching for UDP traffic from fldigi on 127.0.0.1:9876.
+Not1MM listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237. No setup is needed to be done on Not1MM's side. That's good because I'm lazy.\\Not1MM watches for fldigi qso's by watching for UDP traffic from fldigi on 127.0.0.1:9876.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/fldigi_adif_udp.png}
 \vspace{0.5cm}
 
-The F1-F12 function keys be sent to fldigi via XMLRPC. Fldigi will be placed into TX mode, the message will be sent and a carat-r will be tacked onto the end to place it back into RX mode.
+The F1-F12 function keys are sent to fldigi via XMLRPC. Fldigi will be placed into TX mode, the message will be sent and a $\wedge$r will be tacked onto the end to place it back into RX mode.
 
-Unlike WSJT, fldigi needs to be setup for this to work. The XMLRPC interface needs to be active. And in fldigi's config dialog go to \textbf{CONTESTS >> General >> CONTEST} and select Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
+Unlike WSJT, fldigi needs to be setup for this to work. The XMLRPC interface needs to be active. And in fldigi's config dialog, go to \textbf{CONTESTS >> General >> CONTEST} and select Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 \newpage
 \section{Operating Multi Multi}
 
@@ -348,20 +359,29 @@ For the settings of the contest, if the Operator is set to "MULTI-OP" and the Tr
 \subsection{Sending CW Macros}
 Other than sending CW by hand, you can also send predefined CW text messages by pressing F1 - F12. See next section on Editing macro keys.
 \subsection{Auto CQ}
-If you press SHIFT-F1 The Auto CQ mode will be activated and the F1 macro will be resent after each Auto CQ Delay interval has passed. The delay can be changed by going to the Options TAB in the Configuration dialog.
-\\The auto CQ can be cancelled by either typing in the call sign field, or by pressing ESC.
+If you press `SHIFT-F1` The Auto CQ mode will be activated, you will be placed in a Run state and the F1 macro will be resent after each Auto CQ Delay interval has passed. An indicator will appear to the upper left of the F1 macro key as a visual reminder that your Auto CQ is active. With it to the right, you will see a small progress bar giving you a visual indication as to when F1 will fire next.
+
+\vspace{0.5cm}
+\begin{center}
+\includegraphics[width=0.25\linewidth]{pic/auto_cq_indicator.png}
+\end{center}
+\vspace{0.5cm}
+
+\subsubsection{Setting the delay}
+The delay can be changed by going to the `Options` TAB in the Configuration dialog. If you are in S\&P mode when you enable Auto CQ, you will be automatically switched into RUN mode. To properly set the delay you should time how long your F1 macro takes to key, then add how many seconds of pause you would like. This is your delay value.
 \subsection{Sending CW Free Form}
 If you need to send something freeform, you can press \textbf{CTRL-SHIFT-K}, this will expose an entry field at the bottom of the window which you can type directly into. When you're done you can either press \textbf{CTRL-SHIFT-K} again, or press the Enter Key to close the field.
 \newpage
 \section{Editing Macro Keys}
 To edit the macros, choose \textbf{File >> Edit Macros}. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit, CW, SSB or RTTY, will be determined by your current operating mode and contest. Each contest gets it's own copy of the macros.
 
-After editing and saving the macro file. You can force the logger to reload the macro file by toggeling between `Run` and `SP` states.
+After editing and saving the macro file. You can force the logger to reload the macro file by toggeling between `Run` and `S\&P` states.
 
 \subsection{Macro Substitutions}
 
 You can include a limited set of substitution instructions.
 
+\vspace{0.5cm}
 \begin{tabular}{| c | p{9cm} |}
     \hline
     \textbf{Macro} & \textbf{Substitution} \\
@@ -375,6 +395,12 @@ You can include a limited set of substitution instructions.
     \{SENTNR\} & Sends whats in the SentNR field. \\
     \hline
     \{EXCH\} & Sends what's in the Sent Exchange field when contest is defined. \\
+    \hline
+    \{PREVNR\} & Sends the previous serial number. \\
+    \hline
+    \{OTHER1\} & Sends whats in the SentNR/Name field without altering it. \\
+    \hline
+    \{OTHER2\} & Sends whats in the Comment field without altering it. \\
     \hline
     \{LOGIT\} & Log the contact after macro pressed. \\
     \hline
@@ -390,14 +416,32 @@ You can include a limited set of substitution instructions.
     \hline
     \# & Sends serial number. \\
     \hline
+    \{VOICE1\} - \{VOICE10\} & Uses rigctld to send voice macros stored in the radio. \\
+    \hline
+    \ RI: & Send Rig specific codes. See Macro control of radio functions. \\
+    \hline
+    \ $\wedge$M & 	in a RTTY macro will be replaced with a newline character. \\
+    \hline
 \end{tabular}
 
 \subsection{Macro Use with Voice}
-The macros when used with voice, will also accept filenames of WAV files to play, excluding the file extension. The filename must be enclosed by brackets. For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav files are stored in the operators personal data directory. The filenames must be in lowercase. See [Various data file locations](\#various-data-file-locations) above for the location of your data files. For me, the macro `[cq]` will play \begin{verbatim}/home/mbridak/.local/share/not1mm/K6GTE/cq.wav\end{verbatim}
+\textbf{{VOICE1} - {VOICE10}}\\
+If you use rigctld and your radio supports it you can use the macros {VOICE1}, {VOICE2} etc to send the voice messages stored in your radio.
+\subsubsection{Voice macro wave files}
+The macros when used with voice, will also accept filenames of WAV files to play, excluding the file extension. The filename must be enclosed by brackets. For example `[CQ]` will play `cq.wav`, `[again]` will play `again.wav`. The wav files are stored in the operators personal data directory. The filenames must be in lowercase. See \textbf{Various data file locations} above for the location of your data files. For me, the macro `[cq]` will play 
+\begin{verbatim}/home/mbridak/.local/share/not1mm/K6GTE/cq.wav
+\end{verbatim}
 
 \textbf{The current wav files in place are not the ones you will want to use. They sound like an idiot.} You can use something like Audacity to record new wav files in your own voice.
 
 Aside from the `[filename]` wav files, there are also NATO phonetic wav files for each letter and number. So if your macro key holds `{HISCALL} {SNT} {SENTNR}` and you have entered K5TUX in callsign field during CQ WW SSB while in CQ Zone 3. You'll here Kilo 5 Tango Uniform X-ray, 5 9 9, 3. Hopefully not in an idiots voice.
+\subsubsection{Macro control of radio functions}
+Macros can also be used to send CAT/CI-V control codes to your radio. To make use of this feature, start your command with the letters "RI" and a colon, followed by the command you would like to send. If your command is ASCII text (for example, for Yaesu radios), just enter the text after "RI:". For binary codes, enter hexadecimal values separated by spaces.
+
+For example, to enable the auto-notch filter on a Yaesu FT-710, your command would be "RI:BC01;". To do the same on an Icom 7300, your command would be something like "RI:FE FE 94 E0 16 41 01 FD". Please refer to your radio's manual or online sources to determine the commands you need.
+
+Please note that CAT/CI-V command macros are only available if you are using either FLRig or rigctld (HamLib) for rig control.
+
 \newpage
 \section{cty.dat and QRZ for Distance and Bearing}
 
@@ -415,10 +459,11 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 
 \section{Other Uses for the Call Field}
 
+\textbf{You must press the SPACE bar after entering any of the below.}
 \begin{itemize}
-    \item  \textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
-    \item  \textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
-    \item  \textbf{OPON} Change the operator currently logging.
+\item \textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
+\item \textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+\item \textbf{OPON} Change the operator currently logging.
 \end{itemize}
 
 \textbf{You must press the SPACE bar after entering any of the above.}
@@ -443,7 +488,7 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
     \hline
     PgDown & Decreases the cw sending speed. \\
     \hline
-    \textbf{Arrow-Up} & Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). \\
+    Arrow-Up & Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). \\
     \hline
     Arrow-Down & Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required). \\
     \hline
@@ -468,6 +513,18 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
     CTRL-= & Log the contact without sending the ESM macros. \\
     \hline
     CTRL-W & Clears the input fields of any text. \\
+    \hline
+    ALT-B	& Toggles the BandMap window. \\
+    \hline
+    ALT-C	& Toggles the Check Partial window. \\
+    \hline
+    ALT-L	& Toggles the QSO Log window. \\
+    \hline
+    ALT-R	& Toggles the Rate window. \\
+    \hline
+    ALT-S	& Toggles the Statistics window. \\
+    \hline
+    ALT-V	& Toggles the VFO window. \\
     \hline
 \end{tabular}
 
@@ -513,17 +570,44 @@ The bandmap window is, as with everything, a work in progress. The bandmap now f
 \includegraphics[width=0.5\linewidth]{pic/bandmap.png}
 \vspace{0.5cm}
 
-VFO indicator now displays as a small triangle in the frequency tick marks. A small blue rectangle shows the reported receiver bandwidth.
+VFO indicator now displays as a small triangle in the frequency tick marks. A small blue rectangle shows the reported receiver bandwidth if one is reported.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
 \vspace{0.5cm}
 
-Clicked on spots now tune the radio and set the callsign field. Previously worked calls are shown in red.
-\newpage
-\subsection{The Check Window}
+Clicked on spots now tune the radio and set the callsign field.
 
-\textbf{Window >> Check Window}
+Previously worked calls are shown in red.
+
+Callsigns that were marked with CTRL-M to work later are displayed in a Yellow-ish color.
+
+In between the spots call and time is now a little icon to visually tell you what kind of spot it is.
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/bandmap_icons.png}
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item[]  $\bigcirc$ CW
+    \item[]  $\bigodot$ FT*
+    \item[]  $\circledcirc$ RTTY
+    \item[]  $\bigwedge$ Beacons
+    \item[]  @ Everything else
+\end{itemize}
+
+
+Secondary Icons:
+\begin{itemize}
+    \item[]  [P] POTA
+    \item[]  [S] SOTA
+\end{itemize}
+
+
+\newpage
+\subsection{The Check Partial Window}
+
+\textbf{Window >> Check Partial Window}
 
 As you enter a callsign, the Check Window will show probable matches to calls either in the MASTER.SCP file, your local log or the recent telnet spots. The MASTER.SCP column will show results for strings of 3 or more matching characters from the start of the call string. The local log and telnet columns will show matches of any length that appear anywhere in the string.
 
@@ -540,6 +624,49 @@ This window contains QSO rates and counts.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rate_window.png}
+
+\subsection{The DXCC window}
+\textbf{Window >> DXCC}
+
+This window shows you a grid of DXCC entities you've aquired and on what bands.
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/dxcc_window.png}
+
+\subsection{The Rotator Window (Work In Progress)}
+\textbf{Window >> Rotator}
+
+The Rotator window is a work in progress. The Rotator window relies on the functionality of the rotctld daemon. It connects to rotctld on address 127.0.0.1 and port 4533. You can change this if needed in the configuration dialog under the rotator tab. If started and there is no connection, you will see this:
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/rot1.png}
+\vspace{0.5cm}
+
+Once there is a connection to rotctld, the current azimuth of the antenna is obtained and you will see a direction needle apear:
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/rot2.png}
+\vspace{0.5cm}
+
+Once a call is entered and the bearing to contact is calculated you will see another needle appear:
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/rot3.png}
+\vspace{0.5cm}
+
+At this time you can click on the 'Move' button to point your antenna at the contact. A list of other buttons follows below.
+
+\textbf{Move}: Rotates the antenna at the target.
+
+\textbf{Stop}: Stops the current movement.
+
+\textbf{Park}: Parks the antenna.
+
+\textbf{N,S,W,E}: Points the antenna to one of the 4 cardinal directions.
+
+You can also move the rotator by clicking in the globe where you want the antenna to point.
+
+
 
 \subsection{The Remote VFO Window}
 
@@ -634,7 +761,7 @@ The contact will be automatically logged once all the needed info is collected a
 \newpage
 \section{Call History Files}
 
-I've started work on using 'call history files'. To test it, you can go to \textbf{FILE >> Configuration Settings}.
+To use Call History files, go to \textbf{FILE >> Configuration Settings}.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configuration_options.png}
@@ -642,6 +769,9 @@ I've started work on using 'call history files'. To test it, you can go to \text
 
 Place a check in the `Use Call History` box. Call history files are very specific to the contest you are working. Example files can be obtained from https://n1mmwp.hamdocs.com/mmfiles/categories/callhistory/? website. They have a searchbox so you can find the contest you are looking for. If you are feeling masocistic, you can craft your own. The general makeup of the file is a header defining the fields to be used, followed by by lines of comma separated data.
 \newpage
+\section{Creating your own Call History files}
+You can use \textbf{adif2callhistory} at 
+\emph{https://github.com/mbridak/adif2callhistory} to generate your own call history file from your ADIF files.
 An example file excerpt looks like:
 
 \begin{verbatim}
