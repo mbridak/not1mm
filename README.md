@@ -48,7 +48,7 @@ and mature. It just wasn't for me.
 
 ## Code Maturity & Current Multi Multi Development Focus
 
-Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
+Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for [Multi Multi](Multi-Multi.md) contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 
 ## Our Code Contributors ✨
 
@@ -64,8 +64,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 - [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
   - Bugfix: Fix broken dupe checking when not multi-multi.
   - Bugfix: Fix sending SN when not fetched.
-- [25-10-5] Add Multi Multi dupe checking.
-  - Add Multi Multi Serial Number support.
+- [25-10-5] Add [Multi Multi](Multi-Multi.md) dupe checking.
+  - Add [Multi Multi])(Multi-Multi.md) Serial Number support.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
@@ -86,7 +86,7 @@ A quick feature list, See the user manual for more details.
 - CW Keyer Interface, winkeyer and cwdaemon
 - Cluster and Bandmap
 - Rotator control, rotctld
-- Multi Multi (The super sketchy not ready for prime time)
+- [Multi Multi](Multi-Multi.md) (The super sketchy not ready for prime time)
 - N1MM Packet output for nodered
 - WSJT-X FT8/FT4/ETC and FLDIGI RTTY
 - ADIF and Cabrillo output.
