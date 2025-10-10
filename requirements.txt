@@ -6,8 +6,10 @@ dicttoxml
 xmltodict
 pyserial
 notctyparser >= 23.6.21
+numpy
 sounddevice
 soundfile
 rapidfuzz
 appdata
 Levenshtein
+adif_io
