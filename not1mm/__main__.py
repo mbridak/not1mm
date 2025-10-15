@@ -761,6 +761,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.chat_window)
         self.chat_window.hide()
         self.chat_window.message.connect(self.dockwidget_message)
+        self.chat_window.mycall = self.current_op
 
         self.show_splash_msg("Setting up DXCCWindow.")
         self.dxcc_window = DXCCWindow(self.actionDXCC)
@@ -1282,6 +1283,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.bandmap_window:
                     self.bandmap_window.msg_from_main(cmd)
                     self.bandmap_window.callsignField.setText(self.current_op)
+                if self.chat_window:
+                    self.chat_window.msg_from_main(cmd)
+                    self.chat_window.mycall = self.current_op
                 return
 
             if msg.get("cmd", "") == "CHANGECALL":
@@ -1742,6 +1746,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statistics_window.msg_from_main(cmd)
             if self.dxcc_window:
                 self.dxcc_window.msg_from_main(cmd)
+            if self.chat_window:
+                self.chat_window.mycall = self.current_op
 
             self.clearinputs()
             self.edit_station_settings()
@@ -1788,6 +1794,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statistics_window.msg_from_main(cmd)
             if self.dxcc_window:
                 self.dxcc_window.msg_from_main(cmd)
+            if self.chat_window:
+                self.chat_window.mycall = self.current_op
 
             self.clearinputs()
             self.open_contest()
@@ -4376,6 +4384,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.voice_process.current_op = self.current_op
             if self.bandmap_window:
                 self.bandmap_window.callsignField.setText(self.current_op)
+            if self.chat_window:
+                self.chat_window.mycall = self.current_op
         self.opon_dialog.close()
         logger.debug("New Op: %s", self.current_op)
         self.make_op_dir()

@@ -22,7 +22,7 @@ class ChatWindow(QDockWidget):
     """The stats window. Shows something important."""
 
     message = pyqtSignal(dict)
-    pref = {}
+    mycall = ""
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
     def __init__(self, action):
@@ -44,10 +44,11 @@ class ChatWindow(QDockWidget):
 
     def display_chat(self, sender, body):
         """Displays the chat history."""
-        # if self.preference.get("mycall") in body.upper():
-        #     self.chat_history.setTextColor(QtGui.QColor(245, 121, 0))
+        print(f"{self.mycall=}")
+        if self.mycall in body.upper():
+            self.chat_history.setTextColor(QtGui.QColor(245, 121, 0))
         self.chat_history.insertPlainText(f"\n{sender}: {body}")
-        # self.chat_history.setTextColor(QtGui.QColor(211, 215, 207))
+        self.chat_history.setTextColor(QtGui.QColor(211, 215, 207))
         self.chat_history.ensureCursorVisible()
 
     def msg_from_main(self, packet):
@@ -56,6 +57,10 @@ class ChatWindow(QDockWidget):
         if packet.get("cmd", "") == "CHAT":
             # {"cmd": "CHAT", "sender": "N2CQR", "message": "I worked your mama on 80 meters."}
             self.display_chat(packet.get("sender", ""), packet.get("message", ""))
+            return
+        if packet.get("cmd", "") == "CONTESTSTATUS":
+            self.mycall = packet.get("operator", "").upper()
+            return
 
     def setActive(self, mode: bool) -> None:
         self.active: bool = bool(mode)
