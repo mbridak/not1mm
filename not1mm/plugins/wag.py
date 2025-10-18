@@ -40,7 +40,9 @@ import re
 
 from pathlib import Path
 
-from not1mm.lib.plugin_common import gen_adif #, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import (
+    gen_adif,
+)  # , imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -159,10 +161,10 @@ def set_contact_vars(self):
         count = int(result.get("dok_count", 0))
         if count == 0:
             self.contact["IsMultiplier1"] = 1
-            logger.debug(f"{self.contact.get("Call")} is a Multi")
+            logger.debug(f"{self.contact.get('all')} is a Multi")
         else:
             self.contact["IsMultiplier1"] = 0
-            logger.debug(f"{self.contact.get("Call")} is not a Multi")
+            logger.debug(f"{self.contact.get('Call')} is not a Multi")
 
     # Multiplier
     # DL worked any station
@@ -179,10 +181,10 @@ def set_contact_vars(self):
         count = int(result.get("dxcc_count", 0))
         if count == 0:
             self.contact["IsMultiplier1"] = 1
-            logger.debug(f"{self.contact.get("Call")} is a Multi")
+            logger.debug(f"{self.contact.get('Call')} is a Multi")
         else:
             self.contact["IsMultiplier1"] = 0
-            logger.debug(f"{self.contact.get("Call")} is not a Multi")
+            logger.debug(f"{self.contact.get('Call')} is not a Multi")
 
 
 def predupe(self):
@@ -191,10 +193,10 @@ def predupe(self):
     # Check if the typed in callsign should be worked (DL only in WAG for non-DL stations!)
     dxcc = self.contact.get("CountryPrefix", "")
     if not self.is_german and dxcc != "DL":
-      logger.debug("DL only in WAG!")
-      self.dupe_indicator.setText("DL stations only!")
-      self.dupe_indicator.show()
-      
+        logger.debug("DL only in WAG!")
+        self.dupe_indicator.setText("DL stations only!")
+        self.dupe_indicator.show()
+
 
 def prefill(self):
     """Fill SentNR"""
@@ -244,7 +246,6 @@ def points(self):
         return 5
     else:
         return 0
-
 
 
 def show_mults(self):
@@ -503,7 +504,12 @@ def recalculate_mults(self):
 
         # Multiplier
         # non-DL worked DL
-        if dxcc == "DL" and not isinstance(dok, int) and dok != "NM" and not self.is_german:
+        if (
+            dxcc == "DL"
+            and not isinstance(dok, int)
+            and dok != "NM"
+            and not self.is_german
+        ):
             query = (
                 f"select count(*) as dok_count from dxlog where 1=1 "
                 f"and TS < '{time_stamp}' "
@@ -517,10 +523,10 @@ def recalculate_mults(self):
             count = int(result.get("dok_count", 0))
             if count == 0:
                 contact["IsMultiplier1"] = 1
-                logger.debug(f"{contact.get("Call")} is a Multi")
+                logger.debug(f"{contact.get('Call')} is a Multi")
             else:
                 contact["IsMultiplier1"] = 0
-                logger.debug(f"{contact.get("Call")} is not a Multi")
+                logger.debug(f"{contact.get('Call')} is not a Multi")
 
         # Multiplier
         # DL worked any station
@@ -569,7 +575,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get('run_state')=}")
 
     for a_button in [
         self.F1,
