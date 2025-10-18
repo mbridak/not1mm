@@ -61,6 +61,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-10-18] Fix crash issue# 424 with WAG.
 - [25-10-14] Highlight own call in chat window.
 - [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
   - Bugfix: Fix broken dupe checking when not multi-multi.
