@@ -3389,6 +3389,22 @@ class MainWindow(QtWidgets.QMainWindow):
             macro = macro.replace("{SENTNR}", self.other_1.text())
             macro = macro.replace("{PREVNR}", str(prev_serial))
 
+        if "{TX}" in macro:
+            macro = macro.replace("{TX}", "")
+            self.ptt_on()
+        if "{RX}" in macro:
+            macro = macro.replace("{RX}", "")
+            self.ptt_off()
+        if "{TX/RX}" in macro:
+            macro = macro.replace("{TX/RX}", "")
+            if self.rig_control:
+                ptt_state = self.rig_control.get_ptt()
+                logger.debug(f"PTT State: {ptt_state} (type={type(ptt_state)})")
+                # Sometimes rigctl returns "PTT State: get_mode:|Mode: LSB|Passband: 2800|RPRT 0" ???
+                if str(ptt_state) == "0":
+                    self.ptt_on()
+                else:
+                    self.ptt_off()
         if "{LOGIT}" in macro:
             macro = macro.replace("{LOGIT}", "")
             self.save_contact()
