@@ -195,3 +195,9 @@ class Radio(QObject):
     def ptt_off(self):
         if self.cat:
             self.cat.ptt_off()
+
+    def get_ptt(self):
+        """Get PTT state from radio"""
+        if self.cat:
+            return self.cat.get_ptt()
+        return 0
