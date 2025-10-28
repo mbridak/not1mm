@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QBrush, QColor
 
 # from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6 import uic, QtWidgets
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
@@ -83,6 +83,16 @@ class DXCCWindow(QDockWidget):
         self.dxcc_table.resizeColumnsToContents()
         self.dxcc_table.resizeRowsToContents()
 
+    def scrollToDXCC(self, item: str):
+        """Scrolls dxcc table to the item"""
+        if self.active is True and self.isVisible() and isinstance(item, str):
+            matchingitems = self.dxcc_table.findItems(
+                item.upper(), Qt.MatchFlag.MatchContains
+            )
+            if matchingitems:
+                matcheditem = matchingitems[0]  # take the first
+                self.dxcc_table.scrollToItem(matcheditem)
+
     def load_pref(self) -> None:
         """
         Loads the preferences from the config file into the self.pref dictionary.
@@ -140,6 +150,8 @@ class DXCCWindow(QDockWidget):
                 ...
                 self.load_new_db()
                 self.get_log()
+            if msg.get("cmd", "") == "SCROLLTODXCC":
+                self.scrollToDXCC(msg.get("dxcc", ""))
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
