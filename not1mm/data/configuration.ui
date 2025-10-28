@@ -1746,7 +1746,7 @@
          <x>5</x>
          <y>25</y>
          <width>639</width>
-         <height>376</height>
+         <height>378</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_10" columnstretch="1,1">
@@ -2430,6 +2430,20 @@
            <widget class="QCheckBox" name="qsy_on_change">
             <property name="text">
              <string>S&amp;&amp;P QSY on Freq Change</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="autoscroll_dxcc_window">
+            <property name="text">
+             <string>Autoscroll DXCC window</string>
             </property>
            </widget>
           </item>
