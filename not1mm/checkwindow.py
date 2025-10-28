@@ -17,7 +17,7 @@ from typing import Optional
 from json import loads
 from rapidfuzz.distance import Levenshtein
 
-from PyQt6 import QtGui, uic
+from PyQt6 import uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget, QApplication
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtCore import pyqtSignal
