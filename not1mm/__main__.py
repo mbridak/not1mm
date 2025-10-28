@@ -4237,8 +4237,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         result = self.cty_lookup(callsign)
-        # debug_result = f"{result=}"
-        # logger.debug("%s", debug_result)
         if result is not None:
             try:
                 a = result.get(next(iter(result)))
@@ -4453,8 +4451,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # This section has nothing to do with polling the radio
         # It's here because it gets called often enough to be useful.
         if self.auto_cq is True:
+            now = datetime.datetime.now()
             total_duration = self.auto_cq_time - self.auto_cq_then
-            elapsed_duration = datetime.datetime.now() - self.auto_cq_then
+            elapsed_duration = now - self.auto_cq_then
             if total_duration.total_seconds() > 0:
                 percentage_complete = int(
                     (elapsed_duration.total_seconds() / total_duration.total_seconds())
@@ -4463,13 +4462,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 percentage_complete = min(100, percentage_complete)
                 self.cwprogressBar.setValue(100 - percentage_complete)
 
-            if datetime.datetime.now() > self.auto_cq_time:
-                self.auto_cq_then = datetime.datetime.now()
-                self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
+            if now > self.auto_cq_time:
+                self.auto_cq_then = now
+                self.auto_cq_time = now + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
                 )
                 self.process_function_key(self.F1)
-            if datetime.datetime.now() > self.server_seen:
+            if now > self.server_seen:
                 self.server_icon.setPixmap(self.redserver)
 
         # The following pertains to radio polling.
