@@ -4269,6 +4269,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dx_entity.setText(
                 f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
             )
+            if (
+                self.dxcc_window
+                and self.pref.get("autoscroll_dxcc_window", False) is True
+            ):
+                cmd = {}
+                cmd["cmd"] = "SCROLLTODXCC"
+                cmd["dxcc"] = primary_pfx
+                self.dxcc_window.msg_from_main(cmd)
             if len(callsign) > 2:
                 if self.contest:
                     if (
