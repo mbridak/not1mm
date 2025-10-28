@@ -24,7 +24,6 @@ dependencies = [
     "notctyparser >= 23.6.21",
     "rapidfuzz",
     "appdata",
-    "Levenshtein",
     "adif_io",
 ]
 classifiers = [

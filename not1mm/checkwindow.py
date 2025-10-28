@@ -15,7 +15,7 @@ import os
 import queue
 from typing import Optional
 from json import loads
-import Levenshtein
+from rapidfuzz.distance import Levenshtein
 
 from PyQt6 import QtGui, uic
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget, QApplication
