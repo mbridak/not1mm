@@ -87,7 +87,7 @@ class DXCCWindow(QDockWidget):
         """Scrolls dxcc table to the item"""
         if self.active is True and self.isVisible() and isinstance(item, str):
             matchingitems = self.dxcc_table.findItems(
-                item.upper(), Qt.MatchFlag.MatchContains
+                item.upper(), Qt.MatchFlag.MatchExactly
             )
             if matchingitems:
                 matcheditem = matchingitems[0]  # take the first
