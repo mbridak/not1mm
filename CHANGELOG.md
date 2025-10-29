@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-10-29] Corrected DXCC autoscroll match.
 - [25-10-28] Changed Levenshtein library to rapidfuzz
 - [25-10-27] Add TX and RX macros.
   - Option to autoscroll DXCC window to current call.
