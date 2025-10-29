@@ -868,6 +868,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionDXCC.isChecked():
             self.dxcc_window.show()
             self.dxcc_window.setActive(True)
+            self.dxcc_window.get_log()
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
@@ -2369,6 +2370,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.actionDXCC.isChecked():
             self.dxcc_window.show()
             self.dxcc_window.setActive(True)
+            self.dxcc_window.get_log()
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
