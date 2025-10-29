@@ -66,7 +66,7 @@ class DXCCWindow(QDockWidget):
         # {'CountryPrefix': 'XE', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1},
         # {'CountryPrefix': 'G', '160m': 0, '80m': 0, '40m': 0, '20m': 1, '15m': 0, '10m': 0, 'Total': 1}
         # ]
-        if not self.isVisible():
+        if not self.active:
             return
         result = self.database.fetch_dxcc_by_band_count()
         self.dxcc_table.setRowCount(0)
