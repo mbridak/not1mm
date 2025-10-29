@@ -757,8 +757,8 @@ class DataBase:
                                 COUNT(*) AS Total
                             FROM DXLOG where ContestNR = {self.current_contest} 
                             GROUP BY CountryPrefix
-                            ORDER BY Total DESC
                         """
+                #                            ORDER BY Total DESC
                 cursor.execute(query)
                 return cursor.fetchall()
         except sqlite3.OperationalError as exception:
