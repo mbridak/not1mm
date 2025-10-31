@@ -1306,6 +1306,9 @@
           </item>
           <item>
            <widget class="QFrame" name="Command_Buttons">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
             <layout class="QHBoxLayout" name="ButtonRow3">
              <property name="leftMargin">
               <number>0</number>
@@ -1576,8 +1579,10 @@
     <addaction name="actionRate_Window"/>
     <addaction name="actionStatistics"/>
     <addaction name="actionVFO"/>
-    <addaction name="actionDXCC"/>
     <addaction name="actionRotator"/>
+    <addaction name="separator"/>
+    <addaction name="actionDXCC"/>
+    <addaction name="actionZone"/>
     <addaction name="separator"/>
     <addaction name="actionGroup_Chat"/>
    </widget>
@@ -2210,6 +2215,17 @@
    </property>
    <property name="text">
     <string>Group Chat</string>
+   </property>
+  </action>
+  <action name="actionZone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Zone</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Z</string>
    </property>
   </action>
  </widget>
