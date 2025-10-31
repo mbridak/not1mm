@@ -765,6 +765,34 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
+    def fetch_zone_by_band_count(self) -> list:
+        """
+        Fetch list containing count of unique zones by band
+
+        """
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                query = f"""
+                            SELECT ZN,
+                                SUM(CASE WHEN Band = 1.8 THEN 1 ELSE 0 END) AS '160m',
+                                SUM(CASE WHEN Band = 3.5 THEN 1 ELSE 0 END) AS '80m',
+                                SUM(CASE WHEN Band = 7.0 THEN 1 ELSE 0 END) AS '40m',
+                                SUM(CASE WHEN Band = 14.0 THEN 1 ELSE 0 END) AS '20m',
+                                SUM(CASE WHEN Band = 21.0 THEN 1 ELSE 0 END) AS '15m',
+                                SUM(CASE WHEN Band = 28.0 THEN 1 ELSE 0 END) AS '10m',
+                                COUNT(*) AS Total
+                            FROM DXLOG where ContestNR = {self.current_contest} 
+                            GROUP BY ZN
+                        """
+                #                            ORDER BY Total DESC
+                cursor.execute(query)
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def fetch_exchange1_unique_count(self) -> dict:
         """
         Fetch count of unique countries
