@@ -4,14 +4,19 @@
 \usepackage{amssymb}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
+\usepackage{hyperref}
 \title{Not1MM User Manual}
 \author{Mike Bridak K6GTE}
 \date{October 2025}
 \begin{document}
 \maketitle
-\pagebreak
+\thispagestyle{empty}
+\pagestyle{empty}
+\newpage
 \tableofcontents
 \newpage
+\pagestyle{plain}
+\setcounter{page}{1}
 \section{Not1MM}
 The worlds number 1 unfinished contest logger. \textsuperscript{*According to my daughter Corinna.}
 
@@ -636,10 +641,15 @@ This window contains QSO rates and counts.
 \subsection{The DXCC window}
 \textbf{Window >> DXCC}
 
-This window shows you a grid of DXCC entities you've aquired and on what bands. In the Configurations Option tab, there is a checkbox to enable this table to be automatically scrolled to the DXCC entity if the call in the callsign entry field if it exists in the table.
+This window shows you a grid of DXCC entities you've aquired and on what bands. There is a checkbox to enable this table to be automatically scrolled to the DXCC entity if the call in the callsign entry field if it exists in the table.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/dxcc_window.png}
+
+\subsection{The Zone window}
+\textbf{Window >> Zone}
+
+This window does what the DXCC window does, but for zones. In addition to the Scroll to checkbox, there are a couple radio buttons to tell it what zone to scroll to CQ Zones or ITU Zones. Make sure they match the contest your running.
 
 \subsection{The Rotator Window (Work In Progress)}
 \textbf{Window >> Rotator}
