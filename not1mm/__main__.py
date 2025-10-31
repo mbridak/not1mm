@@ -69,6 +69,7 @@ import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.dxcc_tracker import DXCCWindow
+from not1mm.zone_tracker import ZoneWindow
 from not1mm.rotator import RotatorWindow
 from not1mm.bandmap import BandMapWindow
 from not1mm.vfo import VfoWindow
@@ -191,6 +192,7 @@ class MainWindow(QtWidgets.QMainWindow):
     rate_window = None
     statistics_window = None
     dxcc_window = None
+    zone_window = None
     rotator_window = None
     voice_window = None
     settings = None
@@ -318,6 +320,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionGroup_Chat.triggered.connect(self.launch_chat_window)
         self.actionVFO.triggered.connect(self.launch_vfo)
         self.actionDXCC.triggered.connect(self.launch_dxcc_window)
+        self.actionZone.triggered.connect(self.launch_zone_window)
         self.actionRotator.triggered.connect(self.launch_rotator_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.actionMark_Contacts_Dirty.triggered.connect(self.mark_all_dirty)
@@ -772,6 +775,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dxcc_window.hide()
         self.dxcc_window.message.connect(self.dockwidget_message)
 
+        self.show_splash_msg("Setting up ZoneWindow.")
+        self.zone_window = ZoneWindow(self.actionZone)
+        self.zone_window.setObjectName("zone-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.zone_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.zone_window)
+        self.zone_window.hide()
+        self.zone_window.message.connect(self.dockwidget_message)
+
         self.show_splash_msg("Setting up RotatorWindow.")
         self.rotator_window = RotatorWindow(
             self.actionRotator,
@@ -872,6 +884,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
+
+        self.actionZone.setChecked(self.pref.get("zonewindow", False))
+        if self.actionZone.isChecked():
+            self.zone_window.show()
+            self.zone_window.setActive(True)
+            self.zone_window.get_log()
+        else:
+            self.zone_window.hide()
+            self.zone_window.setActive(False)
 
         self.actionRotator.setChecked(self.pref.get("rotatorwindow", False))
         if self.actionRotator.isChecked():
@@ -1239,6 +1260,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.statistics_window.msg_from_main(msg)
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(msg)
+                if self.zone_window:
+                    self.zone_window.msg_from_main(msg)
                 self.check_dupe(self.callsign.text())
 
             if msg.get("cmd", "") == "GETCOLUMNS":
@@ -1747,6 +1770,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statistics_window.msg_from_main(cmd)
             if self.dxcc_window:
                 self.dxcc_window.msg_from_main(cmd)
+            if self.zone_window:
+                self.zone_window.msg_from_main(cmd)
             if self.chat_window:
                 self.chat_window.mycall = self.current_op
 
@@ -1795,6 +1820,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.statistics_window.msg_from_main(cmd)
             if self.dxcc_window:
                 self.dxcc_window.msg_from_main(cmd)
+            if self.zone_window:
+                self.zone_window.msg_from_main(cmd)
             if self.chat_window:
                 self.chat_window.mycall = self.current_op
 
@@ -2102,6 +2129,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.statistics_window.msg_from_main(cmd)
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(cmd)
+                if self.zone_window:
+                    self.zone_window.msg_from_main(cmd)
                 # server
                 if (
                     self.pref.get("useserver", False) is True
@@ -2374,6 +2403,18 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.dxcc_window.hide()
             self.dxcc_window.setActive(False)
+
+    def launch_zone_window(self) -> None:
+        """Launch the zone window"""
+        self.pref["zonewindow"] = self.actionZone.isChecked()
+        self.write_preference()
+        if self.actionZone.isChecked():
+            self.zone_window.show()
+            self.zone_window.setActive(True)
+            self.zone_window.get_log()
+        else:
+            self.zone_window.hide()
+            self.zone_window.setActive(False)
 
     def launch_rotator_window(self) -> None:
         """Launch the rotator window"""
@@ -3105,6 +3146,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statistics_window.msg_from_main(cmd)
         if self.dxcc_window:
             self.dxcc_window.msg_from_main(cmd)
+        if self.zone_window:
+            self.zone_window.msg_from_main(cmd)
 
     def update_rtc_xml(self):
         """Update RTC XML"""
@@ -4269,14 +4312,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dx_entity.setText(
                 f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
             )
-            if (
-                self.dxcc_window
-                and self.pref.get("autoscroll_dxcc_window", False) is True
-            ):
+            if self.dxcc_window:
                 cmd = {}
                 cmd["cmd"] = "SCROLLTODXCC"
                 cmd["dxcc"] = primary_pfx
                 self.dxcc_window.msg_from_main(cmd)
+
+            if self.zone_window:
+                cmd = {}
+                cmd["cmd"] = "SCROLLTOZone"
+                cmd["cq"] = cq
+                cmd["itu"] = itu
+                self.zone_window.msg_from_main(cmd)
+
             if len(callsign) > 2:
                 if self.contest:
                     if (
