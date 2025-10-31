@@ -85,7 +85,12 @@ class DXCCWindow(QDockWidget):
 
     def scrollToDXCC(self, item: str):
         """Scrolls dxcc table to the item"""
-        if self.active is True and self.isVisible() and isinstance(item, str):
+        if (
+            self.active is True
+            and self.isVisible()
+            and isinstance(item, str)
+            and self.scrolltoCheckBox.isChecked()
+        ):
             matchingitems = self.dxcc_table.findItems(
                 item.upper(), Qt.MatchFlag.MatchExactly
             )

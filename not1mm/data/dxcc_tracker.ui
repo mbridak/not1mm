@@ -16,9 +16,19 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QCheckBox" name="scrolltoCheckBox">
+      <property name="text">
+       <string>Scroll to</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QTableWidget" name="dxcc_table">
       <property name="focusPolicy">
-       <enum>Qt::FocusPolicy::NoFocus</enum>
+       <enum>Qt::NoFocus</enum>
       </property>
      </widget>
     </item>
