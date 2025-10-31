@@ -61,10 +61,6 @@ class Settings(QtWidgets.QDialog):
             bool(self.preference.get("use_call_history", False))
         )
 
-        self.autoscroll_dxcc_window.setChecked(
-            bool(self.preference.get("autoscroll_dxcc_window", False))
-        )
-
         self.qsy_on_change.setChecked(bool(self.preference.get("sandpqsy", False)))
 
         self.use_esm.setChecked(bool(self.preference.get("use_esm", False)))
@@ -250,9 +246,6 @@ class Settings(QtWidgets.QDialog):
         self.preference["use_call_history"] = self.use_call_history.isChecked()
 
         self.preference["sandpqsy"] = self.qsy_on_change.isChecked()
-        self.preference["autoscroll_dxcc_window"] = (
-            self.autoscroll_dxcc_window.isChecked()
-        )
 
         self.preference["use_esm"] = self.use_esm.isChecked()
         self.preference["esm_cq"] = self.esm_cq.currentText()
@@ -328,7 +321,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["cluster_server"] = self.cluster_server_field.text()
         try:
             self.preference["cluster_port"] = int(self.cluster_port_field.text())
-        except:
+        except ValueError:
             ...
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
