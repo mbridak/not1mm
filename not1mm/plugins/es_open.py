@@ -75,16 +75,13 @@ def specific_contest_check_dupe(self, call):
     iso_current_time = datetime.now(timezone.utc)
     current_time = iso_current_time.replace(tzinfo=None)
 
-    result = {}
-    result["isdupe"] = False
-
     if (
         time_period_1 is not None
         and current_time < time_period_1
         and current_time >= start_date_init_date
     ):
 
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -99,7 +96,7 @@ def specific_contest_check_dupe(self, call):
         and current_time >= time_period_1
     ):
 
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -114,7 +111,7 @@ def specific_contest_check_dupe(self, call):
         and current_time >= time_period_2
     ):
 
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -129,7 +126,7 @@ def specific_contest_check_dupe(self, call):
         and current_time >= time_period_3
     ):
 
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -137,12 +134,9 @@ def specific_contest_check_dupe(self, call):
             time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
         )
     # just for band and mode if outside of time period
-    else:
-        result = self.database.check_dupe_on_band_mode(
-            call, self.contact.get("Band", ""), mode
-        )
-
-    return result
+    return self.database.check_dupe_on_band_mode(
+        call, self.contact.get("Band", ""), mode
+    )
 
 
 def init_contest(self):
