@@ -364,6 +364,11 @@
      </item>
      <item>
       <property name="text">
+       <string>ES LL KV</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ES OPEN</string>
       </property>
      </item>
