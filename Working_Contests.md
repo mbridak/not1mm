@@ -25,6 +25,7 @@
 - EA RTTY
 - ES OPEN HF
 - ES FIELD DAY HF
+- Estonian LL Cup
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
