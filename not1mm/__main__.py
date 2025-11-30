@@ -50,7 +50,7 @@ from not1mm.lib.ham_utility import (
     distance_with_latlon,
     get_logged_band,
     getband,
-    reciprocol,
+    reciprocal,
     fakefreq,
 )
 
@@ -1350,7 +1350,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.station.get("GridSquare", ""), grid
                             )
                             self.heading_distance.setText(
-                                f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                                f"{grid} Hdg {heading}° LP {reciprocal(heading)}° / "
                                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                                 f" {msg.get('result', {}).get('name_fmt', '')}"
                             )
@@ -4295,7 +4295,7 @@ class MainWindow(QtWidgets.QMainWindow):
             heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
             kilometers = distance_with_latlon(self.station.get("GridSquare"), lat, lon)
             self.heading_distance.setText(
-                f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
+                f"Regional Hdg {heading}° LP {reciprocal(heading)}° / "
                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
             )
             if self.rotator_window is not None:
@@ -4502,13 +4502,12 @@ class MainWindow(QtWidgets.QMainWindow):
             total_duration = self.auto_cq_time - self.auto_cq_then
             elapsed_duration = now - self.auto_cq_then
             if total_duration.total_seconds() > 0:
-                percentage_complete = int(
+                percentage_complete = round(
                     (elapsed_duration.total_seconds() / total_duration.total_seconds())
                     * 100
                 )
-                percentage_complete = min(100, percentage_complete)
+                percentage_complete = max(0, min(100, percentage_complete))
                 self.cwprogressBar.setValue(100 - percentage_complete)
-
             if now > self.auto_cq_time:
                 self.auto_cq_then = now
                 self.auto_cq_time = now + datetime.timedelta(
@@ -4574,7 +4573,6 @@ class MainWindow(QtWidgets.QMainWindow):
             "PKTLSB",
             "PKTUSB",
             "FSK",
-            "PKT",
         ):
             self.setmode("RTTY")
 
@@ -4629,7 +4627,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # falling back to the default ones.
         # If user selects menu option to edit the current macro file, make the previous checks, if the
         # specific one does not exist, copy the default to the contest directory and edit that copy.
-        if self.radio_state.get("mode") in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
+        if self.radio_state.get("mode") in ("CW", "CW-U", "CW-L", "CWR"):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
             "RTTY",
