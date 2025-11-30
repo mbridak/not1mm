@@ -161,7 +161,7 @@
          <string>clear spots</string>
         </property>
         <property name="text">
-         <string>Del Spots</string>
+         <string>Spots</string>
         </property>
        </widget>
       </item>
@@ -186,7 +186,7 @@
          <string>Erase Marked Spots</string>
         </property>
         <property name="text">
-         <string>Del Marked</string>
+         <string>Marked</string>
         </property>
        </widget>
       </item>

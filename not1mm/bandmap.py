@@ -21,7 +21,7 @@ from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtGui import QColorConstants, QFont, QColor
-from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtWidgets import QDockWidget, QStyle
 from PyQt6.QtCore import Qt, pyqtSignal
 
 import not1mm.fsutils as fsutils
@@ -364,7 +364,11 @@ class BandMapWindow(QDockWidget):
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
+        pixmapi = QStyle.StandardPixmap.SP_TrashIcon
+        icon = self.style().standardIcon(pixmapi)
+        self.clearButton.setIcon(icon)
         self.clearmarkedButton.clicked.connect(self.clear_marked)
+        self.clearmarkedButton.setIcon(icon)
         self.zoominButton.clicked.connect(self.dec_zoom)
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
