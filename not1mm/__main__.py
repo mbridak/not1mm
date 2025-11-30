@@ -2465,13 +2465,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
-                    indicator.setStyleSheet(
-                        f"font-family: {self.fontfamily}; color: black;"
-                    )
+                    indicator.setStyleSheet("color: black;")
                 else:
-                    indicator.setStyleSheet(
-                        f"font-family: {self.fontfamily}; color: white;"
-                    )
+                    indicator.setStyleSheet("color: white;")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2492,9 +2488,7 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
-                indicator.setStyleSheet(
-                    f"font-family: {self.fontfamily}; color: green;"
-                )
+                indicator.setStyleSheet("color: green;")
 
     def closeEvent(self, _event) -> None:
         """
