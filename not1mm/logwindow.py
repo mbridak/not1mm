@@ -50,9 +50,7 @@ def safe_float(the_input: any, default=0.0) -> float:
     if the_input:
         try:
             return float(input)
-        except ValueError:
-            return default
-        except TypeError:
+        except (ValueError, TypeError):
             return default
     return default
 
@@ -173,10 +171,7 @@ class LogWindow(QDockWidget):
             log.verticalHeader().setVisible(False)
 
         self.get_log()
-        self.generalLog.resizeColumnsToContents()
-        self.generalLog.resizeRowsToContents()
-        self.focusedLog.resizeColumnsToContents()
-        self.focusedLog.resizeRowsToContents()
+        self.resize_headers_to_smallest()
 
         cmd = {}
         cmd["cmd"] = "GETCOLUMNS"
@@ -207,6 +202,13 @@ class LogWindow(QDockWidget):
         """"""
         for i in range(self.generalLog.columnCount()):
             self.focusedLog.setColumnWidth(i, self.generalLog.columnWidth(i))
+
+    def resize_headers_to_smallest(self) -> None:
+        """Resize the headers and cells to fit the contents."""
+        self.generalLog.resizeColumnsToContents()
+        self.generalLog.resizeRowsToContents()
+        self.focusedLog.resizeColumnsToContents()
+        self.focusedLog.resizeRowsToContents()
 
     def get_column(self, name: str) -> int:
         """
@@ -920,10 +922,7 @@ class LogWindow(QDockWidget):
                 QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
             )
 
-        self.generalLog.resizeColumnsToContents()
-        self.generalLog.resizeRowsToContents()
-        self.focusedLog.resizeColumnsToContents()
-        self.focusedLog.resizeRowsToContents()
+        self.resize_headers_to_smallest()
         self.generalLog.blockSignals(False)
         self.focusedLog.blockSignals(False)
 
@@ -1089,8 +1088,7 @@ class LogWindow(QDockWidget):
                 QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
             )
 
-        self.focusedLog.resizeColumnsToContents()
-        self.focusedLog.resizeRowsToContents()
+        self.resize_headers_to_smallest()
         self.focusedLog.blockSignals(False)
 
     def show_message_box(self, message: str) -> None:
