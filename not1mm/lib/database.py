@@ -434,6 +434,33 @@ class DataBase:
             print(exception)
             logger.info("%s", exception)
 
+    def get_contest_profile(self, contest: str):
+        """get the contest profile"""
+        try:
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(f"select * from Contest where Name='{contest}';")
+                return cursor.fetchone()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
+    def get_contest_list(self):
+        """get the list of contests"""
+        try:
+
+            with sqlite3.connect(self.database) as conn:
+                conn.row_factory = self.row_factory
+                cursor = conn.cursor()
+                cursor.execute(
+                    "select Name, DisplayName from Contest order by DisplayName;"
+                )
+                return cursor.fetchall()
+        except sqlite3.OperationalError as exception:
+            logger.debug("%s", exception)
+            return {}
+
     def add_contest(self, contest: dict) -> None:
         """Add Contest"""
 
@@ -1368,7 +1395,9 @@ class DataBase:
             logger.debug("%s", exception)
             return {}
 
-    def check_dupe_on_period_mode_without_band(self, call, mode, period_1, period_2) -> dict:
+    def check_dupe_on_period_mode_without_band(
+        self, call, mode, period_1, period_2
+    ) -> dict:
         """Checks if a call is dupe on band/mode"""
         try:
             with sqlite3.connect(self.database) as conn:
