@@ -14,11 +14,6 @@
    <string>BandMap</string>
   </property>
   <widget class="QWidget" name="widget">
-   <property name="font">
-    <font>
-     <family>JetBrains Mono</family>
-    </font>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
      <number>6</number>
@@ -166,7 +161,7 @@
          <string>clear spots</string>
         </property>
         <property name="text">
-         <string>🗑 Spots</string>
+         <string>Del Spots</string>
         </property>
        </widget>
       </item>
@@ -191,7 +186,7 @@
          <string>Erase Marked Spots</string>
         </property>
         <property name="text">
-         <string>🗑 Marked</string>
+         <string>Del Marked</string>
         </property>
        </widget>
       </item>
