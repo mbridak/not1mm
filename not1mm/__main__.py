@@ -686,6 +686,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.station = self.database.fetch_station()
+        # profile = self.database.get_contest_profile(contest="FD")
+        self.the_contest_list = self.database.get_contest_list()
         if self.station is None:
             self.station = {}
             self.edit_station_settings()
@@ -3174,6 +3176,7 @@ class MainWindow(QtWidgets.QMainWindow):
         logger.debug("New contest Dialog")
 
         self.contest_dialog = NewContest(fsutils.APP_DATA_PATH)
+        self.contest_dialog.fill_contest_list(self.the_contest_list)
         if self.current_palette:
             self.contest_dialog.setPalette(self.current_palette)
             self.contest_dialog.exchange.setPalette(self.current_palette)
