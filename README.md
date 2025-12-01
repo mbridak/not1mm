@@ -60,18 +60,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-10-30] Added a Zone tracker window.
-- [25-10-29] Corrected DXCC autoscroll match.
-- [25-10-28] Changed Levenshtein library to rapidfuzz
-- [25-10-27] Add TX and RX macros.
-  - Option to autoscroll DXCC window to current call.
-- [25-10-18] Fix crash issue# 424 with WAG.
-- [25-10-14] Highlight own call in chat window.
-- [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
-  - Bugfix: Fix broken dupe checking when not multi-multi.
-  - Bugfix: Fix sending SN when not fetched.
-- [25-10-5] Add [Multi Multi](Multi-Multi.md) dupe checking.
-  - Add [Multi Multi](Multi-Multi.md) Serial Number support.
+- [25-12-1] Fix crash when parsing XML from HamQTH.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
