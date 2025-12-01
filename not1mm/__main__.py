@@ -50,7 +50,7 @@ from not1mm.lib.ham_utility import (
     distance_with_latlon,
     get_logged_band,
     getband,
-    reciprocol,
+    reciprocal,
     fakefreq,
 )
 
@@ -1350,7 +1350,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 self.station.get("GridSquare", ""), grid
                             )
                             self.heading_distance.setText(
-                                f"{grid} Hdg {heading}° LP {reciprocol(heading)}° / "
+                                f"{grid} Hdg {heading}° LP {reciprocal(heading)}° / "
                                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
                                 f" {msg.get('result', {}).get('name_fmt', '')}"
                             )
@@ -2470,13 +2470,9 @@ class MainWindow(QtWidgets.QMainWindow):
             for _, indicator in indicators.items():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
-                    indicator.setStyleSheet(
-                        f"font-family: {self.fontfamily}; color: black;"
-                    )
+                    indicator.setStyleSheet("color: black;")
                 else:
-                    indicator.setStyleSheet(
-                        f"font-family: {self.fontfamily}; color: white;"
-                    )
+                    indicator.setStyleSheet("color: white;")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2497,9 +2493,7 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
-                indicator.setStyleSheet(
-                    f"font-family: {self.fontfamily}; color: green;"
-                )
+                indicator.setStyleSheet("color: green;")
 
     def closeEvent(self, _event) -> None:
         """
@@ -4305,7 +4299,7 @@ class MainWindow(QtWidgets.QMainWindow):
             heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
             kilometers = distance_with_latlon(self.station.get("GridSquare"), lat, lon)
             self.heading_distance.setText(
-                f"Regional Hdg {heading}° LP {reciprocol(heading)}° / "
+                f"Regional Hdg {heading}° LP {reciprocal(heading)}° / "
                 f"distance {int(kilometers*0.621371)}mi {kilometers}km"
             )
             if self.rotator_window is not None:
