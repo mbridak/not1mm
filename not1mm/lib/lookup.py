@@ -305,7 +305,6 @@ class HamQTH:
             else:
                 query_dict = {}
 
-            query_dict = xmltodict.parse(query_result.text)
             the_result["grid"] = (
                 query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
             )
