@@ -13,6 +13,7 @@ Purpose: Onscreen widget to show realtime spots from an AR cluster.
 import logging
 import os
 import platform
+import re
 import sqlite3
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -20,7 +21,7 @@ from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtGui import QColorConstants, QFont, QColor
-from PyQt6.QtWidgets import QDockWidget
+from PyQt6.QtWidgets import QDockWidget, QStyle
 from PyQt6.QtCore import Qt, pyqtSignal
 
 import not1mm.fsutils as fsutils
@@ -344,6 +345,7 @@ class BandMapWindow(QDockWidget):
     text_color = QColor(45, 45, 45)
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
+    date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
 
     def __init__(self, action):
         super().__init__()
@@ -362,7 +364,11 @@ class BandMapWindow(QDockWidget):
         self.agetime = self.clear_spot_olderSpinBox.value()
         self.clear_spot_olderSpinBox.valueChanged.connect(self.spot_aging_changed)
         self.clearButton.clicked.connect(self.clear_spots)
+        pixmapi = QStyle.StandardPixmap.SP_TrashIcon
+        icon = self.style().standardIcon(pixmapi)
+        self.clearButton.setIcon(icon)
         self.clearmarkedButton.clicked.connect(self.clear_marked)
+        self.clearmarkedButton.setIcon(icon)
         self.zoominButton.clicked.connect(self.dec_zoom)
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
@@ -884,7 +890,19 @@ class BandMapWindow(QDockWidget):
                 self.send_command(
                     "set dx mode " + self.settings.get("cluster_mode", "OPEN")
                 )
+                self.send_command("sh ww")
                 logger.debug(f"callsign login acknowledged {data}")
+
+            items = data.split()
+            if items:
+                if re.match(self.date_pattern, items[0]):
+                    try:
+                        sfi = items[2]
+                        aindex = items[3]
+                        kindex = items[4]
+                        print(f"{sfi=} {aindex=} {kindex=}")
+                    except IndexError:
+                        ...
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""

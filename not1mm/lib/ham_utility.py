@@ -478,7 +478,7 @@ def bearing(grid1: str, grid2: str) -> float:
     return round(brng)
 
 
-def reciprocol(heading):
+def reciprocal(heading):
     """return back of the beam heading"""
     heading += 180
     if heading > 360:
