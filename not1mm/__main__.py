@@ -916,7 +916,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     "There is a newer version of not1mm available.\n"
                     "You can update to the current version by using:\n\n"
                     "pip install -U not1mm\n\tor\n"
-                    "pipx upgrade not1mm"
+                    "pipx upgrade not1mm\n\tor\n"
+                    "uv install not1mm@latest",
+                    blocking=False,
                 )
 
         self.udp_socket = QtNetwork.QUdpSocket()
@@ -1165,7 +1167,7 @@ class MainWindow(QtWidgets.QMainWindow):
                                 ...
                         self.database.add_callhistory_items(group_list)
             except FileNotFoundError as err:
-                self.show_message_box(f"{err}")
+                self.show_message_box(f"{err}", blocking=False)
 
     def on_focus_changed(self, new):
         """Called when text entry focus has changed."""
@@ -1602,7 +1604,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.lookup_service.msg_from_main(cmd)
         app.quit()
 
-    def show_message_box(self, message: str) -> None:
+    def show_message_box(self, message: str, blocking: bool = True) -> None:
         """
         Displays a dialog box with a message.
 
@@ -1622,6 +1624,8 @@ class MainWindow(QtWidgets.QMainWindow):
         message_box.setText(message)
         message_box.setWindowTitle("Information")
         message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        if blocking is False:
+            message_box.setWindowModality(Qt.WindowModality.WindowModal)
         _ = message_box.exec()
 
     def show_about_dialog(self) -> None:
@@ -1686,9 +1690,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if self.mscp.update_masterscp():
-            self.show_message_box("MASTER.SCP file updated.")
+            self.show_message_box("MASTER.SCP file updated.", blocking=False)
             return
-        self.show_message_box("MASTER.SCP could not be updated.")
+        self.show_message_box("MASTER.SCP could not be updated.", blocking=False)
 
     def edit_configuration_settings(self) -> None:
         """
@@ -2193,7 +2197,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if updated:
                 cty.dump(fsutils.APP_DATA_PATH / "cty.json")
-                self.show_message_box("cty file updated.")
+                self.show_message_box("cty file updated.", blocking=False)
                 try:
                     with open(
                         fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
@@ -2204,9 +2208,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         f"There was an error {err} parsing the BigCity file."
                     )
             else:
-                self.show_message_box("An Error occurred updating file.")
+                self.show_message_box(
+                    "An Error occurred updating file.", blocking=False
+                )
         else:
-            self.show_message_box("CTY file is up to date.")
+            self.show_message_box("CTY file is up to date.", blocking=False)
 
     def hide_band_mode(self, the_mode: str) -> None:
         """
@@ -2282,7 +2288,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "[CTRL-SHIFT-K] Open CW text input field.\n"
             "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
             "[CTRL-W]\tClears the input fields of any text.\n"
-            "[CTRL-R]\tToggle the Run state.\n"
+            "[CTRL-R]\tToggle the Run state.\n",
+            blocking=False,
         )
 
     def filepicker(self, action: str) -> str:
