@@ -61,6 +61,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 ## Recent Changes
 
 - [25-12-1] Fix crash when parsing XML from HamQTH.
+  - Made trivial message boxes non blocking for the main window.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

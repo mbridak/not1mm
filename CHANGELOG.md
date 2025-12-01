@@ -1,6 +1,7 @@
 # Changelog
 
 - [25-12-1] Fix crash when parsing XML from HamQTH.
+  - Made trivial message boxes non blocking for the main window.
 - [25-10-30] Added a Zone tracker window.
 - [25-10-29] Corrected DXCC autoscroll match.
 - [25-10-28] Changed Levenshtein library to rapidfuzz
