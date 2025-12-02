@@ -2984,7 +2984,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.dupe_indicator.hide()
-        self.previous_contact = self.contact
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
         self.history_info.setText("")
@@ -3136,6 +3135,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        # Copy the last contact so it can be sent to the cluster:
+        self.previous_contact = dict(self.contact)
         self.current_sn = None
         # server
         if self.pref.get("useserver", False) is True:
