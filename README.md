@@ -60,6 +60,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
 - [25-12-1] Fix crash when parsing XML from HamQTH.
   - Made trivial message boxes non blocking for the main window.
 
