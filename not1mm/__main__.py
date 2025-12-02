@@ -695,6 +695,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rotator_window is not None:
             self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
         self.contact = self.database.empty_contact.copy()
+        self.previous_contact = self.contact  # Keep previous contact, if any, so we can spot it.
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
@@ -1756,6 +1757,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
             self.contact = self.database.empty_contact.copy()
+            self.previous_contact = self.contact
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
@@ -1804,6 +1806,7 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.database = DataBase(self.dbname, fsutils.MODULE_PATH)
             self.contact = self.database.empty_contact.copy()
+            self.previous_contact = self.contact
             self.station = self.database.fetch_station()
             if self.station is None:
                 self.station = {}
@@ -2618,15 +2621,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.bandmap_window.msg_from_main(cmd)
 
     def spot_dx(self):
-        """"""
-        freq = self.radio_state.get("vfoa")
-        dx = self.callsign.text()
-        if freq and dx:
-            cmd = {}
-            cmd["cmd"] = "SPOTDX"
-            cmd["dx"] = dx
-            cmd["freq"] = float(int(freq) / 1000)
-            if self.bandmap_window:
+        """If a bandmap_window exists, send it a SPOTDX command to forward info to the cluster."""
+        if self.bandmap_window:
+            freq = self.radio_state.get("vfoa")
+            dx = self.callsign.text()
+            if freq and dx:
+                cmd = {
+                    "cmd": "SPOTDX",
+                    "dx": dx,
+                    "freq": float(int(freq) / 1000)
+                }
+            elif self.previous_contact["Call"] and self.previous_contact["Freq"]:
+                cmd = {
+                    "cmd": "SPOTDX",
+                    "dx": self.previous_contact["Call"],
+                    "freq": self.previous_contact["Freq"]
+                }
+            else:
+                cmd = None
+            if cmd:
                 self.bandmap_window.msg_from_main(cmd)
 
     def get_sn(self):
@@ -3122,6 +3135,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        # Copy the last contact so it can be sent to the cluster:
+        self.previous_contact = dict(self.contact)
         self.current_sn = None
         # server
         if self.pref.get("useserver", False) is True:
