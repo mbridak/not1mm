@@ -695,7 +695,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rotator_window is not None:
             self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
         self.contact = self.database.empty_contact.copy()
-        self.previous_contact = self.contact  # Keep previous contact, if any, so we can spot it.
+        self.previous_contact = (
+            self.contact
+        )  # Keep previous contact, if any, so we can spot it.
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
@@ -1258,13 +1260,16 @@ class MainWindow(QtWidgets.QMainWindow):
                     except OSError as err:
                         logging.warning("%s", err)
 
-            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETED"]:
+            # TODO
+            if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE", "DELETED"]:
                 if self.statistics_window:
                     self.statistics_window.msg_from_main(msg)
                 if self.dxcc_window:
                     self.dxcc_window.msg_from_main(msg)
                 if self.zone_window:
                     self.zone_window.msg_from_main(msg)
+                if self.rate_window:
+                    self.rate_window.msg_from_main(msg)
                 self.check_dupe(self.callsign.text())
 
             if msg.get("cmd", "") == "GETCOLUMNS":
@@ -2626,16 +2631,12 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = self.radio_state.get("vfoa")
             dx = self.callsign.text()
             if freq and dx:
-                cmd = {
-                    "cmd": "SPOTDX",
-                    "dx": dx,
-                    "freq": float(int(freq) / 1000)
-                }
+                cmd = {"cmd": "SPOTDX", "dx": dx, "freq": float(int(freq) / 1000)}
             elif self.previous_contact["Call"] and self.previous_contact["Freq"]:
                 cmd = {
                     "cmd": "SPOTDX",
                     "dx": self.previous_contact["Call"],
-                    "freq": self.previous_contact["Freq"]
+                    "freq": self.previous_contact["Freq"],
                 }
             else:
                 cmd = None
@@ -3164,6 +3165,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dxcc_window.msg_from_main(cmd)
         if self.zone_window:
             self.zone_window.msg_from_main(cmd)
+        if self.rate_window:
+            self.rate_window.msg_from_main(cmd)
 
     def update_rtc_xml(self):
         """Update RTC XML"""
@@ -3772,12 +3775,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
-            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            # self.rig_control.moveToThread(self.radio_thread)
-            # self.radio_thread.started.connect(self.rig_control.run)
-            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            # self.rig_control.poll_callback.connect(self.poll_radio)
-            # self.radio_thread.start()
 
         elif self.pref.get("userigctld", False) is True:
             logger.debug(
@@ -3789,12 +3786,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
-            # self.rig_control.delta = int(self.pref.get("CAT_polldelta", 555))
-            # self.rig_control.moveToThread(self.radio_thread)
-            # self.radio_thread.started.connect(self.rig_control.run)
-            # self.radio_thread.finished.connect(self.rig_control.deleteLater)
-            # self.rig_control.poll_callback.connect(self.poll_radio)
-            # self.radio_thread.start()
+
         else:
             self.rig_control = Radio(
                 "fake",
