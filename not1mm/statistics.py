@@ -51,7 +51,12 @@ class StatsWindow(QDockWidget):
         if self.active is False:
             return
 
-        if packet.get("cmd", "") in ("CONTACTCHANGED", "UPDATELOG", "DELETED"):
+        if packet.get("cmd", "") in (
+            "CONTACTCHANGED",
+            "UPDATELOG",
+            "DELETE",
+            "DELETED",
+        ):
             self.get_run_and_total_qs()
             return
 
