@@ -48,7 +48,7 @@ class RateWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
         self.timer = QTimer()
         self.timer.timeout.connect(self.get_run_and_total_qs)
-        self.timer.start(1000)
+        self.timer.start(10000)
 
     def msg_from_main(self, packet):
         """"""
@@ -60,6 +60,9 @@ class RateWindow(QDockWidget):
             )
             self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
             self.database.current_contest = self.pref.get("contest", 0)
+
+        if packet.get("cmd", "") in ("CONTACTCHANGED", "UPDATELOG", "DELETE"):
+            self.get_run_and_total_qs()
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
@@ -168,6 +171,8 @@ class RateWindow(QDockWidget):
         # Get Run QSO's and S&P QSO's
         query = f"select sum(IsRunQSO) as runs, count(*) as totalqs from dxlog where ContestNR = {self.database.current_contest};"
         result = self.database.exec_sql(query)
+        if result.get("runs") is None:
+            result["runs"] = 0
         try:
             sandp = result.get("totalqs", 0) - result.get("runs", 0)
             self.run_qso.setText(f"{result.get('runs', 0)}")
@@ -178,6 +183,8 @@ class RateWindow(QDockWidget):
         # Get runs for the current hour
         query = f"SELECT strftime('%Y-%m-%d %H:00:00','now') as limit_stamp, sum(IsRunQSO) as runs, count(*) as totalqs FROM DXLOG where ContestNR = {self.database.current_contest} and datetime(TS) > limit_stamp;"
         result = self.database.exec_sql(query)
+        if result.get("runs") is None:
+            result["runs"] = 0
         try:
             sandp = result.get("totalqs", 0) - result.get("runs", 0)
             self.hour_run_qso.setText(f"{result.get('runs', 0)}")

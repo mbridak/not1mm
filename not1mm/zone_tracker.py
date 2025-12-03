@@ -149,7 +149,12 @@ class ZoneWindow(QDockWidget):
     def msg_from_main(self, msg):
         """"""
         if self.active is True and self.isVisible():
-            if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
+            if msg.get("cmd", "") in (
+                "UPDATELOG",
+                "CONTACTCHANGED",
+                "DELETE",
+                "DELETED",
+            ):
                 ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":

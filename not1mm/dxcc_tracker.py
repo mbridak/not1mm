@@ -148,7 +148,12 @@ class DXCCWindow(QDockWidget):
         """"""
 
         if self.active is True and self.isVisible():
-            if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
+            if msg.get("cmd", "") in (
+                "UPDATELOG",
+                "CONTACTCHANGED",
+                "DELETE",
+                "DELETED",
+            ):
                 ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
