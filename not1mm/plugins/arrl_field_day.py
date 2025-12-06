@@ -326,7 +326,7 @@ def cabrillo(self, file_encoding):
                     themode = "PH"
                 if themode in ("FT8", "FT4", "RTTY"):
                     themode = "DG"
-                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
