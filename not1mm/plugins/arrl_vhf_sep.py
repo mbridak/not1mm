@@ -377,7 +377,7 @@ def cabrillo(self, file_encoding):
                     themode = "DG"
                 freq = int(contact.get("Freq", "0")) / 1000
 
-                frequency = str(int(freq)).rjust(4)
+                frequency = str(round(freq)).rjust(4)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
