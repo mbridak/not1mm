@@ -3578,6 +3578,9 @@ class MainWindow(QtWidgets.QMainWindow):
         function_key : QPushButton
         Function key to process.
 
+        rttysendrx : bool
+        Should a '^r' be appended.
+
         Returns
         -------
         None
@@ -3609,8 +3612,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
                 self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
+                self.rig_control.sendcw(" ")
                 return
             self.cw.sendcw(self.process_macro(function_key.toolTip()))
+            self.cw.sendcw(" ")
             if self.pref.get("cwtype") == 2:
                 # I put this back in 'cause no one will know to update winkeyerserial.
                 time.sleep(0.2)
