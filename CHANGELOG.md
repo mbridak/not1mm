@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-12-7] Added CW space character after function keys
 - [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
 - [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero.
 - [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
