@@ -1192,7 +1192,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if the_button is not None:
             pal = QPalette()
             pal.isCopyOf(self.current_palette)
-            greenColor = QColor(0, 128, 0)
+            greenColor = QColor(127, 127, 0)
             pal.setBrush(QPalette.ColorRole.Button, greenColor)
             the_button.setPalette(pal)
 
@@ -2501,7 +2501,7 @@ class MainWindow(QtWidgets.QMainWindow):
             indicator = self.all_mode_indicators[self.current_mode].get(band, None)
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
-                indicator.setStyleSheet("color: green;")
+                indicator.setStyleSheet("color: rgb(127,127,0);")
 
     def closeEvent(self, _event) -> None:
         """
@@ -4513,6 +4513,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         # This section has nothing to do with polling the radio
         # It's here because it gets called often enough to be useful.
+        print("weeee")
         if self.auto_cq is True:
             now = datetime.datetime.now()
             total_duration = self.auto_cq_time - self.auto_cq_then
