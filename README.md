@@ -60,6 +60,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-12-9] Added tooltips to DXCC tracker window showing entity.
 - [25-12-7] Added CW space character after function keys
 - [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
 - [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero. 
