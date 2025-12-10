@@ -900,7 +900,7 @@ class BandMapWindow(QDockWidget):
                         sfi = items[2]
                         aindex = items[3]
                         kindex = items[4]
-                        print(f"{sfi=} {aindex=} {kindex=}")
+                        # print(f"{sfi=} {aindex=} {kindex=}")
                     except IndexError:
                         ...
 
