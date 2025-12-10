@@ -852,6 +852,9 @@ class BandMapWindow(QDockWidget):
             except UnicodeDecodeError:
                 continue
 
+            if os.environ.get("SEND_CLUSTER", False) is not False:
+                print(f"{data}")
+
             if "login:" in data or "call:" in data or "callsign:" in data:
                 self.send_command(self.callsignField.text())
                 return
@@ -920,6 +923,8 @@ class BandMapWindow(QDockWidget):
     def send_command(self, cmd: str) -> None:
         """Send a command to the cluster."""
         cmd += "\r\n"
+        if os.environ.get("SEND_CLUSTER", False) is not False:
+            print(f"{cmd}")
         tosend = bytes(cmd, encoding="ascii")
         logger.debug("Command sent to the cluster")
         if self.socket:
