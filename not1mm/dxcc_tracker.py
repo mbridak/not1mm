@@ -8,6 +8,7 @@ import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 import os
 from json import loads
+from json.decoder import JSONDecodeError
 
 import logging
 
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class DXCCWindow(QDockWidget):
     message = pyqtSignal(dict)
+    ctyfile = {}
     dbname = None
     db = None
     model = None
@@ -54,9 +56,36 @@ class DXCCWindow(QDockWidget):
         self.get_log()
         self.dxcc_table.resizeColumnsToContents()
         self.dxcc_table.resizeRowsToContents()
+        self.load_cty_data()
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
+
+    def load_cty_data(self):
+        try:
+            with open(
+                fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
+            ) as c_file:
+                self.ctyfile = loads(c_file.read())
+        except (IOError, JSONDecodeError, TypeError):
+            logging.critical("There was an error parsing the BigCity file.")
+
+    def dxcc_lookup(self, dxcc: str) -> str:
+        """Lookup callsign in cty.dat file.
+
+        Parameters
+        ----------
+        callsign : str
+        callsign to lookup
+
+        Returns
+        -------
+        return : dict
+        {'entity': 'European Russia', 'cq': 16, 'itu': 29, 'continent': 'EU', 'lat': 53.65, 'long': -41.37, 'tz': 4.0, 'len': 2, 'primary_pfx': 'UA', 'exact_match': False}
+        """
+
+        result = self.ctyfile.get(dxcc, {})
+        return result.get("entity", "")
 
     def get_log(self):
         """dxcc_table"""
@@ -74,6 +103,8 @@ class DXCCWindow(QDockWidget):
             self.dxcc_table.insertRow(row_number)
             for column, data in enumerate(row_data.values()):
                 item = QtWidgets.QTableWidgetItem(str(data))
+                if column == 0:
+                    item.setToolTip(self.dxcc_lookup(data))
                 if column > 0 and column < 7:
                     if data == 0:
                         item.setBackground(QBrush(QColor(44, 138, 44)))
