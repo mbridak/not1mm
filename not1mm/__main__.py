@@ -4513,7 +4513,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         # This section has nothing to do with polling the radio
         # It's here because it gets called often enough to be useful.
-        print("weeee")
         if self.auto_cq is True:
             now = datetime.datetime.now()
             total_duration = self.auto_cq_time - self.auto_cq_then
