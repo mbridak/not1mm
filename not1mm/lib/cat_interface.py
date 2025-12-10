@@ -22,6 +22,7 @@ import logging
 import socket
 import xmlrpc.client
 import http
+import os
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -162,6 +163,8 @@ class CAT:
                 ...
             # self.rigctrlsocket.settimeout(0.1)
         # logger.debug("%s", dump)
+        if os.environ.get("SEERIGCTLD", False):
+            print(dump)
         return dump
 
     def sendvoicememory(self, memoryspot=1):
