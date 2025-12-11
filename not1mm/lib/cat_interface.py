@@ -164,7 +164,7 @@ class CAT:
             # self.rigctrlsocket.settimeout(0.1)
         # logger.debug("%s", dump)
         if os.environ.get("SEERIGCTLD", False):
-            print(dump)
+            print(repr(dump))
         return dump
 
     def sendvoicememory(self, memoryspot=1):
@@ -357,7 +357,7 @@ class CAT:
                     return ""
                 report = self.__get_serial_string().strip()
                 logger.debug("%s", report)
-                if "get_freq:|" in report and "RPRT 0" in report:
+                if report.startswith("get_freq:|") and "RPRT 0" in report:
                     seg_rpt = report.split("|")
                     return seg_rpt[1].split(" ")[1]
             except (socket.error, IndexError) as exception:
@@ -417,7 +417,7 @@ class CAT:
                 # get_mode:|Mode: CW|Passband: 500|RPRT 0
                 report = self.__get_serial_string().strip()
                 logger.debug("%s", report)
-                if "get_mode:|" in report and "RPRT 0" in report:
+                if report.startswith("get_mode:|") and "RPRT 0" in report:
                     seg_rpt = report.split("|")
                     self.rigctld_bw = seg_rpt[2].split(" ")[1]
                     return seg_rpt[1].split(" ")[1]
