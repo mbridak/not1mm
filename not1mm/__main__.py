@@ -4929,7 +4929,7 @@ def run() -> None:
 
 
 DEBUG_ENABLED = False
-if Path("./debug").exists():
+if Path("./debug").exists() or os.environ.get("DEBUG", False):
     DEBUG_ENABLED = True
 
 logger = logging.getLogger("__main__")
