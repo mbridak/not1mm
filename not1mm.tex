@@ -856,11 +856,38 @@ The best thing you can do is play around with it to see how it behaves.
 
 In the `Sent Exchange` field of the New Contest dialog put in the Precidence, Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
-For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
+For the Run Exchange macro I'd put:
+\begin{verbatim}
+{HISCALL} {SENTNR} {EXCH}
+\end{verbatim}
+
+\subsection{ARRL 10M}
+
+The most confusing part of ARRL 10m is apparently how to setup your exchange.
+
+\subsubsection{If you're exchange is (RST + Serial No.)}
+
+You should edit your exchange macro keys to be:
+\begin{verbatim}
+{SNT} {SENTNR}
+\end{verbatim}
+and a \# character in the sent exchange field in the contest definition.
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/sent_exch_sn.png}
+\vspace{0.5cm}
+
+\subsubsection{If you're exchange is (RST + State/Province/ITU)}
+
+You should edit your exchange macro keys to be:
+\begin{verbatim}
+{SNT} {EXCH}
+\end{verbatim}
+and your state/prov/itu in the sent exchange field in the contest definition.
 
 \subsection{RAEM}
 
-In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon. for me 33N117W. And in the exchange macro put `\# {EXCH}`.
+In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon. for me 33N117W. And in the exchange macro put `\# \{EXCH\}`.
 
 \subsection{RandomGram}
 
@@ -868,7 +895,7 @@ This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in th
 
 \subsection{UKEI DX}
 
-For the Run exchange macro I'd put '{SNT} \# {EXCH}'
+For the Run exchange macro I'd put '\{SNT\} \# \{EXCH\}'
 
 \subsection{CWO Open Contest}
 
