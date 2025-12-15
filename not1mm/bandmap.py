@@ -896,16 +896,16 @@ class BandMapWindow(QDockWidget):
                 self.send_command("sh ww")
                 logger.debug(f"callsign login acknowledged {data}")
 
-            items = data.split()
-            if items:
-                if re.match(self.date_pattern, items[0]):
-                    try:
-                        sfi = items[2]
-                        aindex = items[3]
-                        kindex = items[4]
-                        # print(f"{sfi=} {aindex=} {kindex=}")
-                    except IndexError:
-                        ...
+            # items = data.split()
+            # if items:
+            #     if re.match(self.date_pattern, items[0]):
+            #         try:
+            #             sfi = items[2]
+            #             aindex = items[3]
+            #             kindex = items[4]
+            #             # print(f"{sfi=} {aindex=} {kindex=}")
+            #         except IndexError:
+            #             ...
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
