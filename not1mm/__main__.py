@@ -1603,7 +1603,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-
+        self.write_preference()
         cmd = {}
         cmd["cmd"] = "HALT"
         if self.lookup_service:
@@ -2578,6 +2578,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+        self.pref["cw_speed"] = self.cw_speed.value()
         if self.cw is None:
             return
         if self.cw.servertype == 1:
@@ -3816,9 +3817,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pref.get("cwip"),
                 int(self.pref.get("cwport")),
             )
-            self.cw.speed = 20
+            self.cw_speed.setValue(int(self.pref.get("cw_speed", 20)))
+            self.cw.speed = int(self.pref.get("cw_speed", 20))
             if self.cw.servertype == 2:
-                self.cw.set_winkeyer_speed(20)
+                self.cw.set_winkeyer_speed(int(self.pref.get("cw_speed", 20)))
 
         self.n1mm = None
         if self.pref.get("send_n1mm_packets", False):
