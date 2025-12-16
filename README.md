@@ -60,6 +60,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-12-16] Save and load CW speed setting on launch and quit.
 - [25-12-11] Change parsing of rigctld return strings.
 - [25-12-9] Added tooltips to DXCC tracker window showing entity.
 - [25-12-7] Added CW space character after function keys
