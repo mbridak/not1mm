@@ -7,7 +7,7 @@
 \usepackage{hyperref}
 \title{Not1MM User Manual}
 \author{Mike Bridak K6GTE}
-\date{October 2025}
+\date{December 2025}
 \begin{document}
 \maketitle
 \thispagestyle{empty}
@@ -124,7 +124,7 @@ But wait... There's more. If your distro is old and you're stuck with an older v
     •uvx --python 3.14 not1mm@latest
 \end{verbatim}
 
-It'll download Python 3.14 into you virtual environment and run not1mm. Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem. Just tell it which version of not1mm you'd like to run.
+It'll download Python 3.14 into your virtual environment and run not1mm. Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem. Just tell it which version of not1mm you'd like to run.
 
 \begin{verbatim}
     •uvx --python 3.10 not1mm==23.5.19
@@ -175,13 +175,13 @@ in your home directories .bashrc file. Then after logging out and back in you sh
 
 Before operating in a contest, you might want to update the CTY and SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
 \newpage
-\section{Various Data File Locations}
+\section{Various File Locations}
 
-\subsection{Data}
+\subsection{Data Files}
 
 If your system has an `XDG\_DATA\_HOME` environment variable set, the database and CW macro files can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
 
-\subsection{Config}
+\subsection{Configuration Files}
 
 Configuration file(s) can be found at the location defined by
 \begin{verbatim}XDG_CONFIG_HOME\end{verbatim}
@@ -190,7 +190,7 @@ Otherwise they will be found at \begin{verbatim}yourhome/.config/not1mm\end{verb
 
 \subsection{Why}
 
-The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do You Boo.
+The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do you Boo.
 
 \subsection{The First One is Free}
 
@@ -472,15 +472,15 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 \vspace{0.5cm}
 
 \section{Other Uses for the Call Field}
-
 \textbf{You must press the SPACE bar after entering any of the below.}
-\begin{itemize}
-\item \textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
-\item \textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
-\item \textbf{OPON} Change the operator currently logging.
-\end{itemize}
-
-\textbf{You must press the SPACE bar after entering any of the above.}
+\subsection{Frequency}
+\textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
+\subsection{Modes}
+\textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+\subsection{Change Operator}
+\textbf{OPON} Change the operator currently logging.\\
+\\
+\textbf{Again you must press the SPACE bar after entering any of the above.}
 
 \section{The Windows}
 
@@ -667,7 +667,7 @@ Once there is a connection to rotctld, the current azimuth of the antenna is obt
 \includegraphics[width=0.5\linewidth]{pic/rot2.png}
 \vspace{0.5cm}
 
-Once a call is entered and the bearing to contact is calculated you will see another needle appear:
+Once a call is entered and the bearing to contact is calculated you will see a needle appear:
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rot3.png}
