@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-12-21] Group multicast address now actually uses preferred address.
 - [25-12-16] Save and load CW speed setting on launch and quit.
 - [25-12-11] Change parsing of rigctld return strings.
 - [25-12-9] Added tooltips to DXCC tracker window showing entity.
