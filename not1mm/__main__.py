@@ -952,10 +952,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     contact["expire"] = stale.isoformat()
 
                     self.server_commands.append(contact)
-                    # self.server_channel.send_as_json(contact)
-
-                    # time.sleep(0.1)  # Do I need this?
-                    # print(".")
 
     def clear_dirty_flag(self, unique_id):
         """clear the dirty flag on record once response is returned from server."""
@@ -985,7 +981,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
                     self.server_commands[index]["expire"] = newexpire.isoformat()
                     try:
-                        # print(f"Resending {self.server_commands[index]=}")
                         self.server_channel.send_as_json(self.server_commands[index])
                     except OSError as err:
                         logging.warning("%s", err)
@@ -3838,6 +3833,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.send_lookup_packets = self.pref.get("send_n1mm_lookup", False)
             self.n1mm.send_score_packets = self.pref.get("send_n1mm_score", False)
             self.n1mm.radio_info["StationName"] = self.pref.get("n1mm_station_name", "")
+
+        if self.pref.get("useserver", False):
+            self.server_channel = Multicast(
+                multicast_group=self.pref.get("multicast_group", "239.1.1.1"),
+                multicast_port=self.pref.get("multicast_port", 2239),
+                interface_ip=self.pref.get("interface_ip", "0.0.0.0"),
+            )
+            self.server_channel.ready_read_connect(self.server_message)
 
         self.show_command_buttons()
         self.show_CW_macros()
