@@ -1046,7 +1046,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         #     "sn": int or None,
                         # }
                         self.current_sn = json_data.get("sn")
-                        print(f"{self.current_sn=}")
                         continue
 
                     if json_data.get("subject") == "HOSTINFO":
