@@ -19,6 +19,7 @@ from logging.handlers import RotatingFileHandler
 import os
 import queue
 import socket
+import sh
 import sys
 import uuid
 
@@ -3380,6 +3381,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_macro_dialog.the_macro.text()
         )
         self.edit_macro_dialog.close()
+
+        if self.radioButton_run.isChecked():
+            rm = "R"
+        else:
+            rm = "S"
+
+        _, _, new_label = self.edit_macro_dialog.macro_label.text().partition(":")
+        fkey, _, old_label = self.edit_macro_dialog.old_label.partition(":")
+
+        new_label = new_label.strip()
+        old_label = old_label.strip()
+
+        old_string = self.edit_macro_dialog.old_macro
+        new_string = f"{self.edit_macro_dialog.the_macro.text()}"
+
+        sed_string = f"s/{rm}|{fkey}|{old_label}|{old_string}/{rm}|{fkey}|{new_label}|{new_string}/g"
+
+        macro_file = str(self.get_macro_filename())
+
+        try:
+            sh.sed("-i", sed_string, macro_file)
+        except sh.ErrorReturnCode_2:
+            ...
 
     def process_macro(self, macro: str) -> str:
         """
