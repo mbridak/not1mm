@@ -14,5 +14,8 @@ class EditMacro(QtWidgets.QDialog):
         self.macro_label.setText(function_key.text())
         self.the_macro.setText(function_key.toolTip())
 
+        self.old_macro = function_key.toolTip()
+        self.old_label = function_key.text()
+
     def store(self):
         """dialog magic"""
