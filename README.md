@@ -60,6 +60,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [25-12-23] Save edited macro edited with right click.
 - [25-12-21] Group multicast address now actually uses preferred address.
 - [25-12-16] Save and load CW speed setting on launch and quit.
 - [25-12-11] Change parsing of rigctld return strings.
