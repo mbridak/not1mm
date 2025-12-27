@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-12-27-1] Enable/disable network ports in CW settings.
 - [25-12-27] Fixed macro discovery file path.
 - [25-12-23] Save edited macro edited with right click.
 - [25-12-21] Group multicast address now actually uses preferred address.
