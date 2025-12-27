@@ -1,5 +1,6 @@
 # Changelog
 
+- [25-12-27] Fixed macro discovery file path.
 - [25-12-23] Save edited macro edited with right click.
 - [25-12-21] Group multicast address now actually uses preferred address.
 - [25-12-16] Save and load CW speed setting on launch and quit.
