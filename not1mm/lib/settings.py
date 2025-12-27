@@ -208,16 +208,22 @@ class Settings(QtWidgets.QDialog):
 
     def set_cwdaemon_port_hint(self):
         """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setEnabled(True)
+        self.cwport_field.setEnabled(True)
         self.cwip_field.setPlaceholderText("127.0.0.1")
         self.cwport_field.setPlaceholderText("6789")
 
     def set_winkeyer_port_hint(self):
         """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setEnabled(True)
+        self.cwport_field.setEnabled(True)
         self.cwip_field.setPlaceholderText("127.0.0.1")
         self.cwport_field.setPlaceholderText("8000")
 
     def set_catforcw_port_hint(self):
         """Sets placeholder hint for the CW interface."""
+        self.cwip_field.setEnabled(False)
+        self.cwport_field.setEnabled(False)
         self.cwip_field.setPlaceholderText("")
         self.cwport_field.setPlaceholderText("")
 
