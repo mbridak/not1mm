@@ -4711,7 +4711,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if not (fsutils.USER_DATA_PATH / self.contest.name / macro_file).exists():
             try:
                 copyfile(
-                    fsutils.APP_DATA_PATH / macro_file,
+                    fsutils.USER_DATA_PATH / macro_file,
                     fsutils.USER_DATA_PATH / self.contest.name / macro_file,
                 )
             except IOError as err:
@@ -4950,7 +4950,7 @@ def run() -> None:
     splash.finish(window)
     window.show()
     logger.debug(
-        f"Resolved OS file system paths: MODULE_PATH {fsutils.MODULE_PATH}, USER_DATA_PATH {fsutils.USER_DATA_PATH}, CONFIG_PATH {fsutils.CONFIG_PATH}"
+        f"\nResolved OS file system paths:\nAPP_DATA_PATH {fsutils.APP_DATA_PATH}\nMODULE_PATH {fsutils.MODULE_PATH}\nUSER_DATA_PATH {fsutils.USER_DATA_PATH}\nCONFIG_PATH {fsutils.CONFIG_PATH}\nLOG_FILE {fsutils.LOG_FILE}"
     )
     install_icons()
     sys.exit(app.exec())
