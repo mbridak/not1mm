@@ -32,8 +32,17 @@ import notctyparser
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
-from PyQt6.QtGui import QFontDatabase, QColorConstants, QPalette, QColor, QPixmap, QFont
-from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication
+from PyQt6.QtGui import (
+    QFontDatabase,
+    QColorConstants,
+    QPalette,
+    QColor,
+    QPixmap,
+    QFont,
+    QCloseEvent,
+    QKeyEvent,
+)
+from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication, QPushButton
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 from not1mm.lib.about import About
@@ -936,7 +945,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     # Server stuff
 
-    def resolve_dirty_records(self):
+    def resolve_dirty_records(self) -> None:
         """Go through dirty records and submit them to the server queue."""
 
         if (
@@ -954,12 +963,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                     self.server_commands.append(contact)
 
-    def clear_dirty_flag(self, unique_id):
+    def clear_dirty_flag(self, unique_id: str) -> None:
         """clear the dirty flag on record once response is returned from server."""
         self.database.clear_dirty_flag(unique_id)
         # show_dirty_records()
 
-    def remove_confirmed_commands(self, data):
+    def remove_confirmed_commands(self, data: dict) -> None:
         """Removed confirmed commands from the sent commands list."""
         for index, item in enumerate(self.server_commands):
             if item.get("ID") == data.get("unique_id") and item.get("cmd") == data.get(
@@ -968,7 +977,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.server_commands.pop(index)
                 self.clear_dirty_flag(data.get("unique_id"))
 
-    def check_for_stale_commands(self):
+    def check_for_stale_commands(self) -> None:
         """
         Check through server commands to see if there has not been a reply in 30 seconds.
         Resubmits those that are stale.
@@ -986,12 +995,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     except OSError as err:
                         logging.warning("%s", err)
 
-    def server_message(self):
+    def server_message(self) -> None:
         msg = self.server_channel.getpacket()
         if msg:
             self.udp_fifo.put(msg)
 
-    def check_udp_queue(self):
+    def check_udp_queue(self) -> None:
         """checks the UDP datagram queue."""
 
         self.check_for_stale_commands()
@@ -1101,7 +1110,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # if self.groupcall:
                 #     self.send_status_udp()
 
-    def fldigi_on_udp_socket_ready_read(self):
+    def fldigi_on_udp_socket_ready_read(self) -> None:
         """"""
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
@@ -1114,7 +1123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         scheme = hints.colorScheme()
         return scheme == Qt.ColorScheme.Dark
 
-    def dark_watcher(self, color_scheme):
+    def dark_watcher(self, color_scheme: Qt.ColorScheme):
         """..."""
         self.setDarkMode(setdarkmode=color_scheme == Qt.ColorScheme.Dark)
 
@@ -1167,11 +1176,11 @@ class MainWindow(QtWidgets.QMainWindow):
             except FileNotFoundError as err:
                 self.show_message_box(f"{err}", blocking=False)
 
-    def on_focus_changed(self, new):
+    def on_focus_changed(self, focused_widget: QtWidgets.QWidget):
         """Called when text entry focus has changed."""
         if self.use_esm:
             if hasattr(self.contest, "process_esm"):
-                self.contest.process_esm(self, new_focused_widget=new)
+                self.contest.process_esm(self, new_focused_widget=focused_widget)
 
     def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it blue."""
@@ -1195,7 +1204,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Restores the color of the button"""
         the_button.setPalette(self.current_palette)
 
-    def check_esm_with_enter(self):
+    def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
         if self.use_esm:
             if hasattr(self.contest, "process_esm"):
@@ -1205,7 +1214,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.save_contact()
 
-    def check_esm(self):
+    def check_esm(self) -> None:
         """Check for ESM, otherwise save contact."""
         if self.use_esm:
             if hasattr(self.contest, "process_esm"):
@@ -1226,7 +1235,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         QCoreApplication.processEvents()
 
-    def dockwidget_message(self, msg):
+    def dockwidget_message(self, msg: dict) -> None:
         """incomming signals from widgets"""
         if msg:
             # Pass delete message from log window to server.
@@ -1365,12 +1374,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     except OSError as err:
                         logging.warning("%s", err)
 
-    def cluster_expire_updated(self, number):
+    def cluster_expire_updated(self, number: str) -> None:
         """signal from bandmap"""
         self.pref["cluster_expire"] = int(number)
         self.write_preference()
 
-    def fldigi_qso(self, result: str):
+    def fldigi_qso(self, result: str) -> None:
         """
         gets called when there is a new fldigi qso logged.
 
@@ -2498,7 +2507,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet("color: rgb(127,127,0);")
 
-    def closeEvent(self, _event) -> None:
+    def closeEvent(self, _event: QCloseEvent) -> None:
         """
         Write window size and position to config file.
 
@@ -2588,7 +2597,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 elif self.rig_control.interface == "rigctld":
                     self.rig_control.cat.set_rigctl_cw_speed(self.cw_speed.value())
 
-    def stop_cw(self):
+    def stop_cw(self) -> None:
         """"""
         self.auto_cq = False
         self.leftdot.hide()
@@ -2609,7 +2618,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.rig_control.interface == "rigctld":
                         self.rig_control.cat.stopcwrigctl()
 
-    def mark_spot(self):
+    def mark_spot(self) -> None:
         """"""
         freq = self.radio_state.get("vfoa")
         dx = self.callsign.text()
@@ -2621,7 +2630,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.bandmap_window:
                 self.bandmap_window.msg_from_main(cmd)
 
-    def spot_dx(self):
+    def spot_dx(self) -> None:
         """If a bandmap_window exists, send it a SPOTDX command to forward info to the cluster."""
         if self.bandmap_window:
             freq = self.radio_state.get("vfoa")
@@ -2639,7 +2648,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if cmd:
                 self.bandmap_window.msg_from_main(cmd)
 
-    def get_sn(self):
+    def get_sn(self) -> None:
         """Generate a serial number."""
         # {
         #     "cmd": "GET_SN",
@@ -2668,7 +2677,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_sn == "None":
                 self.current_sn = "1"
 
-    def keyPressEvent(self, event) -> None:  # pylint: disable=invalid-name
+    def keyPressEvent(self, event: QKeyEvent) -> None:  # pylint: disable=invalid-name
         """
         This overrides Qt key event.
 
@@ -3164,7 +3173,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rate_window:
             self.rate_window.msg_from_main(cmd)
 
-    def update_rtc_xml(self):
+    def update_rtc_xml(self) -> None:
         """Update RTC XML"""
         if self.pref.get("send_rtc_scores", False):
             if self.contest is None:
@@ -3339,7 +3348,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(contest_count) == 0:
             self.new_contest_dialog()
 
-    def edit_macro(self, function_key) -> None:
+    def edit_macro(self, function_key: str) -> None:
         """
         Show edit macro dialog for function key.
 
@@ -3588,7 +3597,9 @@ class MainWindow(QtWidgets.QMainWindow):
             # app.processEvents()
             self.rig_control.ptt_off()
 
-    def process_function_key(self, function_key, rttysendrx=True) -> None:
+    def process_function_key(
+        self, function_key: QPushButton, rttysendrx: bool = True
+    ) -> None:
         """
         Called when a function key is clicked.
 
@@ -3940,7 +3951,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 port=self.pref.get("rotctld_port", 4533),
             )
 
-    def rtc_response(self, response):
+    def rtc_response(self, response: dict) -> None:
         print(f"{response=}")
 
     def cw_macros_state_changed(self) -> None:
@@ -4215,7 +4226,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
 
-    def change_mode(self, mode: str, intended_freq=None) -> None:
+    def change_mode(self, mode: str, intended_freq: int | None = None) -> None:
         """
         Change mode to given mode.
         Send the new mode to the rig control.
@@ -4306,7 +4317,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clearinputs()
             self.read_macros()
 
-    def check_callsign(self, callsign) -> None:
+    def check_callsign(self, callsign: str) -> None:
         """
         Check callsign as it's being entered in the big_cty index.
         Get DX entity, CQ, ITU and continent.
@@ -4533,7 +4544,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Destination: %s", str(destination_file))
                         destination_file.write_bytes(child.read_bytes())
 
-    def poll_radio(self, the_dict):
+    def poll_radio(self, the_dict: dict) -> None:
         """
         Gets called by thread worker radio.py
         Passing in a dictionary object with the
@@ -4666,13 +4677,15 @@ class MainWindow(QtWidgets.QMainWindow):
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
-    def get_macro_filename(self):
-        """"""
-        # Have not1mm check in USER_DATA_PATH for the existence of a folder with the contests name.
-        # If it exists, check to see if a cw/ssb/rtty macro files exists within it and load them before
-        # falling back to the default ones.
-        # If user selects menu option to edit the current macro file, make the previous checks, if the
-        # specific one does not exist, copy the default to the contest directory and edit that copy.
+    def get_macro_filename(self) -> str:
+        """
+        Have not1mm check in USER_DATA_PATH for the existence of a folder with the contests name.
+        If it exists, check to see if a cw/ssb/rtty macro files exists within it and load them before
+        falling back to the default ones.
+        If user selects menu option to edit the current macro file, make the previous checks, if the
+        specific one does not exist, copy the default to the contest directory and edit that copy.
+        """
+
         if self.radio_state.get("mode") in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
             macro_file = "cwmacros.txt"
         elif self.radio_state.get("mode") in (
@@ -4911,7 +4924,7 @@ def install_icons() -> None:
         )
 
 
-def doimp(modname) -> object:
+def doimp(modname: str) -> object:
     """
     Imports a module.
 
