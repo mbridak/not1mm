@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "Prec Call Check Section"
 
+SOAPBOX_HINT = """For the Run Exchange macro I’d put:
+{HISCALL} {SENTNR} {EXCH}
+
+See the Contest Specific Notes section of the manual for more info.
+"""
+
 name = "ARRL Sweepstakes CW"
 cabrillo_name = "ARRL-SS-CW"
 mode = "CW"  # CW SSB BOTH RTTY

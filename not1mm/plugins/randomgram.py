@@ -12,6 +12,9 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 EXCHANGE_HINT = ""
+SOAPBOX_HINT = """This plugin was submitted by @alduhoo.
+It reads a rg.txt file if it exists in the user’s home directory to populate the next group in the sent exchange field.
+"""
 name = "RandomGram"
 cabrillo_name = "RANDOMGRAM"
 mode = "CW"  # CW SSB BOTH RTTY

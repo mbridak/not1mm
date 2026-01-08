@@ -57,6 +57,10 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "33N117W"
 
+SOAPBOX_HINT = """
+In the exchange field put just your Lat and Lon. for me 33N117W.
+And in the exchange macro put ‘# {EXCH}‘.
+"""
 name = "RAEM"
 cabrillo_name = "RAEM"
 mode = "CW"  # CW SSB BOTH RTTY

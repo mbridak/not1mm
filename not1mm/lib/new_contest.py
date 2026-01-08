@@ -18,9 +18,15 @@ class NewContest(QtWidgets.QDialog):
 
     def add_exchange_hint(self):
         """add hint"""
+        self.soapbox.setPlaceholderText("")
+        self.exchange.setPlaceholderText("")
         contest_name = self.contest.currentText().lower().replace(" ", "_")
         temp = importlib.import_module(f"not1mm.plugins.{contest_name}")
         if hasattr(temp, "EXCHANGE_HINT"):
             self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
         else:
             self.exchange.setPlaceholderText("")
+        if hasattr(temp, "SOAPBOX_HINT"):
+            self.soapbox.setPlaceholderText(temp.SOAPBOX_HINT)
+        else:
+            self.soapbox.setPlaceholderText("")
