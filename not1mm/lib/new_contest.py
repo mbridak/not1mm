@@ -21,12 +21,20 @@ class NewContest(QtWidgets.QDialog):
         self.soapbox.setPlaceholderText("")
         self.exchange.setPlaceholderText("")
         contest_name = self.contest.currentText().lower().replace(" ", "_")
-        temp = importlib.import_module(f"not1mm.plugins.{contest_name}")
-        if hasattr(temp, "EXCHANGE_HINT"):
-            self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
-        else:
+        try:
+            temp = importlib.import_module(f"not1mm.plugins.{contest_name}")
+            if hasattr(temp, "EXCHANGE_HINT"):
+                self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
+            else:
+                self.exchange.setPlaceholderText("")
+            if hasattr(temp, "SOAPBOX_HINT"):
+                self.soapbox.setPlaceholderText(temp.SOPHBOX_HINT)
+            else:
+                self.soapbox.setPlaceholderText("")
+        except ModuleNotFoundError:
             self.exchange.setPlaceholderText("")
-        if hasattr(temp, "SOAPBOX_HINT"):
-            self.soapbox.setPlaceholderText(temp.SOAPBOX_HINT)
-        else:
             self.soapbox.setPlaceholderText("")
+
+    def fill_contest_list(self, contest_list: list):
+        for item in contest_list:
+            self.contest.addItem(item.get("DisplayName"))
