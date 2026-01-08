@@ -37,6 +37,9 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "# Name"
+SOAPBOX_HINT = """When completing the "Recd Number and Name" field, place a space between the received serial number
+and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disabled for this field.)
+"""
 
 name = "CWOPS - Open"
 mode = "CW"  # CW SSB BOTH RTTY

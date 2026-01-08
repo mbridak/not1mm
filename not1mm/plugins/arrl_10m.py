@@ -58,6 +58,10 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "State/Province"
+SOAPBOX_HINT = """If you’re exchange is (RST + Serial No.) You should edit your exchange macro keys to be '{SNT} {SENTNR}' and a '#' character in the sent exchange field above.
+
+If you’re exchange is (RST + State/Province/ITU), you should edit your exchange macro keys to be '{SNT} {EXCH}' and your state/prov/itu in the sent exchange field above.
+"""
 
 name = "ARRL 10M"
 mode = "BOTH"  # CW SSB BOTH RTTY

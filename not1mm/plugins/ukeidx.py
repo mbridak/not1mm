@@ -14,6 +14,7 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "# or # And Dist"
+SOAPBOX_HINT = """For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
 
 ukei_pfx = [
     "G",
