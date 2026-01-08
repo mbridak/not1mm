@@ -17,7 +17,7 @@
    <string>CheckPartial</string>
   </property>
   <widget class="QWidget" name="widget">
-   <layout class="QGridLayout" name="checkpartialgridlayout">
+    <layout class="QGridLayout" name="checkpartialgridlayout">
     <property name="margin" stdset="0">
      <number>2</number>
     </property>

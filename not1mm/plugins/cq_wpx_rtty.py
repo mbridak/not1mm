@@ -354,10 +354,14 @@ def cabrillo(self, file_encoding):
                 file_descriptor,
                 file_encoding,
             )
-            ops = f"@{self.station.get('Call','')}"
+            ops = ""
             list_of_ops = self.database.get_ops()
             for op in list_of_ops:
-                ops += f", {op.get('Operator', '')}"
+                ops += f"{op.get('Operator', '')}, "
+            if self.station.get("Call", "") not in ops:
+                ops += f"@{self.station.get('Call','')}"
+            else:
+                ops = ops.rstrip(", ")
             output_cabrillo_line(
                 f"OPERATORS: {ops}",
                 "\r\n",
@@ -411,7 +415,7 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
-                frequency = str(int(contact.get("Freq", "0"))).rjust(5)
+                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]

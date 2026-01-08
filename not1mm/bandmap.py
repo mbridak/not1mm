@@ -852,6 +852,9 @@ class BandMapWindow(QDockWidget):
             except UnicodeDecodeError:
                 continue
 
+            if os.environ.get("SEND_CLUSTER", False) is not False:
+                print(f"{data}")
+
             if "login:" in data or "call:" in data or "callsign:" in data:
                 self.send_command(self.callsignField.text())
                 return
@@ -893,16 +896,16 @@ class BandMapWindow(QDockWidget):
                 self.send_command("sh ww")
                 logger.debug(f"callsign login acknowledged {data}")
 
-            items = data.split()
-            if items:
-                if re.match(self.date_pattern, items[0]):
-                    try:
-                        sfi = items[2]
-                        aindex = items[3]
-                        kindex = items[4]
-                        print(f"{sfi=} {aindex=} {kindex=}")
-                    except IndexError:
-                        ...
+            # items = data.split()
+            # if items:
+            #     if re.match(self.date_pattern, items[0]):
+            #         try:
+            #             sfi = items[2]
+            #             aindex = items[3]
+            #             kindex = items[4]
+            #             # print(f"{sfi=} {aindex=} {kindex=}")
+            #         except IndexError:
+            #             ...
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
@@ -920,6 +923,8 @@ class BandMapWindow(QDockWidget):
     def send_command(self, cmd: str) -> None:
         """Send a command to the cluster."""
         cmd += "\r\n"
+        if os.environ.get("SEND_CLUSTER", False) is not False:
+            print(f"{cmd}")
         tosend = bytes(cmd, encoding="ascii")
         logger.debug("Command sent to the cluster")
         if self.socket:

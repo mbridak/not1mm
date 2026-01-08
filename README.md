@@ -1,7 +1,7 @@
+<!-- markdownlint-disable MD001 MD033 MD041 -->
 <center>
 
 # Not1MM
-<!-- markdownlint-disable MD001 MD033 -->
 
  ![logo](https://github.com/mbridak/not1mm/raw/master/not1mm/data/k6gte.not1mm.svg)
 
@@ -60,18 +60,19 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-10-30] Added a Zone tracker window.
-- [25-10-29] Corrected DXCC autoscroll match.
-- [25-10-28] Changed Levenshtein library to rapidfuzz
-- [25-10-27] Add TX and RX macros.
-  - Option to autoscroll DXCC window to current call.
-- [25-10-18] Fix crash issue# 424 with WAG.
-- [25-10-14] Highlight own call in chat window.
-- [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
-  - Bugfix: Fix broken dupe checking when not multi-multi.
-  - Bugfix: Fix sending SN when not fetched.
-- [25-10-5] Add [Multi Multi](Multi-Multi.md) dupe checking.
-  - Add [Multi Multi](Multi-Multi.md) Serial Number support.
+- [25-12-27-1] Enable/disable network ports in CW settings.
+- [25-12-27] Fixed macro discovery file path.
+- [25-12-23] Save edited macro edited with right click.
+- [25-12-21] Group multicast address now actually uses preferred address.
+- [25-12-16] Save and load CW speed setting on launch and quit.
+- [25-12-11] Change parsing of rigctld return strings.
+- [25-12-9] Added tooltips to DXCC tracker window showing entity.
+- [25-12-7] Added CW space character after function keys
+- [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
+- [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero.
+- [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
+- [25-12-1] Fix crash when parsing XML from HamQTH.
+  - Made trivial message boxes non blocking for the main window.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

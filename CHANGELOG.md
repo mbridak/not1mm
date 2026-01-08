@@ -1,5 +1,18 @@
 # Changelog
 
+- [25-12-27-1] Enable/disable network ports in CW settings.
+- [25-12-27] Fixed macro discovery file path.
+- [25-12-23] Save edited macro edited with right click.
+- [25-12-21] Group multicast address now actually uses preferred address.
+- [25-12-16] Save and load CW speed setting on launch and quit.
+- [25-12-11] Change parsing of rigctld return strings.
+- [25-12-9] Added tooltips to DXCC tracker window showing entity.
+- [25-12-7] Added CW space character after function keys
+- [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
+- [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero.
+- [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
+- [25-12-1] Fix crash when parsing XML from HamQTH.
+  - Made trivial message boxes non blocking for the main window.
 - [25-10-30] Added a Zone tracker window.
 - [25-10-29] Corrected DXCC autoscroll match.
 - [25-10-28] Changed Levenshtein library to rapidfuzz

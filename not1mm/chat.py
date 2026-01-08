@@ -44,6 +44,7 @@ class ChatWindow(QDockWidget):
 
     def display_chat(self, sender, body):
         """Displays the chat history."""
+
         if self.mycall in body.upper():
             self.chat_history.setTextColor(QtGui.QColor(245, 121, 0))
         self.chat_history.insertPlainText(f"\n{sender}: {body}")

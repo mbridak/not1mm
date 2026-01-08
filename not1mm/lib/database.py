@@ -570,7 +570,7 @@ class DataBase:
             except sqlite3.Error as exception:
                 logger.info("DataBase delete_contact: %s", exception)
 
-    def clear_dirty_flag(self, unique_id) -> None:
+    def clear_dirty_flag(self, unique_id: str) -> None:
         """Clears the dirty flag."""
         if unique_id:
             try:

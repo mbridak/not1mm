@@ -7,7 +7,7 @@
 \usepackage{hyperref}
 \title{Not1MM User Manual}
 \author{Mike Bridak K6GTE}
-\date{October 2025}
+\date{December 2025}
 \begin{document}
 \maketitle
 \thispagestyle{empty}
@@ -74,6 +74,7 @@ Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately
     \item RAC Canada Day
     \item RandomGram
     \item REF CW, SSB
+    \item RSGB 80M CC
     \item SAC CW, SSB
     \item SPDX
     \item Stew Perry Top band
@@ -124,7 +125,7 @@ But wait... There's more. If your distro is old and you're stuck with an older v
     •uvx --python 3.14 not1mm@latest
 \end{verbatim}
 
-It'll download Python 3.14 into you virtual environment and run not1mm. Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem. Just tell it which version of not1mm you'd like to run.
+It'll download Python 3.14 into your virtual environment and run not1mm. Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem. Just tell it which version of not1mm you'd like to run.
 
 \begin{verbatim}
     •uvx --python 3.10 not1mm==23.5.19
@@ -175,13 +176,13 @@ in your home directories .bashrc file. Then after logging out and back in you sh
 
 Before operating in a contest, you might want to update the CTY and SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
 \newpage
-\section{Various Data File Locations}
+\section{Various File Locations}
 
-\subsection{Data}
+\subsection{Data Files}
 
 If your system has an `XDG\_DATA\_HOME` environment variable set, the database and CW macro files can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
 
-\subsection{Config}
+\subsection{Configuration Files}
 
 Configuration file(s) can be found at the location defined by
 \begin{verbatim}XDG_CONFIG_HOME\end{verbatim}
@@ -190,7 +191,7 @@ Otherwise they will be found at \begin{verbatim}yourhome/.config/not1mm\end{verb
 
 \subsection{Why}
 
-The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do You Boo.
+The database holds... wait for it... data... I know shocker right. A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do you Boo.
 
 \subsection{The First One is Free}
 
@@ -381,7 +382,7 @@ The delay can be changed by going to the `Options` TAB in the Configuration dial
 If you need to send something freeform, you can press \textbf{CTRL-SHIFT-K}, this will expose an entry field at the bottom of the window which you can type directly into. When you're done you can either press \textbf{CTRL-SHIFT-K} again, or press the Enter Key to close the field.
 \newpage
 \section{Editing Macro Keys}
-To edit the macros, choose \textbf{File >> Edit Macros}. This will open your systems registered text editor with current macros loaded. When your done just save the file and close the editor. The file loaded to edit, CW, SSB or RTTY, will be determined by your current operating mode and contest. Each contest gets it's own copy of the macros.
+To edit the macros, choose \textbf{File >> Edit Macros}. This will open your systems registered text editor with current macros loaded. When you're done just save the file and close the editor. The file loaded to edit, CW, SSB or RTTY, will be determined by your current operating mode and contest. Each contest gets it's own copy of the macros.
 
 After editing and saving the macro file. You can force the logger to reload the macro file by toggeling between `Run` and `S\&P` states.
 
@@ -472,15 +473,15 @@ After this, a request is made to QRZ for the gridsquare of the callsign. If ther
 \vspace{0.5cm}
 
 \section{Other Uses for the Call Field}
-
 \textbf{You must press the SPACE bar after entering any of the below.}
-\begin{itemize}
-\item \textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
-\item \textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
-\item \textbf{OPON} Change the operator currently logging.
-\end{itemize}
-
-\textbf{You must press the SPACE bar after entering any of the above.}
+\subsection{Frequency}
+\textbf{Frequency} You can enter a frequency in kilohertz. This will change the band you're logging on. If you have CAT control, this will change the frequency of the radio as well.
+\subsection{Modes}
+\textbf{CW, SSB, RTTY} You can set the mode logged. If you have CAT control this will also change the mode on the radio.
+\subsection{Change Operator}
+\textbf{OPON} Change the operator currently logging.\\
+\\
+\textbf{Again you must press the SPACE bar after entering any of the above.}
 
 \section{The Windows}
 
@@ -667,7 +668,7 @@ Once there is a connection to rotctld, the current azimuth of the antenna is obt
 \includegraphics[width=0.5\linewidth]{pic/rot2.png}
 \vspace{0.5cm}
 
-Once a call is entered and the bearing to contact is calculated you will see another needle appear:
+Once a call is entered and the bearing to contact is calculated you will see a needle appear:
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rot3.png}
@@ -856,11 +857,38 @@ The best thing you can do is play around with it to see how it behaves.
 
 In the `Sent Exchange` field of the New Contest dialog put in the Precidence, Call, Check and Section. Example: `A K6GTE 17 ORG`.
 
-For the Run Exchange macro I'd put `{HISCALL} {SENTNR} {EXCH}`.
+For the Run Exchange macro I'd put:
+\begin{verbatim}
+{HISCALL} {SENTNR} {EXCH}
+\end{verbatim}
+
+\subsection{ARRL 10M}
+
+The most confusing part of ARRL 10m is apparently how to setup your exchange.
+
+\subsubsection{If you're exchange is (RST + Serial No.)}
+
+You should edit your exchange macro keys to be:
+\begin{verbatim}
+{SNT} {SENTNR}
+\end{verbatim}
+and a \# character in the sent exchange field in the contest definition.
+
+\vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/sent_exch_sn.png}
+\vspace{0.5cm}
+
+\subsubsection{If you're exchange is (RST + State/Province/ITU)}
+
+You should edit your exchange macro keys to be:
+\begin{verbatim}
+{SNT} {EXCH}
+\end{verbatim}
+and your state/prov/itu in the sent exchange field in the contest definition.
 
 \subsection{RAEM}
 
-In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon. for me 33N117W. And in the exchange macro put `\# {EXCH}`.
+In the New/Edit Contest dialog, in the exchange field put just your Lat and Lon. for me 33N117W. And in the exchange macro put `\# \{EXCH\}`.
 
 \subsection{RandomGram}
 
@@ -868,7 +896,7 @@ This plugin was submitted by @alduhoo. It reads a rg.txt file if it exists in th
 
 \subsection{UKEI DX}
 
-For the Run exchange macro I'd put '{SNT} \# {EXCH}'
+For the Run exchange macro I'd put '\{SNT\} \# \{EXCH\}'
 
 \subsection{CWO Open Contest}
 
