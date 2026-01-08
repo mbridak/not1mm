@@ -25,6 +25,10 @@ class NewContest(QtWidgets.QDialog):
                 self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
             else:
                 self.exchange.setPlaceholderText("")
+            if hasattr(temp, "SOAPBOX_HINT"):
+                self.soapbox.setPlaceholderText(temp.SOPHBOX_HINT)
+            else:
+                self.soapbox.setPlaceholderText("")
         except ModuleNotFoundError:
             self.exchange.setPlaceholderText("")
 

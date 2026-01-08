@@ -36,3 +36,62 @@
 | UKEI DX | | |
 | Weekly RTTY Test | | |
 | Winter Field Day | | |
+
+## Multiplier1Name
+
+Callsign
+CountryPrefix
+Countryprefix
+Cty
+Exchange1
+GridSquare
+Gridsquare
+MiscText
+N/A
+Sect
+StateProvince
+WPXPrefix
+WPXprefix
+ZN
+Zn
+Zone
+
+## Multiplier2Name
+
+Continent
+CountryPrefix
+Exchange1
+GridSquare
+HQ
+IARU
+MiscText
+Mul
+N/A
+NA
+RCC
+Sect
+Section
+WPXPrefix
+ZN
+
+## Multiplier3Name
+
+Comment
+Continent
+CountryPrefix
+MiscText
+N/A
+Sect
+
+## Mode
+
+MIXED
+CW
+SSB
+RTTY
+BOTH
+Both
+DIGITAL
+PSK
+MIXED+DIG
+BOTH+DIG
