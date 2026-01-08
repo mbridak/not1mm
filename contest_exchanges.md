@@ -1,7 +1,7 @@
 # Contest Exchanges
 
-|Contest|Exchange Type|
-|---|---|
+| Contest | Exchange Type |
+| --- | --- |
 | RAEM | S/N LATLON |
 | Stew Perry | RST + GRID |
 | REF | RST + S/N |
@@ -19,6 +19,7 @@
 | CQWW | RST + Zone |
 | CQWW RTTY | RST + Zone + Sate |
 | CQ 160 | RST + SPC |
+| DARC VHF | RST + GRID |
 | DARC Xmas | RST + NM or DOK or S/N |
 | ARRL DX | RST + Power/SPC |
 | ARRL 10M | RST + SPC or S/N or ITU |
