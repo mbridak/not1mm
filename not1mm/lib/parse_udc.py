@@ -48,3 +48,20 @@ class UDC:
                 result[current_section][key] = value
 
         return result
+
+    def get_udc_names(self, path: str) -> list[list[str, str]]:
+        """
+        Get a list of UDC names from a directory.
+        """
+        udc_names = []
+        for file_path in path.iterdir():
+            if file_path.suffix == ".udc":
+                try:
+                    udc_data = self.parse_udc(str(file_path))
+                    if "Contest" in udc_data and "DisplayName" in udc_data["Contest"]:
+                        udc_names.append(
+                            [file_path.name, udc_data["Contest"]["DisplayName"]]
+                        )
+                except Exception as e:
+                    logger.warning(f"Error parsing UDC file {file_path}: {e}")
+        return udc_names
