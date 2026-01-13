@@ -74,6 +74,7 @@ from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
+from not1mm.lib.parse_udc import UDC
 
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
@@ -223,9 +224,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     server_commands = []
 
+    user_defined_contest = UDC()
+
     def __init__(self, splash):
         super().__init__()
         logger.info("MainWindow: __init__")
+        try:
+            print(
+                f"{self.user_defined_contest.get_udc_names(Path.home() / 'UDC_FILES')}"
+            )
+        except Exception as e:
+            print(f"{e=}")
         self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
