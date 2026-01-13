@@ -1,9 +1,9 @@
 id: io.github.mbridak.not1mm
 runtime: org.kde.Sdk
-runtime-version: '6.7'
+runtime-version: '6.9'
 sdk: org.kde.Sdk
 base: com.riverbankcomputing.PyQt.BaseApp
-base-version: '6.7'
+base-version: '6.9'
 command: not1mm
 cleanup-commands:
   - /app/cleanup-BaseApp.sh
