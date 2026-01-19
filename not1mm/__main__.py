@@ -930,7 +930,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can update to the current version by using:\n\n"
                     "pip install -U not1mm\n\tor\n"
                     "pipx upgrade not1mm\n\tor\n"
-                    "uv install not1mm@latest",
+                    "uv tool install not1mm@latest",
                     blocking=False,
                 )
 
