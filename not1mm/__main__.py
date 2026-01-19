@@ -42,7 +42,13 @@ from PyQt6.QtGui import (
     QCloseEvent,
     QKeyEvent,
 )
-from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication, QPushButton
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QSplashScreen,
+    QApplication,
+    QPushButton,
+    QLineEdit,
+)
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 from not1mm.lib.about import About
@@ -2822,6 +2828,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.setFocus()
                     next_tab.deselect()
                     next_tab.end(False)
+                    self.highlight_599(next_tab)
                 return
             if self.receive.hasFocus():
                 logger.debug("From receive")
@@ -2830,6 +2837,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.receive)
                     next_tab.setFocus()
@@ -2843,6 +2851,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.other_1)
                     next_tab.setFocus()
@@ -2856,6 +2865,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.other_2)
                     next_tab.setFocus()
@@ -2883,6 +2893,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.setFocus()
                     next_tab.deselect()
                     next_tab.end(False)
+                    self.highlight_599(next_tab)
                 return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
@@ -2931,6 +2942,10 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
+
+    def highlight_599(self, field: QLineEdit) -> None:
+        if field.text() == "599":
+            field.setSelection(1, 1)
 
     def set_window_title(self) -> None:
         """
