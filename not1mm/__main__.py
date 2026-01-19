@@ -2590,8 +2590,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw_speed.value())
-        if self.rig_control:
-            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+        if self.rig_control and self.rig_control.cat:
+            if self.pref.get("cwtype") == 3:
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
                 elif self.rig_control.interface == "rigctld":
@@ -2609,9 +2609,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
                 return
-        if self.rig_control:
+        if self.rig_control and self.rig_control.cat:
             if self.rig_control.online:
-                if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                if self.pref.get("cwtype") == 3:
                     if self.rig_control.interface == "flrig":
                         self.rig_control.cat.set_flrig_cw_send(False)
                         self.rig_control.cat.set_flrig_cw_send(True)
