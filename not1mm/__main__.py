@@ -2944,7 +2944,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.process_function_key(self.F12)
 
     def highlight_599(self, field: QLineEdit) -> None:
-        if field.text() == "599":
+        if field.text() == "599" and self.pref.get("edit_rst", False):
             field.setSelection(1, 1)
 
     def set_window_title(self) -> None:
