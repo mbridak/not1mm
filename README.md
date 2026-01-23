@@ -60,8 +60,12 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [26-1-19] Update numpy and soundfile module sources to use wheel files and updated SHA256 checksums.
-  - Update installation command in version update prompt.
+- [2026-01-23] Merge pull request #477 from mbridak/highlight-599
+  - Add edit_rst checkbox to settings and update highlight logic for QLineEdit
+  - Add scripts to log and process git commit messages
+- [2026-01-19] Enhance tab navigation: add highlight for '599' input in QLineEdit fields
+  - Update installation command in version update prompt
+  - Update numpy and soundfile module sources to use wheel files and updated SHA256 checksums
 - [26-1-18] Merged PR from @perja12, Fixing a crash when calling rigctl before it is ready.
 - [26-1-13] Update runtime and base versions to 6.9 in YAML configuration.
   - Enhance python3-modules.yaml with new dependencies and updated package sources.
