@@ -1,5 +1,18 @@
 # Changelog
 
+- [2026-01-23] Merge pull request #477 from mbridak/highlight-599
+  - Add edit_rst checkbox to settings and update highlight logic for QLineEdit
+  - Add scripts to log and process git commit messages
+- [2026-01-19] Enhance tab navigation: add highlight for '599' input in QLineEdit fields
+  - Update installation command in version update prompt
+  - Update numpy and soundfile module sources to use wheel files and updated SHA256 checksums
+- [26-1-18] Merged PR from @perja12, Fixing a crash when calling rigctl before it is ready.
+- [26-1-13] Update runtime and base versions to 6.9 in YAML configuration.
+  - Enhance python3-modules.yaml with new dependencies and updated package sources.
+- [26-1-7] Refactor contest exchanges table formatting and add contest points and mults documentation.
+  - Add SOAPBOX_HINT to various contest plugins and update placeholder texts in NewContest dialog.
+- [26-1-4] Added D-Bus notification helper class.
+  - Add type hints for method parameters in MainWindow and DataBase classes.
 - [25-12-27-1] Enable/disable network ports in CW settings.
 - [25-12-27] Fixed macro discovery file path.
 - [25-12-23] Save edited macro edited with right click.

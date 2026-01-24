@@ -288,8 +288,8 @@ modules:
     sources:
       - &id008
         type: file
-        url: https://files.pythonhosted.org/packages/24/62/ae72ff66c0f1fd959925b4c11f8c2dea61f47f6acaea75a08512cdfe3fed/numpy-2.4.1.tar.gz
-        sha256: a1ceafc5042451a858231588a104093474c6a5c57dcc724841f5c888d237d690
+        url: https://files.pythonhosted.org/packages/d9/7d/9c8a781c88933725445a859cac5d01b5871588a15969ee6aeb618ba99eee/numpy-2.4.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+        sha256: 7ad270f438cbdd402c364980317fb6b117d9ec5e226fff5b4148dd9aa9fc6e02
         x-checker-data:
           name: numpy
           type: pypi
@@ -338,8 +338,8 @@ modules:
       - *id008
       - *id009
       - type: file
-        url: https://files.pythonhosted.org/packages/e1/41/9b873a8c055582859b239be17902a85339bec6a30ad162f98c9b0288a2cc/soundfile-0.13.1.tar.gz
-        sha256: b2c68dab1e30297317080a5b43df57e302584c49e2942defdde0acccc53f0e5b
+        url: https://files.pythonhosted.org/packages/57/5e/70bdd9579b35003a489fc850b5047beeda26328053ebadc1fb60f320f7db/soundfile-0.13.1-py2.py3-none-manylinux_2_28_x86_64.whl
+        sha256: 03267c4e493315294834a0870f31dbb3b28a95561b80b134f0bd3cf2d5f0e618
         x-checker-data:
           name: soundfile
           type: pypi

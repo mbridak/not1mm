@@ -60,19 +60,19 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [25-12-27-1] Enable/disable network ports in CW settings.
-- [25-12-27] Fixed macro discovery file path.
-- [25-12-23] Save edited macro edited with right click.
-- [25-12-21] Group multicast address now actually uses preferred address.
-- [25-12-16] Save and load CW speed setting on launch and quit.
-- [25-12-11] Change parsing of rigctld return strings.
-- [25-12-9] Added tooltips to DXCC tracker window showing entity.
-- [25-12-7] Added CW space character after function keys
-- [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
-- [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero.
-- [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
-- [25-12-1] Fix crash when parsing XML from HamQTH.
-  - Made trivial message boxes non blocking for the main window.
+- [2026-01-23] Merge pull request #477 from mbridak/highlight-599
+  - Add edit_rst checkbox to settings and update highlight logic for QLineEdit
+  - Add scripts to log and process git commit messages
+- [2026-01-19] Enhance tab navigation: add highlight for '599' input in QLineEdit fields
+  - Update installation command in version update prompt
+  - Update numpy and soundfile module sources to use wheel files and updated SHA256 checksums
+- [26-1-18] Merged PR from @perja12, Fixing a crash when calling rigctl before it is ready.
+- [26-1-13] Update runtime and base versions to 6.9 in YAML configuration.
+  - Enhance python3-modules.yaml with new dependencies and updated package sources.
+- [26-1-7] Refactor contest exchanges table formatting and add contest points and mults documentation.
+  - Add SOAPBOX_HINT to various contest plugins and update placeholder texts in NewContest dialog.
+- [26-1-4] Added D-Bus notification helper class.
+  - Add type hints for method parameters in MainWindow and DataBase classes.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
