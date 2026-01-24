@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>684</width>
+    <width>699</width>
     <height>499</height>
    </rect>
   </property>
@@ -1745,7 +1745,7 @@
         <rect>
          <x>5</x>
          <y>25</y>
-         <width>639</width>
+         <width>670</width>
          <height>378</height>
         </rect>
        </property>
@@ -2430,6 +2430,13 @@
            <widget class="QCheckBox" name="qsy_on_change">
             <property name="text">
              <string>S&amp;&amp;P QSY on Freq Change</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="edit_rst">
+            <property name="text">
+             <string>Select the S in RST when field entered</string>
             </property>
            </widget>
           </item>
