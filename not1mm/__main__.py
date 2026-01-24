@@ -1420,12 +1420,15 @@ class MainWindow(QtWidgets.QMainWindow):
         if result and result != "NONE":
             datadict = {}
             splitdata = result.upper().strip().split("<")
-            for data in splitdata:
-                if data:
-                    tag = data.split(":")
-                    if tag == ["EOR>"]:
-                        break
-                    datadict[tag[0]] = tag[1].split(">")[1].strip()
+            try:
+                for data in splitdata:
+                    if data:
+                        tag = data.split(":")
+                        if tag == ["EOR>"]:
+                            break
+                        datadict[tag[0]] = tag[1].split(">")[1].strip()
+            except IndexError:
+                logger.debug(f"Parse error: {result=} {data=} {tag=}")
             logger.debug(f"{datadict=}")
             if hasattr(self.contest, "ft8_handler"):
                 self.contest.set_self(self)
