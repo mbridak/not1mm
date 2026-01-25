@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-01-24] Merge pull request #481 from mbridak/478-crashes-save-qso
+  - Add error handling for data parsing in MainWindow class
 - [2026-01-23] Merge pull request #477 from mbridak/highlight-599
   - Add edit_rst checkbox to settings and update highlight logic for QLineEdit
   - Add scripts to log and process git commit messages
