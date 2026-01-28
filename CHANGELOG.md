@@ -2,6 +2,7 @@
 
 - [2026-01-28] Merge pull request #485 from mbridak/484-1mm-doesnt-launch-if-the-route-to-flrig-fails
   - Add TimeoutError handling in CAT class methods
+  - Add OSError handling in CAT class methods
 - [2026-01-24] Merge pull request #481 from mbridak/478-crashes-save-qso
   - Add error handling for data parsing in MainWindow class
 - [2026-01-23] Merge pull request #477 from mbridak/highlight-599
