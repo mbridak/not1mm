@@ -1121,6 +1121,7 @@ class MainWindow(QtWidgets.QMainWindow):
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
+        print(f"{datagram=}")
         self.fldigi_qso(datagram.decode())
 
     def is_it_dark(self) -> bool:
