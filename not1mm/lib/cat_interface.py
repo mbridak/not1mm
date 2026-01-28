@@ -100,6 +100,7 @@ class CAT:
                 socket.error,
                 socket.gaierror,
                 TimeoutError,
+                OSError,
             ):
                 self.online = False
         elif self.interface == "rigctld":
@@ -273,6 +274,7 @@ class CAT:
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -293,6 +295,7 @@ class CAT:
             http.client.ResponseNotReady,
             ValueError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -312,6 +315,7 @@ class CAT:
             http.client.ResponseNotReady,
             ValueError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -344,6 +348,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug(f"{exception=}")
@@ -402,6 +407,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -461,6 +467,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("getbw_flrig: %s", f"{exception}")
@@ -490,6 +497,7 @@ class CAT:
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("getpower_flrig: %s", f"{exception}")
@@ -537,6 +545,7 @@ class CAT:
             http.client.CannotSendRequest,
             http.client.ResponseNotReady,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -588,6 +597,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -644,6 +654,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("setvfo_flrig: %s", f"{exception}")
@@ -697,6 +708,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug(f"{exception=}")
@@ -747,6 +759,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("setpower_flrig: %s", f"{exception}")
@@ -819,6 +832,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -865,6 +879,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
@@ -933,6 +948,7 @@ class CAT:
             http.client.ResponseNotReady,
             AttributeError,
             TimeoutError,
+            OSError,
         ) as exception:
             self.online = False
             logger.debug("%s", f"{exception}")
