@@ -1431,6 +1431,7 @@ class MainWindow(QtWidgets.QMainWindow):
             except IndexError:
                 logger.debug(f"Parse error: {result=} {data=} {tag=}")
             logger.debug(f"{datadict=}")
+            print(f"{datadict=}")
             if hasattr(self.contest, "ft8_handler"):
                 self.contest.set_self(self)
                 self.contest.ft8_handler(datadict)
@@ -3076,15 +3077,28 @@ class MainWindow(QtWidgets.QMainWindow):
         )[:19]
         self.contact["Call"] = self.callsign.text()
         if self.contact.get("Mode") not in (
+            "CONTESTI",
+            "DOMINO",
+            "FSQ",
             "FT8",
             "FT4",
+            "HELL",
+            "IFKP",
             "RTTY",
+            "PSK",
             "PSK31",
             "FSK441",
+            "MFSK",
             "MSK144",
+            "MT63",
+            "OLIVIA",
+            "JS8",
             "JT65",
             "JT9",
             "Q65",
+            "SCAMP",
+            "THOR",
+            "THRB",
         ):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
