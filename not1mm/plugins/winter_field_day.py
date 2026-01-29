@@ -337,7 +337,31 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode in ("LSB", "USB", "FM", "AM"):
                     themode = "PH"
-                if themode.upper() in ("RTTY", "BPSK31", "OLIVIA", "JS8"):
+                if themode.upper() in (
+                    "BPSK31",
+                    "CONTESTI",
+                    "DOMINO",
+                    "FSQ",
+                    "FT8",
+                    "FT4",
+                    "HELL",
+                    "IFKP",
+                    "RTTY",
+                    "PSK",
+                    "PSK31",
+                    "FSK441",
+                    "MFSK",
+                    "MSK144",
+                    "MT63",
+                    "OLIVIA",
+                    "JS8",
+                    "JT65",
+                    "JT9",
+                    "Q65",
+                    "SCAMP",
+                    "THOR",
+                    "THRB",
+                ):
                     themode = "DG"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
