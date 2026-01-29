@@ -1,6 +1,7 @@
 # Changelog
 
 - [2026-01-28] Merge pull request #485 from mbridak/484-1mm-doesnt-launch-if-the-route-to-flrig-fails
+  - Enhance Cabrillo export mode identifiers for Winter Field Day plugin
   - Add TimeoutError handling in CAT class methods
   - Add OSError handling in CAT class methods
 - [2026-01-24] Merge pull request #481 from mbridak/478-crashes-save-qso
