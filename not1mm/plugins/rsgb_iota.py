@@ -24,6 +24,22 @@
 # Find rules at:        https://www.rsgbcc.org/hf/rules/2025/riota.shtml
 # Cabrillo name:        RSGB-IOTA
 
+
+# (a) Island Stations contacting:
+#         World Stations: 5 points
+#         Island Stations having the same IOTA reference: 5 points
+#         Other Island Stations: 15 points
+# (b) World Stations contacting:
+#         World Stations: 2 points
+#         Island Stations: 15 points
+
+# (c) Multiplier. The multiplier is the total of different IOTA references contacted on each band on CW,
+#         plus the total of different IOTA references contacted on each band on SSB
+
+# (d) The Total Score is the total of QSO points on all bands added together,
+#         multiplied by the total of multipliers on all bands added together
+
+
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
