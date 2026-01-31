@@ -855,11 +855,15 @@ class BandMapWindow(QDockWidget):
             if os.environ.get("SEND_CLUSTER", False) is not False:
                 print(f"{data}")
 
-            if "login:" in data or "call:" in data or "callsign:" in data:
+            if (
+                "login:" in data.lower()
+                or "call:" in data.lower()
+                or "callsign:" in data.lower()
+            ):
                 self.send_command(self.callsignField.text())
                 return
 
-            if "password:" in data:
+            if "password:" in data.lower():
                 self.send_command(self.settings.get("cluster_password", ""))
                 return
 
