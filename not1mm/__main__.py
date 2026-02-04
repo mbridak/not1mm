@@ -167,6 +167,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contact_is_dupe = False
     pref = {}
     station = {}
+    spaceweather = ""
     current_op = ""
     current_mode = ""
     current_band = ""
@@ -1380,6 +1381,19 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.server_channel.send_as_json(msg)
                     except OSError as err:
                         logging.warning("%s", err)
+                    return
+
+            if msg.get("cmd", "") == "SPACEWEATHER":
+                # cmd["cmd"] = "SPACEWEATHER"
+                # cmd["date"] = match.group(1)
+                # cmd["hour"] = match.group(2)
+                # cmd["sfi"] = match.group(3)
+                # cmd["aindex"] = match.group(4)
+                # cmd["kindex"] = match.group(5)
+                # cmd["conditions"] = match.group(6).strip()
+                # cmd["source"] = match.group(7)
+                self.spaceweather = f"SFI: {msg.get('sfi', '')} A: {msg.get('aindex', '')} K: {msg.get('kindex', '')}"
+                self.set_window_title()
 
     def cluster_expire_updated(self, number: str) -> None:
         """signal from bandmap"""
@@ -2972,6 +2986,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"vfoa:{round(vfoa,2)} "
             f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
+            f"{self.spaceweather} "
             f"- Not1MM v{__version__}"
         )
         self.setWindowTitle(line)
