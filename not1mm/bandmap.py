@@ -346,6 +346,9 @@ class BandMapWindow(QDockWidget):
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
+    wwv_pattern = (
+        r"(\d{2}-\w{3}-\d{4})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s+<(\w+)>"
+    )
 
     def __init__(self, action):
         super().__init__()
@@ -897,9 +900,29 @@ class BandMapWindow(QDockWidget):
                 self.send_command(
                     "set dx mode " + self.settings.get("cluster_mode", "OPEN")
                 )
-                self.send_command("sh ww")
+                self.send_command("sh wwv 1")
                 logger.debug(f"callsign login acknowledged {data}")
 
+            match = re.search(self.wwv_pattern, data)
+
+            if match:
+                print(f"Date: {match.group(1)}")
+                print(f"Hour: {match.group(2)}")
+                print(f"SFI: {match.group(3)}")
+                print(f"A-Index: {match.group(4)}")
+                print(f"K-Index: {match.group(5)}")
+                print(f"Conditions: {match.group(6).strip()}")
+                print(f"Source: {match.group(7)}")
+                cmd = {}
+                cmd["cmd"] = "SPACEWEATHER"
+                cmd["date"] = match.group(1)
+                cmd["hour"] = match.group(2)
+                cmd["sfi"] = match.group(3)
+                cmd["aindex"] = match.group(4)
+                cmd["kindex"] = match.group(5)
+                cmd["conditions"] = match.group(6).strip()
+                cmd["source"] = match.group(7)
+                self.message.emit(cmd)
             # items = data.split()
             # if items:
             #     if re.match(self.date_pattern, items[0]):
