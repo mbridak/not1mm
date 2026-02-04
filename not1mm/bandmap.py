@@ -906,13 +906,6 @@ class BandMapWindow(QDockWidget):
             match = re.search(self.wwv_pattern, data)
 
             if match:
-                print(f"Date: {match.group(1)}")
-                print(f"Hour: {match.group(2)}")
-                print(f"SFI: {match.group(3)}")
-                print(f"A-Index: {match.group(4)}")
-                print(f"K-Index: {match.group(5)}")
-                print(f"Conditions: {match.group(6).strip()}")
-                print(f"Source: {match.group(7)}")
                 cmd = {}
                 cmd["cmd"] = "SPACEWEATHER"
                 cmd["date"] = match.group(1)
@@ -923,16 +916,6 @@ class BandMapWindow(QDockWidget):
                 cmd["conditions"] = match.group(6).strip()
                 cmd["source"] = match.group(7)
                 self.message.emit(cmd)
-            # items = data.split()
-            # if items:
-            #     if re.match(self.date_pattern, items[0]):
-            #         try:
-            #             sfi = items[2]
-            #             aindex = items[3]
-            #             kindex = items[4]
-            #             # print(f"{sfi=} {aindex=} {kindex=}")
-            #         except IndexError:
-            #             ...
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
