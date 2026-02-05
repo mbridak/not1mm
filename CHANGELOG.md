@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-02-04] Add space weather command handling and update UI title
 - [2026-01-31] Merge pull request #491 from mbridak/account-for-password-prompt-case
   - Normalize case for login and password prompts in BandMapWindow
 - [2026-01-28] Merge pull request #485 from mbridak/484-1mm-doesnt-launch-if-the-route-to-flrig-fails
