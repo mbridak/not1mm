@@ -42,7 +42,13 @@ from PyQt6.QtGui import (
     QCloseEvent,
     QKeyEvent,
 )
-from PyQt6.QtWidgets import QFileDialog, QSplashScreen, QApplication, QPushButton
+from PyQt6.QtWidgets import (
+    QFileDialog,
+    QSplashScreen,
+    QApplication,
+    QPushButton,
+    QLineEdit,
+)
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 from not1mm.lib.about import About
@@ -161,6 +167,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contact_is_dupe = False
     pref = {}
     station = {}
+    spaceweather = ""
     current_op = ""
     current_mode = ""
     current_band = ""
@@ -932,7 +939,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "You can update to the current version by using:\n\n"
                     "pip install -U not1mm\n\tor\n"
                     "pipx upgrade not1mm\n\tor\n"
-                    "uv install not1mm@latest",
+                    "uv tool install not1mm@latest",
                     blocking=False,
                 )
 
@@ -1117,6 +1124,7 @@ class MainWindow(QtWidgets.QMainWindow):
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
+        print(f"{datagram=}")
         self.fldigi_qso(datagram.decode())
 
     def is_it_dark(self) -> bool:
@@ -1375,6 +1383,19 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.server_channel.send_as_json(msg)
                     except OSError as err:
                         logging.warning("%s", err)
+                    return
+
+            if msg.get("cmd", "") == "SPACEWEATHER":
+                # cmd["cmd"] = "SPACEWEATHER"
+                # cmd["date"] = match.group(1)
+                # cmd["hour"] = match.group(2)
+                # cmd["sfi"] = match.group(3)
+                # cmd["aindex"] = match.group(4)
+                # cmd["kindex"] = match.group(5)
+                # cmd["conditions"] = match.group(6).strip()
+                # cmd["source"] = match.group(7)
+                self.spaceweather = f"SFI: {msg.get('sfi', '')} A: {msg.get('aindex', '')} K: {msg.get('kindex', '')}"
+                self.set_window_title()
 
     def cluster_expire_updated(self, number: str) -> None:
         """signal from bandmap"""
@@ -1416,13 +1437,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if result and result != "NONE":
             datadict = {}
             splitdata = result.upper().strip().split("<")
-            for data in splitdata:
-                if data:
-                    tag = data.split(":")
-                    if tag == ["EOR>"]:
-                        break
-                    datadict[tag[0]] = tag[1].split(">")[1].strip()
+            try:
+                for data in splitdata:
+                    if data:
+                        tag = data.split(":")
+                        if tag == ["EOR>"]:
+                            break
+                        datadict[tag[0]] = tag[1].split(">")[1].strip()
+            except IndexError:
+                logger.debug(f"Parse error: {result=} {data=} {tag=}")
             logger.debug(f"{datadict=}")
+            print(f"{datadict=}")
             if hasattr(self.contest, "ft8_handler"):
                 self.contest.set_self(self)
                 self.contest.ft8_handler(datadict)
@@ -2594,8 +2619,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw_speed.value())
-        if self.rig_control:
-            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+        if self.rig_control and self.rig_control.cat:
+            if self.pref.get("cwtype") == 3:
                 if self.rig_control.interface == "flrig":
                     self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
                 elif self.rig_control.interface == "rigctld":
@@ -2613,9 +2638,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
                 return
-        if self.rig_control:
+        if self.rig_control and self.rig_control.cat:
             if self.rig_control.online:
-                if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                if self.pref.get("cwtype") == 3:
                     if self.rig_control.interface == "flrig":
                         self.rig_control.cat.set_flrig_cw_send(False)
                         self.rig_control.cat.set_flrig_cw_send(True)
@@ -2826,6 +2851,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.setFocus()
                     next_tab.deselect()
                     next_tab.end(False)
+                    self.highlight_599(next_tab)
                 return
             if self.receive.hasFocus():
                 logger.debug("From receive")
@@ -2834,6 +2860,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.receive)
                     next_tab.setFocus()
@@ -2847,6 +2874,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.other_1)
                     next_tab.setFocus()
@@ -2860,6 +2888,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     prev_tab.setFocus()
                     prev_tab.deselect()
                     prev_tab.end(False)
+                    self.highlight_599(prev_tab)
                 else:
                     next_tab = self.tab_next.get(self.other_2)
                     next_tab.setFocus()
@@ -2887,6 +2916,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     next_tab.setFocus()
                     next_tab.deselect()
                     next_tab.end(False)
+                    self.highlight_599(next_tab)
                 return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
@@ -2936,6 +2966,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
+    def highlight_599(self, field: QLineEdit) -> None:
+        if field.text() == "599" and self.pref.get("edit_rst", False):
+            field.setSelection(1, 1)
+
     def set_window_title(self) -> None:
         """
         Set window title based on current state.
@@ -2956,6 +2990,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"vfoa:{round(vfoa,2)} "
             f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
+            f"{self.spaceweather} "
             f"- Not1MM v{__version__}"
         )
         self.setWindowTitle(line)
@@ -3061,15 +3096,28 @@ class MainWindow(QtWidgets.QMainWindow):
         )[:19]
         self.contact["Call"] = self.callsign.text()
         if self.contact.get("Mode") not in (
+            "CONTESTI",
+            "DOMINO",
+            "FSQ",
             "FT8",
             "FT4",
+            "HELL",
+            "IFKP",
             "RTTY",
+            "PSK",
             "PSK31",
             "FSK441",
+            "MFSK",
             "MSK144",
+            "MT63",
+            "OLIVIA",
+            "JS8",
             "JT65",
             "JT9",
             "Q65",
+            "SCAMP",
+            "THOR",
+            "THRB",
         ):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2

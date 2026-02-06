@@ -346,6 +346,9 @@ class BandMapWindow(QDockWidget):
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
+    wwv_pattern = (
+        r"(\d{2}-\w{3}-\d{4})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s+<(\w+)>"
+    )
 
     def __init__(self, action):
         super().__init__()
@@ -855,11 +858,15 @@ class BandMapWindow(QDockWidget):
             if os.environ.get("SEND_CLUSTER", False) is not False:
                 print(f"{data}")
 
-            if "login:" in data or "call:" in data or "callsign:" in data:
+            if (
+                "login:" in data.lower()
+                or "call:" in data.lower()
+                or "callsign:" in data.lower()
+            ):
                 self.send_command(self.callsignField.text())
                 return
 
-            if "password:" in data:
+            if "password:" in data.lower():
                 self.send_command(self.settings.get("cluster_password", ""))
                 return
 
@@ -893,19 +900,22 @@ class BandMapWindow(QDockWidget):
                 self.send_command(
                     "set dx mode " + self.settings.get("cluster_mode", "OPEN")
                 )
-                self.send_command("sh ww")
+                self.send_command("sh wwv 1")
                 logger.debug(f"callsign login acknowledged {data}")
 
-            # items = data.split()
-            # if items:
-            #     if re.match(self.date_pattern, items[0]):
-            #         try:
-            #             sfi = items[2]
-            #             aindex = items[3]
-            #             kindex = items[4]
-            #             # print(f"{sfi=} {aindex=} {kindex=}")
-            #         except IndexError:
-            #             ...
+            match = re.search(self.wwv_pattern, data)
+
+            if match:
+                cmd = {}
+                cmd["cmd"] = "SPACEWEATHER"
+                cmd["date"] = match.group(1)
+                cmd["hour"] = match.group(2)
+                cmd["sfi"] = match.group(3)
+                cmd["aindex"] = match.group(4)
+                cmd["kindex"] = match.group(5)
+                cmd["conditions"] = match.group(6).strip()
+                cmd["source"] = match.group(7)
+                self.message.emit(cmd)
 
     def maybeconnected(self) -> None:
         """Update visual state of the connect button."""
