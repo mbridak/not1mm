@@ -168,6 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contact_is_dupe = False
     pref = {}
     station = {}
+    spaceweather = ""
     current_op = ""
     current_mode = ""
     current_band = ""
@@ -1130,6 +1131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
+        print(f"{datagram=}")
         self.fldigi_qso(datagram.decode())
 
     def is_it_dark(self) -> bool:
@@ -1388,6 +1390,19 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.server_channel.send_as_json(msg)
                     except OSError as err:
                         logging.warning("%s", err)
+                    return
+
+            if msg.get("cmd", "") == "SPACEWEATHER":
+                # cmd["cmd"] = "SPACEWEATHER"
+                # cmd["date"] = match.group(1)
+                # cmd["hour"] = match.group(2)
+                # cmd["sfi"] = match.group(3)
+                # cmd["aindex"] = match.group(4)
+                # cmd["kindex"] = match.group(5)
+                # cmd["conditions"] = match.group(6).strip()
+                # cmd["source"] = match.group(7)
+                self.spaceweather = f"SFI: {msg.get('sfi', '')} A: {msg.get('aindex', '')} K: {msg.get('kindex', '')}"
+                self.set_window_title()
 
     def cluster_expire_updated(self, number: str) -> None:
         """signal from bandmap"""
@@ -1439,6 +1454,7 @@ class MainWindow(QtWidgets.QMainWindow):
             except IndexError:
                 logger.debug(f"Parse error: {result=} {data=} {tag=}")
             logger.debug(f"{datadict=}")
+            print(f"{datadict=}")
             if hasattr(self.contest, "ft8_handler"):
                 self.contest.set_self(self)
                 self.contest.ft8_handler(datadict)
@@ -2979,6 +2995,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"vfoa:{round(vfoa,2)} "
             f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
+            f"{self.spaceweather} "
             f"- Not1MM v{__version__}"
         )
         self.setWindowTitle(line)
@@ -3084,15 +3101,28 @@ class MainWindow(QtWidgets.QMainWindow):
         )[:19]
         self.contact["Call"] = self.callsign.text()
         if self.contact.get("Mode") not in (
+            "CONTESTI",
+            "DOMINO",
+            "FSQ",
             "FT8",
             "FT4",
+            "HELL",
+            "IFKP",
             "RTTY",
+            "PSK",
             "PSK31",
             "FSK441",
+            "MFSK",
             "MSK144",
+            "MT63",
+            "OLIVIA",
+            "JS8",
             "JT65",
             "JT9",
             "Q65",
+            "SCAMP",
+            "THOR",
+            "THRB",
         ):
             self.contact["Freq"] = round(
                 float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
