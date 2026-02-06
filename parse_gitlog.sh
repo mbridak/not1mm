@@ -4,7 +4,7 @@
 
 #If no date passed in, use today.
 thevar=""
-if [$1 -eq ""]; then
+if [ "$1" = "" ]; then
     thevar=`date +"%F"`
 else
     thevar=$1
