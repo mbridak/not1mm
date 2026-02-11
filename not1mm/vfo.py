@@ -6,6 +6,7 @@ GPL V3
 Class: VfoWindow
 Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig.
 """
+
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation, c-extension-no-member
 
 # 115200 pico default speed
