@@ -57,6 +57,7 @@ class VfoWindow(QDockWidget):
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
         self.visibilityChanged.connect(self.window_state_changed)
+        self.usb_devices = set()
 
     def load_pref(self) -> None:
         """
@@ -111,17 +112,24 @@ class VfoWindow(QDockWidget):
         if devices is None:
             return None
         if sys.platform == "darwin":
-            for device in devices:
-                if "usb" in device:
-                    try:
-                        with serial.Serial("/dev/" + device, 115200) as ser:
-                            ser.timeout = 1000
-                            ser.write(b"whatareyou\r")
-                            data = ser.readline()
-                    except serial.serialutil.SerialException:
-                        return None
-                    if "vfoknob" in data.decode().strip():
-                        return "/dev/" + device
+            usb_devices = set([device for device in devices if "usb" in device])
+            new_usb_devices = usb_devices - self.usb_devices
+            self.usb_devices = usb_devices
+            if len(new_usb_devices) == 0:
+                return None
+            logger.debug(f"new_usb_devices: {new_usb_devices}")
+            for device in new_usb_devices:
+                try:
+                    with serial.Serial("/dev/" + device, 115200) as ser:
+                        logger.debug(f"trying usb device: {device}")
+                        ser.timeout = 1.0
+                        ser.write(b"whatareyou\r")
+                        data = ser.readline()
+                except serial.serialutil.SerialException as ex:
+                    logger.debug(f"writing usb_device: {device} failed: {ex}")
+                    return None
+                if "vfoknob" in data.decode().strip():
+                    return "/dev/" + device
             return None
         for device in devices:
             if "usb-Raspberry_Pi_Pico" in device:
