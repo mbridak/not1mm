@@ -66,7 +66,23 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Installation
 
-To install not1mm please see the [installation](INSTALL.md) section.
+### TL;DR
+
+#### Prerequisites
+
+Not1MM requires:
+
+- PyQt6
+- libportaudio2
+- libxcb-cursor0 (maybe... Depends on the distro)
+
+#### One liner install
+  
+```bash
+curl -LsSf uvx.sh/not1mm/install.sh | sh
+```
+
+For more in depth info, please see the [installation](INSTALL.md) section.
 
 ## Documentation
 

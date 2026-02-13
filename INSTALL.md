@@ -85,6 +85,7 @@ sudo apt install -y pipx libportaudio2 libxcb-cursor0
 pipx install not1mm
 pipx ensurepath
 ```
+
 You may need once to log out and in again to make the new PATH settings to work. Depending on the shell used you may type in
 
 ```bash
