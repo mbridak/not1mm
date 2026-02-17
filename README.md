@@ -60,13 +60,34 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
+  - Fix crash when there is a / in an editted macro
+- [2026-02-13] Update installation instructions in README
+- [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
+  - On Darwin, fix USB device rummaging stall
 - [2026-02-04] Add space weather command handling and update UI title
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Installation
 
-To install not1mm please see the [installation](INSTALL.md) section.
+### TL;DR
+
+#### Prerequisites
+
+Not1MM requires:
+
+- PyQt6
+- libportaudio2
+- libxcb-cursor0 (maybe... Depends on the distro)
+
+#### One liner install
+  
+```bash
+curl -LsSf uvx.sh/not1mm/install.sh | sh
+```
+
+For more in depth info, please see the [installation](INSTALL.md) section.
 
 ## Documentation
 
