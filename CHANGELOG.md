@@ -1,5 +1,10 @@
 # Changelog
 
+- [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
+  - Fix crash when there is a / in an editted macro
+- [2026-02-13] Update installation instructions in README
+- [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
+  - On Darwin, fix USB device rummaging stall
 - [2026-02-04] Add space weather command handling and update UI title
 - [2026-01-31] Merge pull request #491 from mbridak/account-for-password-prompt-case
   - Normalize case for login and password prompts in BandMapWindow
