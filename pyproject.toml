@@ -25,7 +25,6 @@ dependencies = [
     "rapidfuzz",
     "appdata",
     "adif_io",
-    "sh>=2.2.2",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
