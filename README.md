@@ -60,6 +60,11 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
+  - Fix crash when there is a / in an editted macro
+- [2026-02-13] Update installation instructions in README
+- [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
+  - On Darwin, fix USB device rummaging stall
 - [2026-02-04] Add space weather command handling and update UI title
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
