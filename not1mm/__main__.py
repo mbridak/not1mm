@@ -19,7 +19,6 @@ from logging.handlers import RotatingFileHandler
 import os
 import queue
 import socket
-import sh
 import sys
 import uuid
 
@@ -3458,14 +3457,19 @@ class MainWindow(QtWidgets.QMainWindow):
         old_string = self.edit_macro_dialog.old_macro
         new_string = f"{self.edit_macro_dialog.the_macro.text()}"
 
-        sed_string = f"s/{rm}|{fkey}|{old_label}|{old_string}/{rm}|{fkey}|{new_label}|{new_string}/g"
-
         macro_file = str(self.get_macro_filename())
 
         try:
-            sh.sed("-i", sed_string, macro_file)
-        except sh.ErrorReturnCode_2:
-            ...
+            with open(macro_file, 'r') as file:
+                content = file.read()
+            # Perform the replacement
+            new_content = content.replace(f"{rm}|{fkey}|{old_label}|{old_string}", f"{rm}|{fkey}|{new_label}|{new_string}")
+
+            # Write the modified content back to the file
+            with open(macro_file, 'w') as file:
+                file.write(new_content)
+        except Exception as e:
+            logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
 
     def process_macro(self, macro: str) -> str:
         """
