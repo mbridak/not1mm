@@ -1099,6 +1099,19 @@ class DataBase:
 
     def check_dupe_on_band_mode(self, call, band, mode) -> dict:
         """Checks if a call is dupe on band/mode"""
+        match mode:
+            case "LSB"|"USB"|"SSB"|"FM"|"AM":
+                mode_test = "PH"
+            case "CW"|"CW-U"|"CW-L"|"CWR"|"CW-R":
+                mode_test = "CW"
+            case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+                mode_test = "DI"
+            case _:
+                mode_test = "OTHER"
+        # end match
+        debugline = f"{mode_test}"
+        logger.debug("%s", debugline)
+ 
         try:
             with sqlite3.connect(self.database) as conn:
                 conn.row_factory = self.row_factory
@@ -1119,7 +1132,7 @@ class DataBase:
                             from DXLOG
                             ) as sortedmode
 
-                    where sortedmode.Call = '{call}' and sortedmode.mode = '{mode}' and sortedmode.Band = '{band}' and sortedmode.ContestNR = {self.current_contest};
+                    where sortedmode.Call = '{call}' and sortedmode.mode = '{mode_test}' and sortedmode.Band = '{band}' and sortedmode.ContestNR = {self.current_contest};
                     """
                 )
                 return cursor.fetchone()
