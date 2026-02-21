@@ -30,6 +30,11 @@ Not1MM attempts to be a usable ham/amateur radio contest logger. It's written in
 The primary target for this application is Linux. It may be able to run on other platforms, BSD and Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
 \subsection{Current State, or Code Maturity}
 Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
+\subsection{Known Issues}
+\begin{itemize}
+    \item Hamlib before 4.6.3 had a problem with sending CW and changing/reading the keying speed.
+    \item wfview before version 2.2 has issues with frequency reporting and CW sending.
+\end{itemize}
 \newpage
 \section{List of Should-Be-Working Contests}
 \begin{multicols}{3}
