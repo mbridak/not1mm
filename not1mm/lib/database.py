@@ -1109,8 +1109,6 @@ class DataBase:
             case _:
                 mode_test = "OTHER"
         # end match
-        debugline = f"{mode_test}"
-        logger.debug("%s", debugline)
  
         try:
             with sqlite3.connect(self.database) as conn:
