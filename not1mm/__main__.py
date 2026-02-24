@@ -745,6 +745,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
         self.bandmap_window.message.connect(self.dockwidget_message)
         self.bandmap_window.callsignField.setText(self.current_op)
+        self.bandmap_window.bandmapwindow_closed.connect(self.launch_bandmap_window)
 
         self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow(self.actionCheck_Window)
@@ -754,6 +755,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
         self.check_window.message.connect(self.dockwidget_message)
+        self.check_window.checkwindow_closed.connect(self.launch_check_window)
 
         self.show_splash_msg("Setting up RateWindow.")
         self.rate_window = RateWindow(self.actionRate_Window)
@@ -763,6 +765,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rate_window)
         self.rate_window.hide()
         self.rate_window.message.connect(self.dockwidget_message)
+        self.rate_window.ratewindow_closed.connect(self.launch_rate_window)
 
         self.show_splash_msg("Setting up StatisticsWindow.")
         self.statistics_window = StatsWindow(self.actionStatistics)
@@ -774,6 +777,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.statistics_window.hide()
         self.statistics_window.message.connect(self.dockwidget_message)
+        self.statistics_window.statisticswindow_closed.connect(self.launch_stats_window)
 
         self.show_splash_msg("Setting up GroupChatWindow.")
         self.chat_window = ChatWindow(self.actionGroup_Chat)
@@ -784,6 +788,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.chat_window.hide()
         self.chat_window.message.connect(self.dockwidget_message)
         self.chat_window.mycall = self.current_op
+        self.chat_window.chatwindow_closed.connect(self.launch_chat_window)
 
         self.show_splash_msg("Setting up DXCCWindow.")
         self.dxcc_window = DXCCWindow(self.actionDXCC)
@@ -793,6 +798,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dxcc_window)
         self.dxcc_window.hide()
         self.dxcc_window.message.connect(self.dockwidget_message)
+        self.dxcc_window.dxcc_trackerwindow_closed.connect(self.launch_dxcc_window)
 
         self.show_splash_msg("Setting up ZoneWindow.")
         self.zone_window = ZoneWindow(self.actionZone)
@@ -802,6 +808,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.zone_window)
         self.zone_window.hide()
         self.zone_window.message.connect(self.dockwidget_message)
+        self.zone_window.zone_trackerwindow_closed.connect(self.launch_zone_window)
 
         self.show_splash_msg("Setting up RotatorWindow.")
         self.rotator_window = RotatorWindow(
@@ -817,6 +824,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotator_window.hide()
         self.rotator_window.message.connect(self.dockwidget_message)
         self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
+        self.rotator_window.rotatorwindow_closed.connect(self.launch_rotator_window)
 
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow(self.actionVFO)
@@ -825,6 +833,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
+        self.vfo_window.vfowindow_closed.connect(self.launch_vfo)
 
         self.show_splash_msg("Setting up LogWindow.")
         self.log_window = LogWindow(self.actionLog_Window)
@@ -834,6 +843,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
         self.log_window.hide()
         self.log_window.message.connect(self.dockwidget_message)
+        self.log_window.logwindow_closed.connect(self.launch_log_window)
 
         self.clearinputs()
         self.show_splash_msg("Loading contest.")
@@ -2382,7 +2392,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resolve_dirty_records()
 
     def launch_log_window(self) -> None:
-        """Launch the log window"""
+        """Launch or close the log window"""
         self.pref["logwindow"] = self.actionLog_Window.isChecked()
         self.write_preference()
         if self.actionLog_Window.isChecked():
@@ -2391,7 +2401,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.hide()
 
     def launch_bandmap_window(self) -> None:
-        """Launch the bandmap window"""
+        """Launch or close the bandmap window"""
         self.pref["bandmapwindow"] = self.actionBandmap.isChecked()
         self.write_preference()
         if self.actionBandmap.isChecked():
@@ -2402,7 +2412,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bandmap_window.setActive(False)
 
     def launch_check_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the check window"""
         self.pref["checkwindow"] = self.actionCheck_Window.isChecked()
         self.write_preference()
         if self.actionCheck_Window.isChecked():
@@ -2413,7 +2423,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_window.setActive(False)
 
     def launch_rate_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the rate window"""
         self.pref["ratewindow"] = self.actionRate_Window.isChecked()
         self.write_preference()
         if self.actionRate_Window.isChecked():
@@ -2424,7 +2434,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rate_window.setActive(False)
 
     def launch_stats_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the stats window"""
         self.pref["statisticswindow"] = self.actionStatistics.isChecked()
         self.write_preference()
         if self.actionStatistics.isChecked():
@@ -2436,7 +2446,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statistics_window.setActive(False)
 
     def launch_dxcc_window(self) -> None:
-        """Launch the dxcc window"""
+        """Launch or close the dxcc window"""
         self.pref["dxccwindow"] = self.actionDXCC.isChecked()
         self.write_preference()
         if self.actionDXCC.isChecked():
@@ -2448,7 +2458,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dxcc_window.setActive(False)
 
     def launch_zone_window(self) -> None:
-        """Launch the zone window"""
+        """Launch or close the zone window"""
         self.pref["zonewindow"] = self.actionZone.isChecked()
         self.write_preference()
         if self.actionZone.isChecked():
@@ -2460,7 +2470,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.zone_window.setActive(False)
 
     def launch_rotator_window(self) -> None:
-        """Launch the rotator window"""
+        """Launch or close the rotator window"""
         self.pref["rotatorwindow"] = self.actionRotator.isChecked()
         self.write_preference()
         if self.actionRotator.isChecked():
@@ -2471,7 +2481,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rotator_window.setActive(False)
 
     def launch_vfo(self) -> None:
-        """Launch the VFO window"""
+        """Launch or close the VFO window"""
         self.pref["vfowindow"] = self.actionVFO.isChecked()
         self.write_preference()
         if self.actionVFO.isChecked():
@@ -2480,7 +2490,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.hide()
 
     def launch_chat_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the chat window"""
         self.pref["chatwindow"] = self.actionGroup_Chat.isChecked()
         self.write_preference()
         if self.actionGroup_Chat.isChecked():

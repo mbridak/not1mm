@@ -22,6 +22,7 @@ class ChatWindow(QDockWidget):
     """The stats window. Shows something important."""
 
     message = pyqtSignal(dict)
+    chatwindow_closed = pyqtSignal()
     mycall = ""
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
@@ -92,7 +93,8 @@ class ChatWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
-
+        self.chatwindow_closed.emit()
+        event.accept()
 
 if __name__ == "__main__":
     print("This is not a program.\nTry Again.")

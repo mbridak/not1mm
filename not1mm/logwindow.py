@@ -93,6 +93,8 @@ class LogWindow(QDockWidget):
         21: "UUID",
         22: "Operator",
     }
+    logwindow_closed = pyqtSignal()       
+
 
     def __init__(self, action):
         super().__init__()
@@ -102,7 +104,7 @@ class LogWindow(QDockWidget):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
-
+ 
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
@@ -1114,3 +1116,5 @@ class LogWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.logwindow_closed.emit()
+        event.accept()
