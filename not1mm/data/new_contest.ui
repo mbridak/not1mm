@@ -454,6 +454,11 @@
      </item>
      <item>
       <property name="text">
+       <string>QSO PARTY SN+County</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>RAEM</string>
       </property>
      </item>
