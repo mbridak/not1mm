@@ -24,6 +24,7 @@ class StatsWindow(QDockWidget):
     dbname = None
     pref = {}
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    statisticswindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -201,6 +202,8 @@ class StatsWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.statisticswindow_closed.emit()
+        event.accept()
 
 
 if __name__ == "__main__":

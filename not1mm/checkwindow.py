@@ -49,6 +49,7 @@ class CheckWindow(QDockWidget):
     dxcLayout: QVBoxLayout = None
     qsoLayout: QVBoxLayout = None
     background_colors_cache: Optional[BackgroundColors] = None
+    checkwindow_closed = pyqtSignal()
 
     masterScrollWidget: QWidget = None
 
@@ -274,6 +275,8 @@ class CheckWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.checkwindow_closed.emit()
+        event.accept()
 
 
 class CallLabel(QLabel):

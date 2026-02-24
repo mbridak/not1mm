@@ -33,6 +33,8 @@ class RateWindow(QDockWidget):
     dbname = None
     pref = {}
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    ratewindow_closed = pyqtSignal()
+
 
     def __init__(self, action):
         super().__init__()
@@ -46,6 +48,7 @@ class RateWindow(QDockWidget):
         self.database.current_contest = self.pref.get("contest", 0)
 
         uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.get_run_and_total_qs)
         self.timer.start(10000)
@@ -194,3 +197,5 @@ class RateWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.ratewindow_closed.emit()
+        event.accept()

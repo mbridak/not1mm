@@ -349,6 +349,7 @@ class BandMapWindow(QDockWidget):
     wwv_pattern = (
         r"(\d{2}-\w{3}-\d{4})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s+<(\w+)>"
     )
+    bandmapwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -969,3 +970,5 @@ class BandMapWindow(QDockWidget):
         """Triggered when instance closes."""
         self.close_cluster()
         self.action.setChecked(False)
+        self.bandmapwindow_closed.emit()
+        _event.accept()
