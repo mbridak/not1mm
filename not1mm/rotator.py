@@ -36,6 +36,7 @@ class RotatorWindow(QDockWidget):
     GLOBE_RADIUS: float = 100.0
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
     antennaNeedle: QGraphicsPathItem | None = None
+    rotatorwindow_closed = pyqtSignal()
 
     def __init__(self, action, host: str = "127.0.0.1", port: int = 4533):
         super().__init__()
@@ -370,3 +371,5 @@ class RotatorWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.rotatorwindow_closed.emit()
+        event.accept()
