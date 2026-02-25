@@ -3050,6 +3050,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if (
                 self.contest.name != "ICWC Medium Speed Test"
                 and self.contest.name != "RAEM"
+                and self.contest.name != "QSO_PARTY"
             ):
                 if self.current_mode in ("CW", "RTTY"):
                     self.sent.setText("599")
@@ -3059,6 +3060,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.receive.setText("59")
             else:
                 self.sent.setText("")
+                self.receive.setText("")
         self.callsign.clear()
         self.other_1.clear()
         self.other_2.clear()
@@ -4506,28 +4508,33 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
-        if mode in ("CW", "CW-U", "CW-L", "CWR"):
+        if mode in ("CW", "CW-U", "CW-L", "CWR", "CW-R"):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
-                self.sent.setText("599")
-                self.receive.setText("599")
-                self.read_macros()
                 if self.contest:
-                    if self.contest.name == "ICWC Medium Speed Test":
-                        self.contest.prefill(self)
+                    if self.contest.name != "QSO_PARTY":
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                        self.read_macros()
+                        if self.contest.name == "ICWC Medium Speed Test":
+                            self.contest.prefill(self)
             return
-        if mode == "SSB":
+
+        if mode in ("LSB", "USB", "SSB", "FM", "AM"):
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
-                self.sent.setText("59")
-                self.receive.setText("59")
+                if self.contest and self.contest.name != "QSO_PARTY":
+                    self.sent.setText("59")
+                    self.receive.setText("59")
                 self.read_macros()
             return
-        if mode in ("RTTY", "DIGI-U", "DIGI-L"):
+
+        if mode in ("FT8", "FT4", "RTTY", "PSK31", "FSK441", "MSK144", "JT65", "JT9", "Q65", "PKTUSB", "PKTLSB", "DIGI-U", "DIGI-L"):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                self.sent.setText("599")
-                self.receive.setText("599")
+                if self.contest and self.contest.name != "QSO_PARTY":
+                    self.sent.setText("599")
+                    self.receive.setText("599")
                 self.read_macros()
 
     def get_opon(self) -> None:
