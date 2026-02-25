@@ -2000,7 +2000,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.contest_settings is None:
             return
-
+ 
         self.contest_dialog = NewContest(fsutils.APP_DATA_PATH)
         if self.current_palette:
             self.contest_dialog.setPalette(self.current_palette)
@@ -2012,6 +2012,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
         value = self.contest_settings.get("ContestName").upper().replace("_", " ")
+
         if value == "GENERAL LOGGING":
             value = "General Logging"
         self.refill_dropdown(self.contest_dialog.contest, value)
@@ -3050,14 +3051,22 @@ class MainWindow(QtWidgets.QMainWindow):
             if (
                 self.contest.name != "ICWC Medium Speed Test"
                 and self.contest.name != "RAEM"
-                and self.contest.name != "QSO_PARTY"
+                and self.contest.name != "QSO PARTY SN"
             ):
-                if self.current_mode in ("CW", "RTTY"):
-                    self.sent.setText("599")
-                    self.receive.setText("599")
-                else:
-                    self.sent.setText("59")
-                    self.receive.setText("59")
+                match self.current_mode:
+                    case "LSB"|"USB"|"SSB"|"FM"|"AM":
+                        self.sent.setText("59")
+                        self.receive.setText("59")
+                    case "CW"|"CW-U"|"CW-L"|"CW-R"|"CWR":
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                    case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                    case _:
+                        self.sent.setText("")
+                        self.receive.setText("")
+                # end match
             else:
                 self.sent.setText("")
                 self.receive.setText("")
