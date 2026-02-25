@@ -44,9 +44,9 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "S/N County"
+EXCHANGE_HINT = "County"
 
-name = "QSO_PARTY"
+name = "QSO PARTY SN"
 cabrillo_name = "QSO_PARTY"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
@@ -175,12 +175,8 @@ def points(self):
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    one = int(self.database.fetch_mult_count(1).get("count", 0))
-    two = int(self.database.fetch_mult_count(2).get("count", 0))
-    if rtc is not None:
-        return (two, one)
-
-    return one + two
+    result = int(self.database.fetch_mult_count(1).get("count", 0))
+    return result
 
 
 def show_qso(self):
@@ -211,7 +207,6 @@ def recalculate_mults(self):
     for contact in all_contacts:
 
         contact["IsMultiplier1"] = 0
-        contact["IsMultiplier2"] = 0
 
         time_stamp = contact.get("TS", "")
         county = contact.get("Exchange1", "")
@@ -419,8 +414,6 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                #if themode == "LSB" or themode == "USB":
-                #    themode = "PH"
 
                 match themode:
                     case "LSB"|"USB"|"SSB"|"FM"|"AM":
@@ -442,9 +435,10 @@ def cabrillo(self, file_encoding):
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
-                    f"{str(contact.get('RcvNr', '')).ljust(6)} "
+                    f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('County', '')).ljust(25)}",
+                    f"{str(contact.get('NR', '')).ljust(6)} "
+                    f"{str(contact.get('Exchange1', '')).ljust(15)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
