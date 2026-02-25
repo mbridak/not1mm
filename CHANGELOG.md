@@ -1,7 +1,10 @@
 # Changelog
 
+- [2026-02-25] Merge pull request #504 from ki4mcw/qso_party_rst+county
+- [2026-02-24] Merge pull request #502 from ki4mcw/qso_party_sn+county
+  - Merge pull request #503 from ki4mcw/fix-window-close-pref-update
+- [2026-02-21] Merge pull request #500 from ki4mcw/fix_dupe_indicator
 - [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
-  - Fix crash when there is a / in an editted macro
 - [2026-02-13] Update installation instructions in README
 - [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
   - On Darwin, fix USB device rummaging stall
