@@ -439,13 +439,22 @@ def cabrillo(self, file_encoding):
 
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
+                if contact.get('RoverLocation', ''):
+                    location = f"{contact.get('RoverLocation').ljust(15).upper()}"
+                elif self.contest_settings.get('SentExchange', ''):
+                    location = f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()}"
+                else:
+                    # user did not provide any location info, 
+                    # so insert a placeholder in cabrillo file
+                    location = f"*              "
+
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(6)} "
-                    f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()} "
+                    f"{location} " 
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(6)} "
                     f"{str(contact.get('Exchange1', '')).ljust(15)}",
