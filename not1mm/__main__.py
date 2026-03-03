@@ -55,6 +55,7 @@ from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
+from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.ham_utility import (
@@ -182,6 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contest_dialog = None
     configuration_dialog = None
     opon_dialog = None
+    rove_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state = {}
     worked_list = {}
@@ -2000,7 +2002,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.contest_settings is None:
             return
- 
+
         self.contest_dialog = NewContest(fsutils.APP_DATA_PATH)
         if self.current_palette:
             self.contest_dialog.setPalette(self.current_palette)
@@ -3054,13 +3056,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 and self.contest.name != "QSO PARTY SN"
             ):
                 match self.current_mode:
-                    case "LSB"|"USB"|"SSB"|"FM"|"AM":
+                    case "LSB" | "USB" | "SSB" | "FM" | "AM":
                         self.sent.setText("59")
                         self.receive.setText("59")
-                    case "CW"|"CW-U"|"CW-L"|"CW-R"|"CWR":
+                    case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
                         self.sent.setText("599")
                         self.receive.setText("599")
-                    case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+                    case (
+                        "FT8"
+                        | "FT4"
+                        | "RTTY"
+                        | "PSK31"
+                        | "FSK441"
+                        | "MSK144"
+                        | "JT65"
+                        | "JT9"
+                        | "Q65"
+                        | "PKTUSB"
+                        | "PKTLSB"
+                    ):
                         self.sent.setText("599")
                         self.receive.setText("599")
                     case _:
@@ -3476,13 +3490,16 @@ class MainWindow(QtWidgets.QMainWindow):
         macro_file = str(self.get_macro_filename())
 
         try:
-            with open(macro_file, 'r') as file:
+            with open(macro_file, "r") as file:
                 content = file.read()
             # Perform the replacement
-            new_content = content.replace(f"{rm}|{fkey}|{old_label}|{old_string}", f"{rm}|{fkey}|{new_label}|{new_string}")
+            new_content = content.replace(
+                f"{rm}|{fkey}|{old_label}|{old_string}",
+                f"{rm}|{fkey}|{new_label}|{new_string}",
+            )
 
             # Write the modified content back to the file
-            with open(macro_file, 'w') as file:
+            with open(macro_file, "w") as file:
                 file.write(new_content)
         except Exception as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
@@ -4221,6 +4238,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_opon()
                 self.clearinputs()
                 return
+            if stripped_text == "ROVE":
+                self.get_rover()
+                self.clearinputs()
+                return
             if stripped_text == "HELP":
                 self.show_help_dialog()
                 self.clearinputs()
@@ -4538,13 +4559,43 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.read_macros()
             return
 
-        if mode in ("FT8", "FT4", "RTTY", "PSK31", "FSK441", "MSK144", "JT65", "JT9", "Q65", "PKTUSB", "PKTLSB", "DIGI-U", "DIGI-L"):
+        if mode in (
+            "FT8",
+            "FT4",
+            "RTTY",
+            "PSK31",
+            "FSK441",
+            "MSK144",
+            "JT65",
+            "JT9",
+            "Q65",
+            "PKTUSB",
+            "PKTLSB",
+            "DIGI-U",
+            "DIGI-L",
+        ):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
                 if self.contest and self.contest.name != "QSO_PARTY":
                     self.sent.setText("599")
                     self.receive.setText("599")
                 self.read_macros()
+
+    # TODO
+    def get_rover(self) -> None:
+        self.rover_dialog = Rove(fsutils.APP_DATA_PATH)
+
+        if self.current_palette:
+            self.rover_dialog.setPalette(self.current_palette)
+
+        self.rover_dialog.accepted.connect(self.new_rov)
+        self.rover_dialog.open()
+
+    def new_rov(self):
+        if self.opon_dialog.NewLocation.text():
+            # self.RoverLocation = self.opon_dialog.NewLocation.text().upper()
+            ...
+        self.rover_dialog.close()
 
     def get_opon(self) -> None:
         """
