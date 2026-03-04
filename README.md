@@ -60,6 +60,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-03-03] Merge pull request #506 from ki4mcw/rover-logic
+- [2026-03-02] Add Rove dialog for editing rover location and UI integration
 - [2026-02-25] Merge pull request #504 from ki4mcw/qso_party_rst+county
 - [2026-02-24] Merge pull request #502 from ki4mcw/qso_party_sn+county
   - Merge pull request #503 from ki4mcw/fix-window-close-pref-update
