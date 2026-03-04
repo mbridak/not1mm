@@ -2111,6 +2111,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         """Reset these in case a contest disabled them"""
                         self.other_1.setStyleSheet("text-transform: uppercase;")
                         self.other_2.setStyleSheet("text-transform: uppercase;")
+                        """Reset this too, in case user set it"""
+                        self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
                         self.check_window.database.current_contest = self.pref.get(
                             "contest"
@@ -3166,6 +3168,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
         self.contact["Operator"] = self.current_op
+
+        if self.RoverLocation:
+            self.contact["RoverLocation"] = self.RoverLocation
+        else:
+            self.contact["RoverLocation"] = self.station.get("RoverQTH", "").upper()
+
         self.contact["NetBiosName"] = socket.gethostname()
         self.contact["IsOriginal"] = 1
         self.contact["ID"] = uuid.uuid4().hex
@@ -4542,7 +4550,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
                 if self.contest:
-                    if self.contest.name != "QSO_PARTY":
+                    if self.contest.name != "QSO_PARTY_SN":
                         self.sent.setText("599")
                         self.receive.setText("599")
                         self.read_macros()
@@ -4553,7 +4561,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ("LSB", "USB", "SSB", "FM", "AM"):
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
-                if self.contest and self.contest.name != "QSO_PARTY":
+                if self.contest and self.contest.name != "QSO_PARTY_SN":
                     self.sent.setText("59")
                     self.receive.setText("59")
                 self.read_macros()
@@ -4576,7 +4584,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                if self.contest and self.contest.name != "QSO_PARTY":
+                if self.contest and self.contest.name != "QSO_PARTY_SN":
                     self.sent.setText("599")
                     self.receive.setText("599")
                 self.read_macros()
@@ -4592,9 +4600,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rover_dialog.open()
 
     def new_rov(self):
-        if self.opon_dialog.NewLocation.text():
-            # self.RoverLocation = self.opon_dialog.NewLocation.text().upper()
-            ...
+        if self.rover_dialog.NewLocation.text():
+            self.RoverLocation = self.rover_dialog.NewLocation.text().upper()
+            logger.debug("New RoverLocation: %s", self.RoverLocation) 
         self.rover_dialog.close()
 
     def get_opon(self) -> None:
