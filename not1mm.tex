@@ -5,6 +5,8 @@
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
+\usepackage{makeidx}
+\makeindex
 \title{Not1MM User Manual}
 \author{Mike Bridak K6GTE}
 \date{February 2026}
@@ -21,18 +23,18 @@
 The world's number 1 unfinished contest logger. \textsuperscript{*According to my daughter Corinna.}
 
 \vspace{0.5cm}
-Not1MM's interface is a blatant rip-off of N1MM. It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
+Not1MM's interface is a blatant rip-off of \index{N1MM}N1MM. It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
 \subsection{Not1MM. What is it?}
 Not1MM attempts to be a usable ham/amateur radio contest logger. It's written in Python 3.10+ and uses Qt6 framework for the graphical interface and SQLite for the database.
 \subsection{The Why}
 \textbf{Currently, this exists for my own personal enjoyment}. I recently retired after 35+ years working for 'The Phone Company', GTE → Verizon → Frontier. And being a Gentleman of Leisure, I needed something to do in my free time. I am a casual contester and could not find any contesting software for Linux that I wanted to use. There is \textbf{Tucnak}, available at \emph{HTTP://tucnak.nagano.cz/} which is very robust and mature. It just wasn't for me.
 \subsection{Target Environment}
-The primary target for this application is Linux. It may be able to run on other platforms, BSD and Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
+The primary target for this application is \index{Linux}Linux. It may be able to run on other platforms, \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 \index{Mac}Mac Mini, So I'll probably put more effort into that platform as well.
 \subsection{Current State, or Code Maturity}
 Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 \subsection{Known Issues}
 \begin{itemize}
-    \item Hamlib before 4.6.3 had a problem with sending CW and changing/reading the keying speed.
+    \item \index{HamLib}HamLib before 4.6.3 had a problem with sending CW and changing/reading the keying speed.
     \item wfview before version 2.2 has issues with frequency reporting and CW sending.
 \end{itemize}
 \newpage
@@ -82,6 +84,7 @@ Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately
     \item RSGB 80M CC
     \item SAC CW, SSB
     \item SPDX
+    \item State QSO (limited)
     \item Stew Perry Top band
     \item UK/EI DX
     \item Weekly RTTY
@@ -90,7 +93,7 @@ Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately
 \end{itemize}
 \end{multicols}
 \subsection{Other not so Supported Contests}
-Of note, state QSO parties. I haven't worked any yet. And no one has submitted a PR adding one... So there you go. In the near future I'll probably add California, guess where I live, and the 4 states QSO party.
+Of note, \index{State QSO parties}State QSO parties. A PR has been submitted adding minor support for QSO parties, Mainly logging and Cabrillo\index{Cabrillo} generation, Not scoring or mult tracking.
 \newpage
 \section{Installation}
 This section will hopefully get you started with installing Not1MM.
@@ -107,6 +110,11 @@ Not1MM requires:
 You should install these through your distribution's package manager before continuing.
 \subsection{The Easy and Fast way to install or run the latest version}
 
+\subsubsection{The single line install}
+\begin{verbatim}
+    •curl -LsSf uvx.sh/not1mm/install.sh | sh
+\end{verbatim}
+\subsubsection{The only slightly more involved way}
 Step 1. Visit https://docs.astral.sh/uv/ and install uv.
 
 In short you run this in your terminal:
@@ -179,7 +187,7 @@ in your home directories .bashrc file. Then after logging out and back in you sh
 
 \subsection{Update Your CTY and SCP Files}
 
-Before operating in a contest, you might want to update the CTY and SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
+Before operating in a contest, you might want to update the \index{CTY}CTY and \index{SCP}SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
 \newpage
 \section{Various File Locations}
 
@@ -196,7 +204,7 @@ Otherwise they will be found at \begin{verbatim}yourhome/.config/not1mm\end{verb
 
 \subsection{Why}
 
-The database holds... wait for it... data... I know, shocker right? A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do you Boo.
+The \index{database}database holds... wait for it... data... I know, shocker right? A database can hold one or many contest logs. It also holds the station information, everything shown in the Station Settings dialog. You can have one database for the rest of your life. Filled with hundreds of contests you've logged. Or, you can create a new database to hold just one contest. You do you Boo.
 
 \subsection{The First One is Free}
 
@@ -252,10 +260,8 @@ Edit the parameters of a previously defined contest by selecting it as the curre
 
 \section{Configuration Settings}
 
-To setup CAT control, CW keyer, and callsign lookups
+To setup \index{CAT}CAT control, \index{CW keyer}CW keyer, and \index{callsign lookups}callsign lookups
 select \textbf{File >> Configuration Settings}.
-
-The tabs for groups and N1MM are disabled and are for future expansion.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/configuration_settings.png}
@@ -271,13 +277,13 @@ Choose the sound output device for the voice keyer.
 
 \subsection{CAT Control}
 
-Under the `CAT` tab, you can choose one of the following:
+Under the `CAT`\index{CAT} tab, you can choose one of the following:
 
 \begin{itemize}
 
- \item `rigctld` normally with an IP of `127.0.0.1` and a port of `4532`
+ \item `rigctld`\index{rigctld} normally with an IP of `127.0.0.1` and a port of `4532`
 
- \item `flrig` normally with an IP of `127.0.0.1` and a port of `12345`
+ \item `flrig`\index{FLRig} normally with an IP of `127.0.0.1` and a port of `12345`
 
  \item `None` is always an option (but is it really?).
 \end{itemize}
@@ -289,11 +295,11 @@ A small transceiver icon changes color to indicate the CAT status. Green: Connec
 Under the `CW` tab, there are three options:
 
 \begin{itemize}
- \item `cwdaemon` normally uses IP `127.0.0.1` and port `6789`
+ \item `cwdaemon`\index{cwdaemon} normally uses IP `127.0.0.1` and port `6789`
 
  \item `pywinkeyer` normally uses IP `127.0.0.1` and port `8000`
 
- \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`.
+ \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`\index{rigctld}.
 \end{itemize}
 
 \subsection{Cluster}
@@ -302,11 +308,11 @@ Under the `CW` tab, there are three options:
 \includegraphics[width=0.9\linewidth]{pic/configuration_cluster.png}
 \vspace{0.5cm}
 
-Under the `Cluster` tab you can change the default AR Cluster server, port, and filter settings used for the bandmap window.
+Under the `Cluster`\index{Cluster} tab you can change the default AR\index{AR} Cluster server, port, and filter settings used for the bandmap window.
 
 \subsection{N1MM Packets}
 
-Work has started on N1MM UDP packets. So far just RadioInfo, contactinfo, contactreplace and contactdelete.
+Work has started on N1MM\index{N1MM} UDP\index{UDP} packets. So far just RadioInfo, contactinfo, contactreplace and contactdelete.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/n1mm_packet_config.png}
@@ -315,7 +321,7 @@ Work has started on N1MM UDP packets. So far just RadioInfo, contactinfo, contac
 When entering IP and corresponding Port, connect them with a colon ':' as shown above. You can enter multiple pairs on the same line by separating them with a space ' '.
 
 \subsection{Bands}
-You can define which bands appear in the main window. Those with checkmarks will appear. Those without will not.
+You can define which bands\index{bands} appear in the main window. Those with checkmarks will appear. Those without will not.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configure_bands.png}
@@ -324,17 +330,17 @@ You can define which bands appear in the main window. Those with checkmarks will
 \subsection{Options}
 A variety of features can be enabled in the Options tab:
 \begin{itemize}
-\item Use Enter Sends Message (ESM) and configure its function keys.
-\item Allow the program to access Call History info.
+\item Use Enter Sends Message (ESM)\index{ESM} and configure its function keys.
+\item Allow the program to access Call History\index{Call History} info.
 \item Periodically send XML score to an online scoreboard.
-\item Clear the input fields in S\&P mode when the VFO frequency changes.
+\item Clear the input fields in S\&P mode when the VFO\index{VFO} frequency changes.
 \end{itemize}
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configuration_options.png}
 \vspace{0.5cm}
 
-Three real-time scoreboards are supported:
+Three real-time scoreboards\index{real-time scoreboards} are supported:
 \begin{itemize}
 \item Real Time Contest Server at hamscore.com
 \item Contest Online ScoreBoard at contestonlinescore.com
@@ -343,20 +349,20 @@ Three real-time scoreboards are supported:
 
 \newpage
 \section{Logging Digital Contacts}
-Not1MM listens for WSJT-X UDP traffic on the Multicast address 224.0.0.1:2237. This should work by default with Not1MM. That's good because I'm lazy.\\Not1MM watches for fldigi QSOs by monitoring UDP traffic on 127.0.0.1:9876.
+Not1MM listens for WSJT-X\index{WSJT-X} UDP\index{UDP} traffic on the Multicast\index{Multicast} address 224.0.0.1:2237. This should work by default with Not1MM. That's good because I'm lazy.\\Not1MM watches for fldigi\index{fldigi} QSOs by monitoring UDP traffic on 127.0.0.1:9876.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/fldigi_adif_udp.png}
 \vspace{0.5cm}
 
-The F1--F12 function keys are sent to fldigi via XMLRPC. Fldigi is placed into TX mode, the message is sent, and a $\wedge$r is appended to place it back into RX mode.
+The F1--F12 function keys are sent to fldigi\index{fldigi} via XMLRPC\index{XMLRPC}. Fldigi is placed into TX mode, the message is sent, and a $\wedge$r is appended to place it back into RX mode.
 
-Unlike WSJT, fldigi needs configuration of some settings. The XMLRPC interface needs to be active. In fldigi's config dialog, go to \textbf{CONTESTS >> General >> CONTEST} and select Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
+Unlike WSJT\index{WSJT}, fldigi\index{fldigi} needs configuration of some settings. The XMLRPC interface needs to be active. In fldigi's config dialog, go to \textbf{CONTESTS >> General >> CONTEST} and select Generic Contest. Make sure the Text Capture Order field says CALL EXCHANGE.
 \newpage
 \section{Operating Multi-Multi}
 
-Work is underway on Multi-Multi contest operations. There is a companion project \textbf{renfield}\\
-\emph{https://github.com/mbridak/renfield} that will be needed for this. The idea is to have a separate slave server running, preferably on another computer that's on the same network as the contesting PCs. This server will handle all the database CRUD operations. It will assign serial numbers, check for duplivate contacts, and generate a Cabrillo file.
+Work is underway on Multi-Multi\index{Multi-Multi} contest operations. There is a companion project \textbf{renfield}\index{renfield}\\
+\emph{https://github.com/mbridak/renfield} that will be needed for this. The idea is to have a separate slave server running, preferably on another computer that's on the same network as the contesting PCs. This server will handle all the database CRUD operations. It will assign serial numbers, check for duplivate contacts, and generate a Cabrillo\index{Cabrillo} file.
 
 \vspace{0.5cm}
 \begin{center}
@@ -374,10 +380,10 @@ In the configuration dialog under the group tab, select Connect to server.
 \end{center}
 \vspace{0.5cm}
 
-One computer needs to be the master station. The master station will tell the renfield server what contest is being run.
+One computer needs to be the master station. The master station will tell the renfield\index{renfield} server what contest is being run.
 
 \subsection{Contest Settings for Multi-Multi}
-In Contest Settings, if the Operator is set to "MULTI-OP" and the Transmitter category is not "ONE" or "SWL", Not1MM will ask the renfield server for serial numbers and dupe checks.
+In Contest Settings, if the Operator is set to "MULTI-OP"\index{MULTI-OP} and the Transmitter category is not "ONE" or "SWL", Not1MM will ask the renfield\index{renfield} server for serial numbers\index{serial numbers} and dupe checks.
 
 \vspace{0.5cm}
 \begin{center}
@@ -390,7 +396,7 @@ In Contest Settings, if the Operator is set to "MULTI-OP" and the Transmitter ca
 \subsection{Sending CW Macros}
 Predefined CW messages can be sent with function keys F1--F12. See the following section on Editing Macro Keys.
 \subsection{Auto CQ}
-Pressing `SHIFT-F1` activates the Auto CQ mode. The program is placed in the Run state and the F1 macro is sent then resent after the Auto CQ delay interval. A visual indicator appears to the upper left of the F1 macro key to alert that Auto CQ is active.  A small progress bar indicates when F1 will fire next.
+Pressing `SHIFT-F1` activates the Auto CQ\index{Auto CQ} mode. The program is placed in the Run state and the F1 macro is sent then resent after the Auto CQ delay interval. A visual indicator appears to the upper left of the F1 macro key to alert that Auto CQ is active.  A small progress bar indicates when F1 will fire next.
 
 \vspace{0.5cm}
 \begin{center}
@@ -404,7 +410,7 @@ The Auto CQ delay interval can be changed in the `Options` tab of the Configurat
 Freeform text is sent by pressing \textbf{CTRL-SHIFT-K}. An entry field appears at the bottom of the window for typing from the keyboard terminal. The text is sent by either pressing \textbf{CTRL-SHIFT-K} or using the Enter key to close the entry field.
 \newpage
 \section{Editing Macro Keys}
-To edit the macro keys, choose \textbf{File >> Edit Macros}. This will open the system default text editor and display the current active macros.   The current operating mode (CW, SSB or RTTY) and contest will automatically select the corresponding macro file. Each contest and mode has its own unique copy of the macros -- these are not global settings. When finished editing, save the file and close the editor.
+To edit the macro\index{macro} keys, choose \textbf{File >> Edit Macros}. This will open the system default text editor and display the current active macros.   The current operating mode (CW, SSB or RTTY) and contest will automatically select the corresponding macro file. Each contest and mode has its own unique copy of the macros -- these are not global settings. When finished editing, save the file and close the editor.
 
 Alternatively, macro files can be directly edited outside the not1mm program. On Linux, individual contest directories are located in `.local/share/not1mm/`. Refer to the \textbf{Data Files} section above.
 
@@ -415,7 +421,7 @@ After editing and saving the macro file, any changes are enabled by toggling bet
 
 The macro instruction set is shown below.
 
-\vspace{0.5cm}
+\vspace{0.5cm}\index{macro}
 \begin{tabular}{| c | p{9cm} |}
     \hline
     \textbf{Macro} & \textbf{Substitution} \\
@@ -456,7 +462,7 @@ The macro instruction set is shown below.
     \hline
     \# & Sends serial number. \\
     \hline
-    \{VOICE1\} - \{VOICE10\} & Uses `rigctld` to send voice macros stored in the radio. \\
+    \{VOICE1\} - \{VOICE10\} & Uses `rigctld`\index{rigctld} to send voice macros stored in the radio. \\
     \hline
     \ RI: & Send Rig specific codes. See Macro control of radio functions. \\
     \hline
@@ -466,32 +472,32 @@ The macro instruction set is shown below.
 
 \subsection{Macro Use with Voice}
 \textbf{{VOICE1}--{VOICE10}}\\
-If you use rigctld and your radio supports it, you can use the macros {VOICE1}, {VOICE2}, etc to send the recorded audio messages stored in the radio.
+If you use rigctld\index{rigctld} and your radio supports it, you can use the macros\index{macros} {VOICE1}, {VOICE2}\index{VOICE}, etc to send the recorded audio messages stored in the radio.
 \subsubsection{Voice macro .wav files}
-The macros used with voice can also linked to .wav files. Specify the filename, but exclude the .wav extension. The filename must be lowercase and enclosed in brackets. For example `[cq]` will play `cq.wav`, `[again]` will play `again.wav`. The .wav files are stored in the data directory.  See \textbf{Various data file locations} above for the location of these data files. For me, the macro `[cq]` will play 
+The macros used with voice can also linked to .wav files\index{wav files}. Specify the filename, but exclude the .wav extension. The filename must be lowercase and enclosed in brackets. For example `[cq]` will play `cq.wav`, `[again]` will play `again.wav`. The .wav files are stored in the data directory.  See \textbf{Various data file locations} above for the location of these data files. For me, the macro `[cq]` will play 
 \begin{verbatim}/home/mbridak/.local/share/not1mm/K6GTE/cq.wav
 \end{verbatim}
 
-\textbf{The default .wav files are not the ones you will want to use. They sound like an idiot.} Use a program like Audacity or similar to record new .wav files in your own voice.
+\textbf{The default .wav files are not the ones you will want to use. They sound like an idiot.}\index{idiot} Use a program like Audacity\index{Audacity} or similar to record new .wav files in your own voice.
 
 NATO phonetic .wav files are also provided for each letter and number. Their use can be illustrated with an example from the CQWW SSB Contest operating from Zone 3. The callsign K5TUX is entered and the following macro key is activated: `{HISCALL} {SNT} {SENTNR}`. The program then sends this sequence of audio phonetics: KILO FIVE TANGO UNIFORM X-RAY FIVE NINE NINE THREE. 
 
 \subsubsection{Macro control of radio functions}
-Macros can also be used to send CAT/CI-V control codes to the radio. To make use of this feature, start the command with the letters "RI" and a colon, followed by the desired command. If the command is ASCII text (for example, for Yaesu radios), just enter the text after "RI:". For binary codes, enter hexadecimal values separated by spaces.
+Macros can also be used to send CAT/CI-V control codes\index{CAT/CI-V} to the radio. To make use of this feature, start the command with the letters "RI" and a colon, followed by the desired command. If the command is ASCII text (for example, for Yaesu radios), just enter the text after "RI:". For binary\index{binary} codes, enter hexadecimal\index{hexadecimal} values separated by spaces.
 
 For example, to enable the auto-notch filter on a Yaesu FT-710, the command would be "RI:BC01;". To do the same on an Icom 7300, the command would be something like "RI:FE FE 94 E0 16 41 01 FD". Refer to the operating manual or online sources for the correct command syntax.
-Note that CAT/CI-V command macros are only available when either FLRig or rigctld (HamLib) are being used for transceiver control.
+Note that CAT/CI-V command macros are only available when either FLRig\index{FLRig} or rigctld\index{rigctld} (HamLib)\index{HamLib} are being used for transceiver control.
 
 \newpage
 \section{cty.dat and QRZ for Distance and Bearing}
 
-When a callsign is entered, a lookup is done in the cty.dat file to identify the country of origin, geographic center, CQ zone, and ITU region. Great circle calculations are then done to determine the heading and distance from the home grid square to the geographic center of the DX station. This information is displayed at the bottom left.
+When a callsign is entered, a lookup\index{lookup} is done in the cty.dat\index{cty.dat} file to identify the country of origin, geographic center, CQ\index{CQ} zone, and ITU\index{ITU} region. Great circle calculations are then done to determine the heading\index{heading} and distance\index{distance} from the home grid\index{grid} square to the geographic center of the DX station. This information is displayed at the bottom left.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/heading_distance.png}
 \vspace{0.5cm}
 
-Next, a request is made to qrz.com for the grid square of the callsign. If there is a response, more accurate distance and bearing numbers are displayed. The `Regional` text is replaced with the station's specific 6-digit grid square as shown below.
+Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsign. If there is a response, more accurate distance\index{distance} and bearing\index{bearing} numbers are displayed. The `Regional`\index{Regional} text is replaced with the station's specific 6-digit grid\index{grid} square as shown below.
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/heading_distance_qrz.png}
@@ -500,11 +506,11 @@ Next, a request is made to qrz.com for the grid square of the callsign. If there
 \section{Other Uses for the Callsign Field}
 \textbf{The SPACE bar must be pressed to enable any of the following functions.}
 \subsection{Frequency}
-\textbf{Frequency} Enter a frequency in kHz. This changes the active logging band. If CAT control is enabled, the specified frequency will change the transceiver VFO.
+\textbf{Frequency}\index{Frequency} Enter a frequency in kHz. This changes the active logging band. If CAT\index{CAT} control is enabled, the specified frequency will change the transceiver VFO\index{VFO}.
 \subsection{Modes}
-\textbf{CW, SSB, RTTY} Sets the mode being logged. If CAT control is enabled, the mode changes on the radio.
+\textbf{CW, SSB, RTTY}\index{CW}\index{SSB}\index{RTTY} Sets the mode being logged. If CAT\index{CAT} control is enabled, the mode\index{mode} changes on the radio.
 \subsection{Change Operator}
-\textbf{OPON} Specify the operator currently logging.\\
+\textbf{OPON}\index{OPON} Specify the operator currently logging.\\
 \\
 \textbf{Important: Press the SPACE bar after making any of the above entries.}
 
@@ -522,15 +528,15 @@ Next, a request is made to qrz.com for the grid square of the callsign. If there
     \hline
     \textbf{Key} & \textbf{Result} \\
     \hline
-    Esc & Stop the cwdaemon from sending Morse characters.\\
+    Esc & Stop the cwdaemon\index{cwdaemon} from sending Morse characters.\\
     \hline
     PgUp & Increase the CW sending speed. \\
     \hline
     PgDown & Decrease the CW sending speed. \\
     \hline
-    Arrow-Up & Jump to the next spot above the current VFO cursor in the bandmap window (CAT Required). \\
+    Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
     \hline
-    Arrow-Down & Jump to the next spot below the current VFO cursor in the bandmap window (CAT Required). \\
+    Arrow-Down & Jump to the next spot below the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
     \hline
     TAB & Move cursor to the right one field. \\
     \hline
@@ -546,7 +552,7 @@ Next, a request is made to qrz.com for the grid square of the callsign. If there
     \hline
     CTRL-M & Highlight Callsign in the bandmap window. \\
     \hline
-    CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT Required). \\
+    CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
     \hline
     CTRL-SHIFT-K & Open CW text input field. \\
     \hline
@@ -564,7 +570,7 @@ Next, a request is made to qrz.com for the grid square of the callsign. If there
     \hline
     ALT-S	& Toggle the Statistics window. \\
     \hline
-    ALT-V	& Toggle the VFO window. \\
+    ALT-V	& Toggle the VFO\index{VFO} window. \\
     \hline
 \end{tabular}
 
@@ -592,7 +598,7 @@ Double-click a cell in the log window to edit its contents. Right-clicking on a 
 \includegraphics[width=0.9\linewidth]{pic/edit_dialog.png}
 \vspace{0.5cm}
 
-You cannot directly edit the multiplier status of a contact. See the next section on recalculating multipliers. When editing a logged callsign, it's a good idea to check if other data such as the WPX field are still valid.
+You cannot directly edit the multiplier\index{multiplier} status of a contact. See the next section on recalculating multipliers. When editing a logged callsign, it's a good idea to check if other data such as the WPX field are still valid.
 
 \newpage
 
@@ -600,19 +606,19 @@ You cannot directly edit the multiplier status of a contact. See the next sectio
 
 \textbf{Window >> Bandmap}`
 
-The bandmap displays spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT is enabled, the bandmap will track with the VFO. This is still a work in progress. 
+The bandmap displays spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress. 
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap.png}
 \vspace{0.5cm}
 
-The VFO frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth if available via CAT.
+The VFO\index{VFO} frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth\index{bandwidth} if available via CAT\index{CAT}.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
 \vspace{0.5cm}
 
-Clicking on a spot sets the VFO and populates the callsign field. Previously worked callsigns are displayed in red. Callsigns marked with CTRL-M are highlighted in yellow. A small icon after the callsign indicates the mode as follows:\\
+Clicking on a spot\index{spot} sets the VFO\index{VFO} and populates the callsign field. Previously worked callsigns are displayed in red. Callsigns marked with CTRL-M are highlighted in yellow. A small icon after the callsign indicates the mode as follows:\\
 
 Primary Modes:
 \begin{itemize}
@@ -630,7 +636,7 @@ Secondary Modes:
     \item[]  [S] SOTA
 \end{itemize}
 
-The icon is followed by the UTC time of the spot. The screenshot below shows CW and FT8 spots on the 20m band.
+The icon is followed by the UTC\index{UTC} time of the spot\index{spot}. The screenshot below shows CW\index{CW} and FT8\index{FT8} spots on the 20m band.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap_icons.png}
@@ -641,7 +647,7 @@ The icon is followed by the UTC time of the spot. The screenshot below shows CW 
 
 \textbf{Window >> Check Partial Window}
 
-As a callsign is entered, the Check Window displays potential matches from the MASTER.SCP file, the local log, and recent telnet cluster spots. The MASTER.SCP column shows candidates with 3 or more matching characters indexed from the start of the callsign string. The local log and telnet columns match character strings of any length. Clicking on any of these candidate callsigns will automatically populate the callsign field.
+As a callsign is entered, the Check Window\index{Check Window} displays potential matches from the MASTER.SCP\index{MASTER.SCP} file, the local log, and recent telnet cluster spots. The MASTER.SCP column shows candidates with 3 or more matching characters indexed from the start of the callsign string. The local log and telnet columns match character strings of any length. Clicking on any of these candidate callsigns will automatically populate the callsign field.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/checkwindow.png}
@@ -650,7 +656,7 @@ As a callsign is entered, the Check Window displays potential matches from the M
 
 \textbf{Window >> Rate Window}
 
-This window contains QSO rates and counts.
+This window contains QSO \index{rates} rates and counts.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rate_window.png}
@@ -658,7 +664,7 @@ This window contains QSO rates and counts.
 \subsection{The DXCC window}
 \textbf{Window >> DXCC}
 
-This window displays a table of worked DXCC entities arranged by band. When optional automatic scrolling is enabled, entering a callsign will scroll to the corresponding DXCC entity prefix.
+This window displays a table of worked DXCC \index{DXCC} entities arranged by band. When optional automatic scrolling is enabled, entering a callsign will scroll to the corresponding DXCC entity prefix.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/dxcc_window.png}
@@ -666,12 +672,13 @@ This window displays a table of worked DXCC entities arranged by band. When opti
 \subsection{The Zone window}
 \textbf{Window >> Zone}
 
-This window functions the same way as the DXCC window, but for CQ or ITU zones. When automatic scrolling is enabled, check the appropriate radio button to select CQ or ITU zones as determined by the DX contest requirements.
+\index{Zone}
+This window functions the same way as the DXCC \index{DXCC} window, but for CQ\index{CQ} or ITU\index{ITU} zones. When automatic scrolling is enabled, check the appropriate radio button to select CQ or ITU zones as determined by the DX contest requirements.
 
 \subsection{The Rotator Window (Work In Progress)}
 \textbf{Window >> Rotator}
 
-The Rotator window is a work in progress. The Rotator window relies on the functionality of the rotctld daemon. It connects to rotctld on address 127.0.0.1 and port 4533. You can change this if needed in the configuration dialog under the rotator tab. If started and there is no connection, you will see this:
+The Rotator\index{Rotator} window is a work in progress. The Rotator window relies on the functionality of the rotctld \index{rotctld} daemon. It connects to rotctld on address 127.0.0.1 and port 4533. You can change this if needed in the configuration dialog under the rotator tab. If started and there is no connection, you will see this:
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rot1.png}
@@ -705,19 +712,19 @@ You can also move the rotator by clicking in the globe where you want the antenn
 
 \subsection{The Remote VFO Window}
 
-When operating a remote station, the transceiver VFO can be controlled using inexpensive hardware in tandem with the Remote VFO window. A description of the hardware can be found at the following link:
+When operating a remote station, the transceiver VFO\index{VFO} can be controlled using inexpensive hardware in tandem with the Remote VFO\index{VFO} window. A description of the hardware can be found at the following link:
 
 \begin{verbatim}
     https://github.com/mbridak/not1mm/blob/master/usb\_vfo\_knob/vfo.md
 \end{verbatim}
 
-Communicate with it using the VFO Window: \textbf{Window >> VFO}
+Communicate with it using the VFO\index{VFO} Window: \textbf{Window >> VFO}
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/vfo.png}
 \newpage
 \section{Cabrillo}
-
+\index{Cabrillo}
 Click on \textbf{File >> Generate Cabrillo}
 
 The file will be placed in your home directory. The name will be in the format of:
@@ -733,17 +740,18 @@ K6GTE\_CANADA-DAY\_2023-09-04\_07-47-05.log
 
 \textbf{File >> Generate ADIF}
 
+\index{ADIF}
 Boom... ADIF
 \begin{verbatim}
 `StationCall`_`ContestName`_`Date`_`Time`.adi
 \end{verbatim}
 
 \section{Recalulate Mults}
-
-The program automatically updates the score as each new entry is logged. There may be a situation where a station has been logged incorrectly. This QSO can be easily edited as described above, but this may add or remove a multiplier. To remedy this and correct the score, a Recalculate Mults function is located in the Misc menu. The Cabrillo/ADIF files must be regenerated.
+\index{Mults}
+The program automatically updates the score as each new entry is logged. There may be a situation where a station has been logged incorrectly. This QSO can be easily edited as described above, but this may add or remove a multiplier. To remedy this and correct the score, a Recalculate Mults function is located in the Misc menu. The Cabrillo\index{Cabrillo}/ADIF\index{ADIF} files must be regenerated.
 \newpage
 \section{ESM}
-
+\index{ESM}
 I caved and started working on ESM or Enter Sends Message. To test it out you can go to \textbf{FILE >> Configuration Settings}
 
 \vspace{0.5cm}
@@ -794,7 +802,7 @@ The contact will be automatically logged once all the needed info is collected a
 \includegraphics[width=0.75\linewidth]{pic/esm_sp_logit.png}
 \newpage
 \section{Call History Files}
-
+\index{Call History files}
 To use Call History files, go to \textbf{FILE >> Configuration Settings}.
 
 \vspace{0.5cm}
@@ -804,6 +812,8 @@ To use Call History files, go to \textbf{FILE >> Configuration Settings}.
 Place a check in the `Use Call History` box. Call history files are very specific to the contest you are working. Example files can be obtained from https://n1mmwp.hamdocs.com/mmfiles/categories/callhistory/? website. They have a searchbox so you can find the contest you are looking for. If you are feeling masocistic, you can craft your own. The general makeup of the file is a header defining the fields to be used, followed by by lines of comma separated data.
 \newpage
 \section{Creating your own Call History files}
+\index{Call History files}
+\index{ADIF}
 You can use \textbf{adif2callhistory} at 
 \emph{https://github.com/mbridak/adif2callhistory} to generate your own call history file from your ADIF files.
 An example file excerpt looks like:
@@ -916,5 +926,5 @@ For the Run exchange macro I'd put '\{SNT\} \# \{EXCH\}'
 
 Note: when completing the "Recd Number and Name" field, place a space between the received serial number and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disabled for this field.)
 
-
+\printindex
 \end{document}
