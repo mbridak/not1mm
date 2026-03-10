@@ -23,6 +23,14 @@
 Not1MM's interface is a blatant ripoff of N1MM. It is NOT N1MM and any problem
 you have with this software should in no way reflect on their software.
 
+### Not1MM is NOT ment for interoperability with N1MM+
+
+I wake up, take my first sip of coffee and am greeted by a lovely heartfelt [message](TomsAMassiveTwat.md) from Tom Wagner.
+So I feel something may need to be clarified. Not1MM is... NOT N1MM neither is it N1MM+ or even N1MMPlus.
+They're not ment to work with each other. It does send N1MM packets, but that's for nodered scoreboards, not Tom's beloved program.
+
+You shouldn't bother Tom or his Team. They be cranky...
+
 ### The What
 
 Not1MM is, in my opinion, a usable amateur radio, or HAM, contest logger. It's
