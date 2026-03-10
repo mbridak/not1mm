@@ -488,6 +488,8 @@ def imp_adif(self):
 
         if q.get("NR"):
             this_contact["NR"] = q.get("NR")
+        elif q.get("SRX_STRING"):
+            this_contact["NR"] = q.get("SRX_STRING")
 
         if q.get("SECT"):
             this_contact["Sect"] = q.get("SECT")
@@ -509,6 +511,8 @@ def imp_adif(self):
 
         if q.get("SENTNR"):
             this_contact["SentNr"] = q.get("SENTNR")
+        elif q.get("STX_STRING"):
+            this_contact["SentNr"] = q.get("STX_STRING")
 
         if q.get("POINTS"):
             this_contact["Points"] = q.get("POINTS")
@@ -679,7 +683,8 @@ def imp_adif(self):
 
     self.progress_dialog.setValue(len(contacts))  # forces close
     # update everything
-    self.log_window.get_log()
+    self.contest.recalculate_mults(self)  # compute Points + IsMultiplier1 first
+    self.log_window.get_log()  # then refresh log display with correct data
 
     if self.actionStatistics.isChecked():
         self.statistics_window.get_run_and_total_qs()
