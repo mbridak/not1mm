@@ -489,6 +489,11 @@
      </item>
      <item>
       <property name="text">
+       <string>RSGB IOTA</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>SAC CW</string>
       </property>
      </item>
