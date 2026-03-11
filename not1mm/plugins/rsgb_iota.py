@@ -132,8 +132,14 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.other_1.text()
+    their_exchange = self.other_2.text().upper()
+    self.contact["NR"] = convert_iota_number(their_exchange)
+    their_exchange = their_exchange.split()
+    if len(their_exchange) == 2:
+        self.contact["NR"] = (
+            f"{their_exchange[0]} {convert_iota_number(their_exchange[1]).replace('-','')}"
+        )
+    self.contact["SentNr"] = self.other_1.text().upper()
 
 
 def predupe(self):
@@ -210,15 +216,15 @@ def show_mults(self):
     # plus the total of different IOTA references contacted on each band on SSB.
     # Island Multi-Op stations may not contact members of their own group for multiplier credit.
 
-    query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
-    result = self.database.exec_sql(query)
-    dxcc_count = result.get("dxcc_count", 0)
+    query = query = (
+        f"select count(DISTINCT(SUBSTR(Nr, INSTR(Nr, ' ') + 1) || ':' || Mode || ':' || Band)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} and INSTR(NR, ' ');"
+    )
 
-    query = f"SELECT COUNT(DISTINCT SUBSTR(NR, LENGTH(NR) - 1)) as code_count FROM DXLOG WHERE ContestNR = {self.pref.get('contest', '1')}  and typeof(NR) = 'text';"
+    # query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
     result = self.database.exec_sql(query)
-    code_count = result.get("code_count", 0)
+    mult_count = result.get("mults", 0)
 
-    return dxcc_count + code_count
+    return mult_count
 
 
 def show_qso(self):
@@ -238,7 +244,7 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * mults
+        return contest_points * (mults + 1)
     return 0
 
 
