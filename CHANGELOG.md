@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-03-11] Add RSGB IOTA and update contest lists in documentation
 - [2026-03-06] Merge pull request #507 from trgosk/feature/fix-adif-import
 - [2026-03-03] Merge pull request #506 from ki4mcw/rover-logic
 - [2026-03-02] Add Rove dialog for editing rover location and UI integration
