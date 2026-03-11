@@ -25,6 +25,7 @@
 - EA RTTY
 - ES OPEN HF
 - ES FIELD DAY HF
+- ES OPEN HF
 - Estonian LL Cup
 - Helvetia
 - IARU Fieldday R1 CW, SSB
@@ -40,8 +41,11 @@
 - RandomGram
 - RAC Canada Day
 - REF CW, SSB
+- RSGB 80M CC
+- RSGB IOTA
 - SAC CW, SSB
 - SPDX
+- State QSO (limited)
 - Stew Perry Topband
 - UK/EI DX
 - Weekly RTTY

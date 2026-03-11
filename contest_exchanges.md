@@ -9,6 +9,7 @@
 | Helvetia | RST + S/N |
 | CQWPX | RST + S/N |
 | UKEI DX | RST + S/N + optional Prov |
+| RSGB IOTA | RST + S/N + optional IOTA |
 | ARI 40 80 | RST + Prov|
 | Canada Day | RST + Prov or S/N |
 | ARRL RTTY RU | RST + Prov or S/N |
