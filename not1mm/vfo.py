@@ -21,7 +21,7 @@ import sys
 
 import serial
 from PyQt6 import QtWidgets, uic
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QPalette
 
@@ -41,6 +41,7 @@ class VfoWindow(QDockWidget):
     current_palette: QPalette | None = None
     device_reconnect: bool = False
     stale: datetime.datetime = datetime.datetime.now()
+    vfowindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -297,3 +298,5 @@ class VfoWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.vfowindow_closed.emit()
+        event.accept()
