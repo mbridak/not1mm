@@ -55,6 +55,7 @@ from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
+from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.ham_utility import (
@@ -182,6 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
     contest_dialog = None
     configuration_dialog = None
     opon_dialog = None
+    rove_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state = {}
     worked_list = {}
@@ -745,6 +747,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
         self.bandmap_window.message.connect(self.dockwidget_message)
         self.bandmap_window.callsignField.setText(self.current_op)
+        self.bandmap_window.bandmapwindow_closed.connect(self.launch_bandmap_window)
 
         self.show_splash_msg("Setting up CheckWindow.")
         self.check_window = CheckWindow(self.actionCheck_Window)
@@ -754,6 +757,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.check_window)
         self.check_window.hide()
         self.check_window.message.connect(self.dockwidget_message)
+        self.check_window.checkwindow_closed.connect(self.launch_check_window)
 
         self.show_splash_msg("Setting up RateWindow.")
         self.rate_window = RateWindow(self.actionRate_Window)
@@ -763,6 +767,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.rate_window)
         self.rate_window.hide()
         self.rate_window.message.connect(self.dockwidget_message)
+        self.rate_window.ratewindow_closed.connect(self.launch_rate_window)
 
         self.show_splash_msg("Setting up StatisticsWindow.")
         self.statistics_window = StatsWindow(self.actionStatistics)
@@ -774,6 +779,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.statistics_window.hide()
         self.statistics_window.message.connect(self.dockwidget_message)
+        self.statistics_window.statisticswindow_closed.connect(self.launch_stats_window)
 
         self.show_splash_msg("Setting up GroupChatWindow.")
         self.chat_window = ChatWindow(self.actionGroup_Chat)
@@ -784,6 +790,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.chat_window.hide()
         self.chat_window.message.connect(self.dockwidget_message)
         self.chat_window.mycall = self.current_op
+        self.chat_window.chatwindow_closed.connect(self.launch_chat_window)
 
         self.show_splash_msg("Setting up DXCCWindow.")
         self.dxcc_window = DXCCWindow(self.actionDXCC)
@@ -793,6 +800,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dxcc_window)
         self.dxcc_window.hide()
         self.dxcc_window.message.connect(self.dockwidget_message)
+        self.dxcc_window.dxcc_trackerwindow_closed.connect(self.launch_dxcc_window)
 
         self.show_splash_msg("Setting up ZoneWindow.")
         self.zone_window = ZoneWindow(self.actionZone)
@@ -802,6 +810,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.zone_window)
         self.zone_window.hide()
         self.zone_window.message.connect(self.dockwidget_message)
+        self.zone_window.zone_trackerwindow_closed.connect(self.launch_zone_window)
 
         self.show_splash_msg("Setting up RotatorWindow.")
         self.rotator_window = RotatorWindow(
@@ -817,6 +826,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotator_window.hide()
         self.rotator_window.message.connect(self.dockwidget_message)
         self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
+        self.rotator_window.rotatorwindow_closed.connect(self.launch_rotator_window)
 
         self.show_splash_msg("Setting up VFOWindow.")
         self.vfo_window = VfoWindow(self.actionVFO)
@@ -825,6 +835,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.setFeatures(dockfeatures)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.vfo_window)
         self.vfo_window.hide()
+        self.vfo_window.vfowindow_closed.connect(self.launch_vfo)
 
         self.show_splash_msg("Setting up LogWindow.")
         self.log_window = LogWindow(self.actionLog_Window)
@@ -834,6 +845,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.log_window)
         self.log_window.hide()
         self.log_window.message.connect(self.dockwidget_message)
+        self.log_window.logwindow_closed.connect(self.launch_log_window)
 
         self.clearinputs()
         self.show_splash_msg("Loading contest.")
@@ -2002,6 +2014,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
         value = self.contest_settings.get("ContestName").upper().replace("_", " ")
+
         if value == "GENERAL LOGGING":
             value = "General Logging"
         self.refill_dropdown(self.contest_dialog.contest, value)
@@ -2098,6 +2111,8 @@ class MainWindow(QtWidgets.QMainWindow):
                         """Reset these in case a contest disabled them"""
                         self.other_1.setStyleSheet("text-transform: uppercase;")
                         self.other_2.setStyleSheet("text-transform: uppercase;")
+                        """Reset this too, in case user set it"""
+                        self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
                         self.check_window.database.current_contest = self.pref.get(
                             "contest"
@@ -2382,7 +2397,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resolve_dirty_records()
 
     def launch_log_window(self) -> None:
-        """Launch the log window"""
+        """Launch or close the log window"""
         self.pref["logwindow"] = self.actionLog_Window.isChecked()
         self.write_preference()
         if self.actionLog_Window.isChecked():
@@ -2391,7 +2406,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.hide()
 
     def launch_bandmap_window(self) -> None:
-        """Launch the bandmap window"""
+        """Launch or close the bandmap window"""
         self.pref["bandmapwindow"] = self.actionBandmap.isChecked()
         self.write_preference()
         if self.actionBandmap.isChecked():
@@ -2402,7 +2417,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bandmap_window.setActive(False)
 
     def launch_check_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the check window"""
         self.pref["checkwindow"] = self.actionCheck_Window.isChecked()
         self.write_preference()
         if self.actionCheck_Window.isChecked():
@@ -2413,7 +2428,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.check_window.setActive(False)
 
     def launch_rate_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the rate window"""
         self.pref["ratewindow"] = self.actionRate_Window.isChecked()
         self.write_preference()
         if self.actionRate_Window.isChecked():
@@ -2424,7 +2439,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rate_window.setActive(False)
 
     def launch_stats_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the stats window"""
         self.pref["statisticswindow"] = self.actionStatistics.isChecked()
         self.write_preference()
         if self.actionStatistics.isChecked():
@@ -2436,7 +2451,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statistics_window.setActive(False)
 
     def launch_dxcc_window(self) -> None:
-        """Launch the dxcc window"""
+        """Launch or close the dxcc window"""
         self.pref["dxccwindow"] = self.actionDXCC.isChecked()
         self.write_preference()
         if self.actionDXCC.isChecked():
@@ -2448,7 +2463,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dxcc_window.setActive(False)
 
     def launch_zone_window(self) -> None:
-        """Launch the zone window"""
+        """Launch or close the zone window"""
         self.pref["zonewindow"] = self.actionZone.isChecked()
         self.write_preference()
         if self.actionZone.isChecked():
@@ -2460,7 +2475,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.zone_window.setActive(False)
 
     def launch_rotator_window(self) -> None:
-        """Launch the rotator window"""
+        """Launch or close the rotator window"""
         self.pref["rotatorwindow"] = self.actionRotator.isChecked()
         self.write_preference()
         if self.actionRotator.isChecked():
@@ -2471,7 +2486,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rotator_window.setActive(False)
 
     def launch_vfo(self) -> None:
-        """Launch the VFO window"""
+        """Launch or close the VFO window"""
         self.pref["vfowindow"] = self.actionVFO.isChecked()
         self.write_preference()
         if self.actionVFO.isChecked():
@@ -2480,7 +2495,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.vfo_window.hide()
 
     def launch_chat_window(self) -> None:
-        """Launch the check window"""
+        """Launch or close the chat window"""
         self.pref["chatwindow"] = self.actionGroup_Chat.isChecked()
         self.write_preference()
         if self.actionGroup_Chat.isChecked():
@@ -3040,15 +3055,37 @@ class MainWindow(QtWidgets.QMainWindow):
             if (
                 self.contest.name != "ICWC Medium Speed Test"
                 and self.contest.name != "RAEM"
+                and self.contest.name != "QSO PARTY SN"
             ):
-                if self.current_mode in ("CW", "RTTY"):
-                    self.sent.setText("599")
-                    self.receive.setText("599")
-                else:
-                    self.sent.setText("59")
-                    self.receive.setText("59")
+                match self.current_mode:
+                    case "LSB" | "USB" | "SSB" | "FM" | "AM":
+                        self.sent.setText("59")
+                        self.receive.setText("59")
+                    case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                    case (
+                        "FT8"
+                        | "FT4"
+                        | "RTTY"
+                        | "PSK31"
+                        | "FSK441"
+                        | "MSK144"
+                        | "JT65"
+                        | "JT9"
+                        | "Q65"
+                        | "PKTUSB"
+                        | "PKTLSB"
+                    ):
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                    case _:
+                        self.sent.setText("")
+                        self.receive.setText("")
+                # end match
             else:
                 self.sent.setText("")
+                self.receive.setText("")
         self.callsign.clear()
         self.other_1.clear()
         self.other_2.clear()
@@ -3131,6 +3168,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
         self.contact["Operator"] = self.current_op
+
+        if self.RoverLocation:
+            self.contact["RoverLocation"] = self.RoverLocation
+        else:
+            self.contact["RoverLocation"] = self.station.get("RoverQTH", "").upper()
+
         self.contact["NetBiosName"] = socket.gethostname()
         self.contact["IsOriginal"] = 1
         self.contact["ID"] = uuid.uuid4().hex
@@ -3455,13 +3498,16 @@ class MainWindow(QtWidgets.QMainWindow):
         macro_file = str(self.get_macro_filename())
 
         try:
-            with open(macro_file, 'r') as file:
+            with open(macro_file, "r") as file:
                 content = file.read()
             # Perform the replacement
-            new_content = content.replace(f"{rm}|{fkey}|{old_label}|{old_string}", f"{rm}|{fkey}|{new_label}|{new_string}")
+            new_content = content.replace(
+                f"{rm}|{fkey}|{old_label}|{old_string}",
+                f"{rm}|{fkey}|{new_label}|{new_string}",
+            )
 
             # Write the modified content back to the file
-            with open(macro_file, 'w') as file:
+            with open(macro_file, "w") as file:
                 file.write(new_content)
         except Exception as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
@@ -4200,6 +4246,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.get_opon()
                 self.clearinputs()
                 return
+            if stripped_text == "ROVE":
+                self.get_rover()
+                self.clearinputs()
+                return
             if stripped_text == "HELP":
                 self.show_help_dialog()
                 self.clearinputs()
@@ -4496,29 +4546,64 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
-        if mode in ("CW", "CW-U", "CW-L", "CWR"):
+        if mode in ("CW", "CW-U", "CW-L", "CWR", "CW-R"):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
-                self.sent.setText("599")
-                self.receive.setText("599")
-                self.read_macros()
                 if self.contest:
-                    if self.contest.name == "ICWC Medium Speed Test":
-                        self.contest.prefill(self)
+                    if self.contest.name != "QSO_PARTY_SN":
+                        self.sent.setText("599")
+                        self.receive.setText("599")
+                        self.read_macros()
+                        if self.contest.name == "ICWC Medium Speed Test":
+                            self.contest.prefill(self)
             return
-        if mode == "SSB":
+
+        if mode in ("LSB", "USB", "SSB", "FM", "AM"):
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
-                self.sent.setText("59")
-                self.receive.setText("59")
+                if self.contest and self.contest.name != "QSO_PARTY_SN":
+                    self.sent.setText("59")
+                    self.receive.setText("59")
                 self.read_macros()
             return
-        if mode in ("RTTY", "DIGI-U", "DIGI-L"):
+
+        if mode in (
+            "FT8",
+            "FT4",
+            "RTTY",
+            "PSK31",
+            "FSK441",
+            "MSK144",
+            "JT65",
+            "JT9",
+            "Q65",
+            "PKTUSB",
+            "PKTLSB",
+            "DIGI-U",
+            "DIGI-L",
+        ):
             if self.current_mode != "RTTY":
                 self.current_mode = "RTTY"
-                self.sent.setText("599")
-                self.receive.setText("599")
+                if self.contest and self.contest.name != "QSO_PARTY_SN":
+                    self.sent.setText("599")
+                    self.receive.setText("599")
                 self.read_macros()
+
+    # TODO
+    def get_rover(self) -> None:
+        self.rover_dialog = Rove(fsutils.APP_DATA_PATH)
+
+        if self.current_palette:
+            self.rover_dialog.setPalette(self.current_palette)
+
+        self.rover_dialog.accepted.connect(self.new_rov)
+        self.rover_dialog.open()
+
+    def new_rov(self):
+        if self.rover_dialog.NewLocation.text():
+            self.RoverLocation = self.rover_dialog.NewLocation.text().upper()
+            logger.debug("New RoverLocation: %s", self.RoverLocation) 
+        self.rover_dialog.close()
 
     def get_opon(self) -> None:
         """

@@ -30,6 +30,7 @@ class ZoneWindow(QDockWidget):
         6: "10m",
         7: "Total",
     }
+    zone_trackerwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -169,3 +170,5 @@ class ZoneWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.zone_trackerwindow_closed.emit()
+        event.accept()

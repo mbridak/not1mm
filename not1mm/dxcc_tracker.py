@@ -32,6 +32,8 @@ class DXCCWindow(QDockWidget):
         6: "10m",
         7: "Total",
     }
+    dxcc_trackerwindow_closed = pyqtSignal()
+
 
     def __init__(self, action):
         super().__init__()
@@ -196,3 +198,5 @@ class DXCCWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.dxcc_trackerwindow_closed.emit()
+        event.accept()

@@ -1,62 +1,94 @@
-"""ARRL plugin"""
+"""
+Generic State QSO Party (RST + County)
+-------------------------------------------------
+Status:	Active
+Geographic Focus:	US
+Participation:	Worldwide
+Mode:	CW, SSB, Digital
+Bands:	160, 80, 40, 20, 15, 10, 6, 2m, 70cm
+Classes:	Single Op (QRP/Low/High)
+            Multi-Single (QRP/Low/High)
+            Multi-Multi (QRP/Low/High)
+Max operating hours:	Varies
+Max power:	HP: >100 watts
+LP: 100 watts
+QRP: 5 watts
+Exchange:	RST + County/State/Country
+Work stations:	Once per band per mode per location
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
-# pylint: disable=logging-fstring-interpolation
+Scoring:
+Contact via phone: 1 point
+Contact via CW: 2 points
+Contact via digital: 2 points
+
+Multipliers: County, State, or Country (aside from US/Canada) across all modes/bands: 1 point
+
+Score Calculation:	Total score = total QSO points x total mults + bonus points
+E-mail logs to:	(varies)
+Mail logs to:	(varies)
+Find rules at:	(varies)
+Cabrillo name:	QSO_PARTY
+"""
 
 import datetime
 import logging
+import platform
 
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
+
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "State/Province"
+EXCHANGE_HINT = "County"
 
-name = "ARRL DX SSB"
-cabrillo_name = "ARRL-DX-SSB"
-mode = "SSB"  # CW SSB BOTH RTTY
-# columns = [0, 1, 2, 3, 4, 10, 11, 14, 15]
+name = "QSO PARTY RST"
+cabrillo_name = "QSO_PARTY"
+mode = "BOTH"  # CW SSB BOTH RTTY
+
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
+    "Mode",
     "Snt",
     "Rcv",
-    "RcvNr",
+    "Exchange1",
     "M1",
-    "PFX",
     "PTS",
+    "Operator",
 ]
 
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
-
+dupe_type = 4
+# allow for rovers
 
 def init_contest(self):
     """setup plugin"""
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
-    self.next_field = self.other_2
+    self.next_field = self.other_1
 
 
 def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
-    self.field4.show()
-    self.snt_label.setText("SNT")
-    self.field1.setAccessibleName("RST Sent")
-    self.exch_label.setText("Power/State/Province")
-    self.field4.setAccessibleName("Power or state or province")
+    self.field3.show()
+    self.field4.hide()
+    self.snt_label.setText("Sent RST")
+    self.sent.setAccessibleName("Snt")
+    self.rcv_label.setText("Rcv RST")
+    self.receive.setAccessibleName("Rcv")
+    self.other_label.setText("County/State/DX")
+    #self.sent.setText("")
 
 
 def reset_label(self):
@@ -68,20 +100,18 @@ def set_tab_next(self):
     self.tab_next = {
         self.callsign: self.sent,
         self.sent: self.receive,
-        self.receive: self.other_2,
+        self.receive: self.other_1,
         self.other_1: self.callsign,
-        self.other_2: self.callsign,
     }
 
 
 def set_tab_prev(self):
-    """Set TAB Advances"""
+    """Set Shift-TAB Advances"""
     self.tab_prev = {
-        self.callsign: self.other_2,
+        self.callsign: self.other_1,
         self.sent: self.callsign,
         self.receive: self.sent,
         self.other_1: self.receive,
-        self.other_2: self.receive,
     }
 
 
@@ -89,8 +119,21 @@ def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["NR"] = self.other_2.text().upper()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    self.contact["Exchange1"] = self.other_1.text().upper()
+
+    self.contact["IsMultiplier1"] = 0
+    self.contact["IsMultiplier2"] = 0
+
+    county = self.contact.get("Exchange1", "").upper()
+    query = (
+        f"select count(*) as county_count from dxlog where "
+        f"Exchange1 = '{county}' "
+        f"and ContestNR = {self.pref.get('contest', '1')};"
+    )
+    result = self.database.exec_sql(query)
+    count = int(result.get("county_count", 0))
+    if count == 0:
+        self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):
@@ -98,70 +141,49 @@ def predupe(self):
 
 
 def prefill(self):
-    """Fill sentnr"""
-    # if len(self.other_2.text()) == 0:
-    #     self.other_2.setText(str(self.contact.get("ZN", "")))
-    self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
-
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        mycountry = item.get("primary_pfx", "")
-        if mycountry in ["K", "VE"]:
-            query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and CountryPrefix='{self.contact.get('CountryPrefix','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-        else:
-            query = f"select count(*) as prefix_count from dxlog where Band={float(self.contact.get('Band', 0))} and NR='{self.contact.get('NR','')}' and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-
-    result = self.database.exec_sql(query)
-    count = result.get("prefix_count", 0)
-    if count == 0:
-        self.contact["IsMultiplier1"] = 1
-    else:
-        self.contact["IsMultiplier1"] = 0
+    """Fill Sent"""
+    qso_mode = self.contact.get("Mode","")
+    match qso_mode:
+        case "LSB"|"USB"|"SSB"|"FM"|"AM":
+            self.sent.setText("599")
+            self.rcv.setText("599") 
+        case "CW"|"CW-U"|"CW-L"|"CW-R"|"CWR":
+            self.sent.setText("59")
+            self.rcv.setText("59")
+        case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+            self.sent.setText("599")
+            self.rcv.setText("599")
+    # end match 
 
 
 def points(self):
-    """Calc point"""
+    """
+    Scoring:
+    Phone = 1 point
+    CW = 2 points
+    Digital = 2 points
+    """
 
     if self.contact_is_dupe > 0:
         return 0
 
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        mycountry = item.get("primary_pfx", "")
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        entity = item.get("primary_pfx", "")
-        if mycountry in ["K", "VE"]:
-            if entity in ["K", "VE"]:
-                return 0
-            return 3
-        if entity in ["K", "VE"]:
-            return 3
-        return 0
-    return 0
+    qso_mode = self.contact.get("Mode","")
+    match qso_mode:
+        case "LSB"|"USB"|"SSB"|"FM"|"AM":
+            return 1
+        case "CW"|"CW-U"|"CW-L"|"CW-R"|"CWR":
+            return 2
+        case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+            return 2 
+        case _:
+            return 0
+    # end match
 
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    result = self.cty_lookup(self.station.get("Call", ""))
-    _country, _state = 0, 0
-    if result is not None:
-        item = result.get(next(iter(result)))
-        mycountry = item.get("primary_pfx", "")
-        if mycountry in ["K", "VE"]:
-            result = self.database.fetch_arrldx_country_band_count()
-            if result:
-                _country = int(result.get("cb_count", 0))
-        else:
-            result = self.database.fetch_arrldx_state_prov_count()
-            if result:
-                _state = int(result.get("cb_count", 0))
-    if rtc is not None:
-        return (_country, _state)
-    return _country + _state
+    result = int(self.database.fetch_mult_count(1).get("count", 0))
+    return result
 
 
 def show_qso(self):
@@ -185,9 +207,38 @@ def calc_score(self):
     return 0
 
 
+def recalculate_mults(self):
+    """Recalculates multipliers after change in logged qso."""
+
+    all_contacts = self.database.fetch_all_contacts_asc()
+    for contact in all_contacts:
+
+        contact["IsMultiplier1"] = 0
+        contact["IsMultiplier2"] = 0
+
+        time_stamp = contact.get("TS", "")
+        county = contact.get("Exchange1", "")
+        query = (
+            f"select count(*) as county_count from dxlog where  TS < '{time_stamp}' "
+            f"and Exchange1 = '{county.upper()}' "
+            f"and ContestNR = {self.pref.get('contest', '1')};"
+        )
+        result = self.database.exec_sql(query)
+        count = int(result.get("county_count", 0))
+        if count == 0:
+            contact["IsMultiplier1"] = 1
+
+        self.database.change_contact(contact)
+
+    cmd = {}
+    cmd["cmd"] = "UPDATELOG"
+    if self.log_window:
+        self.log_window.msg_from_main(cmd)
+
+
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "ARRL-DX-SSB")
+    gen_adif(self, cabrillo_name, "QSO_PARTY")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -371,20 +422,42 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode == "LSB" or themode == "USB":
-                    themode = "PH"
+                #if themode == "LSB" or themode == "USB":
+                #    themode = "PH"
+
+                match themode:
+                    case "LSB"|"USB"|"SSB"|"FM"|"AM":
+                        themode = "PH"
+                    case "CW"|"CW-U"|"CW-L"|"CWR"|"CW-R":
+                        themode = "CW"
+                    # dont simplify digital mode names
+                    #case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+                    #    themode = "DI"
+                    #case _:
+                    #    mode_test = "OTHER"
+                # end match
+
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+
+                if contact.get('RoverLocation', ''):
+                    location = f"{contact.get('RoverLocation').ljust(15).upper()}"
+                elif self.contest_settings.get('SentExchange', ''):
+                    location = f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()}"
+                else:
+                    # user did not provide any location info, 
+                    # so insert a placeholder in cabrillo file
+                    location = f"*              "
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).upper().ljust(6)} "
+                    f"{str(contact.get('SNT', '')).ljust(6)} "
+                    f"{location} " 
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{str(contact.get('RCV', '')).ljust(6)} "
+                    f"{str(contact.get('Exchange1', '')).ljust(15)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -397,39 +470,22 @@ def cabrillo(self, file_encoding):
         return
 
 
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Exchange1', '')}"
+        )
+    else:
+        self.history_info.setText("")
 
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
-        time_stamp = contact.get("TS", "")
-        # entity = contact.get("CountryPrefix", "")
-        location = self.cty_lookup(self.station.get("Call", ""))
-        if location is not None:
-            item = location.get(next(iter(location)))
-            mycountry = item.get("primary_pfx", "")
-            if mycountry in ["K", "VE"]:
-                query = (
-                    f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
-                    f"and CountryPrefix='{contact.get('CountryPrefix','')}' "
-                    f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-                )
-            else:
-                query = (
-                    f"select count(*) as prefix_count from dxlog where TS < '{time_stamp}' "
-                    f"and NR='{contact.get('NR','')}' "
-                    f"and ContestNR = {self.pref.get('contest', '1')} and points = 3;"
-                )
-        result = self.database.exec_sql(query)
-        logger.debug("contact: %s", contact)
-        logger.debug("query: %s", query)
-        logger.debug("result: %s", result)
-        count = int(result.get("prefix_count", 1))
-        if count == 0 and contact.get("Points", 0) == 3:
-            contact["IsMultiplier1"] = 1
-        else:
-            contact["IsMultiplier1"] = 0
-        self.database.change_contact(contact)
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    print(f"{result=}")
+    if result:
+        self.history_info.setText(f"{result.get('Exchange1','')}")
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -483,8 +539,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
+        elif self.current_widget == "other_1":
+            if self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -505,8 +561,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
+        elif self.current_widget == "other_1":
+            if self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -524,44 +580,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
 
 def get_mults(self):
-    """"""
-
-    mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
-    return mults
+    """Get mults for RTC XML"""
 
 
 def just_points(self):
-    """"""
-    result = self.database.fetch_points()
-    if result is not None:
-        score = result.get("Points", "0")
-        if score is None:
-            score = "0"
-        return int(score)
-    return 0
-
-
-#!!Order!!,Call,Name,State,Power,UserText,
-
-
-def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('State', '')}, {result.get('Power', '')}, {result.get('UserText','...')}"
-        )
-    else:
-        self.history_info.setText("")
-
-
-def check_call_history(self):
-    """"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText','')}")
-        if self.other_2.text() == "":
-            if result.get("State", ""):
-                self.other_2.setText(f"{result.get('State', '')}")
-            if result.get("Power", ""):
-                self.other_2.setText(f"{result.get('Power', '')}")
+    """Get points for RTC XML"""

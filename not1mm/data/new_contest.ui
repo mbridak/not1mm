@@ -452,6 +452,16 @@
        <string>PHONE WEEKLY TEST</string>
       </property>
      </item>
+     <item> 
+      <property name="text">
+       <string>QSO PARTY RST</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>QSO PARTY SN</string>
+      </property>
+     </item>
      <item>
       <property name="text">
        <string>RAEM</string>

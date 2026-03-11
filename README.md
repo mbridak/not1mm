@@ -23,6 +23,14 @@
 Not1MM's interface is a blatant ripoff of N1MM. It is NOT N1MM and any problem
 you have with this software should in no way reflect on their software.
 
+### Not1MM is NOT ment for interoperability with N1MM+
+
+I wake up, take my first sip of coffee and am greeted by a lovely heartfelt [message](TomsAMassiveTwat.md) from Tom Wagner.
+So I feel something may need to be clarified. Not1MM is... NOT N1MM neither is it N1MM+ or even N1MMPlus.
+They're not ment to work with each other. It does send N1MM packets, but that's for nodered scoreboards, not Tom's beloved program.
+
+You shouldn't bother Tom or his Team. They be cranky...
+
 ### The What
 
 Not1MM is, in my opinion, a usable amateur radio, or HAM, contest logger. It's
@@ -60,12 +68,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
-  - Fix crash when there is a / in an editted macro
-- [2026-02-13] Update installation instructions in README
-- [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
-  - On Darwin, fix USB device rummaging stall
-- [2026-02-04] Add space weather command handling and update UI title
+- [2026-03-06] Merge pull request #507 from trgosk/feature/fix-adif-import
+- [2026-03-03] Merge pull request #506 from ki4mcw/rover-logic
+- [2026-03-02] Add Rove dialog for editing rover location and UI integration
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
