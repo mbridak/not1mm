@@ -47,5 +47,19 @@ I have received your message.
 
 Cheers, Mike K6GTE
 ```
+
 I may have overreacted... Na.
- 
+
+```text
+Date: Wed, 11 Mar 2026 10:02:52 -0400
+From: Tom <n1mmtomwagner@gmail.com>
+To: Michael Bridak <michael.bridak@gmail.com>
+Subject: Re:
+
+Sorry for my over the top email.
+
+Some of my users implied that you were connecting to N1MM to send data. 
+Since you aren't, there is no issue.
+
+Tom - N1MM
+```
