@@ -143,8 +143,6 @@ def predupe(self):
 def prefill(self):
     """Fill sentnr"""
     exch = str(self.contest_settings.get("SentExchange", 0))
-    # result = self.database.get_serial()
-    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     serial_nr = str(self.current_sn).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
@@ -155,97 +153,62 @@ def prefill(self):
 def points(self):
     """Calc point"""
 
-    # UK/EI stations contacting :
-    # UK/EI/Europe 80m, 40m - 4 points 20m, 15m, 10m - 2 points
-    # DX (Outside Europe) 80m, 40m - 8 points 20m, 15m, 10m - 4 points
+    # Island Stations contacting
+    # World Stations: 5 points.
+    # Island Stations having the same IOTA reference : 5 points.
+    # other Island Stations: 15 points.
 
-    # Note : For UK/EI stations only, all QSOs will score double points between the hours of 0100z and 0459z.
+    # World Stations contacting
+    # World Stations: 2 points.
+    # Island Stations: 15 points.
 
-    # European stations contacting :
-    # UK/EI 80m, 40m - 4 points 20m, 15m, 10m - 2 points
-    # Europe 80m, 40m - 2 points 20m, 15m, 10m - 1 points
-    # DX (Outside Europe) 80m, 40m - 4 points 20m, 15m, 10m - 2 points
-
-    # DX (Outside Europe) contacting :
-    # UK/EI 80m, 40m - 8 points 20m, 15m, 10m - 4 points
-    # Europe 80m, 40m - 4 points 20m, 15m, 10m - 2 points
-    # DX (Outside Europe) 80m, 40m - 2 points 20m, 15m, 10m - 1 points
+    # The Total Score is the total of QSO points on all bands added together, multiplied by the total of multipliers on all bands added together.
 
     # f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
 
-    # if self.contact_is_dupe > 0:
-    #     return 0
+    if self.contact_is_dupe > 0:
+        return 0
 
-    # myprimary_pfx = ""
-    # # mycountry = ""
-    # mycontinent = ""
-    # hisprimary_pfx = ""
-    # # hiscountry = ""
-    # hiscontinent = ""
+    # Am I a world station.
+    im_island = False
+    my_ref = ""
+    theyre_island = False
+    their_ref = ""
 
-    # result = self.cty_lookup(self.station.get("Call", ""))
-    # if result is not None:
-    #     item = result.get(next(iter(result)))
-    #     myprimary_pfx = item.get("primary_pfx", "")
-    #     # mycountry = item.get("entity", "")
-    #     mycontinent = item.get("continent", "")
+    my_exchange = str(self.contest_settings.get("SentExchange", 0))
+    my_exchange = my_exchange.split()
+    if len(my_exchange) == 2:
+        im_island = True
+        my_ref = convert_iota_number(my_exchange[1])
 
-    # result = self.cty_lookup(self.contact.get("Call", ""))
-    # if result is not None:
-    #     item = result.get(next(iter(result)))
-    #     hisprimary_pfx = item.get("primary_pfx", "")
-    #     # hiscountry = item.get("entity", "")
-    #     hiscontinent = item.get("continent", "")
+    their_exchange = self.other_2.text().upper()
+    their_exchange = their_exchange.split()
+    if len(their_exchange) == 2:
+        theyre_island = True
+        their_ref = convert_iota_number(their_exchange[1])
 
-    # st = 100
-    # et = 459
-    # zt = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[11:16]
-    # ct = int(zt[0:2]) * 100 + int(zt[3:5])
-    # double_window = st <= ct <= et
-
-    # # UK/EI stations:
-    # if myprimary_pfx in ukei_pfx:
-    #     if hiscontinent == "EU":
-    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
-    #             return 4 + (4 * double_window)
-    #         return 2 + (2 * double_window)
-    #     if self.contact.get("Band", 0) in ["3.5", "7"]:
-    #         return 8 + (8 * double_window)
-    #     return 4 + (4 * double_window)
-
-    # # European stations:
-    # if mycontinent == "EU":
-    #     if hisprimary_pfx in ukei_pfx:
-    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
-    #             return 4
-    #         return 2
-    #     elif hiscontinent == "EU":
-    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
-    #             return 2
-    #         return 1
-    #     if self.contact.get("Band", 0) in ["3.5", "7"]:
-    #         return 4
-    #     return 2
-
-    # # DX (Outside Europe)
-    # if mycontinent != "EU":
-    #     if hisprimary_pfx in ukei_pfx:
-    #         if self.contact.get("Band", "") in ["3.5", "7"]:
-    #             return 8
-    #         return 4
-    #     elif hiscontinent == "EU":
-    #         if self.contact.get("Band", "") in ["3.5", "7"]:
-    #             return 4
-    #         return 2
-    #     if self.contact.get("Band", "") in ["3.5", "7"]:
-    #         return 2
-    #     return 1
+    if im_island:
+        if theyre_island:
+            if my_ref == their_ref:
+                return 5
+            else:
+                return 15
+        else:
+            return 5
+    else:
+        if theyre_island:
+            return 15
+        else:
+            return 2
 
     return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
+    # Multiplier. The multiplier is the total of different IOTA references contacted on each band on CW,
+    # plus the total of different IOTA references contacted on each band on SSB.
+    # Island Multi-Op stations may not contact members of their own group for multiplier credit.
 
     query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
     result = self.database.exec_sql(query)
@@ -297,8 +260,9 @@ def convert_iota_number(iota: str) -> str:
     """
     converts an IOTA reference string to the correct format for cabrillo log.
     """
-    if len(iota) >= 5 and iota[-3:].isdigit() and iota[:-3].isalpha():
-        return f"{iota[:-3]}-{iota[-3:]}"
+    if len(iota) >= 3 and iota[:2].isalpha and iota[2:].isdigit():
+        return f"{iota[:2].upper()}-{iota[2:].zfill(3)}"
+
     return iota
 
 
