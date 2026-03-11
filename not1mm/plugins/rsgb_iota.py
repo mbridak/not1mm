@@ -53,8 +53,8 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "# or # And Dist"
-SOAPBOX_HINT = """For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
+EXCHANGE_HINT = "# or # And IOTA number"
+SOAPBOX_HINT = """For the Run exchange macro I’d put ’{SNT} {SENTNR}’"""
 
 name = "RSGB-IOTA"
 cabrillo_name = "RSGB-IOTA"
@@ -173,73 +173,73 @@ def points(self):
 
     # f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
 
-    if self.contact_is_dupe > 0:
-        return 0
+    # if self.contact_is_dupe > 0:
+    #     return 0
 
-    myprimary_pfx = ""
-    # mycountry = ""
-    mycontinent = ""
-    hisprimary_pfx = ""
-    # hiscountry = ""
-    hiscontinent = ""
+    # myprimary_pfx = ""
+    # # mycountry = ""
+    # mycontinent = ""
+    # hisprimary_pfx = ""
+    # # hiscountry = ""
+    # hiscontinent = ""
 
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        myprimary_pfx = item.get("primary_pfx", "")
-        # mycountry = item.get("entity", "")
-        mycontinent = item.get("continent", "")
+    # result = self.cty_lookup(self.station.get("Call", ""))
+    # if result is not None:
+    #     item = result.get(next(iter(result)))
+    #     myprimary_pfx = item.get("primary_pfx", "")
+    #     # mycountry = item.get("entity", "")
+    #     mycontinent = item.get("continent", "")
 
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        hisprimary_pfx = item.get("primary_pfx", "")
-        # hiscountry = item.get("entity", "")
-        hiscontinent = item.get("continent", "")
+    # result = self.cty_lookup(self.contact.get("Call", ""))
+    # if result is not None:
+    #     item = result.get(next(iter(result)))
+    #     hisprimary_pfx = item.get("primary_pfx", "")
+    #     # hiscountry = item.get("entity", "")
+    #     hiscontinent = item.get("continent", "")
 
-    st = 100
-    et = 459
-    zt = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[11:16]
-    ct = int(zt[0:2]) * 100 + int(zt[3:5])
-    double_window = st <= ct <= et
+    # st = 100
+    # et = 459
+    # zt = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[11:16]
+    # ct = int(zt[0:2]) * 100 + int(zt[3:5])
+    # double_window = st <= ct <= et
 
-    # UK/EI stations:
-    if myprimary_pfx in ukei_pfx:
-        if hiscontinent == "EU":
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
-                return 4 + (4 * double_window)
-            return 2 + (2 * double_window)
-        if self.contact.get("Band", 0) in ["3.5", "7"]:
-            return 8 + (8 * double_window)
-        return 4 + (4 * double_window)
+    # # UK/EI stations:
+    # if myprimary_pfx in ukei_pfx:
+    #     if hiscontinent == "EU":
+    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
+    #             return 4 + (4 * double_window)
+    #         return 2 + (2 * double_window)
+    #     if self.contact.get("Band", 0) in ["3.5", "7"]:
+    #         return 8 + (8 * double_window)
+    #     return 4 + (4 * double_window)
 
-    # European stations:
-    if mycontinent == "EU":
-        if hisprimary_pfx in ukei_pfx:
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
-                return 4
-            return 2
-        elif hiscontinent == "EU":
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
-                return 2
-            return 1
-        if self.contact.get("Band", 0) in ["3.5", "7"]:
-            return 4
-        return 2
+    # # European stations:
+    # if mycontinent == "EU":
+    #     if hisprimary_pfx in ukei_pfx:
+    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
+    #             return 4
+    #         return 2
+    #     elif hiscontinent == "EU":
+    #         if self.contact.get("Band", 0) in ["3.5", "7"]:
+    #             return 2
+    #         return 1
+    #     if self.contact.get("Band", 0) in ["3.5", "7"]:
+    #         return 4
+    #     return 2
 
-    # DX (Outside Europe)
-    if mycontinent != "EU":
-        if hisprimary_pfx in ukei_pfx:
-            if self.contact.get("Band", "") in ["3.5", "7"]:
-                return 8
-            return 4
-        elif hiscontinent == "EU":
-            if self.contact.get("Band", "") in ["3.5", "7"]:
-                return 4
-            return 2
-        if self.contact.get("Band", "") in ["3.5", "7"]:
-            return 2
-        return 1
+    # # DX (Outside Europe)
+    # if mycontinent != "EU":
+    #     if hisprimary_pfx in ukei_pfx:
+    #         if self.contact.get("Band", "") in ["3.5", "7"]:
+    #             return 8
+    #         return 4
+    #     elif hiscontinent == "EU":
+    #         if self.contact.get("Band", "") in ["3.5", "7"]:
+    #             return 4
+    #         return 2
+    #     if self.contact.get("Band", "") in ["3.5", "7"]:
+    #         return 2
+    #     return 1
 
     return 0
 
@@ -291,6 +291,15 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
         end=ending,
         file=file_descriptor,
     )
+
+
+def convert_iota_number(iota: str) -> str:
+    """
+    converts an IOTA reference string to the correct format for cabrillo log.
+    """
+    if len(iota) >= 5 and iota[-3:].isdigit() and iota[:-3].isalpha():
+        return f"{iota[:-3]}-{iota[-3:]}"
+    return iota
 
 
 def cabrillo(self, file_encoding):
@@ -473,18 +482,18 @@ def cabrillo(self, file_encoding):
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 sentnr = str(contact.get("SentNr", "")).upper().split()
                 if len(sentnr) == 2:
-                    sentnr = sentnr[0].zfill(3) + " " + sentnr[1]
+                    sentnr = sentnr[0].zfill(4) + " " + convert_iota_number(sentnr[1])
                 else:
-                    sentnr = sentnr[0].zfill(3) + " --"
+                    sentnr = sentnr[0].zfill(4) + " ------"
 
                 nr = str(contact.get("NR", "")).upper().split()
                 if len(nr) == 2:
-                    nr = nr[0].zfill(3) + " " + nr[1]
+                    nr = nr[0].zfill(4) + " " + convert_iota_number(nr[1])
                 else:
                     if nr[0][-2:].isalpha():
-                        nr = nr[0][:-2].zfill(3) + " " + nr[0][-2:]
+                        nr = nr[0][:-2].zfill(4) + " " + nr[0][-2:]
                     else:
-                        nr = nr[0].zfill(3) + " --"
+                        nr = nr[0].zfill(4) + " ------"
 
                 output_cabrillo_line(
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
