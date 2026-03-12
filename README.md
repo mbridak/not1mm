@@ -103,6 +103,7 @@ I've nuked 90% of the README.md and moved it to a LaTeX file. So now you can get
 
 A quick feature list, See the user manual for more details.
 
+- 45+ [supported contests](Working_Contests.md)
 - Lookup, QRZ and HamQTH
 - CAT Control, rigctld and flrig
 - CW Keyer Interface, winkeyer and cwdaemon
