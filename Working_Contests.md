@@ -20,6 +20,7 @@
 - CWOps CWT, CWO
 - DARC Xmas
 - DARC VHF
+- Dutch PACC
 - EA Majistad CW
 - EA Majistad SSB
 - EA RTTY
