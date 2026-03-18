@@ -214,6 +214,11 @@
      </item>
      <item>
       <property name="text">
+       <string>AGCW QRP</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ARI 40 80</string>
       </property>
      </item>

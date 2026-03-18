@@ -2739,7 +2739,7 @@ class MainWindow(QtWidgets.QMainWindow):
         modifier = event.modifiers()
 
         if (
-            event.key() == Qt.Key.Key_Equal
+            event.key() in [Qt.Key.Key_Equal, Qt.Key.Key_L]
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):
             self.save_contact()
@@ -4602,7 +4602,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def new_rov(self):
         if self.rover_dialog.NewLocation.text():
             self.RoverLocation = self.rover_dialog.NewLocation.text().upper()
-            logger.debug("New RoverLocation: %s", self.RoverLocation) 
+            logger.debug("New RoverLocation: %s", self.RoverLocation)
         self.rover_dialog.close()
 
     def get_opon(self) -> None:
