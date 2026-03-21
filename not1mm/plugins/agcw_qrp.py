@@ -180,7 +180,7 @@ def interface(self):
     self.other_label.setText("Sent")
     self.other_1.setAccessibleName("Sent")
     self.exch_label.setText("SN Pwr MbrNr")
-    self.other_2.setAccessibleName("SN  MemberNr")
+    self.other_2.setAccessibleName("Serial Number Power Class Member Number")
 
 
 def reset_label(self):
@@ -217,7 +217,9 @@ def set_contact_vars(self):
     """
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text().upper()
+    self.contact["SentNr"] = self.other_1.text().upper() + self.contest_settings.get(
+        "SentExchange", "xxx xxx"
+    ).strip("#")
     self.contact["NR"] = self.other_2.text().upper()
 
     self.contact["IsMultiplier1"] = 0
