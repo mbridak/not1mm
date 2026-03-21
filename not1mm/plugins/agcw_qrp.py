@@ -27,11 +27,11 @@ Exchange:   RST+ fortlaufende 3-stellige QSO-Nummer (ab 001) Klasse AGCW-Nummer.
 
 Work stations:	Once per band
 
-QSO Points:	QRO <–> QRO: 0 Punkte
-            QRO <–> QRP, MP, VLP: 2 Punkte
-            MP <–> MP, QRP, VLP: 2 Punkte
-            QRP <–> QRP, VLP: 3 Punkte
-            VLP <–> VLP: 3 Punkte1 point per QSO
+QSO Points:	QRO <–> QRO: 0 Points
+            QRO <–> QRP, MP, VLP: 2 Points
+            MP <–> MP, QRP, VLP: 2 Points
+            QRP <–> QRP, VLP: 3 Points
+            VLP <–> VLP: 3 Points
 
 Multipliers:	QSO with Member  once per band
 
@@ -131,8 +131,12 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "# pwr_class out of {VLP, QRP, MP, QRO} AGCW-MemberNr/NM"
-SOAPBOX_HINT = """For the Run exchange macro I’d put ’{SNT} {SENTNR}’"""
+EXCHANGE_HINT = "# pwr_class MemberNr"
+SOAPBOX_HINT = """
+Power classes are {VLP, QRP, MP, QRO}
+MemberNr is AGCW-MemberNr or NM for Non Member.
+
+For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
 
 
 name = "AGCW QRP"
@@ -281,10 +285,14 @@ def points(self):
     """
     from contest rules:
     QSO Points:
-            QRO <–> QRO: 0 Punkte
-            QRO <–> QRP, MP, VLP: 2 Punkte
-            MP <–> MP, QRP, VLP: 2 Punkte
-            QRP <–> QRP, VLP: 3 Punkte
+            QRO <–> QRO: 0 Points
+
+            QRO <–> QRP, MP, VLP: 2 Points
+
+            MP <–> MP, QRP, VLP: 2 Points
+
+            QRP <–> QRP, VLP: 3 Points
+
             VLP <–> VLP: 3 Punkte1 point per QSO
 
     """
@@ -314,44 +322,6 @@ def points(self):
     if mypowerclass == "High" and pwr_class == QRO:
         pts = 0
     return pts
-    """
-    ust incase the cty lookup fails
-    my_country = None
-    my_continent = None
-    their_continent = None
-    their_country = None
-
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        my_country = item.get("entity", "")
-        my_continent = item.get("continent", "")
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        their_country = item.get("entity", "")
-        their_continent = item.get("continent", "")
-
-    if my_country == "France":
-        if their_country == "France":
-            if my_continent == their_continent:
-                return 6
-            else:
-                return 15
-        else:
-            if my_continent == their_continent:
-                return 1
-            else:
-                return 2
-    else:
-        if their_country == "France":
-            if their_continent == my_continent:
-                return 1
-            else:
-                return 3
-
-    return 0
-    """
 
 
 def show_mults(self, rtc=None):
