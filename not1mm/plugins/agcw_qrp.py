@@ -120,6 +120,7 @@ Publication of the claimed scores will be announced promptly after the deadline.
 import datetime
 import logging
 import platform
+import re
 
 from pathlib import Path
 
@@ -220,7 +221,7 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.other_1.text().upper() + self.contest_settings.get(
         "SentExchange", "xxx xxx"
     ).strip("#")
-    self.contact["NR"] = self.other_2.text().upper()
+    self.contact["NR"] = self.other_2.text().upper().replace(" ", "/")
 
     self.contact["IsMultiplier1"] = 0
     self.contact["IsMultiplier2"] = 0
@@ -251,8 +252,6 @@ def prefill(self):
     """Fill SentNR"""
     sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
     if (len(sent_sxchange_setting) > 0) and (sent_sxchange_setting.find("#") >= 0):
-        # result = self.database.get_serial()
-        # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
         if self.current_sn is not None:
             serial_nr = str(self.current_sn).zfill(3)
         if serial_nr == "None":
@@ -261,9 +260,6 @@ def prefill(self):
             self.other_1.setText(serial_nr)
     else:
         self.other_1.setText(sent_sxchange_setting)
-
-
-import re
 
 
 def received_fields(self, r_nr):
@@ -681,13 +677,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            elif self.other_2.text().isnumeric():
+            else:
                 self.make_button_green(self.esm_dict["QRZ"])
                 buttons_to_send.append(self.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
-            else:
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
@@ -706,13 +699,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            elif self.other_2.text().isnumeric():
+            else:
                 self.make_button_green(self.esm_dict["EXCH"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
                 buttons_to_send.append("LOGIT")
-            else:
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
 
         if with_enter is True and bool(len(buttons_to_send)):
             for button in buttons_to_send:
