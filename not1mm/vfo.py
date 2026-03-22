@@ -20,6 +20,8 @@ from json import loads
 import sys
 
 import serial
+from serial.tools.list_ports_common import ListPortInfo
+
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
@@ -27,6 +29,7 @@ from PyQt6.QtGui import QPalette
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
+from not1mm import serial_devices
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -59,7 +62,7 @@ class VfoWindow(QDockWidget):
         self.poll_rig_timer.timeout.connect(self.poll_radio)
         self.poll_rig_timer.start(500)
         self.visibilityChanged.connect(self.window_state_changed)
-        self.usb_devices = set()
+        self.serial_ports = set()
 
     def load_pref(self) -> None:
         """
@@ -100,58 +103,26 @@ class VfoWindow(QDockWidget):
             )
             self.timer.start(100)
 
-    def discover_device(self) -> str | None:
-        """
-        Poll all serial devices looking for correct one.
+    def discover_device(self) -> ListPortInfo | None:
+        """Return the serial port device that is the vfoknob."""
+        serial_ports = serial_devices.get_serial_device_ports()
 
-        Rummage thru /dev/serial/by-id/ looking for Raspberry Picos
-        Ask each if it's a vfoknob.
-        Return the device ID if it is, or None if not found.
-        """
+        if serial_ports is None:  # or len(serial_ports) == 0:
+            return None
 
-        devices: list[str] | None = self.get_devices()
-        data: bytes | None = None
-        if devices is None:
-            return None
-        if sys.platform == "darwin":
-            usb_devices = set([device for device in devices if "usb" in device])
-            new_usb_devices = usb_devices - self.usb_devices
-            self.usb_devices = usb_devices
-            if len(new_usb_devices) == 0:
-                return None
-            logger.debug(f"new_usb_devices: {new_usb_devices}")
-            for device in new_usb_devices:
-                try:
-                    with serial.Serial("/dev/" + device, 115200) as ser:
-                        logger.debug(f"trying usb device: {device}")
-                        ser.timeout = 1.0
-                        ser.write(b"whatareyou\r")
-                        data = ser.readline()
-                except serial.serialutil.SerialException as ex:
-                    logger.debug(f"writing usb_device: {device} failed: {ex}")
-                    return None
-                if "vfoknob" in data.decode().strip():
-                    return "/dev/" + device
-            return None
-        for device in devices:
-            if "usb-Raspberry_Pi_Pico" in device:
-                try:
-                    with serial.Serial("/dev/serial/by-id/" + device, 115200) as ser:
-                        ser.timeout = 1000
-                        ser.write(b"whatareyou\r")
-                        data = ser.readline()
-                except serial.serialutil.SerialException:
-                    return None
-                if "vfoknob" in data.decode().strip():
-                    return "/dev/serial/by-id/" + device
+        serial_ports = set(serial_ports)
+        new_serial_ports = serial_ports - self.serial_ports
+        self.serial_ports = serial_ports
 
-    def get_devices(self) -> list[str] | None:
-        try:
-            if sys.platform != "darwin":
-                return os.listdir("/dev/serial/by-id")
-            return os.listdir("/dev/")
-        except FileNotFoundError:
+        if len(new_serial_ports) == 0:
             return None
+        logger.debug(f"new_serial_ports: {new_serial_ports}")
+
+        for port in new_serial_ports:
+            if serial_devices.probe(port):
+                logger.debug(f"vfoknob: found {port}")
+                return port
+
         return None
 
     def window_state_changed(self) -> None:
@@ -165,14 +136,15 @@ class VfoWindow(QDockWidget):
         Setup the device returned by discover_device()
         Or display message saying we didn't find one.
         """
-
         if not self.isVisible():
             return
 
-        device: str | None = self.discover_device()
+        device: ListPortInfo | None = self.discover_device()
         if device is not None:
             try:
-                self.pico: serial.Serial = serial.Serial(device, 115200)
+                self.pico: serial.Serial = serial.Serial(
+                    device.device, serial_devices.VFOKNOB_BAUD_RATE
+                )
                 self.pico.timeout = 100
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
                 self.device_reconnect: bool = True
