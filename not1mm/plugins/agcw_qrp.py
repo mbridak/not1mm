@@ -154,7 +154,6 @@ columns = [
     "SentNr",
     "RcvNr",
     "M1",
-    "M2",
     "PTS",
 ]
 
@@ -232,16 +231,14 @@ def set_contact_vars(self):
         r_number, pwr_class, member = received_fields(self, self.contact["NR"])
         if member.isdigit():
             query = (
-                f"select count(*) as member_count from dxlog where 1=1 "
+                f"select count(*) as member_count from dxlog where Nr like '%/%/{member}' "
                 f"and Band = '{band}' "
                 f"and ContestNR = {self.pref.get('contest', '1')};"
             )
             result = self.database.exec_sql(query)
             count = int(result.get("member_count", 0))
             if count == 0:
-                self.contact["IsMultiplier2"] = 1
-            else:
-                self.contact["IsMultiplier2"] = 0
+                self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):
@@ -262,7 +259,7 @@ def prefill(self):
         self.other_1.setText(sent_sxchange_setting)
 
 
-def received_fields(self, r_nr):
+def received_fields(self, r_nr) -> [str, str, str]:
     """
     split the "received field" 003/VLP/1234
     """
@@ -317,7 +314,7 @@ def points(self):
 
         self.contact["NR"] = r_number + "/" + pwr_class + "/" + member
     # if both station QRO than pts=0
-    if mypowerclass == "High" and pwr_class == QRO:
+    if mypowerclass == "High" and pwr_class == "QRO":
         pts = 0
     return pts
 
@@ -364,15 +361,13 @@ def recalculate_mults(self):
 
         time_stamp = contact.get("TS", "")
         R_NR = contact.get("NR", "")
-        dxcc = contact.get("CountryPrefix", "")
+        # dxcc = contact.get("CountryPrefix", "")
         band = contact.get("Band", "")
-        r_nr, pwr_class, member = received_fields(self, R_NR)
-        # print(r_nr, " . ", pwr_class, " . ",member)
-        sumnr = r_nr + "/" + pwr_class + "/" + member
+        _, _, member = received_fields(self, R_NR)
         if (member != "NM") and member.isdigit():
             query = (
                 f"select count(*) as member_count from dxlog where  TS < '{time_stamp}' "
-                f"and NR = '{sumnr}'"
+                f"and NR like '%/%/{member}' "
                 f"and Band = '{band}' "
                 f"and ContestNR = {self.pref.get('contest', '1')};"
             )
