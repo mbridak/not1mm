@@ -5,6 +5,7 @@
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- AGCW QRP
 - ARI 40 80
 - ARI DX
 - ARRL 10M

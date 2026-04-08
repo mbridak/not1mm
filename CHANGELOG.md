@@ -1,5 +1,11 @@
 # Changelog
 
+- [2026-04-08] Merge pull request #522 from mbridak/agcw-qrp
+  - Refactor AGCW QRP plugin: remove unused member variable and streamline database queries
+- [2026-03-21] Refactor NR formatting and clean up unused imports in AGCW QRP plugin
+  - Update accessible name for member number and enhance SentNr formatting in AGCW QRP plugin
+  - Refactor QSO Points and update hints in AGCW QRP plugin
+- [2026-03-18] Add AGCW QRP contest support from Michael Hartje DK5HH and update UI for new contest entry
 - [2026-03-13] Add Dutch PACC
 - [2026-03-11] Add RSGB IOTA and update contest lists in documentation
 - [2026-03-06] Merge pull request #507 from trgosk/feature/fix-adif-import
