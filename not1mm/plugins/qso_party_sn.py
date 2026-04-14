@@ -69,6 +69,7 @@ advance_on_space = [True, True, True, True, True]
 dupe_type = 4
 # allow for rovers
 
+
 def init_contest(self):
     """setup plugin"""
     set_tab_next(self)
@@ -88,7 +89,7 @@ def interface(self):
     self.rcv_label.setText("RcvNR")
     self.receive.setAccessibleName("RcvNR")
     self.other_label.setText("County/State/DX")
-    #self.sent.setText("")
+    # self.sent.setText("")
 
 
 def reset_label(self):
@@ -160,14 +161,26 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    qso_mode = self.contact.get("Mode","")
+    qso_mode = self.contact.get("Mode", "")
     match qso_mode:
-        case "LSB"|"USB"|"SSB"|"FM"|"AM":
+        case "LSB" | "USB" | "SSB" | "FM" | "AM":
             return 1
-        case "CW"|"CW-U"|"CW-L"|"CW-R"|"CWR":
+        case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
             return 2
-        case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
-            return 2 
+        case (
+            "FT8"
+            | "FT4"
+            | "RTTY"
+            | "PSK31"
+            | "FSK441"
+            | "MSK144"
+            | "JT65"
+            | "JT9"
+            | "Q65"
+            | "PKTUSB"
+            | "PKTLSB"
+        ):
+            return 2
         case _:
             return 0
     # end match
@@ -253,7 +266,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -416,14 +429,14 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
 
                 match themode:
-                    case "LSB"|"USB"|"SSB"|"FM"|"AM":
+                    case "LSB" | "USB" | "SSB" | "FM" | "AM":
                         themode = "PH"
-                    case "CW"|"CW-U"|"CW-L"|"CWR"|"CW-R":
+                    case "CW" | "CW-U" | "CW-L" | "CWR" | "CW-R":
                         themode = "CW"
                     # dont simplify digital mode names
-                    #case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
+                    # case "FT8"|"FT4"|"RTTY"|"PSK31"|"FSK441"|"MSK144"|"JT65"|"JT9"|"Q65"|"PKTUSB"|"PKTLSB":
                     #    themode = "DI"
-                    #case _:
+                    # case _:
                     #    mode_test = "OTHER"
                 # end match
 
@@ -431,12 +444,12 @@ def cabrillo(self, file_encoding):
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                if contact.get('RoverLocation', ''):
+                if contact.get("RoverLocation", ""):
                     location = f"{contact.get('RoverLocation').ljust(15).upper()}"
-                elif self.contest_settings.get('SentExchange', ''):
+                elif self.contest_settings.get("SentExchange", ""):
                     location = f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()}"
                 else:
-                    # user did not provide any location info, 
+                    # user did not provide any location info,
                     # so insert a placeholder in cabrillo file
                     location = f"*              "
 

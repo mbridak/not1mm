@@ -212,7 +212,7 @@ def edi(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.edi"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.edi"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -531,7 +531,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
