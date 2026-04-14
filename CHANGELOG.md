@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-04-14] Fix bug where stroke character in station call was interpreted as a file folder delimiter in cabrillo filenames.
 - [2026-04-08] Merge pull request #522 from mbridak/agcw-qrp
   - Refactor AGCW QRP plugin: remove unused member variable and streamline database queries
 - [2026-03-21] Refactor NR formatting and clean up unused imports in AGCW QRP plugin
