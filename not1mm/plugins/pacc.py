@@ -36,23 +36,6 @@ advance_on_space = [True, True, True, True, True]
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 3
 
-RAC_OFFICIAL_STATIONS = [
-    "VA2RAC",
-    "VA3RAC",
-    "VE1RAC",
-    "VE4RAC",
-    "VE5RAC",
-    "VE6RAC",
-    "VE7RAC",
-    "VE8RAC",
-    "VE9RAC",
-    "VO1RAC",
-    "VO2RAC",
-    "VY0RAC",
-    "VY1RAC",
-    "VY2RAC",
-    "VE3RHQ",
-]
 
 PROV_SEC = [
     "DR",
@@ -217,7 +200,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "RAC-CANADA-DAY")
+    gen_adif(self, cabrillo_name, "PACC")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
