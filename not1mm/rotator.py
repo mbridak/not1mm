@@ -56,7 +56,7 @@ class RotatorWindow(QDockWidget):
         self.move_button.clicked.connect(self.the_eye_of_sauron) # left-click
         self.move_button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.move_button.customContextMenuRequested.connect(self.rotate_long_path) # right-click
-        self.stop_button.clicked.connect(lambda x: self.rotator.send_command("S"))
+        self.stop_button.clicked.connect(self.stop)
         self.park_button.clicked.connect(lambda x: self.rotator.send_command("K"))
         self.redrawMap()
         self.rotator: RotatorInterface = RotatorInterface(self.host, self.port)
@@ -137,6 +137,10 @@ class RotatorWindow(QDockWidget):
         """Move the antennas azimuth to long-path direction."""
         if self.rotator.connected and self.requestedAzimuth is not None:
             self.rotator.set_position((self.requestedAzimuth + 180.0) % 360.0)
+
+    def stop(self) -> None:
+        """Stop the rotator."""
+        self.rotator.send_command("S")
 
     def redrawMap(self) -> None:
         """"""
