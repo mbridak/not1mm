@@ -409,7 +409,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.log_it.clicked.connect(self.save_contact)
         self.wipe.clicked.connect(self.clearinputs)
-        self.esc_stop.clicked.connect(self.stop_cw)
+        self.esc_stop.clicked.connect(self.stop_all)
         self.mark.clicked.connect(self.mark_spot)
         self.spot_it.clicked.connect(self.spot_dx)
 
@@ -2319,7 +2319,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[ESC]\tStops cwdaemon from sending Morse.\n"
+            "[ESC]\tStops CW sending and antenna rotation.\n"
             "[PgUp]\tIncreases the cw sending speed.\n"
             "[PgDown]\tDecreases the cw sending speed.\n"
             "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
@@ -2657,6 +2657,12 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.rig_control.interface == "rigctld":
                         self.rig_control.cat.stopcwrigctl()
 
+    def stop_all(self) -> None:
+        """Stop CW and rotator."""
+        self.stop_cw()
+        if self.rotator_window is not None:
+            self.rotator_window.stop()
+
     def mark_spot(self) -> None:
         """"""
         freq = self.radio_state.get("vfoa")
@@ -2811,7 +2817,7 @@ class MainWindow(QtWidgets.QMainWindow):
             event.key() == Qt.Key.Key_Escape
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
-            self.stop_cw()
+            self.stop_all()
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
