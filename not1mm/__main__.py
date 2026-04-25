@@ -1101,8 +1101,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.contact_is_dupe = result
                         if result is not False:
                             self.dupe_indicator.show()
+                            self.callsign.setStyleSheet("color: red;")
                         else:
                             self.dupe_indicator.hide()
+                            self.callsign.setStyleSheet("")
 
                     if json_data.get("subject") == "POST":
                         self.remove_confirmed_commands(json_data)
@@ -3039,6 +3041,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.dupe_indicator.hide()
+        self.callsign.setStyleSheet("")
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
         self.history_info.setText("")
@@ -4282,6 +4285,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.check_window:
             self.check_window.msg_from_main(cmd)
         self.dupe_indicator.hide()
+        self.callsign.setStyleSheet("")
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
             self.check_dupe(stripped_text)
@@ -4541,8 +4545,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contact_is_dupe = result.get("isdupe", False)
             if bool(result.get("isdupe", False)) is not False:
                 self.dupe_indicator.show()
+                self.callsign.setStyleSheet("color: red;")
             else:
                 self.dupe_indicator.hide()
+                self.callsign.setStyleSheet("")
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
