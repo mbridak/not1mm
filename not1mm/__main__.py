@@ -2829,7 +2829,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
-                self.cw.speed += 1
+                self.cw.speed += 2
                 self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
@@ -2841,7 +2841,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
-                self.cw.speed -= 1
+                self.cw.speed -= 2
                 self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
