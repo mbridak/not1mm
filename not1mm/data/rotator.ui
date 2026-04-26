@@ -102,7 +102,7 @@
     <item>
      <widget class="QGraphicsView" name="compassView">
       <property name="focusPolicy">
-       <enum>Qt::FocusPolicy::ClickFocus</enum>
+       <enum>Qt::FocusPolicy::NoFocus</enum>
       </property>
       <property name="frameShape">
        <enum>QFrame::Shape::NoFrame</enum>
