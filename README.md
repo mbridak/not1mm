@@ -69,6 +69,14 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-04-26] Merge pull request #536 from df7cb/Sort bands in Stats window
+  - Merge pull request #535 from df7cb/Prevent rotator, dxcc and zone windows from stealing focus
+  - Merge pull request #534 from df7cb/Make ESC (the key and the button) stop CW and the rotator
+  - Merge pull request #537 from df7cb/Color callsign red on dupes
+  - Merge pull request #538 from df7cb/Fix space between adjacent macros
+  - Merge pull request #532 from df7cb/PgUp/PgDown change CW speed by 2 wpm
+  - Merge pull request #531 from df7cb/Keep self.cw.speed and self.cw_speed.value() in sync
+  - Merge pull request #529 from TnxQSO-Admin/Add SSA Månadstest (SSA MT) contest plugin for CW and SSB
 - [2026-04-14] Fix bug where stroke character in station call was interpreted as a file folder delimiter in cabrillo filenames.
 - [2026-04-08] Merge pull request #522 from mbridak/agcw-qrp
   - Refactor AGCW QRP plugin: remove unused member variable and streamline database queries
