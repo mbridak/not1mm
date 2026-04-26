@@ -107,7 +107,7 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SelectionMode.NoSelection
         )
-        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {self.database.current_contest};"
+        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {self.database.current_contest} ORDER BY band DESC;"
         result = self.database.exec_sql_mult(query)
         self.tableWidget.setRowCount(len(result) + 1)
         row = 0
