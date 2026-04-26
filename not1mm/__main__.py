@@ -3739,11 +3739,9 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
-                self.rig_control.sendcw(" ")
+                self.rig_control.sendcw(self.process_macro(function_key.toolTip()) + " ")
                 return
-            self.cw.sendcw(self.process_macro(function_key.toolTip()))
-            self.cw.sendcw(" ")
+            self.cw.sendcw(self.process_macro(function_key.toolTip()) + " ")
             if self.pref.get("cwtype") == 2:
                 # I put this back in 'cause no one will know to update winkeyerserial.
                 time.sleep(0.2)
