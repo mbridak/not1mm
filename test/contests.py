@@ -486,6 +486,16 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
     ],
+    "SSA MT CW": [
+        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "1", "other_2": "JO89HO"},
+        {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "2", "other_2": "JO89HO"},
+        {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "3", "other_2": "JO86EQ"},
+    ],
+    "SSA MT SSB": [
+        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "1", "other_2": "JO89HO"},
+        {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_1": "2", "other_2": "JO89HO"},
+        {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_1": "3", "other_2": "JO86EQ"},
+    ],
     "STEW PERRY TOPBAND": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
