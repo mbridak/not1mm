@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
+CLEAR_FREQ = 0.0001 # 100 Hz
 
 
 class Band:
@@ -46,7 +47,7 @@ class Band:
         "40m": (7.0, 7.3),
         "30m": (10.1, 10.15),
         "20m": (14.0, 14.35),
-        "17m": (18.069, 18.168),
+        "17m": (18.068, 18.168),
         "15m": (21.0, 21.45),
         "12m": (24.89, 25.0),
         "10m": (28.0, 29.7),
@@ -82,6 +83,13 @@ class Band:
         self.name = band
         self.altname = self.othername.get(band, 0.0)
 
+    def new_from_freq(freq: float) -> (float, float):
+        """Find band matching a frequency."""
+
+        for band, edges in Band.bands.items():
+            if edges[0] <= freq <= edges[1]:
+                return Band(band)
+        return Band("unknown")
 
 class Database:
     """
@@ -149,9 +157,10 @@ class Database:
             logger.debug("%s", exception)
             return {}
 
-    def addspot(self, spot: dict, erase=True) -> None:
+    def addspot(self, spot: dict, clear_freq=False) -> None:
         """
-        Add spot to database, replacing any previous spots with the same call.
+        Add spot to database, replacing any previous spots with the same call
+        on the same band.
 
         Parameters
         ----------
@@ -159,26 +168,25 @@ class Database:
         A dict of the form: {'ts': datetime, 'callsign': str, 'freq': float,
         'band': str,'mode': str,'spotter': str, 'comment': str}
 
-        erase: bool
-        If True, delete any previous spots with the same callsign.
-        If False, do not delete any previous spots with the same callsign.
-        Default is True.
+        clear_freq: bool
+        If True, delete any previous spots around this frequency.
 
         Returns
         -------
         Nothing.
         """
+        if 'band' in spot:
+            band = Band(spot.get("band"))
+        else:
+            band = Band.new_from_freq(spot.get("freq"))
+
         try:
-            if spot.get("comment", None) == "MARKED":
-                delete_call = "delete from spots where callsign = ?;"
-                self.cursor.execute(delete_call, (spot.get("callsign"),))
-                self.db.commit()
-            elif erase:
-                delete_call = (
-                    "delete from spots where callsign = ? AND comment != 'MARKED';"
-                )
-                self.cursor.execute(delete_call, (spot.get("callsign"),))
-                self.db.commit()
+            delete_call_q = "delete from spots where callsign = ? and freq between ? and ?;"
+            self.cursor.execute(delete_call_q, (spot.get("callsign"), band.start, band.end))
+
+            if clear_freq:
+                clear_freq_q = "delete from spots where freq between ? and ?;"
+                self.cursor.execute(clear_freq_q, (spot.get("freq") - CLEAR_FREQ, spot.get("freq") + CLEAR_FREQ))
 
             self.cursor.execute(
                 "INSERT INTO spots(callsign, ts, freq, mode, spotter, comment) VALUES(?, ?, ?, ?, ?, ?)",
@@ -343,6 +351,7 @@ class BandMapWindow(QDockWidget):
     worked_list = {}
     multicast_interface = None
     text_color = QColor(45, 45, 45)
+    worked_color= QColor(128, 128, 128)
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
@@ -467,6 +476,7 @@ class BandMapWindow(QDockWidget):
             dx = packet.get("dx", "")
             freq = packet.get("freq", 0.0)
             the_UTC_time = datetime.now(timezone.utc).isoformat(" ")[:19].split()[1]
+            comment = packet.get("comment", "")
             spot = {
                 "ts": "2099-01-01 " + the_UTC_time,
                 "callsign": dx,
@@ -474,9 +484,9 @@ class BandMapWindow(QDockWidget):
                 "band": self.currentBand.name,
                 "mode": "DX",
                 "spotter": platform.node(),
-                "comment": "MARKED",
+                "comment": comment,
             }
-            self.spots.addspot(spot, erase=False)
+            self.spots.addspot(spot, clear_freq=True)
             self.update_stations()
             return
 
@@ -495,6 +505,7 @@ class BandMapWindow(QDockWidget):
         if packet.get("cmd", "") == "WORKED":
             self.worked_list = packet.get("worked", {})
             logger.debug("%s", f"{self.worked_list}")
+            self.update_stations()
             return
         if packet.get("cmd", "") == "CALLCHANGED":
             call = packet.get("call", "")
@@ -530,9 +541,11 @@ class BandMapWindow(QDockWidget):
         setdarkmode = self.is_it_dark()
         if setdarkmode is True:
             self.text_color = QColorConstants.White
+            self.worked_color = QColor(108, 108, 108)
             self.update()
         else:
             self.text_color = QColorConstants.Black
+            self.worked_color = QColor(178, 178, 178)
             self.update()
 
     def connect(self):
@@ -758,12 +771,12 @@ class BandMapWindow(QDockWidget):
                     flag += "[S]"
 
                 pen_color = self.text_color
-                if items.get("comment") == "MARKED":
+                if "MARKED" in items.get("comment"):
                     pen_color = QColor(254, 194, 17)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:
-                        pen_color = QColor(255, 47, 47)
+                        pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
