@@ -410,7 +410,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log_it.clicked.connect(self.save_contact)
         self.wipe.clicked.connect(self.clearinputs)
         self.esc_stop.clicked.connect(self.stop_all)
-        self.mark.clicked.connect(self.mark_spot)
+        self.mark.clicked.connect(lambda: self.mark_spot(f"{self.current_mode} MARKED"))
         self.spot_it.clicked.connect(self.spot_dx)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -2665,7 +2665,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rotator_window is not None:
             self.rotator_window.stop()
 
-    def mark_spot(self) -> None:
+    def mark_spot(self, comment="") -> None:
         """"""
         freq = self.radio_state.get("vfoa")
         dx = self.callsign.text()
@@ -2674,6 +2674,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["cmd"] = "MARKDX"
             cmd["dx"] = dx
             cmd["freq"] = float(int(freq) / 1000)
+            cmd["comment"] = comment
             if self.bandmap_window:
                 self.bandmap_window.msg_from_main(cmd)
 
@@ -2773,15 +2774,7 @@ class MainWindow(QtWidgets.QMainWindow):
             event.key() == Qt.Key.Key_M
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):
-            freq = self.radio_state.get("vfoa")
-            dx = self.callsign.text()
-            if freq and dx:
-                cmd = {}
-                cmd["cmd"] = "MARKDX"
-                cmd["dx"] = dx
-                cmd["freq"] = float(int(freq) / 1000)
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
+            self.mark_spot(comment=f"{self.current_mode} MARKED")
             return
         if (
             event.key() == Qt.Key.Key_G
@@ -3240,6 +3233,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        if not self.pref["run_state"]: # in S&P mode, put the contact into the bandmap
+            self.mark_spot(comment=self.current_mode)
+
         # Copy the last contact so it can be sent to the cluster:
         self.previous_contact = dict(self.contact)
         self.current_sn = None
@@ -3609,7 +3605,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.save_contact()
         if "{MARK}" in macro:
             macro = macro.replace("{MARK}", "")
-            self.mark_spot()
+            self.mark_spot(comment=f"{self.current_mode} MARKED")
         if "{SPOT}" in macro:
             macro = macro.replace("{SPOT}", "")
             self.spot_dx()
