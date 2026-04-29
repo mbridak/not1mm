@@ -5065,6 +5065,7 @@ def install_icons() -> None:
         os.system(
             f"xdg-desktop-menu install {fsutils.APP_DATA_PATH}/k6gte-not1mm.desktop"
         )
+        QtGui.QGuiApplication.setDesktopFileName("k6gte-not1mm")
 
 
 def doimp(modname: str) -> object:
@@ -5090,6 +5091,8 @@ def run() -> None:
     """
     Main Entry
     """
+
+    install_icons()
     splash.show()
     # app.processEvents()
     splash.showMessage(
@@ -5108,7 +5111,6 @@ def run() -> None:
     logger.debug(
         f"\nResolved OS file system paths:\nAPP_DATA_PATH {fsutils.APP_DATA_PATH}\nMODULE_PATH {fsutils.MODULE_PATH}\nUSER_DATA_PATH {fsutils.USER_DATA_PATH}\nCONFIG_PATH {fsutils.CONFIG_PATH}\nLOG_FILE {fsutils.LOG_FILE}"
     )
-    install_icons()
     sys.exit(app.exec())
 
 
