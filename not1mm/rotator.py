@@ -102,10 +102,12 @@ class RotatorWindow(QDockWidget):
 
     def set_antenna_azimuth(self, azimuth: float) -> None:
         if isinstance(azimuth, float):
+            self.setWindowTitle(f"Rotator: {azimuth:.0f}°")
             self.antennaAzimuth = azimuth
             self.antennaNeedle.setRotation(self.antennaAzimuth)
             self.antennaNeedle.show()
         else:
+            self.setWindowTitle("Rotator")
             self.antennaNeedle.hide()
 
     def set_north_azimuth(self) -> None:
