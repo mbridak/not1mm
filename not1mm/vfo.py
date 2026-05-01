@@ -174,7 +174,7 @@ class VfoWindow(QDockWidget):
             try:
                 self.pico: serial.Serial = serial.Serial(device, 115200)
                 self.pico.timeout = 100
-                self.lcdNumber.setStyleSheet("QLCDNumber { color: white; }")
+                self.lcdNumber.setStyleSheet("QLCDNumber { color: green; }")
                 self.device_reconnect: bool = True
             except OSError:
                 if self.message_shown is False and supress_msg is False:
