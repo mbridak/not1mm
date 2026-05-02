@@ -306,6 +306,16 @@ Under the `CW` tab, there are three options:
  \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`\index{rigctld}.
 \end{itemize}
 
+Other options:
+
+\begin{itemize}
+ \item CW Sent Nr Pad Character: Pad serial numbers with this character. Sensible choices are "T", "0" and maybe "O".
+
+ \item CW Sent Nr Pad Length: Pad serial numbers to this length. Sensible choices are 3 and 1 (= no padding).
+
+ \item CW PgUp/PgDown Stepping: The PgUp and PgDown keys will change the CW speed by this many wpm. Defaults to 1. A value of 2 is a good compromise between faster adjustments and still having fine-grained steps.
+\end{itemize}
+
 \subsection{Cluster}
 
 \vspace{0.5cm}
@@ -534,9 +544,9 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     \hline
     Esc & Stop CW sending and antenna rotation.\\
     \hline
-    PgUp & Increase the CW sending speed by 2 wpm. \\
+    PgUp & Increase the CW sending speed. \\
     \hline
-    PgDown & Decrease the CW sending speed by 2 wpm. \\
+    PgDown & Decrease the CW sending speed. \\
     \hline
     Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
     \hline
