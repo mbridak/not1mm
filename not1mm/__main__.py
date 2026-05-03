@@ -719,6 +719,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
+        self.cq_freq = None
 
         logger.debug(f"{QT_VERSION_STR=} {PYQT_VERSION_STR=}")
         x = PYQT_VERSION_STR.split(".")
@@ -1316,10 +1317,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control:
                     self.rig_control.set_vfo(int(vfo))
                 spot = msg.get("spot", "")
+                if spot == "CQ":  # saved CQ frequency, switch to RUN
+                    self.clearinputs()
+                    self.set_running(True)
+                    return
                 self.callsign.setText(spot)
                 self.callsign_changed()
                 self.callsign.setFocus()
                 self.callsign.activateWindow()
+                self.set_running(False)
                 return
 
             if msg.get("cmd", "") == "GETWORKEDLIST":
@@ -2341,7 +2347,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "[CTRL-SHIFT-K] Open CW text input field.\n"
             "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
             "[CTRL-W]\tClears the input fields of any text.\n"
-            "[CTRL-R]\tToggle the Run state.\n",
+            "[CTRL-R]\tToggle the Run state.\n"
+            "[CTRL-Q]\tJump to last CQ frequency.\n",
             blocking=False,
         )
 
@@ -2665,6 +2672,20 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rotator_window is not None:
             self.rotator_window.stop()
 
+    def mark_cq(self) -> None:
+        """
+        Mark CQ frequency in bandmap. Remember the last frequency so we don't re-add a new spot every few seconds.
+        """
+        freq = self.radio_state.get("vfoa")
+        if freq and freq != self.cq_freq and self.bandmap_window:
+            cmd = {}
+            cmd["cmd"] = "MARKDX"
+            cmd["dx"] = "CQ"
+            cmd["freq"] = float(int(freq) / 1000)
+            cmd["comment"] = f"CQ {self.current_mode} MARKED"
+            self.bandmap_window.msg_from_main(cmd)
+            self.cq_freq = freq
+
     def mark_spot(self, comment="") -> None:
         """"""
         freq = self.radio_state.get("vfoa")
@@ -2787,6 +2808,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["dx"] = dx
                 if self.bandmap_window:
                     self.bandmap_window.msg_from_main(cmd)
+            return
+        if (
+            event.key() == Qt.Key.Key_Q
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):  # pylint: disable=no-member
+            if self.cq_freq:
+                self.radio_state["vfoa"] = self.cq_freq
+                if self.rig_control:
+                    self.rig_control.set_vfo(self.cq_freq)
+                self.set_running(True)
+                self.clearinputs()
             return
         if (
             event.key() == Qt.Key.Key_R
@@ -2931,8 +2963,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
-                self.radioButton_run.setChecked(True)
-                self.run_sp_buttons_clicked()
+                self.set_running(True)
                 # self.make_button_blue(self.F1)
                 self.leftdot.show()
                 self.cwprogressBar.setValue(100)
@@ -2943,6 +2974,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     milliseconds=self.auto_cq_delay
                 )
             self.process_function_key(self.F1)
+            self.mark_cq()
             return
         if event.key() == Qt.Key.Key_F2:
             self.process_function_key(self.F2)
@@ -3233,7 +3265,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
-        if not self.pref["run_state"]: # in S&P mode, put the contact into the bandmap
+        if not self.pref["run_state"]:  # in S&P mode, put the contact into the bandmap
             self.mark_spot(comment=self.current_mode)
 
         # Copy the last contact so it can be sent to the cluster:
@@ -3611,12 +3643,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.spot_dx()
         if "{RUN}" in macro:
             macro = macro.replace("{RUN}", "")
-            self.radioButton_run.setChecked(True)
-            self.run_sp_buttons_clicked()
+            self.set_running(True)
         if "{SANDP}" in macro:
             macro = macro.replace("{SANDP}", "")
-            self.radioButton_sp.setChecked(True)
-            self.run_sp_buttons_clicked()
+            self.set_running(False)
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
@@ -3744,20 +3774,27 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(self.process_macro(function_key.toolTip()) + " ")
+                self.rig_control.sendcw(
+                    self.process_macro(function_key.toolTip()) + " "
+                )
                 return
             self.cw.sendcw(self.process_macro(function_key.toolTip()) + " ")
             if self.pref.get("cwtype") == 2:
                 # I put this back in 'cause no one will know to update winkeyerserial.
                 time.sleep(0.2)
 
+    def set_running(self, run: bool) -> None:
+        """Set Run/S&P. Avoid re-reading all state when nothing changed."""
+        if run != self.pref["run_state"]:
+            if run:
+                self.radioButton_run.setChecked(True)
+            else:
+                self.radioButton_sp.setChecked(True)
+            self.run_sp_buttons_clicked()
+
     def toggle_run_sp(self) -> None:
         """Toggles the radioButton_run and radioButton_sp."""
-        if self.radioButton_run.isChecked():
-            self.radioButton_sp.setChecked(True)
-        else:
-            self.radioButton_run.setChecked(True)
-        self.run_sp_buttons_clicked()
+        self.set_running(not self.pref["run_state"])
 
     def run_sp_buttons_clicked(self) -> None:
         """
