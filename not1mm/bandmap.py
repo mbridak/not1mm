@@ -32,56 +32,34 @@ logger = logging.getLogger(__name__)
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
-CLEAR_FREQ = 0.0001 # 100 Hz
+CLEAR_FREQ = 0.1  # 100 Hz
 
 
 class Band:
     """the band"""
 
-    # 432070000 70cm
-
     bands = {
-        "160m": (1.8, 2),
-        "80m": (3.5, 4),
-        "60m": (5.102, 5.4065),
-        "40m": (7.0, 7.3),
-        "30m": (10.1, 10.15),
-        "20m": (14.0, 14.35),
-        "17m": (18.068, 18.168),
-        "15m": (21.0, 21.45),
-        "12m": (24.89, 25.0),
-        "10m": (28.0, 29.7),
-        "6m": (50.0, 54.0),
-        "4m": (70.0, 71.0),
-        "2m": (144.0, 148.0),
-        "70cm": (420.0, 450.0),
-        "33cm": (902.0, 928.0),
-        "23cm": (1240.0, 1300.0),
-    }
-
-    othername = {
-        "160m": 1.8,
-        "80m": 3.5,
-        "60m": 5.1,
-        "40m": 7.0,
-        "30m": 10.0,
-        "20m": 14.0,
-        "17m": 18.0,
-        "15m": 21.0,
-        "12m": 24.0,
-        "10m": 28.0,
-        "6m": 50.0,
-        "4m": 70.0,
-        "2m": 144.0,
-        "70cm": 432.0,
-        "33cm": 932.0,
-        "23cm": 1232.0,
-    }
+        "160m":     (1800,     2000,    1.8),
+        "80m":      (3500,     4000,    3.5),
+        "60m":      (5102,     5407,    5.1),
+        "40m":      (7000,     7300,    7.0),
+        "30m":     (10100,    10150,   10.0),
+        "20m":     (14000,    14350,   14.0),
+        "17m":     (18068,    18168,   18.0),
+        "15m":     (21000,    21450,   21.0),
+        "12m":     (24890,    24990,   24.0),
+        "10m":     (28000,    29700,   28.0),
+        "6m":      (50000,    54000,   50.0),
+        "4m":      (70000,    71000,   70.0),
+        "2m":    (144_000,  148_000,  144.0),
+        "70cm":  (420_000,  450_000,  432.0),
+        "33cm":  (902_000,  928_000,  932.0),
+        "23cm": (1240_000, 1300_000, 1232.0),
+    } # fmt: skip
 
     def __init__(self, band: str) -> None:
-        self.start, self.end = self.bands.get(band, (0.0, 1.0))
+        self.start, self.end, self.altname = self.bands.get(band, (0.0, 1.0, 0.0))
         self.name = band
-        self.altname = self.othername.get(band, 0.0)
 
     def new_from_freq(freq: float) -> (float, float):
         """Find band matching a frequency."""
@@ -90,6 +68,7 @@ class Band:
             if edges[0] <= freq <= edges[1]:
                 return Band(band)
         return Band("unknown")
+
 
 class Database:
     """
@@ -104,7 +83,7 @@ class Database:
             "create table spots ("
             "callsign VARCHAR(15) NOT NULL, "
             "ts DATETIME NOT NULL, "
-            "freq DOUBLE NOT NULL, "
+            "freq DOUBLE NOT NULL, "  # in kHz
             "mode VARCHAR(6), "
             "spotter VARCHAR(15) NOT NULL, "
             "comment VARCHAR(45));"
@@ -175,18 +154,25 @@ class Database:
         -------
         Nothing.
         """
-        if 'band' in spot:
+        if "band" in spot:
             band = Band(spot.get("band"))
         else:
             band = Band.new_from_freq(spot.get("freq"))
 
         try:
-            delete_call_q = "delete from spots where callsign = ? and freq between ? and ?;"
-            self.cursor.execute(delete_call_q, (spot.get("callsign"), band.start, band.end))
+            delete_call_q = (
+                "delete from spots where callsign = ? and freq between ? and ?;"
+            )
+            self.cursor.execute(
+                delete_call_q, (spot.get("callsign"), band.start, band.end)
+            )
 
             if clear_freq:
                 clear_freq_q = "delete from spots where freq between ? and ?;"
-                self.cursor.execute(clear_freq_q, (spot.get("freq") - CLEAR_FREQ, spot.get("freq") + CLEAR_FREQ))
+                self.cursor.execute(
+                    clear_freq_q,
+                    (spot.get("freq") - CLEAR_FREQ, spot.get("freq") + CLEAR_FREQ),
+                )
 
             self.cursor.execute(
                 "INSERT INTO spots(callsign, ts, freq, mode, spotter, comment) VALUES(?, ?, ?, ?, ?, ?)",
@@ -351,7 +337,7 @@ class BandMapWindow(QDockWidget):
     worked_list = {}
     multicast_interface = None
     text_color = QColor(45, 45, 45)
-    worked_color= QColor(128, 128, 128)
+    worked_color = QColor(128, 128, 128)
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
@@ -429,8 +415,8 @@ class BandMapWindow(QDockWidget):
                 else:
                     self.set_band(packet.get("band") + "m", False)
             try:
-                if self.rx_freq != float(packet.get("vfoa")) / 1000000:
-                    self.rx_freq = float(packet.get("vfoa")) / 1000000
+                if self.rx_freq != float(packet.get("vfoa")) / 1000:
+                    self.rx_freq = float(packet.get("vfoa")) / 1000
                     self.tx_freq = self.rx_freq
                     self.center_on_rxfreq()
             except ValueError:
@@ -445,9 +431,7 @@ class BandMapWindow(QDockWidget):
             self.drawTXRXMarks(step)
             return
         if packet.get("cmd", "") == "NEXTSPOT" and self.rx_freq:
-            spot = self.spots.get_next_spot(
-                self.rx_freq + 0.000001, self.currentBand.end
-            )
+            spot = self.spots.get_next_spot(self.rx_freq + 0.001, self.currentBand.end)
             if spot:
                 cmd = {}
                 cmd["cmd"] = "TUNE"
@@ -457,7 +441,7 @@ class BandMapWindow(QDockWidget):
             return
         if packet.get("cmd", "") == "PREVSPOT" and self.rx_freq:
             spot = self.spots.get_prev_spot(
-                self.rx_freq - 0.000001, self.currentBand.start
+                self.rx_freq - 0.001, self.currentBand.start
             )
             if spot:
                 cmd = {}
@@ -480,7 +464,7 @@ class BandMapWindow(QDockWidget):
             spot = {
                 "ts": "2099-01-01 " + the_UTC_time,
                 "callsign": dx,
-                "freq": freq / 1000,
+                "freq": freq,
                 "band": self.currentBand.name,
                 "mode": "DX",
                 "spotter": platform.node(),
@@ -607,7 +591,7 @@ class BandMapWindow(QDockWidget):
         # self.bandmap_scene.setFont(self.font)
         self.bandmap_scene.setFont(self.thefont)
         step, _digits = self.determine_step_digits()
-        steps = int(round((self.currentBand.end - self.currentBand.start) / step))
+        steps = int(round((self.currentBand.end - self.currentBand.start) / step)) + 1
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
         # self.graphicsView.setFont(self.font)
@@ -636,7 +620,7 @@ class BandMapWindow(QDockWidget):
                 )
 
         freq = self.currentBand.end + step * steps
-        endFreqDigits = f"{freq:.3f}"
+        endFreqDigits = f"{freq:.1f}"
         self.bandmap_scene.setSceneRect(
             160 - (len(endFreqDigits) * PIXELSPERSTEP), 0, 0, steps * PIXELSPERSTEP + 20
         )
@@ -654,7 +638,7 @@ class BandMapWindow(QDockWidget):
     def dec_zoom(self):
         """doc"""
         self.zoom -= 1
-        self.zoom = max(self.zoom, 1)
+        self.zoom = max(self.zoom, 0)
         self.update()
         self.center_on_rxfreq()
 
@@ -717,10 +701,8 @@ class BandMapWindow(QDockWidget):
             return
         if freq and self.bandwidth:
             # color = QColor(30, 30, 180)
-            bw_start = Decimal(str(freq)) - (
-                (Decimal(str(self.bandwidth)) / 2) / 1000000
-            )
-            bw_end = Decimal(str(freq)) + ((Decimal(str(self.bandwidth)) / 2) / 1000000)
+            bw_start = Decimal(str(freq)) - ((Decimal(str(self.bandwidth)) / 2) / 1000)
+            bw_end = Decimal(str(freq)) + ((Decimal(str(self.bandwidth)) / 2) / 1000)
             logger.debug("%s", f"s:{bw_start} e:{bw_end}")
             Yposition_neg = self.Freq2ScenePos(bw_start).y()
             Yposition_pos = self.Freq2ScenePos(bw_end).y()
@@ -810,15 +792,16 @@ class BandMapWindow(QDockWidget):
     def determine_step_digits(self):
         """doc"""
         return_zoom = {
-            1: (0.0001, 5),
-            2: (0.00025, 5),
-            3: (0.0005, 5),
-            4: (0.001, 5),
-            5: (0.0025, 5),
-            6: (0.005, 3),
-            7: (0.01, 3),
+            0: (0.04, 1),
+            1: (0.1, 1),
+            2: (0.2, 0),
+            3: (0.4, 0),
+            4: (1, 0),
+            5: (2, 0),
+            6: (4, 0),
+            7: (10, 0),
         }
-        step, digits = return_zoom.get(self.zoom, (0.0001, 4))
+        step, digits = return_zoom.get(self.zoom, (0.1, 1))
 
         if self.currentBand.start >= 28.0 and self.currentBand.start < 420.0:
             step = step * 10
@@ -901,7 +884,7 @@ class BandMapWindow(QDockWidget):
                 spot["comment"] = comment
                 logger.debug(f"{spot}")
                 try:
-                    spot["freq"] = float(freq) / 1000
+                    spot["freq"] = float(freq)
                     self.spots.addspot(spot)
                 except ValueError:
                     logger.debug(f"couldn't parse freq from datablock {data}")

@@ -1311,7 +1311,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.vfo_window:
                     self.vfo_window.msg_from_main(msg)
                 vfo = msg.get("freq")
-                vfo = float(vfo) * 1000000
+                vfo = float(vfo) * 1000
                 self.radio_state["vfoa"] = int(vfo)
                 if self.rig_control:
                     self.rig_control.set_vfo(int(vfo))
