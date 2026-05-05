@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-05-05] Fix crash in cabrillo generation
 - [2026-05-04] Merge pull request #549 from df7cb Remember CQ frequencies in bandmap
   - Merge pull request #548 from df7cb Send serials with CW cut numbers
   - Merge pull request #547 from df7cb Remove padding around bandmap scroll area, Convert bandmap to kHz
