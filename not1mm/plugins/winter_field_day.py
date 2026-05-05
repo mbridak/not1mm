@@ -335,6 +335,8 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode == "CW-U" | "CW-L" | "CW-R" | "CWR":
+                    themode = "CW"
                 if themode in ("LSB", "USB", "FM", "AM"):
                     themode = "PH"
                 if themode.upper() in (
