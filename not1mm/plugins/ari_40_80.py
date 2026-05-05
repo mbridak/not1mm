@@ -342,6 +342,8 @@ def cabrillo(self, file_encoding):
                     themode = "PH"
                 if themode == "RTTY":
                     themode = "RY"
+                if themode == "CW-U" | "CW-L" | "CW-R" | "CWR":
+                    themode = "CW"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
