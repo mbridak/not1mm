@@ -343,7 +343,7 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
-                if themode == "CW-U" | "CW-L" | "CW-R" | "CWR":
+                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
                     themode = "CW"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
