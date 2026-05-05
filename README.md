@@ -69,6 +69,15 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-05-04] Merge pull request #549 from df7cb Remember CQ frequencies in bandmap
+  - Merge pull request #548 from df7cb Send serials with CW cut numbers
+  - Merge pull request #547 from df7cb Remove padding around bandmap scroll area, Convert bandmap to kHz
+  - Merge pull request #551 from mbridak Refactor CW mode handling in Cabrillo format for multiple plugins
+- [2026-05-01] Merge pull request #544 from mbridak Change LCD number color from white to green in VfoWindow
+- [2026-04-30] Merge pull request #543 from df7cb/degrees
+  - Merge pull request #542 from df7cb Show rotator azimuth in dock window title
+  - Set desktop file name so icon is shown in task bar
+- [2026-04-27] Merge pull request #540 from df7cb Add worked stations to bandmap and teach it about bands
 - [2026-04-26] Merge pull request #536 from df7cb/Sort bands in Stats window
   - Merge pull request #535 from df7cb/Prevent rotator, dxcc and zone windows from stealing focus
   - Merge pull request #534 from df7cb/Make ESC (the key and the button) stop CW and the rotator
