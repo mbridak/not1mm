@@ -5,6 +5,7 @@ Email: michael.bridak@gmail.com
 GPL V3
 Purpose: Provides main logging window and a crap ton more.
 """
+
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 # pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long, bare-except
 
@@ -3233,7 +3234,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
-        if not self.pref["run_state"]: # in S&P mode, put the contact into the bandmap
+        if not self.pref["run_state"]:  # in S&P mode, put the contact into the bandmap
             self.mark_spot(comment=self.current_mode)
 
         # Copy the last contact so it can be sent to the cluster:
@@ -3517,6 +3518,38 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
 
+    def format_serial(self, serial: str) -> str:
+        """
+        Pad serial number to desired length (all modes) and do CW cut numbers replacements.
+        """
+
+        serial = serial.lstrip("0")
+        if self.radio_state.get("mode") == "CW":
+            serial = (
+                serial.replace("1", self.pref.get("cwserial_1", "1"))
+                .replace("9", self.pref.get("cwserial_9", "9"))
+                .replace("0", self.pref.get("cwserial_0", "0"))
+            )
+            padding = self.pref.get("cwpaddingchar", "T")
+        else:
+            padding = "0"
+        serial = serial.rjust(self.pref.get("cwpaddinglength", 3), padding)
+        return serial
+
+    def format_rst(self, rst: str) -> str:
+        """
+        Apply CW cut numbers to RST sent.
+        """
+
+        if self.radio_state.get("mode") == "CW":
+            # Only send "E" if the full report is 599, we shouldn't end up with
+            # something mixed like "E8N"
+            if self.pref.get("cwsentrst", "5NN") == "ENN" and rst == "599":
+                return "ENN"
+            if self.pref.get("cwsentrst", "5NN") in ("5NN", "ENN"):
+                return rst.replace("9", "N")
+        return rst
+
     def process_macro(self, macro: str) -> str:
         """
         Process CW macro substitutions for contest.
@@ -3540,49 +3573,17 @@ class MainWindow(QtWidgets.QMainWindow):
         result = self.database.get_last_serial()
         prev_serial = str(result.get("serial_nr", "1")).zfill(3)
         macro = macro.upper()
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace(
-                "#",
-                next_serial.rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-        else:
-            macro = macro.replace("#", next_serial)
+        macro = macro.replace(  # handle EXCH first so it can contain more macros
+            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
+        )
+        macro = macro.replace("#", self.format_serial(next_serial))
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         macro = macro.replace("{OTHER1}", self.other_1.text())
         macro = macro.replace("{OTHER2}", self.other_2.text())
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
-        else:
-            macro = macro.replace("{SNT}", self.sent.text())
-        macro = macro.replace(
-            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
-        )
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace(
-                "{SENTNR}",
-                self.other_1.text()
-                .lstrip("0")
-                .rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-            macro = macro.replace(
-                "{PREVNR}",
-                str(prev_serial)
-                .lstrip("0")
-                .rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-        else:
-            macro = macro.replace("{SENTNR}", self.other_1.text())
-            macro = macro.replace("{PREVNR}", str(prev_serial))
+        macro = macro.replace("{SNT}", self.format_rst(self.sent.text()))
+        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text()))
+        macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial)))
 
         if "{TX}" in macro:
             macro = macro.replace("{TX}", "")
@@ -3744,7 +3745,9 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(self.process_macro(function_key.toolTip()) + " ")
+                self.rig_control.sendcw(
+                    self.process_macro(function_key.toolTip()) + " "
+                )
                 return
             self.cw.sendcw(self.process_macro(function_key.toolTip()) + " ")
             if self.pref.get("cwtype") == 2:
