@@ -178,10 +178,10 @@ class Database:
                 "INSERT INTO spots(callsign, ts, freq, mode, spotter, comment) VALUES(?, ?, ?, ?, ?, ?)",
                 (
                     spot["callsign"],
-                    spot["ts"],
+                    spot.get("ts", datetime.now(timezone.utc).replace(second=0, microsecond=0, tzinfo=None)),
                     spot["freq"],
                     spot.get("mode", None),
-                    spot["spotter"],
+                    spot.get("spotter", platform.node()),
                     spot.get("comment", None),
                 ),
             )
@@ -296,6 +296,15 @@ class Database:
         )
         return self.cursor.fetchone()
 
+    def delete_spot(self, call: str, freq: float) -> None:
+        """
+        Delete a spot identified by call and frequency.
+        """
+        self.cursor.execute(
+            "delete from spots where callsign = ? and freq = ?",
+            (call, freq))
+        self.db.commit()
+
     def delete_spots(self, minutes: int) -> None:
         """
         Delete spots older than the specified number of minutes.
@@ -317,6 +326,46 @@ class Database:
     def delete_marks(self) -> None:
         """Delete marked spots."""
         self.cursor.execute("delete from spots where ts > datetime('now');")
+
+
+class BandMapScene(QtWidgets.QGraphicsScene):
+    """
+    QGraphicsScene class with custom context menu hook.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+
+    def contextMenuEvent(self, event):
+        item = self.itemAt(event.scenePos(), QtGui.QTransform())
+        if item:
+            callsign = item.property("callsign")
+            freq = item.property("freq")
+            comment = item.toolTip()
+
+            menu = QtWidgets.QMenu()
+            menu.addAction("Confirm", lambda: self.parent.spots.addspot({
+                "callsign": callsign,
+                "freq": freq,
+                "comment": comment,
+            }, True))
+            if "MARKED" in comment:
+                menu.addAction("Unmark", lambda: self.parent.spots.addspot({
+                    "callsign": callsign,
+                    "freq": freq,
+                    "comment": comment.replace("MARKED", ""),
+                }, True))
+            else:
+                menu.addAction("Mark", lambda: self.parent.spots.addspot({
+                    "callsign": callsign,
+                    "freq": freq,
+                    "comment": comment + " MARKED",
+                }, True))
+            menu.addAction("Delete", lambda: self.parent.spots.delete_spot(callsign, freq))
+            menu.exec(event.screenPos())
+        else:
+            super().contextMenuEvent(event)
 
 
 class BandMapWindow(QDockWidget):
@@ -373,13 +422,13 @@ class BandMapWindow(QDockWidget):
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
         # self.font = QFont("JetBrains Mono ExtraLight", 10)
-        self.bandmap_scene = QtWidgets.QGraphicsScene()
-        self.bandmap_scene.setFont(self.thefont)
         self.socket = QtNetwork.QTcpSocket()
         self.socket.readyRead.connect(self.receive)
         self.socket.connected.connect(self.maybeconnected)
         self.socket.disconnected.connect(self.disconnected)
         self.socket.errorOccurred.connect(self.socket_error)
+        self.bandmap_scene = BandMapScene(self)
+        self.bandmap_scene.setFont(self.thefont)
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
         self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
@@ -783,6 +832,7 @@ class BandMapWindow(QDockWidget):
                     | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable
                     | text.flags()
                 )
+                text.setProperty("callsign", items.get("callsign"))
                 text.setProperty("freq", items.get("freq"))
                 text.setToolTip(items.get("comment"))
                 text.setDefaultTextColor(pen_color)
