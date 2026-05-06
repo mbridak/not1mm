@@ -202,7 +202,7 @@ class CAT:
             try:
                 self.online = True
                 if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                    self.rigctrlsocket.send(bytes(f"b {texttosend}\n", "utf-8"))
                 else:
                     self.rigctrlsocket = None
                     self.online = False

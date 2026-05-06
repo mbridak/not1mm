@@ -87,6 +87,7 @@ Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately
     \item RSGB IOTA
     \item SAC CW, SSB
     \item SPDX
+    \item SSA MT
     \item State QSO (limited)
     \item Stew Perry Top band
     \item UK/EI DX
@@ -303,6 +304,20 @@ Under the `CW` tab, there are three options:
  \item `pywinkeyer` normally uses IP `127.0.0.1` and port `8000`
 
  \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`\index{rigctld}.
+\end{itemize}
+
+Other options:
+
+\begin{itemize}
+ \item PgUp/PgDown Stepping: The PgUp and PgDown keys will change the CW speed by this many wpm. Defaults to 1. A value of 2 is a good compromise between faster adjustments and still having fine-grained steps.
+
+ \item Sent RST: Send "599" either in full, or abbreviated as "5NN" or "ENN".
+
+ \item Sent Nr Pad Character: Pad serial numbers with this character. Choices are "0", "O" and "T".
+
+ \item Sent Nr Pad Length: Pad serial numbers to this length. Sensible choices are 3 and 1 (= no padding).
+
+ \item Sent Nr 1, 9, 0: Send numbers in serials as-is or as an abbreviated "cut number".
 \end{itemize}
 
 \subsection{Cluster}
@@ -531,7 +546,7 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     \hline
     \textbf{Key} & \textbf{Result} \\
     \hline
-    Esc & Stop the cwdaemon\index{cwdaemon} from sending Morse characters.\\
+    Esc & Stop CW sending and antenna rotation.\\
     \hline
     PgUp & Increase the CW sending speed. \\
     \hline
@@ -551,9 +566,9 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     \hline
     F1-F12 & Send (CW/RTTY/Voice) macros. \\
     \hline
-    CTRL-S & Spot Callsign to the cluster. \\
+    CTRL-S & Spot callsign to the cluster. \\
     \hline
-    CTRL-M & Highlight Callsign in the bandmap window. \\
+    CTRL-M & Mark callsign in the bandmap window. \\
     \hline
     CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
     \hline
@@ -562,6 +577,10 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     CTRL-= & Log the contact without sending the ESM macros. \\
     \hline
     CTRL-W & Clear the input fields of any text. \\
+    \hline
+    CTRL-R & Toggle the Run state. \\
+    \hline
+    CTRL-Q & Jump to last CQ frequency. \\
     \hline
     ALT-B	& Toggle the bandmap window. \\
     \hline
@@ -609,7 +628,7 @@ You cannot directly edit the multiplier\index{multiplier} status of a contact. S
 
 \textbf{Window >> Bandmap}`
 
-The bandmap displays spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress. 
+The bandmap displays worked stations and spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap.png}
@@ -621,7 +640,7 @@ The VFO\index{VFO} frequency is indicated with a small green triangle above the 
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
 \vspace{0.5cm}
 
-Clicking on a spot\index{spot} sets the VFO\index{VFO} and populates the callsign field. Previously worked callsigns are displayed in red. Callsigns marked with CTRL-M are highlighted in yellow. A small icon after the callsign indicates the mode as follows:\\
+Clicking on a spot\index{spot} sets the VFO\index{VFO} and populates the callsign field. Previously worked callsigns are displayed in gray. Callsigns marked with CTRL-M are highlighted in yellow. A small icon after the callsign indicates the mode as follows:\\
 
 Primary Modes:
 \begin{itemize}
@@ -644,6 +663,14 @@ The icon is followed by the UTC\index{UTC} time of the spot\index{spot}. The scr
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap_icons.png}
 \vspace{0.5cm}
+
+Right-clicking on a spot opens a menu to manage the entry:
+
+\begin{itemize}
+    \item[] Confirm: Refresh spot expiration timestamp and delete all other spots on this frequency (+- 0.1 kHz).
+    \item[] Mark: Mark/Unmark spot to work later and delete all other spots on this frequency.
+    \item[] Delete: Remove spot.
+\end{itemize}
 
 \newpage
 \subsection{The Check Partial Window}
@@ -701,7 +728,7 @@ Once a call is entered and the bearing to contact is calculated you will see a n
 
 At this time you can click on the 'Move' button to point your antenna at the contact. A list of other buttons follows below.
 
-\textbf{Move}: Rotates the antenna at the target.
+\textbf{Move}: Rotates the antenna at the target. Right-click to rotate to long-path (opposite) direction.
 
 \textbf{Stop}: Stops the current movement.
 

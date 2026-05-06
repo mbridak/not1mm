@@ -47,6 +47,7 @@
 - RSGB IOTA
 - SAC CW, SSB
 - SPDX
+- SSA MT
 - State QSO (limited)
 - Stew Perry Topband
 - UK/EI DX
