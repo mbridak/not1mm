@@ -60,6 +60,9 @@
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left-click to rotate antenna towards selected station. Right-click to rotate to long-path direction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="styleSheet">
          <string notr="true">padding-left: 10px; padding-top: 5px; padding-right: 10px; padding-bottom: 5px;</string>
         </property>
@@ -99,7 +102,7 @@
     <item>
      <widget class="QGraphicsView" name="compassView">
       <property name="focusPolicy">
-       <enum>Qt::FocusPolicy::ClickFocus</enum>
+       <enum>Qt::FocusPolicy::NoFocus</enum>
       </property>
       <property name="frameShape">
        <enum>QFrame::Shape::NoFrame</enum>

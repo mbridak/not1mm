@@ -519,6 +519,16 @@
      </item>
      <item>
       <property name="text">
+       <string>SSA MT CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SSA MT SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>STEW PERRY TOPBAND</string>
       </property>
      </item>

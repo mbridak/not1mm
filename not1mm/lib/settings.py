@@ -146,10 +146,27 @@ class Settings(QtWidgets.QDialog):
             self.set_winkeyer_port_hint()
         elif self.preference.get("cwtype") == 3:
             self.set_catforcw_port_hint()
-        self.cwpaddingchar_field.setText(self.preference.get("cwpaddingchar", "T"))
-        self.cwpaddinglength_field.setText(
-            str(self.preference.get("cwpaddinglength", "3"))
+        self.cwpaddinglength_field.setValue(self.preference.get("cwpaddinglength", 3))
+        self.cwstepping_field.setValue(self.preference.get("cwstepping", 1))
+        self.cwsentrst_599.setChecked(self.preference.get("cwsentrst", "599") == "599")
+        self.cwsentrst_5nn.setChecked(self.preference.get("cwsentrst", "599") == "5NN")
+        self.cwsentrst_enn.setChecked(self.preference.get("cwsentrst", "599") == "ENN")
+        self.cwpaddingchar_0.setChecked(
+            self.preference.get("cwpaddingchar", "T") == "0"
         )
+        self.cwpaddingchar_o.setChecked(
+            self.preference.get("cwpaddingchar", "T") == "O"
+        )
+        self.cwpaddingchar_t.setChecked(
+            self.preference.get("cwpaddingchar", "T") == "T"
+        )
+        self.cwserial_0_as_0.setChecked(self.preference.get("cwserial_0", "0") == "0")
+        self.cwserial_0_as_o.setChecked(self.preference.get("cwserial_0", "0") == "O")
+        self.cwserial_0_as_t.setChecked(self.preference.get("cwserial_0", "0") == "T")
+        self.cwserial_1_as_1.setChecked(self.preference.get("cwserial_1", "1") == "1")
+        self.cwserial_1_as_a.setChecked(self.preference.get("cwserial_1", "1") == "A")
+        self.cwserial_9_as_9.setChecked(self.preference.get("cwserial_9", "9") == "9")
+        self.cwserial_9_as_n.setChecked(self.preference.get("cwserial_9", "9") == "N")
 
         self.connect_to_server.setChecked(bool(self.preference.get("useserver", False)))
         self.be_the_master.setChecked(bool(self.preference.get("im_the_master", False)))
@@ -296,11 +313,12 @@ class Settings(QtWidgets.QDialog):
         except ValueError:
             self.preference["cwport"] = None
             ...
-        self.preference["cwpaddingchar"] = self.cwpaddingchar_field.text()
-        try:
-            self.preference["cwpaddinglength"] = int(self.cwpaddinglength_field.text())
-        except ValueError:
-            self.preference["cwpaddinglength"] = 3
+        cwpaddingchar_button = self.cwpaddingchar_group.checkedButton()
+        self.preference["cwpaddingchar"] = (
+            cwpaddingchar_button.text() if cwpaddingchar_button else "0"
+        )
+        self.preference["cwpaddinglength"] = self.cwpaddinglength_field.value()
+        self.preference["cwstepping"] = self.cwstepping_field.value()
         self.preference["cwtype"] = 0
         if self.usecwdaemon_radioButton.isChecked():
             self.preference["cwtype"] = 1
@@ -308,6 +326,23 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwtype"] = 2
         elif self.usecwviacat_radioButton.isChecked():
             self.preference["cwtype"] = 3
+        cwsentrst_button = self.cwsentrst_group.checkedButton()
+        self.preference["cwsentrst"] = (
+            cwsentrst_button.text() if cwsentrst_button else "5NN"
+        )
+        cwserial_1_button = self.cwserial_1_group.checkedButton()
+        self.preference["cwserial_1"] = (
+            cwserial_1_button.text() if cwserial_1_button else "1"
+        )
+        cwserial_9_button = self.cwserial_9_group.checkedButton()
+        self.preference["cwserial_9"] = (
+            cwserial_9_button.text() if cwserial_9_button else "9"
+        )
+        cwserial_0_button = self.cwserial_0_group.checkedButton()
+        self.preference["cwserial_0"] = (
+            cwserial_0_button.text() if cwserial_0_button else "0"
+        )
+
         self.preference["useserver"] = self.connect_to_server.isChecked()
         self.preference["im_the_master"] = self.be_the_master.isChecked()
         self.preference["multicast_group"] = self.multicast_group.text()

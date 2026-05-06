@@ -463,6 +463,8 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
+                    themode = "CW"
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)

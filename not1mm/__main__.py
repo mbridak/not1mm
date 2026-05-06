@@ -5,6 +5,7 @@ Email: michael.bridak@gmail.com
 GPL V3
 Purpose: Provides main logging window and a crap ton more.
 """
+
 # pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
 # pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long, bare-except
 
@@ -409,8 +410,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.log_it.clicked.connect(self.save_contact)
         self.wipe.clicked.connect(self.clearinputs)
-        self.esc_stop.clicked.connect(self.stop_cw)
-        self.mark.clicked.connect(self.mark_spot)
+        self.esc_stop.clicked.connect(self.stop_all)
+        self.mark.clicked.connect(lambda: self.mark_spot(f"{self.current_mode} MARKED"))
         self.spot_it.clicked.connect(self.spot_dx)
 
         self.F1.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -719,6 +720,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_op = self.station.get("Call", "")
         self.voice_process.current_op = self.current_op
         self.make_op_dir()
+        self.cq_freq = None
 
         logger.debug(f"{QT_VERSION_STR=} {PYQT_VERSION_STR=}")
         x = PYQT_VERSION_STR.split(".")
@@ -1101,8 +1103,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.contact_is_dupe = result
                         if result is not False:
                             self.dupe_indicator.show()
+                            self.callsign.setStyleSheet("color: red;")
                         else:
                             self.dupe_indicator.hide()
+                            self.callsign.setStyleSheet("")
 
                     if json_data.get("subject") == "POST":
                         self.remove_confirmed_commands(json_data)
@@ -1309,15 +1313,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.vfo_window:
                     self.vfo_window.msg_from_main(msg)
                 vfo = msg.get("freq")
-                vfo = float(vfo) * 1000000
+                vfo = float(vfo) * 1000
                 self.radio_state["vfoa"] = int(vfo)
                 if self.rig_control:
                     self.rig_control.set_vfo(int(vfo))
                 spot = msg.get("spot", "")
+                if spot == "CQ":  # saved CQ frequency, switch to RUN
+                    self.clearinputs()
+                    self.set_running(True)
+                    return
                 self.callsign.setText(spot)
                 self.callsign_changed()
                 self.callsign.setFocus()
                 self.callsign.activateWindow()
+                self.set_running(False)
                 return
 
             if msg.get("cmd", "") == "GETWORKEDLIST":
@@ -2319,7 +2328,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.show_message_box(
-            "[ESC]\tStops cwdaemon from sending Morse.\n"
+            "[ESC]\tStops CW sending and antenna rotation.\n"
             "[PgUp]\tIncreases the cw sending speed.\n"
             "[PgDown]\tDecreases the cw sending speed.\n"
             "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
@@ -2339,7 +2348,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "[CTRL-SHIFT-K] Open CW text input field.\n"
             "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
             "[CTRL-W]\tClears the input fields of any text.\n"
-            "[CTRL-R]\tToggle the Run state.\n",
+            "[CTRL-R]\tToggle the Run state.\n"
+            "[CTRL-Q]\tJump to last CQ frequency.\n",
             blocking=False,
         )
 
@@ -2624,17 +2634,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pref["cw_speed"] = self.cw_speed.value()
         if self.cw is None:
             return
+        self.cw.speed = self.cw_speed.value()
         if self.cw.servertype == 1:
-            self.cw.speed = self.cw_speed.value()
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
-            self.cw.set_winkeyer_speed(self.cw_speed.value())
+            self.cw.set_winkeyer_speed(self.cw.speed)
         if self.rig_control and self.rig_control.cat:
             if self.pref.get("cwtype") == 3:
                 if self.rig_control.interface == "flrig":
-                    self.rig_control.cat.set_flrig_cw_speed(self.cw_speed.value())
+                    self.rig_control.cat.set_flrig_cw_speed(self.cw.speed)
                 elif self.rig_control.interface == "rigctld":
-                    self.rig_control.cat.set_rigctl_cw_speed(self.cw_speed.value())
+                    self.rig_control.cat.set_rigctl_cw_speed(self.cw.speed)
 
     def stop_cw(self) -> None:
         """"""
@@ -2657,7 +2667,27 @@ class MainWindow(QtWidgets.QMainWindow):
                     if self.rig_control.interface == "rigctld":
                         self.rig_control.cat.stopcwrigctl()
 
-    def mark_spot(self) -> None:
+    def stop_all(self) -> None:
+        """Stop CW and rotator."""
+        self.stop_cw()
+        if self.rotator_window is not None:
+            self.rotator_window.stop()
+
+    def mark_cq(self) -> None:
+        """
+        Mark CQ frequency in bandmap. Remember the last frequency so we don't re-add a new spot every few seconds.
+        """
+        freq = self.radio_state.get("vfoa")
+        if freq and freq != self.cq_freq and self.bandmap_window:
+            cmd = {}
+            cmd["cmd"] = "MARKDX"
+            cmd["dx"] = "CQ"
+            cmd["freq"] = float(int(freq) / 1000)
+            cmd["comment"] = f"CQ {self.current_mode} MARKED"
+            self.bandmap_window.msg_from_main(cmd)
+            self.cq_freq = freq
+
+    def mark_spot(self, comment="") -> None:
         """"""
         freq = self.radio_state.get("vfoa")
         dx = self.callsign.text()
@@ -2666,6 +2696,7 @@ class MainWindow(QtWidgets.QMainWindow):
             cmd["cmd"] = "MARKDX"
             cmd["dx"] = dx
             cmd["freq"] = float(int(freq) / 1000)
+            cmd["comment"] = comment
             if self.bandmap_window:
                 self.bandmap_window.msg_from_main(cmd)
 
@@ -2765,15 +2796,7 @@ class MainWindow(QtWidgets.QMainWindow):
             event.key() == Qt.Key.Key_M
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):
-            freq = self.radio_state.get("vfoa")
-            dx = self.callsign.text()
-            if freq and dx:
-                cmd = {}
-                cmd["cmd"] = "MARKDX"
-                cmd["dx"] = dx
-                cmd["freq"] = float(int(freq) / 1000)
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
+            self.mark_spot(comment=f"{self.current_mode} MARKED")
             return
         if (
             event.key() == Qt.Key.Key_G
@@ -2786,6 +2809,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["dx"] = dx
                 if self.bandmap_window:
                     self.bandmap_window.msg_from_main(cmd)
+            return
+        if (
+            event.key() == Qt.Key.Key_Q
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):  # pylint: disable=no-member
+            if self.cq_freq:
+                self.radio_state["vfoa"] = self.cq_freq
+                if self.rig_control:
+                    self.rig_control.set_vfo(self.cq_freq)
+                self.set_running(True)
+                self.clearinputs()
             return
         if (
             event.key() == Qt.Key.Key_R
@@ -2811,7 +2845,7 @@ class MainWindow(QtWidgets.QMainWindow):
             event.key() == Qt.Key.Key_Escape
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
-            self.stop_cw()
+            self.stop_all()
         if event.key() == Qt.Key.Key_Up:
             cmd = {}
             cmd["cmd"] = "PREVSPOT"
@@ -2829,7 +2863,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
-                self.cw.speed += 1
+                self.cw.speed += self.pref.get("cwstepping", 1)
                 self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
@@ -2841,7 +2875,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier != Qt.KeyboardModifier.ControlModifier
         ):
             if self.cw is not None:
-                self.cw.speed -= 1
+                self.cw.speed -= self.pref.get("cwstepping", 1)
                 self.cw_speed.setValue(self.cw.speed)
                 if self.cw.servertype == 1:
                     self.cw.sendcw(f"\x1b2{self.cw.speed}")
@@ -2930,8 +2964,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
-                self.radioButton_run.setChecked(True)
-                self.run_sp_buttons_clicked()
+                self.set_running(True)
                 # self.make_button_blue(self.F1)
                 self.leftdot.show()
                 self.cwprogressBar.setValue(100)
@@ -2942,6 +2975,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     milliseconds=self.auto_cq_delay
                 )
             self.process_function_key(self.F1)
+            self.mark_cq()
             return
         if event.key() == Qt.Key.Key_F2:
             self.process_function_key(self.F2)
@@ -3039,6 +3073,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.dupe_indicator.hide()
+        self.callsign.setStyleSheet("")
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
         self.history_info.setText("")
@@ -3231,6 +3266,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.send_contact_info()
 
         self.database.log_contact(self.contact)
+        if not self.pref["run_state"]:  # in S&P mode, put the contact into the bandmap
+            self.mark_spot(comment=self.current_mode)
+
         # Copy the last contact so it can be sent to the cluster:
         self.previous_contact = dict(self.contact)
         self.current_sn = None
@@ -3512,6 +3550,38 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
 
+    def format_serial(self, serial: str) -> str:
+        """
+        Pad serial number to desired length (all modes) and do CW cut numbers replacements.
+        """
+
+        serial = serial.lstrip("0")
+        if self.radio_state.get("mode") == "CW":
+            serial = (
+                serial.replace("1", self.pref.get("cwserial_1", "1"))
+                .replace("9", self.pref.get("cwserial_9", "9"))
+                .replace("0", self.pref.get("cwserial_0", "0"))
+            )
+            padding = self.pref.get("cwpaddingchar", "T")
+        else:
+            padding = "0"
+        serial = serial.rjust(self.pref.get("cwpaddinglength", 3), padding)
+        return serial
+
+    def format_rst(self, rst: str) -> str:
+        """
+        Apply CW cut numbers to RST sent.
+        """
+
+        if self.radio_state.get("mode") == "CW":
+            # Only send "E" if the full report is 599, we shouldn't end up with
+            # something mixed like "E8N"
+            if self.pref.get("cwsentrst", "5NN") == "ENN" and rst == "599":
+                return "ENN"
+            if self.pref.get("cwsentrst", "5NN") in ("5NN", "ENN"):
+                return rst.replace("9", "N")
+        return rst
+
     def process_macro(self, macro: str) -> str:
         """
         Process CW macro substitutions for contest.
@@ -3535,49 +3605,17 @@ class MainWindow(QtWidgets.QMainWindow):
         result = self.database.get_last_serial()
         prev_serial = str(result.get("serial_nr", "1")).zfill(3)
         macro = macro.upper()
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace(
-                "#",
-                next_serial.rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-        else:
-            macro = macro.replace("#", next_serial)
+        macro = macro.replace(  # handle EXCH first so it can contain more macros
+            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
+        )
+        macro = macro.replace("#", self.format_serial(next_serial))
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         macro = macro.replace("{OTHER1}", self.other_1.text())
         macro = macro.replace("{OTHER2}", self.other_2.text())
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace("{SNT}", self.sent.text().replace("9", "n"))
-        else:
-            macro = macro.replace("{SNT}", self.sent.text())
-        macro = macro.replace(
-            "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
-        )
-        if self.radio_state.get("mode") == "CW":
-            macro = macro.replace(
-                "{SENTNR}",
-                self.other_1.text()
-                .lstrip("0")
-                .rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-            macro = macro.replace(
-                "{PREVNR}",
-                str(prev_serial)
-                .lstrip("0")
-                .rjust(
-                    self.pref.get("cwpaddinglength", 3),
-                    self.pref.get("cwpaddingchar", "T"),
-                ),
-            )
-        else:
-            macro = macro.replace("{SENTNR}", self.other_1.text())
-            macro = macro.replace("{PREVNR}", str(prev_serial))
+        macro = macro.replace("{SNT}", self.format_rst(self.sent.text()))
+        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text()))
+        macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial)))
 
         if "{TX}" in macro:
             macro = macro.replace("{TX}", "")
@@ -3600,18 +3638,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.save_contact()
         if "{MARK}" in macro:
             macro = macro.replace("{MARK}", "")
-            self.mark_spot()
+            self.mark_spot(comment=f"{self.current_mode} MARKED")
         if "{SPOT}" in macro:
             macro = macro.replace("{SPOT}", "")
             self.spot_dx()
         if "{RUN}" in macro:
             macro = macro.replace("{RUN}", "")
-            self.radioButton_run.setChecked(True)
-            self.run_sp_buttons_clicked()
+            self.set_running(True)
         if "{SANDP}" in macro:
             macro = macro.replace("{SANDP}", "")
-            self.radioButton_sp.setChecked(True)
-            self.run_sp_buttons_clicked()
+            self.set_running(False)
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
@@ -3739,22 +3775,27 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if self.cw:
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(self.process_macro(function_key.toolTip()))
-                self.rig_control.sendcw(" ")
+                self.rig_control.sendcw(
+                    self.process_macro(function_key.toolTip()) + " "
+                )
                 return
-            self.cw.sendcw(self.process_macro(function_key.toolTip()))
-            self.cw.sendcw(" ")
+            self.cw.sendcw(self.process_macro(function_key.toolTip()) + " ")
             if self.pref.get("cwtype") == 2:
                 # I put this back in 'cause no one will know to update winkeyerserial.
                 time.sleep(0.2)
 
+    def set_running(self, run: bool) -> None:
+        """Set Run/S&P. Avoid re-reading all state when nothing changed."""
+        if run != self.pref["run_state"]:
+            if run:
+                self.radioButton_run.setChecked(True)
+            else:
+                self.radioButton_sp.setChecked(True)
+            self.run_sp_buttons_clicked()
+
     def toggle_run_sp(self) -> None:
         """Toggles the radioButton_run and radioButton_sp."""
-        if self.radioButton_run.isChecked():
-            self.radioButton_sp.setChecked(True)
-        else:
-            self.radioButton_run.setChecked(True)
-        self.run_sp_buttons_clicked()
+        self.set_running(not self.pref["run_state"])
 
     def run_sp_buttons_clicked(self) -> None:
         """
@@ -4282,6 +4323,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.check_window:
             self.check_window.msg_from_main(cmd)
         self.dupe_indicator.hide()
+        self.callsign.setStyleSheet("")
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
             self.check_dupe(stripped_text)
@@ -4541,8 +4583,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.contact_is_dupe = result.get("isdupe", False)
             if bool(result.get("isdupe", False)) is not False:
                 self.dupe_indicator.show()
+                self.callsign.setStyleSheet("color: red;")
             else:
                 self.dupe_indicator.hide()
+                self.callsign.setStyleSheet("")
 
     def setmode(self, mode: str) -> None:
         """Call when the mode changes."""
@@ -5059,6 +5103,7 @@ def install_icons() -> None:
         os.system(
             f"xdg-desktop-menu install {fsutils.APP_DATA_PATH}/k6gte-not1mm.desktop"
         )
+        QtGui.QGuiApplication.setDesktopFileName("k6gte-not1mm")
 
 
 def doimp(modname: str) -> object:
@@ -5084,6 +5129,8 @@ def run() -> None:
     """
     Main Entry
     """
+
+    install_icons()
     splash.show()
     # app.processEvents()
     splash.showMessage(
@@ -5102,7 +5149,6 @@ def run() -> None:
     logger.debug(
         f"\nResolved OS file system paths:\nAPP_DATA_PATH {fsutils.APP_DATA_PATH}\nMODULE_PATH {fsutils.MODULE_PATH}\nUSER_DATA_PATH {fsutils.USER_DATA_PATH}\nCONFIG_PATH {fsutils.CONFIG_PATH}\nLOG_FILE {fsutils.LOG_FILE}"
     )
-    install_icons()
     sys.exit(app.exec())
 
 
