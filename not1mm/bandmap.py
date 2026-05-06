@@ -802,8 +802,12 @@ class BandMapWindow(QDockWidget):
                     flag += "[S]"
 
                 pen_color = self.text_color
-                if "MARKED" in items.get("comment"):
-                    pen_color = QColor(254, 194, 17)
+                if items.get("comment") == "MARKED":
+                    setdarkmode = self.is_it_dark()
+                    if setdarkmode is True:
+                        pen_color = QColor(254, 194, 17)
+                    else:
+                        pen_color = QColor(0, 160, 0)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.altname in call_bandlist:

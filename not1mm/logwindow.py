@@ -6,6 +6,7 @@ GPL V3
 Class: LogWindow
 Purpose: Onscreen widget to show and edit logged contacts.
 """
+
 # pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, too-many-lines
 # QTableWidget
@@ -93,8 +94,7 @@ class LogWindow(QDockWidget):
         21: "UUID",
         22: "Operator",
     }
-    logwindow_closed = pyqtSignal()       
-
+    logwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -104,7 +104,7 @@ class LogWindow(QDockWidget):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
- 
+
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
@@ -121,9 +121,14 @@ class LogWindow(QDockWidget):
         self.generalLog.setColumnCount(len(self.columns))
         self.focusedLog.setColumnCount(len(self.columns))
 
-        self.checkmark = QtGui.QPixmap(str(fsutils.APP_DATA_PATH / "check.png"))
+        self.gcheckmark = QtGui.QPixmap(str(fsutils.APP_DATA_PATH / "check.png"))
+        self.rcheckmark = QtGui.QPixmap(str(fsutils.APP_DATA_PATH / "rcheck.png"))
         self.checkicon = QtGui.QIcon()
-        self.checkicon.addPixmap(self.checkmark)
+        setdarkmode = self.is_it_dark()
+        if setdarkmode is True:
+            self.checkicon.addPixmap(self.gcheckmark)
+        else:
+            self.checkicon.addPixmap(self.rcheckmark)
         self.generalLog.setContextMenuPolicy(
             QtCore.Qt.ContextMenuPolicy.CustomContextMenu
         )
@@ -550,6 +555,12 @@ class LogWindow(QDockWidget):
 
     def dummy(self):
         """the dummy"""
+
+    def is_it_dark(self) -> bool:
+        """Returns if the DE has a dark theme active."""
+        hints = QtGui.QGuiApplication.styleHints()
+        scheme = hints.colorScheme()
+        return
 
     def edit_focused_contact_selected(self, clicked_cell) -> None:
         """
