@@ -6,6 +6,7 @@ GPL V3
 Class: CheckWindow
 Purpose: Onscreen widget to show possible matches to callsigns entered in the main window.
 """
+
 # pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, line-too-long
 
@@ -92,6 +93,8 @@ class CheckWindow(QDockWidget):
             self.log_list(call)
             return
         if packet.get("cmd", "") == "CHECKSPOTS":
+            call = packet.get("call", "")
+            self.call = call
             self.populate_layout(self.dxcLayout, [])
             spots = packet.get("spots", [])
             self.telnet_list(spots)
