@@ -2886,7 +2886,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if (
             event.key() == Qt.Key.Key_Period
             and modifier == Qt.KeyboardModifier.ControlModifier
-         ):
+        ):
             freq = self.radio_state.get("vfoa")
             selected_mode = self.radio_state.get("mode")
             if  selected_mode == "CW":
