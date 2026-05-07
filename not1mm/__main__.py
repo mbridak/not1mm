@@ -2885,9 +2885,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if (
             event.key() == Qt.Key.Key_Period
             and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
+         ):
             freq = self.radio_state.get("vfoa")
-            vfo = int(freq) + 20
+            selected_mode = self.radio_state.get("mode")
+            if  selected_mode == "CW":
+                deltaf = 20
+            elif selected_mode in ["LSB", "USB", "SSB"]:  
+                deltaf = 100
+            else:
+                deltaf = 0
+            vfo = int(freq) + deltaf
             if self.rig_control:
                 self.rig_control.set_vfo(vfo)
                 return
@@ -2896,10 +2903,17 @@ class MainWindow(QtWidgets.QMainWindow):
             and modifier == Qt.KeyboardModifier.ControlModifier
         ):
             freq = self.radio_state.get("vfoa")
-            vfo = int(freq) - 20
+            selected_mode = self.radio_state.get("mode")
+            if  selected_mode == "CW":
+                deltaf = 20
+            elif selected_mode in ["LSB", "USB", "SSB"]:  
+                deltaf = 100
+            else:
+                deltaf = 0
+            vfo = int(freq) - deltaf
             if self.rig_control:
                 self.rig_control.set_vfo(vfo)
-                return
+                return        
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
