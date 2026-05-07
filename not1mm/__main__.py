@@ -2882,6 +2882,24 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 2:
                     self.cw.set_winkeyer_speed(self.cw_speed.value())
             return
+        if (
+            event.key() == Qt.Key.Key_Period
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            freq = self.radio_state.get("vfoa")
+            vfo = int(freq) + 20
+            if self.rig_control:
+                self.rig_control.set_vfo(vfo)
+                return
+        if (
+            event.key() == Qt.Key.Key_Comma
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            freq = self.radio_state.get("vfoa")
+            vfo = int(freq) - 20
+            if self.rig_control:
+                self.rig_control.set_vfo(vfo)
+                return
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
