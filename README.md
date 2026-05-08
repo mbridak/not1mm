@@ -69,33 +69,20 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-05-07] Merge remote-tracking branch 'origin/master' into 525-rework-pacc
+  - Add Dutch contest logic to points calculation in PACC
+  - Add call history support to PACC
+  - Merge pull request #561 from microphonon/dual_mode_VFO_bump
+  - Merge pull request #560 from mbridak/530-wrong-checkpartial-hilighting-in-telnet-column
 - [2026-05-06] Merge pull request #556 from df7cb Add context menu on bandmap spots
   - trimmed configuration.ui file with trim_ui.sh script to stop uic parser from crashing
+  - Merge pull request #559 from microphonon Keyboard control to bump VFO frequency
 - [2026-05-05] Fix crash in cabrillo generation
 - [2026-05-04] Merge pull request #549 from df7cb Remember CQ frequencies in bandmap
   - Merge pull request #548 from df7cb Send serials with CW cut numbers
   - Merge pull request #547 from df7cb Remove padding around bandmap scroll area, Convert bandmap to kHz
   - Merge pull request #551 from mbridak Refactor CW mode handling in Cabrillo format for multiple plugins
 - [2026-05-01] Merge pull request #544 from mbridak Change LCD number color from white to green in VfoWindow
-- [2026-04-30] Merge pull request #543 from df7cb/degrees
-  - Merge pull request #542 from df7cb Show rotator azimuth in dock window title
-  - Set desktop file name so icon is shown in task bar
-- [2026-04-27] Merge pull request #540 from df7cb Add worked stations to bandmap and teach it about bands
-- [2026-04-26] Merge pull request #536 from df7cb/Sort bands in Stats window
-  - Merge pull request #535 from df7cb/Prevent rotator, dxcc and zone windows from stealing focus
-  - Merge pull request #534 from df7cb/Make ESC (the key and the button) stop CW and the rotator
-  - Merge pull request #537 from df7cb/Color callsign red on dupes
-  - Merge pull request #538 from df7cb/Fix space between adjacent macros
-  - Merge pull request #532 from df7cb/PgUp/PgDown change CW speed by 2 wpm
-  - Merge pull request #531 from df7cb/Keep self.cw.speed and self.cw_speed.value() in sync
-  - Merge pull request #529 from TnxQSO-Admin/Add SSA Månadstest (SSA MT) contest plugin for CW and SSB
-- [2026-04-14] Fix bug where stroke character in station call was interpreted as a file folder delimiter in cabrillo filenames.
-- [2026-04-08] Merge pull request #522 from mbridak/agcw-qrp
-  - Refactor AGCW QRP plugin: remove unused member variable and streamline database queries
-- [2026-03-21] Refactor NR formatting and clean up unused imports in AGCW QRP plugin
-  - Update accessible name for member number and enhance SentNr formatting in AGCW QRP plugin
-  - Refactor QSO Points and update hints in AGCW QRP plugin
-- [2026-03-18] Add AGCW QRP contest support from Michael Hartje DK5HH and update UI for new contest entry
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
