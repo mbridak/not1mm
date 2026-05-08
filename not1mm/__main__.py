@@ -1360,6 +1360,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if msg.get("cmd", "") == "CHECKSPOTS":
                 if self.check_window:
+                    msg["call"] = self.callsign.text()
                     self.check_window.msg_from_main(msg)
 
             # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
@@ -2882,6 +2883,38 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.cw.servertype == 2:
                     self.cw.set_winkeyer_speed(self.cw_speed.value())
             return
+        if (
+            event.key() == Qt.Key.Key_Period
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            freq = self.radio_state.get("vfoa")
+            selected_mode = self.radio_state.get("mode")
+            if  selected_mode == "CW":
+                deltaf = 20
+            elif selected_mode in ["LSB", "USB", "SSB"]:  
+                deltaf = 100
+            else:
+                deltaf = 0
+            vfo = int(freq) + deltaf
+            if self.rig_control:
+                self.rig_control.set_vfo(vfo)
+                return
+        if (
+            event.key() == Qt.Key.Key_Comma
+            and modifier == Qt.KeyboardModifier.ControlModifier
+        ):
+            freq = self.radio_state.get("vfoa")
+            selected_mode = self.radio_state.get("mode")
+            if  selected_mode == "CW":
+                deltaf = 20
+            elif selected_mode in ["LSB", "USB", "SSB"]:  
+                deltaf = 100
+            else:
+                deltaf = 0
+            vfo = int(freq) - deltaf
+            if self.rig_control:
+                self.rig_control.set_vfo(vfo)
+                return        
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
