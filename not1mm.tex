@@ -273,7 +273,7 @@ select \textbf{File >> Configuration Settings}.
 
 \subsection{Callsign Lookup}
 
-Two services are supported:~QRZ and HamQTH. Username and password are required so enter that information here.
+Two services are supported:~QRZ.com and HamQTH.com. Username and password are required so enter that information here. Note that a paid subscription to QRZ.com is required to use their lookup service.
 
 \subsection{Soundcard}
 
@@ -306,18 +306,18 @@ Under the `CW` tab, there are three options:
  \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`\index{rigctld}.
 \end{itemize}
 
-Other options:
+Other CW configuration settings:
 
 \begin{itemize}
- \item PgUp/PgDown Stepping: The PgUp and PgDown keys will change the CW speed by this many wpm. Defaults to 1. A value of 2 is a good compromise between faster adjustments and still having fine-grained steps.
+ \item PgUp/PgDown Stepping: The PgUp and PgDown keys increment the keyer speed by the specified amount. The default step is 1 wpm with option to select steps anywhere in the range 1--10 wpm.
+ 
+ \item Sent RST: If a CW contest requires an RST report, the convention is to always use 599. This can be sent as either 599, 5NN, or ENN. 5NN is the most common.
 
- \item Sent RST: Send "599" either in full, or abbreviated as "5NN" or "ENN".
+ \item Sent Nr Pad Character: Contest serial numbers can be optionally left-padded. Choices for the padding character are 0, O, or T.
 
- \item Sent Nr Pad Character: Pad serial numbers with this character. Choices are "0", "O" and "T".
+ \item Sent Nr Pad Length: Pad serial numbers with a specified number of padding characters. As an example, selecting the character T with a padding length of 3 sends the serial number 8 as TT8. Setting the padding length to 1 will result in no padding.
 
- \item Sent Nr Pad Length: Pad serial numbers to this length. Sensible choices are 3 and 1 (= no padding).
-
- \item Sent Nr 1, 9, 0: Send numbers in serials as-is or as an abbreviated "cut number".
+ \item Sent Nr 1, 9, 0: Select how to send these characters in contest serial numbers. When sent as cut numbers, the character A replaces 1, N replaces 9, and T replaces 0.
 \end{itemize}
 
 \subsection{Cluster}
@@ -594,6 +594,10 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     \hline
     ALT-V	& Toggle the VFO\index{VFO} window. \\
     \hline
+    ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+    \hline
+    ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+    \hline
 \end{tabular}
 
 \subsection{The Log Window}
@@ -714,7 +718,7 @@ The Rotator\index{Rotator} window is a work in progress. The Rotator window reli
 \includegraphics[width=0.5\linewidth]{pic/rot1.png}
 \vspace{0.5cm}
 
-Once there is a connection to rotctld, the current azimuth of the antenna is obtained and you will see a direction needle apear:
+Once there is a connection to rotctld, the current azimuth of the antenna is obtained and you will see a direction needle appear:
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/rot2.png}
