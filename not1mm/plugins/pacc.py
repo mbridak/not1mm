@@ -227,10 +227,21 @@ def points(self):
     return 0
 
 
+def im_dutch(self):
+    my_exchange = str(self.contest_settings.get("SentExchange", 0))
+    if my_exchange.isalpha():
+        return True
+    return False
+
+
 def show_mults(self):
     """Return display string for mults"""
 
-    sql = f"select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest} and NR in ('DR','FL','FR','GD','GR','LB','NB','NH','OV','UT','ZH','ZL');"
+    sql = ""
+    if im_dutch(self) is False:
+        sql = f"select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest} and NR in ('DR','FL','FR','GD','GR','LB','NB','NH','OV','UT','ZH','ZL');"
+    else:
+        sql = f"select count(DISTINCT(CountryPrefix || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest};"
 
     result = self.database.exec_sql(sql)
     if result:
