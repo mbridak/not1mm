@@ -1,5 +1,69 @@
-"""rac canada day"""
+"""Dutch PACC Contest"""
 
+"""
+6. Exchange:
+6.1 Non-Dutch (Non-PA) stations: signal report + QSO number, starting with 001.
+6.1.1 Non-Dutch (Non-PA) MOAB (Multi Op, All Bands) stations can use separate serial numbers for each band if using
+more than one transmitter at a time. If only one transmitter at a time is used, chronological serial numbers need to be used,
+but skipped numbers are allowed (e.g. as a result of blocking numbers for the multiplier station).
+6.2 Dutch (PA) stations: signal report + province code (two letters).
+There are 12 provinces: DR, FL, FR, GD, GR, LB, NB, NH, OV, UT, ZH and ZL
+7. QSO Points
+7.1 Each valid contact with another participating contest station is worth one (1) point. For foreign stations: only contacts
+with Dutch (PA) stations count. In MIXED mode (CW/SSB) a valid qso counts once per mode per band. For PA stations:
+cross contest contacts (e.g. if the PACC coincides with the RSGB 160m contest) are considered valid as long as a serial
+number is received. No cross mode or cross band contacts are allowed.
+7.2 SWL stations count each individual heard PACC contest station (both Dutch (PA) and non-Dutch (Non-PA)) as 1 point
+provided both the calls and the exchange number of the heard station (i.e. RST + number or RST + Province) is logged of
+the QSO of concern. Each call counts only once per band, per mode and one particular contest station may not be logged
+as counter station more than 10 times per band.
+7.2.1 All SWL QSO’s should be logged during the contest.
+8. Dupes
+8.1 Dupes are contacts made with the same station on the same band. If the first contact between stations is valid, dupes
+have 0 points value. If the first contact is not valid, the second (dupe) contact is accepted.
+8.2 DO NOT DELETE DUPES! Dupe contacts are not penalized; one does not have to mark them in the Cabrillo log
+submission.
+Moreover, entrants are strongly recommended to leave DUPES in the log file.
+9. Multipliers
+9.1 Non-Dutch (Non-PA) stations (incl. SWL stations): a multiplier of one (1) for each different Dutch (PA) province
+contacted on each band on each mode.
+The Dutch (PA) province abbreviations are:
+DR = Drenthe NB = Noord-Brabant
+FL = Flevoland NH = Noord-Holland
+FR = Friesland OV = Overijssel
+GD = Gelderland UT = Utrecht
+GR = Groningen ZH = Zuid-Holland
+LB = Limburg ZL = Zeeland
+9.2 Dutch (PA) stations (incl. SWL stations):
+• A multiplier of one (1) for each different DXCC entity (ARRL list) on each band, each mode including PA, with the
+following exceptions:
+• A multiplier of one (1) for each different call area of Asiatic Russia (UA8/9/0), Chile (CE), Japan (JA), Argentina (LU),
+Brazil (PY), Canada (VE), USA, Australia (VK), South Africa (ZS) and New-Zealand (ZL) on each band, each mode.
+Note 1: this means that Asiatic Russia has 3 call areas/multipliers: UA8, UA9 and UA0. Canadian call areas are interpreted
+as geographical districts, which means VE1, VO1, VY1, VE2, VO2, VY2, VY0 are all separate multipliers, but e.g. VE2,
+CG2, XK2 are all the same multiplier (VE2).
+Note 2: A reciprocal call sign in one of the countries which have call areas as multipliers, but without a call area designation,
+is counted as the zero-call area, e.g. LU/G3XYZ gives multiplier LU0. Reciprocal calls in W, JA, VE and UA need to indicate
+their call area, otherwise the call should be regarded as invalid, e.g. W3/DL8ABC is valid, W/DL8ABC is invalid. (This
+means that, theoretically, PY0 is a separate multiplier besides PY0F, PY0S and PY0T).
+Note 3: Call areas are taken as-is from the call sign, even if it is known that the station is located in a different area,
+UNLESS the station explicitly indicates it. E.g. K5ZD is multiplier W5, but K5ZD/1 would give multiplier W1.
+Note 4: Special call signs will count for the call area to which they geographically belong (e.g. UE150SBM = UA0).
+"""
+
+"""
+Test calls
+
+PA2WRD             PA3ADU             PA3AKP             PA3ARM
+PA3BGQ             PA3BQP             PA3BQS             PA3CDD
+PA3CSG             PA3CXB              PA3DB             PA3DNA
+PA3DRL             PA3DSB             PA3DTR             PA3DUU
+PA3DVA             PA3DWJ             PA3EEG             PA3EKM
+PA3ELQ              PA3EM             PA3EMN             PA3EOU
+PA3EOZ             PA3EPO             PA3EVY             PA3EWG
+PA3FUJ             PA3FZV             PA3GDD             PA3GEO
+PA3GMM  
+"""
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
@@ -36,23 +100,6 @@ advance_on_space = [True, True, True, True, True]
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 3
 
-RAC_OFFICIAL_STATIONS = [
-    "VA2RAC",
-    "VA3RAC",
-    "VE1RAC",
-    "VE4RAC",
-    "VE5RAC",
-    "VE6RAC",
-    "VE7RAC",
-    "VE8RAC",
-    "VE9RAC",
-    "VO1RAC",
-    "VO2RAC",
-    "VY0RAC",
-    "VY1RAC",
-    "VY2RAC",
-    "VE3RHQ",
-]
 
 PROV_SEC = [
     "DR",
@@ -180,10 +227,21 @@ def points(self):
     return 0
 
 
+def im_dutch(self):
+    my_exchange = str(self.contest_settings.get("SentExchange", 0))
+    if my_exchange.isalpha():
+        return True
+    return False
+
+
 def show_mults(self):
     """Return display string for mults"""
 
-    sql = f"select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest} and NR in ('DR','FL','FR','GD','GR','LB','NB','NH','OV','UT','ZH','ZL');"
+    sql = ""
+    if im_dutch(self) is False:
+        sql = f"select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest} and NR in ('DR','FL','FR','GD','GR','LB','NB','NH','OV','UT','ZH','ZL');"
+    else:
+        sql = f"select count(DISTINCT(CountryPrefix || ':' || Band || ':' || Mode)) as mult_count from dxlog where ContestNR = {self.database.current_contest};"
 
     result = self.database.exec_sql(sql)
     if result:
@@ -217,7 +275,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "RAC-CANADA-DAY")
+    gen_adif(self, cabrillo_name, "PACC")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -403,7 +461,7 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
                     themode = "CW"
-                if themode == "LSB" or themode == "USB":
+                if themode in ("LSB", "USB", "AM", "FM"):
                     themode = "PH"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
@@ -539,3 +597,24 @@ def just_points(self):
             score = "0"
         return int(score)
     return 0
+
+
+def populate_history_info_line(self):
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(
+            f"{result.get('Call', '')}, {result.get('Sect', '')}, {result.get('UserText','...')}"
+        )
+    else:
+        self.history_info.setText("")
+
+
+def check_call_history(self):
+    """"""
+    result = self.database.fetch_call_history(self.callsign.text())
+    if result:
+        self.history_info.setText(f"{result.get('UserText','')}")
+        # if self.other_1.text() == "":
+        #     self.other_1.setText(f"{result.get('Exch1', '')}")
+        if self.other_2.text() == "":
+            self.other_2.setText(f"{result.get('Sect', '')}")
