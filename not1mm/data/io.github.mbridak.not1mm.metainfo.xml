@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.mbridak.not1mm</id>
+  
+  <name>Not1MM</name>
+  <summary>Amateur radio contest logger</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  
+  <description>
+    <p>
+      An Amateur Radio contest logger supporting close to 50 contests. Allowing the user to easily log contacts and submit a Cabrillo or ADIF file at the end. Not1MM leverages Python, Qt6 and Sqlite to provide a visually pleasing interface.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">k6gte-not1mm.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/mbridak/not1mm/raw/master/pic/main.png</image>
+    </screenshot>
+  </screenshots>
+</component>
