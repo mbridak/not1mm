@@ -4241,10 +4241,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.contest.advance_on_space[3]:
                     text = self.other_1.text()
                     text = text.upper()
-                    # position = self.other_1.cursorPosition()
+                    position = self.other_1.cursorPosition()
                     stripped_text = text.strip().replace(" ", "")
                     self.other_1.setText(stripped_text)
-                    # self.other_1.setCursorPosition(position)
+                    self.other_1.setCursorPosition(position)
                     if " " in text:
                         next_tab = self.tab_next.get(self.other_1)
                         next_tab.setFocus()
@@ -4277,10 +4277,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.contest.advance_on_space[4]:
                     text = self.other_2.text()
                     text = text.upper()
-                    # position = self.other_2.cursorPosition()
+                    position = self.other_2.cursorPosition()
                     stripped_text = text.strip().replace(" ", "")
                     self.other_2.setText(stripped_text)
-                    # self.other_2.setCursorPosition(position)
+                    self.other_2.setCursorPosition(position)
                     if " " in text:
                         next_tab = self.tab_next.get(self.other_2)
                         next_tab.setFocus()
