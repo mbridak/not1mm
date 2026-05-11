@@ -1,7 +1,13 @@
 # Changelog
 
+- [2026-05-07] Merge remote-tracking branch 'origin/master' into 525-rework-pacc
+  - Add Dutch contest logic to points calculation in PACC
+  - Add call history support to PACC
+  - Merge pull request #561 from microphonon/dual_mode_VFO_bump
+  - Merge pull request #560 from mbridak/530-wrong-checkpartial-hilighting-in-telnet-column
 - [2026-05-06] Merge pull request #556 from df7cb Add context menu on bandmap spots
   - trimmed configuration.ui file with trim_ui.sh script to stop uic parser from crashing
+  - Merge pull request #559 from microphonon Keyboard control to bump VFO frequency
 - [2026-05-05] Fix crash in cabrillo generation
 - [2026-05-04] Merge pull request #549 from df7cb Remember CQ frequencies in bandmap
   - Merge pull request #548 from df7cb Send serials with CW cut numbers
