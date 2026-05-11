@@ -310,15 +310,15 @@ Under the `CW` tab, there are three options:
 Other CW configuration settings:
 
 \begin{itemize}
- \item PgUp/PgDown Stepping: The PgUp and PgDown keys increment the keyer speed by the specified amount. The default step is 1 wpm with option to select steps anywhere in the range 1--10 wpm.
+ \item Speed Increment for PgUp/PgDown: The PgUp and PgDown keys increment the keyer speed by the specified amount. The default step is $\pm$ 1 wpm with option to select steps anywhere in the range 1--10 wpm.
  
- \item Sent RST: If a CW contest requires an RST report, the convention is to always use 599. This can be sent as either 599, 5NN, or ENN. 5NN is the most common.
+ \item Send 599 RST as: If a CW contest requires an RST report, the convention is to always use 599. This can be sent as either 5NN, 599, or ENN. 5NN is the most common.
 
- \item Sent Nr Pad Character: Contest serial numbers can be optionally left-padded. Choices for the padding character are 0, O, or T.
+ \item Serial Number Padding Character: Contest serial numbers can be optionally zero-padded. Choices for the padding character are 0, O, or T.
 
- \item Sent Nr Pad Length: Pad serial numbers with a specified number of padding characters. As an example, selecting the character T with a padding length of 3 sends the serial number 8 as TT8. Setting the padding length to 1 will result in no padding.
+ \item Padding Length: Pad serial numbers with a specified number of padding characters. As an example, selecting the character T with a padding length of 3 sends the serial number 8 as TT8. Setting the padding length to 1 will result in no padding.
 
- \item Sent Nr 1, 9, 0: Select how to send these characters in contest serial numbers. When sent as cut numbers, the character A replaces 1, N replaces 9, and T replaces 0.
+ \item Specify how to send characters 1, 9, 0 in contest serial numbers. When sent as cut numbers, the character A replaces 1, N replaces 9, and T replaces 0.
 \end{itemize}
 
 \subsection{Cluster}
@@ -598,6 +598,9 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
     ALT-.(period)	& \makecell[l]{Increase the VFO frequency by 20 Hz for cw; \\100 Hz for ssb.} \\
     \hline
     ALT-,(comma)	& \makecell[l]{Decrease the VFO frequency by 20 Hz; \\100 Hz for ssb.} \\
+    ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+    \hline
+    ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
     \hline
 \end{tabular}
 
