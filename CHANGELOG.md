@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-05-11] Merged pr #566 fixing text editing in exchange fields
+  - Merge pull request #565 from microphonon/cwtab
 - [2026-05-07] Merge remote-tracking branch 'origin/master' into 525-rework-pacc
   - Add Dutch contest logic to points calculation in PACC
   - Add call history support to PACC
