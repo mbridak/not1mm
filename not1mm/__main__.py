@@ -1593,7 +1593,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def handle_text_change(self) -> None:
         """
-        ....
+        This is called when text is changed in the CW entry field.
+
 
         Parameters
         ----------
@@ -2889,9 +2890,9 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             freq = self.radio_state.get("vfoa")
             selected_mode = self.radio_state.get("mode")
-            if  selected_mode == "CW":
+            if selected_mode == "CW":
                 deltaf = 20
-            elif selected_mode in ["LSB", "USB", "SSB"]:  
+            elif selected_mode in ["LSB", "USB", "SSB"]:
                 deltaf = 100
             else:
                 deltaf = 0
@@ -2905,16 +2906,16 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             freq = self.radio_state.get("vfoa")
             selected_mode = self.radio_state.get("mode")
-            if  selected_mode == "CW":
+            if selected_mode == "CW":
                 deltaf = 20
-            elif selected_mode in ["LSB", "USB", "SSB"]:  
+            elif selected_mode in ["LSB", "USB", "SSB"]:
                 deltaf = 100
             else:
                 deltaf = 0
             vfo = int(freq) - deltaf
             if self.rig_control:
                 self.rig_control.set_vfo(vfo)
-                return        
+                return
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
@@ -4240,10 +4241,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.contest.advance_on_space[3]:
                     text = self.other_1.text()
                     text = text.upper()
-                    # position = self.other_1.cursorPosition()
+                    position = self.other_1.cursorPosition()
                     stripped_text = text.strip().replace(" ", "")
                     self.other_1.setText(stripped_text)
-                    # self.other_1.setCursorPosition(position)
+                    self.other_1.setCursorPosition(position)
                     if " " in text:
                         next_tab = self.tab_next.get(self.other_1)
                         next_tab.setFocus()
@@ -4276,10 +4277,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.contest.advance_on_space[4]:
                     text = self.other_2.text()
                     text = text.upper()
-                    # position = self.other_2.cursorPosition()
+                    position = self.other_2.cursorPosition()
                     stripped_text = text.strip().replace(" ", "")
                     self.other_2.setText(stripped_text)
-                    # self.other_2.setCursorPosition(position)
+                    self.other_2.setCursorPosition(position)
                     if " " in text:
                         next_tab = self.tab_next.get(self.other_2)
                         next_tab.setFocus()
