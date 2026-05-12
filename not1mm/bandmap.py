@@ -161,8 +161,11 @@ class Database:
 
         try:
             delete_call_q = (
-                "delete from spots where callsign = ? and freq between ? and ?;"
+                "delete from spots where callsign = ? and freq between ? and ?"
             )
+            if "MARKED" not in spot.get("comment", ""):
+                # new spot is not MARKED, don't overwrite any MARKED spot
+                delete_call_q += " and comment not like '%MARKED%'"
             self.cursor.execute(
                 delete_call_q, (spot.get("callsign"), band.start, band.end)
             )
@@ -182,7 +185,7 @@ class Database:
                     spot["freq"],
                     spot.get("mode", None),
                     spot.get("spotter", platform.node()),
-                    spot.get("comment", None),
+                    spot.get("comment", ""),
                 ),
             )
             self.db.commit()
