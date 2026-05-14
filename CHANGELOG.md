@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-05-12] Merge pull request #567 from df7cb Don't let telnet spots overwrite MARKED spots
 - [2026-05-11] Merged pr #566 fixing text editing in exchange fields
   - Merge pull request #565 from microphonon/cwtab
 - [2026-05-07] Merge remote-tracking branch 'origin/master' into 525-rework-pacc
