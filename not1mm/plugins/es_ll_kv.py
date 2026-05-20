@@ -50,7 +50,7 @@ def specific_contest_check_dupe(self, call):
     """Dupe checking specific to just this contest."""
     # constant to split the contest - correct ES Open Contest length is 4 hours
     contest_length_in_minutes = 60
-    split_contest_by_minutes = 20
+    split_contest_by_minutes = 15
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
 
