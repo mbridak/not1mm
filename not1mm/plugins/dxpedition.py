@@ -31,6 +31,7 @@ dupe_type = 4
 
 def init_contest(self):
     """setup plugin"""
+    self.set_running(True)
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
