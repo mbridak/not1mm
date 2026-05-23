@@ -27,14 +27,8 @@ LOG_FILE = USER_DATA_PATH / "not1mm_debug.log"
 
 # Create directories if they do not exist on Linux systems
 if platform.system() not in ["Windows", "Darwin"]:
-    try:
-        os.mkdir(CONFIG_PATH)
-    except FileExistsError:
-        ...
-    try:
-        os.mkdir(USER_DATA_PATH)
-    except FileExistsError:
-        ...
+    Path(CONFIG_PATH).mkdir(parents=True, exist_ok=True)
+    Path(USER_DATA_PATH).mkdir(parents=True, exist_ok=True)
 
 # Define and create directories if they do not exist on Windows or Mac systems
 if platform.system() in ["Windows", "Darwin"]:
