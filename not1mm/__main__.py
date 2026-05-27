@@ -400,6 +400,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
         self.redserver = QtGui.QPixmap(str(icon_path / "cloud_red.png"))
         self.greenserver = QtGui.QPixmap(str(icon_path / "cloud_green.png"))
+        self.blueserver = QtGui.QPixmap(str(icon_path / "cloud_blue.png"))
+        self.greyserver = QtGui.QPixmap(str(icon_path / "cloud_grey.png"))
         self.leftdot.setPixmap(self.greendot)
         self.rightdot.setPixmap(self.reddot)
 
@@ -1043,7 +1045,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.server_seen = datetime.datetime.now() + datetime.timedelta(
                         seconds=15
                     )
-                    self.server_icon.setPixmap(self.greenserver)
+                    # im_the_master
+                    if self.pref.get("im_the_master", False) is True:
+                        self.server_icon.setPixmap(self.blueserver)
+                    else:
+                        self.server_icon.setPixmap(self.greenserver)
                 continue
 
             if json_data.get("cmd") == "CONTEST_REQUEST":
