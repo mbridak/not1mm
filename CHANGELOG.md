@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-05-28] Alter ESM behaviour for DXPedition.
+- [2026-05-27] Add new cloud icon images
+- [2026-05-23] Merge pull request #572 from heldis Altering config and user data directories creation on Linux
 - [2026-05-22] Merged PR #570 Adding a DXPedition plugin.
 - [2026-05-20] Merge pull request #569 from heldis Update ES Field Day to 120m total and ES LL KV dupe interval to 15m
   - Changed  CAT status icons.
