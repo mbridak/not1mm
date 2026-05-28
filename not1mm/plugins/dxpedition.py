@@ -28,6 +28,8 @@ columns = [
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 4
 
+advance_on_space = [True, True, True, True, True]
+
 
 def init_contest(self):
     """setup plugin"""
@@ -179,6 +181,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["EXCH"])
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
+                if with_enter is True:
+                    self.receive.setFocus()
+                    self.receive.deselect()
+                    self.receive.end(False)
 
         elif self.current_widget in ["sent", "receive"]:
             self.make_button_green(self.esm_dict["QRZ"])

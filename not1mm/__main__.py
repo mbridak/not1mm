@@ -383,8 +383,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.returnPressed.connect(self.check_esm_with_enter)
         self.callsign.cursorPositionChanged.connect(self.check_esm)
         self.sent.returnPressed.connect(self.check_esm_with_enter)
+        self.sent.textEdited.connect(self.sent_changed)
         self.sent.cursorPositionChanged.connect(self.check_esm)
         self.receive.returnPressed.connect(self.check_esm_with_enter)
+        self.receive.textEdited.connect(self.receive_changed)
         self.receive.cursorPositionChanged.connect(self.check_esm)
         self.other_1.returnPressed.connect(self.check_esm_with_enter)
         self.other_1.textEdited.connect(self.other_1_changed)
@@ -4227,6 +4229,42 @@ class MainWindow(QtWidgets.QMainWindow):
         except ValueError:
             return False
         return True
+
+    def sent_changed(self) -> None:
+        """
+        The text in the sent field has changed.
+        """
+        if self.contest:
+            if "DX-Pedition" in self.contest.name:
+                text = self.sent.text()
+                text = text.upper()
+                position = self.sent.cursorPosition()
+                stripped_text = text.strip().replace(" ", "")
+                self.sent.setText(stripped_text)
+                self.sent.setCursorPosition(position)
+                if " " in text:
+                    next_tab = self.tab_next.get(self.sent)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
+
+    def receive_changed(self) -> None:
+        """
+        The text in the receive field has changed.
+        """
+        if self.contest:
+            if "DX-Pedition" in self.contest.name:
+                text = self.receive.text()
+                text = text.upper()
+                position = self.receive.cursorPosition()
+                stripped_text = text.strip().replace(" ", "")
+                self.receive.setText(stripped_text)
+                self.receive.setCursorPosition(position)
+                if " " in text:
+                    next_tab = self.tab_next.get(self.receive)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
 
     def other_1_changed(self) -> None:
         """
