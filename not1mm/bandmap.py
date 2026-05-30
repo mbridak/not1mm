@@ -930,7 +930,6 @@ class BandMapWindow(QDockWidget):
 
     def receive(self) -> None:
         """Process waiting bytes"""
-        print(f"tester {self.test_for_data}")
         while self.test_for_data():
             data = self.socket.readLine()
 
