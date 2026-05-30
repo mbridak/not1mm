@@ -410,6 +410,7 @@ class BandMapWindow(QDockWidget):
     lineitemlist = []
     textItemList = []
     connected = False
+    test_for_data = None
     bandwidth = 0
     bandwidth_mark = []
     worked_list = {}
@@ -452,6 +453,7 @@ class BandMapWindow(QDockWidget):
         self.spots = Database()
         # self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.socket = QtNetwork.QTcpSocket()
+        self.test_for_data = self.socket.bytesAvailable
         self.socket.readyRead.connect(self.receive)
         self.socket.connected.connect(self.maybeconnected)
         self.socket.disconnected.connect(self.disconnected)
@@ -623,6 +625,7 @@ class BandMapWindow(QDockWidget):
         port = self.settings.get("cluster_port", 7373)
         logger.info(f"connecting to dx cluster {server} {port}")
         self.socket.connectToHost(server, port)
+        self.test_for_data = self.socket.bytesAvailable
         self.connectButton.setText("Connecting")
         self.connected = True
 
@@ -927,8 +930,9 @@ class BandMapWindow(QDockWidget):
 
     def receive(self) -> None:
         """Process waiting bytes"""
-        while self.socket.canReadLine():
-            data = self.socket.readLine(1000)
+        print(f"tester {self.test_for_data}")
+        while self.test_for_data():
+            data = self.socket.readLine()
 
             try:
                 data = str(data, "utf-8").strip()
@@ -941,7 +945,7 @@ class BandMapWindow(QDockWidget):
             if (
                 "login:" in data.lower()
                 or "call:" in data.lower()
-                or "callsign" in data.lower()
+                or "callsign:" in data.lower()
             ):
                 self.send_command(self.callsignField.text())
                 return
@@ -975,6 +979,7 @@ class BandMapWindow(QDockWidget):
 
             if "HELLO" in data.upper():
                 self.connectButton.setText("Connected")
+                self.test_for_data = self.socket.canReadLine
                 self.send_command(self.settings.get("cluster_filter", ""))
                 self.send_command("set dx extension Section")
                 self.send_command(
