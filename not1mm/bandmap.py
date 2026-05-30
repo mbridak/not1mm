@@ -154,6 +154,7 @@ class Database:
         -------
         Nothing.
         """
+
         if "band" in spot:
             band = Band(spot.get("band"))
         else:
@@ -181,7 +182,12 @@ class Database:
                 "INSERT INTO spots(callsign, ts, freq, mode, spotter, comment) VALUES(?, ?, ?, ?, ?, ?)",
                 (
                     spot["callsign"],
-                    spot.get("ts", datetime.now(timezone.utc).replace(second=0, microsecond=0, tzinfo=None)),
+                    spot.get(
+                        "ts",
+                        datetime.now(timezone.utc).replace(
+                            second=0, microsecond=0, tzinfo=None
+                        ),
+                    ),
                     spot["freq"],
                     spot.get("mode", None),
                     spot.get("spotter", platform.node()),
@@ -304,8 +310,8 @@ class Database:
         Delete a spot identified by call and frequency.
         """
         self.cursor.execute(
-            "delete from spots where callsign = ? and freq = ?",
-            (call, freq))
+            "delete from spots where callsign = ? and freq = ?", (call, freq)
+        )
         self.db.commit()
 
     def delete_spots(self, minutes: int) -> None:
@@ -348,24 +354,44 @@ class BandMapScene(QtWidgets.QGraphicsScene):
             comment = item.toolTip()
 
             menu = QtWidgets.QMenu()
-            menu.addAction("Confirm", lambda: self.parent.spots.addspot({
-                "callsign": callsign,
-                "freq": freq,
-                "comment": comment,
-            }, True))
+            menu.addAction(
+                "Confirm",
+                lambda: self.parent.spots.addspot(
+                    {
+                        "callsign": callsign,
+                        "freq": freq,
+                        "comment": comment,
+                    },
+                    True,
+                ),
+            )
             if "MARKED" in comment:
-                menu.addAction("Unmark", lambda: self.parent.spots.addspot({
-                    "callsign": callsign,
-                    "freq": freq,
-                    "comment": comment.replace("MARKED", ""),
-                }, True))
+                menu.addAction(
+                    "Unmark",
+                    lambda: self.parent.spots.addspot(
+                        {
+                            "callsign": callsign,
+                            "freq": freq,
+                            "comment": comment.replace("MARKED", ""),
+                        },
+                        True,
+                    ),
+                )
             else:
-                menu.addAction("Mark", lambda: self.parent.spots.addspot({
-                    "callsign": callsign,
-                    "freq": freq,
-                    "comment": comment + " MARKED",
-                }, True))
-            menu.addAction("Delete", lambda: self.parent.spots.delete_spot(callsign, freq))
+                menu.addAction(
+                    "Mark",
+                    lambda: self.parent.spots.addspot(
+                        {
+                            "callsign": callsign,
+                            "freq": freq,
+                            "comment": comment + " MARKED",
+                        },
+                        True,
+                    ),
+                )
+            menu.addAction(
+                "Delete", lambda: self.parent.spots.delete_spot(callsign, freq)
+            )
             menu.exec(event.screenPos())
         else:
             super().contextMenuEvent(event)
@@ -803,7 +829,7 @@ class BandMapWindow(QDockWidget):
                     flag += "[P]"
                 if "SOTA" in items.get("comment"):
                     flag += "[S]"
-                
+
                 pen_color = self.text_color
                 if "MARKED" in items.get("comment"):
                     setdarkmode = self.is_it_dark()
@@ -901,7 +927,7 @@ class BandMapWindow(QDockWidget):
 
     def receive(self) -> None:
         """Process waiting bytes"""
-        while self.socket.bytesAvailable():
+        while self.socket.canReadLine():
             data = self.socket.readLine(1000)
 
             try:
@@ -915,7 +941,7 @@ class BandMapWindow(QDockWidget):
             if (
                 "login:" in data.lower()
                 or "call:" in data.lower()
-                or "callsign:" in data.lower()
+                or "callsign" in data.lower()
             ):
                 self.send_command(self.callsignField.text())
                 return
