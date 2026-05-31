@@ -3920,9 +3920,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.radioButton_sp.setChecked(True)
 
         if self.pref.get("command_buttons", False) is True:
-            self.actionCommand_Buttons.setChecked(True)
+            self.actionCommand_Buttons_2.setChecked(True)
         else:
-            self.actionCommand_Buttons.setChecked(False)
+            self.actionCommand_Buttons_2.setChecked(False)
 
         if self.pref.get("cw_macros", False) is True:
             self.actionCW_Macros.setChecked(True)
