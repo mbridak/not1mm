@@ -964,7 +964,13 @@ Note: when completing the "Recd Number and Name" field, place a space between th
 
 \subsection{DX-Pedition}
 
-This requested plugin is ment for operating a dxpedition\index{DXPedition}. There's no scoring. No cabrillo generator. Be in Run mode with ESM. 
+This requested plugin is ment for operating a dxpedition\index{DXPedition}. There's no scoring. No cabrillo generator. Be in Run mode with ESM. ESM mode opperates differently for this plug in than any other contest. The cursor does not advance to other fields when pressing enter.
 
+\begin{itemize}
+    \item [] Pressing enter with no call in the callsign field sends the CQ macro.
+    \item [] Pressing enter with a call in the callsign field sends HISCALL and the EXCHange macro.
+    \item [] Pressing enter again with an unaltered callsign in the field will send the QRZ macro and log the contact.
+    \item [] Pressing enter again with a different call than the one that was used two steps ago will assume you have corrected the call and send HISCALL macro and QRZ macro and log the contact.
+\end{itemize}
 \printindex
 \end{document}
