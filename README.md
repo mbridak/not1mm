@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-05-30] ReWorked DXPedition ESM flow.
 - [2026-05-29] Trying new bandmap telnet loop.
 - [2026-05-28] Alter ESM behaviour for DXPedition.
 - [2026-05-27] Add new cloud icon images
