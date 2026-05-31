@@ -38,6 +38,7 @@ def init_contest(self):
     set_tab_prev(self)
     interface(self)
     self.next_field = self.receive
+    self.prev_call = ""
 
 
 def interface(self):
@@ -59,6 +60,8 @@ def interface(self):
 
 def reset_label(self):
     """reset label after field cleared"""
+    print("Clearing call.")
+    self.prev_call = ""
 
 
 def set_tab_next(self):
@@ -151,7 +154,9 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
+    print(
+        f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=} {self.prev_call=}"
+    )
 
     for a_button in [
         self.F1,
@@ -177,14 +182,28 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["CQ"])
                 buttons_to_send.append(self.esm_dict["CQ"])
             elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
+                if self.prev_call == "":
+                    self.make_button_green(self.esm_dict["HISCALL"])
+                    self.make_button_green(self.esm_dict["EXCH"])
+                    buttons_to_send.append(self.esm_dict["HISCALL"])
+                    buttons_to_send.append(self.esm_dict["EXCH"])
+                elif self.prev_call != self.callsign.text():
+                    self.make_button_green(self.esm_dict["HISCALL"])
+                    self.make_button_green(self.esm_dict["QRZ"])
+                    buttons_to_send.append(self.esm_dict["HISCALL"])
+                    buttons_to_send.append(self.esm_dict["QRZ"])
+                    buttons_to_send.append("LOGIT")
+                elif self.prev_call == self.callsign.text():
+                    self.make_button_green(self.esm_dict["QRZ"])
+                    buttons_to_send.append(self.esm_dict["QRZ"])
+                    buttons_to_send.append("LOGIT")
+
                 if with_enter is True:
-                    self.receive.setFocus()
-                    self.receive.deselect()
-                    self.receive.end(False)
+                    if self.prev_call == "":
+                        self.prev_call = self.callsign.text()
+                        self.restore_button_color(self.esm_dict["HISCALL"])
+                        self.restore_button_color(self.esm_dict["EXCH"])
+                        self.make_button_green(self.esm_dict["QRZ"])
 
         elif self.current_widget in ["sent", "receive"]:
             self.make_button_green(self.esm_dict["QRZ"])
