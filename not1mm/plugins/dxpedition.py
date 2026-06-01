@@ -154,9 +154,9 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    print(
-        f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=} {self.prev_call=}"
-    )
+    # print(
+    #     f"checking esm {self.current_widget=} {with_enter=} {self.pref.get('run_state')=} {self.prev_call=}"
+    # )
 
     for a_button in [
         self.F1,
