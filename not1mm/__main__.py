@@ -82,6 +82,9 @@ from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
+if sys.platform == "linux":
+    from not1mm.lib.notification import DbusNotification
+
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
@@ -235,6 +238,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, splash):
         super().__init__()
         logger.info("MainWindow: __init__")
+        if sys.platform == "linux":
+            self.notify = DbusNotification("Not1MM")
         self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
@@ -1682,16 +1687,24 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        message_box = QtWidgets.QMessageBox()
-        if self.current_palette:
-            message_box.setPalette(self.current_palette)
-        message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
-        message_box.setText(message)
-        message_box.setWindowTitle("Information")
-        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-        if blocking is False:
-            message_box.setWindowModality(Qt.WindowModality.WindowModal)
-        _ = message_box.exec()
+        if sys.platform == "linux":
+            self.notify.notify(
+                summary="Message from Not1MM",
+                body=message,
+                icon=f"{os.fspath(fsutils.APP_DATA_PATH)}/k6gte.not1mm-32.png",
+                timeout=15000,
+            )
+        else:
+            message_box = QtWidgets.QMessageBox()
+            if self.current_palette:
+                message_box.setPalette(self.current_palette)
+            message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
+            message_box.setText(message)
+            message_box.setWindowTitle("Information")
+            message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            if blocking is False:
+                message_box.setWindowModality(Qt.WindowModality.WindowModal)
+            _ = message_box.exec()
 
     def show_about_dialog(self) -> None:
         """
