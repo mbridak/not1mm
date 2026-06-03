@@ -6,10 +6,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
 \usepackage{makeidx}
+\usepackage{hyperref}
 \makeindex
 \title{Not1MM User Manual}
 \author{Mike Bridak K6GTE}
-\date{April 2026}
+\date{June 2026}
 \begin{document}
 \maketitle
 \thispagestyle{empty}
@@ -24,14 +25,14 @@ The world's number 1 unfinished contest logger. \textsuperscript{*According to m
 
 \vspace{0.5cm}
 Not1MM's interface is a blatant rip-off of \index{N1MM}N1MM. It is NOT N1MM and any problem you have with this software should in no way reflect on their software.
-\subsection{Not1MM. What is it?}
+\subsection{Not1MM:~What is it?}
 Not1MM attempts to be a usable ham/amateur radio contest logger. It's written in Python 3.10+ and uses Qt6 framework for the graphical interface and SQLite for the database.
 \subsection{The Why}
-\textbf{Currently, this exists for my own personal enjoyment}. I recently retired after 35+ years working for 'The Phone Company', GTE → Verizon → Frontier. And being a Gentleman of Leisure, I needed something to do in my free time. I am a casual contester and could not find any contesting software for Linux that I wanted to use. There is \textbf{Tucnak}, available at \emph{HTTP://tucnak.nagano.cz/} which is very robust and mature. It just wasn't for me.
+\textbf{Currently, this exists for my own personal enjoyment}. I recently retired after 35+ years working for 'The Phone Company', GTE → Verizon → Frontier. And being a Gentleman of Leisure, I needed something to do in my free time. I am a casual contester and could not find any contesting software for Linux that I wanted to use. \textbf{Tucnak} is very robust and mature contest logger that is available at \url{http://tucnak.nagano.cz/}. It just wasn't for me.
 \subsection{Target Environment}
-The primary target for this application is \index{Linux}Linux. It may be able to run on other platforms, \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 \index{Mac}Mac Mini, So I'll probably put more effort into that platform as well.
-\subsection{Current State, or Code Maturity}
-Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
+The target operating system for this application is \index{Linux}Linux. It may be able to run on other platforms such as \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 \index{Mac}Mac Mini, so I'll probably put more effort into that platform as well.
+\subsection{Current State or Code Maturity}
+Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi-Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 \subsection{Known Issues}
 \begin{itemize}
     \item \index{HamLib}HamLib before 4.6.3 had a problem with sending CW and changing/reading the keying speed.
@@ -96,13 +97,13 @@ Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately
     \item Winter Field Day
 \end{itemize}
 \end{multicols}
-\subsection{Other not so Supported Contests}
-Of note, \index{State QSO parties}State QSO parties. A PR has been submitted adding minor support for QSO parties, Mainly logging and Cabrillo\index{Cabrillo} generation, Not scoring or mult tracking.
+\subsection{Other Not-So-Supported Contests}
+At present, there are no specific \index{State QSO parties}State QSO parties. There are, however, plug-ins for generic QSO parties that use either a signal report or serial number for the exchange.
 \newpage
 \section{Installation}
-This section will hopefully get you started with installing Not1MM.
-\subsection{Prerequisites}
-Not1MM requires:
+
+\subsection{Not1MM Dependencies}
+Install these software packages through your distribution package manager before continuing:
 \begin{itemize}
     \item Python 3.10+
     \item PyQt6
@@ -111,49 +112,54 @@ Not1MM requires:
     \item libxslt-devel  (maybe... Depends on the distro)
     \item libxml2-devel  (maybe... Depends on the distro)
 \end{itemize}
-You should install these through your distribution's package manager before continuing.
-\subsection{The Easy and Fast way to install or run the latest version}
 
-\subsubsection{The single line install}
+\subsection{Installation and Startup}
+
+\subsubsection{Single line install}
+From the terminal type:
 \begin{verbatim}
-    •curl -LsSf uvx.sh/not1mm/install.sh | sh
+    • curl -LsSf uvx.sh/not1mm/install.sh | sh
 \end{verbatim}
-\subsubsection{The only slightly more involved way}
-Step 1. Visit https://docs.astral.sh/uv/ and install uv.
-
-In short you run this in your terminal:
+\subsubsection{Multiple line install}
+Install uv as described at \url{https://docs.astral.sh/uv/}. Run the following line in the terminal:
 \begin{verbatim}
-    •curl -LsSf https://astral.sh/uv/install.sh | sh
+    • curl -LsSf https://astral.sh/uv/install.sh | sh
 \end{verbatim}
-Step 2. Tell it to run not1mm:
+Instruct it to run Not1MM:
 \begin{verbatim}
-    •uvx not1mm@latest
+    • uvx not1mm@latest
 \end{verbatim}
-or install it:
+or install it with:
 \begin{verbatim}
-    •uv tool install not1mm@latest
-\end{verbatim}
-
-That's it... It will go out, fetch the latest version of not1mm, setup a python virtual environment, get all the needed python libraries, cache everything and run not1mm. The first time takes a minute, but each time after, it's lightning quick and it will automatically check for updates and run the latest version.
-
-But wait... There's more. If your distro is old and you're stuck with an older version of python... Say 3.10. And you want to see what all the cool kids are using. But you don't want to corrupt your broke ol' system by downloading the newest Python version. No problem. You can tell uv to run not1mm with any version of Python you'd like. Let's say 3.14.
-
-\begin{verbatim}
-    •uvx --python 3.14 not1mm@latest
+    • uv tool install not1mm@latest
 \end{verbatim}
 
-It'll download Python 3.14 into your virtual environment and run not1mm. Let's say I was an idiot and pushed a new version and did't fully test it. This happens a-lot... We test in production. Or lets say you just want to see the pain that was back in 2023. No problem. Just tell it which version of not1mm you'd like to run.
+\noindent That's it... it will go out, fetch the latest version of Not1MM, setup a Python virtual environment, get all the needed python libraries, cache everything, and run Not1MM. 
+\subsubsection{Running the software}
+Start Not1MM from the command line by typing: 
+\begin{verbatim}
+    • not1mm
+\end{verbatim}
+The first time it runs will take a minute, but on subsequent launches it's lightning quick and will automatically check for updates. You will prompted to download the latest version. A lovely non-AI generated icon may appear on the desktop that can be clicked to launch the application.
+\subsubsection{Python versions and rollbacks}
+\label{subsec:rollback}
+If your Linux distro is not current it may be using an older version Python -- perhaps 3.10. There can be significant performance benefits to using the latest Python release, but simply downloading and installing it will likely corrupt your system. The much safer approach is to run Not1MM inside a virtual environment with the desired Python version. To run Not1MM with Python 3.14, for example, you would type this line in the terminal:
 
 \begin{verbatim}
-    •uvx --python 3.10 not1mm==23.5.19
+    • uvx --python 3.14 not1mm@latest
+\end{verbatim}
+
+\noindent You can also rollback to an earlier version of Not1MM if the latest update has a bug (This happens a lot as we test in production).To run version 23.5.29 of the software with Python 3.10, for example, you would type:
+
+\begin{verbatim}
+    • uvx --python 3.10 not1mm==23.5.19
 \end{verbatim}
 
 Pow! Enjoy the pain... 
-\newpage
-\section{After the Install}
-You can now open a new terminal and type `not1mm`. On it's first run, it may or may not install a lovely non AI generated icon, which you can later click on to launch the application.
 
-\subsection{You May or May Not Get a Warning Message Like}
+\section{Possible Post-Install Issues }
+
+\subsection{Warning Message 1}
 
 \begin{verbatim}
 WARNING: The script not1mm is installed in '/home/mbridak/.local/bin',
@@ -161,9 +167,9 @@ which is not on PATH. Consider adding this directory to PATH or,
 if you prefer to suppress this warning, use --no-warn-script-location.
 \end{verbatim}
 
-If you do, log out and back in or reboot.
+\noindent Try logging out and logging back in. Or reboot.
 
-\subsection{Or this Fan Favorite}
+\subsection{Warning Message 2}
 
 \begin{verbatim}
 Warning: Ignoring XDG\_SESSION\_TYPE=wayland on Gnome.
@@ -174,36 +180,32 @@ because no Qt platform plugin could be initialized.
 Reinstalling the application may fix this problem.
 \end{verbatim}
 
-You can use your package manager to load \textbf{libxcb-cursor0}.\\
+\noindent Use your package manager to load \textbf{libxcb-cursor0}.\\
 If that is not an option, you can export an environment variable and launch the app like this:
 
 \begin{verbatim}
 mbridak@vm:~$ export QT_QPA_PLATFORM=wayland; not1mm
 \end{verbatim}
 
-For a more permanent solution, you can place the line:
+\noindent For a more permanent solution, you can place the line:
 
 \begin{verbatim}
 export QT_QPA_PLATFORM=wayland
 \end{verbatim}
 
-in your home directories .bashrc file. Then after logging out and back in you should be able to launch it normally.
+\noindent in the .bashrc file of your home directory. Then after logging out and back in you should be able to launch it normally.
 
-\subsection{Update Your CTY and SCP Files}
-
-Before operating in a contest, you might want to update the \index{CTY}CTY and \index{SCP}SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
-\newpage
 \section{Various File Locations}
 
 \subsection{Data Files}
 
-If your system has an `XDG\_DATA\_HOME` environment variable set, the database and CW macro files can be found there. Otherwise they will be found at `yourhome/.local/share/not1mm`
+If your system has an XDG\_DATA\_HOME environment variable set, the database and CW macro files can be found there. Otherwise they will be in $\sim$/.local/share/not1mm
 
 \subsection{Configuration Files}
 
 Configuration file(s) can be found at the location defined by
 \begin{verbatim}XDG_CONFIG_HOME\end{verbatim}
-Otherwise they will be found at \begin{verbatim}yourhome/.config/not1mm\end{verbatim}
+Otherwise they will be found in the home directory at \begin{verbatim}~/.config/not1mm\end{verbatim}
 \section{The Database}
 
 \subsection{Why}
@@ -240,6 +242,10 @@ You can fill. You can fill. Everyone look at your keys. \emph{You had to be arou
 Station information can be changed any time by going to\\
 \textbf{File >> Station Settings} and editing the information.
 
+\subsection{Update Your CTY and SCP Files}
+
+Before operating in a contest, you might want to update the \index{CTY}CTY and \index{SCP}SCP files. You can do this by choosing \textbf{FILE >> Update CTY} and \textbf{FILE >> Update MASTER.SCP}
+
 \section{Selecting a Contest}
 
 \subsection{Selecting a New Contest}
@@ -264,7 +270,7 @@ Edit the parameters of a previously defined contest by selecting it as the curre
 
 \section{Configuration Settings}
 
-To setup \index{CAT}CAT control, \index{CW keyer}CW keyer, and \index{callsign lookups}callsign lookups
+To setup \index{CAT}CAT control, \index{CW keyer}CW keyer, \index{callsign lookups}callsign lookups, and \index{cluster} telnet cluster
 select \textbf{File >> Configuration Settings}.
 
 \vspace{0.5cm}
@@ -281,29 +287,29 @@ Choose the sound output device for the voice keyer.
 
 \subsection{CAT Control}
 
-Under the `CAT`\index{CAT} tab, you can choose one of the following:
+Under the CAT\index{CAT} tab, you can choose one of the following:
 
 \begin{itemize}
 
- \item `rigctld`\index{rigctld} normally with an IP of `127.0.0.1` and a port of `4532`
+ \item rigctld\index{rigctld} normally with an IP of 127.0.0.1 and a port of 4532
 
- \item `flrig`\index{FLRig} normally with an IP of `127.0.0.1` and a port of `12345`
+ \item flrig\index{FLRig} normally with an IP of 127.0.0.1 and a port of 12345
 
- \item `None` is always an option (but is it really?).
+ \item None is always an option (but is it really?).
 \end{itemize}
 
 A small transceiver icon changes color to indicate the CAT status. Green: Connected; Red: Not connected; Grey: Neither.
 
 \subsection{CW Keyer Interface}
 
-Under the `CW` tab, there are three options:
+Under the CW tab, there are three options:
 
 \begin{itemize}
- \item `cwdaemon`\index{cwdaemon} normally uses IP `127.0.0.1` and port `6789`
+ \item cwdaemon\index{cwdaemon} normally uses IP 127.0.0.1 and port 6789
 
- \item `pywinkeyer` normally uses IP `127.0.0.1` and port `8000`
+ \item pywinkeyer normally uses IP 127.0.0.1 and port 8000
 
- \item `CAT` can be used if your radio supports it. Morse characters are sent via `rigctld`\index{rigctld}.
+ \item CAT can be used if your radio supports it. Morse characters are sent via rigctld\index{rigctld}.
 \end{itemize}
 
 Other CW configuration settings:
@@ -326,7 +332,13 @@ Other CW configuration settings:
 \includegraphics[width=0.9\linewidth]{pic/configuration_cluster.png}
 \vspace{0.5cm}
 
-Under the `Cluster`\index{Cluster} tab you can change the default AR\index{AR} Cluster server, port, and filter settings used for the bandmap window.
+\noindent Under the Cluster\index{Cluster} tab you can change the default AR\index{AR} cluster server, port, and filter settings used for the bandmap window. Setting the Mode to OPEN will display all spots on the selected band originating from all spotters anywhere in the world. Most users will want to enable a FILTER for spotters in the region in which they are located. The filter can be highly customized to select continents, countries, CQ zones, specific callsigns, and even Boolean filter combinations. To select spotting stations located in Europe, for example, the filter text can be set as:
+\begin{verbatim}
+set/dx/filter spottercont=eu
+\end{verbatim}
+Detailed information can be found at \url{http://www.nc7j.com/arcluster/arusermanual-6/AR-Cluster\%20DX.html}.
+
+\noindent Older versions of Python may not be able to handle the data rate of the telnet cluster stream, particularly during busy contests. This will cause spots on the bandmap to lose synchronization with the cluster. To remedy this, Not1MM can be run with the current version of Python inside a virtual environment as described in \ref{subsec:rollback}.
 
 \subsection{N1MM Packets}
 
@@ -644,7 +656,7 @@ The VFO\index{VFO} frequency is indicated with a small green triangle above the 
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
 \vspace{0.5cm}
 
-Clicking on a spot\index{spot} sets the VFO\index{VFO} and populates the callsign field. Previously worked callsigns are displayed in gray. Callsigns marked with CTRL-M are highlighted in yellow. A small icon after the callsign indicates the mode as follows:\\
+Clicking on a spot\index{spot} sets the VFO\index{VFO} and populates the callsign field. Previously worked callsigns are displayed in gray. Callsigns marked with CTRL-M are color highlighted. A small icon after the callsign indicates the mode as follows:\\
 
 Primary Modes:
 \begin{itemize}
