@@ -68,8 +68,8 @@ def specific_contest_check_dupe(self, call):
     # get mode from radio state
     mode = self.radio_state.get("mode", "")
     """Dupe checking specific to just this contest."""
-    # constant to split the contest - correct ES Open Contest length is 4 hours
-    contest_length_in_minutes = 90
+    # constant to split the contest - correct ES Field Day contest length is 2 hours
+    contest_length_in_minutes = 120
     split_contest_by_minutes = 30
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
@@ -89,6 +89,7 @@ def specific_contest_check_dupe(self, call):
     time_period_1 = time_periods[0] if len(time_periods) > 0 else None
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
+    time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
     # get current time in UTC
     iso_current_time = datetime.now(timezone.utc)
@@ -139,6 +140,21 @@ def specific_contest_check_dupe(self, call):
             mode,
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+
+    if (
+        time_period_3 is not None
+        and time_period_4 is not None
+        and current_time < time_period_4
+        and current_time >= time_period_3
+    ):
+
+        result = self.database.check_dupe_on_period_mode(
+            call,
+            self.contact.get("Band", ""),
+            mode,
+            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+            time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     # just for band and mode if outside of time period

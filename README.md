@@ -69,23 +69,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-05-12] Merge pull request #567 from df7cb Don't let telnet spots overwrite MARKED spots
-- [2026-05-11] Merged pr #566 fixing text editing in exchange fields
-  - Merge pull request #565 from microphonon/cwtab
-- [2026-05-07] Merge remote-tracking branch 'origin/master' into 525-rework-pacc
-  - Add Dutch contest logic to points calculation in PACC
-  - Add call history support to PACC
-  - Merge pull request #561 from microphonon/dual_mode_VFO_bump
-  - Merge pull request #560 from mbridak/530-wrong-checkpartial-hilighting-in-telnet-column
-- [2026-05-06] Merge pull request #556 from df7cb Add context menu on bandmap spots
-  - trimmed configuration.ui file with trim_ui.sh script to stop uic parser from crashing
-  - Merge pull request #559 from microphonon Keyboard control to bump VFO frequency
-- [2026-05-05] Fix crash in cabrillo generation
-- [2026-05-04] Merge pull request #549 from df7cb Remember CQ frequencies in bandmap
-  - Merge pull request #548 from df7cb Send serials with CW cut numbers
-  - Merge pull request #547 from df7cb Remove padding around bandmap scroll area, Convert bandmap to kHz
-  - Merge pull request #551 from mbridak Refactor CW mode handling in Cabrillo format for multiple plugins
-- [2026-05-01] Merge pull request #544 from mbridak Change LCD number color from white to green in VfoWindow
+- [2026-06-05-1] Fixed 2 bugs in ADIF imports
+- [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
+- [2026-06-02] Add D-Bus notification support for Linux and clean up code
+- [2026-06-01] Removed mismatched quote from fstring in dxpedition.py
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

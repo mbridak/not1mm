@@ -1,5 +1,18 @@
 # Changelog
 
+- [2026-06-05-1] Fixed 2 bugs in ADIF imports
+- [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
+- [2026-06-02] Add D-Bus notification support for Linux and clean up code
+- [2026-06-01] Removed mismatched quote from fstring in dxpedition.py
+- [2026-05-31] Merge pull request #577 Fix command button state handling in MainWindow class.
+- [2026-05-30] ReWorked DXPedition ESM flow.
+- [2026-05-29] Trying new bandmap telnet loop.
+- [2026-05-28] Alter ESM behaviour for DXPedition.
+- [2026-05-27] Add new cloud icon images
+- [2026-05-23] Merge pull request #572 from heldis Altering config and user data directories creation on Linux
+- [2026-05-22] Merged PR #570 Adding a DXPedition plugin.
+- [2026-05-20] Merge pull request #569 from heldis Update ES Field Day to 120m total and ES LL KV dupe interval to 15m
+  - Changed  CAT status icons.
 - [2026-05-12] Merge pull request #567 from df7cb Don't let telnet spots overwrite MARKED spots
 - [2026-05-11] Merged pr #566 fixing text editing in exchange fields
   - Merge pull request #565 from microphonon/cwtab

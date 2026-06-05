@@ -43,6 +43,7 @@ Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm despera
 \begin{multicols}{3}
 \begin{itemize}
     \item General Logging
+    \item DXPedition
     \item 10 10 Fall CW
     \item 10 10 Spring CW
     \item 10 10 Summer Phone
@@ -534,14 +535,15 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
 \vspace{0.5cm}
 
 \section{Other Uses for the Callsign Field}
-\textbf{The SPACE bar must be pressed to enable any of the following functions.}
+\textbf{The SPACE bar must be pressed after entering any of the following functions.}
 \subsection{Frequency}
 \textbf{Frequency}\index{Frequency} Enter a frequency in kHz. This changes the active logging band. If CAT\index{CAT} control is enabled, the specified frequency will change the transceiver VFO\index{VFO}.
 \subsection{Modes}
 \textbf{CW, SSB, RTTY}\index{CW}\index{SSB}\index{RTTY} Sets the mode being logged. If CAT\index{CAT} control is enabled, the mode\index{mode} changes on the radio.
 \subsection{Change Operator}
-\textbf{OPON}\index{OPON} Specify the operator currently logging.\\
-\\
+\textbf{OPON}\index{OPON} Specify the operator currently logging.
+ \\
+ \\ 
 \textbf{Important: Press the SPACE bar after making any of the above entries.}
 
 \section{The Windows}
@@ -972,5 +974,15 @@ For the Run exchange macro I'd put '\{SNT\} \# \{EXCH\}'
 
 Note: when completing the "Recd Number and Name" field, place a space between the received serial number and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disabled for this field.)
 
+\subsection{DX-Pedition}
+
+This requested plugin is ment for operating a dxpedition\index{DXPedition}. There's no scoring. No cabrillo generator. Be in Run mode with ESM. ESM mode opperates differently for this plug in than any other contest. The cursor does not advance to other fields when pressing enter.
+
+\begin{itemize}
+    \item [] Pressing enter with no call in the callsign field sends the CQ macro.
+    \item [] Pressing enter with a call in the callsign field sends HISCALL and the EXCHange macro.
+    \item [] Pressing enter again with an unaltered callsign in the field will send the QRZ macro and log the contact.
+    \item [] Pressing enter again with a different call than the one that was used two steps ago will assume you have corrected the call and send HISCALL macro and QRZ macro and log the contact.
+\end{itemize}
 \printindex
 \end{document}
