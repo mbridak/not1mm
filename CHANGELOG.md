@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-05-1] Fixed 2 bugs in ADIF imports
 - [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
 - [2026-06-02] Add D-Bus notification support for Linux and clean up code
 - [2026-06-01] Removed mismatched quote from fstring in dxpedition.py
