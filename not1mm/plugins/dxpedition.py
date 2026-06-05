@@ -60,7 +60,6 @@ def interface(self):
 
 def reset_label(self):
     """reset label after field cleared"""
-    print("Clearing call.")
     self.prev_call = ""
 
 

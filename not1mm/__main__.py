@@ -82,6 +82,9 @@ from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
+if sys.platform == "linux":
+    from not1mm.lib.notification import DbusNotification
+
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
@@ -235,6 +238,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, splash):
         super().__init__()
         logger.info("MainWindow: __init__")
+        if sys.platform == "linux":
+            self.notify = DbusNotification("Not1MM")
         self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
@@ -680,6 +685,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.ctyfile = loads(c_file.read())
         except (IOError, JSONDecodeError, TypeError):
             logging.critical("There was an error parsing the BigCity file.")
+            self.show_message_box(
+                "There ws an error parsing the BigCity file.", blocking=False
+            )
 
         self.show_splash_msg("Starting LookUp Service.")
 
@@ -1682,16 +1690,24 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        message_box = QtWidgets.QMessageBox()
-        if self.current_palette:
-            message_box.setPalette(self.current_palette)
-        message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
-        message_box.setText(message)
-        message_box.setWindowTitle("Information")
-        message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
-        if blocking is False:
-            message_box.setWindowModality(Qt.WindowModality.WindowModal)
-        _ = message_box.exec()
+        if sys.platform == "linux":
+            self.notify.notify(
+                summary="Message from Not1MM",
+                body=message,
+                icon=f"{os.fspath(fsutils.APP_DATA_PATH)}/k6gte.not1mm-32.png",
+                timeout=15000,
+            )
+        else:
+            message_box = QtWidgets.QMessageBox()
+            if self.current_palette:
+                message_box.setPalette(self.current_palette)
+            message_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
+            message_box.setText(message)
+            message_box.setWindowTitle("Information")
+            message_box.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+            if blocking is False:
+                message_box.setWindowModality(Qt.WindowModality.WindowModal)
+            _ = message_box.exec()
 
     def show_about_dialog(self) -> None:
         """
@@ -2277,6 +2293,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     logging.critical(
                         f"There was an error {err} parsing the BigCity file."
                     )
+                    self.show_message_box(
+                        f"There was an error {err} parsing the BigCity file.",
+                        blocking=False,
+                    )
+
             else:
                 self.show_message_box(
                     "An Error occurred updating file.", blocking=False
@@ -2682,6 +2703,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stop_cw()
         if self.rotator_window is not None:
             self.rotator_window.stop()
+        # call self.stop_voice()
+        self.voice_process.stop_voice()
 
     def mark_cq(self) -> None:
         """
@@ -3876,6 +3899,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 # logger.info("writing: %s", self.pref)
         except (IOError, TypeError, ValueError) as exception:
             logger.critical("writepreferences: %s", exception)
+            self.show_message_box(f"writepreferences: {exception}", blocking=False)
 
     def readpreferences(self) -> None:
         """
@@ -3902,6 +3926,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         logging.CRITICAL(
                             "There was an error parsing the preference file."
                         )
+                        self.show_message_box(
+                            "There was an error parsing the preference file.",
+                            blocking=False,
+                        )
                     logger.info("%s", self.pref)
             else:
                 logger.info("No preference file. Writing preference.")
@@ -3913,6 +3941,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     logger.info("%s", self.pref)
         except (IOError, TypeError, ValueError) as exception:
             logger.critical("Error: %s", exception)
+            self.show_message_box(f"readpreferences error: {exception}", blocking=False)
 
         if self.pref.get("run_state", False) is True:
             self.radioButton_run.setChecked(True)
@@ -4347,6 +4376,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         if self.auto_cq is True:
             self.stop_cw()
+            self.voice_process.stop_voice()
         self.get_sn()
         if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
             self.sandpfreq = int(self.radio_state.get("vfoa", 0))
@@ -4979,6 +5009,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except IOError as err:
                 logger.critical(f"Error {err} copying macro file.")
+                self.show_message_box(
+                    f"Error {err} copying macro file.", blocking=False
+                )
 
         if not (fsutils.USER_DATA_PATH / self.contest.name / macro_file).exists():
             try:
@@ -4988,6 +5021,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 )
             except IOError as err:
                 logger.critical(f"Error {err} copying macro file.")
+                self.show_message_box(
+                    f"Error {err} copying macro file.", blocking=False
+                )
 
         return fsutils.USER_DATA_PATH / self.contest.name / macro_file
 
@@ -5010,6 +5046,9 @@ class MainWindow(QtWidgets.QMainWindow):
             fsutils.openFileWithOS(macro_file)
         except FileNotFoundError | PermissionError | OSError as err:
             logger.critical(f"Could not open file {macro_file} {err}")
+            self.show_message_box(
+                f"Could not open file {macro_file} {err}", blocking=False
+            )
         self.read_macros()
 
     def read_macros(self) -> None:
