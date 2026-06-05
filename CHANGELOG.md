@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
+- [2026-06-02] Add D-Bus notification support for Linux and clean up code
 - [2026-06-01] Removed mismatched quote from fstring in dxpedition.py
 - [2026-05-31] Merge pull request #577 Fix command button state handling in MainWindow class.
 - [2026-05-30] ReWorked DXPedition ESM flow.
