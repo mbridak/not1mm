@@ -435,7 +435,7 @@ def imp_adif(self):
         else:
             logger.debug("Frequency not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_msgbox(
+            self.show_message_box(
                 f"Valid Frequency not found in QSO #{q_num+1}.\nImport cancelled."
             )
             return
