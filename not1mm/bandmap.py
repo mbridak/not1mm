@@ -947,14 +947,12 @@ class BandMapWindow(QDockWidget):
                 or "callsign:" in data.lower()
             ):
                 self.send_command(self.callsignField.text())
-                return
 
             if "password:" in data.lower():
                 self.send_command(self.settings.get("cluster_password", ""))
-                return
 
             if "BEACON" in data:
-                return
+                pass
 
             if "DX de" in data:
                 parts = data.split()
@@ -974,7 +972,6 @@ class BandMapWindow(QDockWidget):
                     self.spots.addspot(spot)
                 except ValueError:
                     logger.debug(f"couldn't parse freq from datablock {data}")
-                return
 
             if "HELLO" in data.upper():
                 self.connectButton.setText("Connected")
@@ -1016,10 +1013,9 @@ class BandMapWindow(QDockWidget):
 
     def send_command(self, cmd: str) -> None:
         """Send a command to the cluster."""
-        cmd += "\r\n"
         if os.environ.get("SEND_CLUSTER", False) is not False:
-            print(f"{cmd}")
-        tosend = bytes(cmd, encoding="ascii")
+            print(f">>> {cmd}")
+        tosend = bytes(cmd + "\r\n", encoding="ascii")
         logger.debug("Command sent to the cluster")
         if self.socket:
             if self.socket.isOpen():
