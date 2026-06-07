@@ -20,6 +20,12 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+# this just removes unsused warning
+assert imp_adif
+assert get_points
+assert QtWidgets
+assert platform
+
 EXCHANGE_HINT = "#"
 
 name = "ES FIELD DAY"
