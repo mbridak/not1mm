@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-06-07-1] Merge pull request #586 from df7cb Allow more time for CAT connection.
+  - Merge pull request #585 from df7cb Process more cluster spots per cycle.
 - [2026-06-07] Fix ADIF generation when callsign has a stroke character.
 - [2026-06-05-1] Fixed 2 bugs in ADIF imports
 - [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
