@@ -7,9 +7,12 @@ This section will hopefully get you started with installing Not1MM.
 Not1MM requires:
 
 - Python 3.10+
+- Python3-dbus
 - PyQt6
 - libportaudio2
 - libxcb-cursor0 (maybe... Depends on the distro)
+- libglib2.0-dev
+- libdbus-1-dev
 
 You should install these through your distribution's package manager before continuing.
 

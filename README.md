@@ -90,6 +90,8 @@ Not1MM requires:
 - PyQt6
 - libportaudio2
 - libxcb-cursor0 (maybe... Depends on the distro)
+- libglib2.0-dev
+- libdbus-1-dev
 
 #### One liner install
   
