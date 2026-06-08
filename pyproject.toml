@@ -25,7 +25,7 @@ dependencies = [
     "rapidfuzz",
     "appdata",
     "adif_io",
-    "dbus-python",
+    "dbus-python ; platform_system != 'Windows'",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
