@@ -67,7 +67,7 @@ class Voice(QObject):
             try:
                 while sd.get_stream().active:
                     QThread.msleep(100)
-            except RuntimeError:
+            except (RuntimeError, AttributeError):
                 pass
             if keyed:
                 self.ptt_off.emit()
