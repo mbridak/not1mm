@@ -3777,6 +3777,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("PTT On")
+
         if self.rig_control:
             # self.leftdot.setPixmap(self.greendot)
             # app.processEvents()
@@ -3844,12 +3845,13 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             return
         if self.cw:
-            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(
-                    self.process_macro(function_key.toolTip()) + " "
-                )
+            macro_contests = self.process_macro(function_key.toolTip())
+            if macro_contests == "":
                 return
-            self.cw.sendcw(self.process_macro(function_key.toolTip()) + " ")
+            if self.pref.get("cwtype") == 3 and self.rig_control is not None:
+                self.rig_control.sendcw(macro_contests + " ")
+                return
+            self.cw.sendcw(macro_contests + " ")
             if self.pref.get("cwtype") == 2:
                 # I put this back in 'cause no one will know to update winkeyerserial.
                 time.sleep(0.2)
