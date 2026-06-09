@@ -48,6 +48,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QPushButton,
     QLineEdit,
+    QSystemTrayIcon,
 )
 from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
@@ -974,6 +975,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
         self.resolve_dirty_records()
         self.dark_watcher(QApplication.instance().styleHints().colorScheme())
+        self.tray_icon = None
+        if not QSystemTrayIcon.isSystemTrayAvailable():
+            print("System tray not available for this system")
+        else:
+            self.tray_icon = QSystemTrayIcon()
+            self.tray_icon.setIcon(
+                QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
+            )  # Replace with your icon path
+            self.tray_icon.setVisible(True)
 
     # Server stuff
 
@@ -1690,12 +1700,12 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        if sys.platform == "linux":
-            self.notify.notify(
-                summary="Message from Not1MM",
-                body=message,
-                icon=f"{os.fspath(fsutils.APP_DATA_PATH)}/k6gte.not1mm-32.png",
-                timeout=15000,
+        if self.tray_icon is not None:
+            self.tray_icon.showMessage(
+                "Message from Not1MM",
+                message,
+                QSystemTrayIcon.MessageIcon.NoIcon,
+                10000,
             )
         else:
             message_box = QtWidgets.QMessageBox()
