@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-09] Stop triggering PTT when processing {} macros in CW mode. I hope.
 - [2026-06-08-1] Removed the use of dbus-python. More trouble than it was worth. Using QSystemTrayIcon instead.
 - [2026-06-07-1] Merge pull request #586 from df7cb Allow more time for CAT connection.
   - Merge pull request #585 from df7cb Process more cluster spots per cycle.
