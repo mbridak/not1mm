@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-08-1] Removed the use of dbus-python. More trouble than it was worth. Using QSystemTrayIcon instead.
 - [2026-06-07-1] Merge pull request #586 from df7cb Allow more time for CAT connection.
   - Merge pull request #585 from df7cb Process more cluster spots per cycle.
 - [2026-06-07] Fix ADIF generation when callsign has a stroke character.

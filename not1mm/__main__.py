@@ -83,9 +83,6 @@ from not1mm.lib.versiontest import VersionTest
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 
-if sys.platform == "linux":
-    from not1mm.lib.notification import DbusNotification
-
 import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
 from not1mm.checkwindow import CheckWindow
@@ -239,8 +236,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, splash):
         super().__init__()
         logger.info("MainWindow: __init__")
-        if sys.platform == "linux":
-            self.notify = DbusNotification("Not1MM")
         self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
