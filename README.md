@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-06-09-1] Add check for non-existant sound device.
 - [2026-06-09] Stop triggering PTT when processing {} macros in CW mode. I hope.
 - [2026-06-08-1] Removed the use of dbus-python. More trouble than it was worth. Using QSystemTrayIcon instead.
 - [2026-06-07-1] Merge pull request #586 from df7cb Allow more time for CAT connection.
