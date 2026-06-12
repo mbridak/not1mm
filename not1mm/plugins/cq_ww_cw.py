@@ -48,6 +48,11 @@ from not1mm.lib.ham_utility import get_logged_band
 
 logger = logging.getLogger(__name__)
 
+assert QtWidgets
+assert imp_adif
+assert online_score_xml
+assert get_logged_band
+
 EXCHANGE_HINT = "CQ Zone No."
 
 name = "CQ WW CW"
