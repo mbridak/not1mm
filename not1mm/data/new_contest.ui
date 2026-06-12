@@ -394,6 +394,11 @@
      </item>
      <item>
       <property name="text">
+       <string>EUDX</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
