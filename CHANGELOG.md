@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-11] Add EUDX contest.
 - [2026-06-09-1] Add check for non-existant sound device.
 - [2026-06-09] Stop triggering PTT when processing {} macros in CW mode. I hope.
 - [2026-06-08-1] Removed the use of dbus-python. More trouble than it was worth. Using QSystemTrayIcon instead.
