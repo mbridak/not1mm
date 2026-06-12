@@ -47,7 +47,7 @@ assert imp_adif
 assert online_score_xml
 
 EXCHANGE_HINT = "ITU/EU Union Region"
-SOAPBOX_HINT = """Hello"""
+SOAPBOX_HINT = """"""
 
 name = "EUDXC"
 mode = "BOTH"  # CW SSB BOTH RTTY
