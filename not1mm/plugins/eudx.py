@@ -46,7 +46,7 @@ assert QtWidgets
 assert imp_adif
 assert online_score_xml
 
-EXCHANGE_HINT = "ITU/EU Union Region"
+EXCHANGE_HINT = "ITU or EU Union Region"
 SOAPBOX_HINT = """"""
 
 name = "EUDXC"
