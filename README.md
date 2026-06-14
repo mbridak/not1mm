@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-06-14] Fixed dependency name adif_io to adif-io
 - [2026-06-11] Add EUDX contest.
 - [2026-06-09-1] Add check for non-existant sound device.
 - [2026-06-09] Stop triggering PTT when processing {} macros in CW mode. I hope.
