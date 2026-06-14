@@ -25,6 +25,7 @@ dependencies = [
     "rapidfuzz",
     "appdata",
     "adif-io",
+    "pyobjc-framework-Cocoa; sys_platform == 'darwin'",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
