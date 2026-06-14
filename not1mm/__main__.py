@@ -30,6 +30,18 @@ from shutil import copyfile
 
 import notctyparser
 
+if sys.platform == "darwin":
+    try:
+        from Foundation import NSBundle
+        bundle = NSBundle.mainBundle()
+        if bundle:
+            info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+            if info:
+                info['CFBundleName'] = 'Not1MM'
+    except ImportError:
+        pass
+
+
 from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
 from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
 from PyQt6.QtGui import (
