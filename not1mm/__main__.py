@@ -264,6 +264,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        self.tray_icon = None
+        if not QSystemTrayIcon.isSystemTrayAvailable():
+            print("System tray not available for this system")
+        else:
+            self.tray_icon = QSystemTrayIcon()
+            self.tray_icon.setIcon(
+                QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
+            )  # Replace with your icon path
+            self.tray_icon.setVisible(True)
 
         if sys.platform == "darwin":
             QApplication.setStyle("Fusion")
@@ -982,15 +991,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.udp_socket.readyRead.connect(self.fldigi_on_udp_socket_ready_read)
         self.resolve_dirty_records()
         self.dark_watcher(QApplication.instance().styleHints().colorScheme())
-        self.tray_icon = None
-        if not QSystemTrayIcon.isSystemTrayAvailable():
-            print("System tray not available for this system")
-        else:
-            self.tray_icon = QSystemTrayIcon()
-            self.tray_icon.setIcon(
-                QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
-            )  # Replace with your icon path
-            self.tray_icon.setVisible(True)
 
     # Server stuff
 
