@@ -3723,6 +3723,7 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace("{SNT}", self.format_rst(self.sent.text()))
         macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text()))
         macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial)))
+        macro = macro.replace("{PREVCALL}", self.previous_contact.get("Call", ""))
 
         if "{TX}" in macro:
             macro = macro.replace("{TX}", "")
