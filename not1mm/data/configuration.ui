@@ -13,6 +13,7 @@
   <property name="font">
    <font>
     <family>JetBrains Mono</family>
+    <weight>100</weight>
    </font>
   </property>
   <property name="windowTitle">
@@ -30,6 +31,7 @@
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
+       <weight>100</weight>
        <pointsize>12</pointsize>
        <strikeout>false</strikeout>
       </font>
@@ -68,6 +70,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -81,6 +84,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -108,6 +112,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <weight>100</weight>
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
@@ -137,6 +142,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -160,6 +166,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -187,6 +194,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -213,6 +221,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -231,6 +240,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -249,6 +259,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -303,6 +314,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -366,6 +378,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -379,6 +392,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -416,6 +430,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -450,6 +465,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -492,6 +508,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <bold>false</bold>
              <strikeout>false</strikeout>
@@ -519,6 +536,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <strikeout>false</strikeout>
             </font>
@@ -545,6 +563,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <strikeout>false</strikeout>
             </font>
@@ -583,6 +602,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -625,6 +645,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -638,6 +659,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -740,6 +762,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -763,6 +786,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>11</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -780,6 +804,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -797,6 +822,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -820,6 +846,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -875,6 +902,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1036,6 +1064,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1104,6 +1133,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1136,6 +1166,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1441,6 +1472,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -1454,6 +1486,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1471,6 +1504,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1488,6 +1522,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>14</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1505,6 +1540,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1519,6 +1555,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1533,6 +1570,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1550,6 +1588,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1577,6 +1616,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1595,6 +1635,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -1608,6 +1649,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1625,6 +1667,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1670,6 +1713,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1684,6 +1728,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1706,7 +1751,8 @@
         <widget class="QLabel" name="label_19">
          <property name="font">
           <font>
-           <family>JetBrains Mono</family>
+           <family>JetBrains Mono
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1723,7 +1769,8 @@
         <widget class="QLineEdit" name="n1mm_scoreport">
          <property name="font">
           <font>
-           <family>JetBrains Mono</family>
+           <family>JetBrains Mono
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1750,6 +1797,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1776,6 +1824,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1792,7 +1841,8 @@
         <widget class="QLineEdit" name="n1mm_operator">
          <property name="font">
           <font>
-           <family>JetBrains Mono ExtraLight</family>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1832,6 +1882,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1846,6 +1897,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1866,6 +1918,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1892,6 +1945,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -2781,6 +2835,7 @@
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
+       <weight>100</weight>
        <pointsize>12</pointsize>
        <bold>false</bold>
       </font>
