@@ -81,6 +81,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>9</pointsize>
        </font>
       </property>
@@ -102,6 +103,7 @@
        <property name="font">
         <font>
          <family>JetBrains Mono</family>
+         <weight>100</weight>
          <pointsize>9</pointsize>
         </font>
        </property>
@@ -123,6 +125,7 @@
           <property name="font">
            <font>
             <family>JetBrains Mono</family>
+            <weight>100</weight>
             <pointsize>6</pointsize>
            </font>
           </property>

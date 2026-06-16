@@ -24,6 +24,7 @@
        <property name="font">
         <font>
          <family>JetBrains Mono</family>
+         <weight>100</weight>
         </font>
        </property>
        <property name="focusPolicy">
@@ -37,6 +38,7 @@
        <property name="font">
         <font>
          <family>JetBrains Mono</family>
+         <weight>100</weight>
         </font>
        </property>
        <property name="focusPolicy">
