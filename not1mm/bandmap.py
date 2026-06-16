@@ -432,8 +432,7 @@ class BandMapWindow(QDockWidget):
         self._udpwatch = None
 
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
-        # self.thefont = QFont()
-        # self.thefont.setFamily("JetBrains Mono")
+        # self.thefont = QFont("JetBrains Mono", 10, QFont.Weight.Thin)
         self.thefont = QFont("JetBrains Mono", 10)
         self.settings = self.get_settings()
         self.clear_spot_olderSpinBox.setValue(
@@ -451,7 +450,6 @@ class BandMapWindow(QDockWidget):
         self.zoomoutButton.clicked.connect(self.inc_zoom)
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
-        # self.font = QFont("JetBrains Mono ExtraLight", 10)
         self.socket = QtNetwork.QTcpSocket()
         self.test_for_data = self.socket.bytesAvailable
         self.socket.readyRead.connect(self.receive)
