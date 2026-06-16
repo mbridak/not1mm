@@ -6,6 +6,7 @@ GPL V3
 Class: LogWindow
 Purpose: Onscreen widget to show and edit logged contacts.
 """
+
 # pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
 # pylint: disable=logging-fstring-interpolation, too-many-lines
 # QTableWidget
@@ -18,7 +19,7 @@ from json import loads
 
 import math
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import QItemSelectionModel
+from PyQt6.QtCore import QItemSelectionModel, Qt
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import pyqtSignal
 
@@ -93,8 +94,7 @@ class LogWindow(QDockWidget):
         21: "UUID",
         22: "Operator",
     }
-    logwindow_closed = pyqtSignal()       
-
+    logwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -104,7 +104,7 @@ class LogWindow(QDockWidget):
         self.udp_fifo = queue.Queue()
         self.n1mm = None
         self.load_pref()
- 
+
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
@@ -555,12 +555,12 @@ class LogWindow(QDockWidget):
 
     def dummy(self):
         """the dummy"""
-    
+
     def is_it_dark(self) -> bool:
         """Returns if the DE has a dark theme active."""
         hints = QtGui.QGuiApplication.styleHints()
         scheme = hints.colorScheme()
-        return    
+        return scheme == Qt.ColorScheme.Dark
 
     def edit_focused_contact_selected(self, clicked_cell) -> None:
         """
