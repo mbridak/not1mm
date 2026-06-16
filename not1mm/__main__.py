@@ -33,11 +33,12 @@ import notctyparser
 if sys.platform == "darwin":
     try:
         from Foundation import NSBundle
+
         bundle = NSBundle.mainBundle()
         if bundle:
             info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
             if info:
-                info['CFBundleName'] = 'Not1MM'
+                info["CFBundleName"] = "Not1MM"
     except ImportError:
         pass
 
@@ -271,46 +272,70 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tray_icon = QSystemTrayIcon()
             self.tray_icon.setIcon(
                 QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
-            )  # Replace with your icon path
+            )
             self.tray_icon.setVisible(True)
 
         if sys.platform == "darwin":
             QApplication.setStyle("Fusion")
             def_font_size = 13
 
-            QApplication.instance().setFont(QFont(self.fontfamily, def_font_size))
-            self.F1.setFont(QFont(self.fontfamily, def_font_size))
-            self.F2.setFont(QFont(self.fontfamily, def_font_size))
-            self.F3.setFont(QFont(self.fontfamily, def_font_size))
-            self.F4.setFont(QFont(self.fontfamily, def_font_size))
-            self.F5.setFont(QFont(self.fontfamily, def_font_size))
-            self.F6.setFont(QFont(self.fontfamily, def_font_size))
-            self.F7.setFont(QFont(self.fontfamily, def_font_size))
-            self.F8.setFont(QFont(self.fontfamily, def_font_size))
-            self.F9.setFont(QFont(self.fontfamily, def_font_size))
-            self.F10.setFont(QFont(self.fontfamily, def_font_size))
-            self.F11.setFont(QFont(self.fontfamily, def_font_size))
-            self.F12.setFont(QFont(self.fontfamily, def_font_size))
-            self.radioButton_run.setFont(QFont(self.fontfamily, def_font_size))
-            self.radioButton_sp.setFont(QFont(self.fontfamily, def_font_size))
-            self.cw_speed.setFont(QFont(self.fontfamily, def_font_size))
-            self.callsign_label.setFont(QFont(self.fontfamily, def_font_size))
-            self.snt_label.setFont(QFont(self.fontfamily, def_font_size))
-            self.rcv_label.setFont(QFont(self.fontfamily, def_font_size))
-            self.other_label.setFont(QFont(self.fontfamily, def_font_size))
-            self.exch_label.setFont(QFont(self.fontfamily, def_font_size))
-            self.heading_distance.setFont(QFont(self.fontfamily, def_font_size))
-            self.history_info.setFont(QFont(self.fontfamily, def_font_size))
-            self.dx_entity.setFont(QFont(self.fontfamily, def_font_size))
-            self.score.setFont(QFont(self.fontfamily, def_font_size))
-            self.mults.setFont(QFont(self.fontfamily, def_font_size))
+            QApplication.instance().setFont(
+                QFont(self.fontfamily, 12, QFont.Weight.Thin)
+            )
+            self.F1.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F2.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F3.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F4.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F5.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F6.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F7.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F8.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F9.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F10.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F11.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.F12.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.radioButton_run.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.radioButton_sp.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.cw_speed.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.callsign_label.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.snt_label.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.rcv_label.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.other_label.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.exch_label.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.heading_distance.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.history_info.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.dx_entity.setFont(
+                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
+            )
+            self.score.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
+            self.mults.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
 
-            self.callsign.setFont(QFont(self.fontfamily, 20))
-            self.sent.setFont(QFont(self.fontfamily, 20))
-            self.receive.setFont(QFont(self.fontfamily, 20))
-            self.other_1.setFont(QFont(self.fontfamily, 20))
-            self.other_2.setFont(QFont(self.fontfamily, 20))
-            self.dupe_indicator.setFont(QFont(self.fontfamily, 20))
+            self.callsign.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
+            self.sent.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
+            self.receive.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
+            self.other_1.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
+            self.other_2.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
+            self.dupe_indicator.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
 
         self.history_info.hide()
         QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
