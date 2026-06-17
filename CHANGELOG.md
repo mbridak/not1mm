@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-17] Fix crash with bad config UI file.
 - [2026-06-16] Fix SQL queries in StatsWindow to include more CW modes.
 - [2026-06-14-1] Merge PR #591 from df7cb fixing startup crash when there is a new version.
 - [2026-06-14] Fixed dependency name adif_io to adif-io
