@@ -2211,6 +2211,12 @@
    <property name="text">
     <string>DXCC</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Alt+D</string>
    </property>
@@ -2221,6 +2227,12 @@
    </property>
    <property name="text">
     <string>Rotator</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
    </property>
    <property name="shortcut">
     <string>Alt+P</string>
@@ -2253,6 +2265,12 @@
    <property name="text">
     <string>Group Chat</string>
    </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
+   </property>
   </action>
   <action name="actionZone">
    <property name="checkable">
@@ -2260,6 +2278,12 @@
    </property>
    <property name="text">
     <string>Zone</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
    </property>
    <property name="shortcut">
     <string>Alt+Z</string>
