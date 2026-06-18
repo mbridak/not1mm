@@ -6,6 +6,8 @@ with open("CHANGELOG.md", "w") as file:
             line = raw.strip()
             if not line:
                 continue
+            if "ignore:" in line.lower():
+                continue
             if prevdate != line[0:10]:
                 restofline = line[11:97] + "..." if len(line[11:]) > 100 else line[11:]
                 file.write(f"- [{line[0:10]}] {restofline}\n")
