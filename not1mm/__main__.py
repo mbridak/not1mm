@@ -53,6 +53,7 @@ from PyQt6.QtGui import (
     QPixmap,
     QFont,
     QCloseEvent,
+    QIcon,
     QKeyEvent,
 )
 from PyQt6.QtWidgets import (
@@ -271,7 +272,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.tray_icon = QSystemTrayIcon()
             self.tray_icon.setIcon(
-                QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
+                QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
             )
             self.tray_icon.setVisible(True)
 
@@ -714,9 +715,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "RTTY": self.band_indicators_rtty,
         }
 
-        self.setWindowIcon(
-            QtGui.QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png"))
-        )
+        self.setWindowIcon(QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png")))
 
         self.show_splash_msg("Loading CTY file.")
 
@@ -5333,6 +5332,7 @@ logging.getLogger("PyQt6.uic.properties").setLevel("INFO")
 
 app = QtWidgets.QApplication(sys.argv)
 
+app.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-128.png"))
 pixmap = QPixmap(f"{os.fspath(fsutils.APP_DATA_PATH)}/splash.png")
 splash = QSplashScreen(pixmap)
 
