@@ -1,14 +1,13 @@
 #!/bin/bash
 
-# call git log, requesting just the commit date and commit message and direct the output to a temporary file.
+# call git log, and direct the output to a temporary file.
+# remove dulicate lines.
+# then write a new CHANGELOG.md file
 
-#If no date passed in, use today.
-thevar=""
-if [ "$1" = "" ]; then
-    thevar=`date +"%F"`
-else
-    thevar=$1
-fi
+thevar="2023-02-09"
 
-git log --since=$thevar --pretty=format:"%ad %s" --date=short > scratch.txt
+git log --since=$thevar --pretty=format:"%ad %s" --date=short > temp.txt
+awk '!seen[$0]++' temp.txt > scratch.txt
+rm temp.txt
+
 python process-scratch.py
