@@ -9,9 +9,6 @@ Purpose: A voice keying class to handle playing soundfiles and activating PTT
          Run in it's own thread.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import logging
 from pathlib import Path
 
@@ -22,8 +19,7 @@ except OSError as exception:
     print("portaudio is not installed")
     sd = None
 import soundfile as sf
-
-from PyQt6.QtCore import QObject, pyqtSignal, QThread
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
 
 logger = logging.getLogger("voice_keying")
 

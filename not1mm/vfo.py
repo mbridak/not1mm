@@ -7,8 +7,6 @@ Class: VfoWindow
 Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig.
 """
 
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation, c-extension-no-member
-
 # 115200 pico default speed
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
@@ -16,14 +14,14 @@ Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig
 import datetime
 import logging
 import os
-from json import loads
 import sys
+from json import loads
 
 import serial
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import QTimer, pyqtSignal
-from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_interface import CAT
@@ -179,16 +177,10 @@ class VfoWindow(QDockWidget):
             except OSError:
                 if self.message_shown is False and supress_msg is False:
                     self.message_shown: bool = True
-                    # self.show_message_box(
-                    #     "Unable to locate or open the VFO knob serial device."
-                    # )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
         else:
             if self.message_shown is False and supress_msg is False:
                 self.message_shown: bool = True
-                # self.show_message_box(
-                #     "Unable to locate or open the VFO knob serial device."
-                # )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
     def msg_from_main(self, msg_dict) -> None:
@@ -216,7 +208,7 @@ class VfoWindow(QDockWidget):
         """Display vfo value with dots"""
         dvfo: str = str(the_number)
         if len(dvfo) > 6:
-            dnum: str = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
+            dnum: str = f"{dvfo[: len(dvfo) - 6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
 
     def poll_radio(self) -> None:
@@ -236,8 +228,6 @@ class VfoWindow(QDockWidget):
                     vfo: int = int(self.rig_control.get_vfo())
                 except ValueError:
                     return
-                # if vfo < 1700000 or vfo > 60000000:
-                #     return
                 if vfo != self.old_vfo or self.device_reconnect is True:
                     self.old_vfo: int = vfo
                     logger.debug(f"{vfo}")
@@ -262,8 +252,6 @@ class VfoWindow(QDockWidget):
                 self.pico.write(b"f\r")
                 while self.pico.in_waiting:
                     result: str = self.pico.read(self.pico.in_waiting).decode().strip()
-                    # result = result.decode().strip()
-
                     if self.old_pico != result:
                         self.old_pico: str = result
                         self.stale: datetime.datetime = (

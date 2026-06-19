@@ -7,9 +7,6 @@ Class: BandMapWindow
 Purpose: Onscreen widget to show realtime spots from an AR cluster.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import logging
 import os
 import platform
@@ -19,10 +16,10 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from json import loads
 
-from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtGui import QColorConstants, QFont, QColor
-from PyQt6.QtWidgets import QDockWidget, QStyle
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
 from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QColor, QColorConstants, QFont
+from PyQt6.QtWidgets import QDockWidget, QStyle
 
 import not1mm.fsutils as fsutils
 
@@ -55,7 +52,7 @@ class Band:
         "70cm":  (420_000,  450_000,  432.0),
         "33cm":  (902_000,  928_000,  932.0),
         "23cm": (1240_000, 1300_000, 1232.0),
-    } # fmt: skip
+    }  # fmt: skip
 
     def __init__(self, band: str) -> None:
         self.start, self.end, self.altname = self.bands.get(band, (0.0, 1.0, 0.0))

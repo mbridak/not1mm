@@ -7,18 +7,14 @@ Class: RTCService
 Purpose: Service to post 'real time' scores.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import datetime
 import logging
 import os
 from json import loads
 
 import requests
+from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 from requests.auth import HTTPBasicAuth
-
-from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
 
 import not1mm.fsutils as fsutils
 

@@ -4,13 +4,13 @@
 fsutils.py: Filesystem utilities for not1mm.
 @kyleboyle
 """
-# pylint: disable=invalid-name
 
 import os
 import platform
-import sys
 import subprocess
+import sys
 from pathlib import Path
+
 from appdata import AppDataPaths
 
 WORKING_PATH = Path(os.path.dirname(os.path.abspath(__file__)))
