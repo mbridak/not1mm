@@ -6,11 +6,6 @@ GPL V3
 Purpose: Provides main logging window and a crap ton more.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines, no-name-in-module
-# pylint: disable=logging-fstring-interpolation, logging-not-lazy, line-too-long, bare-except
-
-# alt cluster hamqth.com 7300
-
 import datetime
 import importlib
 import locale
@@ -98,8 +93,6 @@ from not1mm.lib.ham_utility import (
     reciprocal,
 )
 from not1mm.lib.multicast import Multicast
-
-# from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
 from not1mm.lib.select_contest import SelectContest
