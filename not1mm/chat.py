@@ -1,21 +1,16 @@
 import datetime
 import logging
 import os
-
-# import sys
-
-from PyQt6 import uic, QtGui
-from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal
-
-import not1mm.fsutils as fsutils
 from json import loads
 from json.decoder import JSONDecodeError
 
-logger = logging.getLogger(__name__)
+from PyQt6 import QtGui, uic
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QDockWidget
 
-# chat_history  QTextBrowser
-# chat_input    QLineedit
+import not1mm.fsutils as fsutils
+
+logger = logging.getLogger(__name__)
 
 
 class ChatWindow(QDockWidget):
@@ -30,7 +25,6 @@ class ChatWindow(QDockWidget):
         super().__init__()
         self.action = action
         self.active: bool = False
-        # self.load_pref()
         uic.loadUi(fsutils.APP_DATA_PATH / "chat.ui", self)
         self.chat_input.returnPressed.connect(self.send_chat)
 
@@ -38,7 +32,6 @@ class ChatWindow(QDockWidget):
         """Sends UDP chat packet with text entered in chat_entry field."""
         chat_string = self.chat_input.text()
         packet = {"cmd": "CHAT"}
-        #  packet["sender"] = self.preference.get("mycall", "")
         packet["message"] = chat_string
         self.message.emit(packet)
         self.chat_input.setText("")
@@ -95,6 +88,7 @@ class ChatWindow(QDockWidget):
         self.action.setChecked(False)
         self.chatwindow_closed.emit()
         event.accept()
+
 
 if __name__ == "__main__":
     print("This is not a program.\nTry Again.")

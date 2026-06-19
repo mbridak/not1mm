@@ -7,25 +7,21 @@ Class: CheckWindow
 Purpose: Onscreen widget to show possible matches to callsigns entered in the main window.
 """
 
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
-# pylint: disable=logging-fstring-interpolation, line-too-long
-
-from dataclasses import dataclass
 import logging
 import os
 import queue
-from typing import Optional
+from dataclasses import dataclass
 from json import loads
-from rapidfuzz.distance import Levenshtein
+from typing import Optional
 
 from PyQt6 import uic
-from PyQt6.QtWidgets import QLabel, QVBoxLayout, QWidget, QDockWidget, QApplication
-from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtWidgets import QApplication, QDockWidget, QLabel, QVBoxLayout, QWidget
+from rapidfuzz.distance import Levenshtein
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
-
 from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
@@ -101,7 +97,6 @@ class CheckWindow(QDockWidget):
             return
         if packet.get("cmd", "") == "NEWDB":
             ...
-            # self.load_new_db()
 
     def setActive(self, mode: bool):
         self.active = bool(mode)

@@ -6,13 +6,11 @@ Email: michael.bridak@gmail.com
 GPL V3
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import datetime
 import logging
 
-from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
+from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
+
 from not1mm.lib.cat_interface import CAT
 
 logger = logging.getLogger("radio")
@@ -22,7 +20,6 @@ class Radio(QObject):
     """Radio class"""
 
     poll_callback = pyqtSignal(dict)
-
     cat = None
     vfoa = "14030000"
     mode = "CW"
@@ -66,7 +63,6 @@ class Radio(QObject):
                 if pos_rtty in self.modes:
                     self.last_data_mode = pos_rtty
                     break
-
         except ConnectionResetError:
             ...
         while not self.time_to_quit:
@@ -102,7 +98,6 @@ class Radio(QObject):
                     )
                 except QEventLoop:
                     ...
-            # QThread.msleep(int(self.delta / 2))
             QThread.msleep(100)
 
     def store_last_data_mode(self, the_mode: str = ""):
@@ -149,36 +144,12 @@ class Radio(QObject):
             self.cat.set_vfo(vfo)
 
         self.poll_time = datetime.datetime.now()
-        # try:
-        #     self.poll_callback.emit(
-        #         {
-        #             "vfoa": str(self.vfoa),
-        #             "mode": self.mode,
-        #             "bw": self.bw,
-        #             "online": self.online,
-        #         }
-        #     )
-        # except RuntimeError:
-        #     ...
 
     def set_mode(self, mode):
         self.mode = mode
-
         if self.cat:
             self.cat.set_mode(mode)
-
         self.poll_time = datetime.datetime.now()
-        # try:
-        #     self.poll_callback.emit(
-        #         {
-        #             "vfoa": str(self.vfoa),
-        #             "mode": self.mode,
-        #             "bw": self.bw,
-        #             "online": self.online,
-        #         }
-        #     )
-        # except RuntimeError:
-        #     ...
 
     def get_modes(self):
         """get list of modes"""

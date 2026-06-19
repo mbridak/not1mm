@@ -7,20 +7,15 @@ Class: LookupService
 Purpose: Lookup callsigns with online services.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import logging
 import os
 from json import loads
 
-from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
-
-# from not1mm.lib.multicast import Multicast
-from not1mm.lib.lookup import QRZlookup, HamQTH
+from not1mm.lib.lookup import HamQTH, QRZlookup
 
 logger = logging.getLogger(__name__)
 
@@ -33,17 +28,14 @@ class LookupService(QDockWidget):
     def __init__(self):
         super().__init__()
         self._udpwatch = None
-
         self.look_up = None
         self.settings = self.get_settings()
         if self.settings:
-
             if self.settings.get("useqrz"):
                 self.look_up = QRZlookup(
                     self.settings.get("lookupusername", ""),
                     self.settings.get("lookuppassword", ""),
                 )
-
             if self.settings.get("usehamqth"):
                 self.look_up = HamQTH(
                     self.settings.get("lookupusername", ""),
@@ -78,7 +70,6 @@ class LookupService(QDockWidget):
                     self.settings.get("lookupusername", ""),
                     self.settings.get("lookuppassword", ""),
                 )
-
             if self.settings.get("usehamqth"):
                 self.look_up = HamQTH(
                     self.settings.get("lookupusername", ""),

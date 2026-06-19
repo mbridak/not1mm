@@ -7,27 +7,19 @@ Class: LogWindow
 Purpose: Onscreen widget to show and edit logged contacts.
 """
 
-# pylint: disable=no-name-in-module, unused-import, no-member, c-extension-no-member
-# pylint: disable=logging-fstring-interpolation, too-many-lines
-# QTableWidget
-# focusedLog, generalLog
-
 import logging
+import math
 import os
 import queue
 from json import loads
 
-import math
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
-from PyQt6.QtCore import QItemSelectionModel, Qt
+from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_contact import EditContact
-
-# from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 
 logger = logging.getLogger(__name__)
@@ -154,12 +146,7 @@ class LogWindow(QDockWidget):
         )
         self.focusedLog.cellDoubleClicked.connect(self.double_clicked)
         self.focusedLog.cellChanged.connect(self.focused_cell_changed)
-
         self.generalLog.setSortingEnabled(True)
-
-        # self.generalLog.horizontalHeader().setStyleSheet("color: orange")
-        # self.focusedLog.horizontalHeader().setStyleSheet("color: orange")
-
         for log in (self.generalLog, self.focusedLog):
             log.setColumnWidth(self.get_column("YYYY-MM-DD HH:MM:SS"), 200)
 
@@ -380,7 +367,6 @@ class LogWindow(QDockWidget):
         }
         self.database.change_contact(db_record)
 
-        # cmd = {}
         db_record["cmd"] = "CONTACTCHANGED"
         self.message.emit(db_record)
 
@@ -392,7 +378,6 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
             self.n1mm.contact_info["operator"] = self.contact["Operator"]
             self.n1mm.contact_info["mycall"] = self.contact["Operator"]
-            # self.n1mm.contact_info[""] = self.contact[""]
             self.n1mm.contact_info["band"] = self.contact["Band"]
             self.n1mm.contact_info["mode"] = self.contact["Mode"]
             self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
@@ -400,7 +385,6 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["gridsquare"] = self.contact["GridSquare"]
             self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
             self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
-
             self.n1mm.contact_info["call"] = db_record["Call"]
             self.n1mm.contact_info["oldcall"] = self.contact["Call"]
             try:
@@ -420,9 +404,7 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["section"] = db_record["Sect"]
             self.n1mm.contact_info["wpxprefix"] = db_record["WPXPrefix"]
             self.n1mm.contact_info["power"] = db_record["Power"]
-
             self.n1mm.contact_info["zone"] = db_record["ZN"]
-
             self.n1mm.contact_info["countryprefix"] = db_record["CountryPrefix"]
             self.n1mm.contact_info["points"] = db_record["Points"]
             self.n1mm.contact_info["name"] = db_record["Name"]
@@ -499,7 +481,6 @@ class LogWindow(QDockWidget):
         }
         self.database.change_contact(db_record)
 
-        # cmd = {}
         db_record["cmd"] = "CONTACTCHANGED"
         self.message.emit(db_record)
 
@@ -519,7 +500,6 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["gridsquare"] = self.contact["GridSquare"]
             self.n1mm.contact_info["ismultiplier1"] = self.contact["IsMultiplier1"]
             self.n1mm.contact_info["ismultiplier2"] = self.contact["IsMultiplier2"]
-
             self.n1mm.contact_info["call"] = db_record["Call"]
             self.n1mm.contact_info["oldcall"] = self.contact["Call"]
             try:
@@ -539,9 +519,7 @@ class LogWindow(QDockWidget):
             self.n1mm.contact_info["section"] = db_record["Sect"]
             self.n1mm.contact_info["wpxprefix"] = db_record["WPXPrefix"]
             self.n1mm.contact_info["power"] = db_record["Power"]
-
             self.n1mm.contact_info["zone"] = db_record["ZN"]
-
             self.n1mm.contact_info["countryprefix"] = db_record["CountryPrefix"]
             self.n1mm.contact_info["points"] = db_record["Points"]
             self.n1mm.contact_info["name"] = db_record["Name"]
@@ -621,7 +599,6 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.accepted.connect(self.save_edited_contact)
         self.contact = self.database.fetch_contact_by_uuid(uuid)
         self.edit_contact_dialog.delete_2.clicked.connect(self.delete_contact)
-
         self.edit_contact_dialog.call.setText(self.contact.get("Call", ""))
         self.edit_contact_dialog.time_stamp.setText(self.contact.get("TS", ""))
         self.edit_contact_dialog.rx_freq.setText(str(self.contact.get("Freq", "")))
@@ -637,7 +614,6 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.name.setText(self.contact.get("Name", ""))
         self.edit_contact_dialog.qth.setText(self.contact.get("QTH", ""))
         self.edit_contact_dialog.comment.setText(self.contact.get("Comment", ""))
-
         self.edit_contact_dialog.nr.setText(str(self.contact.get("NR", "0")))
         self.edit_contact_dialog.nr_sent.setText(str(self.contact.get("SentNr", "0")))
         self.edit_contact_dialog.points.setText(str(self.contact.get("Points", "0")))
@@ -663,7 +639,6 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.rover_qth.setText(
             self.contact.get("RoverLocation", "")
         )
-
         self.edit_contact_dialog.mult_1.setChecked(
             bool(self.contact.get("IsMultiplier1", ""))
         )
@@ -673,7 +648,6 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.mult_3.setChecked(
             bool(self.contact.get("IsMultiplier3", ""))
         )
-
         self.edit_contact_dialog.show()
         debugline = f"Right Clicked Item: {uuid}"
         logger.debug(debugline)
@@ -703,7 +677,6 @@ class LogWindow(QDockWidget):
         self.contact["Name"] = self.edit_contact_dialog.name.text()
         self.contact["QTH"] = self.edit_contact_dialog.qth.text()
         self.contact["Comment"] = self.edit_contact_dialog.comment.text()
-
         self.contact["NR"] = self.edit_contact_dialog.nr.text()
         self.contact["SentNr"] = self.edit_contact_dialog.nr_sent.text()
         self.contact["Points"] = self.edit_contact_dialog.points.text()
@@ -721,9 +694,7 @@ class LogWindow(QDockWidget):
         self.contact["Operator"] = self.edit_contact_dialog.op.text()
         self.contact["MiscText"] = self.edit_contact_dialog.misc.text()
         self.contact["RoverLocation"] = self.edit_contact_dialog.rover_qth.text()
-
         self.database.change_contact(self.contact)
-
         self.get_log()
         cmd = self.contact.copy()
         cmd["cmd"] = "CONTACTCHANGED"
@@ -743,7 +714,6 @@ class LogWindow(QDockWidget):
         None
         """
         self.database.delete_contact(self.contact.get("ID", ""))
-
         if self.n1mm:
             if self.n1mm.send_contact_packets:
                 self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
@@ -1101,7 +1071,6 @@ class LogWindow(QDockWidget):
                 self.get_column("Operator"),
                 QtWidgets.QTableWidgetItem(str(log_item.get("Operator", ""))),
             )
-
         self.focusedLog.resizeColumnsToContents()
         self.focusedLog.resizeRowsToContents()
         self.focusedLog.blockSignals(False)
