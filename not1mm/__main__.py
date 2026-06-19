@@ -12,19 +12,18 @@ Purpose: Provides main logging window and a crap ton more.
 # alt cluster hamqth.com 7300
 
 import datetime
-import time
 import importlib
 import locale
 import logging
-from logging.handlers import RotatingFileHandler
 import os
 import queue
 import socket
 import sys
+import time
 import uuid
-
 from json import dumps, loads
 from json.decoder import JSONDecodeError
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from shutil import copyfile
 
@@ -43,29 +42,41 @@ if sys.platform == "darwin":
         pass
 
 
-from PyQt6 import QtCore, QtGui, QtWidgets, uic, QtNetwork
-from PyQt6.QtCore import QDir, Qt, QThread, QSettings, QCoreApplication
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
+from PyQt6.QtCore import (
+    PYQT_VERSION_STR,
+    QT_VERSION_STR,
+    QCoreApplication,
+    QDir,
+    QSettings,
+    Qt,
+    QThread,
+)
 from PyQt6.QtGui import (
-    QFontDatabase,
-    QColorConstants,
-    QPalette,
-    QColor,
-    QPixmap,
-    QFont,
     QCloseEvent,
+    QColor,
+    QColorConstants,
+    QFont,
+    QFontDatabase,
     QIcon,
     QKeyEvent,
+    QPalette,
+    QPixmap,
 )
 from PyQt6.QtWidgets import (
-    QFileDialog,
-    QSplashScreen,
     QApplication,
-    QPushButton,
+    QFileDialog,
     QLineEdit,
+    QPushButton,
+    QSplashScreen,
     QSystemTrayIcon,
 )
-from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
+import not1mm.fsutils as fsutils
+from not1mm.bandmap import BandMapWindow
+from not1mm.chat import ChatWindow
+from not1mm.checkwindow import CheckWindow
+from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -73,45 +84,39 @@ from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
-from not1mm.lib.multicast import Multicast
+from not1mm.lib.fldigi_sendstring import FlDigi_Comm
+from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.ham_utility import (
     bearing,
     bearing_with_latlon,
     calculate_wpx_prefix,
     distance,
     distance_with_latlon,
+    fakefreq,
     get_logged_band,
     getband,
     reciprocal,
-    fakefreq,
 )
+from not1mm.lib.multicast import Multicast
 
 # from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
-from not1mm.lib.super_check_partial import SCP
 from not1mm.lib.select_contest import SelectContest
 from not1mm.lib.settings import Settings
+from not1mm.lib.super_check_partial import SCP
 from not1mm.lib.version import __version__
 from not1mm.lib.versiontest import VersionTest
-from not1mm.lib.ft8_watcher import FT8Watcher
-from not1mm.lib.fldigi_sendstring import FlDigi_Comm
-
-import not1mm.fsutils as fsutils
 from not1mm.logwindow import LogWindow
-from not1mm.checkwindow import CheckWindow
-from not1mm.dxcc_tracker import DXCCWindow
-from not1mm.zone_tracker import ZoneWindow
-from not1mm.rotator import RotatorWindow
-from not1mm.bandmap import BandMapWindow
-from not1mm.vfo import VfoWindow
-from not1mm.ratewindow import RateWindow
-from not1mm.statistics import StatsWindow
-from not1mm.chat import ChatWindow
-from not1mm.radio import Radio
-from not1mm.voice_keying import Voice
 from not1mm.lookupservice import LookupService
+from not1mm.radio import Radio
+from not1mm.ratewindow import RateWindow
+from not1mm.rotator import RotatorWindow
 from not1mm.rtc_service import RTCService
+from not1mm.statistics import StatsWindow
+from not1mm.vfo import VfoWindow
+from not1mm.voice_keying import Voice
+from not1mm.zone_tracker import ZoneWindow
 
 poll_time = datetime.datetime.now()
 
@@ -1124,7 +1129,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if json_data.get("cmd") == "RESPONSE":
                 if json_data.get("recipient") == socket.gethostname():
-
                     if json_data.get("subject") == "GET_SN":
                         # {
                         #     "cmd": "RESPONSE",
@@ -1447,7 +1451,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             )
                             self.heading_distance.setText(
                                 f"{grid} Hdg {heading}° LP {reciprocal(heading)}° / "
-                                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                                f"distance {int(kilometers * 0.621371)}mi {kilometers}km"
                                 f" {msg.get('result', {}).get('name_fmt', '')}"
                             )
                             self.rotator_window.set_requested_azimuth(float(heading))
@@ -3137,7 +3141,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest:
             contest_name = self.contest.name
         line = (
-            f"vfoa:{round(vfoa,2)} "
+            f"vfoa:{round(vfoa, 2)} "
             f"mode:{self.radio_state.get('mode', '')} "
             f"OP:{self.current_op} {contest_name} "
             f"{self.spaceweather} "
@@ -4647,7 +4651,7 @@ class MainWindow(QtWidgets.QMainWindow):
             kilometers = distance_with_latlon(self.station.get("GridSquare"), lat, lon)
             self.heading_distance.setText(
                 f"Regional Hdg {heading}° LP {reciprocal(heading)}° / "
-                f"distance {int(kilometers*0.621371)}mi {kilometers}km"
+                f"distance {int(kilometers * 0.621371)}mi {kilometers}km"
             )
             if self.rotator_window is not None:
                 self.rotator_window.set_requested_azimuth(float(heading))
@@ -4702,7 +4706,6 @@ class MainWindow(QtWidgets.QMainWindow):
             and self.contest_settings.get("TransmitterCategory", "")
             not in ("ONE", "SWL")
         ):
-
             cmd = {}
             cmd["cmd"] = "ISDUPE"
             cmd["Operator"] = self.current_op
@@ -4715,7 +4718,6 @@ class MainWindow(QtWidgets.QMainWindow):
             except OSError as err:
                 logging.warning("%s", err)
         else:
-
             if self.contest.dupe_type == 1:
                 result = self.database.check_dupe(call)
             if self.contest.dupe_type == 2:
