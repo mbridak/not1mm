@@ -713,7 +713,11 @@ class MainWindow(QtWidgets.QMainWindow):
             "RTTY": self.band_indicators_rtty,
         }
 
-        self.setWindowIcon(QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png")))
+        if sys.platform == "darwin":
+            self.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/macosicon.png"))
+        else:
+            self.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-32.png"))
+        # self.setWindowIcon(QIcon(str(fsutils.APP_DATA_PATH / "k6gte.not1mm-32.png")))
 
         self.show_splash_msg("Loading CTY file.")
 
@@ -5327,7 +5331,10 @@ logging.getLogger("PyQt6.uic.properties").setLevel("INFO")
 
 app = QtWidgets.QApplication(sys.argv)
 
-app.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-128.png"))
+if sys.platform == "darwin":
+    app.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/macosicon.png"))
+else:
+    app.setWindowIcon(QIcon(f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-128.png"))
 pixmap = QPixmap(f"{os.fspath(fsutils.APP_DATA_PATH)}/splash.png")
 splash = QSplashScreen(pixmap)
 
