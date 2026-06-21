@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-06-20] Refactor: Clean up code and improve readability in darc_vhf.py
 - [2026-06-17] @mbridak Add app icon for macos.
   - Add JetBrains Mono font to various UI elements in main.ui
   - Update version to 26.6.17 and fix changelog entries for recent changes
