@@ -43,7 +43,7 @@ and SQLite for the database.
 The primary target for this application is Linux. It may be able to run on other
 platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
 
-I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
+I've recently purchased an M4 Mac Mini, So I can confirm it works well on the MacOS platform.
 
 ### The Why
 
