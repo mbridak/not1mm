@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-06-21] @mbridak Fix: Ignore errors when reading utf8 history files and exclude commented line...
 - [2026-06-20] Refactor: Clean up code and improve readability in darc_vhf.py
 - [2026-06-17] @mbridak Add app icon for macos.
   - Add JetBrains Mono font to various UI elements in main.ui
