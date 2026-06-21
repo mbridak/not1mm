@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-06-20] Refactor: Clean up code and improve readability in darc_vhf.py
 - [2026-06-17] @mbridak Add app icon for macos.
   - Add JetBrains Mono font to various UI elements in main.ui
   - Update version to 26.6.17 and fix changelog entries for recent changes
@@ -2683,9 +2684,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
