@@ -889,3 +889,21 @@ class DataBase:
             "select count(*) as isdupe from dxlog where Call = ? and Mode = ? and Band = ? and ContestNR = ? AND TS >= ? AND TS <= ?;",
             (call, mode, band, self.current_contest, period_1, period_2),
         )
+
+    def fetch_band_lastletter_exists(self, band, call) -> dict:
+        return self.exec_sql(
+            "select count(*) as count from dxlog where band = ? and substr(call, -1) = substr(?, -1) and ContestNR = ?;",
+            (band, call, self.current_contest),
+        )
+
+    def fetch_band_lastletter_exists_before_me(self, band, call, time_stamp) -> dict:
+        return self.exec_sql(
+            "select count(*) as count from dxlog where band = ? and substr(call, -1) = substr(?, -1) and TS < ? and ContestNR = ?;",
+            (band, call, time_stamp, self.current_contest),
+        )
+
+    def fetch_band_lastletter_count(self) -> dict:
+        return self.exec_sql(
+            "select count(DISTINCT substr(call, -1) || ':' || band) as count from dxlog where ContestNR = ?;",
+            (self.current_contest,),
+        )

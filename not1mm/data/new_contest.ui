@@ -465,6 +465,11 @@
      </item>
      <item>
       <property name="text">
+       <string>OK1WC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>PACC</string>
       </property>
      </item>
