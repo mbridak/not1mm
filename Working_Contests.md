@@ -5,6 +5,7 @@
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- AGCW QRP
 - ARI 40 80
 - ARI DX
 - ARRL 10M
@@ -20,11 +21,13 @@
 - CWOps CWT, CWO
 - DARC Xmas
 - DARC VHF
+- Dutch PACC
 - EA Majistad CW
 - EA Majistad SSB
 - EA RTTY
 - ES OPEN HF
 - ES FIELD DAY HF
+- ES OPEN HF
 - Estonian LL Cup
 - Helvetia
 - IARU Fieldday R1 CW, SSB
@@ -40,8 +43,12 @@
 - RandomGram
 - RAC Canada Day
 - REF CW, SSB
+- RSGB 80M CC
+- RSGB IOTA
 - SAC CW, SSB
 - SPDX
+- SSA MT
+- State QSO (limited)
 - Stew Perry Topband
 - UK/EI DX
 - Weekly RTTY

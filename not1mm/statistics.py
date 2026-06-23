@@ -1,18 +1,15 @@
 import datetime
 import logging
 import os
+from json import loads
+from json.decoder import JSONDecodeError
 
-# import sys
-
-from PyQt6 import uic, QtWidgets
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget, QTableWidgetItem
-from PyQt6.QtCore import pyqtSignal, Qt
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
-
-from json import loads
-from json.decoder import JSONDecodeError
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +21,7 @@ class StatsWindow(QDockWidget):
     dbname = None
     pref = {}
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    statisticswindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -106,7 +104,7 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SelectionMode.NoSelection
         )
-        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {self.database.current_contest};"
+        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {self.database.current_contest} ORDER BY band DESC;"
         result = self.database.exec_sql_mult(query)
         self.tableWidget.setRowCount(len(result) + 1)
         row = 0
@@ -133,9 +131,7 @@ class StatsWindow(QDockWidget):
             )
             item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 6, item)
-            query: str = (
-                f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
-            )
+            query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
             result: dict = self.database.exec_sql(query)
             item: QTableWidgetItem = QTableWidgetItem(
                 str(result.get("CW", "0")).replace("None", "0")
@@ -154,9 +150,7 @@ class StatsWindow(QDockWidget):
             self.tableWidget.setItem(row, 5, item)
 
             row += 1
-        query: str = (
-            f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
-        )
+        query: str = f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
         result: dict = self.database.exec_sql(query)
         item: QTableWidgetItem = QTableWidgetItem("TOTAL")
         item.setTextAlignment(0x0002)
@@ -177,9 +171,7 @@ class StatsWindow(QDockWidget):
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 6, item)
 
-        query: str = (
-            f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW','CW-R') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
-        )
+        query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
         result: dict = self.database.exec_sql(query)
         item: QTableWidgetItem = QTableWidgetItem(
             str(result.get("CW", "0")).replace("None", "0")
@@ -201,6 +193,8 @@ class StatsWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.statisticswindow_closed.emit()
+        event.accept()
 
 
 if __name__ == "__main__":

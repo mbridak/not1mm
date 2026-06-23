@@ -9,9 +9,6 @@ Purpose: A voice keying class to handle playing soundfiles and activating PTT
          Run in it's own thread.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import logging
 from pathlib import Path
 
@@ -22,8 +19,7 @@ except OSError as exception:
     print("portaudio is not installed")
     sd = None
 import soundfile as sf
-
-from PyQt6.QtCore import QObject, pyqtSignal, QThread
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
 
 logger = logging.getLogger("voice_keying")
 
@@ -36,6 +32,7 @@ class Voice(QObject):
     data_path = None
     current_op = None
     sounddevice = None
+    nonblocking = False
     voicings = []
 
     def __init__(self) -> None:
@@ -50,19 +47,42 @@ class Voice(QObject):
                     self.ptt_on.emit()
                     keyed = True
                 filename = self.voicings.pop(0)
+                self.nonblocking = len(self.voicings)
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     data, _fs = sf.read(filename, dtype="float32")
                     try:
                         sd.default.device = self.sounddevice
                         sd.default.samplerate = 44100.0
-                        sd.play(data, blocking=True)
+                        sd.play(data, blocking=False)
+                        if self.nonblocking > 0:
+                            sd.wait()
                         # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
                     except sd.PortAudioError as err:
                         logger.warning("%s", f"{err}")
+            try:
+                while sd.get_stream().active:
+                    QThread.msleep(100)
+            except (RuntimeError, AttributeError):
+                pass
             if keyed:
                 self.ptt_off.emit()
             QThread.msleep(100)
+
+    def stop_voice(self) -> None:
+        """
+        empty the voicings list and call sd.stop().
+
+
+        Returns
+        -------
+        None
+        """
+        if sd is None:
+            return
+        self.voicings.clear()
+        if self.nonblocking == 0:
+            sd.stop()
 
     def voice_string(self, the_string: str) -> None:
         """

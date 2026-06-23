@@ -6,13 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>699</width>
+    <width>767</width>
     <height>499</height>
    </rect>
   </property>
   <property name="font">
    <font>
     <family>JetBrains Mono</family>
+    <weight>100</weight>
    </font>
   </property>
   <property name="windowTitle">
@@ -22,10 +23,7 @@
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-   </item>
-   <item row="1" column="2">
+   <item row="1" column="1">
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
@@ -33,6 +31,7 @@
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
+       <weight>100</weight>
        <pointsize>12</pointsize>
        <strikeout>false</strikeout>
       </font>
@@ -50,7 +49,7 @@
       <enum>QTabWidget::TabShape::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <property name="elideMode">
       <enum>Qt::TextElideMode::ElideNone</enum>
@@ -71,6 +70,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -84,6 +84,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -101,7 +102,7 @@
           <string>Use HamQTH</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">buttonGroup_2</string>
+          <string notr="true">lookup_method_group</string>
          </attribute>
         </widget>
        </item>
@@ -111,6 +112,7 @@
           <font>
            <family>JetBrains Mono</family>
            <pointsize>12</pointsize>
+           <weight>100</weight>
            <bold>false</bold>
            <strikeout>false</strikeout>
           </font>
@@ -131,7 +133,7 @@
           <string>Use QRZ</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">buttonGroup_2</string>
+          <string notr="true">lookup_method_group</string>
          </attribute>
         </widget>
        </item>
@@ -140,6 +142,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -154,7 +157,7 @@
           <string>None</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">buttonGroup_2</string>
+          <string notr="true">lookup_method_group</string>
          </attribute>
         </widget>
        </item>
@@ -163,6 +166,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -190,6 +194,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -207,7 +212,7 @@
           <string>Use HamDB</string>
          </property>
          <attribute name="buttonGroup">
-          <string notr="true">buttonGroup_2</string>
+          <string notr="true">lookup_method_group</string>
          </attribute>
         </widget>
        </item>
@@ -216,6 +221,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -234,6 +240,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -252,6 +259,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -306,6 +314,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -369,6 +378,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -382,6 +392,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -419,6 +430,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -453,6 +465,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -495,6 +508,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <bold>false</bold>
              <strikeout>false</strikeout>
@@ -513,7 +527,7 @@
             <string>rigctld</string>
            </property>
            <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
+            <string notr="true">cat_method_group</string>
            </attribute>
           </widget>
          </item>
@@ -522,6 +536,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <strikeout>false</strikeout>
             </font>
@@ -539,7 +554,7 @@
             <string>flrig</string>
            </property>
            <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
+            <string notr="true">cat_method_group</string>
            </attribute>
           </widget>
          </item>
@@ -548,6 +563,7 @@
            <property name="font">
             <font>
              <family>JetBrains Mono</family>
+             <weight>100</weight>
              <pointsize>12</pointsize>
              <strikeout>false</strikeout>
             </font>
@@ -562,7 +578,7 @@
             <string>None</string>
            </property>
            <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
+            <string notr="true">cat_method_group</string>
            </attribute>
           </widget>
          </item>
@@ -586,6 +602,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <bold>false</bold>
            <strikeout>false</strikeout>
@@ -628,6 +645,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -636,11 +654,12 @@
        <string>CW</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="1" column="2" colspan="2">
+       <item row="2" column="1" colspan="3">
         <widget class="QLineEdit" name="cwport_field">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -659,41 +678,91 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_11">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
+       <item row="4" column="1">
+        <widget class="QRadioButton" name="cwsentrst_5nn">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as 5NN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>5 n n</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 5 9 9 as 5 n n</string>
          </property>
          <property name="text">
-          <string>CW_Port:</string>
+          <string>5NN</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <property name="checked">
+          <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwsentrst_group</string>
+         </attribute>
         </widget>
        </item>
-       <item row="2" column="0">
-        <spacer name="horizontalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="12" column="2">
+        <widget class="QRadioButton" name="cwserial_0_as_o">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as O (oscar) in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
+         <property name="accessibleName">
+          <string>o</string>
          </property>
-        </spacer>
+         <property name="accessibleDescription">
+          <string>send 0 in serials as o</string>
+         </property>
+         <property name="text">
+          <string>O</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_0_group</string>
+         </attribute>
+        </widget>
        </item>
-       <item row="2" column="2" alignment="Qt::AlignHCenter">
+       <item row="10" column="2">
+        <widget class="QRadioButton" name="cwserial_1_as_a">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 1 as A in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>a</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 1 in serials as a</string>
+         </property>
+         <property name="text">
+          <string>A</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_1_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QRadioButton" name="cwpaddingchar_0">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with 0 (zeros)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>0</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>pad serial numbers with zero</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwpaddingchar_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="0" column="2">
         <widget class="QRadioButton" name="usepywinkeyer_radioButton">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -707,13 +776,77 @@
          <property name="text">
           <string>PyWinkeyer</string>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwkeying_group</string>
+         </attribute>
         </widget>
        </item>
-       <item row="2" column="3" alignment="Qt::AlignHCenter">
+       <item row="5" column="0">
+        <widget class="QLabel" name="cwpaddingchar_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
+           <pointsize>11</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Serial Number Padding Character:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="cwaddress_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Network Address:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QRadioButton" name="usecwdaemon_radioButton">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="accessibleName">
+          <string>cwdaemon</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>use c w daemon</string>
+         </property>
+         <property name="text">
+          <string>cwdaemon</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwkeying_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="0" column="3">
         <widget class="QRadioButton" name="usecwviacat_radioButton">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -727,13 +860,211 @@
          <property name="text">
           <string>CAT</string>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwkeying_group</string>
+         </attribute>
         </widget>
        </item>
-       <item row="0" column="2" colspan="2">
+       <item row="5" column="3">
+        <widget class="QRadioButton" name="cwpaddingchar_t">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>t</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>pad serial numbers with letter t</string>
+         </property>
+         <property name="text">
+          <string>T</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwpaddingchar_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="cwserial_1_label">
+         <property name="text">
+          <string>Send 1 in Serial Number as:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="cwport_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Network Port:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QRadioButton" name="cwserial_0_as_0">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as 0 (zero) in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>0</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 0 in serials as-is</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_0_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="cwstepping_label">
+         <property name="text">
+          <string>Speed Increment for PgUp/PgDown:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeft|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QRadioButton" name="cwserial_1_as_1">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 1 as 1 in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>1</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 1 in serials as-is</string>
+         </property>
+         <property name="text">
+          <string>1</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_1_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="cwserial_0_label">
+         <property name="text">
+          <string>Send 0 in Serial Number as:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="cwkeying_label">
+         <property name="text">
+          <string>Keying Method:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="3">
+        <widget class="QRadioButton" name="cwserial_0_as_t">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as T in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>t</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 0 in serials as t</string>
+         </property>
+         <property name="text">
+          <string>T</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_0_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QRadioButton" name="cwserial_9_as_n">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 9 as N in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>n</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 9 in serials as n</string>
+         </property>
+         <property name="text">
+          <string>N</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_9_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QRadioButton" name="cwserial_9_as_9">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 9 as 9 in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>9</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 9 in serials as-is</string>
+         </property>
+         <property name="text">
+          <string>9</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwserial_9_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="cwserial_9_label">
+         <property name="text">
+          <string>Send 9 in Serial Number as:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="3">
         <widget class="QLineEdit" name="cwip_field">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -749,107 +1080,29 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QRadioButton" name="usecwdaemon_radioButton">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
+       <item row="4" column="3">
+        <widget class="QRadioButton" name="cwsentrst_enn">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as ENN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="accessibleName">
-          <string>cwdaemon</string>
+          <string>e n n</string>
          </property>
          <property name="accessibleDescription">
-          <string>use c w daemon</string>
+          <string>send 5 9 9 as e n n</string>
          </property>
          <property name="text">
-          <string>cwdaemon</string>
+          <string>ENN</string>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwsentrst_group</string>
+         </attribute>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_10">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
+       <item row="4" column="0">
+        <widget class="QLabel" name="cwsentrst_label">
          <property name="text">
-          <string>CW_Address:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <spacer name="horizontalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_31">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>CW Sent Nr Pad Character:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLineEdit" name="cwpaddingchar_field">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="accessibleName">
-          <string>c w padding character</string>
-         </property>
-         <property name="accessibleDescription">
-          <string>padding character when sending c w exchange number.</string>
-         </property>
-         <property name="inputMethodHints">
-          <set>Qt::InputMethodHint::ImhDigitsOnly</set>
-         </property>
-         <property name="text">
-          <string>T</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="label_32">
-         <property name="font">
-          <font>
-           <family>JetBrains Mono</family>
-           <pointsize>12</pointsize>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>CW Sent Nr Pad Length:</string>
+          <string>Send 599 RST as:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -857,10 +1110,30 @@
         </widget>
        </item>
        <item row="4" column="2">
-        <widget class="QLineEdit" name="cwpaddinglength_field">
+        <widget class="QRadioButton" name="cwsentrst_599">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as 599&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>5 9 9</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>send 5 9 9 as-is</string>
+         </property>
+         <property name="text">
+          <string>599</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwsentrst_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="7" column="1" colspan="3">
+        <widget class="QSpinBox" name="cwpaddinglength_field">
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -874,8 +1147,76 @@
          <property name="inputMethodHints">
           <set>Qt::InputMethodHint::ImhDigitsOnly</set>
          </property>
+         <property name="text" stdset="0">
+          <string>1</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="cwpaddinglength_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
+           <pointsize>12</pointsize>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
          <property name="text">
-          <string>3</string>
+          <string>Padding Length (1 for none):</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QRadioButton" name="cwpaddingchar_o">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with O (oscar)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="accessibleName">
+          <string>o</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>pad serial numbers with letter o</string>
+         </property>
+         <property name="text">
+          <string>O</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">cwpaddingchar_group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="3">
+        <widget class="QSpinBox" name="cwstepping_field">
+         <property name="accessibleName">
+          <string>c w page up/down stepping</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>The page up/down keys change the sending speed by this many w p m.</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="prefix">
+          <string>± </string>
+         </property>
+         <property name="suffix">
+          <string> wpm</string>
          </property>
         </widget>
        </item>
@@ -1131,6 +1472,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -1144,6 +1486,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1161,6 +1504,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1178,6 +1522,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>14</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1195,6 +1540,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1209,6 +1555,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1223,6 +1570,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1240,6 +1588,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1267,6 +1616,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1285,6 +1635,7 @@
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
+        <weight>100</weight>
         <pointsize>12</pointsize>
         <strikeout>false</strikeout>
        </font>
@@ -1298,6 +1649,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1315,6 +1667,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1360,6 +1713,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1374,6 +1728,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1397,6 +1752,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1414,6 +1770,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1440,6 +1797,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1466,6 +1824,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1482,7 +1841,8 @@
         <widget class="QLineEdit" name="n1mm_operator">
          <property name="font">
           <font>
-           <family>JetBrains Mono ExtraLight</family>
+           <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1522,6 +1882,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1536,6 +1897,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1556,6 +1918,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -1582,6 +1945,7 @@
          <property name="font">
           <font>
            <family>JetBrains Mono</family>
+           <weight>100</weight>
            <pointsize>12</pointsize>
            <strikeout>false</strikeout>
           </font>
@@ -2460,7 +2824,7 @@
      </widget>
     </widget>
    </item>
-   <item row="2" column="2" alignment="Qt::AlignHCenter">
+   <item row="2" column="1" alignment="Qt::AlignHCenter">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -2471,6 +2835,7 @@
      <property name="font">
       <font>
        <family>JetBrains Mono</family>
+       <weight>100</weight>
        <pointsize>12</pointsize>
        <bold>false</bold>
       </font>
@@ -2505,10 +2870,7 @@
   <tabstop>radioButton</tabstop>
   <tabstop>rigcontrolport_field</tabstop>
   <tabstop>cwport_field</tabstop>
-  <tabstop>usepywinkeyer_radioButton</tabstop>
-  <tabstop>usecwviacat_radioButton</tabstop>
   <tabstop>cwip_field</tabstop>
-  <tabstop>usecwdaemon_radioButton</tabstop>
   <tabstop>multicast_group</tabstop>
   <tabstop>multicast_port</tabstop>
   <tabstop>interface_ip</tabstop>
@@ -2571,7 +2933,13 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="cwkeying_group"/>
+  <buttongroup name="cwserial_1_group"/>
+  <buttongroup name="cwserial_9_group"/>
+  <buttongroup name="cwserial_0_group"/>
+  <buttongroup name="cat_method_group"/>
+  <buttongroup name="lookup_method_group"/>
+  <buttongroup name="cwpaddingchar_group"/>
+  <buttongroup name="cwsentrst_group"/>
  </buttongroups>
 </ui>

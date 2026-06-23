@@ -10,12 +10,18 @@ from decimal import Decimal
 from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication, QDialog, QPushButton, QProgressDialog
+
 from PyQt6.QtCore import QCoreApplication, Qt
 
 from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_band_xlog
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+# Prevents unused warnings
+assert QApplication
+assert QDialog
+assert QPushButton
 
 
 def online_score_xml(self):
@@ -86,7 +92,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     now = datetime.datetime.now()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-    station_callsign = self.station.get("Call", "").upper()
+    station_callsign = self.station.get("Call", "").upper().replace("/", "-")
     filename = (
         str(Path.home()) + "/" + f"{station_callsign}_{cabrillo_name}_{date_time}.adi"
     )
@@ -429,16 +435,22 @@ def imp_adif(self):
             )
             return
 
-        # ADIF freq is in MHz, not1mm is in kHz
+        freq_mhz = None
         if q.get("FREQ"):
-            this_contact["Freq"] = float(q.get("FREQ")) * 1000.0
-        else:
-            logger.debug("Frequency not found in QSO #{q_num+1}")
+            freq_mhz = float(q.get("FREQ"))
+        elif q.get("BAND"):
+            band_str = str(q.get("BAND")).lower()
+            freq_mhz = get_not1mm_band(band_str)
+            if freq_mhz == 0.0:
+                freq_mhz = None
+
+        if freq_mhz is None:
+            logger.debug(f"Frequency not found in QSO #{q_num+1}")
             self.progress_dialog.close()
-            self.show_msgbox(
-                f"Valid Frequency not found in QSO #{q_num+1}.\nImport cancelled."
-            )
+            self.show_message_box(...)
             return
+
+        this_contact["Freq"] = freq_mhz * 1000.0
 
         if q.get("QSXFREQ"):
             this_contact["QSXFreq"] = float(q.get("QSXFREQ")) * 1000.0
@@ -488,6 +500,8 @@ def imp_adif(self):
 
         if q.get("NR"):
             this_contact["NR"] = q.get("NR")
+        elif q.get("SRX_STRING"):
+            this_contact["NR"] = q.get("SRX_STRING")
 
         if q.get("SECT"):
             this_contact["Sect"] = q.get("SECT")
@@ -509,6 +523,8 @@ def imp_adif(self):
 
         if q.get("SENTNR"):
             this_contact["SentNr"] = q.get("SENTNR")
+        elif q.get("STX_STRING"):
+            this_contact["SentNr"] = q.get("STX_STRING")
 
         if q.get("POINTS"):
             this_contact["Points"] = q.get("POINTS")
@@ -532,10 +548,13 @@ def imp_adif(self):
         temp = str(q.get("BAND"))
         temp = get_not1mm_band(temp.lower())
         # 2nd attempt: no Band field, so take a Freq like "18.160" and double-convert
-        temp2 = get_adif_band(float(q.get("FREQ")))  # returns like "18m"
-        temp3 = get_not1mm_band(temp2.lower())  # returns like "18.068"
-        # 3rd attempt: abbreviated Freq like "18" (ie, from xlog)
-        temp4 = get_not1mm_band_xlog(q.get("FREQ"))
+        if q.get("FREQ"):
+            temp2 = get_adif_band(float(q.get("FREQ")))
+            temp3 = get_not1mm_band(temp2.lower())
+            temp4 = get_not1mm_band_xlog(q.get("FREQ"))
+        else:
+            temp3 = 0.0
+            temp4 = 0.0
         if temp != 0.0:
             this_contact["Band"] = temp
         elif temp3 != 0.0:
@@ -679,7 +698,8 @@ def imp_adif(self):
 
     self.progress_dialog.setValue(len(contacts))  # forces close
     # update everything
-    self.log_window.get_log()
+    self.contest.recalculate_mults(self)  # compute Points + IsMultiplier1 first
+    self.log_window.get_log()  # then refresh log display with correct data
 
     if self.actionStatistics.isChecked():
         self.statistics_window.get_run_and_total_qs()

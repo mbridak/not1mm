@@ -1,30 +1,29 @@
+import logging
+import math
+import os
+
+from PyQt6 import uic
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import (
+    QBrush,
+    QColor,
+    QImage,
+    QMouseEvent,
+    QPainterPath,
+    QPen,
+    QPixmap,
+    QResizeEvent,
+    QShowEvent,
+)
 from PyQt6.QtWidgets import (
     QDockWidget,
-    QGraphicsScene,
     QGraphicsPathItem,
     QGraphicsPixmapItem,
+    QGraphicsScene,
 )
 
-from PyQt6.QtGui import (
-    QImage,
-    QColor,
-    QPixmap,
-    QPen,
-    QBrush,
-    QPainterPath,
-    QShowEvent,
-    QResizeEvent,
-    QMouseEvent,
-)
-
-from PyQt6.QtCore import Qt, pyqtSignal, QTimer
-from PyQt6 import uic
-
-from not1mm.lib.rot_interface import RotatorInterface
 import not1mm.fsutils as fsutils
-import math
-import logging
-import os
+from not1mm.lib.rot_interface import RotatorInterface
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +35,7 @@ class RotatorWindow(QDockWidget):
     GLOBE_RADIUS: float = 100.0
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
     antennaNeedle: QGraphicsPathItem | None = None
+    rotatorwindow_closed = pyqtSignal()
 
     def __init__(self, action, host: str = "127.0.0.1", port: int = 4533):
         super().__init__()
@@ -52,8 +52,12 @@ class RotatorWindow(QDockWidget):
         self.south_button.clicked.connect(self.set_south_azimuth)
         self.east_button.clicked.connect(self.set_east_azimuth)
         self.west_button.clicked.connect(self.set_west_azimuth)
-        self.move_button.clicked.connect(self.the_eye_of_sauron)
-        self.stop_button.clicked.connect(lambda x: self.rotator.send_command("S"))
+        self.move_button.clicked.connect(self.the_eye_of_sauron)  # left-click
+        self.move_button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.move_button.customContextMenuRequested.connect(
+            self.rotate_long_path
+        )  # right-click
+        self.stop_button.clicked.connect(self.stop)
         self.park_button.clicked.connect(lambda x: self.rotator.send_command("K"))
         self.redrawMap()
         self.rotator: RotatorInterface = RotatorInterface(self.host, self.port)
@@ -99,10 +103,12 @@ class RotatorWindow(QDockWidget):
 
     def set_antenna_azimuth(self, azimuth: float) -> None:
         if isinstance(azimuth, float):
+            self.setWindowTitle(f"Rotator: {azimuth:.0f}°")
             self.antennaAzimuth = azimuth
             self.antennaNeedle.setRotation(self.antennaAzimuth)
             self.antennaNeedle.show()
         else:
+            self.setWindowTitle("Rotator")
             self.antennaNeedle.hide()
 
     def set_north_azimuth(self) -> None:
@@ -127,8 +133,17 @@ class RotatorWindow(QDockWidget):
 
     def the_eye_of_sauron(self) -> None:
         """Move the antennas azimuth to match the contacts."""
-        if self.rotator.connected:
+        if self.rotator.connected and self.requestedAzimuth is not None:
             self.rotator.set_position(self.requestedAzimuth)
+
+    def rotate_long_path(self) -> None:
+        """Move the antennas azimuth to long-path direction."""
+        if self.rotator.connected and self.requestedAzimuth is not None:
+            self.rotator.set_position((self.requestedAzimuth + 180.0) % 360.0)
+
+    def stop(self) -> None:
+        """Stop the rotator."""
+        self.rotator.send_command("S")
 
     def redrawMap(self) -> None:
         """"""
@@ -183,12 +198,6 @@ class RotatorWindow(QDockWidget):
         path.lineTo(0, -90)
         path.lineTo(4, 0)
         path.closeSubpath()
-
-        # path2: QPainterPath = QPainterPath()
-        # path2.lineTo(-1, 0)
-        # path2.lineTo(0, -90)
-        # path2.lineTo(1, 0)
-        # path2.closeSubpath()
 
         self.requestedAzimuthNeedle: QGraphicsPathItem | None = (
             self.compassScene.addPath(
@@ -350,7 +359,6 @@ class RotatorWindow(QDockWidget):
             dx: float = clickPos.x()
             dy: float = -1 * clickPos.y()
             if math.sqrt(math.pow(dx, 2) + math.pow(dy, 2)) <= self.GLOBE_RADIUS:
-
                 angle: float = math.degrees(math.atan2(dx, dy))
 
                 if angle < 0:
@@ -370,3 +378,5 @@ class RotatorWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.rotatorwindow_closed.emit()
+        event.accept()

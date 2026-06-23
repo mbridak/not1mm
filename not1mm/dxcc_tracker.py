@@ -1,16 +1,15 @@
-from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QBrush, QColor
-
-# from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6 import uic, QtWidgets
-import not1mm.fsutils as fsutils
-from not1mm.lib.database import DataBase
+import logging
 import os
 from json import loads
 from json.decoder import JSONDecodeError
 
-import logging
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QDockWidget
+
+import not1mm.fsutils as fsutils
+from not1mm.lib.database import DataBase
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +31,7 @@ class DXCCWindow(QDockWidget):
         6: "10m",
         7: "Total",
     }
+    dxcc_trackerwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -196,3 +196,5 @@ class DXCCWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.dxcc_trackerwindow_closed.emit()
+        event.accept()

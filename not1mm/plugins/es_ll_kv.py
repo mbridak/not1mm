@@ -50,7 +50,7 @@ def specific_contest_check_dupe(self, call):
     """Dupe checking specific to just this contest."""
     # constant to split the contest - correct ES Open Contest length is 4 hours
     contest_length_in_minutes = 60
-    split_contest_by_minutes = 20
+    split_contest_by_minutes = 15
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
 
@@ -291,7 +291,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -452,6 +452,8 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
+                    themode = "CW"
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)

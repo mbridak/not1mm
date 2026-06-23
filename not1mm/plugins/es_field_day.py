@@ -20,6 +20,12 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+# this just removes unsused warning
+assert imp_adif
+assert get_points
+assert QtWidgets
+assert platform
+
 EXCHANGE_HINT = "#"
 
 name = "ES FIELD DAY"
@@ -68,8 +74,8 @@ def specific_contest_check_dupe(self, call):
     # get mode from radio state
     mode = self.radio_state.get("mode", "")
     """Dupe checking specific to just this contest."""
-    # constant to split the contest - correct ES Open Contest length is 4 hours
-    contest_length_in_minutes = 90
+    # constant to split the contest - correct ES Field Day contest length is 2 hours
+    contest_length_in_minutes = 120
     split_contest_by_minutes = 30
 
     period_count = int(contest_length_in_minutes / split_contest_by_minutes)
@@ -89,6 +95,7 @@ def specific_contest_check_dupe(self, call):
     time_period_1 = time_periods[0] if len(time_periods) > 0 else None
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
+    time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
     # get current time in UTC
     iso_current_time = datetime.now(timezone.utc)
@@ -139,6 +146,21 @@ def specific_contest_check_dupe(self, call):
             mode,
             time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+
+    if (
+        time_period_3 is not None
+        and time_period_4 is not None
+        and current_time < time_period_4
+        and current_time >= time_period_3
+    ):
+
+        result = self.database.check_dupe_on_period_mode(
+            call,
+            self.contact.get("Band", ""),
+            mode,
+            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
+            time_period_4.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     # just for band and mode if outside of time period
@@ -264,7 +286,7 @@ def show_mults(self, rtc=None):
     # apply params
     params = estonian_regions
     # run query
-    result = self.database.exec_sql_params_mult(query, params)
+    result = self.database.exec_sql(query, params)
     if result:
         mult_count = result.get("mults", 0)
         return mult_count
@@ -321,7 +343,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -482,6 +504,8 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
+                    themode = "CW"
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
