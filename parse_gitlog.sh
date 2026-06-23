@@ -10,4 +10,4 @@ git log --since=$thevar --pretty=format:"%ad %s" --date=short > temp.txt
 awk '!seen[$0]++' temp.txt > scratch.txt
 rm temp.txt
 
-python process-scratch.py
+python3 process-scratch.py
