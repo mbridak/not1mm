@@ -387,7 +387,7 @@ class DataBase:
 
     def get_contest_list(self):
         """get the list of contests"""
-        return self.exec_sql(
+        return self.exec_sql_mult(
             "select Name, DisplayName from Contest order by DisplayName;"
         )
 
@@ -561,7 +561,7 @@ class DataBase:
         Fetch count of unique countries
         {exch1_count: count}
         """
-        return self.exec_sql_mult(
+        return self.exec_sql(
             "select count(DISTINCT(Exchange1)) as exch1_count from dxlog where Exchange1 != '' and ContestNR = ?;",
             (self.current_contest,),
         )
