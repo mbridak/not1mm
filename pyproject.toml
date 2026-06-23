@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "26.2.16"
+version = "26.6.23"
 description = "NOT1MM Logger"
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -24,7 +24,8 @@ dependencies = [
     "notctyparser >= 23.6.21",
     "rapidfuzz",
     "appdata",
-    "adif_io",
+    "adif-io",
+    "pyobjc-framework-Cocoa; sys_platform == 'darwin'",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

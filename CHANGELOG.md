@@ -1,448 +1,2699 @@
 # Changelog
 
-- [2026-02-16] Merge pull request #498 from csibbitt/fix_slash_crash
-  - Fix crash when there is a / in an editted macro
-- [2026-02-13] Update installation instructions in README
+- [2026-06-23] Merge pull request #600 from df7cb/database
+  - Fixup: Simplify database queries
+- [2026-06-22] Merge pull request #599 from df7cb/ok1wc
+  - Merge pull request #598 from df7cb/database
+  - Add OK1WC Memorial Contest
+- [2026-06-15] Simplify database queries
+- [2026-06-21] @mbridak Fix: Ignore errors when reading utf8 history files and exclude commented line...
+- [2026-06-20] Refactor: Clean up code and improve readability in darc_vhf.py
+- [2026-06-17] @mbridak Add app icon for macos.
+  - Add JetBrains Mono font to various UI elements in main.ui
+  - Update version to 26.6.17 and fix changelog entries for recent changes
+  - Fix XML syntax by closing <family> tags in configuration.ui
+- [2026-06-16] Add script to automate version updates in pyproject.toml and version.py
+  - Remove outdated version update script
+  - Update version to 26.6.16.1 in version.py and pyproject.toml; add script to automate version updates
+  - @mbridak Add {PREVCALL} macro.
+  - @mbridak fix is_it_dark function to return a bool value instead of None.
+  - @mbridak Add font weight property to UI files for consistency
+  - @mbridak Get rid of the font warning.
+  - Update version to 26.6.16, fix SQL queries in StatsWindow, and add changelog entry
+  - @mbridak Fix SQL queries in StatsWindow to include more CW modes.
+- [2026-06-14] Update version to 26.6.14.1, add changelog entry for PR #591, and reflect changes in README
+  - Merge pull request #591 from df7cb/trayicon
+  - Set tray icon earlier
+  - @mbridak Changes the app name on MacOS from Python to Not1MM.
+  - @mbridak Add a MacOS specific dependancy.
+  - Update version to 26.6.14 and fix dependency name in changelog and README
+  - Fix dependency name for adif-io in pyproject.toml
+- [2026-06-13] @mbridak Update EXCHANGE_HINT for clarity in EUDX plugin
+- [2026-06-11] Add EUDX contest entry to Not1MM user manual
+  - Update version to 26.6.11 and add EUDX contest entry to changelog and README
+  - Remove greeting from SOAPBOX_HINT in EUDX plugin
+  - @mbridak Add EUDX
+  - Add additional assertions for module imports in CQ WW CW plugin
+- [2026-06-09] Update version to 26.6.9.1 and add changelog entry for sound device check
+  - Handle multiple exceptions in voice keying stream
+  - Update version to 26.6.9 and document recent changes in changelog and README
+  - @mbridak prevent {} macros from cycling PTT in CW mode.
+  - update scp and cty
+  - Remove D-Bus notification helper implementation from notification.py
+- [2026-06-08] Lets try that again
+  - Bump version to 26.6.8.1 in version.py and pyproject.toml
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Remove dbus-python libglib2.0-dev and libdbus-1-dev from installation require...
+  - Merge pull request #589 from d3m3vilurr/bypass-dbus-on-windows
+  - Update installation requirements in INSTALL.md and README.md to include libglib2.0-dev...
+- [2026-06-09] Bypass installing dbus-python on non linux platform
+- [2026-06-08] Bump version to 26.6.8 in version.py and pyproject.toml
+  - Remove version constraint for dbus-python dependency
+- [2026-06-07] @mbridak Bump version to 26.6.7.1 and update changelog and README for recent changes
+  - Merge pull request #585 from df7cb/cluster-rate
+  - Merge pull request #586 from df7cb/rig-timeout
+  - Allow more time for rig connection
+  - @mbridak Bump version to 26.6.7 and update changelog and README for ADIF generation fix
+  - Process all pending spots every cycle
+  - Merge pull request #584 from mbridak/583-stroke-character-in-call-prevents-saving-adif
+  - @mbridak Fix ADIF filename generation to replace '/' with '-' in callsign and remove u...
+- [2026-06-05] Merge pull request #582 from microphonon/manual_edits
+  - Attempt to fic not1mm.pdf merge conflict
+  - Bump version to 26.6.5.1 in version.py and pyproject.toml
+  - Merge pull request #581 from mbridak/580-adif-import-bug
+  - Update changelog and README to document fixes for ADIF import bugs
+  - Fix ADIF import frequency handling and improve logging for missing frequencies
+  - Add temp.txt to .gitignore to exclude temporary testing files
+  - @mbridak Fix typo in method name for showing message box during ADIF import
+  - Update version to 26.6.5 and document recent changes in changelog and README
+  - Merge pull request #579 from mbridak/new_notifications
+  - Enhance error handling with message boxes and improve voice keying functionality
+- [2026-06-03] edits to the user manual
+- [2026-06-02] Add D-Bus notification support for Linux and clean up code
+- [2026-06-01] Update changelog and README to document recent changes
+  - Bump version to 26.6.1 in version.py and pyproject.toml
+  - Remove debug print statement from process_esm function
+- [2026-05-31] Update version to 26.5.31 and document recent changes in changelog and README
+  - Merge pull request #577 from mbridak/576-small-bug-command-buttons
+  - Fix command button state handling in MainWindow class
+- [2026-05-30] Update DX-Pedition plugin documentation: clarify ESM mode behavior and add usage instructions
+  - Update version to 26.5.30 and document recent changes in changelog and README
+  - Enhance DX-Pedition plugin: manage previous call state and improve button logic in process_esm
+- [2026-05-29] Remove debug print statement from receive method in BandMapWindow class
+  - Bump
+  - Kinda broke logins. So fixed that.
+  - Update version to 26.5.29, refactor bandmap.py for improved performance.
+- [2026-05-28] Update version to 26.5.28 and enhance changelog and README with recent changes
+  - Alter ESM behaviour for dxpedition.
+- [2026-05-27] Add new cloud icon images: blue, grey, and update green and red icons
+  - Add blue and grey server icons to MainWindow and update server icon logic
+- [2026-05-25] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Remove extensive comments and test calls from PACC plugin
+- [2026-05-23] Merge pull request #572 from heldis/master
+  - Fix config and user data directories creation on Linux
+- [2026-05-22] Update version to 26.5.22, add DXPedition plugin details to documentation, and update changelog
+  - Merge pull request #571 from mbridak/570-dxpedition-log
+  - Initialize contest plugin by setting it to running state
+  - Add DXPEDITION option to new contest UI and implement DX-Pedition logging plugin
+- [2026-05-20] Update version to 26.5.20 and document recent changes in changelog and README
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Changed  CAT status icons.
+  - Merge pull request #569 from heldis/master
+  - Update ES Field Day to 120m total and ES LL KV dupe interval to 15m
+- [2026-05-13] Update version to 26.5.13 and document recent changes in changelog and README
+- [2026-05-12] Merge pull request #567 from df7cb/preserve-marked
+  - Don't let telnet spots overwrite MARKED spots
+- [2026-05-11] Update version to 26.5.11 and document recent changes in changelog and README
+  - Merge pull request #566 from mbridak/528-editing-text-in-the-qso-exchange-box
+  - Merge pull request #565 from microphonon/cwtab
+  - Refactor text handling in MainWindow to restore cursor position after text modification
+  - Clarify text change handling and clean up conditional formatting in MainWindow
+  - fix more typos in manual
+  - fix typos in manual
+  - even more manual edits
+  - more manual edits
+  - edited user guide
+  - edits to the cw configuration tab
+- [2026-05-09] Add metainfo.xml for desktop application configuration
+- [2026-05-08] Update version to 26.5.8 and enhance changelog and README with recent changes
+  - Merge pull request #563 from mbridak/525-rework-pacc
+  - Merge branch 'master' into 525-rework-pacc
+  - Add ui.xml to .gitignore
+  - Remove ui.xml and add pull_master_to_branch.md to .gitignore
+  - Merge pull request #562 from dawkagaming/patch-1
+  - Added keywords for the .desktop file
+- [2026-05-07] add instructions for pulling master into branch
+  - Merge remote-tracking branch 'origin/master' into 525-rework-pacc
+  - Add Dutch contest logic to points calculation
+  - Merge pull request #561 from microphonon/dual_mode_VFO_bump
+  - fixed typo
+  - VFO bump depends on mode
+  - Merge branch 'dual_mode_VFO_bump' of https://github.com/microphonon/not1mm into dual_mode_VFO_bump
+  - Add call history support.
+- [2026-05-06] Merge pull request #559 from microphonon/bumpVFO
+- [2026-05-07] select VFO step depending on mode
+  - Merge pull request #560 from mbridak/530-wrong-checkpartial-hilighting-in-telnet-column
+  - Fixed telnet spots check in the checkwindow.
+- [2026-05-06] restore deleted text from manual
+  - Update version to 26.5.6.1 and document configuration changes in changelog and README
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - used trim_ui.sh to remove what should be normal stuff.
+  - Merge pull request #557 from microphonon/notdark
+  - prep
+  - Keyboard control to bump VFO frequency
+  - Merge branch 'master' into 525-rework-pacc
+  - Edits for light background UI window
+  - Update version to 26.5.6, add recent changes to changelog and README
+  - Update not1mm.pdf with latest changes
+  - Merge pull request #556 from df7cb/bandmap-menu
+- [2026-05-03] Add context menu on bandmap spots
+- [2026-05-05] Update version to 26.5.5, fix crash in cabrillo generation in changelog and README
+  - Merge pull request #553 from mbridak/552-after-installing-latest-update-not-able-to-wr...
+  - Fix mode comparison logic in cabrillo function across multiple plugins
+- [2026-05-04] Update version to 26.5.4 and enhance changelog and README with recent changes
+  - Merge pull request #549 from df7cb/mark-cq
+  - Merge pull request #548 from df7cb/cut-numbers
+  - Merge pull request #547 from df7cb/khz
+  - Merge pull request #551 from mbridak/550-cabrillo-qso-line-cw-mode
+  - Refactor CW mode handling in Cabrillo format for multiple plugins
+- [2026-05-03] Remember CQ frequencies
+  - Send serials with CW cut numbers
+- [2026-05-02] Remove padding around bandmap scroll area
+  - Convert bandmap to kHz
+  - Merge pull request #545 from df7cb/cwstepping
+  - Configurable CW stepping
+- [2026-05-01] Merge pull request #544 from mbridak/541-vfo-window-with-white-background-and-white-numbers
+  - Change LCD number color from white to green in VfoWindow
+- [2026-04-30] Merge pull request #543 from df7cb/degrees
+  - Merge pull request #542 from df7cb/icon
+  - Show rotator azimuth in dock window title
+- [2026-04-29] Set desktop file name so icon is shown in task bar
+- [2026-04-27] Update not1mm.pdf with latest changes
+  - Merge pull request #540 from df7cb/bandmap-worked
+  - Add worked stations to bandmap and teach it about bands
+- [2026-04-26] Updates for release.
+  - Merge pull request #536 from df7cb/stats-sort-bands
+  - Merge pull request #535 from df7cb/focus
+  - Merge pull request #534 from df7cb/stop-all
+  - Merge pull request #537 from df7cb/dupe-red
+  - Merge pull request #538 from df7cb/macro-spacing
+  - Merge pull request #532 from df7cb/cwstep
+  - Merge pull request #531 from df7cb/cwspeed
+  - Merge pull request #529 from TnxQSO-Admin/feature/ssa-mt
+- [2026-04-25] Color callsign red on dupes
+  - Fix space between adjacent macros
+  - Sort bands in Stats window
+  - Prevent rotator, dxcc and zone windows from stealing focus
+  - Make ESC (the key and the button) stop CW and the rotator
+  - Support rotating to long-path direction
+  - PgUp/PgDown change CW speed by 2 wpm
+  - Keep self.cw.speed and self.cw_speed.value() in sync
+- [2026-04-22] Add SSA Månadstest (SSA MT) contest plugin for CW and SSB
+- [2026-04-14] Remove RAC official stations and update ADIF generation to use PACC
+  - @mbridak Update version to 26.4.14, fix changelog and README for stroke character bug ...
+  - Merge pull request #526 from mbridak/524-stroke-character-in-station-call-breaks-file-structure
+  - @mbridak Fix filename generation in Cabrillo logs to replace '/' with '-' in station call signs
+- [2026-04-08] Update version to 26.4.8, enhance documentation, and add AGCW QRP contest support
+  - Merge pull request #522 from mbridak/agcw-qrp
+  - Refactor AGCW QRP plugin: remove unused member variable and streamline database queries
+  - Update PyPI download badges in README.md for improved visibility
+- [2026-03-21] Refactor NR formatting and clean up unused imports in AGCW QRP plugin
+  - Update accessible name for member number and enhance SentNr formatting in AGCW QRP plugin
+  - Refactor QSO Points and update hints in AGCW QRP plugin
+- [2026-03-18] Add AGCW QRP contest support from Michael Hartje DK5HH and update UI for new contest entry
+- [2026-03-15] @mbridak Add Dutch PACC contest to supported contests list in documentation
+- [2026-03-13] Bump version to 26.3.13 in version.py and pyproject.toml
+  - Merge pull request #513 from mbridak/489-is-it-possible-to-add-pacc-contest
+  - @mbridak Add Dutch PACC contest support and update documentation
+  - Clarify RSGB IOTA exchange type description in contest exchanges documentation
+- [2026-03-11] Add supported contests list to README
+  - @mbridak Update version to 26.3.11 and document recent changes in changelog and README
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Add RSGB IOTA and update contest lists in documentation
+  - Merge pull request #512 from mbridak/rsgb-iota
+  - @mbridak Update multiplier calculation in scoring logic
+  - Refactor scoring logic and improve IOTA reference formatting in points calculation
+  - @mbridak Generate correct cabrillo
+  - Merge remote-tracking branch 'origin' into rsgb-iota
+  - Format SentNr to uppercase in cabrillo output
+  - Add response from Tom Wagner addressing previous email concerns
+- [2026-03-10] Add closing remark to correspondence with Tom Wagner
+  - Clarify interoperability limitations with N1MM in README and add correspondence with Tom Wagner
+- [2026-03-09] Update changelog. Bump version for ADIF fix.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Enhance documentation with index support and clarify contest logging details
+- [2026-03-06] Merge pull request #507 from trgosk/feature/fix-adif-import
+  - Fix ADIF Import
+- [2026-03-03] Update version to 26.3.3, refresh changelog and README with recent pull requests
+  - Merge pull request #506 from ki4mcw/rover-logic
+  - added logic around roving
+- [2026-03-02] Add Rove dialog for editing rover location and UI integration
+- [2026-02-25] Update version to 26.2.25 and refresh changelog and README with recent pull requests
+  - Merge pull request #504 from ki4mcw/qso_party_rst+county
+  - QSO Party draft 1.1
+- [2026-02-24] Merge pull request #502 from ki4mcw/qso_party_sn+county
+  - Merge pull request #503 from ki4mcw/fix-window-close-pref-update
+  - fix window close pref update
+- [2026-02-23] qso party 1st draft
+- [2026-02-22] Merge branch 'master' of https://github.com/mbridak/not1mm into rsgb-iota
+- [2026-02-21] Merge pull request #500 from ki4mcw/fix_dupe_indicator
+  - fix_dupe_indicator
+- [2026-02-20] Add known issues section to user manual
+  - Add known issues section to README.md
+- [2026-02-16] Merge remote-tracking branch 'origin/master' into rsgb-iota
+  - Update version to 26.2.16 and reflect recent changes in changelog and README
+  - Merge pull request #498 from csibbitt/fix_slash_crash
+- [2026-02-15] Fix crash when there is a / in an editted macro
+- [2026-02-13] Update installation instructions in README and INSTALL.md for clarity
 - [2026-02-11] Merge pull request #497 from natersoz/natersoz/fix_darwin_vfo
+- [2026-02-10] black not1mm/vfo.py
   - On Darwin, fix USB device rummaging stall
-- [2026-02-04] Add space weather command handling and update UI title
-- [2026-01-31] Merge pull request #491 from mbridak/account-for-password-prompt-case
+- [2026-02-06] Merge branch 'master' of https://github.com/mbridak/not1mm into rsgb-iota
+- [2026-02-04] Update version to 26.2.4 and add entry for space weather command handling in changelog
+  - Update publication date in user manual to February 2026
+  - Merge pull request #494 from microphonon/master
+  - Remove debug print statements and commented-out code in BandMapWindow.
+  - Merge pull request #495 from mbridak/spaceweather
+  - Add space weather command handling and update UI title
+  - Add files via upload
+- [2026-01-31] Update version to 26.1.31 and enhance changelog with recent changes
+  - Merge pull request #491 from mbridak/account-for-password-prompt-case
   - Normalize case for login and password prompts in BandMapWindow
-- [2026-01-28] Merge pull request #485 from mbridak/484-1mm-doesnt-launch-if-the-route-to-flrig-fails
+  - Fix syntax error in conditional check for date input in parse_gitlog.sh
+  - Add RSGB IOTA contest details and update UI for new contest. Stil have to finish it.
+- [2026-01-28] copy ukeidx as a starting point for rsgb iota.
+  - Update version to 26.1.28.2 and enhance changelog with recent changes
+  - Merge pull request #488 from mbridak/482-cabrillo-exports-do-not-contain-the-correct-m...
   - Enhance Cabrillo export mode identifiers for Winter Field Day plugin
-  - Add TimeoutError handling in CAT class methods
+  - Merge branch 'master' into 482-cabrillo-exports-do-not-contain-the-correct-mode-identi...
+  - Merge pull request #487 from mbridak/486-crash-if-no-route-to-flrig-cat-host
+  - Update version to 26.1.28.1, add OSError handling in changelog and README
   - Add OSError handling in CAT class methods
-- [2026-01-24] Merge pull request #481 from mbridak/478-crashes-save-qso
+  - Update version to 26.1.28, revise changelog and README for recent changes
+  - Merge pull request #485 from mbridak/484-1mm-doesnt-launch-if-the-route-to-flrig-fails
+  - Add TimeoutError handling in CAT class methods
+  - Enhance Winter Field Day plugin: update mode handling and add FT8 packet processing
+- [2026-01-24] Update version to 26.1.24, revise changelog and README for recent changes
+  - Merge pull request #481 from mbridak/478-crashes-save-qso
   - Add error handling for data parsing in MainWindow class
-- [2026-01-23] Merge pull request #477 from mbridak/highlight-599
+- [2026-01-23] Update version to 26.1.23 and revise changelog and README for recent changes
+  - Merge pull request #477 from mbridak/highlight-599
   - Add edit_rst checkbox to settings and update highlight logic for QLineEdit
+  - Fix date handling in git log script: use today's date if no argument is provided
   - Add scripts to log and process git commit messages
 - [2026-01-19] Enhance tab navigation: add highlight for '599' input in QLineEdit fields
+  - Refactor TODO list: remove completed items and enhance RST field input instructions
+  - Bump version to 26.1.19 and update changelog with recent changes
   - Update installation command in version update prompt
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
   - Update numpy and soundfile module sources to use wheel files and updated SHA256 checksums
-- [26-1-18] Merged PR from @perja12, Fixing a crash when calling rigctl before it is ready.
-- [26-1-13] Update runtime and base versions to 6.9 in YAML configuration.
-  - Enhance python3-modules.yaml with new dependencies and updated package sources.
-- [26-1-7] Refactor contest exchanges table formatting and add contest points and mults documentation.
-  - Add SOAPBOX_HINT to various contest plugins and update placeholder texts in NewContest dialog.
-- [26-1-4] Added D-Bus notification helper class.
-  - Add type hints for method parameters in MainWindow and DataBase classes.
-- [25-12-27-1] Enable/disable network ports in CW settings.
-- [25-12-27] Fixed macro discovery file path.
-- [25-12-23] Save edited macro edited with right click.
-- [25-12-21] Group multicast address now actually uses preferred address.
-- [25-12-16] Save and load CW speed setting on launch and quit.
-- [25-12-11] Change parsing of rigctld return strings.
-- [25-12-9] Added tooltips to DXCC tracker window showing entity.
-- [25-12-7] Added CW space character after function keys
-- [25-12-6] Merged PRs correcting Cabrillo Operators list and rounding frequency.
-- [25-12-2-1] Fixed RateWindow not updating if Q count iz Zero.
-- [25-12-2] Merged PR allowing spotting of a contact after it's been logged.
-- [25-12-1] Fix crash when parsing XML from HamQTH.
-  - Made trivial message boxes non blocking for the main window.
-- [25-10-30] Added a Zone tracker window.
-- [25-10-29] Corrected DXCC autoscroll match.
-- [25-10-28] Changed Levenshtein library to rapidfuzz
-- [25-10-27] Add TX and RX macros.
-  - Option to autoscroll DXCC window to current call.
-- [25-10-18] Fix crash issue# 424 with WAG.
-- [25-10-14] Highlight own call in chat window.
-- [25-10-6] Bugfix: Fix 70cm frequency ranges not showing in bandmap.
-  - Bugfix: Fix broken dupe checking when not multi-multi.
-  - Bugfix: Fix sending SN when not fetched.
-- [25-10-5] Add Multi Multi dupe checking.
-  - Add Multi Multi Serial Number support.
-- [25-9-29] Fix Cabrillo output for CQWW RTTY.
-- [25-9-21] add group chat window.
-- [25-9-19] Merge PR from xentux adding Work All Germany.
-- [25-9-10] Yet MORE work on talking to the server.
-- [25-9-8] Yet More work on talking to server.
-- [25-9-7] More work on talking to server.
-- [25-8-25] Work on talking to aggregation server.
-- [25-8-21] Merge bugfix for dupe indicator from @ki4mcw
-- [25-8-14] Merge bugfix PR for ADIF import.
-- [25-8-13] Supress popup if knob not found.
-  - Merge PR from @ki4mcw, Adding ADIF import support.
-- [25-8-10] Allow '^M' in RTTY macros to allow newline.
-- [25-8-9] Fix lockup if rigctld daemon dies.
-  - Changed ADIF version number to 3.1.5
-- [25-8-7] Merged PR from @ki4mcw, adding a macro for rig specific codes.
-- [25-8-3] Merge PR from @ki4mcw, Adding frequency precision to bandmap window.
-  - Allowing lowercase in general logging.
-- [25-8-2] Merge PR from @ki4mcw, Unchecking window view state when window closed via [x].
-- [25-8-1] Merge PR from @ki4mcw, Adding Operator field to log window.
-- [25-7-31] Improved error handling in QRZ and HamQTH lookups; ensure robust XML parsing and status code checks.
-- [25-7-29] Enhanced duplicate check query in DataBase class.
-  - Fixed dupe check on calls of 3 characters or less.
-  - Enhance grid square validation in gen_adif method using regex.
-- [25-7-26] Merged PR from @digitaltheology, adding CW Ops CW Open contest.
-- [25-7-22] Merged PR RSGB 80m Club Championship Contests from digitaltheology.
-- [25-7-13-1] Fix cabrillo output to use 'NR' instead of 'ZN' for contact number in IARU HF.
-- [25-7-13] Ensure mode is not set to a numeric value.
-- [25-7-12] Add Mode column to log window for IARU Field Day.
-- [25-7-10] Improved checkpartial contrast if not using dark mode.
-- [25-7-3] Fixed CAT online indicator.
-- [25-6-21] Remove range check on vfo display.
-- [25-6-20] Added a Rotator tab in the configuration dialog.
-- [25-6-18] Merged changes from @term73, Adding ES Manual Key contest.
-- [25-6-16] Merged PR from @awandahl SM0HPL, adding ESM buttons to General DX Logging plugin.
-- [25-6-15] Corrected tab focus of rotator windows buttons.
-- [25-6-13] Polished up the Rotator window. Adding Stop and Park. Made the NSWE buttons smaller.
-  - Add mouse press event handling to RotatorWindow for position setting.
-- [25-6-12] Account for no gridsquare being returned from lookup service.
-- [25-6-11] Added a rotator control widget.
-- [25-6-10] Merged PR from @dj1yfk correcting WPX prefix calculation.
-- [25-6-8] Revmoved SQLite WAL mode.
-  - Rewrote DXCC tracker.
-- [25-6-7] Fix focus issue when dxcc widget is active.
-- [25-6-4] Add a DXCC/Band widget.
-- [25-6-3] Fix crash caused by SSL cert expiration from supercheckpartial.com.
-- [25-6-2] Crash Fix. Change initial self.pref from None to a dict.
-- [25-6-1] Merged changes from @term73, updating ES Field Day.
-- [25-5-31] Merged PR from @term73, Adding ES Field Day and changes to ES open.
-- [25-5-26] Add ARI DX contest, Fix Canada Day mults.
-- [25-5-25] Added {PREVNR} macro to resend last logged serial number.
-  - Add Bandmap mode indicators for CW, FT*, SSB, Beacons.
-  - Made tuning with the VFO knob smoother.
-  - Add MacOS support for VFO knob.
-  - Forced style to Fusion on MacOS, 'cause it looked like ass.
-- [25-5-22] Trap possible ValueError exception in settings.py
-- [25-5-21] Fix crash from unsafe dict key access when processing F1-F12.
-- [25-5-6] Merged PR from @JG3LLB, Koji-Kawano, Adding code to stop sending morse if using rigctld to send, and @alduhoo adding more control to CW serial number padding.
-- [25-4-28] Merged PR from MicroPhonon adding VHF Sprint.
-- [25-4-25] Merged PR from @microphonon making changes to ARRL VHF and CWOps CWT.
-- [25-4-22] Mostly code cleanup. Not running some code when not needed.
-- [25-4-21] Add a couple more debug messages. Add LSB/USB to input-able commands to the callsign field.
-- [25-4-19-1] Add FM and AM as input-able commands to the callsign field.
-- [25-4-19] Changed S&P QSY wipe from 50hz to 500hz.
-- [25-4-18] Option to clear input fields when QSY in S&P mode.
-- [25-4-17] Testing sending radio voice memory. {VOICE1}, {VOICE2} etc.
-- [25-4-16] Fix serial number not updating when selecing call from checkpartial or bandmap.
-- [25-4-15] Corrected dupe_type 5 check for contest specific function. Fixed wrong ES Open plugin name. Fixed some problems with the specific_contest_check_dupe datetime namespace. And other stuff.
-- [25-4-14] Add ES Open HF Chanmpionship.
-- [25-4-13] Fix crash in JIDX Cabrillo output.
-- [25-4-12] Added an Auto CQ time to fire progress bar.
-- [25-4-11-3] Fixed issue with winkeyer not sending multiple macros in ESM mode.
-- [25-4-11-2] Fixed a crash.
-- [25-4-11-1] Add clear buffer to winkeyer interface to stop sending.
-- [25-4-11] Add Scandinavian Activity Contest CW
-- [25-4-10-1] Add ARI 40/80 contest. Add Auto CQ visual indicator. Add CTRL-R to toggle Run state.
-- [25-4-10] Add Auto CQ visual indicator.
-- [25-4-9] Added UKEI DX
-- [25-4-8] Remove focus from statistics table widget.
-- [25-4-7] Merge in changes from dj1yfk correcting SPDX Cabrillo name.
-- [25-4-5] Add SPDX.
-- [25-4-2] Add some tool tips to bandmap and main. Updated Zoom buttons on bandmap. Updated minimum Python version to 3.10.
-- [25-4-1] Fix: statistics window not populating when initially activated from the window menu. Removed unused code chucks. Removed some unused and hidden visual elements.
-- [25-3-31-1] Recolor rate window lables.
-- [25-3-31] Maybe try and do something useful with the detection of the systems dark mode.
-- [25-3-27-1] Detect system dark mode.
-- [25-3-27] Add more DI and PH mode to stats window.
-- [25-3-26] Record 0 points on dupes for each contest, excluding RandomGram.
-- [25-3-25-1] Improved process messaging.
-- [25-3-25] Use safer dict key access in the stats window.
-- [25-3-24] Add CW, PH, DI counts to the statistics window.
-- [25-3-23] Add a statistics window.
-- [25-3-19-1] Add EA His Maj King of Spain SSB.
-- [25-3-19] Merged PR from @DD5ML Adding DARC VHF.
-- [25-3-18] Add His Maj King of Spain CW
-- [25-3-17] Add EA RTTY contest.
-- [25-3-14] Add call history support to ARR Field Day.
-- [25-3-10] Slight change to adif header. Slight change to CAT status icon state.
-- [25-3-5] Added checks for blank/comment lines in the macros
-- [25-3-2] Added call history support to ARRL DX, just in time for it to be over.
-- [25-3-1] Add {OTHER1} and {OTHER2} macros.
-- [25-2-26] Switch to a Run state if engaging auto_cq.
-- [25-2-22] Add Auto CQ.
-- [25-2-12] Merged PR from @alduhoo Adding RandomGram event.
-- [25-2-6] Trimmed out newer tags from UI files, 'cause stuff be old sometimes.
-- [25-1-29] Add password field for cluster signin.
-- [25-1-27-3] Add ft8 adif parser to the general logger.
-- [25-1-27-1] Add LABRE-RS Digi
-- [25-1-27] Update pop up about updates...
-- [25-1-26] Add macros for MARK, SPOT, WIPE, RUN, SANDP.
-- [25-1-25-2] Add call history to REF CW and SSB.
-- [25-1-25-1] Fix:ratewindow failed to change stats when contest changed.
-- [25-1-25] Fix app not following radio mode. Fix crash on recalc mults.
-- [25-1-24] Fix mismatched quotes causing crash.
-- [25-1-23] Added a basic rate window. Changed DB to WAL mode.
-- [25-1-15] Fix bug in ADIF output where mode showed as CW-R and not CW.
-- [25-1-6] Altered RTTY RU UDP ADIF parse.
-- [25-1-1] Added ARRL RTTY RU.
-- [24-12-29] Add {LOGIT} macro.
-- [24-12-15] Fixed Button focus policy in the bandmap window.
-- [24-12-14] Changed method of detecting fldigi QSOs. See docs.
-- [24-12-12] Add a try exception for a unicode decode error.
-- [24-12-11-1] Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
-- [24-12-11] Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
-- [24-12-9] Add RTC to Winter Field Day, Stew Perry, REF, RAEM, NAQP, LZ-DX, JIDX
-- [24-12-8-2] Add RTC to ARRL 10M, Tweaked cabrillo file output.
-- [24-12-8-1] Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
-- [24-12-8] Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
-- [24-12-6] Add RTC to K1USN.
-- [24-12-5-1] ARRL 160 gets rtc.
-- [24-12-5] Add 'real time' score posting to external sites.
-- [24-12-4] Merged PR from @alduhoo Add STATION_CALLSIGN field to ADIF output
-- [24-12-3-1] Adding ARRL 160
-- [24-12-3] Add button to bandmap to delete marked spots.
-- [24-11-27] Added CAT poll interval.
-- [24-11-26-1] Changed ESC to stop CW, CTRL-W to wipe input fields.
-- [24-11-26] Trying something different with rigctld parsing.
-- [24-11-15] Fix CQWW points, fix mode showing as RPRT.
-- [24-11-24-1] Add ESM to CQ160, ARRL VHF, ARRL 10M, 10 10 contests.
-- [24-11-24] Added ESM to IARU HF and FieldDay.
-- [24-11-23] Made macros per contest.
-- [24-11-21] Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call history support for General Logging.
-- [24-11-19] Added ESM to Stew Perry, Phone Weekly, Medium Speed Test and JIDX.
-- [24-11-18] Accepted PR from dg9vh for the DARC XMAS Contest.
-- [24-11-17] Accepted PR from dg9vh for the LZ DX contest.
-- [24-11-15] Made checkwindow font bigger and match a little more contrasted.
-- [24-11-12] add check for ipv4 address for CAT.
-- [24-11-10] ReJiggered CAT/flrig interface to hopefull make it more workable.
-- [24-11-6] Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
-- [24-11-5] Fix crash with bad qrz credentials.
-- [24-11-3-1] Fixed CWT ESM, Add Call History to CWT, Helvetia, WFD, NAQP, K1USN. Add ESM Helvetia.
-- [24-11-3] Added RAEM contest
-- [24-11-2] Add beginning of call history files. Add command buttons.
-- [24-10-27-2] Changed CQ zone auto population for CQ WW, it now waits for the user to exit the callsign entry window before auto filling the zone.
-- [24-10-27-1] Fixed setting radios ssb mode when crossing 10M boundary.
-- [24-10-27] Fix bug where a contacts info could be carried over to new contact if no new value was written.
-- [24-10-26] Clear inputs when seeking to a call from the bandmap via the arrow up and down. Fixed bandmap crash from bad telnet data. Drop beacons from bandmap.
-- [24-10-25] Add File Menu option to create either an ASCII or UTF8 Cabrillo.
-- [24-10-24-1] Make all Cabrillo files with UTF-8.
-- [24-10-24] Forgot to convert the VFO dockwidget along with the rest. CQ WW CW, Dupes now score 0.
-- [24-10-23] Remove duplicate marked calls in the bandmap.
-- [24-10-22] Added ESM to RAC Canada Day. Added French REF.
-- [24-10-21] Scaled back the hits returned from the check window from 25 to 20. Seems less resource hungry now.
-- [24-10-20-1] ReWrote how the widgets interact. I probably broke a thing or two. Let me know.
-- [24-10-20] Add ESM to ARRL DX.
-- [24-10-19-1] Rewrite part of CAT control.
-- [24-10-19] Change ESM button states when the run state is toggled. Add ESM to ARRL Field Day and Winter Field Day.
-- [24-10-18] Fixed marked spots showing the correct time.
-- [24-10-17-2] Add ESM to ARRL Sweepstakes.
-- [24-10-17-1] Fix dupe check. Reordered change mode and interface update sequence. Resend mode if rigctld does not report back `RPRT 0`
-- [24-10-17] Increased max CW speed to 99, 'cause people be crazy. Trying smaller timeout for the rigctlsocket. Not having the checkwindow process events while not visible since it's a resource hog.
-- [24-10-15-1] Fix callsigns with a slash failing check during ESM.
-- [24-10-15] Add NAQP RTTY, Added ESM to NAQP.
-- [24-10-14] Add ESM to CQ WPX.
-- [24-10-13] Added ESM to Weekly RTTY, K1USN and CWT.
-- [24-10-11] Added ESM to CQWW SSB and RTTY.
-- [24-10-10] Add ESM to CQ WW CW to test it out.
-- [24-10-8] Fix crash on Tune to spot. Change placeholder text for the CW port for those unable to read documentation.
-- [24-10-6] Removed 60, 30, 17 and 12M from the default list of bands.
-- [24-10-5-1] Store the bandmap spots age timer in the preferences.
-- [24-10-5] Force reselction of contest after different DB opened.
-- [24-10-2] Add WPX RTTY.
-- [24-10-1] Merged PR removing leading zeros from serial numbers. Merged PR correcting the parsing of lookups for previous name and state in the CWT.
-- [24-9-29] Corrected Cabrillo generation for CQWWRTTY.
-- [24-9-28-2] Fix Cabrillo and ADIF export for cqwwrtty.
-- [24-9-28-1] Add RTTY-R, LSB-D, USB-D, AM-D, FM-D, DIGI-U, DIGI-L, RTTYR, PKTLSB, PKTUSB to list of modes that will load in the RTTY/DG Macros.
-- [24-9-28] Fixed crash with CAT None, Display tweek. Refactored a couple conditionals.
-- [24-9-25-1] Added WARC and 4M bands.
-- [24-9-25] Fix QRZ lookup crash on non-existant call.
-- [24-9-24] Correct crash in CWT.
-- [24-9-23] Improved serial interface to rigctld. Send RTTY macros to fldigi when radio modes are RTTY, USB-D, LSB-D, PKTLSB, PKTUSB, DIGI-U, DIGI-L.
-- [24-9-22] Merged in changes for CQ WW RTTY
-- [24-9-15] Fixing an ARRL VHF Cabrillo format error.
-- [24-9-14] BugFix. Starting lookups fail init if no settings.
-- [24-9-12] Fixed WSJT-X MFSK submodes FT4 Q65.
-- [24-9-11-2] Removed all the sketchy threaded call lookups. They're now implimented as a multicast service.
-- [24-9-11-1] Fixed high clock cycle usage from the FlDigiWatcher class.
-- [24-9-11] Fixed the HamQTH call lookups.
-- [24-9-10-2] Removed mapping of FM to PH in the ARRL VHF Cabrillo logs
-- [24-9-10-1] ft8_watcher now used default WSJT-X Multicast address and port.
-- [24-9-10] Add WSJT FT8/4 and fldigi support to ARRL VHF.
-- [24-9-9] Add IARU R1 Fieldday CW and SSB.
-- [24-9-8] Correct n1mm contact packet info.
-- [24-9-6] Added the Weekly RTTY.
-- [24-9-5] Added FlDigi support for Field Day.
-- [24-9-3] Added WSJT-X FT8 mode contacts to ARRL Field Day.
-- [24-8-27] Added Helvetia contest.
-- [24-8-22] Add loading splash screen.
-- [24-8-20] Added K1USN Slow Speed Test
-- [24-8-17-1] Did an oops. Fixed the oops.
-- [24-8-17] Removed some cruft. Made dockable widgets not floatable since Wayland breaks this.
-- [24-7-31] Serial number leading Zeros sent as T in CW.
-- [24-7-29] Add flrig cw speed change via onscreen widget.
-- [24-7-28] Second try at flrig CW.
-- [24-7-25-1] Have VFO dock widget handle disconnect/reconnect events of the USB VFO knob more gracefully.
-- [24-7-25] Updated application categories for the desktop file.
-- [24-7-25] Maybe let flrig send CW... Probably not.
-- [24-7-19] Use Qt's QSettings to store window and dockwidgets states.
-- [24-7-13] Trap Exceptions in flrig xmlrpc client.
-- [24-6-27] Corrected ADIF contest_id for the Phone Weekly Test.
-- [24-6-1] Added leading zeros to S/N's less than 100.
-- [24-5-25] Fixed points calculation for CQ WW WPX.
-- [24-5-10] Add sanity check for VFO freq.
-- [24-5-9] Add ICWC MST.
-- [24-5-1] Moved the voice keying into it's own thread.
-- [24-4-30] Allow sending CW via rigctld if your radio supports it.
-- [24-4-27] Cleaned up dark mode code.
-- [24-4-25-1] Reduce delta time to poll. Reorder poll_radio callback. Remove unused CAT lib from main.
-- [24-4-25] Limited loop in radio.py, reducing clock cycles used. Moved Log window to the top of the logger.
-- [24-4-24] Placed CAT control into a thread so disconnecting the radio wouldn't lock up the interface.
-- [24-4-17] Trap OSError if no sound device. Stop fsutils/appdata from creating useless .not1mm and .username folder structures on Linux platforms.
-- [24-4-15] checkwindow.py Tighter results. Changed the call selection to use a single click.
-- [24-4-9-4] Check for portaudio instead of crash boom. Removed empty dockwidget. Tested on Plasma 6.
-- [24-4-9-3] Ugh. It's not a real day unless you forget to test.
-- [24-4-9-2] Put back the floatable dock widgets, 'cause Wayland strikes again.
-- [24-4-9-1] Removed DockWidgetFloatable from the dock widgets since my wee brain can't figure out how to add a dragable window frame to them once they are floating. Added a minimum size for the VFO LCD digits. Defaulted bandmap window to the right.
-- [24-4-9] Fixed Checkwindow not showing calls from logged contacts.
-- [24-4-7] Added FT8Watcher class to prep for FT8 support.
-- [24-4-4-1] Made docking widgets open state persistent.
-- [24-4-4] Added per-contest echange hint when adding new contest.
-- [24-4-2] Migrated to PyQt6. I'm sure there are broken things.
-- [24-4-1-2] Added color text indicators to the Check Partial window. Poached the code from @kyleboyle. Thanks! Fixed the Log, VFO and Check Partial windows to be actual docking widgets. Refocus call field after double clicking on item in the check partial window.
-- [24-4-1] Removed some un-needed loops and widgets from the check window. Fixed docking to the left side.
-- [24-3-27] Made items in the checkwindow clickable. Removed connection check in bandmap preventing marked calls from appearing.
-- [24-3-25-1] Dark mode sorted out. Atleast for me...
-- [24-3-25] Yanked version 24-3-24-1. Fixed widget focus issues.
-- [24-3-24-1] Killed an SQL query bug causing crash when pressing arrow down.
-- [24-3-24] Reworked fsutil.py to correct directory paths for Linux.
-- [24-3-23] Yanked version 24-3-21, too many bugs for existing userbase.
-- [24-3-21] Merged PR from @kyleboyle for docking windows. MacOS and Windows support.
-- [24-3-19] Removed some useless bloat causing slow interface on FreeBSD 13/14 and maybe others.
-- [24-3-16] Add Save/Fail confirmation dialogs when saving ADIF of Cabrillo files.
-- [24-3-15] Change 'CWR' to 'CW' in the ADIF output.
-- [24-3-13] Added CQ 160 CW and SSB
-- [24-3-9] Marked calls in the bandmap window colored Blue, until worked.
-- [24-3-7] Merged PR from @arodland for faster fuzzy SCP lookups.
-- [24-3-2-1] Added marking stations on the bandmap to work later with CTRL-M.
-- [24-3-2] Merged PR from @arodland for fuzzy SCP lookup.
-- [24-2-21] Have the remote vfo monitor for TUNE packets from the bandmap app.
-- [24-2-20] Improved the VFO display.
-- [24-2-19] Re-Removed the depricated code. Replaced with code tested against Python 3.9
-- [24-2-16] Replaced the removed depricated code.
-- [24-2-15] Fixed a bunch of stuff related to ARRL DX mults.
-- [24-2-14] Fixed point/mult calculation if you're not in W/VE.
-- [24-2-13] Fixed no points being assigned in ARRL DX, reported by NC8R.
-- [24-2-4] Fixed Cabrillo name in 10 10 Winter Phone. Added missing Club tag in all the cabrillo contest files.
-- [24-2-3] Merge PR from @wvolz.
-- [24-2-1] Fix bug in bandmap, quotation mark mismatch. Changed CAT timeout back to 0.5 seconds.
-- [24-1-29] PR from @wvolz fixing a crash in the log window when right clicking a vacant cell.
-- [24-1-28] Updated cabrillo 'Operators' line to include station call prefixed with an '@', and list all ops after that appear in the log for the contest.
-- [24-1-27] Fix return value in get_unique_band_and_mode(). fix bandmap crash.
-- [24-1-22] Fix crash in bandmap when processing CTRL-G.
-- [24-1-21] Fixed crash in get_logged_band when out of band.
-- [24-1-16.1] Fix possible crash when cabrillo generated without a station call.
-- [24-1-16] Added Stew Perry Topband.
-- [24-1-15] Added the Phone Weekly Test.
-- [23-12-24] Fixed bug where no bands showed onscreen during initial launch.
-- [23-12-22] Refactored a bunch of code.
-- [23-12-20] Add ARRL VHF Jun and Sep.
-- [23-12-19] Add ARRL VHF contest. Add VHF frequencies. Add Bands TAB to configuration dialog to select active bands you want displayed.
-- [23-12-17] Add ARRL 10M contest. Fixed crash in RAC Canada Day
-- [23-12-5] Removed deprecated datetime.utcnow()
-- [23-12-4] Moved get_points to plugin_common, fixing crash.
-- [23-12-3] Initial WFD plugin.
-- [23-11-30.1] Add seconds to ADIF timeon tag. Add ADIF CONTEST_ID tags. Fixed 40m band tag. Fixed SSB mode and submode tags.
-- [23-11-30] Moved common plugin ADIF export code into importable function.
-- [23-11-29] Added BAND to adif export.
-- [23-11-16] Corrected xml tag mismatch in configuration.ui
-- [23-11-15.1] Replacing the depricated function turned out to be a poor decision.
-- [23-11-15] Started working on Winter Field Day. (It doesn't work yet)
-- [23-11-14] Removed depricated pkgutil.get_loader, Lets see what breaks.
-- [23-11-13] Changed check_process() to only return True if python opened source file. Allows emacs to edit source file.
-- [23-11-12.1] HamQTH lookup now returns a dict not a tuple.
-- [23-11-12] Fix crash in ADIF exporter where the grid was of None type.
-- [23-11-2] Add missing dependency for pyserial.
-- [23-10-31] Fix crash if flrig wasn't running. Add CAT status icon.
-- [23-10-28] Merged PR from #qsantos and #bseidenberg, fixing crash related to zombie processes.
-- [23-10-22] Where've I been? Sorry, I've been caring for a family member. Be back soon.
-- [23-9-3] Added some accessibility stuff for screen readers. Fixed crash when entering invalid frequency in log window. You can now edit cells in the focused half of the log window.
-- [23-9-2] CTRL+SHIFT+K to open CW text entry field.
-- [23-8-24] Add timestamp to log filenames.
-- [23-8-21] You can now click on the band/mode indicators to change to that band/mode.
-- [23-8-9] Add telnet matches to Check Window.
-- [23-8-7] Control Remote Rig VFO with a bespoke USB VFO Knob.
-- [23-8-6] Add parsing of local log to check window.
-- [23-8-5] Add Check Window. Moved MASTER.SCP stuff to it's own class. Close sub windows when main app closes.
-- [23-7-29] Add YOUTH and YL overlay categories.
-- [23-7-28] Added NAQP SSB and CW. Added optional move to next field with spacebar.
-- [23-7-27] Check if bandwidth returned is not a number.
-- [23-7-13] Add IARU HF contest.
-- [23-7-11] Add mode to logwindow. Highlight already worked calls in bandmap. Add FM and AM to Field Day, since I guess it's still a thing.
-- [23-7-5] Fix coredump in bandmap after CTRL-G.
-- [23-7-2] bandmap now requests worked list at startup. Completed ARRL Field Day plugin.
-- [23-6-30] Added RAC Canada Day.
-- [23-6-28] bandmap now displays callsigns in red if they have been worked before.
-- [23-6-21] cty updater needs work changed to ondemand.
-- [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
-- [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
-- [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
-- [23-6-15] Add `Help->HotKeys`.
-- [23-6-14] Added check to see if your Russ and want to operate a contest thats not defined.
-- [23-6-12] Add `File->Quit` because Russ can't click an 'x' to quit program.
-- [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
-- [23-6-18] Pinned lib notctyparser to >= 26.6.18. Fix bug allowing editing RST field.
-- [23-6-17] Trapped ValueError from notctyparser when environment variable `LC_TIME` set to `lt_LT.UTF-8`.
-- [23-6-16] Send F1-12 button text, not tooltip in RadioInfo packet. Add `File->Update MASTER.SCP`. Add `Help->Help`
-- [23-6-15] Add `Help->HotKeys`.
-- [23-6-14] Added check to see if your Russ and want to operate a contest thats not defined.
-- [23-6-12] Add `File->Quit` because Russ can't click an 'x' to quit program.
-- [23-6-2] Added an automated check and update of the cty.dat file. Added dependency to `notctyparser`
-- [23-5-31] updated cty.json ( I need to automate this )
-- [23-5-30] Changed the default multicast group from 224.1.1.1 to 239.1.1.1 This restricts broadcast traffic to the local subnet.
-- [23-5-29] Hide CATEGORY-OVERLAY in Cabrillo file if set to N/A.
-- [23-5-28] Fixed Dupe check on TAB.
-- [23-5-27] Fixed frequency in the ADIF output. Corrected WPX contact points.
-- [23-5-26] Fixed Dark Mode on Ubuntu. Removed the crappy dark css theme and the code to load it. OOPS. Fixed some stuff.
-- [23-5-24] Added contact delete and change n1mm packets.
-- [23-5-23] Reworked N1MM packets. Can now specify multiple destinations for the packets.
-- [23-5-22] Worked on n1mm contactinfo packets. Reduced network beaconing from 100 miliseconds to 10 seconds, Unless the radio state changes.
-- [23-5-20] Got n1mm RadioInfo posting.
-- [23-5-19] Added a version check at startup. Starting work on N1MM packet broadcasts. Corrected flrig return value of bandwidth. Changed get Next/Prev bandmap spot to Arrow Up/Down.
-- [23-5-18] ReInit rigctld CAT when it goes offline and back.
-- [23-5-17] CTRL-G tunes to a spot matching text in the callsign entry field. Thanks to Martin, OK1RR for suggesting this. Bandmap centers on the VFO after frequency change. Set mode on startup based on the mode category set for the contest.
-- [23-5-15] CTRL-S in the main window will send a spot to the cluster.
-- [23-5-12] Bandmap, Reload system preferences before each connect. Increased the minimum Python version to 3.10. Main, Refactored UDP code to remove the use of timers and queues, replaced with readyRead signals.
-- [23-5-11] Added missing numpy package dependency to pyproject.toml. Added install steps for clean images of Fedora and Ubuntu. Entered frequencies when no CAT control are not sent to the bandmap. Added K1EL speed change via xmlrpc. One would need to update the pywinkeyerserial client.
-- [23-5-10] Fix crash in bandmap when No CAT, and using CTRL-PgUp/Down. Add specific Ubuntu install instructions.
-- [23-5-9] Removed 1 second timers in the bandmap and log window, made them UDP readyRead(). Much smoother. Add CTRL-PgUp and CTRL-PgDown keys to jump to the next/prev spots in the bandmap. Fix: Voice not keying on LSB. Fix: calling pttoff when no CAT interface. Fix: Voice not keying on LSB
-- [23-5-8] Bandmap zoom in/out now centers scale to RX Freq.
-- [23-5-7] Added bandwidth marker to the bandmap.
-- [23-5-6] Added AR Cluster filter options for the bandmap. Added a station ID to the multicast packets. This will prevent erratic bevahiour if 2 stations are on the same network.
-- [23-5-5] Re-wrote most of the log window code. Added ARRL Sweepstakes.
-- [23-5-4] Fixed 'Operators' line in WPX cabrillo file. Fix window title not updating if no CAT control.
-- [23-5-3] Added '#' macro.
-- [23-5-1] Added 10 10 CW and Phone contests. Added a `Cluster` TAB for the AR Cluster server/port in the configuration settings.
-- [23-4-29] Added callsign and connect button to the bandmap. Fixed rxmarker not updateing.
-- [23-4-28] Added a bandmap window (WIP) to track spots. Clicked spots now tune radio and sets callsign.
-- [23-4-24] CWT now prefills exchange based on past CWT contacts in database. Fixed crash when editing an existing contest that does not exist. Removed legacy stylesheet from configuration settings dialog.
-- [23-4-23] Added CWOps CWT. Added EXCH macro. Fixed messed up columns in log window.
-- [23-4-21] Seems phrases were mp3, resaved as wav. Add PTT to flrig CAT. Added Select sound device. Reworked Configuration Settings dialog. Rerecorded phonetics.
-- [23-4-20] Added ARRL DX CW and SSB. Hid the 'Radio dots', cause they currently do nothing. Hid the CW speed combo box if it's not a CW contest. Added edit existing contest dialog.
-- [23-4-18] Added voice keying. Fixed a bunch of crashes. Added PTT to rigctld.
-- [23-4-15] Corrected tabstops on new contest screen. Changed project state to BETA.
-- [23-4-12] Dynamic log window columns. Reload settings after changes saved. Altered JIDX displayed log columns.
-- [23-4-11] Add about dialog. Fix crash when previous working DB is erased. Add CQ WW CW and SSB. When entering station settings, after entering callsign and grid, the cqzone, ituzone, country, latitude and longitude will auto fill.
-- [23-4-10] Added Configure Settings dialog. Added CW keyer and CAT control settings to Configure Settings dialog.
-- [23-4-6] Added JIDX contest. Added {SNT} and {SENTNR} CW macros. Added a menu item to open then CW macros data file in your systems preferred text editor.
-- [23-4-5] Fixed crash caused by lists not being lists. Filled out some existing code stubs in the Field Day plugin. Fixed log window not showing current contest Q's.  
-- [23-4-4] Current OP defaults to Station call if OPON not used. Text formatting of Station settings. Removed STX and SRX strings from General Logging ADIF. DB now operates on current contest Nr. Hide/Show band-mode frames.
-- [23-4-3] Added dialog to select from defined contests in the active database. Force Station settings then new contest dialog on new DB creation. Add Greneral Logging contest type. Added other Cabrillo tags.
-- [23-3-31] Now saving station settings in the contest database.
-- [23-3-30] Added Open new and Open existing database
-- [23-3-29] Added a new contest dialog.
-- [23-3-27] Add menu item to recalculate mults.
-- [23-3-27] Fix cursor behaviour when editing text in callsign field.
-- [23-3-25] Fix minimum call length. Fix cabrillo tag. Add adif output.
-- [23-3-24] Added dupe checking. Added CAT check for flrig or rigctld. Added online flag for flrig.
-- [23-3-23] Added most of Cabrillo generation. Plan to test it this weekends CQ WPX SSB.
-- [23-3-22] Add prefill of serial nr. set OP call on startup. Set IsMultiplier1 new unique wpx. Add OP and contest name to window title. and stuff.
-- [23-3-21] Worked on CQ WPX SSB plugin.
-- [23-3-20] Added a contact edit dialog. RightClick to edit contact. Changed placeholder text color in settings dialog. Hooked up CW speedchange widget. PgUp/PgDn to change speed.
-- [23-3-17] Added multicast UDP messages to update the log window when new contact made. You can now edit existing contacts in the log window. You can't delete them yet. Got rid of watchdog. Isolated common multicast code to it's own class.
-- [23-3-15] Added a rudimentary log view window.
-- [23-3-10] Started work on saving contacts to the DB. Added a claculate_wpx_prefix routine.
-- [23-3-9] Placed network call lookup in a thread. Display freq/mode for non CAT radios. Hooked up the CW macros to cwdaemon.
-- [23-3-8] Band/Frequency/Mode indicators. Direct frequency/mode entry in call field.
-- [23-3-7] Changed dxlog table column names.
-- [23-3-1] Add shift tab for field movement.
-- [23-2-23] Dialogs now do darkmode, Add settings dialog. App remembers window size and location.
-- [23-2-22] Added cty.dat file.
-- [23-2-21] Added edit macro dialog.
-- [23-2-20] Save view states. fixed debug messages. Started coding plugins/stubs.
-- [23-2-15] Added qss stylesheet. Connected Run and S&P radio buttons. Reads in cwmacros.
-- [23-2-12] Added View menu to show/hide macro buttons, command buttons, and the band/mode indicator on the left. Added OpOn dialog. Added a dark mode. QRZ lookup added but needs work.
-- [23-2-9] Initial post and name squatting.
+- [2026-01-18] Merge pull request #476 from perja12/perja/fix_crash_rigctl
+- [2026-01-17] Fix a crash when calling rigctl before it is ready
+- [2026-01-13] Update runtime and base versions to 6.9 in YAML configuration; enhance python3-modules...
+- [2026-01-07] Add SOAPBOX_HINT to various contest plugins and update placeholder texts in NewContest dialog
+  - Refactor contest exchanges table formatting and add contest points and mults documentation
+- [2026-01-04] Add type hints for method parameters in MainWindow and DataBase classes
+  - Add D-Bus notification helper class for desktop notifications
+- [2025-12-27] Bump version to 25.12.27.1, update changelog and README with recent changes
+  - Enable and disable CW interface fields based on selected port hints
+  - Bump version to 25.12.27, update changelog and README with recent changes
+  - Fix file path handling for macro files and enhance logging output
+- [2025-12-24] Fix typo in macro editing instructions in user manual
+- [2025-12-23] Bump version to 25.12.23, update changelog and README with recent changes
+  - Add macro editing functionality and dependency on 'sh' library
+  - Add RSGB 80M CC to contest list in user manual
+- [2025-12-22] Add UDC class for parsing UDC files with section handling
+- [2025-12-21] Remove debug print statement for current_sn in MainWindow class
+  - Bump version to 25.12.21 and update changelog and README with recent changes
+  - Initialize server channel in MainWindow for multicast communication
+- [2025-12-17] Update user manual with revised dates and section titles for clarity
+- [2025-12-16] Bump version to 25.12.16, update changelog and README with new CW speed setting feature
+  - @mbridak Update CW speed preference handling in MainWindow class
+- [2025-12-15] Update user manual with detailed exchange macro instructions and add example image
+  - Comment out unused code for processing login data in BandMapWindow class
+  - Enable debug mode based on environment variable in __main__.py
+- [2025-12-11] Bump version to 25.12.11 and update changelog and README
+  - Refactor dump printing and improve report checks in CAT class
+- [2025-12-10] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Bump version to 25.12.10 and update related files; remove debug print statement in ban...
+- [2025-12-09] Merge pull request #470 from mbridak/display-cluster-text
+  - Add debug print statements for SEND_CLUSTER environment variable
+  - removed trailing space making linter happy.
+  - Update version to 25.12.9 and add tooltips to DXCC tracker in changelog and README
+  - Merge pull request #469 from mbridak/dxcc-code-to-entity-name-as-tool-tip
+  - Add tooltips for DXCC entities in the DXCC table and improve data loading
+  - Unified the greeness.
+- [2025-12-07] Update version to 25.12.7 and reflect changes in changelog and README
+  - Merge pull request #467 from mbridak/a-fix-for-#464
+  - send a space after f-keys
+- [2025-12-06] Update version to 25.12.6 and reflect changes in changelog and README
+  - Merge pull request #466 from mbridak/465-correct-cabrillo-operators-line
+  - Merge pull request #463 from aknrdureegaesr/correct_qrg_rounding
+  - Corrected the Cabrillo OPERATORS line.
+  - On output to Cabrillo logs, frequencies now properly rounded.
+- [2025-12-02] Update changelog and README with recent fix for RateWindow not updating when Q count is zero
+  - Merge pull request #459 from mbridak/Fix_ratewindow_count
+  - Refactor command handling in multiple windows to include "DELETE" and improve readability
+  - Bump version to 25.12.2 and update changelog for recent PR merge
+  - Merge pull request #454 from aknrdureegaesr/logged_not_wiped_qso_to_cluster
+  - Allow to send a QSO to the cluster (immediately) after logging.
+- [2025-12-01] Add methods to retrieve contest profile and list from the database
+  - Fix typos in function names and UI elements; update styles for clarity
+  - Update changelog
+  - Merge pull request #444 from mbridak/fix_for_#440
+  - updated
+  - Enhance show_message_box functionality to support non-blocking dialogs
+  - Merge pull request #441 from mbridak/439-not1mm-crashed-with-xmlparsersexpatexpaterror...
+  - Fixed annoying lint error by disabling it.
+  - Bump version to 25.12.1 and update changelog for XML parsing crash fix
+  - Remove redundant XML parsing in HamQTH class lookup method
+- [2025-11-11] Merge pull request #434 from mbridak/place_holder
+  - Add Estonian LL Cup to contest lists and introduce state abbreviations in ss.py
+- [2025-11-08] Merge pull request #433 from heldis/master
+  - Add ES LL KV contest support: - Add ES LL KV to contest dropdown - Add dupe checking s...
+- [2025-11-02] @mbridak For issue #430
+- [2025-10-30] Enhance user manual: update page styles and add Zone window description
+  - Remove unnecessary blank line in README.md
+  - Bump version to 25.10.30 and update changelog and README
+  - @mbridak Added zone tracker window.
+  - @mbridak Added scroll checkbox to tracker window.
+  - @mbridak removed autoscroll widget.
+  - @mbridak Added fetch_zone_by_band_count
+  - @mbridak removed autoscroll stuff. changed bare except to ValueError
+  - @mbridak Update donor list
+- [2025-10-29] updated changelog
+  - Bump version to 25.10.29 in version.py and pyproject.toml
+  - Remove ORDER BY clause from DXLOG query in fetch_country_count method
+  - Fix visibility check in get_log method to use active state
+  - Add log retrieval in DXCC window activation and improve visibility check
+  - Change item matching in dxcc_table to match exactly in scrollToDXCC method
+  - Fix license format in pyproject.toml
+- [2025-10-28] Bump version to 25.10.28 in version.py and pyproject.toml
+  - Add dependencies for libxslt and libxml2 in user manual; fix typos in documentation
+  - Update changelog and README with recent changes: Levenshtein library updated to rapidf...
+  - Remove unused import of QtGui from checkwindow.py
+  - Levenshtein library not building on Python 3.14
+  - Refactor datetime usage in MainWindow for improved readability
+- [2025-10-27] Add autoscroll functionality to DXCC window in main window
+  - Add autoscroll option to DXCC window in settings dialog
+  - Add scrollToDXCC method to DXCCWindow for table navigation
+  - Updated manual adding TX, RX and TX/RX macros.
+  - Merge pull request #426 from csibbitt/rxtx_macros
+- [2025-10-26] Add TX/RX macros
+- [2025-10-18] Bump version to 25.10.18 and update changelog and README with recent fix
+  - Fix issue Crash when selecting contest WAG Fixes #424
+- [2025-10-14] Bump and doc for release.
+  - Fix: synchronize mycall attribute between MainWindow and ChatWindow
+- [2025-10-12] not sure what or why this is here...
+- [2025-10-10] Add: include numpy and adif_io to requirements
+  - removed contests that were already added.
+  - removed unneeded
+- [2025-10-09] Fix: correct Markdown link syntax for Multi Multi Serial Number support
+  - Fix: update Multi Multi references to link to the dedicated documentation
+  - Fix: update user manual link to point to the correct PDF location
+  - Fix: table of contents
+  - Refactor README.md: Clean up formatting, remove outdated sections, and add documentation links
+  - Fix typos and improve wording in Not1MM user manual
+- [2025-10-08] Update Not1MM user manual with additional configuration options and features
+  - Add Multi Multi contest operations section to user manual and include related images
+  - Add Not1MM user manual in LaTeX format
+  - Add documentation for Call History files, Contest specific notes, and ESM feature
+  - Add Multi Multi contest operations documentation and working contests list
+- [2025-10-07] add pic
+- [2025-10-06] Just Because
+  - Merge pull request #423 from mbridak/fix_next_serial_no_value
+  - Refactor serial number handling in MainWindow class
+  - Merge pull request #421 from mbridak/420-i-broke-non-multi-multi-dupes
+  - Bump and doc for release.
+  - Fix duplicate check logic in MainWindow class
+  - Bump and Doc for release.
+  - Merge pull request #419 from mbridak/fix_70cm_in_bandmap
+  - remove print statement used for debugging.
+  - Remove duplicate import of QFont in bandmap.py
+  - Add additional bands and improve band handling logic in Band class
+- [2025-10-05] Merge pull request #416 from mbridak/server-serial-number
+  - Merge branch 'master' into server-serial-number
+  - update changelog
+  - Bump version
+  - Refactor duplicate checking logic in MainWindow to handle ISDUPE subject and improve i...
+  - add design.md to ignore list.
+- [2025-09-30] Update docs for renfield group server.
+- [2025-09-29] Refactor serial number handling to use current_sn instead of database retrieval in multiple plugins
+  - Bump and doc.
+  - Merge pull request #415 from mbridak/414-cqww-rtty-cabrillo-file-is-missing-a-space-be...
+  - @mbridak fix: add space after ZN in cabrillo output format
+  - @mbridak Implement serial number handling in MainWindow and update helvetia plugin to use current_sn
+- [2025-09-26] update workflow.
+  - add scratch
+- [2025-09-22] add placeholder text.
+  - @mbridak Once again I forget to supress Focus.
+  - To close issue #370
+  - Add PyPI downloads badge to README.md
+- [2025-09-21] Add "Work All Germany" to the README.
+  - @mbridak bump and doc
+  - Refactor chat history text color and comment out unused code
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Add ChatWindow functionality to MainWindow. This includes setting up and managing a ne...
+  - Add chat functionality with a new QDockWidget for messaging.
+- [2025-09-19] Merge pull request #413 from xentux/update_installation_ubuntu
+  - Merge pull request #412 from xentux/contest_wag
+  - added Ubuntu 25.04
+  - Bugfix recalculate_mults non-DL stn
+  - clean up
+  - implemeted recalculate_mults()
+- [2025-09-18] show_mults(), plugin version
+- [2025-09-14] changed logging
+- [2025-09-13] 1st version that works basically
+  - added test for get_district()
+- [2025-09-12] documented rules and station test DL or not DL
+  - added WAG contest
+- [2025-09-11] Merge pull request #409 from xentux/fix_darc_xmas_rcvd
+  - Fix #408 DARC XMAS rcvd exch
+- [2025-09-10] Add 'im_the_master' preference and update UI layout for configuration
+- [2025-09-08] Refactor contact change command emission to use db_record directly
+  - Update version to 25.9.8 and reflect changes in changelog and README
+- [2025-09-07] Merge pull request #405 from Warpnugget/fix_cwo_plugin
+  - Update version to 25.9.7 and reflect changes in changelog and README
+  - Add server state command handling in MainWindow
+  - update cabrillo generate
+  - database issue
+  - fix database issue
+- [2025-09-06] update cabr
+  - Parse name and nr
+- [2025-09-05] change to call history
+- [2025-08-26] Fix OOPS and Bump version to 25.8.26.1 and update related files
+  - Update version to 25.8.26 and add recent changes to changelog and README
+- [2025-08-25] Update rebuild script to use 'uv' for building and installing the package
+  - Refactor command handling in MainWindow to improve server communication and clean up debug prints
+- [2025-08-24] @mbridak Comment out server command appending in MainWindow
+  - Add handling for CONTEST_REQUEST command in server channel
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Clear terminal before displaying multicast listener information
+- [2025-08-21] Merge pull request #403 from ki4mcw/Issue-#380-Dupe-indicator
+- [2025-08-20] @ki4mcw Issue #380 Dupe indicator
+- [2025-08-19] Update multicast port and group for listener
+  - Remove commented-out code
+- [2025-08-18] Merge pull request #400 from ki4mcw/ADIF-import-non-ASCII
+- [2025-08-17] @ki4mcw ADIF import non-ASCII characters
+  - Merge pull request #399 from ki4mcw/ADIF-import-update-3
+- [2025-08-16] @ki4mcw Fix modality of progress bars
+  - Merge pull request #398 from ki4mcw/ADIF-import-updates
+  - @ki4mcw ADIF import updates 2
+- [2025-08-15] Refactor code formatting and remove unnecessary whitespace in multiple files
+- [2025-08-14] Bump version to 25.8.14 and update changelog
+  - Merge pull request #396 from ki4mcw/ADIF-import-updates
+  - Refactor error message formatting
+  - @ki4mcw ADIF import updates
+- [2025-08-13] @ki4mcw ADIF import updates
+  - Update version to 25.8.13 and reflect changes in changelog and README
+  - @mbridak Supress popup message from vfo.py if knob not found.
+- [2025-08-12] Merge pull request #395 from ki4mcw/ADIF-import
+- [2025-08-11] @ki4mcw ADIF import
+  - Update iaru_hf.py
+- [2025-08-09] @mbridak Bump and Doc for release.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Refactor send_string method to define newline character earlier and replace "^M" in message
+  - Merge pull request #394 from ki4mcw/Log-sorting
+  - @ki4mcw Log sorting
+  - @mbridak Fix rigctl socket receive loop.
+  - @mbridak Update CW mode handling in gen_adif function to include additional variants
+  - @mbridak Remove unused functions for fetching station ARRL section and state codes
+  - @mbridak Ran thru black
+  - @mbridak Update ADIF version to 3.1.5 in gen_adif function
+- [2025-08-07] @mbridak Refactor stop CW control logic.
+  - @mbridak Bump and Doc for release.
+  - Merge pull request #387 from ki4mcw/Make-all-window-titles-system-font
+  - Merge pull request #392 from ki4mcw/Binary-CAT-codes-in-macros
+  - Merge pull request #393 from ki4mcw/Fix-macro-selection-with-flrig
+  - Fix macro selection with flrig
+- [2025-08-06] RI<space> to RI<colon>
+  - CAT macros for rigctld
+  - Link fix
+  - Add instructions for "RI" macros
+  - Add code for "RI" macros
+  - Introduce "RI" macros
+- [2025-08-05] Merge pull request #391 from ki4mcw/Bandmap-font
+  - Merge pull request #390 from ki4mcw/Check-window-lists-wrong-contest
+- [2025-08-04] Bandmap font
+- [2025-08-03] Bandmap font
+  - Check window lists entries from wrong contest
+  - Merge branch 'mbridak:master' into Make-all-window-titles-system-font
+  - @mbridak Bump and Doc for push to PyPi.
+  - Merge pull request #388 from ki4mcw/Issue-#374---add-digits-in-bandmap
+  - Merge pull request #389 from ki4mcw/Dont-force-uppercase-in-general-logging
+  - Whoops - bug fix
+  - Disable forced uppercase
+- [2025-08-02] Issue #374 add digits to bandmap
+  - Merge branch 'mbridak:master' into master
+  - Update main.ui
+  - Make all window titles system font
+  - @mbridak still thinking
+  - Merge pull request #386 from ki4mcw/Uncheck-box-on-window-close
+  - Merge pull request #3 from ki4mcw/Uncheck-box-on-window-close
+  - Uncheck-box-on-window-close
+- [2025-08-01] Merge pull request #385 from ki4mcw/Fix-floating-Callsign-label
+  - Merge pull request #383 from ki4mcw/ki4mcw-add-op-to-fd-log
+- [2025-07-31] Merge pull request #1 from ki4mcw/ki4mcw-patch-1
+  - Add Op to FD log table
+  - Fix floating Callsign label
+  - Contrasting color for column headers
+  - @mbridak Bump and Doc for release.
+  - @mbridak Improve error handling in QRZ and HamQTH lookups; ensure robust XML parsing a...
+- [2025-07-29] @mbridak Enhance grid square validation in gen_adif method using regex
+  - @mbridak Update version to 25.7.29.1 and enhance duplicate check for short calls.
+  - @mbridak Bump and Doc for release.
+  - Add 'Mark Contacts Dirty' action and connect to mark_all_dirty method
+  - @mbridak Add make_all_dirty method and enhance duplicate check query in DataBase class
+- [2025-07-26] Update version to 25.7.26 and enhance documentation for CW Ops CW Open Contest
+  - Merge pull request #362 from digitaltheology/cwo
+  - Added plugin for CW-OPS CW Open Contest
+- [2025-07-23] Merge pull request #361 from awandahl/master
+  - Update cat_interface.py
+- [2025-07-22] Bump and Doc
+  - Merge pull request #360 from digitaltheology/rsgb-contests
+  - A few minor edits.
+  - Forgot to run through black, so...
+  - Added plugin for RSGB 80m Club Championship Contests
+- [2025-07-20] Refactor super_check method to streamline results filtering and enhance readability; e...
+  - update
+- [2025-07-13] @mbridak Fix cabrillo output to use 'NR' instead of 'ZN' for contact number
+  - @mbridak Bump and Doc for release.
+  - @mbridak Fix mode validation to ensure numeric values are not accepted
+- [2025-07-12] @mbridak Bump and Doc for publishing.
+  - @mbridak Add "Mode" column to IARU Field Day logs for CW and SSB plugins
+  - @mbridak Move dark_watcher call to the bottom of MainWindow __init__.
+- [2025-07-10] Merge pull request #355 from aknrdureegaesr/cache_supercheck_background_colors
+- [2025-07-11] Cache the background colors so the mode determination happens less often.
+- [2025-07-10] Merge pull request #354 from aknrdureegaesr/fix_supercheck_undark_mode_contrast
+- [2025-07-11] Improve checkpartial contrast if not using dark mode.
+- [2025-07-10] Merge pull request #353 from aknrdureegaesr/doc_black_and_pytest
+  - Documenting black and pytest, and change the sources so black does nothing.
+- [2025-07-08] Document {PREVNR}
+- [2025-07-03] Update version to 25.7.3, fix CAT online indicator, and update changelog and README
+- [2025-06-21] @mbridak Refactor VfoWindow class: change old_vfo type to int, update discover_device ...
+- [2025-06-20] @mbridak Update changelog and README for Rotator tab addition; refactor Rotator interf...
+- [2025-06-18] @mbridak re-added delay after sending esm macros.
+  - @mbridak Bump and Doc for release.
+  - @mbridak Refactor specific_contest_check_dupe logic to include None checks for time pe...
+  - @mbridak Refactor code by removing unused imports and commenting out unused functions for clarity
+  - @mbridak Comment out unused station code retrieval functions
+  - @mbridak Refactor datetime usage and remove unused get_station_license_class function.
+  - @mbridak Remove unused get_station_license_class function.
+  - Merge pull request #344 from term73/develop
+  - Fix serialnumber prefill for ES MANUAL KEY contest
+  - @mbridak bump for release
+  - @mbridak Refactor HamDB and QRZ lookup error handling and logging
+  - Merge branch 'mbridak:master' into develop
+  - @mbridak made pylance happy.
+  - @mbridak remove 0.3 second pause when sending esm keys
+- [2025-06-16] bump
+  - @mbridak try an experiment
+  - trim
+  - @mbridak Bump and Doc for release.
+  - Merge pull request #343 from awandahl/master
+  - Update general_logging.py
+- [2025-06-15] @mbridak Bump and Doc for release.
+  - @mbridak Once again, I forgot to change new elements to nofocus... Heavy sigh.
+  - @mbridak Add some types
+  - @mbridak Add check for window visible before get_log
+  - @mbridak Add a call to request worked list after setActive.
+- [2025-06-14] @mbridak Refactor type annotations and improve variable declarations in StatsWindow class
+  - @mbridak Refactor type annotations and improve variable declarations in VfoWindow class
+- [2025-06-13] @mbridak Bump and Doc for release.
+  - @mbridak Add mouse press event handling to RotatorWindow for position setting
+  - @mbridak Bump and Doc for ralease.
+  - @mbridak Update rotator window pics.
+  - @mbridak Add stop and park buttons with functionality in RotatorWindow
+  - @mbridak Refactor RotatorWindow class for improved type hinting and code clarity
+- [2025-06-12] @mbridak Refactor RotatorInterface initialization and method signatures for type hinting
+  - @mbridak Update version to 25.6.12 and enhance grid square handling in main window
+- [2025-06-11] @mbridak bump
+  - @mbridak Change the rotator map. Make the needles a little thicker.
+- [2025-06-10] @mbridak Bump and Doc for pypi release.
+  - Merge pull request #337 from mbridak/rotator_window
+  - @mbridak point pic at master branch.
+  - @mbridak save generated rotator maps to reload later.
+  - @mbridak removed extra space.
+  - @mbridak Display users name as returned from QRZ at the bottom of the window.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Bump and doc for a push to pypi.
+  - @mbridak Made it a little useful.
+  - @mbridak Add default elevation to set_position
+  - Merge pull request #336 from dj1yfk/master
+  - fix calculate_wpx_prefix
+  - @mbridak Name the NSEW buttons.
+  - @mbridak Add rotator interface.
+  - Add ES Manual Key Contest
+  - @mbridak point to rotator branch for placeholder graphic.
+  - @mbridak Add snippet for rotator window.
+  - @mbridak Change contest heading needle color.
+  - @mbridak simplify buttons for space.
+  - @mbridak Add placeholder pic for rotator window.
+  - @mbridak Cleanup and add types.
+- [2025-06-09] @mbridak Add a rotator widget
+  - @mbridak trim
+  - @mbridak Add uvx package@latest
+- [2025-06-08] @mbridak rewrote the dxcc tracker.
+  - @mbridak removed WAL mode.
+- [2025-06-07] @mbridak bump and doc.
+  - @mbridak Fix Focus issue
+- [2025-06-06] @mbridak Update Donors list
+- [2025-06-05] @mbridak Updated docs with dxcc window.
+  - @mbridak Add
+  - @mbridak shorten title
+  - @mbridak Remove name of db from window title.
+  - @mbridak Bump
+  - @mbridak Typo
+- [2025-06-04] @mbridak Might be nice is the widget focused on the current contest.
+  - @mbridak Remove the 'None' responces.
+  - @mbridak Bump and Doc
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Add a dxcc/band widget.
+  - @mbridak trim
+- [2025-06-03] Merge pull request #330 from microphonon/microphonon-README
+  - @mbridak typo
+  - @mbridak Fix creash caused by SSL cert expiration from supercheckpartial.com
+- [2025-06-02] @mbridak Crash Fix. Change initial self.pref from None to a dict.
+  - Update README.md
+  - Merge branch 'mbridak:master' into master
+- [2025-06-01] @mbridak Bump and Doc
+  - Merge pull request #329 from term73/develop
+  - @mbridak Add alternate striping for table lines.
+  - Merge pull request #3 from mbridak/master
+  - ES Field Day get Estonian region code from the state field
+- [2025-05-31] ES Field Day get station region code from ARRL Section of the station setup
+  - @mbridak Bump and Doc
+  - @mbridak fix indent.
+  - @mbridak Update
+  - @mbridak Trim
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak send station info to server.
+  - Merge pull request #328 from term73/master
+- [2025-05-30] New MASTER.SCP file
+  - Merge pull request #2 from mbridak/master
+- [2025-05-29] Merge pull request #1 from term73/develop
+  - add ES Field Day mults calculation initial version
+  - @mbridak Send NEWDB to server.
+- [2025-05-27] Changes to  points  calculation for ES Field Day
+  - @mbridak Simplified the access of the dict returned by cty_lookup()
+  - @mbridak moved install instructions into it's own file.
+- [2025-05-26] add changes related  to ES  Field Day Contest
+  - Merge branch 'mbridak:master' into develop
+  - Modifications related to ES Field Day
+  - @mbridak minor fixes bump
+  - @mbridak Missing lib, quieted some useless warnings.
+  - @mbridak Forgot to add the fldigi handler.
+  - @mbridak Fix Cabrillo output.
+  - @mbridak Update contest list
+  - @mbridak Bump and Doc.
+  - @mbridak Add ARI DX
+  - @mbridak Fix mults.
+  - @mbridak Updated VFO docs.
+  - @mbridak Updated Bandmap section.
+  - @mbridak Add
+- [2025-05-25] @mbridak reorder
+  - @mbridak Make sure rate and stats window update with db change.
+  - @mbridak Added preferred dict access methods.
+  - @mbridak Expanded on changes.
+  - Merge pull request #326 from mbridak/talk_to_the_server
+  - Merge branch 'master' into talk_to_the_server
+  - @mbridak Add {PREVNR} Macro.
+  - @mbridak Add get_last_serial()
+  - @mbridak Trim
+- [2025-05-22] Trap ValueError
+  - typo
+  - Bump and doc
+  - @mbridak Trap possible ValueError from user input.
+- [2025-05-21] Bump and Doc
+  - @mbridak Fix crash from unsafe dict key access when processing F1-F12.
+  - Merge branch 'talk_to_the_server' of https://github.com/mbridak/not1mm into talk_to_the_server
+- [2025-05-20] @mbridak remove debug print statements.
+  - @mbridak Don't iterate over None
+  - .
+  - @mbridak force fusion on macos
+  - @mbridak Add Mac support for vfo knob.
+  - another dupe field...
+  - @mbridak removed duplicate field.
+  - @mbridak add missing checkbox
+  - Merge branch 'master' into talk_to_the_server
+  - Merge pull request #321 from mbridak/mcfont
+  - @mbridak unscrew the mac
+  - @mbridak bring back the light
+  - @mbridak return font family name.
+  - @mbridak swap fonts
+- [2025-05-19] @mbridak missing ;
+  - @mbridak font not working on macos
+  - @mbridak add ds_store to ignore.
+- [2025-05-16] @mbridak Add some more status characters.
+  - @mbridak trap keyboard interrupt.
+- [2025-05-14] @mbridak Add build dir to gitignore.
+  - @mbridak add build dir to gitignore
+  - Merge remote-tracking branch 'origin/master' into talk_to_the_server
+  - @mbridak Added documentation on using uv.
+  - @mbridak Bump and Doc.
+- [2025-05-13] @mbridak Add server status icon.
+  - @mbridak Check for records at startup marked as dirty, and resend those to the server.
+- [2025-05-12] @mbridak Add fetch_all_dirty_contacts function.
+  - @mbridak Fix the VFO routine.
+- [2025-05-09] @mbridak Pause VFO knob polling radio.
+  - @mbridak Enable the group settings tab
+  - @mbridak Fix crash caused by possible index error.
+- [2025-05-08] @mbridak Add some mode indicators.
+- [2025-05-07] @mbridak server record change
+  - @mbridak more WIP
+- [2025-05-06] Merge remote-tracking branch 'origin/master' into talk_to_the_server Pull changes from main.
+  - Merge pull request #319 from alduhoo/alduhoo/cw/padding
+  - Merge remote-tracking branch 'origin/master' into talk_to_the_server @mbridak Merge in...
+  - @mbridak Add some code to talk to the server.
+  - @mbridak trim
+  - @mbridak Add clear_dirty_flag()
+  - Merge pull request #320 from Koji-Kawano/stop_morse
+  - <esc> key stop sending cw on rigctld.
+  - <esc> key stop cw on rigctld.
+  - Revert "stop_morse Update cat_interface.py"
+  - Revert "stop_morse  Update __main__.py"
+- [2025-05-05] Add settings for CW padding when sending serial number
+- [2025-05-04] stop_morse Update cat_interface.py
+  - stop_morse  Update __main__.py
+- [2025-04-28] @mbridak Bump and Doc
+  - Merge pull request #317 from microphonon/vhf_contests
+  - Add files via upload
+  - Delete vhf_sprint.py
+- [2025-04-25] @mbridak Bump and Doc
+  - Merge pull request #316 from microphonon/cwt
+  - Merge pull request #315 from microphonon/markdowns
+  - Merge pull request #314 from microphonon/vhf_contests
+- [2025-04-24] Delete new_contest.ui
+  - Add files via upload
+  - Update Anatomy_Of_A_Plugin.md
+  - Delete vhf_sprint.py
+  - Delete arrl_vhf_sep.py
+  - Delete arrl_vhf_jun.py
+  - Delete arrl_vhf_jan.py
+- [2025-04-23] @mbridak Check if returned mode has garbage in it.
+- [2025-04-22] @mbridak Bump and doc
+  - @mbridak Don't update the screen if the screen is closed.
+  - @mbridak stop processing ratewindow database queries if window not visible.
+  - @mbridak Removed some redundant code blocks.
+  - @mbridak change debug logger scope.
+  - @mbridak Store BW when polling mode with rigctld.
+  - @mbridak Don't poll the vfo if vfo window not open.
+- [2025-04-21] @mbridak bump and doc
+  - @mbridak Add a debug line to __setmode_rigctld and __get_serial_string
+- [2025-04-19] @mbridak Add a couple more
+  - @mbridak Add FM and AM as input-able commands to the callsign field.
+  - fix parameters
+  - fix datetype error
+  - @mbridak Changed S&P QSY wipe from 50hz to 500hz.
+  - minor changes related to ES Open Contest
+- [2025-04-18] Merge pull request #311 from mbridak/clear_inputs_when_qsy_sandp
+  - @mbridak clear inputs when qsy sandp.
+- [2025-04-17] @mbridak Documented the new voice macro usage.
+  - @mbridak Testing sending radio voice memories
+- [2025-04-16] @mbridak Bump and Doc
+  - Merge pull request #310 from mbridak/callchange_not_triggering_serial_number_change
+  - @mbridak Fix: callchange not updating serial number.
+- [2025-04-15] Merge branch 'master' into develop
+  - @mbridak Bump and Doc.
+  - ES Open Contest plugin
+  - @mbridak Corrections to specific_contest_check_dupe
+  - @mbridak Corrected dupe_type 5 check for existing function.
+  - @mbridak Update donors
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Wrong name of plugin.
+- [2025-04-14] Merge pull request #308 from mbridak/307-khz---khz
+  - @mbridak Fix Khz abbreviation in the log window.
+  - @mbridak Fixed an oops.
+  - @mbridak Bump and Doc.
+  - Merge pull request #306 from mbridak/es_ll_kv
+  - @mbridak scoring
+  - @mbridak We'll call it ES OPEN.
+  - @mbridak Fix Crash if contest didn't have edi.
+- [2025-04-13] @mbridak Fix: JIDX cabrillo crash.
+  - @mbridak trim cruft.
+  - @mbridak Add donor
+  - @mbridak Starting ES LL KV.
+- [2025-04-12] @mbridak Updated docs.
+  - @mbridak Add Auto CQ progress indicator.
+  - @mbridak fixed issue with winkeyer not sending multiple macro keys in ESM mode.
+- [2025-04-11] @mbridakfixed a crash
+  - @mbridak updated winkeyer interface to add a way to stop the keyer.
+  - Merge pull request #303 from mbridak/add-sac-cw-ssb
+  - @mbridak Add Scandinavian Activity Contest.
+- [2025-04-10] @mbridak update help dialog.
+  - @mbridak bump and doc
+  - @mbridak Add CTRL-R to toggle Run state.
+  - @mbridak Add ARI 40/80 contest.
+  - @mbridak Updated list of contest exchange types.
+  - @mbridak trim cruft
+  - @mbridak Add an Auto CQ visual indicator.
+- [2025-04-09] Merge pull request #297 from mbridak/add_ukeicc
+  - Merge branch 'master' into add_ukeicc
+  - @mbridak bump and doc
+  - @mbridak Add call history support to ukeidx.
+  - @mbridak made load_call_history tolerant of leading blank lines.
+  - @mbridak Add mults to ukeidx
+  - @mbridak Add score calc to ukeidx
+- [2025-04-08] @mbridak Cabrillo name is ukei-dx.
+  - Merge pull request #298 from mbridak/296-tab-between-entry-fields-ends-up-in-the-stats...
+  - @mbridak Remove focus from tablewidget in the statistics widget window.
+  - @mbridak set up the fields and cab output.
+- [2025-04-07] @mbridak bump and doc
+  - @mbridak Copy existing contest to modify.
+  - Merge pull request #295 from dj1yfk/master
+  - Fix typos / copy&paste errors in SP DX contest definition
+- [2025-04-05] @mbridak Add more info on plugins.
+  - @mbridak made a table of it.
+  - @mbridak Update plugin information.
+  - @mbridak add spdx
+  - Merge pull request #294 from mbridak/add_spdx
+  - @mbridak Add SPDX
+- [2025-04-02] @mbridak Add note about auto-switching to run mode when Auto CQ is started.
+  - @mbridak Update Python Pill
+  - @mbridak Tweeked rate current hour display.
+  - @mbridak bump and doc.
+  - @mbridak Add tool tips.
+  - @mbridak Updated.
+  - @mbridak Change Zoom in and out button text. Add tooltips.
+  - @mbridak Add FocusPolicy::
+  - @mbridak Update image
+- [2025-04-01] @mbridak Add a couple links.
+  - @mbridak removed cruft. Changed some if thing: to if thing is True:
+  - @mbridak Update minimum Python version from 3.9 to 3.10 since it's EOL in a few months.
+  - @mbridak add uv.lock
+  - update ignore file
+  - @mbridak Bump and doc
+  - @mbridak Trimmed code cruft.
+  - @mbridak Remove unused fields from UI and code cruft.
+  - @mbridak Fix: statistics window not populating when initially activated from the window menu.
+- [2025-03-31] @mbridak Bump and doc
+  - @mbridak recolor rate lables
+  - Merge pull request #289 from mbridak/testing_dark
+  - @mbridak bump and doc.
+  - Oh I'm sure this will do it...
+  - maybe this
+  - maybe this.
+- [2025-03-30] testing
+  - Just testing
+- [2025-03-27] @mbridak Detect systems dark mode and apply the same. Maybe...
+  - @mbridak updated
+- [2025-03-26] @mbridak Add more DI and PH modeto stats window.
+  - Merge pull request #287 from mbridak/enforce_dupes_equal_zero
+  - @mbridak make sure if contact is a dupe to record zero points.
+- [2025-03-25] @mbridak bump and doc
+  - @mbridak improve process messaging.
+  - @mbridak change to safer dict key access.
+- [2025-03-24] @mbridak corrected project license.
+  - @mbridak darkmode palatte
+  - @mbridak resize columns to fit.
+  - @mbridak Update font.
+  - Merge pull request #285 from mbridak/update_stats_window
+  - @mbridak Add CW, PH, and DI fields to the statistics window.
+  - @mbridak removed depricated license classifier, added project license string.
+- [2025-03-23] Merge pull request #283 from mbridak/add_statistics_window
+  - @mbridak Add a statistics window.
+- [2025-03-19] Bump and Doc
+  - @mbridak Add EA Majistad SSB, Correct call history for EA Majistad CW.
+  - @mbridak Process thru black formatter. Add newline="" to file open.
+  - Add contest id to adif out.
+  - Merge pull request #280 from DD5MJ/darc_vhf
+  - Add darc_vhf contest
+- [2025-03-18] @mbridak Update list of contests.
+  - Merge pull request #279 from mbridak/add_ea_majistad_cw
+  - @mbridak Add His Maj King of Spain CW.
+- [2025-03-17] @mbridak change watch string in fldigi qso packet to SRX_STRING
+  - Merge pull request #278 from mbridak/add_ea_rtty
+  - @mbridak Add eadx100 mult.
+  - @mbridak Add newline="" to open statement, windows users getting double CR's at the en...
+  - @mbridak Add EA RTTY, Still needs work on mults.
+- [2025-03-16] @mbridak Added contest specific notes for RandomGram.
+- [2025-03-14] @mbridak Bump and Doc
+  - @mbridak Add call history support to ARRL Field Day.
+  - @mbridak Add remarks on call history
+  - @mbridak Moved
+  - @mbridak Add keys used for each contest.
+- [2025-03-10] @mbridak bump and doc
+  - @mbridak small change of not much note.
+- [2025-03-05] @mbridak Doc and bump
+  - @mbridak skip updating certain things if the window is not active.
+  - @mbridak Not spamming the bandmap with same poll_radio info. Add FM, AM to phone and D...
+- [2025-03-04] @mbridak trim
+- [2025-03-02] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak removed logging data sent to cluster.
+  - Remove debug log info
+  - Merge pull request #277 from mbridak/better_late_than_never
+  - @mbridak Add call history support to ARRL DX. Just in time for it to be over.
+- [2025-03-01] @mbridak Add macros
+- [2025-02-26] Merge pull request #274 from mbridak/toggle_to_run_state_when_auto_cq
+  - @mbridak Switch to a run state when engaging auto cq
+- [2025-02-22] Merge pull request #273 from mbridak/auto_cq
+  - @mbridak Add Auto CQ
+- [2025-02-20] Update _config.yml
+  - Create _config.yml
+- [2025-02-16] @mbridak Add some ALT keys to open/close widgets.
+  - @mbridak make it exec-able.
+- [2025-02-12] @mbridak bump and doc
+  - Merge pull request #272 from alduhoo/alduhoo/contest/rg
+  - Add RandomGram event
+- [2025-02-08] @mbridak typo
+- [2025-02-06] @mbridak removed duplicate error message.
+  - @mbridak Corect logging scope.
+  - @mbridak removed duplicate import.
+  - @mbridak Add script to trim ui files.
+  - @mbridak Bump and Doc
+  - Merge pull request #270 from mbridak/trim_ui_files
+  - @mbridak Trim new elements from UI files, cause people be running old stuff.
+- [2025-02-03] @mbridak Add a donor, Yay donors!
+- [2025-01-29] Merge pull request #267 from mbridak/allow_cluster_passwords
+  - @mbridak Add password field for cluster signin
+- [2025-01-27] @mbridak adjust ft8 adif parse
+  - @mbridak Adjusted ft8 adif parser for general log.
+  - @mbridak add ft8 listener to general logger
+  - @mbridak change cabrillo name. fix scoring.
+  - change testing
+  - Merge pull request #263 from mbridak/add_labre_rs_digi
+  - @update contest list
+  - @mbridak Add Labre RS Digi
+  - Merge pull request #262 from mbridak/update_pop_up
+  - @mbridak Update popup about updates.
+  - @mbridak passing time.
+- [2025-01-26] @mbridak Change bandmap marked color.
+  - Merge pull request #259 from mbridak/more_macros
+  - @mbridak Add more macros
+  - @mbridak Add more macros.
+- [2025-01-25] @mbridak bump and doc
+  - Merge pull request #256 from mbridak/Add_call_history_to_REF
+  - @mbridak Add call history to REF
+  - @mbridak Fix:ratewindow failed to change stats when contest changed.
+  - @mbridak Bump and Doc
+  - @mbridak Correct logwindow update after recalc mults.
+  - Merge pull request #255 from mbridak/Remove_multicast_calls_on_mult_recalcs
+  - @mbridak remove calls to multicast on mult recalcs since there is no interface and causing a crash.
+  - Merge pull request #254 from mbridak/Fix_radio_mode_changes
+  - @mbridak fix mode changes from radio.
+  - @mbridak updated install instructions for ubuntu 24.04
+- [2025-01-24] @mbridak update pic
+  - @mbridak trim fat
+  - @mbridak Fix: f-string quote mismatch in ratewindow.py
+- [2025-01-23] @mbridak Add action to msg_from_main call.
+  - @mbridak Add some msg_from_main calls to rate window.
+  - bump
+  - @mbridak Bump and Doc Rate Window.
+  - @mbridak Add pic of rate window.
+  - Merge pull request #249 from mbridak/Add_Rate_Window
+  - @mbridak Fixed some rate queries.
+  - @mbridak renamed a label.
+  - @mbridak Fix capitalizations.
+  - @mbridak Removed bashing on general logging.
+- [2025-01-21] @mbridak Change db mode to WAL
+- [2025-01-15] @mbridak Fix bug in ADIF output where mode showed as CW-R and not CW.
+  - Merge pull request #248 from mbridak/cw-r_to_cw_in_adif
+  - @mbridak FIX ADIF doesn't like CW-R
+- [2025-01-14] @mbridak error checking, add 10/100 q's per hour.
+  - @mbridak typo
+  - @mbridak get rate window to auto update.
+- [2025-01-13] @mbridak Add Rate Window menu item.
+  - @mbridak Initial class RateWindow
+  - @mbridak Label color
+  - @mbridak Set point size
+  - @mbridak Add ratewindow.ui
+  - @mbridak rtty as dg
+- [2025-01-06] @mbridak Altered RTTY RU UDP ADIF parse.
+- [2025-01-03] @mbridak Forgot to add the fldigi udp qso parser.
+- [2025-01-01] Merge pull request #243 from mbridak/add_arrl_rtty_ru
+  - @mbridak Add ARRL RTTY Roundup.
+- [2024-12-29] Add {LOGIT} macro.
+- [2024-12-15] Merge pull request #241 from awandahl/no_name-general-logging
+  - Update general_logging.py
+  - @mbridak Fixed TAB focus when bandmap is active.
+- [2024-12-14] Merge pull request #239 from mbridak/change_fldigi_qso_detection
+  - @mbridak Bump and Doc
+  - @mbridak Change how we get qso's from fldigi. Instead of watching the qsofile, we watc...
+  - @mbridak remove unneeded class.
+  - @mbridak Add fldigi udp adif settings screen.
+- [2024-12-12] Add a try exception for a unicode decode error
+- [2024-12-11] @mbridak Add RTC to RAC Canada Day, ARRL VHF, ARRL Field Day, ARRL SS, ARRL DX, 10 10
+  - @mbridak Add RTC to IARU HF, IARU Field Day, DARC XMAS, CQ WW, CQ WPX
+- [2024-12-09] @mbridak Add RTC to Winter Field Day, Stew Perry, REF, RAEM, NAQP, LZ-DX, JIDX
+- [2024-12-08] Add RTC to ARRL 10M, Tweaked cabrillo file output.
+  - Changed cabrillo names for Weekly RTTY, CW Ops CWT and K1USN SST.
+  - @mbridak changed cabrillo name from K1USN-SST to K1USNSST
+  - @mbridak changed cabrillo name from cwops-cwt to cw-ops
+  - @mbridak Changed cabrillo name from weekly-rtty to wrt
+  - @mbridak small update to the RTC mult id.
+  - @mbridak Fix: Weekly RTTY mults. Add RTC to Weekly RTTY.
+  - @mbridak trimmed done
+- [2024-12-06] @mbridak add RTC to K1USN
+- [2024-12-05] @mbridak forgot to add arrl 160 to list of contests.
+  - @mbridak cleanup rtc responses
+  - only "K", "KL", "KH0", "KH1", "KH2", "KH3", "KH4", "KH5", "KH6", "KH7", "KH8", "KH9", ...
+  - @mbridak bump and doc
+  - @mbridak black linter changes
+  - @mbridak cleaner xml update
+  - @mbridak rtc for arrl 160
+  - update comment
+  - @mbridak updated pic
+  - @mbridak Update info on options tab.
+  - @mbridak Bump and Doc
+  - Merge pull request #236 from mbridak/Real_Time_Scoring
+  - @mbridak Add rtc settings to dialog.
+  - @mbridak Add RTCService thread and preferences.
+  - @mbridak Add some functions needed for RTC services to text contests.
+  - @mbridak Add RTCService class.
+  - @mbridak Correct description.
+  - Merge pull request #235 from alduhoo/alduhoo/adif/stationCallsign
+- [2024-12-04] Add STATION_CALLSIGN field to ADIF output
+  - @mbridak Some minor edits.
+  - @mbridak No longer true.
+  - @mbridak typo
+- [2024-12-03] @mbridak Add ARRL 160
+  - @mbridak Add fetch_exchange1_unique_count
+  - Merge pull request #234 from mbridak/delete_marked_spots
+  - @mbridak Add button to delete marked spots.
+- [2024-11-30] @mbridak Add online_score_xml generator
+  - Messing around with real time scoring.
+- [2024-11-27] @mbridak Added CAT poll interval.
+- [2024-11-26] @mbridak Changed ESC and CRTL-W functions.
+  - @mbridak bump and doc
+  - @mbridak Trying something new.
+  - @mbridak Set window title after opon.
+- [2024-11-25] @mbridak typo
+  - @mbridak Bump and doc
+  - Merge pull request #228 from mbridak/Fix_RPRT_showing_as_a_mode
+  - @mbridak fix rprt showing as a mode.
+  - Merge pull request #227 from mbridak/Fix_CQWW_Scoring
+  - @mbridak Fix CQWW CW and SSB Scoring.
+- [2024-11-24] @mbridak Bump and Doc.
+  - @mbridak Add ESM to the 10 10 contests.
+  - @mbridak Add ESM and call History to ARRL 10m
+  - @mbridak Add ESM to ARRL VHF
+  - @mbridak Add ESM and Call History.
+  - @mbridak Bump and Doc
+- [2024-11-23] @mbridak Add ESM
+  - @mbridak
+  - @mbridak Bump and Doc
+  - @mbridak Made macros per contest and mode.
+- [2024-11-21] @mbridak Changed read_cw_macros() to read_macros() and edit_cw_macros() to edit_macros()
+  - @mbridak Merged PR from alduhoo setting CW Speed via rigctld, Added ESM and call histo...
+  - @mbridak linter
+  - Merge pull request #220 from alduhoo/alduhoo/cw/speed
+- [2024-11-20] Support setting CW speed via rigctl
+- [2024-11-19] @mbridak Add a Donor.
+  - @mbridak bump and doc
+  - @mbridak Add super secret file.
+  - @mbridak Add Call History
+  - @mbridak Fix Medium speed test. Add ESM.
+  - @mbridak fix advance on space for other_2
+  - @mbridak Add ESM to JIDX.
+  - @mbridak Add ESM to Phone Weekly Test.
+  - @mbridak Add ESM to Stew Perry Topband.
+- [2024-11-18] @mbridak removed un-needed findchild calls.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak bump and doc
+  - Merge pull request #219 from mbridak/218-darc-xmas-crash-when-changing-fields
+  - @mbridak Fix next_field and tab order.
+- [2024-11-17] Merge pull request #217 from dg9vh/darc-xmas
+  - Bugfixing Labels
+  - Bugfixing
+  - Adding DARC XMAS - Contest
+  - @mbridak removed commented out code.
+  - @mbridak Moved lz-dx below k1usn
+  - @mbridak bump and doc changes
+  - @mbridak Run thru black.
+  - Merge pull request #216 from dg9vh/lz-dx-contest
+  - Adding LZ DX Contest
+- [2024-11-15] @mbridak add data to usertext
+  - @mbridak Made checkwindow font bigger and match a little more contrasted.
+- [2024-11-14] @mbridak Documented Call History File usage.
+  - @mbridak Add call history screenshot.
+- [2024-11-12] @mbridak hide history info line when not needed.
+  - @mbridak fix qt version check
+  - @mbridak bump Shhh
+  - @mbridak Had an Oops, better not mention it.
+  - @mbridak bump and doc.
+  - @mbridak Add trapping for bad ipv4 address
+- [2024-11-10] @mbridak bump and Doc.
+  - Merge pull request #213 from mbridak/fixing_flrig_just_a_bit
+  - @mbridak trying to fix flrig just a bit.
+- [2024-11-08] @mbridak removed useless print statement
+  - @mbridak still trying.
+- [2024-11-07] @mbridak flatpak closer but ... No Go.
+  - @mbridak ignore ./flatpak-builder folder
+  - @mbridak trying flatpak again...
+- [2024-11-06] @mbridak Added Call history to ARRL VHF, CQ160, CQWW, StewPerry, Weekly RTTY
+- [2024-11-05] @mbridak bump and doc
+  - Merge pull request #211 from mbridak/session_what_session
+  - @mbridak Provided initial condition for root.
+- [2024-11-03] @mbridak Bump and Doc
+  - @mbridak Add Call History
+  - @mbridak Add Call History to NAQP
+  - @mbridak Fix Call History import
+  - @mbridak Add Call History to WFD
+  - @mbridak Add ESM and Call History to Helvetia.
+  - @mbridak fixed CWT ESM, Add CWT Call History.
+  - @mbridak Clear history_info with clearinputs()
+  - @mbridak Doc options tab
+  - @mbridak Add config options pic.
+  - @mbridak Updated show_key_help
+  - @mbridak Forgot to change the base encoding of the cabrillo.
+  - @mbridak Document the CTRL-= combo.
+  - @mbridak Added RAEM
+- [2024-11-02] @mbridak Bump and Doc
+  - Merge pull request #209 from mbridak/121-call-history
+  - @mbridak add check_call_history
+  - @mbridak Add CTRL = to log without sending ESM text.
+  - @mbridak Add fetch_call_history
+  - @mbridak add functions to support the command buttons.
+  - @mbridak Add menu item to show command buttons.
+- [2024-11-01] @mbridak Save and load use call history flag in the settings.
+  - @mbridak Add "Use Call History" check box.
+  - @mbridak hide the group tab
+  - @mbridak Add function to load a call history file.
+- [2024-10-30] @mbridak removed primary key, adjusted column sizes.
+  - @mbridak Add add_callhistory_items, remove some NOT NULL flags from callhistory table.
+  - @mbridak add_callhistory_item
+  - @mbridak Add an exclude folder.
+  - @mbridak Add delete_callhistory
+  - @mbridak Add create_callhistory_table
+- [2024-10-29] @mbridak contests to add.
+- [2024-10-27] @mbridak Changed when zone is populated in CQ WW.
+  - @mbridak flew too close to the sun...
+  - Merge pull request #206 from mbridak/wayland_allow_undockable_widgets
+  - @mbridak Allow undocking widgets while using Wayland if PyQt6 version is atleast 6.7.1
+  - Merge pull request #205 from mbridak/fix_ssb_when_crossing_10m
+  - Fix ssb modes send to radio when crossing between the 10M boundary.
+- [2024-10-26] Merge pull request #204 from mbridak/contact_info_not_cleared_between_qsos
+  - @mbridak dict received another dict object instead of a copy of the dict object.
+  - @mbridak bump and doc.
+  - @mbridak removed debug print.
+  - Merge pull request #202 from mbridak/drop_beacons_from_bandmap
+  - @mbridak Drop Beacons from bandmap.
+  - Merge pull request #201 from mbridak/couple_personal_annoyances
+  - @mbridak trap a unicode decode error caused by bad telnet data.
+  - @mbridak Clear inputs when seeking to a call from the bandmap via the arrow up and down.
+- [2024-10-25] Merge pull request #196 from mbridak/your_choice_ascii_or_utf
+  - @mbridak bump and doc
+  - @mbridak Add choice of Cabrillos in ASCII or UTF8
+- [2024-10-24] Merge pull request #194 from mbridak/make_cabrillo_use_utf-8
+  - @mbridak bump and doc
+  - @mbridak create Cabrillo files with UTF-8 encoding.
+  - @mbridak doc changes
+  - @awandahl Score dupes as 0 points.
+  - @mbridak selfish commit so I don't have to rerecord.
+  - @mbridak Corrected typo.
+  - Merge pull request #192 from mbridak/forgot_about_the_vfo_window
+  - @mbridak bump and doc.
+- [2024-10-23] @mbridak Forgot to convert the vfo window. Thats how useful that is.
+  - Merge pull request #191 from mbridak/multi-marked_to_single_marked
+  - @mbridak bump and doc
+  - @mbridak Remove previous marked calls when marking the same call.
+- [2024-10-22] Merge pull request #190 from mbridak/too_many_peeps_in_the_club
+  - @mbridak OOpsie
+  - @mbridak remove REF from todo. Update readme.
+  - @mbridak Added ESM to RAC Canada Day. Added French REF.
+- [2024-10-21] @mbridak Bump and doc.
+  - @mbridak Reduced max matches returned to improve performance.
+  - @mbridak trim cruft
+- [2024-10-20] Merge pull request #188 from mbridak/187-widgets-fail-to-update-when-there-is-no-network-connection
+  - @mbridak Got rid of the multicast UDP inter-widget messaging scheme. Using signals and...
+  - @mbridak ReWrote how the widgets interact. I porbably broke a thing or two. Let me know.
+  - @mbridak added ESM to ARRL DX.
+  - @mbridak Resizing headers in the main log window will trigger resizing the focused log headers.
+- [2024-10-19] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Bump and doc
+  - Merge pull request #186 from mbridak/rewrite_cat_control_be_bold_be_brave
+  - @mbridak Change the way signal emitted after change.
+  - @mbridak Shutdown radio thread before closing.
+  - @mbridak Rewrite cat control to have a fake radio. This should simplify the state of t...
+  - Merge pull request #185 from mbridak/recheck-esm-state-on-run-sandp-toggle
+  - @mbridak Callout contests in list with ESM in bold.
+  - @mbridak Add ESM to ARRL Field Day and Winter Field Day.
+  - @mbridak Removed statement saying ESM only worked in CQ WW.
+  - @mbridak bump and doc
+  - @mbridak Recheck ESM button states when the run/s&p state is toggled.
+- [2024-10-18] removed unneeded print statement.
+  - @mbridak bump and doc
+- [2024-10-17] Merge pull request #182 from mbridak/Fix_marked_spot_time_in_bandmap
+  - @mbridak Fix the time of the marked spot in the bandmap.
+  - @mbridak Add ESM to ARRL SS
+  - @mbridak bump and doc
+  - @mbridak fixed Dupe check.
+  - @mbridak reorder change mode and interface update.
+  - @mbridak resend mode if no RPRT 0 from rigctld.
+  - Change to align with ESM.
+  - @mbridak updated.
+  - @mbridak revert delta time back to 1
+  - @mbridak Doc and Bump.
+  - @mbridak Trimmed.
+  - @mbridak Have the checkwindow not process events while not active. It's a resource hog.
+  - @mbridak Add profiler view.
+  - @mbridak Poll time to delta 2.
+  - speeding up button transitions.
+  - @mbridak Trying a smaller timeout for the rigctlsocket.
+  - @mbridak Nothing to look at.
+- [2024-10-15] @mbridak Increase maximum CW speed to 99...
+  - @mbridak bump and doc
+  - Merge pull request #178 from mbridak/allow_slashes_in_call_check
+  - @mbridak Allow slashes in callsign during ESM check.
+  - @mbridak Add ESM to NAQP, Add RTTY to NAQP.
+- [2024-10-14] @mbridak Add ESM to CQ WPX.
+- [2024-10-13] @mbridak Bump and Doc.
+  - @mbridak Add ESM to CWT.
+  - @mbridak Add ESM to K1USN.
+  - @mbridak Added ESM to the Weekly RTTY.
+- [2024-10-11] @mbridak Moved creation of a dict with keys of input objects in to the MainWindow clas...
+  - @mbridak Made some if's, elif's.
+  - @mbridak Updated 'Keyboard commands' table.
+  - @mbridak Bump and Doc.
+  - Merge pull request #170 from mbridak/Add_ESM_to_CQWWSSB_RTTY
+  - @mbridak Add ESM to CQWW ssb and rtty.
+- [2024-10-10] @mbridak correct ESM images.
+  - @mbridak Add ESM PICS.
+  - @mbridak Changed indent levels for the ESM docs.
+  - @mbridak Document ESM.
+  - @mbridak Bump version and doc ESM.
+  - Merge pull request #169 from mbridak/ESM_or_Redacted_due_to_swear_words
+  - @mbridak Remove unused print statement.
+  - @mbridak Working ESM.
+  - @mbridak Highlight ESM function keys based on state of input widgets.
+- [2024-10-09] @mbridak send self to self.contest.process_esm().
+  - @mbridak Check for ESM, Check if contest has ESM function defined.
+  - @mbridak Add ESM F-key for QSOB4
+  - @mbridak Load and save ESM settings.
+  - @mbridak Add option TAB to configuration menu for ESM opt in and F-Key definition.
+  - @mbridak Add functions to manage color highlighting of a QPushButton.
+- [2024-10-08] @mbridak Update to ARRL SS reccomended exchange macro.
+  - @mbridak Add a couple tool tips.
+  - Merge pull request #167 from mbridak/Change_CW_placeholder_text
+  - @mbridak Fix crash on Tune to spot. Change placeholder text for the CW port for those ...
+- [2024-10-07] @mbridak add ui.xml to ignore file.
+- [2024-10-06] @mbridak Add Station information.
+  - @mbridak Removed duplicate ARRL VHF SEP. Add test for file exists before deleting.
+  - Merge pull request #165 from driechers/pytest
+  - @mbridak Add missing port number to pywinkeyer.
+  - CQ contests syntax errors
+- [2024-10-05] Bugfix: Fixed depricated log function call
+  - main: Made __main__.py importable for testing
+  - Test: Created inital pytestqt test
+- [2024-10-06] @mbridak Removed 60, 30, 17 and 12M from the default list of bands.
+- [2024-10-05] Merge pull request #164 from mbridak/Save_bandmap_aged_timer_in_preferences
+  - @mbridak Store the bandmap spots age timer in the preferences.
+  - @mbridak Doc and Bump
+  - Merge pull request #163 from mbridak/Reselect_contest_after_db_chosen
+  - Force reselction of contest after different DB opened.
+- [2024-10-04] @mbridak removed redundant text.
+- [2024-10-02] @mbridak Bump and doc
+  - Merge pull request #161 from mbridak/Add_wpx_rtty
+  - @mbridak Add CQ WPX RTTY.
+- [2024-10-01] @mbridak Start work on WPX RTTY.
+  - @mbridak Doc update.
+  - Merge pull request #160 from mbridak/Update_splash_screen
+  - @mbridak Extend splash screen use.
+  - Merge pull request #159 from mbridak:Update_key_help
+  - @mbridak Update key help dialog.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Bump and Doc.
+- [2024-09-30] Merge pull request #158 from mbridak/work_on_data_modes
+  - @mbridak Add couple more modes.
+  - Merge pull request #157 from driechers/bugfix_cwt_dupe
+  - Merge pull request #156 from driechers/mst_serial
+  - cwt fixed error on duplicate entry in cwt
+  - MST Removed leading zeros on serial numbers
+- [2024-09-29] @mbridak Corrected Cabrillo generation for CQWWRTTY.
+  - @mbridak Condensed contest list.
+- [2024-09-28] @mbridak Fix Cabrillo and ADIF export for cqwwrtty.
+  - @mbridak bump
+  - @mbridak bump and doc
+  - @mbridak Add RTTY-R, LSB-D, USB-D, AM-D, FM-D, DIGI-U, DIGI-L, RTTYR, PKTLSB, PKTUSB t...
+  - @mbridak Added mode field to log display on general logging.
+  - @mbridak Cleaned up some conditionals, Added more modes to trigger RTTY band/mode field.
+  - @mbridak Added minimum size for 599 fields.
+- [2024-09-25] Merge pull request #154 from mbridak/fix_crash_when_CAT_toggled_to_None
+  - @mbridak Fix odd crash when CAT was set, then changed to None
+  - @mbridak bump and doc.
+  - Merge pull request #152 from mbridak/fix_formatting_on_band_tab
+  - @mbridak Fixed formatting of the configuration band tab.
+  - Merge pull request #143 from awandahl/master
+  - Merge pull request #151 from mbridak/fix_qrz_lookup_crash
+  - @mbridak Fix crash when looking up non existant call with qrz.
+  - Fixed band inconsistencies
+- [2024-09-24] @mbridak Bump and doc
+  - Merge pull request #148 from mbridak/fix_cwt
+  - @mbridak correct sql query.
+  - Track last data mode.
+- [2024-09-23] @mbridak Bump and Doc
+  - @mbridak Send RTTY macro stuff to fldigi when the radio mode is RTTY, USB-D, LSB-D, PK...
+  - @mbridak Add get_mode_list method to poll for supported radio modes. Fixed getting res...
+  - @mbridak tweek to the rtty macros.
+  - @mbridak Add list of modes the radio supports when interface is init'd.
+- [2024-09-22] doc and bump
+  - Merge pull request #146 from mbridak/cq_ww_rtty
+  - Merge branch 'master' into cq_ww_rtty
+  - default to prepend newline.
+  - add macros to rtty
+  - Add class to send tx strings to fldigi.
+  - add macro file for rtty
+- [2024-09-21] fix tab and space movement.
+  - Merge pull request #145 from mbridak/144-crash-when-fldigi-is-running
+  - @mbridak Check for 'NONE' returned from fldigi.
+- [2024-09-20] Add fldigi stuff
+  - fixed adif
+  - fix cabrillo output
+- [2024-09-21] More line breaks
+  - Fixed line breaks
+- [2024-09-20] 599 for rtty
+  - mults
+  - points calc.
+  - removed unused var
+  - trap exception connection error
+  - Validated XML
+  - Updated WARC bands + 4M
+- [2024-09-19] updated
+  - Start work on cq ww rtty
+- [2024-09-17] Add SAC to todo
+  - Don't send empty CW strings, so other software doesn't crash...
+- [2024-09-15] @mbridak bugfix: Fixing an ARRL VHF Cabrillo format error.
+- [2024-09-14] @mbridak BugFix. Starting lookups fail init if no settings.
+- [2024-09-12] @mbridak doc: change message about logging digital modes.
+  - @mbridak bugfix: Fixed WSJT-X MFSK submodes FT4 Q65 & JT9.
+  - @mbridak thin the font.
+- [2024-09-11] @mbridak doc changes.
+  - @mbridak bump
+  - @mbridak Refactor: Removed all the sketchy threaded call lookups. They're now implimen...
+  - @mbridak fix: HamQTH nick and adr_name tags.
+  - @mbridak Add: LookupService class.
+  - @mbridak refactor: cleaned up QRZlookup class. Removed unused parse_lookup
+  - Merge pull request #133 from mbridak/132-something-is-consuming-too-much-cpu-time
+  - @mbridak doc changes
+  - @mbridak bugfix: Fixed high clock cycle usage from the FlDigiWatcher class.
+  - bump
+  - Merge pull request #131 from mbridak/130-hamqth-lookups-seem-broken
+  - @mbridak bugfix: Fixed the HamQTH lookup(), Much cleaner now. Removed parse_lookup()
+- [2024-09-10] @mbridak Removed mapping of FM to PH in the ARRL VHF Cabrillo logs.
+  - @mbridak Bump and doc changes.
+  - @mbridak bump and doc
+  - @mbridak ft8_watcher now used default WSJT-X Multicast address and port.
+  - @mbridak add helper script to update changes.
+  - @mbridak Sync changelog.
+  - @mbridak drop extra debug print statements.
+  - Add FT8 and fldigi stuff to ARRL VHF
+- [2024-09-09] bump and doc
+  - trimmed
+  - Add IARU Fieldday R1 CW and SSB
+  - Add 2 methods to get dxcc in contest.
+  - add iaru r1 fieldday
+- [2024-09-08] bump and doc
+  - Correct n1mm radio info
+- [2024-09-07] fix exchange.
+  - Added info on FT8 and RTTY
+  - Updated note about Data and RTTY.
+- [2024-09-06] bump and doc
+  - add utility script
+  - Add Weekly RTTY
+  - add typing
+- [2024-09-05] bump
+  - dump and doc
+  - trim
+  - Add debug msg
+- [2024-09-04] repurpose the ft8 qso handler to also handle fldigi.
+  - Add class to watch for fldigi qso's in a separate thread.
+- [2024-09-03] Add FT4
+  - Document changes adding FT8 to Field Day.
+  - bump
+  - Add FT8 to ARRL Field Day
+- [2024-09-02] Trapped possible errors with file access.
+  - trapped possible json.dumps errors.
+  - removed redundant check for self.pref.get("contest")
+  - Added json decoding error trapping.
+- [2024-08-31] still trying and failing to build a flatpak.
+  - removed calls to self.database.fetch_mult1_count() and self.database.fetch_mult2_count...
+  - removed fetch_mult1_count and fetch_mult2_count and replaced with a generic fetch_mult...
+- [2024-08-30] add numpy
+- [2024-08-29] start
+- [2024-08-27] updated contests todo list
+  - Doc changes and bump version.
+  - Added Helvetia contest.
+  - Add fetch_mult2_count and fetch_country_count to database class.
+- [2024-08-24] Add parse_udc to ham_utility
+- [2024-08-22] Add splash screen
+  - add loading screen
+- [2024-08-20] Updated prerequisits. Add Mint 22 install recipe. Note about licxcb-cursor0.
+  - Bump and doc changes.
+  - Add K1USN SST
+- [2024-08-17] bump and doc
+  - Fix a stupid bug.
+  - document  changes disallowing floatable dock widgets since Wayland breaks this.
+  - Make dockable widgets not floatable if using Wayland.
+  - Delete not1mm/.vscode directory
+  - Delete not1mm/.DS_Store
+  - update ignore
+  - doc and bump
+  - cruft removal.
+  - removed import of psutil and re, removed unused check_process function.
+  - removed dependency of psutil and re
+- [2024-07-31] doc change
+  - bump
+  - Serial number leading Zeros sent as T in CW.
+- [2024-07-30] .
+- [2024-07-29] doc changes
+  - Merge pull request #123 from mbridak/114-cw-operation-via-flrig
+  - Merge branch 'master' into 114-cw-operation-via-flrig
+  - bump
+  - Set flrig's cw send speed.
+- [2024-07-28] doc changes
+  - bump
+  - Merge pull request #122 from mbridak/114-cw-operation-via-flrig
+  - try number 2 for flrig cw.
+  - testing some ft8 stuff.
+- [2024-07-25] Merge pull request #119 from mbridak/master
+  - Have VFO dock widget handle disconnect/reconnect events of the USB VFO knob more gracefully.
+  - Merge pull request #118 from mbridak/114-cw-operation-via-flrig
+  - dump and doc
+- [2024-07-22] test
+- [2024-07-21] add categories
+- [2024-07-19] Merge pull request #116 from mbridak/111-window-position-location-is-not-saved-on-exit
+  - Add QSettings to re/store window and dock widget states.
+  - width and height a wee bit smaller
+  - Trap value error
+  - doc changes
+  - update version number
+- [2024-07-13] Merge pull request #106 from mbridak/105-app-crashing-sporadically-when-changing-frequency
+  - bump and doc
+  - trap exception
+- [2024-07-12] bump
+  - notyet
+  - Updated Docs
+  - Update base CTY and SCP files
+  - removed utcnow deprication.
+- [2024-06-27] Corrected ADIF contest_id for the Phone Weekly Test.
+  - alt logo
+  - score report update
+- [2024-06-08] slight lateral unimportant update.
+- [2024-06-01] bump and doc
+  - Pad S/N with leading zeros.
+- [2024-05-31] move initial read of macros to after contest is loaded.
+  - correct dropdown menu font.
+- [2024-05-25] point calc change
+  - bump and doc changes
+  - a whoopsie in point calc.
+- [2024-05-22] update
+- [2024-05-16] left out header
+- [2024-05-11] Add Manjaro install recipe.
+- [2024-05-10] Merge pull request #102 from mbridak/101-nonsense-from-rigctrld-causes-a-glitch-in-the-matrix
+  - doc
+  - bump
+  - Add sanity check for vfo data
+- [2024-05-09] bump
+  - Add ICWC Medium Speed Test
+  - reset the snt field label back to default.
+  - doc changes
+  - Add ICWC MST
+  - not important
+  - Added catch post mainloop close crash.
+  - updated ignore file
+  - Not important
+  - Allowed using 599 field for MST contest.
+- [2024-05-02] update
+  - Updated install instructions for Ubuntu 22.04
+- [2024-05-01] bump and doc
+  - Add voice keying thread class.
+- [2024-04-30] typo
+  - bump and doc changes
+  - sent to wrong cat interface
+  - left out radio button setting in settings.py
+  - Allow CW to be sent thru rigctld CAT
+- [2024-04-27] update
+  - doc changes
+  - removed unused import.
+  - Cleaned up dark mode settings.
+- [2024-04-26] restructured.
+  - bump
+  - defaulted the extra windows as false and pref darkmode.
+  - add ubuntu 24.04 install instructions.
+- [2024-04-25] Add install instructions for Fedora 40
+  - bump and doc.
+  - remove unused CAT lib from main.
+  - reorder poll_radio callback
+  - reduce delta time to poll.
+  - doc and bump
+  - Make the log window default to the top of the logger. Cause I want it that way.
+  - Stop the process from consuming 100% of free CPU time.
+- [2024-04-24] Merge pull request #100 from mbridak/99-if-cat-configured-and-no-radio-connected-the-i...
+  - trimmed.
+  - Added 1 second timeout for thread teardown.
+  - move port setup to run function.
+  - thread control
+  - bump and doc
+  - Move CAT into a thread.
+- [2024-04-23] more debug stuff for ft8
+- [2024-04-17] moved ctyfile into the mainwindow object and out of the global variable space.
+  - Add highlight for exact match.
+  - bump and doc.
+  - Cleanup
+  - Stop fsutils/appdata from creating useless .not1mm and .username folder structures on ...
+- [2024-04-16] Merge pull request #98 from ckuhtz/patch-1
+  - looking why we're creating .not1mm folder in the main directory...
+  - typo
+  - Update README.md
+- [2024-04-15] trap OSError if no sound device.
+  - bump and doc
+  - Tighter call matching results.
+- [2024-04-09] doc and bump
+  - window icon
+  - removed unused import
+  - check for portaudio instead of crash boom.
+  - fixed segfault.
+  - Traceback (most recent call last):   File "/home/mbridak/Nextcloud/dev/not1mm/not1mm/_...
+  - it was Waylands fault.
+  - bump and doc.
+  - removed DockWidgetFloatable from the dock widgets since my wee brain can't figure out ...
+  - Added a minimun size for the lcd digits.
+  - added subwindow defaults to default preference dict.
+  - defaulting bandmap to left
+  - trimmed unused property
+  - updated
+  - doc changes
+  - bump
+  - Check window interface_ip somehow changed. Changed it back.
+  - replaced a qt5 straggler
+- [2024-04-08] bump
+  - Uh Yeah.
+- [2024-04-07] bump and doc.
+  - Add FT8Watcher class.
+  - Add a class to watch for FT8 packets.
+  - add program to inject an ft8 test packet.
+- [2024-04-04] bomp and doc
+  - moved widget init to main init.
+  - Made widgets open state persist.
+  - fixed bare except
+  - remove extra print statements
+  - doc
+  - bump
+  - Add Exchange hints
+  - Add mechanism to display an exchange hint when adding a contest.
+  - check palette exists
+- [2024-04-02] bump and doc
+  - Added lru_cache to callsign lookups.
+  - trim
+  - Add dockwidget featurs
+  - changed another pyqt5 ref to pyqt6
+  - updated made with pill
+  - Qt6
+  - removed frame.
+  - changed label
+  - Migrated to Qt6
+- [2024-04-01] bump and doc
+  - Fixed left docking corner. Fix re-focus callsign field when clicking on check partial call.
+  - doc changes
+  - Corrected logwindow docking.
+  - Fixed vfo and checkwindow dock.
+  - Merge pull request #95 from mbridak/Something-interesting
+  - Add color indicators, poached from kyleboyle
+  - remove for loop. replace with lambda and filter.
+  - linter
+  - Removed un-needed loops and widgets.
+- [2024-03-31] Failed at building a flatpak.
+  - Tried making a flatpak. failed. it wont build numpy...
+- [2024-03-28] a little document rework.
+- [2024-03-27] Removed connection check in bandmap preventing marked calls from appearing.
+  - doc feature.
+  - bump and doc
+  - made checkwindow items clickable.
+  - general edit.
+- [2024-03-26] updated prerequisites
+- [2024-03-25] Added back install recipes.
+  - bump
+  - Applied theme to edit contact dialog.
+  - updated
+  - doc
+  - Add more files to ignore.
+  - Dark mode sorted out. Probably.
+  - excluded junk from being included in the package.
+  - bump and doc
+  - remove Tab focus from sub window elements.
+- [2024-03-24] forgot the background size
+  - It was a wee bit too big.
+  - removed temp debugging print statement.
+  - Merge pull request #93 from mbridak/92-arrow-down-no-longer-gets-you-the-next-callsign...
+  - bump and doc
+  - removed set of curley braces in sql call. removed a self.callsignField.selectAll() call.
+  - linter fodder
+  - reworked paths restoring function to linux clients.
+  - updated
+  - import reorder for linter.
+  - ignore wip
+- [2024-03-23] doc changes
+- [2024-03-22] Linter
+- [2024-03-21] doc changes
+  - trying to fix vfo gui wierdness
+  - linter stuff
+  - fix Traceback (most recent call last):   File "/home/mbridak/Nextcloud/dev/not1mm/not1...
+  - fix Traceback (most recent call last):   File "/home/mbridak/Nextcloud/dev/not1mm/not1...
+  - fix broke help dialog
+  - bump
+  - fix TypeError: fromLocalFile(localfile: Optional[str]): argument 1 has unexpected type 'PosixPath'
+  - Merge pull request #91 from kyleboyle/master
+- [2024-03-20] add appdata dep to module meta
+  - correct bandmap dx cluster connectivity based on window state
+  - Merge remote-tracking branch 'upstream/master'
+  - refactoring, updates for cross platform, single process dockable windows
+- [2024-03-19] more darkmode stuff
+  - dark mode stuff.
+  - Merge branch 'play-with-darkmode' into master
+  - Merge pull request #89 from mbridak/88-im-facing-some-lag-while-typing-the-callsign
+  - bump and doc
+  - removed bloat
+  - ignore virt environment folder
+  - more dark stuff
+- [2024-03-18] logging
+  - removed darkdetect lib
+  - cleanup
+  - corrected scene text and line colors.
+  - rm unneeded print
+  - try freq color
+  - drop lib
+  - little better
+  - Add darkdetect lib
+- [2024-03-17] more
+  - Add some libs
+  - it's a start
+  - ignore venv
+  - it's a start.
+- [2024-03-15] bump and doc changes.
+  - Add Save/Fail confirmation dialog when saving ADIF can Cabrillo files.
+  - first cut at windows runtime
+  - Change CWR to CW in the ADIF output.
+- [2024-03-13] bump and doc changes.
+  - Add cq 160 ssb to contest list
+  - Add CQ 160 SSB plugin
+  - Add CQ 160 CW plugin.
+  - Add CQ 160 CW to contest dropdown.
+  - Updated gen_adif() adding pfx tag and cq160 code.
+  - removed useless comment.
+  - Add fetch_mult1_count to database class
+  - Add a couple contests to the todo list.
+- [2024-03-09] updated the help window. still sucks..
+  - Add CTRL-M to Help->Hotkeys
+  - bump and doc
+  - Marked calls not first appear in blue, until worked then red.
+  - removed addmark() changed addspot() to accomodate.
+- [2024-03-07] bump and doc
+  - Add function doc string.
+- [2024-03-06] Merge pull request #85 from arodland/scp-fuzzy-match-v2
+- [2024-03-05] Improved fuzzy matching
+- [2024-03-02] Merge pull request #83 from mbridak/82-bandmap-and-spots-should-work-without-telnet
+  - doc changes.
+  - bump
+  - Added spots marked by main window.
+  - Add CTRL-M for MARKDX multicast message.
+  - only exec icon install code on linux.
+  - update
+  - typo
+  - trim page size
+  - trim imports.
+  - doc changes
+  - trimmed unused imports.
+  - check if comment line returned from scp.
+  - ran thru black.
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - update icon.
+  - add files to ignore.
+  - Merge pull request #81 from arodland/scp-fuzzy-match
+  - Use thefuzz fuzzy matcher for SCP results
+- [2024-02-21] bump and doc.
+  - Monitor for TUNE packets and set external vfo.
+  - rm commented code snippet.
+- [2024-02-20] bump and doc
+  - add decimals to number.
+  - increase visible digits
+- [2024-02-19] bump and doc
+  - replaced depricated UTC code. Tested against Python 3.9
+- [2024-02-16] bump and doc
+  - replaced depricated code
+- [2024-02-15] doc changes
+  - bump
+  - Fixed the mults.
+  - changed string to int
+  - stopped log window from inadvertently changing the mult flags.
+  - changed a string to int
+- [2024-02-14] fixed recalc mults.
+  - removed deprication.
+  - bump and doc changes.
+  - corrected show_mults if you're not in W/VE.
+  - add fetch_arrldx_state_prov_count
+- [2024-02-13] bump and doc change.
+  - Merge pull request #80 from mbridak/79-arrl-dx-cw-not-assigning-points-to-contacts
+  - Corrected point assignment.
+  - Stole a simulant. needs modification.
+- [2024-02-04] Add missing CLUB tag.
+  - Fix cabrillo name, add club tag.
+  - bump
+  - doc changes
+  - updated
+- [2024-02-03] bump and doc.
+  - clean up
+  - add getpacket
+- [2024-02-02] Merge pull request #73 from wvolz/use-multicast-lib
+- [2024-02-01] bump and doc
+  - Merge pull request #77 from mbridak/74-timeout-too-low-for-cat-interface-netrig
+  - timeout back to .5
+  - Merge pull request #76 from mbridak/75-cannot-open-bandmap-window
+  - Quote mismatch in an f-string.
+- [2024-01-30] use multicast lib for other tools/windows, load settings from prefs
+- [2024-01-29] bump and doc pr
+  - Merge pull request #70 from wvolz/logwindow-no-item-fix
+  - logwindow: only call edit if item selected
+- [2024-01-28] bump and doc changes to cabrillo output.
+  - List out station and all ops in the cabrillo Operators field.
+  - Added get_ops()
+- [2024-01-27] bump and doc update.
+  - update
+  - trivial
+  - fix crash if vfo null.
+  - get_unique_band_and_mode returning wrong value.
+- [2024-01-22] Document change and bump version.
+  - Merge pull request #67 from mbridak/66-bandmappy-now-crashes-on-ctrl-g-from-main
+  - crash fix, bandmap.py, string was presented as tuple.
+- [2024-01-21] Merge pull request #65 from mbridak/development
+  - bump
+  - doc fix to get_logged_band
+  - fixed crash in get_logged_band if frequency out of band.
+- [2024-01-18] Added more code documentation.
+- [2024-01-16] Fix possible crash when cabrillo generated without a station call.
+  - doc changes
+  - bump
+  - bump version
+  - add Stew Perry Topband
+- [2024-01-15] bump version
+  - Updated docs
+  - Added check for plugin.
+  - Added the phone weekly test.
+- [2024-01-11] updated with black link and link to HYNEK SCHLAWACK artical.
+- [2023-12-24] Fix bug where no bands showed on firstrun.
+  - doc changes
+  - update version
+- [2023-12-22] black formatter
+  - doc changes
+  - bump
+  - refactored some code.
+- [2023-12-21] rm text file
+- [2023-12-20] removed vhf contests
+  - doc changes
+  - Add arrl vhf jun sep to dropdown.
+  - bump
+  - Add ARRL VHF Jun and Sep
+- [2023-12-19] Doc VHF contest and Band config screen.
+  - add bands configure screenshot
+  - fixed dupe
+  - fix mults
+  - add 902 1296 2300+ bands
+  - cleanup
+  - bump
+  - doc
+  - show only active bands from settings.
+  - fix 1.25 band ssb indicator.
+- [2023-12-18] add bands to pref, add vhf.
+  - add arrl vhf jan
+  - add vhf frequencies
+  - Save and restore band checkboxes
+  - Add Band tab with band checkboxes
+- [2023-12-17] rm arrl 10m
+  - bump
+  - doc changes
+  - add MM and DX mults
+  - fixed show_mults()
+- [2023-12-16] cleanup
+  - add alt text
+  - add arrl 10m
+  - add
+  - update.
+- [2023-12-12] wiki
+- [2023-12-07] needed
+- [2023-12-05] Made the linter happy.
+  - doc changes
+  - bump
+  - remove deprecated code.
+- [2023-12-04] bump
+  - doc changes
+  - fixed get_points()
+  - Add get_points()
+- [2023-12-03] Update list of supported contest
+  - QRP Mult
+  - Updated contest names
+  - bump
+  - doc changes
+  - stx_string and srx_string tags for FD and WFD.
+  - Work on WFD plugin
+- [2023-11-30] doc changes
+  - bump
+  - Add seconds to ADIF timeon tag.
+  - Add ADIF CONTEST_ID tags.
+  - fixed 40m band tag
+  - Added contest_id, fixed SSB mode and submode tags.
+  - remove ADIF code, import common adif function.
+  - Add lib for common contest plugin functions.
+- [2023-11-29] doc changes
+  - bump version
+  - Add BAND to adif export.
+  - add function to calc bandstring for adif.
+- [2023-11-18] typos
+- [2023-11-16] doc
+  - bump
+  - rm pkgutil
+  - fixed missing tag in xml tree.
+- [2023-11-15] walk back deprecation change
+  - bump
+  - updated doc
+  - Made the linter happy.
+- [2023-11-14] DeprecationWarning: 'pkgutil.get_loader'
+- [2023-11-13] Merge pull request #56 from wvolz/bugfix-macos-psutilcrash
+  - fix crash on MacOS related to psutil accessdenied
+  - doc changes.
+  - bump
+  - check_process() True only if python opened file.
+  - Merge pull request #53 from DE8MSH/patch-2
+  - configuration.ui
+- [2023-11-12] Merge pull request #52 from mbridak/48-lookup-not-working
+  - docs
+  - bump
+  - corrected hamqth lookup to return a dict not tuple
+  - trim unused import
+  - add -y option
+  - dev with pipx not fun
+  - doc changes
+  - bump version
+  - Trap TypeError when grid is of None type.
+  - fix indent
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - trap TypeError when value is None.
+  - Merge pull request #45 from DE8MSH/patch-1
+  - main.ui
+- [2023-11-09] add
+- [2023-11-02] doc changes
+  - update verision
+  - missing dependency pyserial
+- [2023-10-31] fixed regex string
+  - switch rebuild script to pipx
+  - bump version
+  - update docs
+  - trap crashes for no xmlrpc interface.
+  - Add method to set radio icon.
+  - Add radio Icon
+- [2023-10-29] combined exceptions
+  - updated data files
+  - updated attribution
+- [2023-10-28] Document PR change. Update version.
+  - Merge pull request #39 from bseidenberg/master
+- [2023-10-27] Fix crash opening windows on systems with zombie processes
+- [2023-10-22] typo.. go figure..
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - update
+- [2023-09-10] Merge pull request #37 from linustolke/allow_connecting_to_rbn
+  - Allow connecting to rbn.telegraphy.de
+- [2023-09-04] update log filename format.
+- [2023-09-03] Merge pull request #35 from mbridak/33-log-window-crashes-when-entering-an-incorrect-number
+  - add safe float function
+  - doc
+  - bump
+  - fixed crash with invalid frequency.
+  - disambiguate frequency column.
+  - document
+  - add accessibility stuff. hopefully.
+  - updated hotkeys dialog.
+  - Added some hopefully screen reader friendly stuff.
+- [2023-09-02] updated
+  - Add freeform CW send field.
+  - Update changelog and readme
+  - Update version
+  - Add freeform CW entry.
+- [2023-09-01] Just some function documentation.
+- [2023-08-28] add some type hints
+  - update
+- [2023-08-25] better method type annotation.
+  - Document code.
+- [2023-08-24] update doc
+  - Add knob pics
+  - Doc and bump
+  - Add date-time stamp to adi and log filenames.
+  - add vfo box
+  - more to do
+  - add update_version script
+  - add update_version.sh
+- [2023-08-21] doc and bump
+  - add RTTY to fakefreq
+  - made bband/mode indicators clickable.
+- [2023-08-19] Add plate
+  - Typo
+- [2023-08-15] incorperated changes from @trapeznikovk
+- [2023-08-14] Update dxlog adding dirty column.
+- [2023-08-11] updated help file.
+- [2023-08-09] bump and doc changes.
+  - update pics
+  - clear telnet column when no match.
+  - order telnet data
+  - Added matching cals from the telnet cluster.
+- [2023-08-07] back to gif
+  - try again
+  - try webm
+  - add
+  - Add VFO
+  - Merge pull request #22 from mbridak/16-change-frequency-in-bandmap
+  - bump and doc
+  - remove
+  - device autodetection and message dialog.
+  - trim
+  - autodetect pico vfoknob
+  - add challenge response.
+  - Add sanity check.
+  - add blinky light.
+- [2023-08-06] animated gif
+  - knob for encoder
+  - Add pico firmware.
+  - better display update.
+  - Mo Betta
+  - Trapped valueerror
+  - trap value error
+  - Add action for VFO
+  - Add vfo to window menu.
+  - typo
+  - add vfo docs
+  - add pic of encoder
+  - add proof of concept. needs massaging.
+  - add vfo ui
+  - bump
+  - updated docs for check window.
+  - Add screenshot of check window.
+  - Add parsing of local log.
+  - Add column names.
+  - add method get_like_calls_and_bands
+- [2023-08-05] Merge pull request #21 from mbridak/20-add-a-check-window
+  - doc changes
+  - bump
+  - removed unused libs
+  - Quit sub window when main app sends HALT.
+  - emit HALT packet when File->Quit
+  - broadcast HALT message when closing.
+  - reduce window size.
+  - Add launch check window function.
+  - Add check window to menu
+  - hide unused columns
+  - removed 2 unused imports
+  - removed ref to unused method.
+- [2023-08-04] add check window app
+  - add window
+- [2023-08-03] scp class
+  - Moved SCP stuff to it's own class
+- [2023-07-29] minor
+  - bump and doc
+  - Add advance to next field on space.
+  - Add YOUTH overlay
+- [2023-07-28] Doc changes
+  - Add NAQP contest plugins.
+  - add NAQP SSSB and CW
+  - added functions to support NAQP
+  - moved name column to middle.
+  - bump
+  - redisplay mults/score after recalculating mults.
+  - advance fields on space.
+- [2023-07-27] check if bandwidth returned is digits.
+  - bump and doc
+  - minor
+- [2023-07-13] update base scp and cty
+  - Bump, doc add of iaru hf
+  - add IARU HF
+  - tweek freq
+  - add fetch_zn_band_mode_count
+- [2023-07-11] Add FM and AM to FD plugin.
+  - bump
+  - Doc changes.
+  - Add mode
+  - Tint already worked.
+  - Add Mode to logwindow
+  - Send worked list to bandmap.
+  - Use Black
+- [2023-07-05] doc the fix
+  - bump
+  - fixed core dump after CTRL-G
+  - trimmed columns
+- [2023-07-02] Add comment.
+  - bump and doc
+  - Reduced columns in the Log Window.
+  - update docs
+  - bunp
+  - Add watch for GETWORKEDLIST.
+  - add request_workedlist method
+  - updated docs
+  - Change work before color.
+  - Add
+- [2023-06-30] bump
+  - corrected score calc.
+  - updated docs
+  - calculate mults.
+  - Add contact band if no CAT
+  - Canada Day points, serial nr / province /territory
+  - starting work on Canada Day
+  - updated add call
+- [2023-06-29] update docs
+- [2023-06-28] doc changes
+  - highlight call in read if already worked on band.
+  - send calls and worked on band list to udp stream.
+  - add method to get call and bands worked.
+  - add testing
+- [2023-06-22] correct version
+- [2023-06-21] bump
+  - More cty work.
+  - cty work
+- [2023-06-20] update donors
+- [2023-06-18] Update issue templates
+  - Fix unchangable RST.
+  - doc changes
+  - bump
+  - Add
+  - Pinned lib notctyparser to >= 26.6.18
+- [2023-06-17] pin
+  - doc changes
+  - Trap ValueError
+  - bump
+  - docstring work
+  - remove
+- [2023-06-16] trim
+  - Add help dialog and menu to update MASTER.SCP
+  - Add menu items.
+  - update
+  - add
+  - Doc changes
+  - bump
+  - send F1-12 button text, not tooltip.
+- [2023-06-15] Update python-package.yml
+  - bump and doc changes
+  - Add help menu for hotkeys
+  - Updated docs
+- [2023-06-14] bump
+  - Doc changes.
+  - Added basic checks to see if contest was defined
+- [2023-06-12] Added quit
+- [2023-06-07] typo
+- [2023-06-03] trivial
+  - more todo
+- [2023-06-02] Add warc bands in bandmap. Add auto cty update.
+- [2023-05-31] add ctyparser
+  - doc changes
+  - bump
+  - updated
+  - trivial
+- [2023-05-30] Change default multicast group.
+  - doc changes.
+  - bump
+- [2023-05-29] update
+  - contributors
+  - doc change.
+  - bump
+  - Hide CATEGORY-OVERLAY if set to N/A.
+- [2023-05-28] Dupe check on TAB
+  - Doc and bump
+- [2023-05-27] doc changes
+  - corrected scoring.
+  - doc and bump
+  - Fixed whacky frequency lengths.
+- [2023-05-26] trying app.setStyle
+  - OOps bug fix.
+  - bump
+  - Removed crappy darkmode code. Got new crappy code.
+  - doc changes
+  - remove
+- [2023-05-25] More docs is good docs.
+- [2023-05-24] document more stuff.
+  - doc changes
+  - updated log level on error.
+  - Corrected cellchange triggering another cellchange
+  - bump and change update
+  - General cleanup
+  - Added n1mm contactdelete packet sending.
+  - removed prettyPrint xml.
+- [2023-05-23] Update docs and bump
+  - Specify multiple n1mm IP:Port Pairs.
+  - convert dialog to new n1mm format.
+  - remove n1mm_ip
+  - add betatest flag
+  - Add
+- [2023-05-22] doc changes
+  - stripped contest name of '-' in xml output.
+  - Added xml fields, reduced network chatter
+  - removed a couple logging lines to make it quieter.
+  - changed output xml format.
+  - More work on contactinfo packets.
+- [2023-05-21] fix crash: failed to check if n1mm object existed.
+- [2023-05-20] Doc changes
+  - got n1mm radio info packets broadcasting.
+  - traped a permission error.
+- [2023-05-19] changed jump to next/prev spot to Up/Down arrow.
+  - updated changes
+  - corrected bandwidth return from flrig.
+  - load up the n1mm class and test small emit packet.
+  - Add logic to save/load new checkboxes.
+  - update docs
+  - Add flags to turn on/off types of packets to emit.
+  - Turn on n1mm tab in config dialog.
+  - Add version checker.
+  - Add n1mm packet sniffer
+  - updated flrig testing doohickies.
+  - got rid of unused var
+  - Added exception for xmlrpc.client.Fault.
+  - Fake flrig connection for testing.
+- [2023-05-18] doc
+  - Merge branches 'master' and 'master' of https://github.com/mbridak/not1mm
+  - reinit CAT if offline.
+  - thank you to KB3ORR for the donation!
+  - Merge pull request #2 from vk6flab/patch-docker
+  - Added Docker support
+- [2023-05-17] Set mode on startup.
+  - Bandmap centers on the VFO after frequency change.
+  - CTRL-G tunes to matching spot.
+- [2023-05-15] CTRL-S to spot current callsign to cluster.
+- [2023-05-13] remove
+  - add
+- [2023-05-12] bump
+  - catch sqlite error when spot has no freq.
+  - made linter happy
+  - doc more changes
+  - PageUp/Down now +/- the cw speed for k1el.
+  - doc changes
+  - removed cruft
+  - add markdownlint.json
+  - updated
+  - Reload system preferences when reconnecting.
+- [2023-05-11] updated required python version.
+  - Updated doc
+  - Was hard to see on dark background.
+  - doc changes
+  - Added calls to change winkeyer speed via xmlrpc.
+  - Add set_winkeyer_speed()
+  - Changing minimum python version to 3.10
+  - band/mode indicator not appearing.
+  - add mainscreen w/ callouts.
+  - Update python-package.yml
+  - Create python-package.yml
+  - Add Main screen with callouts
+  - typo
+  - Fix: missing numpy dep. No CAT freq to bandmap.
+- [2023-05-10] Fix: crash in bandmap. Update docs.
+  - documented Ubuntu installs. You should use Fedora.
+  - fix: crash
+- [2023-05-09] fix: calling pttoff when no CAT
+  - Swapped NextSpot/PrevSpot
+  - reordered a couple elements
+  - add
+  - fix: voice not keying on LSB.
+  - fixed bug voice not keying on LSB.
+  - bump
+  - Add jump to next/prev spots
+  - changed 1 sec timers to udp readyRead().
+- [2023-05-08] bump
+  - update
+  - dark style
+  - fixed font
+  - simplified interface()
+- [2023-05-07] typo
+  - Added bandwidth marker to bandmap.
+  - settings change
+  - doc
+- [2023-05-06] Added a station ID to the multicast packets.
+  - bump and doc
+  - update and add configurations pic
+  - Added cluster filter options to bandmap.
+- [2023-05-05] typo
+  - Bump and Doc
+  - Filled out the stubs.
+  - ADIF and cabrillo
+  - scoring and mults
+  - Add fetch_sect_exists fetch_sect_exists_before_me
+  - Add pic showing sweepstakes parser.
+  - Add reset_label()
+  - Rewrote much of the log window.
+  - Add ARRL SS (not readty yet)
+  - Add other_2_changed()
+  - update
+- [2023-05-04] Changed dupe_type
+  - add reset label
+  - Working on sweepstakes
+  - renamed label
+  - Doc and bump.
+  - Operators line in cabrillo was not pulling info.
+  - fix window title not changing.
+- [2023-05-03] Doc # macro
+  - Add # macro
+- [2023-05-01] added comment to tool tip. added filter command.
+  - Added other 10 10 CW and Phone contests.
+  - Add AR Cluster setting.
+  - bump
+  - Updated changes
+  - Add
+  - forced uppercase in exchange and operator fields.
+  - force uppercase in callsign field
+  - Added show_message_box()
+- [2023-04-29] update bandmap
+  - bump
+  - Added connection button.
+  - fixed rxmarker not updating or removing.
+  - fixed spacing and margins
+  - fixed font in windoiw menu
+  - updated
+  - update
+  - Fix: unnecessary screen updates on UDP packets.
+  - Add environment variable
+  - Add no-name-in-module
+- [2023-04-28] doc bandmap
+  - Clicking on spot in bandmap now tunes radio.
+  - Note bandmap window.
+  - Added multicast broadcast of radio state.
+  - Added UDP multicast, Added RX Indicator.
+  - Add pic of bandmap window.
+  - bump
+  - Add menu item for bandmap.
+  - renamed
+  - Add bandmap code
+  - Zoom works.
+- [2023-04-27] more testing
+  - More work on bandmap
+- [2023-04-26] broke
+- [2023-04-25] just some testing stuff
+  - bump
+  - uppercase inputs
+- [2023-04-24] Updated changes of note
+  - removed old background color from UI
+  - handle edit existing contest if not existing.
+  - add message about ubuntu lts.
+  - Filled out more info defining a plugin.
+  - more things
+  - bump
+  - updated chages of note
+  - Call contest.predupe before the dupe check.
+  - Added predupe() called after callsign changed.
+- [2023-04-23] updated changes of not
+  - bump and doc
+  - started plugin docs. not done.
+  - update
+  - Add EXCH macro
+  - Had columns messed up.
+  - Add fetch_call_exists and fetch_call_count
+- [2023-04-21] removed cloudlog reference.
+  - updated voice
+  - replaced recorded phonetics.
+  - typo
+  - Added section for installing via pip.
+  - Updated macro section.
+  - update
+  - bump
+  - updated
+  - reworked config menu
+  - doc
+  - Add PTT on/off to flrig
+  - trivial
+  - docs
+  - Phrases were mp3 not wav... Converted and resaved.
+  - messing with sample rates
+- [2023-04-20] updated docs
+  - Added sound device selector to config dialog.
+  - cleanup
+  - bump
+  - Added code to edit existing contest parameters.
+  - renamed a label
+  - Added update_contest()
+  - Corrected logwindow column
+  - Add ARRL DX
+- [2023-04-19] adding work on arrl dx
+  - Add column to log window
+  - remove
+  - add ptt info
+  - trim
+- [2023-04-18] update docs
+  - Added phonetics dir. I checked this time.
+  - another ptt bug.
+  - Oops left out ptt off
+  - Add PTT on/off
+  - left out the wav files...
+  - more things to do
+  - updated
+  - typo
+  - documented voice keying.
+  - changed Edit CW Macros to edit macros
+  - Changed Edit CW Macros to Edit Macros.
+  - some crash fixes
+  - more voicekeying files
+  - Add voice phrases.
+  - Voice keying baby steps.
+  - Add NATO phonetic wav files for voice keying.
+- [2023-04-17] playing with sound
+  - cleanup
+  - Update
+- [2023-04-15] Delete python-package.yml
+  - Create python-package.yml
+  - Reworded the Configuration Settings section.
+  - More documentation.
+  - Bump, changed project state from planning to beta
+  - Title change.
+  - corrected tabstops
+  - Title change. Disabled some future tabs.
+- [2023-04-13] Beta
+  - load settings after they are changed.
+  - fixed displayed log columns.
+  - bump and docs
+- [2023-04-12] bump
+  - debug log message
+  - Added dynamic columns.
+  - Added udp task queue
+  - Added link
+  - Updated docs.
+  - Updated docs
+- [2023-04-11] Added list of working contests.
+  - removed wpx rtty since I can't figure out scoring.
+  - Mo Betta.
+  - Doc changes.
+  - oopsie bump
+  - fixed the prefill.
+  - moved NR to field 4 and so sentnr is back at 3.
+  - updated changes.
+  - more linter nonsense
+  - made linter happy
+  - took out print statement.
+  - filled out stubs mirroring whats in cq ww ssb.
+  - correct nr and sentnr
+  - autofill country, cq and itu zones from call.
+  - bump
+  - worked on cw ww
+  - Add fetch_zn_band_count() and others
+  - add cw ww cw and ssb
+  - fix crash when prev contest db has been deleted.
+- [2023-04-10] trim
+  - The always useful about dialog.
+  - update docs
+  - Updated docs
+  - bump
+  - Add
+  - Moved CW keyer and CAT to configure settings.
+  - removed json import.
+  - remove qrz dialog, coved to config dialog
+  - remove loading of config file since it's passed in
+  - Add actionConfiguration_Settings
+  - Add configuration dialog window.
+- [2023-04-06] Added menu item to edit cw macros.
+  - Updated docs.
+  - Add several methods dealing with NR field.
+  - Add JIDX CW and JIDX PH contests.
+  - Display more columns.
+  - Add SNT and SENTNR cw macros.
+  - Updated docs and bump version.
+- [2023-04-05] Add Sect and Exchange1 fields to log window.
+  - fixed fields tab focus order.
+  - fixed bug in get_logged_band()
+  - updated pics
+  - Add cabrillo()
+  - typo
+  - Updated docs
+  - bump
+  - Filled some stubs.
+  - Add get_unique_band_and_mode()
+  - Fixed bug where list wasnt a list and not iterable Send NEWDB message to log window. W...
+  - only show Q's from current contest.
+- [2023-04-04] Update Docs.
+  - add hide_band_mode() to hide unused mode frames.
+  - cleaned up debug
+  - Add cabrillo name, and next field set to other_1.
+  - Tells DB what current contest Nr. is
+  - database now minds current contest.
+  - bump
+  - Defaulting opon to station call if opon blank. Hiding command buttons by default.
+  - Fixed up the ADIF output on General Logging.
+  - Text formatting of station settings.
+- [2023-04-03] update
+  - Force station settings then new contest w/ new db.
+  - Add general logging type.
+  - Add cabrillo categories.
+  - add adif output.
+  - Fixed timedate cell alignment.
+  - updated
+  - Add
+  - Load an existing contest.
+  - Add more cabrillo categories.
+  - change width of window.
+- [2023-03-31] select contest.
+  - Create FUNDING.yml
+  - Saving station information in contest DB.
+  - typo
+  - Add missing psutil to dependencies.
+- [2023-03-30] reset score/mults when db changed.
+  - set window title with current db.
+  - Updated doc w/ add database
+  - bump
+  - Added create New or open Existing databases.
+  - Added a bunch or error checking.
+  - Add menu items for db and contest.
+  - Add filepicker
+  - sanity check for set_band_indicator
+- [2023-03-29] updated
+  - more bandmode frames.
+  - Added 2 more band/mode frames.
+  - add testing folder
+  - updated doc.
+  - updated docs
+  - bump
+  - add new_contest_dialog
+  - add add_contest
+  - add
+- [2023-03-28] Add new contest dialog.
+  - Add WPX RTTY
+  - Added stubs
+  - updated
+  - bump
+  - Updated doc
+  - Add recalculate_mults
+  - Add fetch_wpx_exists_before_me
+  - Added menu to recalculate multipliers.
+- [2023-03-27] bump
+  - update docs
+  - Fixed callsign textfield editing.
+  - add
+- [2023-03-25] update docs
+  - add version import
+  - add variable dupe checking
+  - added dupe and dupe on band.
+  - Moved cabrillo function to plugin.
+  - Add CQ WPX CW plugin.
+  - update doc and bump.
+  - fixed min call length before save. fix cabrillo tag for state-province.
+  - Add adif output.
+  - Add generate adif menu item
+- [2023-03-24] update doc and bump
+  - add debug lines
+  - Added online flag to flrig
+  - Updated docs and bump.
+  - Add autocheck for flrig or rigctld
+  - Changed couple placeholder texts.
+  - fixed name collision.
+  - basic Dupe checking, vfo and mode processing.
+  - Add Dupe indicator
+  - add check_dupe_on_band_mode
+- [2023-03-23] added launch_log_window function.
+  - resized columns.
+  - Add menu item to relaunch log window.
+  - Adjusted logwindow cells for wpx.
+  - Adjusted size
+  - update
+  - Add cabrillo section.
+  - Updated doc
+  - bump
+  - Checks for None type
+  - typo
+  - Added beginning of cabrillo log
+  - Updated Cabrillo name
+  - Add Generate Cabrillo under File menu
+- [2023-03-22] changed cabrillo name
+  - updated docs
+  - bump
+  - updated
+  - set IsRunQSO and IsOriginal swapped qso and mult in status line.
+  - corrected doc string
+  - Set IsMultiplier1 if wpx is unique.
+  - store band in db. set OP to station call on startup. show op and contest in title bar.
+  - truncate band float if decimal is a 0
+  - add get_logged_band()
+  - Set OP to station call on startup.
+  - trim
+  - Nothing of note.
+  - updated prefil to get serial number.
+  - add def get_serial
+- [2023-03-21] bump
+  - show mults/qsos and score at bottom.
+  - add def fetch_qso_count
+  - Corrected input fields. Add def show_qso
+  - Add fetch_points
+  - Add mults/points/score
+  - Add check for points.
+  - Add points function.
+  - call contest prefill
+  - add stub
+  - add interface, prefill etc.
+  - add interface and prefill etc.
+  - add prefill dummy
+  - smaller
+  - tweek
+  - Add wpx count and wpx exists functions to DB.
+  - add debug
+  - add research folder
+- [2023-03-20] Don't log if call < 4, has no digits or no letters
+  - trim.
+  - right click edit added to focused contact window.
+  - add ignores.
+  - set vars
+  - Updated changes section.
+  - updated documentation for editing a contact.
+  - bump
+  - Add edit cell and edit dialog pic.
+  - Added right click for edit dialog.
+  - Added EditContact class and populated the GUI.
+  - Added an editContact class.
+  - Added a fetch by uuid.
+  - Gave names to all the QLineEdit objects.
+  - Set a contrasting placeholder text color.
+  - Add edit contact UI
+- [2023-03-17] add speed var
+  - add right click context menu req.
+  - hooked up the cw speed change widget.
+  - check to see if logwindow running before spawning.
+  - Add check_process method.
+  - Show filtered contacts.
+  - send CALLCHANGED message.
+  - add fetch_like_calls method.
+  - updated
+  - removed
+  - Update README.md
+  - add
+  - Multicast class
+  - Add multicast class import.
+  - typo
+  - moved common multicast code into a class module.
+  - updated docs.
+  - Added some debug logging.
+  - bump
+  - remove watchdog.
+  - Removed file watcher. Add multicast udp messaging.
+  - size adjust
+  - Add multicast UDP server message to update log.
+  - update
+- [2023-03-16] removed vertical header
+- [2023-03-15] Add doubleclick and cell edit events.
+  - update
+  - slight refractor
+  - resize columns and window.
+  - Add checkmark icon.
+  - minor
+  - trim
+  - Add checkmark icon
+  - add
+  - fix typo
+  - Add watchdog dependency
+  - bump
+  - moved startup code.
+  - Launch log window.
+  - took out hard coded path to db
+  - widened the window
+  - Watched for db changes and updates the log display
+- [2023-03-14] add a window
+  - .
+  - add start of log window.
+  - reshuffle imports
+  - Add gnome interface files.
+  - update
+  - Convert string to float before divide.
+- [2023-03-10] start work on saving contact to DB.
+  - Add some default contact values.
+  - Add function calculate_wpx_prefix
+- [2023-03-09] bump
+  - Hooked up the CW macros.
+  - Changed Min Max Default cw speeds for spinner.
+  - update
+  - Show freq/mode for non CAT radios.
+  - Moved network callsign lookup into a thread.
+- [2023-03-08] Fix RTTY mode discovery on startup.
+  - set minimum size for bandmode indicator.
+  - bump
+  - Other uses for call field.
+  - Add RTTY
+  - Updated.
+  - Band indicators
+  - Frequency and mode changes viq the callsign field.
+  - reduced input text font size.
+  - reduced debug noise.
+- [2023-03-07] forgot to include sql filetype in the toml file.
+  - bump
+  - updated dxlog column names.
+  - updated db tester
+  - fixed debug messages.
+  - commands to populate Contests table.
+  - Added tables
+  - Add Database class
+- [2023-03-06] Add docstring... PEP8 Grrrr.
+  - More pylint pep8 stuff. Moved some classes out into their own lib file. Again because ...
+  - Moved some classes into their own lib file.
+  - pylint... Need I say more.
+- [2023-03-02] yup
+- [2023-03-01] updated doc
+  - Update heading pics
+  - bump
+  - Added init_contest and set_tab_prev
+  - implimented Shift-Tab of fields
+  - fixed crash due to no sane default.
+- [2023-02-26] tab key
+- [2023-02-25] reread pref
+  - Add qrz class and settings logic
+  - add qrz settings menu item
+  - add qrz use dialog
+- [2023-02-24] Add keyPressEvent override to process tab and fkey
+  - Added general logging plugin stump
+  - Added cw speed spinbox.
+  - Added reciprocol bearing
+- [2023-02-23] updated showing settings dialog
+  - Added a bunch of settings fields (not used yet)
+  - bump and update.
+  - Add settings dialog. remember window size and pos.
+  - Add settings UI
+- [2023-02-22] add cty_lookup and check_callsign
+  - add bearing/distance with latlon.
+  - add mode and dupe type
+  - add
+  - updated doc cty.dat
+  - bump
+  - add pic for heading and distance.
+- [2023-02-21] updated
+  - Add view menu snapshot
+  - Add edit macro snapshot
+  - bump
+  - Add edit macro dialog.
+  - Added Preference menu item.
+- [2023-02-20] add interface
+  - updated
+  - Started plugins stubs
+  - add
+  - Initial stubbs for contest plugins.
+  - updated doc
+  - bump
+  - fixed debug messages.
+  - Save view states
+- [2023-02-17] Added a dxcc entity database.
+  - Changed project status to planning.
+- [2023-02-16] Added another field.
+- [2023-02-15] Figured out right click on a button.
+  - Updated pic
+  - Updated docs
+  - Connected run/sp radio buttons.
+  - bump
+  - updated docs
+  - Added darkmode qss
+  - added timeout exception on regctld init.
+- [2023-02-14] Add for later
+  - Added XDG paths
+- [2023-02-13] Updated docs
+- [2023-02-12] updated pic
+  - qrz session
+  - updated docs
+  - bump
+  - QRZ, still needs work.
+  - Add preference file
+  - Add a dark mode
+  - Added an OPON dialog.
+  - Updated docs
+  - Added view menu to show and hide onscreen elements
+  - Converted some H and V Box layouts to frames.
+- [2023-02-10] bump
+  - updated
+  - import CAT control lib abnd some stuff.
+  - Add some ham utilities.
+  - Add some dots.
+  - Renamed dotindicators. center alignment for bands.
+  - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit

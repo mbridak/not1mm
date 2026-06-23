@@ -202,7 +202,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper()}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -363,6 +363,8 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
+                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
+                    themode = "CW"
                 if themode in ("LSB", "USB", "AM"):
                     themode = "PH"
                 if themode in (

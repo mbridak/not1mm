@@ -3,7 +3,6 @@
 import importlib
 from PyQt6 import QtWidgets, uic
 
-
 class NewContest(QtWidgets.QDialog):
     """New Contest"""
 

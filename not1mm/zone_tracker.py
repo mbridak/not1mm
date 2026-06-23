@@ -1,15 +1,14 @@
-from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QBrush, QColor
-
-# from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6 import uic, QtWidgets
-import not1mm.fsutils as fsutils
-from not1mm.lib.database import DataBase
+import logging
 import os
 from json import loads
 
-import logging
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QDockWidget
+
+import not1mm.fsutils as fsutils
+from not1mm.lib.database import DataBase
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +29,7 @@ class ZoneWindow(QDockWidget):
         6: "10m",
         7: "Total",
     }
+    zone_trackerwindow_closed = pyqtSignal()
 
     def __init__(self, action):
         super().__init__()
@@ -169,3 +169,5 @@ class ZoneWindow(QDockWidget):
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
+        self.zone_trackerwindow_closed.emit()
+        event.accept()

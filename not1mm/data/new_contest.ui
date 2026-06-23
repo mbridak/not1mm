@@ -13,6 +13,7 @@
   <property name="font">
    <font>
     <family>JetBrains Mono</family>
+    <weight>100</weight>
    </font>
   </property>
   <property name="windowTitle">
@@ -214,6 +215,11 @@
      </item>
      <item>
       <property name="text">
+       <string>AGCW QRP</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>ARI 40 80</string>
       </property>
      </item>
@@ -349,6 +355,11 @@
      </item>
      <item>
       <property name="text">
+       <string>DXPEDITION</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>EA MAJISTAD CW</string>
       </property>
      </item>
@@ -380,6 +391,11 @@
      <item>
       <property name="text">
        <string>ES MANUAL KEY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>EUDX</string>
       </property>
      </item>
      <item>
@@ -449,7 +465,27 @@
      </item>
      <item>
       <property name="text">
+       <string>OK1WC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>PACC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>PHONE WEEKLY TEST</string>
+      </property>
+     </item>
+     <item> 
+      <property name="text">
+       <string>QSO PARTY RST</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>QSO PARTY SN</string>
       </property>
      </item>
      <item>
@@ -479,6 +515,11 @@
      </item>
      <item>
       <property name="text">
+       <string>RSGB IOTA</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>SAC CW</string>
       </property>
      </item>
@@ -490,6 +531,16 @@
      <item>
       <property name="text">
        <string>SPDX</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SSA MT CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SSA MT SSB</string>
       </property>
      </item>
      <item>

@@ -127,7 +127,7 @@ class CAT:
         try:
             logger.debug("Connecting to rigctrld")
             self.rigctrlsocket = socket.socket()
-            self.rigctrlsocket.settimeout(0.1)
+            self.rigctrlsocket.settimeout(1.0)
             self.rigctrlsocket.connect((self.host, self.port))
             logger.debug("Connected to rigctrld")
             self.online = True
@@ -202,7 +202,7 @@ class CAT:
             try:
                 self.online = True
                 if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"b{texttosend}\n", "utf-8"))
+                    self.rigctrlsocket.send(bytes(f"b {texttosend}\n", "utf-8"))
                 else:
                     self.rigctrlsocket = None
                     self.online = False

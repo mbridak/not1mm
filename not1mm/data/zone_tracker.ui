@@ -17,6 +17,9 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QCheckBox" name="scrolltoCheckBox">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
       <property name="text">
        <string>Scroll to</string>
       </property>
@@ -42,6 +45,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QRadioButton" name="cqButton">
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
          <property name="text">
           <string>CQ</string>
          </property>
@@ -52,6 +58,9 @@
        </item>
        <item>
         <widget class="QRadioButton" name="ituButton">
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::NoFocus</enum>
+         </property>
          <property name="text">
           <string>ITU</string>
          </property>
@@ -63,7 +72,7 @@
     <item row="1" column="0" colspan="2">
      <widget class="QTableWidget" name="zone_table">
       <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
+       <enum>Qt::FocusPolicy::NoFocus</enum>
       </property>
      </widget>
     </item>

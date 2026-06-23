@@ -4,13 +4,13 @@
 fsutils.py: Filesystem utilities for not1mm.
 @kyleboyle
 """
-# pylint: disable=invalid-name
 
 import os
 import platform
-import sys
 import subprocess
+import sys
 from pathlib import Path
+
 from appdata import AppDataPaths
 
 WORKING_PATH = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -27,14 +27,8 @@ LOG_FILE = USER_DATA_PATH / "not1mm_debug.log"
 
 # Create directories if they do not exist on Linux systems
 if platform.system() not in ["Windows", "Darwin"]:
-    try:
-        os.mkdir(CONFIG_PATH)
-    except FileExistsError:
-        ...
-    try:
-        os.mkdir(USER_DATA_PATH)
-    except FileExistsError:
-        ...
+    Path(CONFIG_PATH).mkdir(parents=True, exist_ok=True)
+    Path(USER_DATA_PATH).mkdir(parents=True, exist_ok=True)
 
 # Define and create directories if they do not exist on Windows or Mac systems
 if platform.system() in ["Windows", "Darwin"]:
