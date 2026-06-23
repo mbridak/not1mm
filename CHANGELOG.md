@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-06-23] Merge pull request #600 from df7cb/database
+  - Fixup: Simplify database queries
 - [2026-06-22] Merge pull request #599 from df7cb/ok1wc
   - Merge pull request #598 from df7cb/database
   - Add OK1WC Memorial Contest
@@ -2691,3 +2693,7 @@
   - Add default window size. and others.
 - [2023-02-09] trim
   - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
