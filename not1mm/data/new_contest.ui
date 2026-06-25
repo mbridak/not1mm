@@ -550,6 +550,11 @@
      </item>
      <item>
       <property name="text">
+        <string>TA VHF UHF Contest</string>  
+      </property>     
+     </item>
+     <item>
+      <property name="text">
        <string>UKEIDX</string>
       </property>
      </item>
