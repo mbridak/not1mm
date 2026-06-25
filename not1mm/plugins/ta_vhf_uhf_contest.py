@@ -35,17 +35,20 @@ def init_contest(self):
     interface(self)
     self.next_field = self.other_2
 
+
 def reset_label(self):
     pass
 
+
 def predupe(self):
-    pass  
+    pass
+
 
 def interface(self):
-    self.field1.show()   # callsign
-    self.field2.show()   # sent RST
-    self.field3.show()   # receive RST
-    self.field4.show()   # exchange field
+    self.field1.show()  # callsign
+    self.field2.show()  # sent RST
+    self.field3.show()  # receive RST
+    self.field4.show()  # exchange field
 
     self.snt_label.setText("SNT")
     self.other_label.setText("SNTNR")
@@ -56,6 +59,7 @@ def interface(self):
 
     self.sent.setReadOnly(True)
     self.receive.setReadOnly(True)
+
 
 def set_tab_next(self):
     self.tab_next = {
@@ -76,6 +80,7 @@ def set_tab_prev(self):
         self.other_2: self.other_1,
     }
 
+
 def parse_exchange(self):
     exchange = self.other_2.text().upper().split()
 
@@ -89,6 +94,7 @@ def parse_exchange(self):
             grid = t
 
     return sn, grid
+
 
 def set_contact_vars(self):
     sn, grid = parse_exchange(self)
@@ -107,11 +113,13 @@ def set_contact_vars(self):
     except:
         pass
 
+
 def prefill(self):
     serial_nr = str(self.current_sn).zfill(3)
 
     if self.other_1.text() == "":
         self.other_1.setText(serial_nr)
+
 
 def points(self):
     if self.contact_is_dupe > 0:
@@ -150,11 +158,13 @@ def calc_score(self):
 def adif(self):
     gen_adif(self, cabrillo_name)
 
+
 def edi(self, parent=None):
     from pathlib import Path
     import datetime
     from not1mm.lib.ham_utility import distance
     import logging
+
     logger = logging.getLogger(__name__)
 
     def get_station_field(*keys, default=""):
@@ -171,7 +181,9 @@ def edi(self, parent=None):
 
     my_call = get_station_field("Call", "Callsign", "MyCall", default="MYCALL")
     my_grid = get_station_field("GridSquare", "Grid", default="AA00AA")
-    operator_name = get_station_field("OperatorName", "Operator", "Name", default="Operator")
+    operator_name = get_station_field(
+        "OperatorName", "Operator", "Name", default="Operator"
+    )
     address = get_station_field("Address", "Adr1", default="")
     city = get_station_field("City", "Locality", default="")
     country = get_station_field("Country", "CountryName", default="Turkey")
@@ -300,10 +312,11 @@ def edi(self, parent=None):
         output_lines.extend(summary)
         output_lines.extend(qso_lines)
 
-    with open(filename, 'w', encoding='utf-8') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
 
     logger.info(f"EDI saved to {filename}")
+
 
 def recalculate_mults(self):
     pass

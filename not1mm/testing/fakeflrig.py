@@ -4,7 +4,6 @@ import logging
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
-
 logging.basicConfig(level=logging.WARNING)
 
 radio_state = {
