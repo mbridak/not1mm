@@ -35,16 +35,27 @@ def init_contest(self):
     interface(self)
     self.next_field = self.other_2
 
+def reset_label(self):
+    pass
+
+def predupe(self):
+    pass  
 
 def interface(self):
-    self.field1.show()
-    self.field2.show()
-    self.field3.show()
-    self.field4.show()
-    self.snt_label.setText("SNT")
-    self.other_label.setText("SentNR")
-    self.exch_label.setText("# GRID")
+    self.field1.show()   # callsign
+    self.field2.show()   # sent RST
+    self.field3.show()   # receive RST
+    self.field4.show()   # exchange field
 
+    self.snt_label.setText("SNT")
+    self.other_label.setText("SNTNR")
+    self.exch_label.setText("RCV NR + GRID")
+
+    self.sent.setText("599")
+    self.receive.setText("599")
+
+    self.sent.setReadOnly(True)
+    self.receive.setReadOnly(True)
 
 def set_tab_next(self):
     self.tab_next = {
@@ -65,13 +76,13 @@ def set_tab_prev(self):
         self.other_2: self.other_1,
     }
 
-
 def parse_exchange(self):
-    exchange = self.other_2.text().upper()
+    exchange = self.other_2.text().upper().split()
+
     sn = ""
     grid = ""
 
-    for t in exchange.split():
+    for t in exchange:
         if t.isdigit() and sn == "":
             sn = t
         elif len(t) == 6 and t.isalnum():
@@ -79,23 +90,28 @@ def parse_exchange(self):
 
     return sn, grid
 
-
 def set_contact_vars(self):
     sn, grid = parse_exchange(self)
 
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text()
+
     self.contact["NR"] = sn
     self.contact["Exchange1"] = grid
 
+    self.contact["SentNr"] = self.other_1.text()
+
+    try:
+        next_sn = int(self.current_sn) + 1
+        self.other_1.setText(str(next_sn).zfill(3))
+    except:
+        pass
 
 def prefill(self):
     serial_nr = str(self.current_sn).zfill(3)
-    exch = str(self.contest_settings.get("SentExchange", "#"))
-    if len(self.other_1.text()) == 0:
-        self.other_1.setText(exch.replace("#", serial_nr))
 
+    if self.other_1.text() == "":
+        self.other_1.setText(serial_nr)
 
 def points(self):
     if self.contact_is_dupe > 0:
