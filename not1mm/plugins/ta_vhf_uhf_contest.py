@@ -51,8 +51,8 @@ def interface(self):
     self.other_label.setText("SNTNR")
     self.exch_label.setText("RCV NR + GRID")
 
-    self.sent.setText("599")
-    self.receive.setText("599")
+    self.sent.setText("59")
+    self.receive.setText("59")
 
     self.sent.setReadOnly(True)
     self.receive.setReadOnly(True)
