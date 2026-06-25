@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-06-25] @mbridak Fix: unresponsive interface after loading call history file.
 - [2026-06-23] Merge pull request #600 from df7cb/database
   - Fixup: Simplify database queries
 - [2026-06-22] Merge pull request #599 from df7cb/ok1wc
