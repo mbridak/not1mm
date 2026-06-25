@@ -252,11 +252,26 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         logger.info("MainWindow: __init__")
         try:
+            a = self.user_defined_contest.get_udc_names(Path.home() / "UDC_FILES")
             print(
                 f"{self.user_defined_contest.get_udc_names(Path.home() / 'UDC_FILES')}"
             )
         except Exception as e:
             print(f"{e=}")
+
+        udc_contest = self.user_defined_contest.parse_udc(
+            Path.home() / "UDC_FILES" / a[0][0]
+        )
+
+        print(f"\n{udc_contest.keys()}\n")
+        print(f"\n{udc_contest.get('Author', '')}\n")
+        print(f"\n{udc_contest.get('File', '')}\n")
+        # print(f"\n{udc_contest.get('Contest', '')}\n")
+        useful_items = {
+            k: v for k, v in udc_contest.get("Contest", "").items() if v != ""
+        }
+        print(f"\n{useful_items}\n")
+
         self.splash = splash
         self.dock_loc = {
             "Top": Qt.DockWidgetArea.TopDockWidgetArea,
