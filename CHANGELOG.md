@@ -1,6 +1,7 @@
 # Changelog
 
-- [2026-06-25] @mbridak Fix: unresponsive interface after loading call history file.
+- [2026-06-25] Merge pull request #602 from Egco2811/feature/ta-vhf-uhf-contest
+  - @mbridak Fix: unresponsive interface after loading call history file.
 - [2026-06-23] Merge pull request #600 from df7cb/database
   - Fixup: Simplify database queries
 - [2026-06-22] Merge pull request #599 from df7cb/ok1wc
@@ -2692,9 +2693,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
