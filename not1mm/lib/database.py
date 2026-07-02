@@ -133,7 +133,7 @@ class DataBase:
             logger.error("%s", exception)
             return ()
 
-    def exec_sql_commit(self, query: str, params=(), error_logger=logger.error) -> None:
+    def exec_sql_commit(self, query: str, params=(), commit=True, error_logger=logger.error) -> None:
         """Exec write query with database changes and commit"""
         try:
             logger.debug("%s", query)
@@ -141,43 +141,15 @@ class DataBase:
                 logger.debug("Parameters: %s", params)
             cursor = self.conn.cursor()
             cursor.execute(query, params)
-            self.conn.commit()
-        except sqlite3.OperationalError as exception:
-            error_logger("%s", exception)
-
-    def exec_sql_wocommit(
-        self, query: str, params=(), error_logger=logger.error
-    ) -> None:
-        """Exec write query with database changes and commit"""
-        try:
-            logger.debug("%s", query)
-            if params:
-                logger.debug("Parameters: %s", params)
-            cursor = self.conn.cursor()
-            cursor.execute(query, params)
+            if commit:
+                self.conn.commit()
         except sqlite3.OperationalError as exception:
             error_logger("%s", exception)
 
     def commit_it(self):
         self.conn.commit()
 
-    def exec_sql_insert_wocommit(self, table: str, row: dict) -> None:
-        """Insert a dict into table columns"""
-        if row == {}:
-            return
-
-        fields, values, placeholders = [], [], []
-        for field in row.keys():
-            fields.append(field)
-            values.append(row[field])
-            placeholders.append("?")
-
-        self.exec_sql_wocommit(
-            f"insert into {table} ({', '.join(fields)}) values ({', '.join(placeholders)});",
-            values,
-        )
-
-    def exec_sql_insert(self, table: str, row: dict) -> None:
+    def exec_sql_insert(self, table: str, row: dict, commit=True) -> None:
         """Insert a dict into table columns"""
         if row == {}:
             return
@@ -191,6 +163,7 @@ class DataBase:
         self.exec_sql_commit(
             f"insert into {table} ({', '.join(fields)}) values ({', '.join(placeholders)});",
             values,
+            commit=commit,
         )
 
     def exec_sql_update(self, table: str, row: dict, key: str) -> None:
@@ -411,7 +384,7 @@ class DataBase:
     def add_callhistory_items(self, history_list: list) -> None:
         """Add a list of items to the call history db"""
         for history in history_list:
-            self.exec_sql_insert_wocommit("CALLHISTORY", history)
+            self.exec_sql_insert("CALLHISTORY", history, commit=False)
         self.commit_it()
 
     def get_contest_profile(self, contest: str):
