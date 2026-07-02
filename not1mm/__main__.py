@@ -2719,10 +2719,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.set_winkeyer_speed(self.cw.speed)
         if self.rig_control and self.rig_control.cat:
             if self.pref.get("cwtype") == 3:
-                if self.rig_control.interface == "flrig":
-                    self.rig_control.cat.set_flrig_cw_speed(self.cw.speed)
-                elif self.rig_control.interface == "rigctld":
-                    self.rig_control.cat.set_rigctl_cw_speed(self.cw.speed)
+                self.rig_control.set_cw_speed(self.cw.speed)
 
     def stop_cw(self) -> None:
         """"""
@@ -2739,11 +2736,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rig_control and self.rig_control.cat:
             if self.rig_control.online:
                 if self.pref.get("cwtype") == 3:
-                    if self.rig_control.interface == "flrig":
-                        self.rig_control.cat.set_flrig_cw_send(False)
-                        self.rig_control.cat.set_flrig_cw_send(True)
-                    if self.rig_control.interface == "rigctld":
-                        self.rig_control.cat.stopcwrigctl()
+                    self.rig_control.stopcw()
 
     def stop_all(self) -> None:
         """Stop CW and rotator."""
@@ -4590,9 +4583,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control.online:
                     self.rig_control.set_mode(self.rig_control.last_cw_mode)
                     if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                        if self.rig_control.interface == "flrig":
-                            self.cwspeed_spinbox_changed()
-                            self.rig_control.cat.set_flrig_cw_send(True)
+                        self.cwspeed_spinbox_changed()
+                        self.rig_control.set_cw_send(True)
             else:
                 self.setmode("CW")
                 self.radio_state["mode"] = "CW"
