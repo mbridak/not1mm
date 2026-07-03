@@ -1,7 +1,19 @@
 # Changelog
 
+- [2026-07-03] @mbridak Fix contest name casing and improve error handling in New Contest dialog
+- [2026-07-02] Merge pull request #606 from df7cb/commit
+  - Add "commit" parameter to exec_sql_commit
+- [2026-06-29] Merge pull request #603 from dawkagaming/dawkagaming-patch-1
+  - Update the metainfo file
 - [2026-06-25] Merge pull request #602 from Egco2811/feature/ta-vhf-uhf-contest
+  - run black
+  - implemented edi export, reverted freq changes
+  - Merge branch 'mbridak:master' into master
   - @mbridak Fix: unresponsive interface after loading call history file.
+  - changed dummy frequencies to match the default turkish 70cm and 2m bands
+  - adjusted sent received fills to fit the FM format
+  - renamed the file to match the .ui file
+  - added ta_vhf_uhf contest
 - [2026-06-23] Merge pull request #600 from df7cb/database
   - Fixup: Simplify database queries
 - [2026-06-22] Merge pull request #599 from df7cb/ok1wc
@@ -2693,3 +2705,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
