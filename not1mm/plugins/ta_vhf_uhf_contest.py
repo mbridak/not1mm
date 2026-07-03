@@ -1,9 +1,13 @@
 """TA VHF UHF Contest"""
 
 import logging
+
 from not1mm.lib.ham_utility import distance
 from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
+
+assert get_points
+assert __version__
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +114,8 @@ def set_contact_vars(self):
     try:
         next_sn = int(self.current_sn) + 1
         self.other_1.setText(str(next_sn).zfill(3))
-    except:
-        pass
+    except ValueError:
+        ...
 
 
 def prefill(self):
@@ -160,10 +164,10 @@ def adif(self):
 
 
 def edi(self, parent=None):
-    from pathlib import Path
     import datetime
+    from pathlib import Path
+
     from not1mm.lib.ham_utility import distance
-    import logging
 
     logger = logging.getLogger(__name__)
 
