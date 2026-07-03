@@ -324,3 +324,6 @@ def edi(self, parent=None):
 
 def recalculate_mults(self):
     pass
+
+
+def cabrillo(self, file_encoding): ...
