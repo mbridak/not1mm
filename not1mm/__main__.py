@@ -266,20 +266,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
-        self.function_keys = (
-            self.F1,
-            self.F2,
-            self.F3,
-            self.F4,
-            self.F5,
-            self.F6,
-            self.F7,
-            self.F8,
-            self.F9,
-            self.F10,
-            self.F11,
-            self.F12,
-        )
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
@@ -4271,7 +4257,20 @@ class MainWindow(QtWidgets.QMainWindow):
         is_phone_mode = self._is_phone_mode()
         hide_for_missing_audio = is_phone_mode and not self.voice_output_available
 
-        for function_key in self.function_keys:
+        for function_key in (
+            self.F1,
+            self.F2,
+            self.F3,
+            self.F4,
+            self.F5,
+            self.F6,
+            self.F7,
+            self.F8,
+            self.F9,
+            self.F10,
+            self.F11,
+            self.F12,
+        ):
             function_key.setEnabled(not hide_for_missing_audio)
 
         if self.pref.get("cw_macros") and not hide_for_missing_audio:
