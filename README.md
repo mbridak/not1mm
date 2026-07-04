@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-04] @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
 - [2026-07-03] @mbridak Fix contest name casing and improve error handling in New Contest dialog
 - [2026-07-02] Merge pull request #606 from df7cb/commit
   - Add "commit" parameter to exec_sql_commit
