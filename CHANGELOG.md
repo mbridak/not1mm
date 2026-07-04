@@ -1,6 +1,9 @@
 # Changelog
 
-- [2026-07-03] @mbridak Fix contest name casing and improve error handling in New Contest dialog
+- [2026-07-04] @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
+- [2026-07-03] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Add cabrillo stub to ta vhf uhf to prevent crash.
+  - @mbridak Fix contest name casing and improve error handling in New Contest dialog
 - [2026-07-02] Merge pull request #606 from df7cb/commit
   - Add "commit" parameter to exec_sql_commit
 - [2026-06-29] Merge pull request #603 from dawkagaming/dawkagaming-patch-1
