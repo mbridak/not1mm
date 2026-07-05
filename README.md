@@ -17,7 +17,7 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/not1mm?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Monthly%20Downloads)](https://pepy.tech/projects/not1mm)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/not1mm?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Total%20Downloads)](https://pepy.tech/projects/not1mm)
 
-![main screen](https://github.com/mbridak/not1mm/raw/master/.github/pictures/main.png)
+![main screen](https://github.com/mbridak/not1mm/raw/master/docs/pictures/main.png)
 
 ### The Elephant in the Room
 
@@ -26,7 +26,7 @@ you have with this software should in no way reflect on their software.
 
 ### Not1MM is NOT ment for interoperability with N1MM+
 
-I wake up, take my first sip of coffee and am greeted by a lovely heartfelt [message](TomsAMassiveTwat.md) from Tom Wagner.
+I wake up, take my first sip of coffee and am greeted by a lovely heartfelt [message](docs/TomsAMassiveTwat.md) from Tom Wagner.
 So I feel something may need to be clarified. Not1MM is... NOT N1MM neither is it N1MM+ or even N1MMPlus.
 They're not ment to work with each other. It does send N1MM packets, but that's for nodered scoreboards, not Tom's beloved program.
 
@@ -56,7 +56,7 @@ and mature. It just wasn't for me.
 
 ## Code Maturity & Current Multi Multi Development Focus
 
-Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for [Multi Multi](Multi-Multi.md) contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
+Not1MM is, at times, fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for [Multi Multi](docs/Multi-Multi.md) contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 
 ## Our Code Contributors ✨
 
@@ -96,23 +96,23 @@ Not1MM requires:
 curl -LsSf uvx.sh/not1mm/install.sh | sh
 ```
 
-For more in depth info, please see the [installation](INSTALL.md) section.
+For more in depth info, please see the [installation](docs/INSTALL.md) section.
 
 ## Documentation
 
-I've nuked 90% of the README.md and moved it to a LaTeX file. So now you can get the [user manual](https://github.com/mbridak/not1mm/raw/master/not1mm.pdf) as a PDF file. I know some WILL NOT LIKE THIS. Sorry, not sorry.
+I've nuked 90% of the README.md and moved it to a LaTeX file. So now you can get the [user manual](https://github.com/mbridak/not1mm/raw/master/docs/book/not1mm.pdf) as a PDF file. I know some WILL NOT LIKE THIS. Sorry, not sorry.
 
 ## Features
 
 A quick feature list, See the user manual for more details.
 
-- 45+ [supported contests](Working_Contests.md)
+- 45+ [supported contests](docs/Working_Contests.md)
 - Lookup, QRZ and HamQTH
 - CAT Control, rigctld and flrig
 - CW Keyer Interface, winkeyer and cwdaemon
 - Cluster and Bandmap
 - Rotator control, rotctld
-- [Multi Multi](Multi-Multi.md) (The super sketchy not ready for prime time)
+- [Multi Multi](docs/Multi-Multi.md) (The super sketchy not ready for prime time)
 - N1MM Packet output for nodered
 - WSJT-X FT8/FT4/ETC and FLDIGI RTTY
 - ADIF and Cabrillo output.
