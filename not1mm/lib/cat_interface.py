@@ -369,8 +369,9 @@ class CAT:
                 logger.debug("%s", report)
                 if report.startswith("get_freq:|") and "RPRT 0" in report:
                     seg_rpt = report.split("|")
-                    return seg_rpt[1].split(" ")[1]
-            except (socket.error, IndexError) as exception:
+                    freq_str = seg_rpt[1].split(" ")[1]
+                    return str(int(float(freq_str)))
+            except (socket.error, IndexError, ValueError) as exception:
                 self.online = False
                 logger.debug(f"{exception=}")
                 self.rigctrlsocket = None
