@@ -17,7 +17,7 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/not1mm?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Monthly%20Downloads)](https://pepy.tech/projects/not1mm)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/not1mm?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Total%20Downloads)](https://pepy.tech/projects/not1mm)
 
-![main screen](https://github.com/mbridak/not1mm/raw/master/pic/main.png)
+![main screen](https://github.com/mbridak/not1mm/raw/master/.github/pictures/main.png)
 
 ### The Elephant in the Room
 
