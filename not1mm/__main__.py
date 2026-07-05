@@ -108,7 +108,7 @@ from not1mm.rotator import RotatorWindow
 from not1mm.rtc_service import RTCService
 from not1mm.statistics import StatsWindow
 from not1mm.vfo import VfoWindow
-from not1mm.voice_keying import Voice
+from not1mm.voice_keying import Voice, has_output_device
 from not1mm.zone_tracker import ZoneWindow
 
 poll_time = datetime.datetime.now()
@@ -211,6 +211,8 @@ class MainWindow(QtWidgets.QMainWindow):
     esm_dict = {}
     sandpfreq = 0
     current_sn = None
+    # Starts false and is set true when runtime output-device checks succeed.
+    voice_output_available = False
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -1856,6 +1858,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.write_preference()
         # logger.debug("%s", f"{self.pref}")
         self.readpreferences()
+        self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
 
     def new_database(self) -> None:
         """
@@ -3862,12 +3865,20 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Function Key: %s", function_key.text())
+        if self._is_phone_mode():
+            self.voice_output_available = has_output_device(
+                self.pref.get("sounddevice", "default")
+            )
+            if not self.voice_output_available:
+                self.show_CW_macros()
+                logger.warning("No available output sound device for voice keying.")
+                return
         if function_key.toolTip()[0:3] == "RI:":
             self.rig_control.cat.send_cat_string(function_key.toolTip()[3:])
             return
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB", "FM", "AM"]:
+        if self._is_phone_mode():
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
@@ -4240,13 +4251,44 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+        self.voice_output_available = has_output_device(
+            self.pref.get("sounddevice", "default")
+        )
+        is_phone_mode = self._is_phone_mode()
+        hide_for_missing_audio = is_phone_mode and not self.voice_output_available
 
-        if self.pref.get("cw_macros"):
+        for function_key in (
+            self.F1,
+            self.F2,
+            self.F3,
+            self.F4,
+            self.F5,
+            self.F6,
+            self.F7,
+            self.F8,
+            self.F9,
+            self.F10,
+            self.F11,
+            self.F12,
+        ):
+            function_key.setEnabled(not hide_for_missing_audio)
+
+        if self.pref.get("cw_macros") and not hide_for_missing_audio:
             self.Button_Row1.show()
             self.Button_Row2.show()
         else:
             self.Button_Row1.hide()
             self.Button_Row2.hide()
+
+    def _is_phone_mode(self) -> bool:
+        """Return True when the current operating mode is phone/voice."""
+        return self.current_mode == "SSB" or self.radio_state.get("mode") in (
+            "LSB",
+            "USB",
+            "SSB",
+            "FM",
+            "AM",
+        )
 
     def command_buttons_state_change(self) -> None:
         """
@@ -4753,6 +4795,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.read_macros()
                         if self.contest.name == "ICWC Medium Speed Test":
                             self.contest.prefill(self)
+                self.show_CW_macros()
             return
 
         if mode in ("LSB", "USB", "SSB", "FM", "AM"):
@@ -4762,6 +4805,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.sent.setText("59")
                     self.receive.setText("59")
                 self.read_macros()
+                self.show_CW_macros()
             return
 
         if mode in (
@@ -4785,6 +4829,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.sent.setText("599")
                     self.receive.setText("599")
                 self.read_macros()
+                self.show_CW_macros()
 
     # TODO
     def get_rover(self) -> None:
