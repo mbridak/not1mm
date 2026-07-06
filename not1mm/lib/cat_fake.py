@@ -11,7 +11,7 @@ from not1mm.lib.cat_interface import CAT
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("cat_interface")
+logger = logging.getLogger("cat_fake")
 
 
 class FakeCAT(CAT):
@@ -40,7 +40,7 @@ class FakeCAT(CAT):
             "bw": "500",
             "power": "100",
             "modes": ["CW", "USB", "LSB", "RTTY"],
-            "ptt": False,
+            "ptt": "0",
         }
         logger.debug("Using Fake Rig")
 
@@ -63,7 +63,7 @@ class FakeCAT(CAT):
         return self.fake_radio.get("power", "100")
 
     def get_ptt(self):
-        return self.fake_radio.get("ptt", False)
+        return self.fake_radio.get("ptt", "0")
 
     def get_mode_list(self):
         "Get a list of modes supported by the radio"
@@ -89,10 +89,10 @@ class FakeCAT(CAT):
 
     def ptt_on(self):
         """turn ptt on/off"""
-        self.fake_radio["ptt"] = True
+        self.fake_radio["ptt"] = "1"
         return True
 
     def ptt_off(self):
         """turn ptt on/off"""
-        self.fake_radio["ptt"] = False
+        self.fake_radio["ptt"] = "0"
         return True

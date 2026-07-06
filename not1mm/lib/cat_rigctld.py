@@ -12,7 +12,7 @@ from not1mm.lib.cat_interface import CAT
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("cat_interface")
+logger = logging.getLogger("cat_rigctld")
 
 
 class RigctldCAT(CAT):
@@ -37,9 +37,19 @@ class RigctldCAT(CAT):
         self.rigctrlsocket = None
         self.rigctld_bw = "0"
         self.interface = "rigctld"
-        self.__initialize_rigctrld()
+        self.reinit()
 
-    def __initialize_rigctrld(self):
+    def reinit(self):
+        """initialise rigctld
+
+        This routine is called whenever the rig is initialized (startup,
+        settings changed), and each rigctld_command() call will use it when the
+        connection was lost in flight.
+
+        Rigctld is set into "VFO mode" which requires a VFO argument in most
+        commands ("f VFOA 1810000"). The advantage is this lets us get/set the
+        inactive VFO without flickering the display.
+        """
         try:
             logger.debug("Connecting to rigctrld %s %d", self.host, self.port)
             self.rigctrlsocket = socket.socket()
@@ -56,329 +66,151 @@ class RigctldCAT(CAT):
         ) as exception:
             self.rigctrlsocket = None
             self.online = False
-            logger.debug("%s", f"{exception}")
+            logger.info("%s", f"{exception}")
+        # turn on "VFO mode" so we can set/get VFO A/B directly (no automatic reinit here to avoid loop)
+        self.rigctld_command("\\set_vfo_opt 1", auto_reinit=False)
 
-    def reinit(self):
-        """reinitialise rigctl"""
-        self.__initialize_rigctrld()
+    def rigctld_command(self, command: str, prefix="+", auto_reinit=True) -> str:
+        """Send a command to rigctld and return the reply.
 
-    def __get_serial_string(self):
-        """Gets any serial data waiting"""
-        dump = ""
-        thegrab = ""
-        if self.rigctrlsocket is None:
+        The reply is expected to end with "RPRT N" which is guaranteed in the
+        extended response protocol (prefix="+").
+        """
+
+        if (
+            not self.online
+            or self.rigctrlsocket is None
+            or not hasattr(self.rigctrlsocket, "send")
+        ):
+            if auto_reinit:
+                self.reinit()
+        if not self.online:
             return ""
-        if hasattr(self.rigctrlsocket, "settimeout"):
-            self.rigctrlsocket.settimeout(0.1)
-            try:
-                while True and hasattr(self.rigctrlsocket, "recv"):
-                    thegrab = self.rigctrlsocket.recv(1024).decode()
-                    dump += thegrab
-                    if thegrab == "":
-                        break
-            except (socket.error, UnicodeDecodeError):
-                ...
-            # self.rigctrlsocket.settimeout(0.1)
-        # logger.debug("%s", dump)
-        if os.environ.get("SEERIGCTLD", False):
-            print(repr(dump))
-        return dump
+        try:
+            logger.debug("> %s", command)
+            self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
+            report = ""
+            while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
+                thegrab = self.rigctrlsocket.recv(1024).decode()
+                if thegrab == "":  # socket closed
+                    break
+                report += thegrab
+            logger.debug("< %s", report)
+            return report
+        except (TimeoutError, OSError, UnicodeDecodeError, socket.error) as exception:
+            self.online = False
+            logger.info("%s", f"{exception}")
+            self.rigctrlsocket = None
+        return ""
+
+    def rigctld_parse(self, report: str) -> dict:
+        """Parse a extended response protocol message (prefix +) into fields.
+
+        +\\get_vfo_list
+        get_vfo_list: currVFO
+        VFOs: Sub Main MEM
+        RPRT 0
+
+        -> {"get_vfo_list": "currVFO", "VFOs": "Sub Main MEM"}
+
+        +l VFOA RFPOWER
+        get_level: VFOA:RFPOWER
+        1
+        RPRT 0
+
+        If a line does not have a label, it is stored as "line":
+
+        -> {"get_level": "VFOA:RFPOWER", "line": "1"}
+        """
+
+        fields = {}
+        for line in report.splitlines():
+            if ": " in line:
+                k, _, v = line.partition(": ")
+                fields[k] = v
+            elif line.startswith("RPRT "):
+                k, _, v = line.partition(" ")
+                fields["RPRT"] = v
+            else:  # some response parts don't have labels
+                fields["line"] = line
+        return fields
 
     def sendvoicememory(self, memoryspot=1):
-        """..."""
-        return self.__sendvoicememory_rigctld(memoryspot)
-
-    def __sendvoicememory_rigctld(self, memoryspot=1):
-        """..."""
-        try:
-            self.online = True
-            self.rigctrlsocket.send(bytes(f"+\\send_voice_mem {memoryspot}\n", "utf-8"))
-            info = self.__get_serial_string()
-            logger.debug("%s", info)
-            return
-        except socket.error as exception:
-            self.online = False
-            logger.debug("%s", f"{exception}")
-            self.rigctrlsocket = None
-            return
+        self.rigctld_command(f"\\send_voice_mem {memoryspot}")
 
     def sendcw(self, texttosend):
-        """..."""
-        logger.debug(f"{texttosend=} {self.interface=}")
-        self.sendcwrigctl(texttosend)
-
-    def sendcwrigctl(self, texttosend):
         """Send text via rigctld"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"b {texttosend}\n", "utf-8"))
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return False
-                info = self.__get_serial_string()
-                logger.debug("%s", info)
-                return True
-            except socket.error as exception:
-                self.online = False
-                logger.debug("setvfo_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-                return False
-        self.__initialize_rigctrld()
-        return False
+        self.rigctld_command(f"b {texttosend}")
 
     def stopcw(self):
         """Stop CW via rigctld"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes("\\stop_morse\n", "utf-8"))
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return False
-                _ = self.__get_serial_string()
-                return True
-            except socket.error as exception:
-                self.online = False
-                logger.debug("setvfo_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-                return False
-        self.__initialize_rigctrld()
-        return False
+        self.rigctld_command("\\stop_morse")
 
     def set_cw_speed(self, speed):
         """Set CW speed via rigctld"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"L KEYSPD {speed}\n", "utf-8"))
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return
-                info = self.__get_serial_string()
-                logger.debug("%s", info)
-                return
-            except socket.error as exception:
-                self.online = False
-                logger.debug("set_level_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-                return
-        self.__initialize_rigctrld()
+        self.rigctld_command(f"L VFOA KEYSPD {speed}")
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
-        vfo = self.__getvfo_rigctld()
-        if "RPRT -" in vfo:
-            vfo = ""
-        return vfo
-
-    def __getvfo_rigctld(self) -> str:
-        """Returns VFO freq returned from rigctld"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(b"|f\n")
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return ""
-                report = self.__get_serial_string().strip()
-                logger.debug("%s", report)
-                if report.startswith("get_freq:|") and "RPRT 0" in report:
-                    seg_rpt = report.split("|")
-                    freq_str = seg_rpt[1].split(" ")[1]
-                    return str(int(float(freq_str)))
-            except (socket.error, IndexError, ValueError) as exception:
-                self.online = False
-                logger.debug(f"{exception=}")
-                self.rigctrlsocket = None
+        report = self.rigctld_parse(self.rigctld_command("f VFOA"))
+        freq = report.get("Frequency", "")
+        if freq.isnumeric():
+            return str(int(float(freq)))
+        else:
             return ""
-
-        self.__initialize_rigctrld()
-        return ""
 
     def get_mode(self) -> str:
         """Returns the current mode filter width of the radio"""
         # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(b"|m\n")
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return ""
-                # get_mode:|Mode: CW|Passband: 500|RPRT 0
-                report = self.__get_serial_string().strip()
-                logger.debug("%s", report)
-                if report.startswith("get_mode:|") and "RPRT 0" in report:
-                    seg_rpt = report.split("|")
-                    self.rigctld_bw = seg_rpt[2].split(" ")[1]
-                    return seg_rpt[1].split(" ")[1]
-            except IndexError as exception:
-                logger.debug("%s", f"{exception}")
-            except socket.error as exception:
-                self.online = False
-                logger.debug("%s", f"{exception}")
-                self.rigctrlsocket = None
-            return ""
-        self.__initialize_rigctrld()
-        return ""
+        report = self.rigctld_parse(self.rigctld_command("m VFOA"))
+        # get_mode:|Mode: CW|Passband: 500|RPRT 0
+        self.rigctld_bw = report.get("Passband", "0")
+        return report.get("Mode", "")
 
-    def get_bw(self):
+    def get_bw(self) -> str:
         """Get current vfo bandwidth"""
         return self.rigctld_bw
 
-    def get_power(self):
+    def get_power(self) -> int:
         """Get power level from rig"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(b"|l RFPOWER\n")
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return ""
-                # get_level: RFPOWER|0.000000|RPRT 0
-                report = self.__get_serial_string().strip()
-                logger.debug("%s", report)
-                if "get_level: RFPOWER|" in report and "RPRT 0" in report:
-                    seg_rpt = report.split("|")
-                    return int(float(seg_rpt[1]) * 100)
-            except socket.error as exception:
-                self.online = False
-                logger.debug("getpower_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-            return ""
+        report = self.rigctld_parse(self.rigctld_command("l VFOA RFPOWER"))
+        # get_level: RFPOWER |0.000000|RPRT 0
+        return int(float(report.get("line", 0)) * 100)
 
-    def get_ptt(self):
+    def get_ptt(self) -> str:
         """Get PTT state"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(b"t\n")
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return "0"
-                ptt = self.__get_serial_string()
-                logger.debug("%s", ptt)
-                ptt = ptt.strip()
-                return ptt
-            except socket.error as exception:
-                self.online = False
-                logger.debug("%s", f"{exception}")
-                self.rigctrlsocket = None
-        return "0"
+        report = self.rigctld_parse(self.rigctld_command("t VFOA"))
+        return report.get("PTT", "0")
 
-    def get_mode_list(self):
+    def get_mode_list(self) -> list:
         "Get a list of modes supported by the radio"
-        # Mode list: AM CW USB LSB RTTY FM CWR RTTYR
-        if self.rigctrlsocket:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(b"1\n")
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return ""
-                dump = self.__get_serial_string()
-                for line in dump.splitlines():
-                    if "Mode list:" in line:
-                        modes = line.split(":")[1].strip()
-                        return modes
-                return ""
-            except socket.error as exception:
-                self.online = False
-                logger.debug("%s", f"{exception}")
-                self.rigctrlsocket = None
-        return ""
+        # set_mode: VFOA:?|AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D PSK PSKR
+        # RPRT 0
+        report = self.rigctld_parse(self.rigctld_command("M VFOA ?"))
+        return report.get("line", "").split(" ")
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
-        try:
-            return self.__setvfo_rigctld(freq)
-        except ValueError:
-            ...
-        return False
-
-    def __setvfo_rigctld(self, freq: str) -> bool:
-        """sets the radios vfo"""
-        if self.rigctrlsocket is not None:
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"|F {freq}\n", "utf-8"))
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return False
-                info = self.__get_serial_string()
-                logger.debug("%s", info)
-                return True
-            except socket.error as exception:
-                self.online = False
-                logger.debug("setvfo_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-                return False
-        self.__initialize_rigctrld()
-        return False
+        self.rigctld_command(f"F VFOA {freq}")
+        return True
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
-        if self.rigctrlsocket:
-            try:
-                self.online = True
-                # logger.debug(f"\nM {mode} 0\n")
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(bytes(f"\n|M {mode} 0\n", "utf-8"))
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return False
-                info = self.__get_serial_string()
-                logger.debug("%s", info)
-                return True
-            except socket.error as exception:
-                self.online = False
-                logger.debug("setmode_rigctld: %s", f"{exception}")
-                self.rigctrlsocket = None
-                return False
-        self.__initialize_rigctrld()
-        return False
+        self.rigctld_command(f"M VFOA {mode} 0")
+        return True
 
     def set_power(self, power):
         """Sets the radios power"""
         if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
-            rig_cmd = bytes(f"|L RFPOWER {str(float(power) / 100)}\n", "utf-8")
-            try:
-                self.online = True
-                if hasattr(self.rigctrlsocket, "send"):
-                    self.rigctrlsocket.send(rig_cmd)
-                else:
-                    self.rigctrlsocket = None
-                    self.online = False
-                    return
-                info = self.__get_serial_string()
-                logger.debug("%s", info)
-            except socket.error:
-                self.online = False
-                self.rigctrlsocket = None
+            rig_cmd = f"L VFOA RFPOWER {str(float(power) / 100)}"
+            self.rigctld_command(rig_cmd)
+            return True
+        else:
+            return False
 
-    def ptt_on(self):
-        """turn ptt on/off"""
+    def ptt_on(self) -> bool:
+        """turn ptt on/off
 
         # T, set_ptt 'PTT'
         # Set 'PTT'.
@@ -387,40 +219,14 @@ class RigctldCAT(CAT):
         # t, get_ptt
         # Get 'PTT' status.
         # Returns PTT as a value in set_ptt above.
+        """
+        self.rigctld_command("T VFOA 1")
+        return True
 
-        rig_cmd = bytes("|T 1\n", "utf-8")
-        logger.debug("%s", f"{rig_cmd}")
-        try:
-            self.online = True
-            if hasattr(self.rigctrlsocket, "send"):
-                self.rigctrlsocket.send(rig_cmd)
-            else:
-                self.rigctrlsocket = None
-                self.online = False
-                return
-            info = self.__get_serial_string()
-            logger.debug("%s", info)
-        except socket.error:
-            self.online = False
-            self.rigctrlsocket = None
-
-    def ptt_off(self):
+    def ptt_off(self) -> bool:
         """turn ptt on/off"""
-        rig_cmd = bytes("|T 0\n", "utf-8")
-        logger.debug("%s", f"{rig_cmd}")
-        try:
-            self.online = True
-            if hasattr(self.rigctrlsocket, "send"):
-                self.rigctrlsocket.send(rig_cmd)
-            else:
-                self.rigctrlsocket = None
-                self.online = False
-                return
-            into = self.__get_serial_string()
-            logger.debug("%s", into)
-        except socket.error:
-            self.online = False
-            self.rigctrlsocket = None
+        self.rigctld_command("T VFOA 0")
+        return True
 
     def send_cat_string(self, cmdstr=""):
         """send a raw cat string to radio"""

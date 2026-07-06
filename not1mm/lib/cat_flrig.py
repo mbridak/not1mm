@@ -28,7 +28,7 @@ from not1mm.lib.cat_interface import CAT
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
 
-logger = logging.getLogger("cat_interface")
+logger = logging.getLogger("cat_flrig")
 
 
 class FlrigCAT(CAT):
