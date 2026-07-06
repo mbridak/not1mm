@@ -24,7 +24,8 @@ from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
-from not1mm.lib.cat_interface import CAT
+from not1mm.lib.cat_flrig import FlrigCAT
+from not1mm.lib.cat_rigctld import RigctldCAT
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class VfoWindow(QDockWidget):
         self.action = action
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-        self.rig_control: CAT | None = None
+        self.rig_control: FlrigCAT | RigctldCAT | None = None
         self.timer: QTimer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
@@ -80,8 +81,7 @@ class VfoWindow(QDockWidget):
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "flrig",
+            self.rig_control: FlrigCAT | None = FlrigCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
@@ -91,8 +91,7 @@ class VfoWindow(QDockWidget):
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "rigctld",
+            self.rig_control: RigctldCAT | None = RigctldCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )
