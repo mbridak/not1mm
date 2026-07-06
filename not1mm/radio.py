@@ -11,7 +11,9 @@ import logging
 
 from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 
-from not1mm.lib.cat_interface import CAT
+from not1mm.lib.cat_flrig import FlrigCAT
+from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.cat_fake import FakeCAT
 
 logger = logging.getLogger("radio")
 
@@ -49,10 +51,16 @@ class Radio(QObject):
         self.interface = interface
         self.host = host
         self.port = port
+        logger.debug("Using %s: %s %d", interface, host, port)
 
     def run(self):
         try:
-            self.cat = CAT(self.interface, self.host, self.port)
+            if self.interface == "flrig":
+                self.cat = FlrigCAT(self.host, self.port)
+            elif self.interface == "rigctld":
+                self.cat = RigctldCAT(self.host, self.port)
+            else:
+                self.cat = FakeCAT(self.host, self.port)
             self.online = self.cat.online
             self.modes = self.cat.get_mode_list()
             for pos_cw in self.cw_list:
@@ -136,6 +144,21 @@ class Radio(QObject):
         logger.debug(f"Send CW: {texttosend}")
         if self.cat:
             self.cat.sendcw(texttosend)
+
+    def stopcw(self):
+        logger.debug("Stopping CW")
+        if self.cat:
+            self.cat.stopcw()
+
+    def set_cw_speed(self, speed):
+        logger.debug("Setting CW speed %d", speed)
+        if self.cat:
+            self.cat.set_cw_speed(speed)
+
+    def set_cw_send(self, send: bool) -> None:
+        logger.debug("Setting CW send %s", send)
+        if self.cat:
+            self.cat.set_cw_send(send)
 
     def set_vfo(self, vfo):
         self.vfoa = vfo
