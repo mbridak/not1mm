@@ -757,10 +757,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
         self.voice_thread.start()
 
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
-            "current_database", "ham.db"
-        )
-        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.station = self.database.fetch_station()
         if self.station is None:
             self.station = {}
@@ -3993,6 +3989,12 @@ class MainWindow(QtWidgets.QMainWindow):
         except (IOError, TypeError, ValueError) as exception:
             logger.critical("Error: %s", exception)
             self.show_message_box(f"readpreferences error: {exception}", blocking=False)
+
+        # open database as the first thing we do so other threads can use it
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
 
         if self.pref.get("run_state", False) is True:
             self.radioButton_run.setChecked(True)
