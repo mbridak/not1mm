@@ -1,8 +1,20 @@
 # Changelog
 
-- [2026-07-04] @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
+- [2026-07-10] Merge pull request #614 from df7cb/database-race
+  - Fix race condition opening the database
+- [2026-07-06] Create AGENTS.md
+- [2026-07-05] Merge pull request #613 from df7cb/cat-classes
+  - Fix: Handle float format frequency responses in certain rigctld emulators
+- [2026-07-03] Split CAT class into three separate for flrig, rigctld and fake
+- [2026-07-05] GitBook: Update content
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+- [2026-07-04] Merge pull request #610 from ivica3730k/master
+  - fix: remove unecessary cleanup for pr
+  - fix: check for audio interface availability on startup - guard the ui… (#1)
+  - @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
 - [2026-07-03] Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak Add cabrillo stub to ta vhf uhf to prevent crash.
+  - GitBook: Update content
   - @mbridak Fix contest name casing and improve error handling in New Contest dialog
 - [2026-07-02] Merge pull request #606 from df7cb/commit
   - Add "commit" parameter to exec_sql_commit
@@ -2708,9 +2720,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
