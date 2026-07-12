@@ -884,12 +884,12 @@ class BandMapWindow(QDockWidget):
         }
         step, digits = return_zoom.get(self.zoom, (0.1, 1))
 
-        if self.currentBand.start >= 28.0 and self.currentBand.start < 420.0:
+        if self.currentBand.start >= 50_000.0 and self.currentBand.start < 420_000.0:
             step = step * 10
-            return (step, digits)
-
-        if self.currentBand.start >= 420.0 and self.currentBand.start < 2300.0:
+            digits = 0
+        elif self.currentBand.start >= 420_000.0 and self.currentBand.start < 2300_000.0:
             step = step * 100
+            digits = 0
 
         return (step, digits)
 
