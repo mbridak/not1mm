@@ -32,6 +32,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: X11 Applications :: Qt",
     "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
     "Intended Audience :: End Users/Desktop",
     "Natural Language :: English",
     "Topic :: Communications :: Ham Radio",
