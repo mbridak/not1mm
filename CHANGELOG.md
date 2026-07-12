@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-07-12] Merge pull request #615 from df7cb/bandmap-zoom
+  - Fix bandmap zoom on 160m
+- [2026-07-11] @mbridak Add MacOS classifier to project metadata
 - [2026-07-10] Merge pull request #614 from df7cb/database-race
   - Fix race condition opening the database
 - [2026-07-06] Create AGENTS.md
