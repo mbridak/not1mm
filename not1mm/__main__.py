@@ -43,6 +43,7 @@ from PyQt6.QtCore import (
     QT_VERSION_STR,
     QCoreApplication,
     QDir,
+    QEvent,
     QSettings,
     Qt,
     QThread,
@@ -55,6 +56,7 @@ from PyQt6.QtGui import (
     QFontDatabase,
     QIcon,
     QKeyEvent,
+    QKeySequence,
     QPalette,
     QPixmap,
 )
@@ -67,6 +69,7 @@ from PyQt6.QtWidgets import (
     QSystemTrayIcon,
 )
 
+import not1mm.actions
 import not1mm.fsutils as fsutils
 from not1mm.bandmap import BandMapWindow
 from not1mm.chat import ChatWindow
@@ -141,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
     qrz_dialog = None
     settings_dialog = None
     edit_macro_dialog = None
+    edit_keys_dialog = None
     contest_dialog = None
     configuration_dialog = None
     opon_dialog = None
@@ -321,6 +325,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.cw_entry.textChanged.connect(self.handle_text_change)
         self.cw_entry.returnPressed.connect(self.toggle_cw_entry)
+        self.cw_entry.installEventFilter(self)
 
         self.actionCW_Macros.triggered.connect(self.cw_macros_state_changed)
         self.actionCommand_Buttons_2.triggered.connect(
@@ -366,6 +371,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
         self.actionHotKeys.triggered.connect(self.show_key_help)
+        self.actionEdit_Keys.triggered.connect(lambda x: not1mm.actions.EDIT_KEYS(self))
         self.actionHelp.triggered.connect(self.show_help_dialog)
         self.actionUpdate_CTY.triggered.connect(self.check_for_new_cty)
         self.actionUpdate_MASTER_SCP.triggered.connect(self.update_masterscp)
@@ -377,18 +383,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.textEdited.connect(self.callsign_changed)
         self.callsign.returnPressed.connect(self.check_esm_with_enter)
         self.callsign.cursorPositionChanged.connect(self.check_esm)
+        self.callsign.installEventFilter(self)
         self.sent.returnPressed.connect(self.check_esm_with_enter)
         self.sent.textEdited.connect(self.sent_changed)
         self.sent.cursorPositionChanged.connect(self.check_esm)
+        self.sent.installEventFilter(self)
         self.receive.returnPressed.connect(self.check_esm_with_enter)
         self.receive.textEdited.connect(self.receive_changed)
         self.receive.cursorPositionChanged.connect(self.check_esm)
+        self.receive.installEventFilter(self)
         self.other_1.returnPressed.connect(self.check_esm_with_enter)
         self.other_1.textEdited.connect(self.other_1_changed)
         self.other_1.cursorPositionChanged.connect(self.check_esm)
+        self.other_1.installEventFilter(self)
         self.other_2.returnPressed.connect(self.check_esm_with_enter)
         self.other_2.textEdited.connect(self.other_2_changed)
         self.other_2.cursorPositionChanged.connect(self.check_esm)
+        self.other_2.installEventFilter(self)
 
         self.sent.setText("59")
         self.receive.setText("59")
@@ -2763,173 +2774,62 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_sn == "None":
                 self.current_sn = "1"
 
+    def process_key_bindings(self, event: QKeyEvent, obj=None) -> bool:
+        """
+        Common key intercept code for eventFilter and keyPressEvent.
+        """
+        key_bindings = self.pref.get(
+            "key_bindings", not1mm.actions.default_key_bindings
+        )
+        key_name = QKeySequence(event.key() | event.modifiers().value).toString()
+
+        action = None
+        if obj == self.callsign:
+            action = key_bindings.get(f"Callsign:{key_name}", None)
+        elif obj in (self.sent, self.receive):
+            action = key_bindings.get(f"Report:{key_name}", None)
+        elif obj == self.other_1:
+            action = key_bindings.get(f"Other 1:{key_name}", None)
+        elif obj == self.other_2:
+            action = key_bindings.get(f"Other 2:{key_name}", None)
+        elif obj == self.cw_entry:
+            action = key_bindings.get(f"CW entry:{key_name}", None)
+        # Exchange is Other 1 + 2
+        if action is None and obj in (self.other_1, self.other_2):
+            action = key_bindings.get(f"Exchange:{key_name}", None)
+        # generic binding
+        if action is None:
+            action = key_bindings.get(key_name, None)
+
+        if action:
+            if action_function := getattr(not1mm.actions, action, None):
+                action_function(self)
+                return True
+        return False  # key not handled here
+
+    def eventFilter(self, obj, event) -> bool:
+        """
+        This intercepts key events on the input widgets.
+        True: event processing stops here.
+        False: further processing in the input widget (bindings like Ctrl+A),
+        then forwarded to MainWindow.keyPressEvent.
+        """
+
+        if event.type() != QEvent.Type.KeyPress:
+            return False
+        if self.process_key_bindings(event, obj=obj):
+            return True
+        return False
+
     def keyPressEvent(self, event: QKeyEvent) -> None:  # pylint: disable=invalid-name
         """
-        This overrides Qt key event.
-
-        Parameters:
-        ----------
-        event: QKeyEvent
-        Qt key event
-
-        Returns:
-        -------
-        None
-
-        Control
-        QWRTYIOPSFGHJLBNM,./;'[]//-
-
-
-        shift control
-        ABCDEFGHIJKLMNOPQRSTUVWXY
+        This overrides Qt key event to catch keys not yet handled in the input widgets.
         """
+
+        if self.process_key_bindings(event):
+            return
+
         modifier = event.modifiers()
-
-        if (
-            event.key() in [Qt.Key.Key_Equal, Qt.Key.Key_L]
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            self.save_contact()
-            return
-        if event.key() == Qt.Key.Key_K:
-            self.toggle_cw_entry()
-            return
-        if (
-            event.key() == Qt.Key.Key_S
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            freq = self.radio_state.get("vfoa")
-            dx = self.callsign.text()
-            if freq and dx:
-                cmd = {}
-                cmd["cmd"] = "SPOTDX"
-                cmd["dx"] = dx
-                cmd["freq"] = float(int(freq) / 1000)
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
-            return
-        if (
-            event.key() == Qt.Key.Key_M
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            self.mark_spot(comment=f"{self.current_mode} MARKED")
-            return
-        if (
-            event.key() == Qt.Key.Key_G
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            dx = self.callsign.text()
-            if dx:
-                cmd = {}
-                cmd["cmd"] = "FINDDX"
-                cmd["dx"] = dx
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
-            return
-        if (
-            event.key() == Qt.Key.Key_Q
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):  # pylint: disable=no-member
-            if self.cq_freq:
-                self.radio_state["vfoa"] = self.cq_freq
-                if self.rig_control:
-                    self.rig_control.set_vfo(self.cq_freq)
-                self.set_running(True)
-                self.clearinputs()
-            return
-        if (
-            event.key() == Qt.Key.Key_R
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):  # pylint: disable=no-member
-            self.toggle_run_sp()
-            return
-        if (
-            event.key() == Qt.Key.Key_T
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):  # pylint: disable=no-member
-            if hasattr(self.contest, "add_test_data"):
-                self.contest.add_test_data(self)
-            return
-
-        if (
-            event.key() == Qt.Key.Key_W
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):  # pylint: disable=no-member
-            self.clearinputs()
-            return
-        if (
-            event.key() == Qt.Key.Key_Escape
-            and modifier != Qt.KeyboardModifier.ControlModifier
-        ):
-            self.stop_all()
-        if event.key() == Qt.Key.Key_Up:
-            cmd = {}
-            cmd["cmd"] = "PREVSPOT"
-            if self.bandmap_window:
-                self.bandmap_window.msg_from_main(cmd)
-            return
-        if event.key() == Qt.Key.Key_Down:
-            cmd = {}
-            cmd["cmd"] = "NEXTSPOT"
-            if self.bandmap_window:
-                self.bandmap_window.msg_from_main(cmd)
-            return
-        if (
-            event.key() == Qt.Key.Key_PageUp
-            and modifier != Qt.KeyboardModifier.ControlModifier
-        ):
-            if self.cw is not None:
-                self.cw.speed += self.pref.get("cwstepping", 1)
-                self.cw_speed.setValue(self.cw.speed)
-                if self.cw.servertype == 1:
-                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
-                if self.cw.servertype == 2:
-                    self.cw.set_winkeyer_speed(self.cw_speed.value())
-            return
-        if (
-            event.key() == Qt.Key.Key_PageDown
-            and modifier != Qt.KeyboardModifier.ControlModifier
-        ):
-            if self.cw is not None:
-                self.cw.speed -= self.pref.get("cwstepping", 1)
-                self.cw_speed.setValue(self.cw.speed)
-                if self.cw.servertype == 1:
-                    self.cw.sendcw(f"\x1b2{self.cw.speed}")
-                if self.cw.servertype == 2:
-                    self.cw.set_winkeyer_speed(self.cw_speed.value())
-            return
-        if (
-            event.key() == Qt.Key.Key_Period
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            freq = self.radio_state.get("vfoa")
-            selected_mode = self.radio_state.get("mode")
-            if selected_mode == "CW":
-                deltaf = 20
-            elif selected_mode in ["LSB", "USB", "SSB"]:
-                deltaf = 100
-            else:
-                deltaf = 0
-            vfo = int(freq) + deltaf
-            if self.rig_control:
-                self.rig_control.set_vfo(vfo)
-                return
-        if (
-            event.key() == Qt.Key.Key_Comma
-            and modifier == Qt.KeyboardModifier.ControlModifier
-        ):
-            freq = self.radio_state.get("vfoa")
-            selected_mode = self.radio_state.get("mode")
-            if selected_mode == "CW":
-                deltaf = 20
-            elif selected_mode in ["LSB", "USB", "SSB"]:
-                deltaf = 100
-            else:
-                deltaf = 0
-            vfo = int(freq) - deltaf
-            if self.rig_control:
-                self.rig_control.set_vfo(vfo)
-                return
         if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
             if self.sent.hasFocus():
                 logger.debug("From sent")
