@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-13] Merge pull request #616 from df7cb/refactor-rigctld
+  - Refactor rigctld methods and align PTT state across CAT backends
 - [2026-07-12] Merge pull request #615 from df7cb/bandmap-zoom
   - Fix bandmap zoom on 160m
 - [2026-07-11] @mbridak Add MacOS classifier to project metadata
