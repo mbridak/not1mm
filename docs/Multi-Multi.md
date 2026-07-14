@@ -10,11 +10,11 @@ You could even use this while operating alone as an automated backup. So in case
 
 In the configuration dialog under the group tab, select Connect to server.
 
-![config](https://github.com/mbridak/not1mm/raw/master/pic/configuration_group.png)
+![config](https://github.com/mbridak/not1mm/raw/master/docs/pictures/configuration_group.png)
 
 One computer needs to be the master station. The master station will tell the renfield server what contest is being run.
 
 For the settings of the contest, if the Operator is set to "MULTI-OP" and the Transmitter category is not "ONE" or "SWL" Not1MM will ask the renfield server for serial numbers and dupe checks.
 
-![contest settings](https://github.com/mbridak/not1mm/raw/master/pic/multi_multi.png)
+![contest settings](https://github.com/mbridak/not1mm/raw/master/docs/pictures/multi_multi.png)
 

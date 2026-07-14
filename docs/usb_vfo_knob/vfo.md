@@ -16,7 +16,7 @@ Even though the Pico is a 3.3v device, the 5v can be pulled from the Pico's VBUS
 
 So connect the encoder VCC to VBUS, GND to GND, A+ to GPIO22 and B+ to GPIO21.
 
-![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/pic/encoder.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/docs/pictures/encoder.jpg)
 
 ## The Firmware
 
@@ -66,6 +66,6 @@ I've also included an STL file to 3D print a knob and enclosure and a DXF file f
 
 Located in the usb_vfo_knob folder.
 
-![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_1.jpg)
-![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_2.jpg)
-![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/usb_vfo_knob/vfo_knob_3.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/docs/usb_vfo_knob/vfo_knob_1.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/docs/usb_vfo_knob/vfo_knob_2.jpg)
+![Rotary Encoder](https://github.com/mbridak/not1mm/raw/master/docs/usb_vfo_knob/vfo_knob_3.jpg)
