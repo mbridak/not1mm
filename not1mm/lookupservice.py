@@ -8,14 +8,12 @@ Purpose: Lookup callsigns with online services.
 """
 
 import logging
-import os
-from json import loads
 
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
 from not1mm.lib.lookup import HamQTH, QRZlookup
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +42,7 @@ class LookupService(QDockWidget):
 
     def get_settings(self) -> dict:
         """Get the settings."""
-        if os.path.exists(fsutils.CONFIG_FILE):
-            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
-                return loads(file_descriptor.read())
-        return {}
+        return Preferences.data()
 
     def msg_from_main(self, packet):
         """"""
