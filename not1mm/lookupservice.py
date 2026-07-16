@@ -27,22 +27,21 @@ class LookupService(QDockWidget):
         super().__init__()
         self._udpwatch = None
         self.look_up = None
-        self.settings = self.get_settings()
-        if self.settings:
-            if self.settings.get("useqrz"):
-                self.look_up = QRZlookup(
-                    self.settings.get("lookupusername", ""),
-                    self.settings.get("lookuppassword", ""),
-                )
-            if self.settings.get("usehamqth"):
-                self.look_up = HamQTH(
-                    self.settings.get("lookupusername", ""),
-                    self.settings.get("lookuppassword", ""),
-                )
+        self.settings = Preferences.data()
+        self.setup()
 
-    def get_settings(self) -> dict:
-        """Get the settings."""
-        return Preferences.data()
+    def setup(self):
+        self.look_up = None
+        if self.settings.get("useqrz"):
+            self.look_up = QRZlookup(
+                self.settings.get("lookupusername", ""),
+                self.settings.get("lookuppassword", ""),
+            )
+        elif self.settings.get("usehamqth"):
+            self.look_up = HamQTH(
+                self.settings.get("lookupusername", ""),
+                self.settings.get("lookuppassword", ""),
+            )
 
     def msg_from_main(self, packet):
         """"""
@@ -58,15 +57,4 @@ class LookupService(QDockWidget):
             return
 
         if packet.get("cmd", "") == "REFRESH_LOOKUP":
-            self.settings = self.get_settings()
-            self.look_up = None
-            if self.settings.get("useqrz"):
-                self.look_up = QRZlookup(
-                    self.settings.get("lookupusername", ""),
-                    self.settings.get("lookuppassword", ""),
-                )
-            if self.settings.get("usehamqth"):
-                self.look_up = HamQTH(
-                    self.settings.get("lookupusername", ""),
-                    self.settings.get("lookuppassword", ""),
-                )
+            self.setup()
