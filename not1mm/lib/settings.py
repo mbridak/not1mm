@@ -3,6 +3,8 @@
 import logging
 from PyQt6 import QtWidgets, uic
 
+from not1mm.lib.preferences import Preferences
+
 try:
     import sounddevice as sd
 except OSError:
@@ -407,3 +409,4 @@ class Settings(QtWidgets.QDialog):
         if self.activate_23cm.isChecked():
             bandlist.append("23cm")
         self.preference["bands"] = bandlist
+        Preferences.save()

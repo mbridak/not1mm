@@ -9,14 +9,12 @@ Purpose: Service to post 'real time' scores.
 
 import datetime
 import logging
-import os
-from json import loads
 
 import requests
 from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 from requests.auth import HTTPBasicAuth
 
-import not1mm.fsutils as fsutils
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +72,4 @@ class RTCService(QObject):
 
     def get_settings(self) -> dict:
         """Get the settings."""
-        if os.path.exists(fsutils.CONFIG_FILE):
-            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
-                return loads(file_descriptor.read())
+        return Preferences.data()

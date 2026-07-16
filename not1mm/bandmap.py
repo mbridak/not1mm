@@ -14,7 +14,6 @@ import re
 import sqlite3
 from datetime import datetime, timezone
 from decimal import Decimal
-from json import loads
 
 from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -22,6 +21,7 @@ from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 import not1mm.fsutils as fsutils
+from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
 
@@ -431,7 +431,7 @@ class BandMapWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
         # self.thefont = QFont("JetBrains Mono", 10, QFont.Weight.Thin)
         self.thefont = QFont("JetBrains Mono", 10)
-        self.settings = self.get_settings()
+        self.settings = Preferences.data()
         self.clear_spot_olderSpinBox.setValue(
             int(self.settings.get("cluster_expire", 1))
         )
@@ -471,12 +471,6 @@ class BandMapWindow(QDockWidget):
     def setActive(self, mode: bool):
         self.active = bool(mode)
         self.request_workedlist()
-
-    def get_settings(self) -> dict:
-        """Get the settings."""
-        if os.path.exists(fsutils.CONFIG_FILE):
-            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
-                return loads(file_descriptor.read())
 
     def msg_from_main(self, packet):
         """"""
@@ -615,7 +609,6 @@ class BandMapWindow(QDockWidget):
         if self.connected is True:
             self.close_cluster()
             return
-        self.settings = self.get_settings()
         server = self.settings.get("cluster_server", "dxc.nc7j.com")
         port = self.settings.get("cluster_port", 7373)
         logger.info(f"connecting to dx cluster {server} {port}")
