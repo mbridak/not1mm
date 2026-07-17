@@ -16,7 +16,7 @@ import socket
 import sys
 import time
 import uuid
-from json import dumps, loads
+from json import loads
 from json.decoder import JSONDecodeError
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
