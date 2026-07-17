@@ -15,7 +15,6 @@ import datetime
 import logging
 import os
 import sys
-from json import loads
 
 import serial
 from PyQt6 import QtWidgets, uic
@@ -26,6 +25,7 @@ from PyQt6.QtWidgets import QDockWidget
 import not1mm.fsutils as fsutils
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.preferences import Preferences
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -65,16 +65,7 @@ class VfoWindow(QDockWidget):
         Load preference file.
         Get CAT interface.
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref: dict = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref: dict = Preferences.data()
 
         if self.pref.get("useflrig", False):
             logger.debug(
