@@ -14,7 +14,6 @@ import re
 import sqlite3
 from datetime import datetime, timezone
 from decimal import Decimal
-from json import loads
 
 from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -22,6 +21,7 @@ from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 import not1mm.fsutils as fsutils
+from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
 
@@ -397,7 +397,17 @@ class BandMapScene(QtWidgets.QGraphicsScene):
 class BandMapWindow(QDockWidget):
     """The BandMapWindow class."""
 
-    zoom = 5
+    default_zoom = 5
+    zoom_levels = [  # kHz per tick, decimal digits
+        (0.04, 1),
+        (0.1, 1),
+        (0.2, 0),
+        (0.4, 0),
+        (1, 0),
+        (2, 0),  # default level (index 5)
+        (4, 0),
+        (10, 0),
+    ]
     currentBand = Band("20m")
     txMark = []
     rxMark = []
@@ -431,7 +441,7 @@ class BandMapWindow(QDockWidget):
         uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
         # self.thefont = QFont("JetBrains Mono", 10, QFont.Weight.Thin)
         self.thefont = QFont("JetBrains Mono", 10)
-        self.settings = self.get_settings()
+        self.settings = Preferences.data()
         self.clear_spot_olderSpinBox.setValue(
             int(self.settings.get("cluster_expire", 1))
         )
@@ -443,8 +453,8 @@ class BandMapWindow(QDockWidget):
         self.clearButton.setIcon(icon)
         self.clearmarkedButton.clicked.connect(self.clear_marked)
         self.clearmarkedButton.setIcon(icon)
-        self.zoominButton.clicked.connect(self.dec_zoom)
-        self.zoomoutButton.clicked.connect(self.inc_zoom)
+        self.zoominButton.clicked.connect(self.zoom_in)
+        self.zoomoutButton.clicked.connect(self.zoom_out)
         self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
         self.socket = QtNetwork.QTcpSocket()
@@ -472,12 +482,6 @@ class BandMapWindow(QDockWidget):
         self.active = bool(mode)
         self.request_workedlist()
 
-    def get_settings(self) -> dict:
-        """Get the settings."""
-        if os.path.exists(fsutils.CONFIG_FILE):
-            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
-                return loads(file_descriptor.read())
-
     def msg_from_main(self, packet):
         """"""
         if self.active is False or not self.isVisible():
@@ -486,9 +490,9 @@ class BandMapWindow(QDockWidget):
             target_band_name = packet.get("band", "")
             if len(target_band_name):
                 if target_band_name[-1:] == "m":
-                    self.set_band(target_band_name, False)
+                    self.set_band(target_band_name)
                 else:
-                    self.set_band(packet.get("band") + "m", False)
+                    self.set_band(packet.get("band") + "m")
             try:
                 if self.rx_freq != float(packet.get("vfoa")) / 1000:
                     self.rx_freq = float(packet.get("vfoa")) / 1000
@@ -615,7 +619,6 @@ class BandMapWindow(QDockWidget):
         if self.connected is True:
             self.close_cluster()
             return
-        self.settings = self.get_settings()
         server = self.settings.get("cluster_server", "dxc.nc7j.com")
         port = self.settings.get("cluster_port", 7373)
         logger.info(f"connecting to dx cluster {server} {port}")
@@ -704,17 +707,19 @@ class BandMapWindow(QDockWidget):
         self.drawTXRXMarks(step)
         self.update_stations()
 
-    def inc_zoom(self):
-        """doc"""
-        self.zoom += 1
-        self.zoom = min(self.zoom, 7)
+    def zoom_out(self):
+        """The zoom out button was clicked"""
+        zoom = self.settings.get("bandmap_zoom", self.default_zoom) + 1
+        zoom = min(zoom, len(self.zoom_levels) - 1)  # clamp to valid values
+        self.settings["bandmap_zoom"] = zoom
         self.update()
         self.center_on_rxfreq()
 
-    def dec_zoom(self):
-        """doc"""
-        self.zoom -= 1
-        self.zoom = max(self.zoom, 0)
+    def zoom_in(self):
+        """The zoom in button was clicked"""
+        zoom = self.settings.get("bandmap_zoom", self.default_zoom) - 1
+        zoom = max(zoom, 0)  # clamp to valid values
+        self.settings["bandmap_zoom"] = zoom
         self.update()
         self.center_on_rxfreq()
 
@@ -872,33 +877,24 @@ class BandMapWindow(QDockWidget):
 
     def determine_step_digits(self):
         """doc"""
-        return_zoom = {
-            0: (0.04, 1),
-            1: (0.1, 1),
-            2: (0.2, 0),
-            3: (0.4, 0),
-            4: (1, 0),
-            5: (2, 0),
-            6: (4, 0),
-            7: (10, 0),
-        }
-        step, digits = return_zoom.get(self.zoom, (0.1, 1))
+        zoom = self.settings.get("bandmap_zoom", self.default_zoom)
+        zoom = max(0, min(zoom, len(self.zoom_levels) - 1))
+        step, digits = self.zoom_levels[zoom]
 
-        if self.currentBand.start >= 28.0 and self.currentBand.start < 420.0:
+        if self.currentBand.start >= 50_000.0 and self.currentBand.start < 420_000.0:
             step = step * 10
-            return (step, digits)
-
-        if self.currentBand.start >= 420.0 and self.currentBand.start < 2300.0:
+            digits = 0
+        elif (
+            self.currentBand.start >= 420_000.0 and self.currentBand.start < 2300_000.0
+        ):
             step = step * 100
+            digits = 0
 
         return (step, digits)
 
-    def set_band(self, band: str, savePrevBandZoom: bool) -> None:
+    def set_band(self, band: str) -> None:
         """Change band being shown."""
-        logger.debug("%s", f"{band} {savePrevBandZoom}")
         if band != self.currentBand.name:
-            if savePrevBandZoom:
-                self.saveCurrentZoom()
             self.currentBand = Band(band)
             self.update()
 

@@ -133,7 +133,7 @@ class DataBase:
             logger.error("%s", exception)
             return ()
 
-    def exec_sql_commit(self, query: str, params=(), error_logger=logger.error) -> None:
+    def exec_sql_commit(self, query: str, params=(), commit=True, error_logger=logger.error) -> None:
         """Exec write query with database changes and commit"""
         try:
             logger.debug("%s", query)
@@ -141,11 +141,15 @@ class DataBase:
                 logger.debug("Parameters: %s", params)
             cursor = self.conn.cursor()
             cursor.execute(query, params)
-            self.conn.commit()
+            if commit:
+                self.conn.commit()
         except sqlite3.OperationalError as exception:
             error_logger("%s", exception)
 
-    def exec_sql_insert(self, table: str, row: dict) -> None:
+    def commit_it(self):
+        self.conn.commit()
+
+    def exec_sql_insert(self, table: str, row: dict, commit=True) -> None:
         """Insert a dict into table columns"""
         if row == {}:
             return
@@ -159,6 +163,7 @@ class DataBase:
         self.exec_sql_commit(
             f"insert into {table} ({', '.join(fields)}) values ({', '.join(placeholders)});",
             values,
+            commit=commit,
         )
 
     def exec_sql_update(self, table: str, row: dict, key: str) -> None:
@@ -379,7 +384,8 @@ class DataBase:
     def add_callhistory_items(self, history_list: list) -> None:
         """Add a list of items to the call history db"""
         for history in history_list:
-            self.exec_sql_insert("CALLHISTORY", history)
+            self.exec_sql_insert("CALLHISTORY", history, commit=False)
+        self.commit_it()
 
     def get_contest_profile(self, contest: str):
         """get the contest profile"""
@@ -467,7 +473,7 @@ class DataBase:
 
     def fetch_contact_by_uuid(self, uuid: str) -> dict:
         """returns a list of dicts with last contact in the database."""
-        return self.exec_sql(f"select * from dxlog where ID = ?;", (uuid,))
+        return self.exec_sql("select * from dxlog where ID = ?;", (uuid,))
 
     def fetch_cqzn_exists(self, number) -> dict:
         """returns a dict key of nr_count"""
@@ -731,7 +737,7 @@ class DataBase:
                 mode_test = "OTHER"
         # end match
 
-        query = f"""
+        query = """
                     select 
                     count(*) as isdupe
                     from (

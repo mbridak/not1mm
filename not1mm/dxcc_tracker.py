@@ -1,5 +1,4 @@
 import logging
-import os
 from json import loads
 from json.decoder import JSONDecodeError
 
@@ -10,6 +9,7 @@ from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -141,18 +141,7 @@ class DXCCWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def load_new_db(self) -> None:
         """

@@ -15,7 +15,6 @@ import datetime
 import logging
 import os
 import sys
-from json import loads
 
 import serial
 from PyQt6 import QtWidgets, uic
@@ -24,7 +23,9 @@ from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
-from not1mm.lib.cat_interface import CAT
+from not1mm.lib.cat_flrig import FlrigCAT
+from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.preferences import Preferences
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class VfoWindow(QDockWidget):
         self.action = action
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-        self.rig_control: CAT | None = None
+        self.rig_control: FlrigCAT | RigctldCAT | None = None
         self.timer: QTimer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
@@ -64,24 +65,14 @@ class VfoWindow(QDockWidget):
         Load preference file.
         Get CAT interface.
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref: dict = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref: dict = Preferences.data()
 
         if self.pref.get("useflrig", False):
             logger.debug(
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "flrig",
+            self.rig_control: FlrigCAT | None = FlrigCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
@@ -91,8 +82,7 @@ class VfoWindow(QDockWidget):
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "rigctld",
+            self.rig_control: RigctldCAT | None = RigctldCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
             )

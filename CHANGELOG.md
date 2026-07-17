@@ -1,5 +1,43 @@
 # Changelog
 
+- [2026-07-16] Merge pull request #618 from df7cb/preferences
+- [2026-07-17] Save bandmap zoom level in preferences
+- [2026-07-16] Refactor lookupservice setup
+  - Move preferences handling into a single place
+- [2026-07-13] Merge pull request #616 from df7cb/refactor-rigctld
+- [2026-07-07] Refactor rigctld methods and align PTT state across CAT backends
+- [2026-07-12] Merge pull request #615 from df7cb/bandmap-zoom
+  - Fix bandmap zoom on 160m
+- [2026-07-11] @mbridak Add MacOS classifier to project metadata
+- [2026-07-10] Merge pull request #614 from df7cb/database-race
+  - Fix race condition opening the database
+- [2026-07-06] Create AGENTS.md
+- [2026-07-05] Merge pull request #613 from df7cb/cat-classes
+  - Fix: Handle float format frequency responses in certain rigctld emulators
+- [2026-07-03] Split CAT class into three separate for flrig, rigctld and fake
+- [2026-07-05] GitBook: Update content
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+- [2026-07-04] Merge pull request #610 from ivica3730k/master
+  - fix: remove unecessary cleanup for pr
+  - fix: check for audio interface availability on startup - guard the ui… (#1)
+  - @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
+- [2026-07-03] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Add cabrillo stub to ta vhf uhf to prevent crash.
+  - GitBook: Update content
+  - @mbridak Fix contest name casing and improve error handling in New Contest dialog
+- [2026-07-02] Merge pull request #606 from df7cb/commit
+  - Add "commit" parameter to exec_sql_commit
+- [2026-06-29] Merge pull request #603 from dawkagaming/dawkagaming-patch-1
+  - Update the metainfo file
+- [2026-06-25] Merge pull request #602 from Egco2811/feature/ta-vhf-uhf-contest
+  - run black
+  - implemented edi export, reverted freq changes
+  - Merge branch 'mbridak:master' into master
+  - @mbridak Fix: unresponsive interface after loading call history file.
+  - changed dummy frequencies to match the default turkish 70cm and 2m bands
+  - adjusted sent received fills to fit the FM format
+  - renamed the file to match the .ui file
+  - added ta_vhf_uhf contest
 - [2026-06-23] Merge pull request #600 from df7cb/database
   - Fixup: Simplify database queries
 - [2026-06-22] Merge pull request #599 from df7cb/ok1wc
@@ -2691,9 +2729,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

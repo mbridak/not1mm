@@ -8,10 +8,8 @@ Purpose: Onscreen widget to show possible matches to callsigns entered in the ma
 """
 
 import logging
-import os
 import queue
 from dataclasses import dataclass
-from json import loads
 from typing import Optional
 
 from PyQt6 import uic
@@ -22,6 +20,7 @@ from rapidfuzz.distance import Levenshtein
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.preferences import Preferences
 from not1mm.lib.super_check_partial import SCP
 
 logger = logging.getLogger(__name__)
@@ -121,18 +120,7 @@ class CheckWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def clear_lists(self) -> None:
         """

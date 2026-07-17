@@ -14,7 +14,6 @@ import argparse
 from random import randint
 from json import dumps, loads, JSONDecodeError
 
-
 parser = argparse.ArgumentParser(description="Simulate a Field Day participant.")
 parser.add_argument("-c", "--call", type=str, help="Your Callsign")
 parser.add_argument("-b", "--band", type=str, help="Your Band")

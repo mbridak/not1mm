@@ -9,9 +9,7 @@ Purpose: Onscreen widget to show and edit logged contacts.
 
 import logging
 import math
-import os
 import queue
-from json import loads
 
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtSignal
@@ -21,6 +19,7 @@ import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_contact import EditContact
 from not1mm.lib.n1mm import N1MM
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -232,18 +231,7 @@ class LogWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
         try:
             self.n1mm = N1MM(

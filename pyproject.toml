@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "26.6.23"
+version = "26.7.16"
 description = "NOT1MM Logger"
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -32,6 +32,7 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: X11 Applications :: Qt",
     "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
     "Intended Audience :: End Users/Desktop",
     "Natural Language :: English",
     "Topic :: Communications :: Ham Radio",
@@ -47,7 +48,7 @@ where = ["."]
 exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test", "usb_vfo_knob*", "research*",]
 
 [tool.setuptools.package-data]
-"not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html",]
+"not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html", "*.metainfo.xml",]
 "not1mm.data.phonetics" = ["*.wav",]
 "not1mm.icon" = ["*.png",]
 
