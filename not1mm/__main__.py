@@ -16,7 +16,7 @@ import socket
 import sys
 import time
 import uuid
-from json import dumps, loads
+from json import loads
 from json.decoder import JSONDecodeError
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -96,6 +96,7 @@ from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
 from not1mm.lib.parse_udc import UDC
+from not1mm.lib.preferences import Preferences
 from not1mm.lib.select_contest import SelectContest
 from not1mm.lib.settings import Settings
 from not1mm.lib.super_check_partial import SCP
@@ -109,7 +110,7 @@ from not1mm.rotator import RotatorWindow
 from not1mm.rtc_service import RTCService
 from not1mm.statistics import StatsWindow
 from not1mm.vfo import VfoWindow
-from not1mm.voice_keying import Voice
+from not1mm.voice_keying import Voice, has_output_device
 from not1mm.zone_tracker import ZoneWindow
 
 poll_time = datetime.datetime.now()
@@ -121,60 +122,6 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     ctyfile = {}
-    pref_ref = {
-        "sounddevice": "default",
-        "useqrz": False,
-        "lookupusername": "username",
-        "lookuppassword": "password",
-        "run_state": True,
-        "command_buttons": False,
-        "cw_macros": True,
-        "bands_modes": True,
-        "bands": ["160", "80", "40", "20", "15", "10"],
-        "current_database": "ham.db",
-        "contest": "",
-        "multicast_group": "239.1.1.1",
-        "multicast_port": 2239,
-        "interface_ip": "0.0.0.0",
-        "send_rtc_scores": False,
-        "rtc_url": "",
-        "rtc_user": "",
-        "rtc_pass": "",
-        "rtc_interval": 2,
-        "send_n1mm_packets": False,
-        "n1mm_station_name": "20M CW Tent",
-        "n1mm_operator": "Bernie",
-        "n1mm_radioport": "127.0.0.1:12060",
-        "n1mm_contactport": "127.0.0.1:12060",
-        "n1mm_lookupport": "127.0.0.1:12060",
-        "n1mm_scoreport": "127.0.0.1:12060",
-        "usehamdb": False,
-        "usehamqth": False,
-        "cloudlog": False,
-        "cloudlogapi": "",
-        "cloudlogurl": "",
-        "CAT_ip": "127.0.0.1",
-        "userigctld": False,
-        "useflrig": False,
-        "cwip": "127.0.0.1",
-        "cwport": 6789,
-        "cwtype": 0,
-        "useserver": False,
-        "im_the_master": False,
-        "CAT_port": 4532,
-        "cluster_server": "dxc.nc7j.com",
-        "cluster_port": 7373,
-        "cluster_filter": "Set DX Filter SpotterCont=NA",
-        "cluster_mode": "OPEN",
-        "cluster_expire": 1,
-        "logwindow": False,
-        "bandmapwindow": False,
-        "checkwindow": False,
-        "vfowindow": False,
-        "ratewindow": False,
-        "statisticswindow": False,
-        "darkmode": True,
-    }
     appstarted = False
     contact = {}
     contest = None
@@ -212,6 +159,8 @@ class MainWindow(QtWidgets.QMainWindow):
     esm_dict = {}
     sandpfreq = 0
     current_sn = None
+    # Starts false and is set true when runtime output-device checks succeed.
+    voice_output_available = False
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -756,16 +705,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 "There ws an error parsing the BigCity file.", blocking=False
             )
 
-        self.show_splash_msg("Starting LookUp Service.")
+        self.show_splash_msg("Reading preferences.")
+        self.pref = Preferences.load()
+        self.apply_preferences()
 
+        self.show_splash_msg("Starting LookUp Service.")
         self.lookup_service = LookupService()
         self.lookup_service.message.connect(self.dockwidget_message)
         self.lookup_service.hide()
 
         self.server_seen = datetime.datetime.now()
-
-        self.show_splash_msg("Reading preferences.")
-        self.readpreferences()
 
         self.show_splash_msg("Starting voice thread.")
         self.voice_process = Voice()
@@ -779,10 +728,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
         self.voice_thread.start()
 
-        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
-            "current_database", "ham.db"
-        )
-        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.station = self.database.fetch_station()
         if self.station is None:
             self.station = {}
@@ -1503,7 +1448,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def cluster_expire_updated(self, number: str) -> None:
         """signal from bandmap"""
         self.pref["cluster_expire"] = int(number)
-        self.write_preference()
+        Preferences.save()
 
     def fldigi_qso(self, result: str) -> None:
         """
@@ -1738,7 +1683,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        self.write_preference()
+        Preferences.save()
         cmd = {}
         cmd["cmd"] = "HALT"
         if self.lookup_service:
@@ -1877,9 +1822,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.configuration_dialog.save_changes()
-        self.write_preference()
+        Preferences.save()
         # logger.debug("%s", f"{self.pref}")
-        self.readpreferences()
+        self.apply_preferences()
+        self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
 
     def new_database(self) -> None:
         """
@@ -1899,7 +1845,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if filename[-3:] != ".db":
                 filename += ".db"
             self.pref["current_database"] = os.path.basename(filename)
-            self.write_preference()
+            Preferences.save()
             self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
                 "current_database", "ham.db"
             )
@@ -1948,7 +1894,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filename = self.filepicker("open")
         if filename:
             self.pref["current_database"] = os.path.basename(filename)
-            self.write_preference()
+            Preferences.save()
             self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
                 "current_database", "ham.db"
             )
@@ -2061,7 +2007,7 @@ class MainWindow(QtWidgets.QMainWindow):
         selected_row = self.contest_dialog.contest_list.currentRow()
         contest = self.contest_dialog.contest_list.item(selected_row, 0).text()
         self.pref["contest"] = contest
-        self.write_preference()
+        Preferences.save()
         logger.debug("Selected contest: %s", f"{contest}")
         self.load_contest()
         self.worked_list = self.database.get_calls_and_bands()
@@ -2186,7 +2132,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         logger.debug("%s", f"{contest}")
         self.database.update_contest(contest)
-        self.write_preference()
+        Preferences.save()
         self.load_contest()
 
     def load_contest(self) -> None:
@@ -2508,7 +2454,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_log_window(self) -> None:
         """Launch or close the log window"""
         self.pref["logwindow"] = self.actionLog_Window.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionLog_Window.isChecked():
             self.log_window.show()
         else:
@@ -2517,7 +2463,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_bandmap_window(self) -> None:
         """Launch or close the bandmap window"""
         self.pref["bandmapwindow"] = self.actionBandmap.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionBandmap.isChecked():
             self.bandmap_window.show()
             self.bandmap_window.setActive(True)
@@ -2528,7 +2474,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_check_window(self) -> None:
         """Launch or close the check window"""
         self.pref["checkwindow"] = self.actionCheck_Window.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionCheck_Window.isChecked():
             self.check_window.show()
             self.check_window.setActive(True)
@@ -2539,7 +2485,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_rate_window(self) -> None:
         """Launch or close the rate window"""
         self.pref["ratewindow"] = self.actionRate_Window.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionRate_Window.isChecked():
             self.rate_window.show()
             self.rate_window.setActive(True)
@@ -2550,7 +2496,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_stats_window(self) -> None:
         """Launch or close the stats window"""
         self.pref["statisticswindow"] = self.actionStatistics.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionStatistics.isChecked():
             self.statistics_window.show()
             self.statistics_window.setActive(True)
@@ -2562,7 +2508,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_dxcc_window(self) -> None:
         """Launch or close the dxcc window"""
         self.pref["dxccwindow"] = self.actionDXCC.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionDXCC.isChecked():
             self.dxcc_window.show()
             self.dxcc_window.setActive(True)
@@ -2574,7 +2520,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_zone_window(self) -> None:
         """Launch or close the zone window"""
         self.pref["zonewindow"] = self.actionZone.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionZone.isChecked():
             self.zone_window.show()
             self.zone_window.setActive(True)
@@ -2586,7 +2532,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_rotator_window(self) -> None:
         """Launch or close the rotator window"""
         self.pref["rotatorwindow"] = self.actionRotator.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionRotator.isChecked():
             self.rotator_window.show()
             self.rotator_window.setActive(True)
@@ -2597,7 +2543,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_vfo(self) -> None:
         """Launch or close the VFO window"""
         self.pref["vfowindow"] = self.actionVFO.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionVFO.isChecked():
             self.vfo_window.show()
         else:
@@ -2606,7 +2552,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def launch_chat_window(self) -> None:
         """Launch or close the chat window"""
         self.pref["chatwindow"] = self.actionGroup_Chat.isChecked()
-        self.write_preference()
+        Preferences.save()
         if self.actionGroup_Chat.isChecked():
             self.chat_window.show()
             self.chat_window.setActive(True)
@@ -2689,7 +2635,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.lookup_service:
             self.lookup_service.msg_from_main(cmd)
-        self.write_preference()
+        Preferences.save()
 
     def cty_lookup(self, callsign: str) -> dict:
         """Lookup callsign in cty.dat file.
@@ -2740,10 +2686,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.set_winkeyer_speed(self.cw.speed)
         if self.rig_control and self.rig_control.cat:
             if self.pref.get("cwtype") == 3:
-                if self.rig_control.interface == "flrig":
-                    self.rig_control.cat.set_flrig_cw_speed(self.cw.speed)
-                elif self.rig_control.interface == "rigctld":
-                    self.rig_control.cat.set_rigctl_cw_speed(self.cw.speed)
+                self.rig_control.set_cw_speed(self.cw.speed)
 
     def stop_cw(self) -> None:
         """"""
@@ -2760,11 +2703,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rig_control and self.rig_control.cat:
             if self.rig_control.online:
                 if self.pref.get("cwtype") == 3:
-                    if self.rig_control.interface == "flrig":
-                        self.rig_control.cat.set_flrig_cw_send(False)
-                        self.rig_control.cat.set_flrig_cw_send(True)
-                    if self.rig_control.interface == "rigctld":
-                        self.rig_control.cat.stopcwrigctl()
+                    self.rig_control.stopcw()
 
     def stop_all(self) -> None:
         """Stop CW and rotator."""
@@ -3511,7 +3450,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # contest['TimeCategory'] = self.contest_dialog.
         logger.debug("%s", f"{contest}")
         self.database.add_contest(contest)
-        self.write_preference()
+        Preferences.save()
         self.load_contest()
 
     def edit_station_settings(self) -> None:
@@ -3762,7 +3701,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.rig_control:
                 ptt_state = self.rig_control.get_ptt()
                 logger.debug(f"PTT State: {ptt_state} (type={type(ptt_state)})")
-                # Sometimes rigctl returns "PTT State: get_mode:|Mode: LSB|Passband: 2800|RPRT 0" ???
                 if str(ptt_state) == "0":
                     self.ptt_on()
                 else:
@@ -3886,12 +3824,20 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Function Key: %s", function_key.text())
+        if self._is_phone_mode():
+            self.voice_output_available = has_output_device(
+                self.pref.get("sounddevice", "default")
+            )
+            if not self.voice_output_available:
+                self.show_CW_macros()
+                logger.warning("No available output sound device for voice keying.")
+                return
         if function_key.toolTip()[0:3] == "RI:":
             self.rig_control.cat.send_cat_string(function_key.toolTip()[3:])
             return
         if self.n1mm:
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
-        if self.radio_state.get("mode") in ["LSB", "USB", "SSB", "FM", "AM"]:
+        if self._is_phone_mode():
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
             # self.voice_string(self.process_macro(function_key.toolTip()))
             return
@@ -3946,73 +3892,25 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         self.pref["run_state"] = self.radioButton_run.isChecked()
-        self.write_preference()
+        Preferences.save()
         self.read_macros()
         self.check_esm()
 
-    def write_preference(self) -> None:
+    def apply_preferences(self) -> None:
         """
-        Write preferences to file.
+        Apply current preferences to subsystems (database, radio, CW, RTC, N1MM, ...).
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
+        Called once at startup and again after the Settings dialog closes.
+        Preferences.load() must have been called first.
         """
 
-        logger.debug("writepreferences")
-        try:
-            with open(fsutils.CONFIG_FILE, "wt", encoding="utf-8") as file_descriptor:
-                file_descriptor.write(dumps(self.pref, indent=4))
-                # logger.info("writing: %s", self.pref)
-        except (IOError, TypeError, ValueError) as exception:
-            logger.critical("writepreferences: %s", exception)
-            self.show_message_box(f"writepreferences: {exception}", blocking=False)
+        logger.debug("apply_preferences")
 
-    def readpreferences(self) -> None:
-        """
-        Restore preferences if they exist, otherwise create some sane defaults.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        logger.debug("readpreferences")
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    try:
-                        self.pref = loads(file_descriptor.read())
-                    except (JSONDecodeError, TypeError):
-                        logging.CRITICAL(
-                            "There was an error parsing the preference file."
-                        )
-                        self.show_message_box(
-                            "There was an error parsing the preference file.",
-                            blocking=False,
-                        )
-                    logger.info("%s", self.pref)
-            else:
-                logger.info("No preference file. Writing preference.")
-                with open(
-                    fsutils.CONFIG_FILE, "wt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = self.pref_ref.copy()
-                    file_descriptor.write(dumps(self.pref, indent=4))
-                    logger.info("%s", self.pref)
-        except (IOError, TypeError, ValueError) as exception:
-            logger.critical("Error: %s", exception)
-            self.show_message_box(f"readpreferences error: {exception}", blocking=False)
+        # open database as the first thing we do so other threads can use it
+        self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
+            "current_database", "ham.db"
+        )
+        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
 
         if self.pref.get("run_state", False) is True:
             self.radioButton_run.setChecked(True)
@@ -4249,7 +4147,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.pref["cw_macros"] = self.actionCW_Macros.isChecked()
-        self.write_preference()
+        Preferences.save()
         self.show_CW_macros()
 
     def show_CW_macros(self) -> None:
@@ -4264,13 +4162,44 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+        self.voice_output_available = has_output_device(
+            self.pref.get("sounddevice", "default")
+        )
+        is_phone_mode = self._is_phone_mode()
+        hide_for_missing_audio = is_phone_mode and not self.voice_output_available
 
-        if self.pref.get("cw_macros"):
+        for function_key in (
+            self.F1,
+            self.F2,
+            self.F3,
+            self.F4,
+            self.F5,
+            self.F6,
+            self.F7,
+            self.F8,
+            self.F9,
+            self.F10,
+            self.F11,
+            self.F12,
+        ):
+            function_key.setEnabled(not hide_for_missing_audio)
+
+        if self.pref.get("cw_macros") and not hide_for_missing_audio:
             self.Button_Row1.show()
             self.Button_Row2.show()
         else:
             self.Button_Row1.hide()
             self.Button_Row2.hide()
+
+    def _is_phone_mode(self) -> bool:
+        """Return True when the current operating mode is phone/voice."""
+        return self.current_mode == "SSB" or self.radio_state.get("mode") in (
+            "LSB",
+            "USB",
+            "SSB",
+            "FM",
+            "AM",
+        )
 
     def command_buttons_state_change(self) -> None:
         """
@@ -4286,7 +4215,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         self.pref["command_buttons"] = self.actionCommand_Buttons_2.isChecked()
-        self.write_preference()
+        Preferences.save()
         self.show_command_buttons()
 
     def show_command_buttons(self) -> None:
@@ -4572,9 +4501,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.rig_control.online:
                     self.rig_control.set_mode(self.rig_control.last_cw_mode)
                     if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                        if self.rig_control.interface == "flrig":
-                            self.cwspeed_spinbox_changed()
-                            self.rig_control.cat.set_flrig_cw_send(True)
+                        self.cwspeed_spinbox_changed()
+                        self.rig_control.set_cw_send(True)
             else:
                 self.setmode("CW")
                 self.radio_state["mode"] = "CW"
@@ -4777,6 +4705,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.read_macros()
                         if self.contest.name == "ICWC Medium Speed Test":
                             self.contest.prefill(self)
+                self.show_CW_macros()
             return
 
         if mode in ("LSB", "USB", "SSB", "FM", "AM"):
@@ -4786,6 +4715,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.sent.setText("59")
                     self.receive.setText("59")
                 self.read_macros()
+                self.show_CW_macros()
             return
 
         if mode in (
@@ -4809,6 +4739,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.sent.setText("599")
                     self.receive.setText("599")
                 self.read_macros()
+                self.show_CW_macros()
 
     # TODO
     def get_rover(self) -> None:
