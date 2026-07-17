@@ -69,6 +69,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-16] Merge pull request #618 from df7cb/preferences
+- [2026-07-17] Save bandmap zoom level in preferences
+- [2026-07-16] Refactor lookupservice setup
+  - Move preferences handling into a single place
 - [2026-07-13] Merge pull request #616 from df7cb/refactor-rigctld
   - Refactor rigctld methods and align PTT state across CAT backends
 - [2026-07-12] Merge pull request #615 from df7cb/bandmap-zoom
