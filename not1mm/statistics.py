@@ -1,8 +1,5 @@
 import datetime
 import logging
-import os
-from json import loads
-from json.decoder import JSONDecodeError
 
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -10,6 +7,7 @@ from PyQt6.QtWidgets import QDockWidget, QTableWidgetItem
 
 import not1mm.fsutils as fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -73,18 +71,7 @@ class StatsWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except (IOError, JSONDecodeError) as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def get_run_and_total_qs(self):
         """get numbers"""

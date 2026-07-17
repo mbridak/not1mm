@@ -1,14 +1,12 @@
 import datetime
 import logging
-import os
-from json import loads
-from json.decoder import JSONDecodeError
 
 from PyQt6 import QtGui, uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 import not1mm.fsutils as fsutils
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -71,18 +69,7 @@ class ChatWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except (IOError, JSONDecodeError) as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
