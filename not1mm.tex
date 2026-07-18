@@ -523,6 +523,68 @@ For example, to enable the auto-notch filter on a Yaesu FT-710, the command woul
 Note that CAT/CI-V command macros are only available when either FLRig\index{FLRig} or rigctld\index{rigctld} (HamLib)\index{HamLib} are being used for transceiver control.
 
 \newpage
+\section{Keyboard key bindings}
+\begin{tabular}{| c | p{9cm} |}
+	\hline
+	\textbf{Key} & \textbf{Result} \\
+	\hline
+	Esc & Stop CW sending and antenna rotation.\\
+	\hline
+	PgUp & Increase the CW sending speed. \\
+	\hline
+	PgDown & Decrease the CW sending speed. \\
+	\hline
+	Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
+	\hline
+	Arrow-Down & Jump to the next spot below the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
+	\hline
+	TAB & Move cursor to the right one field. \\
+	\hline
+	Shift-Tab & Move cursor left One field. \\
+	\hline
+	SPACE & When in the callsign field, move the input to the next field in the exchange. \\
+	\hline
+	Enter & Submit entered data to the log, unless ESM is enabled. \\
+	\hline
+	F1-F12 & Send (CW/RTTY/Voice) macros. \\
+	\hline
+	CTRL-S & Spot callsign to the cluster. \\
+	\hline
+	CTRL-M & Mark callsign in the bandmap window. \\
+	\hline
+	CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
+	\hline
+	CTRL-SHIFT-K & Open CW text input field. \\
+	\hline
+	CTRL-= & Log the contact without sending the ESM macros. \\
+	\hline
+	CTRL-W & Clear the input fields of any text. \\
+	\hline
+	CTRL-R & Toggle the Run state. \\
+	\hline
+	CTRL-Q & Jump to last CQ frequency. \\
+	\hline
+	ALT-B	& Toggle the bandmap window. \\
+	\hline
+	ALT-C	& Toggle the Check Partial window. \\
+	\hline
+	ALT-L	& Toggle the QSO Log window. \\
+	\hline
+	ALT-R	& Toggle the Rate window. \\
+	\hline
+	ALT-S	& Toggle the Statistics window. \\
+	\hline
+	ALT-V	& Toggle the VFO\index{VFO} window. \\
+	\hline
+	ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+	\hline
+	ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+	\hline
+\end{tabular}
+\subsubsection{And how to edit them}
+Luckily now you don't have to be stuck with my preferred bindings. The \index{key bindings} key bindings can now be edited \textbf{File >> Edit Keys}.
+
+\newpage
 \section{cty.dat and QRZ for Distance and Bearing}
 
 When a callsign is entered, a lookup\index{lookup} is done in the cty.dat\index{cty.dat} file to identify the country of origin, geographic center, CQ\index{CQ} zone, and ITU\index{ITU} region. Great circle calculations are then done to determine the heading\index{heading} and distance\index{distance} from the home grid\index{grid} square to the geographic center of the DX station. This information is displayed at the bottom left.
@@ -556,66 +618,6 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/mainwithcallouts.png}
 \vspace{0.5cm}
-
-\subsubsection{Keyboard Commands}
-
-\begin{tabular}{| c | p{9cm} |}
-    \hline
-    \textbf{Key} & \textbf{Result} \\
-    \hline
-    Esc & Stop CW sending and antenna rotation.\\
-    \hline
-    PgUp & Increase the CW sending speed. \\
-    \hline
-    PgDown & Decrease the CW sending speed. \\
-    \hline
-    Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
-    \hline
-    Arrow-Down & Jump to the next spot below the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
-    \hline
-    TAB & Move cursor to the right one field. \\
-    \hline
-    Shift-Tab & Move cursor left One field. \\
-    \hline
-    SPACE & When in the callsign field, move the input to the next field in the exchange. \\
-    \hline
-    Enter & Submit entered data to the log, unless ESM is enabled. \\
-    \hline
-    F1-F12 & Send (CW/RTTY/Voice) macros. \\
-    \hline
-    CTRL-S & Spot callsign to the cluster. \\
-    \hline
-    CTRL-M & Mark callsign in the bandmap window. \\
-    \hline
-    CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
-    \hline
-    CTRL-SHIFT-K & Open CW text input field. \\
-    \hline
-    CTRL-= & Log the contact without sending the ESM macros. \\
-    \hline
-    CTRL-W & Clear the input fields of any text. \\
-    \hline
-    CTRL-R & Toggle the Run state. \\
-    \hline
-    CTRL-Q & Jump to last CQ frequency. \\
-    \hline
-    ALT-B	& Toggle the bandmap window. \\
-    \hline
-    ALT-C	& Toggle the Check Partial window. \\
-    \hline
-    ALT-L	& Toggle the QSO Log window. \\
-    \hline
-    ALT-R	& Toggle the Rate window. \\
-    \hline
-    ALT-S	& Toggle the Statistics window. \\
-    \hline
-    ALT-V	& Toggle the VFO\index{VFO} window. \\
-    \hline
-    ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
-    \hline
-    ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
-    \hline
-\end{tabular}
 
 \subsection{The Log Window}
 
@@ -803,7 +805,7 @@ The program automatically updates the score as each new entry is logged. There m
 \newpage
 \section{ESM}
 \index{ESM}
-I caved and started working on ESM or Enter Sends Message. To test it out you can go to \textbf{FILE >> Configuration Settings}
+To turn on ESM or Enter Sends Message you can go to \textbf{FILE >> Configuration Settings}
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configuration_options.png}
