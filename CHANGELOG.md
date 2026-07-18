@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-07-18] Merge pull request #619 from df7cb/edit-keys
+- [2026-07-14] Configure key bindings in a new Edit Keys dialog
+- [2026-07-17] @mbridak Remove unused import of dumps from json in __main__.py
 - [2026-07-16] Merge pull request #618 from df7cb/preferences
 - [2026-07-17] Save bandmap zoom level in preferences
 - [2026-07-16] Refactor lookupservice setup
@@ -2729,3 +2732,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
