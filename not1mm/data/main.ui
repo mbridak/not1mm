@@ -1554,6 +1554,7 @@
     <addaction name="actionImport_ADIF"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
+    <addaction name="actionEdit_Keys"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_Call_History_File"/>
     <addaction name="actionUpdate_CTY"/>
@@ -2040,6 +2041,17 @@
   <action name="actionEdit_Current_Contest">
    <property name="text">
     <string>Edit Current Contest</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
+   </property>
+  </action>
+  <action name="actionEdit_Keys">
+   <property name="text">
+    <string>Edit Keys</string>
    </property>
    <property name="font">
     <font>
