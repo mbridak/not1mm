@@ -120,7 +120,7 @@ class Voice(QObject):
         if not has_output_device(self.sounddevice):
             logger.warning("No available output sound device for voice keying.")
             return
-        op_path = self.data_path / self.current_op
+        op_path = self.data_path / self.current_op.replace("/", "-")
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()
             filename = f"{str(op_path)}/{sub_string}.wav"
