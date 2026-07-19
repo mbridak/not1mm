@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-07-19] @mbridak Fix: Replace slashes in current_op with dashes for file path consistency
 - [2026-07-18] Merge pull request #619 from df7cb/edit-keys
 - [2026-07-14] Configure key bindings in a new Edit Keys dialog
 - [2026-07-17] @mbridak Remove unused import of dumps from json in __main__.py
