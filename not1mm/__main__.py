@@ -4695,7 +4695,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         if self.current_op:
-            op_path = fsutils.USER_DATA_PATH / self.current_op
+            op_path = fsutils.USER_DATA_PATH / self.current_op.replace("/", "-")
             logger.debug("op_path: %s", str(op_path))
             if op_path.is_dir() is False:
                 logger.debug("Creating Op Directory: %s", str(op_path))
