@@ -37,6 +37,7 @@ class RigctldCAT(CAT):
         self.rigctrlsocket = None
         self.rigctld_bw = "0"
         self.interface = "rigctld"
+        self.sync_vfos = False
         self.reinit()
 
     def reinit(self):
@@ -193,7 +194,27 @@ class RigctldCAT(CAT):
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
         self.rigctld_command(f"F VFOA {freq}")
+        if self.sync_vfos:
+            self.rigctld_command(f"F VFOB {freq}")
         return True
+
+    def set_sync_vfos(self, sync_vfos: bool):
+        """
+        Turn on/off the Sync VFOs feature. Syncs frequencies once when turned
+        on and then with every set_vfo().
+
+        It also turns on VFO Tracking mode on supported rigs. On ICOM, setting
+        VFOA using CAT doesn't automatically update VFOB even when tracking is
+        active, so we still need to set VFOB explicitly.
+        """
+        self.sync_vfos = sync_vfos
+        # turn on SY/Tracking on supported rigs
+        self.rigctld_command(
+            f"\\set_func VFOA SYNC {int(self.sync_vfos)}"
+        )
+        # sync now when activating
+        if self.sync_vfos and (freq := self.get_vfo()):
+            self.rigctld_command(f"F VFOB {freq}")
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
