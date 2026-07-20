@@ -77,8 +77,11 @@ class CAT:
     def get_mode_list(self):
         "Get a list of modes supported by the radio"
 
-    def set_vfo(self, freq: str) -> bool:
-        """Sets the radios vfo"""
+    def set_vfo(self, freq: str):
+        """Sets the radios VFO. Defaults to VFOA."""
+
+    def set_sync_vfos(self, sync_vfos: bool) -> bool:
+        """Turn Sync VFOs on/off"""
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
