@@ -138,6 +138,12 @@ def VFO_UP(self) -> None:
         self.rig_control.set_vfo(vfo)
 
 
+def TOGGLE_VFO_SYNC(self) -> None:
+    """Toggle the Synchronize VFOs mode"""
+    self.actionSynchronize_VFOs.setChecked(not self.actionSynchronize_VFOs.isChecked())
+    self.synchronize_vfos_triggered()
+
+
 def CW_SPEED_UP(self) -> None:
     """Increase CW sending speed"""
     if self.cw is not None:

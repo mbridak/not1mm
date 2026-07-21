@@ -343,6 +343,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionRotator.triggered.connect(self.launch_rotator_window)
         self.actionRecalculate_Mults.triggered.connect(self.recalculate_mults)
         self.actionMark_Contacts_Dirty.triggered.connect(self.mark_all_dirty)
+        self.actionSynchronize_VFOs.triggered.connect(self.synchronize_vfos_triggered)
         self.actionLoad_Call_History_File.triggered.connect(self.load_call_history)
 
         self.actionGenerate_Cabrillo_ASCII.triggered.connect(
@@ -2438,6 +2439,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.database.make_all_dirty()
         self.resolve_dirty_records()
 
+    def synchronize_vfos_triggered(self) -> None:
+        """When ticked, set both VFO A and B on supported rigs when set_vfo is called."""
+        self.pref["synchronize_vfos"] = self.actionSynchronize_VFOs.isChecked()
+        Preferences.save()
+        if self.rig_control is not None:
+            self.rig_control.cat.set_sync_vfos(self.pref["synchronize_vfos"])
+
     def launch_log_window(self) -> None:
         """Launch or close the log window"""
         self.pref["logwindow"] = self.actionLog_Window.isChecked()
@@ -4005,6 +4013,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 ),
                 port=self.pref.get("rotctld_port", 4533),
             )
+
+        # widgets outside the settings window
+        sync_vfos = self.pref.get("synchronize_vfos", False)
+        self.actionSynchronize_VFOs.setChecked(sync_vfos)
+        if self.rig_control is not None:
+            self.rig_control.cat.set_sync_vfos(sync_vfos)
 
     def rtc_response(self, response: dict) -> None:
         print(f"{response=}")
