@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-07-20] Merge pull request #621 from df7cb/sync-vfos
+- [2026-07-21] Synchronize VFOs
 - [2026-07-19] @mbridak Fix: Replace slashes in current_op with dashes for file path consistency
 - [2026-07-18] Merge pull request #619 from df7cb/edit-keys
 - [2026-07-14] Configure key bindings in a new Edit Keys dialog
@@ -2733,9 +2735,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
