@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-20] Merge pull request #621 from df7cb/sync-vfos
+  - Synchronize VFOs
 - [2026-07-19] @mbridak Fix: Replace slashes in current_op with dashes for file path consistency
 - [2026-07-18] Merge pull request #619 from df7cb/edit-keys
   - Configure key bindings in a new Edit Keys dialog
