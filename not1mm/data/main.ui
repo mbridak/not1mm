@@ -1601,6 +1601,8 @@
     </property>
     <addaction name="actionRecalculate_Mults"/>
     <addaction name="actionMark_Contacts_Dirty"/>
+    <addaction name="separator"/>
+    <addaction name="actionSynchronize_VFOs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -2299,6 +2301,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+Z</string>
+   </property>
+  </action>
+  <action name="actionSynchronize_VFOs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Synchronize VFOs</string>
    </property>
   </action>
  </widget>
