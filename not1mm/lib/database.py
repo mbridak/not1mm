@@ -21,12 +21,11 @@ logger = logging.getLogger("database")
 class DataBase:
     """Database class for our database."""
 
-    current_contest = 1
-
-    def __init__(self, database: str, app_data_dir: str):
+    def __init__(self, database: str, app_data_dir: str, current_contest=None):
         """initializes DataBase instance"""
         logger.debug("Database: %s", database)
         self.app_data_dir = app_data_dir
+        self.current_contest = current_contest
         self.empty_contact = {
             "TS": "",
             "Call": "",
@@ -133,7 +132,9 @@ class DataBase:
             logger.error("%s", exception)
             return ()
 
-    def exec_sql_commit(self, query: str, params=(), commit=True, error_logger=logger.error) -> None:
+    def exec_sql_commit(
+        self, query: str, params=(), commit=True, error_logger=logger.error
+    ) -> None:
         """Exec write query with database changes and commit"""
         try:
             logger.debug("%s", query)
@@ -369,7 +370,9 @@ class DataBase:
 
     def get_next_contest_nr(self):
         """Returns the next ContestNR to use."""
-        return self.exec_sql("select count(*) + 1 as count from ContestInstance;")
+        return self.exec_sql(
+            "select coalesce(max(ContestNR), 0) + 1 as nr from ContestInstance;"
+        )
 
     def fetch_contest_by_id(self, contest_nr: str) -> dict:
         """returns a dict of ContestInstance"""

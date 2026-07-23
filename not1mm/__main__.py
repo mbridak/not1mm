@@ -3325,8 +3325,7 @@ class MainWindow(QtWidgets.QMainWindow):
         contest["Operators"] = self.contest_dialog.operators.text()
         contest["Soapbox"] = self.contest_dialog.soapbox.toPlainText()
         contest["SentExchange"] = self.contest_dialog.exchange.text()
-        contest["ContestNR"] = next_number.get("count", 1)
-        self.pref["contest"] = next_number.get("count", 1)
+        contest["ContestNR"] = next_number.get("nr", 1)
         # contest['SubType'] = self.contest_dialog.
         contest["StationCategory"] = self.contest_dialog.station.currentText()
         contest["AssistedCategory"] = self.contest_dialog.assisted.currentText()
@@ -3334,7 +3333,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # contest['TimeCategory'] = self.contest_dialog.
         logger.debug("%s", f"{contest}")
         self.database.add_contest(contest)
+
+        self.pref["contest"] = next_number.get("nr", 1)
         Preferences.save()
+
         self.load_contest()
 
     def edit_station_settings(self) -> None:
@@ -3794,7 +3796,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dbname = fsutils.USER_DATA_PATH / self.pref.get(
             "current_database", "ham.db"
         )
-        self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
+        self.database = DataBase(
+            self.dbname,
+            fsutils.APP_DATA_PATH,
+            current_contest=self.pref.get("contest", None),
+        )
 
         if self.pref.get("run_state", False) is True:
             self.radioButton_run.setChecked(True)
