@@ -15,6 +15,7 @@ import queue
 import socket
 import sys
 import time
+import typing
 import uuid
 from json import loads
 from json.decoder import JSONDecodeError
@@ -70,7 +71,7 @@ from PyQt6.QtWidgets import (
 )
 
 import not1mm.actions
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.bandmap import BandMapWindow
 from not1mm.chat import ChatWindow
 from not1mm.checkwindow import CheckWindow
@@ -115,7 +116,7 @@ from not1mm.vfo import VfoWindow
 from not1mm.voice_keying import Voice, has_output_device
 from not1mm.zone_tracker import ZoneWindow
 
-poll_time = datetime.datetime.now()
+poll_time = datetime.datetime.now(tz=datetime.UTC)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -123,14 +124,14 @@ class MainWindow(QtWidgets.QMainWindow):
     The main window
     """
 
-    ctyfile = {}
+    ctyfile: typing.ClassVar = {}
     appstarted = False
-    contact = {}
+    contact: typing.ClassVar = {}
     contest = None
-    contest_settings = {}
+    contest_settings: typing.ClassVar = {}
     contact_is_dupe = False
-    pref = {}
-    station = {}
+    pref: typing.ClassVar = {}
+    station: typing.ClassVar = {}
     spaceweather = ""
     current_op = ""
     current_mode = ""
@@ -139,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
     cw = None
     look_up = None
     run_state = False
-    fkeys = {}
+    fkeys: typing.ClassVar = {}
     about_dialog = None
     qrz_dialog = None
     settings_dialog = None
@@ -150,8 +151,8 @@ class MainWindow(QtWidgets.QMainWindow):
     opon_dialog = None
     rove_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
-    radio_state = {}
-    worked_list = {}
+    radio_state: typing.ClassVar = {}
+    worked_list: typing.ClassVar = {}
     cw_entry_visible = False
     last_focus = None
     oldtext = ""
@@ -159,7 +160,7 @@ class MainWindow(QtWidgets.QMainWindow):
     current_palette = None
     use_esm = False
     use_call_history = False
-    esm_dict = {}
+    esm_dict: typing.ClassVar = {}
     sandpfreq = 0
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.
@@ -192,11 +193,11 @@ class MainWindow(QtWidgets.QMainWindow):
     current_widget = None
 
     auto_cq = False
-    auto_cq_then = datetime.datetime.now()
-    auto_cq_time = datetime.datetime.now()
+    auto_cq_then = datetime.datetime.now(tz=datetime.UTC)
+    auto_cq_time = datetime.datetime.now(tz=datetime.UTC)
     auto_cq_delay = 15000
 
-    server_commands = []
+    server_commands: typing.ClassVar = []
 
     def __init__(self, splash):
         super().__init__()
@@ -687,7 +688,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
-        except (IOError, JSONDecodeError, TypeError):
+        except (OSError, JSONDecodeError, TypeError):
             logging.critical("There was an error parsing the BigCity file.")
             self.show_message_box(
                 "There ws an error parsing the BigCity file.", blocking=False
@@ -702,7 +703,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lookup_service.message.connect(self.dockwidget_message)
         self.lookup_service.hide()
 
-        self.server_seen = datetime.datetime.now()
+        self.server_seen = datetime.datetime.now(tz=datetime.UTC)
 
         self.show_splash_msg("Starting voice thread.")
         self.voice_process = Voice()
@@ -741,9 +742,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(x) == 1:
             if int(x[0]) > 6:
                 old_Qt = False
-        elif len(x) >= 2:
-            if int(x[0]) >= 6 and int(x[1]) >= 8:
-                old_Qt = False
+        elif len(x) >= 2 and int(x[0]) >= 6 and int(x[1]) >= 8:
+            old_Qt = False
 
         # Featureset for wayland if pyqt is older than 6.8
         dockfeatures = (
@@ -955,16 +955,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.cwspeed_spinbox_changed()
 
-        if not DEBUG_ENABLED:
-            if VersionTest(__version__).test():
-                self.show_message_box(
-                    "There is a newer version of not1mm available.\n"
-                    "You can update to the current version by using:\n\n"
-                    "pip install -U not1mm\n\tor\n"
-                    "pipx upgrade not1mm\n\tor\n"
-                    "uv tool install not1mm@latest",
-                    blocking=False,
-                )
+        if not DEBUG_ENABLED and VersionTest(__version__).test():
+            self.show_message_box(
+                "There is a newer version of not1mm available.\n"
+                "You can update to the current version by using:\n\n"
+                "pip install -U not1mm\n\tor\n"
+                "pipx upgrade not1mm\n\tor\n"
+                "uv tool install not1mm@latest",
+                blocking=False,
+            )
 
         self.udp_socket = QtNetwork.QUdpSocket()
         b_result = self.udp_socket.bind(
@@ -983,14 +982,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if (
             self.pref.get("useserver", False) is True
             and hasattr(self, "database")
-            and datetime.datetime.now() < self.server_seen
+            and datetime.datetime.now(tz=datetime.UTC) < self.server_seen
         ):
             records = self.database.fetch_all_dirty_contacts()
             print(f"Resolving {len(records)} unsent contacts.\n")
             if records:
                 for contact in records:
                     contact["cmd"] = "POST"
-                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                        seconds=30
+                    )
                     contact["expire"] = stale.isoformat()
 
                     self.server_commands.append(contact)
@@ -1018,9 +1019,11 @@ class MainWindow(QtWidgets.QMainWindow):
             for index, item in enumerate(self.server_commands):
                 expired = datetime.datetime.strptime(
                     item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f"
-                )
-                if datetime.datetime.now() > expired:
-                    newexpire = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                ).astimezone(datetime.UTC)
+                if datetime.datetime.now(tz=datetime.UTC) > expired:
+                    newexpire = datetime.datetime.now(
+                        tz=datetime.UTC
+                    ) + datetime.timedelta(seconds=30)
                     self.server_commands[index]["expire"] = newexpire.isoformat()
                     try:
                         self.server_channel.send_as_json(self.server_commands[index])
@@ -1052,9 +1055,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
             if json_data.get("cmd") == "PING":
                 if json_data.get("host"):
-                    self.server_seen = datetime.datetime.now() + datetime.timedelta(
-                        seconds=15
-                    )
+                    self.server_seen = datetime.datetime.now(
+                        tz=datetime.UTC
+                    ) + datetime.timedelta(seconds=15)
                     # im_the_master
                     if self.pref.get("im_the_master", False) is True:
                         self.server_icon.setPixmap(self.blueserver)
@@ -1069,7 +1072,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 ):
                     cmd = self.contest_settings.copy()
                     cmd["cmd"] = "NEWDB"
-                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                        seconds=30
+                    )
                     cmd["expire"] = stale.isoformat()
                     cmd["NetBiosName"] = socket.gethostname()
                     cmd["Operator"] = self.current_op
@@ -1148,8 +1153,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 #     self.send_status_udp()
 
     def fldigi_on_udp_socket_ready_read(self) -> None:
-        """"""
-        datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
+        """Gets called when there a UDP packet available."""
+        datagram, _, _ = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
         print(f"{datagram=}")
@@ -1218,9 +1223,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_focus_changed(self, focused_widget: QtWidgets.QWidget):
         """Called when text entry focus has changed."""
-        if self.use_esm:
-            if hasattr(self.contest, "process_esm"):
-                self.contest.process_esm(self, new_focused_widget=focused_widget)
+        if self.use_esm and hasattr(self.contest, "process_esm"):
+            self.contest.process_esm(self, new_focused_widget=focused_widget)
 
     def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it blue."""
@@ -1279,30 +1283,38 @@ class MainWindow(QtWidgets.QMainWindow):
         """incomming signals from widgets"""
         if msg:
             # Pass delete message from log window to server.
-            if msg.get("cmd", "") == "DELETED":
-                if self.pref.get("useserver", False) is True:
-                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
-                    msg["cmd"] = "DELETE"
-                    msg["expire"] = stale.isoformat()
-                    msg["station"] = socket.gethostname()
-                    msg["unique_id"] = msg.get("ID")
-                    self.server_commands.append(msg)
-                    try:
-                        self.server_channel.send_as_json(msg)
-                    except OSError as err:
-                        logging.warning("%s", err)
+            if (
+                msg.get("cmd", "") == "DELETED"
+                and self.pref.get("useserver", False) is True
+            ):
+                stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                    seconds=30
+                )
+                msg["cmd"] = "DELETE"
+                msg["expire"] = stale.isoformat()
+                msg["station"] = socket.gethostname()
+                msg["unique_id"] = msg.get("ID")
+                self.server_commands.append(msg)
+                try:
+                    self.server_channel.send_as_json(msg)
+                except OSError as err:
+                    logging.warning("%s", err)
 
-            if msg.get("cmd", "") == "CONTACTCHANGED":
-                if self.pref.get("useserver", False) is True:
-                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
-                    msg["expire"] = stale.isoformat()
-                    msg["station"] = socket.gethostname()
-                    msg["unique_id"] = msg.get("ID")
-                    self.server_commands.append(msg)
-                    try:
-                        self.server_channel.send_as_json(msg)
-                    except OSError as err:
-                        logging.warning("%s", err)
+            if (
+                msg.get("cmd", "") == "CONTACTCHANGED"
+                and self.pref.get("useserver", False) is True
+            ):
+                stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                    seconds=30
+                )
+                msg["expire"] = stale.isoformat()
+                msg["station"] = socket.gethostname()
+                msg["unique_id"] = msg.get("ID")
+                self.server_commands.append(msg)
+                try:
+                    self.server_channel.send_as_json(msg)
+                except OSError as err:
+                    logging.warning("%s", err)
 
             # TODO
             if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE", "DELETED"]:
@@ -1375,51 +1387,51 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.callsign.setFocus()
                 self.callsign_changed()
 
-            if msg.get("cmd", "") == "CHECKSPOTS":
-                if self.check_window:
-                    msg["call"] = self.callsign.text()
-                    self.check_window.msg_from_main(msg)
+            if msg.get("cmd", "") == "CHECKSPOTS" and self.check_window:
+                msg["call"] = self.callsign.text()
+                self.check_window.msg_from_main(msg)
 
             # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
 
-            if msg.get("cmd", "") == "LOOKUP_RESPONSE":
-                if msg.get("result", None) is not None:
-                    fname = msg.get("result", {}).get("fname", "")
-                    name = msg.get("result", {}).get("name", "")
-                    grid = msg.get("result", {}).get("grid", "")
-                    nickname = msg.get("result", {}).get("nickname", "")
+            if (
+                msg.get("cmd", "") == "LOOKUP_RESPONSE"
+                and msg.get("result", None) is not None
+            ):
+                fname = msg.get("result", {}).get("fname", "")
+                name = msg.get("result", {}).get("name", "")
+                grid = msg.get("result", {}).get("grid", "")
+                nickname = msg.get("result", {}).get("nickname", "")
 
-                    if self.contest:
-                        if "General Logging" in self.contest.name:
-                            if nickname:
-                                self.other_1.setText(nickname)
-                            elif fname:
-                                self.other_1.setText(fname)
-                            elif name:
-                                self.other_1.setText(name)
+                if self.contest and "General Logging" in self.contest.name:
+                    if nickname:
+                        self.other_1.setText(nickname)
+                    elif fname:
+                        self.other_1.setText(fname)
+                    elif name:
+                        self.other_1.setText(name)
 
-                    if isinstance(grid, str) and len(grid) > 0:
-                        self.contact["GridSquare"] = grid
-                        if self.station.get("GridSquare", ""):
-                            heading = bearing(self.station.get("GridSquare", ""), grid)
-                            kilometers = distance(
-                                self.station.get("GridSquare", ""), grid
-                            )
-                            self.heading_distance.setText(
-                                f"{grid} Hdg {heading}° LP {reciprocal(heading)}° / "
-                                f"distance {int(kilometers * 0.621371)}mi {kilometers}km"
-                                f" {msg.get('result', {}).get('name_fmt', '')}"
-                            )
-                            self.rotator_window.set_requested_azimuth(float(heading))
+                if isinstance(grid, str) and len(grid) > 0:
+                    self.contact["GridSquare"] = grid
+                    if self.station.get("GridSquare", ""):
+                        heading = bearing(self.station.get("GridSquare", ""), grid)
+                        kilometers = distance(self.station.get("GridSquare", ""), grid)
+                        self.heading_distance.setText(
+                            f"{grid} Hdg {heading}° LP {reciprocal(heading)}° / "
+                            f"distance {int(kilometers * 0.621371)}mi {kilometers}km"
+                            f" {msg.get('result', {}).get('name_fmt', '')}"
+                        )
+                        self.rotator_window.set_requested_azimuth(float(heading))
 
-            if msg.get("cmd", "") == "CHAT":
-                if self.pref.get("useserver", False) is True:
-                    msg["sender"] = self.current_op
-                    try:
-                        self.server_channel.send_as_json(msg)
-                    except OSError as err:
-                        logging.warning("%s", err)
-                    return
+            if (
+                msg.get("cmd", "") == "CHAT"
+                and self.pref.get("useserver", False) is True
+            ):
+                msg["sender"] = self.current_op
+                try:
+                    self.server_channel.send_as_json(msg)
+                except OSError as err:
+                    logging.warning("%s", err)
+                return
 
             if msg.get("cmd", "") == "SPACEWEATHER":
                 # cmd["cmd"] = "SPACEWEATHER"
@@ -2166,18 +2178,16 @@ class MainWindow(QtWidgets.QMainWindow):
                         if self.contest_settings.get("ModeCategory", "") == "CW":
                             self.setmode("CW")
                             self.radio_state["mode"] = "CW"
-                            if self.rig_control:
-                                if self.rig_control.online:
-                                    self.rig_control.set_mode("CW")
+                            if self.rig_control and self.rig_control.online:
+                                self.rig_control.set_mode("CW")
                             band = getband(str(self.radio_state.get("vfoa", "0.0")))
                             self.set_band_indicator(band)
                             self.set_window_title()
                         if self.contest_settings.get("ModeCategory", "") == "RTTY":
                             self.setmode("RTTY")
                             self.radio_state["mode"] = "RTTY"
-                            if self.rig_control:
-                                if self.rig_control.online:
-                                    self.rig_control.set_mode("RTTY")
+                            if self.rig_control and self.rig_control.online:
+                                self.rig_control.set_mode("RTTY")
                             band = getband(str(self.radio_state.get("vfoa", "0.0")))
                             self.set_band_indicator(band)
                             self.set_window_title()
@@ -2230,7 +2240,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 ):
                     cmd = self.contest_settings.copy()
                     cmd["cmd"] = "NEWDB"
-                    stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+                    stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                        seconds=30
+                    )
                     cmd["expire"] = stale.isoformat()
                     cmd["NetBiosName"] = socket.gethostname()
                     cmd["Operator"] = self.current_op
@@ -2291,7 +2303,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
                     ) as ctyfile:
                         self.ctyfile = loads(ctyfile.read())
-                except (IOError, JSONDecodeError, TypeError) as err:
+                except (OSError, JSONDecodeError, TypeError) as err:
                     logging.critical(
                         f"There was an error {err} parsing the BigCity file."
                     )
@@ -2567,8 +2579,8 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        for _, indicators in self.all_mode_indicators.items():
-            for _, indicator in indicators.items():
+        for indicators in self.all_mode_indicators.values():
+            for indicator in indicators.values():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
                 if self.text_color == QColorConstants.Black:
                     indicator.setStyleSheet("color: black;")
@@ -2679,12 +2691,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw.speed)
-        if self.rig_control and self.rig_control.cat:
-            if self.pref.get("cwtype") == 3:
-                self.rig_control.set_cw_speed(self.cw.speed)
+        if self.rig_control and self.rig_control.cat and self.pref.get("cwtype") == 3:
+            self.rig_control.set_cw_speed(self.cw.speed)
 
     def stop_cw(self) -> None:
-        """"""
+        """Stops CW output"""
         self.auto_cq = False
         self.leftdot.hide()
         self.cwprogressBar.hide()
@@ -2695,10 +2706,13 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cw.servertype == 2:
                 self.cw.winkeyer_stop()
                 return
-        if self.rig_control and self.rig_control.cat:
-            if self.rig_control.online:
-                if self.pref.get("cwtype") == 3:
-                    self.rig_control.stopcw()
+        if (
+            self.rig_control
+            and self.rig_control.cat
+            and self.rig_control.online
+            and self.pref.get("cwtype") == 3
+        ):
+            self.rig_control.stopcw()
 
     def stop_all(self) -> None:
         """Stop CW and rotator."""
@@ -2723,7 +2737,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cq_freq = freq
 
     def mark_spot(self, comment="") -> None:
-        """"""
+        """Send a command to the bandmap window to mark the current call."""
         freq = self.radio_state.get("vfoa")
         dx = self.callsign.text()
         if freq and dx:
@@ -2825,9 +2839,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if event.type() != QEvent.Type.KeyPress:
             return False
-        if self.process_key_bindings(event, obj=obj):
-            return True
-        return False
+        return self.process_key_bindings(event, obj=obj)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:  # pylint: disable=invalid-name
         """
@@ -2926,10 +2938,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.cwprogressBar.setValue(100)
                 self.cwprogressBar.show()
                 self.auto_cq = True
-                self.auto_cq_then = datetime.datetime.now()
-                self.auto_cq_time = datetime.datetime.now() + datetime.timedelta(
-                    milliseconds=self.auto_cq_delay
-                )
+                self.auto_cq_then = datetime.datetime.now(tz=datetime.UTC)
+                self.auto_cq_time = datetime.datetime.now(
+                    tz=datetime.UTC
+                ) + datetime.timedelta(milliseconds=self.auto_cq_delay)
             self.process_function_key(self.F1)
             self.mark_cq()
             return
@@ -3230,7 +3242,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_sn = None
         # server
         if self.pref.get("useserver", False) is True:
-            stale = datetime.datetime.now() + datetime.timedelta(seconds=30)
+            stale = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+                seconds=30
+            )
             self.contact["cmd"] = "POST"
             self.contact["expire"] = stale.isoformat()
             self.server_commands.append(self.contact)
@@ -3262,9 +3276,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("send_rtc_scores", False):
             if self.contest is None:
                 return
-            if hasattr(self.contest, "online_score_xml"):
-                if self.rtc_service is not None:
-                    self.rtc_service.xml = self.contest.online_score_xml(self)
+            if (
+                hasattr(self.contest, "online_score_xml")
+                and self.rtc_service is not None
+            ):
+                self.rtc_service.xml = self.contest.online_score_xml(self)
 
     def new_contest_dialog(self) -> None:
         """
@@ -4159,37 +4175,35 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         The text in the sent field has changed.
         """
-        if self.contest:
-            if "DX-Pedition" in self.contest.name:
-                text = self.sent.text()
-                text = text.upper()
-                position = self.sent.cursorPosition()
-                stripped_text = text.strip().replace(" ", "")
-                self.sent.setText(stripped_text)
-                self.sent.setCursorPosition(position)
-                if " " in text:
-                    next_tab = self.tab_next.get(self.sent)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
+        if self.contest and "DX-Pedition" in self.contest.name:
+            text = self.sent.text()
+            text = text.upper()
+            position = self.sent.cursorPosition()
+            stripped_text = text.strip().replace(" ", "")
+            self.sent.setText(stripped_text)
+            self.sent.setCursorPosition(position)
+            if " " in text:
+                next_tab = self.tab_next.get(self.sent)
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
 
     def receive_changed(self) -> None:
         """
         The text in the receive field has changed.
         """
-        if self.contest:
-            if "DX-Pedition" in self.contest.name:
-                text = self.receive.text()
-                text = text.upper()
-                position = self.receive.cursorPosition()
-                stripped_text = text.strip().replace(" ", "")
-                self.receive.setText(stripped_text)
-                self.receive.setCursorPosition(position)
-                if " " in text:
-                    next_tab = self.tab_next.get(self.receive)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
+        if self.contest and "DX-Pedition" in self.contest.name:
+            text = self.receive.text()
+            text = text.upper()
+            position = self.receive.cursorPosition()
+            stripped_text = text.strip().replace(" ", "")
+            self.receive.setText(stripped_text)
+            self.receive.setCursorPosition(position)
+            if " " in text:
+                next_tab = self.tab_next.get(self.receive)
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
 
     def other_1_changed(self) -> None:
         """
@@ -4205,20 +4219,22 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        if self.contest:
-            if hasattr(self.contest, "advance_on_space"):
-                if self.contest.advance_on_space[3]:
-                    text = self.other_1.text()
-                    text = text.upper()
-                    position = self.other_1.cursorPosition()
-                    stripped_text = text.strip().replace(" ", "")
-                    self.other_1.setText(stripped_text)
-                    self.other_1.setCursorPosition(position)
-                    if " " in text:
-                        next_tab = self.tab_next.get(self.other_1)
-                        next_tab.setFocus()
-                        next_tab.deselect()
-                        next_tab.end(False)
+        if (
+            self.contest
+            and hasattr(self.contest, "advance_on_space")
+            and self.contest.advance_on_space[3]
+        ):
+            text = self.other_1.text()
+            text = text.upper()
+            position = self.other_1.cursorPosition()
+            stripped_text = text.strip().replace(" ", "")
+            self.other_1.setText(stripped_text)
+            self.other_1.setCursorPosition(position)
+            if " " in text:
+                next_tab = self.tab_next.get(self.other_1)
+                next_tab.setFocus()
+                next_tab.deselect()
+                next_tab.end(False)
 
     def other_2_changed(self) -> None:
         """
@@ -4239,22 +4255,26 @@ class MainWindow(QtWidgets.QMainWindow):
             if "ARRL Sweepstakes" in self.contest.name:
                 self.contest.parse_exchange(self)
                 return
-            if hasattr(self.contest, "call_parse_exchange_on_edit"):
-                if self.contest.advance_on_space:
-                    self.contest.parse_exchange(self)
-            if hasattr(self.contest, "advance_on_space"):
-                if self.contest.advance_on_space[4]:
-                    text = self.other_2.text()
-                    text = text.upper()
-                    position = self.other_2.cursorPosition()
-                    stripped_text = text.strip().replace(" ", "")
-                    self.other_2.setText(stripped_text)
-                    self.other_2.setCursorPosition(position)
-                    if " " in text:
-                        next_tab = self.tab_next.get(self.other_2)
-                        next_tab.setFocus()
-                        next_tab.deselect()
-                        next_tab.end(False)
+            if (
+                hasattr(self.contest, "call_parse_exchange_on_edit")
+                and self.contest.advance_on_space
+            ):
+                self.contest.parse_exchange(self)
+            if (
+                hasattr(self.contest, "advance_on_space")
+                and self.contest.advance_on_space[4]
+            ):
+                text = self.other_2.text()
+                text = text.upper()
+                position = self.other_2.cursorPosition()
+                stripped_text = text.strip().replace(" ", "")
+                self.other_2.setText(stripped_text)
+                self.other_2.setCursorPosition(position)
+                if " " in text:
+                    next_tab = self.tab_next.get(self.other_2)
+                    next_tab.setFocus()
+                    next_tab.deselect()
+                    next_tab.end(False)
 
     def callsign_changed(self) -> None:
         """
@@ -4331,11 +4351,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if len(stripped_text) >= 3:
             self.check_callsign(stripped_text)
             self.check_dupe(stripped_text)
-        if self.contest:
-            if self.use_call_history and hasattr(
-                self.contest, "populate_history_info_line"
-            ):
-                self.contest.populate_history_info_line(self)
+        if (
+            self.contest
+            and self.use_call_history
+            and hasattr(self.contest, "populate_history_info_line")
+        ):
+            self.contest.populate_history_info_line(self)
 
     def change_freq(self, stripped_text: str) -> None:
         """
@@ -4504,9 +4525,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rotator_window.set_requested_azimuth(float(heading))
             self.contact["CountryPrefix"] = primary_pfx
             self.contact["ZN"] = int(cq)
-            if self.contest:
-                if self.contest.name in ("IARU HF", "LZ DX"):
-                    self.contact["ZN"] = int(itu)
+            if self.contest and self.contest.name in ("IARU HF", "LZ DX"):
+                self.contact["ZN"] = int(itu)
             self.contact["Continent"] = continent
             self.dx_entity.setText(
                 f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
@@ -4524,13 +4544,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd["itu"] = itu
                 self.zone_window.msg_from_main(cmd)
 
-            if len(callsign) > 2:
-                if self.contest:
-                    if (
-                        "CQ WW" not in self.contest.name
-                        and "IARU HF" not in self.contest.name
-                    ):
-                        self.contest.prefill(self)
+            if (
+                len(callsign) > 2
+                and self.contest
+                and "CQ WW" not in self.contest.name
+                and "IARU HF" not in self.contest.name
+            ):
+                self.contest.prefill(self)
 
     def check_dupe(self, call: str) -> bool:
         # TODO multi multi
@@ -4594,13 +4614,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if mode in ("CW", "CW-U", "CW-L", "CWR", "CW-R"):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
-                if self.contest:
-                    if self.contest.name != "QSO_PARTY_SN":
-                        self.sent.setText("599")
-                        self.receive.setText("599")
-                        self.read_macros()
-                        if self.contest.name == "ICWC Medium Speed Test":
-                            self.contest.prefill(self)
+                if self.contest and self.contest.name != "QSO_PARTY_SN":
+                    self.sent.setText("599")
+                    self.receive.setText("599")
+                    self.read_macros()
+                    if self.contest.name == "ICWC Medium Speed Test":
+                        self.contest.prefill(self)
                 self.show_CW_macros()
             return
 
@@ -4614,28 +4633,31 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.show_CW_macros()
             return
 
-        if mode in (
-            "FT8",
-            "FT4",
-            "RTTY",
-            "PSK31",
-            "FSK441",
-            "MSK144",
-            "JT65",
-            "JT9",
-            "Q65",
-            "PKTUSB",
-            "PKTLSB",
-            "DIGI-U",
-            "DIGI-L",
+        if (
+            mode
+            in (
+                "FT8",
+                "FT4",
+                "RTTY",
+                "PSK31",
+                "FSK441",
+                "MSK144",
+                "JT65",
+                "JT9",
+                "Q65",
+                "PKTUSB",
+                "PKTLSB",
+                "DIGI-U",
+                "DIGI-L",
+            )
+            and self.current_mode != "RTTY"
         ):
-            if self.current_mode != "RTTY":
-                self.current_mode = "RTTY"
-                if self.contest and self.contest.name != "QSO_PARTY_SN":
-                    self.sent.setText("599")
-                    self.receive.setText("599")
-                self.read_macros()
-                self.show_CW_macros()
+            self.current_mode = "RTTY"
+            if self.contest and self.contest.name != "QSO_PARTY_SN":
+                self.sent.setText("599")
+                self.receive.setText("599")
+            self.read_macros()
+            self.show_CW_macros()
 
     # TODO
     def get_rover(self) -> None:
@@ -4738,7 +4760,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # This section has nothing to do with polling the radio
         # It's here because it gets called often enough to be useful.
         if self.auto_cq is True:
-            now = datetime.datetime.now()
+            now = datetime.datetime.now(tz=datetime.UTC)
             total_duration = self.auto_cq_time - self.auto_cq_then
             elapsed_duration = now - self.auto_cq_then
             if total_duration.total_seconds() > 0:
@@ -4779,9 +4801,12 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.radio_state.get("vfoa") != vfo:
             info_dirty = True
             self.radio_state["vfoa"] = vfo
-            if self.pref.get("sandpqsy") is True and self.radioButton_sp.isChecked():
-                if max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 500:
-                    self.clearinputs()
+            if (
+                self.pref.get("sandpqsy") is True
+                and self.radioButton_sp.isChecked()
+                and max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 500
+            ):
+                self.clearinputs()
         band = getband(str(vfo))
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))
@@ -4903,7 +4928,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     fsutils.APP_DATA_PATH / macro_file,
                     fsutils.USER_DATA_PATH / macro_file,
                 )
-            except IOError as err:
+            except OSError as err:
                 logger.critical(f"Error {err} copying macro file.")
                 self.show_message_box(
                     f"Error {err} copying macro file.", blocking=False
@@ -4915,7 +4940,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     fsutils.USER_DATA_PATH / macro_file,
                     fsutils.USER_DATA_PATH / self.contest.name / macro_file,
                 )
-            except IOError as err:
+            except OSError as err:
                 logger.critical(f"Error {err} copying macro file.")
                 self.show_message_box(
                     f"Error {err} copying macro file.", blocking=False
@@ -4940,7 +4965,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         try:
             fsutils.openFileWithOS(macro_file)
-        except FileNotFoundError | PermissionError | OSError as err:
+        except (FileNotFoundError, PermissionError, OSError) as err:
             logger.critical(f"Could not open file {macro_file} {err}")
             self.show_message_box(
                 f"Could not open file {macro_file} {err}", blocking=False
@@ -4968,7 +4993,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
                     if mode.strip().upper() != "R" and not self.pref.get("run_state"):
                         self.fkeys[fkey.strip()] = (buttonname.strip(), cwtext.strip())
-        except (IOError, ValueError) as err:
+        except (OSError, ValueError) as err:
             logger.info("read_cw_macros: %s", err)
         keys = self.fkeys.keys()
         if "F1" in keys:
