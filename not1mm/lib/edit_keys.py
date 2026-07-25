@@ -3,7 +3,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets, uic
 
 import not1mm.actions
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.preferences import Preferences
 
 _KNOWN_CONTEXTS = [
