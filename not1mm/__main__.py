@@ -80,7 +80,6 @@ from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
-from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
@@ -4285,7 +4284,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
-                self.get_opon()
+                not1mm.actions.OPON(self)
                 self.clearinputs()
                 return
             if stripped_text == "ROVE":
@@ -4651,49 +4650,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.RoverLocation = self.rover_dialog.NewLocation.text().upper()
             logger.debug("New RoverLocation: %s", self.RoverLocation)
         self.rover_dialog.close()
-
-    def get_opon(self) -> None:
-        """
-        Ctrl+O Open the OPON dialog.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        self.opon_dialog = OpOn(fsutils.APP_DATA_PATH)
-
-        if self.current_palette:
-            self.opon_dialog.setPalette(self.current_palette)
-
-        self.opon_dialog.accepted.connect(self.new_op)
-        self.opon_dialog.open()
-
-    def new_op(self) -> None:
-        """
-        Called when the user clicks the OK button on the OPON dialog.
-        Create the new directory and copy the phonetic files.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if current_op := self.opon_dialog.NewOperator.text().upper():
-            self.pref["current_op"] = current_op
-            Preferences.save()
-            logger.debug("New Op: %s", current_op)
-            self.make_op_dir()
-            self.set_window_title()
-        self.opon_dialog.close()
 
     def make_op_dir(self) -> None:
         """
