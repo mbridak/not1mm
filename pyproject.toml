@@ -8,7 +8,7 @@ version = "26.7.23"
 description = "NOT1MM Logger"
 license = "GPL-3.0-or-later"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
   { name="Michael Bridak", email="michael.bridak@gmail.com" },
 ]
