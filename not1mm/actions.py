@@ -3,17 +3,14 @@ Functions called from key events
 
 Parameters: self (MainWindow)
 
-All functions from this file (except when prefixed with _) appear in the Action
-dropdown list, in the order they are defined in this file.
+All UPPER CASE functions from this file (except when prefixed with _) appear in
+the Action dropdown list, in the order they are defined in this file.
 
 The function doc string is used as action description in the Edit Keys dialog.
 """
 
-from not1mm.lib.edit_keys import hotkey_window
-# pylint: disable=invalid-name
-
 from not1mm import fsutils
-from not1mm.lib.edit_keys import EditKeys
+from not1mm.lib.edit_keys import EditKeys, hotkey_window
 from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.preferences import Preferences
 

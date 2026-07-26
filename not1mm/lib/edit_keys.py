@@ -35,8 +35,12 @@ class EditKeys(QtWidgets.QDialog):
         self.action_docs = {}
         for action in vars(not1mm.actions):
             action_function = getattr(not1mm.actions, action)
-            # skip everything starting with _ and check if this is a function
-            if not action.startswith("_") and callable(action_function):
+            # look for UPPER function names but skip everything starting with _
+            if (
+                action.isupper()
+                and not action.startswith("_")
+                and callable(action_function)
+            ):
                 self.actions.append(action)
                 self.action_docs[action] = action_function.__doc__
 
