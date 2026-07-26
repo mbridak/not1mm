@@ -69,7 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-07-26] @mbridak Fix: RSGB IOTA call history.
+- [2026-07-26] Merge pull request #630 from ivica3730k/master
+  - fix: properly select VFO from rigctld
+  - @mbridak Fix: RSGB IOTA call history.
   - Merge pull request #628 from df7cb/hotkey-help
   - Merge branch 'master' into hotkey-help
   - Merge pull request #626 from df7cb/operator
