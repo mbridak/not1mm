@@ -35,6 +35,10 @@ default_key_bindings = {
     "Ctrl+.": "VFO_UP",
     "PgDown": "CW_SPEED_DOWN",
     "PgUp": "CW_SPEED_UP",
+    "Ctrl+J": "ROTATE",
+    "Ctrl+Shift+J": "ROTATE_LP",
+    "[": "ROTATE_LEFT",
+    "]": "ROTATE_RIGHT",
     "Ctrl+W": "CLEAR_INPUTS",
     "Esc": "STOP_ALL",
     "Ctrl+O": "OPON",
@@ -220,6 +224,26 @@ def EXCH_INCR(self, increment=1) -> None:
 def EXCH_DECR(self) -> None:
     """Decrement number in exchange field"""
     EXCH_INCR(self, increment=-1)
+
+
+def ROTATE(self) -> None:
+    """Rotate antenna towards current contact"""
+    self.rotator_window.the_eye_of_sauron()
+
+
+def ROTATE_LP(self) -> None:
+    """Rotate antenna to long-path bearing of contact"""
+    self.rotator_window.rotate_long_path()
+
+
+def ROTATE_LEFT(self) -> None:
+    """Rotate antenna 30° left (counter-clockwise)"""
+    self.rotator_window.rotate_left()
+
+
+def ROTATE_RIGHT(self) -> None:
+    """Rotate antenna 30° right (clockwise)"""
+    self.rotator_window.rotate_right()
 
 
 def CLEAR_INPUTS(self) -> None:
