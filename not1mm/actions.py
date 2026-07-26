@@ -9,6 +9,8 @@ the Action dropdown list, in the order they are defined in this file.
 The function doc string is used as action description in the Edit Keys dialog.
 """
 
+import re
+
 from not1mm import fsutils
 from not1mm.lib.edit_keys import EditKeys, hotkey_window
 from not1mm.lib.edit_opon import OpOn
@@ -19,8 +21,12 @@ default_key_bindings = {
     "Ctrl+L": "LOG_NOW",
     "Ctrl+=": "LOG_NOW",
     "Ctrl+Shift+K": "TOGGLE_CW_INPUT",
-    "Up": "PREV_SPOT",
-    "Down": "NEXT_SPOT",
+    "Callsign:Up": "PREV_SPOT",
+    "Callsign:Down": "NEXT_SPOT",
+    "Report:Up": "RST_INCR",
+    "Report:Down": "RST_DECR",
+    "Exchange:Up": "EXCH_INCR",
+    "Exchange:Down": "EXCH_DECR",
     "Ctrl+G": "FIND_DX",
     "Ctrl+M": "MARK_SPOT",
     "Ctrl+Q": "JUMP_TO_CQ",
@@ -168,6 +174,52 @@ def CW_SPEED_DOWN(self) -> None:
             self.cw.sendcw(f"\x1b2{self.cw.speed}")
         if self.cw.servertype == 2:
             self.cw.set_winkeyer_speed(self.cw_speed.value())
+
+
+def RST_INCR(self, increment=1) -> None:
+    """Increment report in RST field"""
+    # use sent when that has focus, else use receive (so the action also works
+    # from elsewhere)
+    widget = self.sent if self.sent.hasFocus() else self.receive
+    text = widget.text()
+    # this assumes the "interesting" part of the report is always the 2nd digit
+    if len(text) >= 2 and text[1].isnumeric():
+        new_digit = int(text[1]) + increment
+        if 0 <= new_digit <= 9:
+            position = widget.cursorPosition()
+            widget.setText(text[:1] + str(new_digit) + text[2:])
+            widget.setCursorPosition(position)
+
+
+def RST_DECR(self) -> None:
+    """Decrement report in RST field"""
+    RST_INCR(self, increment=-1)
+
+
+def EXCH_INCR(self, increment=1) -> None:
+    """Increment number in exchange field"""
+    # use other_1 when that has focus, else use other_2 (so the action also
+    # works from elsewhere)
+    widget = self.other_1 if self.other_1.hasFocus() else self.other_2
+    # find the first number in the text (groups: prefix, number, suffix)
+    if m := re.match(r"(.*?)(\d+)(.*)", widget.text()):
+        len_number = len(m.group(2))
+        new_number = int(m.group(2)) + increment
+        if new_number >= 0:  # refuse to go negative
+            position = widget.cursorPosition()
+            # build a string with the same length
+            widget.setText(m.group(1) + str(new_number).zfill(len_number) + m.group(3))
+            if (
+                len(str(new_number)) > len_number
+                and position >= len(m.group(1)) + len_number
+            ):
+                position += 1  # 9 -> 10: move cursor one to the right
+            widget.setCursorPosition(position)
+
+
+def EXCH_DECR(self) -> None:
+    """Decrement number in exchange field"""
+    EXCH_INCR(self, increment=-1)
 
 
 def CLEAR_INPUTS(self) -> None:
