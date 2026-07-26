@@ -56,6 +56,9 @@ class CAT:
     def stopcw(self):
         """..."""
 
+    def set_cw_speed(self, speed: int) -> None:
+        """Set the CW speed in wpm"""
+
     def set_cw_send(self, send: bool) -> None:
         """Enable or disable the radio's CW keyer send flag."""
 
