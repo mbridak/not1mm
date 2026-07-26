@@ -80,7 +80,6 @@ from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
-from not1mm.lib.edit_opon import OpOn
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
@@ -133,7 +132,6 @@ class MainWindow(QtWidgets.QMainWindow):
     pref: typing.ClassVar = {}
     station: typing.ClassVar = {}
     spaceweather = ""
-    current_op = ""
     current_mode = ""
     current_band = ""
     default_rst = "59"
@@ -714,7 +712,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.voice_thread.finished.connect(self.voice_process.deleteLater)
         self.voice_process.ptt_on.connect(self.ptt_on)
         self.voice_process.ptt_off.connect(self.ptt_off)
-        self.voice_process.current_op = self.current_op
         self.voice_process.data_path = fsutils.USER_DATA_PATH
         self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
         self.voice_thread.start()
@@ -732,8 +729,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.previous_contact = (
             self.contact
         )  # Keep previous contact, if any, so we can spot it.
-        self.current_op = self.station.get("Call", "")
-        self.voice_process.current_op = self.current_op
         self.make_op_dir()
         self.cq_freq = None
 
@@ -762,7 +757,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_window.hide()
         self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
         self.bandmap_window.message.connect(self.dockwidget_message)
-        self.bandmap_window.callsignField.setText(self.current_op)
+        self.bandmap_window.callsignField.setText(self.pref.get("current_op", ""))
         self.bandmap_window.bandmapwindow_closed.connect(self.launch_bandmap_window)
 
         self.show_splash_msg("Setting up CheckWindow.")
@@ -805,7 +800,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.chat_window)
         self.chat_window.hide()
         self.chat_window.message.connect(self.dockwidget_message)
-        self.chat_window.mycall = self.current_op
         self.chat_window.chatwindow_closed.connect(self.launch_chat_window)
 
         self.show_splash_msg("Setting up DXCCWindow.")
@@ -1079,7 +1073,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     cmd["expire"] = stale.isoformat()
                     cmd["NetBiosName"] = socket.gethostname()
-                    cmd["Operator"] = self.current_op
+                    cmd["Operator"] = self.pref.get("current_op", "")
                     cmd["ID"] = uuid.uuid4().hex
                     cmd["Station"] = self.station
                     try:
@@ -1369,20 +1363,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.bandmap_window.msg_from_main(cmd)
                 return
 
-            if msg.get("cmd", "") == "GETCONTESTSTATUS":
-                cmd = {
-                    "cmd": "CONTESTSTATUS",
-                    "contest": self.contest_settings,
-                    "operator": self.current_op,
-                }
-                if self.bandmap_window:
-                    self.bandmap_window.msg_from_main(cmd)
-                    self.bandmap_window.callsignField.setText(self.current_op)
-                if self.chat_window:
-                    self.chat_window.msg_from_main(cmd)
-                    self.chat_window.mycall = self.current_op
-                return
-
             if msg.get("cmd", "") == "CHANGECALL":
                 self.activateWindow()
                 self.callsign.setText(msg.get("call", ""))
@@ -1428,7 +1408,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 msg.get("cmd", "") == "CHAT"
                 and self.pref.get("useserver", False) is True
             ):
-                msg["sender"] = self.current_op
+                msg["sender"] = self.pref.get("current_op", "")
                 try:
                     self.server_channel.send_as_json(msg)
                 except OSError as err:
@@ -1859,8 +1839,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.station = {}
             if self.rotator_window is not None:
                 self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
-            self.current_op = self.station.get("Call", "")
-            self.voice_process.current_op = self.current_op
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
@@ -1874,8 +1852,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.dxcc_window.msg_from_main(cmd)
             if self.zone_window:
                 self.zone_window.msg_from_main(cmd)
-            if self.chat_window:
-                self.chat_window.mycall = self.current_op
 
             self.clearinputs()
             self.edit_station_settings()
@@ -1910,8 +1886,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.rotator_window.set_mygrid(self.station.get("GridSquare", ""))
             if self.station.get("Call", "") == "":
                 self.edit_station_settings()
-            self.current_op = self.station.get("Call", "")
-            self.voice_process.current_op = self.current_op
             self.make_op_dir()
             cmd = {}
             cmd["cmd"] = "NEWDB"
@@ -1925,8 +1899,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.dxcc_window.msg_from_main(cmd)
             if self.zone_window:
                 self.zone_window.msg_from_main(cmd)
-            if self.chat_window:
-                self.chat_window.mycall = self.current_op
 
             self.clearinputs()
             self.open_contest()
@@ -2247,7 +2219,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     )
                     cmd["expire"] = stale.isoformat()
                     cmd["NetBiosName"] = socket.gethostname()
-                    cmd["Operator"] = self.current_op
+                    cmd["Operator"] = self.pref.get("current_op", "")
                     cmd["ID"] = uuid.uuid4().hex
                     cmd["Station"] = self.station
                     # self.server_commands.append(cmd)
@@ -2746,7 +2718,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.current_sn = "REQUESTED"
                 cmd = {}
                 cmd["cmd"] = "GET_SN"
-                cmd["Operator"] = self.current_op
+                cmd["Operator"] = self.pref.get("current_op", "")
                 cmd["NetBiosName"] = socket.gethostname()
                 try:
                     self.server_channel.send_as_json(cmd)
@@ -2963,7 +2935,7 @@ class MainWindow(QtWidgets.QMainWindow):
         line = (
             f"vfoa:{round(vfoa, 2)} "
             f"mode:{self.radio_state.get('mode', '')} "
-            f"OP:{self.current_op} {contest_name} "
+            f"OP:{self.pref.get("current_op", "")} {contest_name} "
             f"{self.spaceweather} "
             f"- Not1MM v{__version__}"
         )
@@ -3132,7 +3104,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["StationPrefix"] = self.station.get("Call", "")
         self.contact["WPXPrefix"] = calculate_wpx_prefix(self.callsign.text())
         self.contact["IsRunQSO"] = self.radioButton_run.isChecked()
-        self.contact["Operator"] = self.current_op
+        self.contact["Operator"] = self.pref.get("current_op", "")
 
         if self.RoverLocation:
             self.contact["RoverLocation"] = self.RoverLocation
@@ -3338,6 +3310,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.settings_dialog.accepted.connect(self.save_settings)
         self.settings_dialog.Call.setText(self.station.get("Call", ""))
+        self.settings_dialog.Operator.setText(
+            self.pref.get("current_op", "") or self.station.get("Call", "")
+        )
         self.settings_dialog.Name.setText(self.station.get("Name", ""))
         self.settings_dialog.Address1.setText(self.station.get("Street1", ""))
         self.settings_dialog.Address2.setText(self.station.get("Street2", ""))
@@ -3375,9 +3350,9 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        cs = self.settings_dialog.Call.text()
+        mycall = self.settings_dialog.Call.text().upper()
         self.station = {}
-        self.station["Call"] = cs.upper()
+        self.station["Call"] = mycall
         self.station["Name"] = self.settings_dialog.Name.text().title()
         self.station["Street1"] = self.settings_dialog.Address1.text().title()
         self.station["Street2"] = self.settings_dialog.Address2.text().title()
@@ -3404,10 +3379,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.rotator_window is not None:
             self.rotator_window.set_mygrid(self.settings_dialog.GridSquare.text())
         self.settings_dialog.close()
-        if self.current_op == "":
-            self.current_op = self.station.get("Call", "")
-            self.voice_process.current_op = self.current_op
-            self.make_op_dir()
+
+        self.pref["current_op"] = self.settings_dialog.Operator.text().upper() or mycall
+        Preferences.save()
+        self.make_op_dir()
+
         contest_count = self.database.fetch_all_contests()
         if len(contest_count) == 0:
             self.new_contest_dialog()
@@ -4270,7 +4246,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.change_mode(stripped_text)
                 return
             if stripped_text == "OPON":
-                self.get_opon()
+                not1mm.actions.OPON(self)
                 self.clearinputs()
                 return
             if stripped_text == "ROVE":
@@ -4537,7 +4513,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             cmd = {}
             cmd["cmd"] = "ISDUPE"
-            cmd["Operator"] = self.current_op
+            cmd["Operator"] = self.pref.get("current_op", "")
             cmd["NetBiosName"] = socket.gethostname()
             cmd["Call"] = call
             cmd["Band"] = band
@@ -4637,53 +4613,6 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("New RoverLocation: %s", self.RoverLocation)
         self.rover_dialog.close()
 
-    def get_opon(self) -> None:
-        """
-        Ctrl+O Open the OPON dialog.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        self.opon_dialog = OpOn(fsutils.APP_DATA_PATH)
-
-        if self.current_palette:
-            self.opon_dialog.setPalette(self.current_palette)
-
-        self.opon_dialog.accepted.connect(self.new_op)
-        self.opon_dialog.open()
-
-    def new_op(self) -> None:
-        """
-        Called when the user clicks the OK button on the OPON dialog.
-        Create the new directory and copy the phonetic files.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if self.opon_dialog.NewOperator.text():
-            self.current_op = self.opon_dialog.NewOperator.text().upper()
-            self.voice_process.current_op = self.current_op
-            if self.bandmap_window:
-                self.bandmap_window.callsignField.setText(self.current_op)
-            if self.chat_window:
-                self.chat_window.mycall = self.current_op
-        self.opon_dialog.close()
-        logger.debug("New Op: %s", self.current_op)
-        self.make_op_dir()
-        self.set_window_title()
-
     def make_op_dir(self) -> None:
         """
         Create OP directory if it does not exist.
@@ -4698,8 +4627,8 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        if self.current_op:
-            op_path = fsutils.USER_DATA_PATH / self.current_op.replace("/", "-")
+        if current_op := self.pref.get("current_op", ""):
+            op_path = fsutils.USER_DATA_PATH / current_op.replace("/", "-")
             logger.debug("op_path: %s", str(op_path))
             if op_path.is_dir() is False:
                 logger.debug("Creating Op Directory: %s", str(op_path))
@@ -4829,7 +4758,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.n1mm.radio_info["Freq"] = vfo[:-1]
                     self.n1mm.radio_info["TXFreq"] = vfo[:-1]
                     self.n1mm.radio_info["Mode"] = mode
-                    self.n1mm.radio_info["OpCall"] = self.current_op
+                    self.n1mm.radio_info["OpCall"] = self.pref.get("current_op", "")
                     self.n1mm.radio_info["IsRunning"] = str(
                         self.pref.get("run_state", False)
                     )
@@ -4841,7 +4770,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     cmd["Band"] = band
                     cmd["Mode"] = mode
                     cmd["NetBiosName"] = socket.gethostname()
-                    cmd["Operator"] = self.current_op
+                    cmd["Operator"] = self.pref.get("current_op", "")
                     try:
                         self.server_channel.send_as_json(cmd)
                     except OSError as err:
