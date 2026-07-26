@@ -9,6 +9,7 @@ dropdown list, in the order they are defined in this file.
 The function doc string is used as action description in the Edit Keys dialog.
 """
 
+from not1mm.lib.edit_keys import hotkey_window
 # pylint: disable=invalid-name
 
 from not1mm import fsutils
@@ -36,6 +37,8 @@ default_key_bindings = {
     "Ctrl+O": "OPON",
     "Ctrl+T": "ADD_TEST_DATA",
 }
+
+# pylint: disable=invalid-name
 
 
 def NO_ACTION(self) -> None:  # pylint: disable=unused-argument
@@ -211,3 +214,8 @@ def EDIT_KEYS(self) -> None:
         self.edit_keys_dialog.accepted.connect(self.edit_keys_dialog.save_keys)
         self.edit_keys_dialog.finished.connect(finished)
         self.edit_keys_dialog.show()
+
+
+def SHOW_HOTKEYS(self) -> None:
+    """Show the hotkeys help window"""
+    hotkey_window(self, default_key_bindings)

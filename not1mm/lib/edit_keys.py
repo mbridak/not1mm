@@ -242,3 +242,21 @@ class EditKeys(QtWidgets.QDialog):
         pref = Preferences.data()
         pref["key_bindings"] = key_bindings
         Preferences.save()
+
+
+def hotkey_window(self, default_key_bindings) -> None:
+    text = "Space\tAdvance to next input field\nF1-F12\tSend CW/Voice/RTTY macros\n"
+    for key, action_name in self.pref.get("key_bindings", default_key_bindings).items():
+        action = getattr(not1mm.actions, action_name, None)
+        if action and action.__doc__:
+            text += f"{key}\t{action.__doc__.strip()}\n"
+
+    self.hotkey_help = QtWidgets.QMessageBox(self)
+    self.hotkey_help.setIcon(QtWidgets.QMessageBox.Icon.Information)
+    self.hotkey_help.setWindowTitle("Not1MM Hot Keys")
+    self.hotkey_help.setText(text)
+    self.hotkey_help.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+    if self.current_palette:
+        self.hotkey_help.setPalette(self.current_palette)
+    self.hotkey_help.setWindowModality(QtCore.Qt.WindowModality.NonModal)
+    self.hotkey_help.show()

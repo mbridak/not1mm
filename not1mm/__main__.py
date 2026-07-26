@@ -370,7 +370,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionEdit_Macros.triggered.connect(self.edit_macros)
 
         self.actionAbout.triggered.connect(self.show_about_dialog)
-        self.actionHotKeys.triggered.connect(self.show_key_help)
+        self.actionHotKeys.triggered.connect(
+            lambda x: not1mm.actions.SHOW_HOTKEYS(self)
+        )
         self.actionEdit_Keys.triggered.connect(lambda x: not1mm.actions.EDIT_KEYS(self))
         self.actionHelp.triggered.connect(self.show_help_dialog)
         self.actionUpdate_CTY.triggered.connect(self.check_for_new_cty)
@@ -2329,46 +2331,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if frames:
             for frame in frames:
                 frame.show()
-
-    def show_key_help(self) -> None:
-        """
-        Show help box for hotkeys.
-        Provides a list of hotkeys and what they do.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        self.show_message_box(
-            "[ESC]\tStops CW sending and antenna rotation.\n"
-            "[PgUp]\tIncreases the cw sending speed.\n"
-            "[PgDown]\tDecreases the cw sending speed.\n"
-            "[Arrow-Up] Jump to the next spot above the current VFO cursor\n"
-            "\tin the bandmap window (CAT Required).\n"
-            "[Arrow-Down] Jump to the next spot below the current\n"
-            "\tVFO cursor in the bandmap window (CAT Required).\n"
-            "[TAB]\tMove cursor to the right one field.\n"
-            "[Shift-Tab]\tMove cursor left One field.\n"
-            "[SPACE]\tWhen in the callsign field, will move the input to the\n"
-            "\tfirst field needed for the exchange.\n"
-            "[Enter]\tSubmits the fields to the log. Unless ESM is enabled.\n"
-            "[F1-F12]\tSend (CW or Voice) macros.\n"
-            "[CTRL-G]\tTune to a spot matching partial text in the callsign\n"
-            "\tentry field (CAT Required).\n"
-            "[CTRL-M]\tMark Callsign to the bandmap window to work later."
-            "[CTRL-S]\tSpot Callsign to the cluster.\n"
-            "[CTRL-SHIFT-K] Open CW text input field.\n"
-            "[CTRL-=]\tLog the contact without sending the ESM macros.\n"
-            "[CTRL-W]\tClears the input fields of any text.\n"
-            "[CTRL-R]\tToggle the Run state.\n"
-            "[CTRL-Q]\tJump to last CQ frequency.\n",
-            blocking=False,
-        )
 
     def filepicker(self, action: str) -> str:
         """
