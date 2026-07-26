@@ -69,6 +69,19 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-26] @mbridak Fix: RSGB IOTA call history.
+  - Merge pull request #628 from df7cb/hotkey-help
+  - Merge branch 'master' into hotkey-help
+  - Merge pull request #626 from df7cb/operator
+  - Merge pull request #627 from df7cb/radio-race
+  - Merge pull request #625 from df7cb/nesteddocks
+  - Build Hotkeys help window from actual key bindings
+- [2026-07-25] Make OPON an action and connect it to Ctrl+O
+  - Move current operator to preferences
+  - Initialize rig_control.cat earlier
+  - Set MainWindow dock option AllowNestedDocks
+- [2026-07-24] @mbridak Update Python version requirement to 3.11, 3.10 EOL in October.
+  - @mbridak Refactor datetime handling to use UTC. Combined nested if statments with 'and...
 - [2026-07-23] Merge pull request #623 from df7cb/contestnr
 - [2026-07-24] Fix corruption of current_contest after changing settings
 - [2026-07-20] Merge pull request #621 from df7cb/sync-vfos
