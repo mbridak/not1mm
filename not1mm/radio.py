@@ -22,7 +22,6 @@ class Radio(QObject):
     """Radio class"""
 
     poll_callback = pyqtSignal(dict)
-    cat = None
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
@@ -53,7 +52,6 @@ class Radio(QObject):
         self.port = port
         logger.debug("Using %s: %s %d", interface, host, port)
 
-    def run(self):
         try:
             if self.interface == "flrig":
                 self.cat = FlrigCAT(self.host, self.port)
@@ -73,6 +71,8 @@ class Radio(QObject):
                     break
         except ConnectionResetError:
             ...
+
+    def run(self):
         while not self.time_to_quit:
             if datetime.datetime.now() > self.poll_time:
                 self.poll_time = datetime.datetime.now() + datetime.timedelta(
