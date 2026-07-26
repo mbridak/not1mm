@@ -21,6 +21,8 @@ except OSError as exception:
 import soundfile as sf
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
 
+from not1mm.lib.preferences import Preferences
+
 logger = logging.getLogger("voice_keying")
 
 
@@ -41,7 +43,6 @@ class Voice(QObject):
     ptt_on = pyqtSignal()
     ptt_off = pyqtSignal()
     data_path = None
-    current_op = None
     sounddevice = None
     nonblocking = False
     voicings = []
@@ -49,6 +50,7 @@ class Voice(QObject):
     def __init__(self) -> None:
         super().__init__()
         """setup interface"""
+        self.pref = Preferences.data()
 
     def run(self):
         while True:
@@ -120,7 +122,7 @@ class Voice(QObject):
         if not has_output_device(self.sounddevice):
             logger.warning("No available output sound device for voice keying.")
             return
-        op_path = self.data_path / self.current_op.replace("/", "-")
+        op_path = self.data_path / self.pref.get("current_op", "").replace("/", "-")
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()
             filename = f"{str(op_path)}/{sub_string}.wav"

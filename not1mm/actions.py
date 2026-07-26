@@ -11,7 +11,10 @@ The function doc string is used as action description in the Edit Keys dialog.
 
 # pylint: disable=invalid-name
 
+from not1mm import fsutils
 from not1mm.lib.edit_keys import EditKeys
+from not1mm.lib.edit_opon import OpOn
+from not1mm.lib.preferences import Preferences
 
 default_key_bindings = {
     "Ctrl+R": "TOGGLE_RUN",
@@ -30,6 +33,7 @@ default_key_bindings = {
     "PgUp": "CW_SPEED_UP",
     "Ctrl+W": "CLEAR_INPUTS",
     "Esc": "STOP_ALL",
+    "Ctrl+O": "OPON",
     "Ctrl+T": "ADD_TEST_DATA",
 }
 
@@ -174,6 +178,17 @@ def CLEAR_INPUTS(self) -> None:
 def STOP_ALL(self) -> None:
     """Stop CW sending and antenna rotation"""
     self.stop_all()
+
+
+def OPON(self) -> None:
+    """
+    Ctrl+O Open the OPON dialog.
+    """
+
+    self.opon_dialog = OpOn(fsutils.APP_DATA_PATH, self)
+    if self.current_palette:
+        self.opon_dialog.setPalette(self.current_palette)
+    self.opon_dialog.open()
 
 
 def ADD_TEST_DATA(self) -> None:

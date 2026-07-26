@@ -1413,6 +1413,66 @@
      </item>
     </layout>
    </item>
+   <item row="2" column="4">
+    <widget class="QLineEdit" name="Operator">
+     <property name="palette">
+      <palette>
+       <active>
+        <colorrole role="PlaceholderText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>229</red>
+           <green>163</green>
+           <blue>10</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </active>
+       <inactive>
+        <colorrole role="PlaceholderText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>145</red>
+           <green>145</green>
+           <blue>144</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </inactive>
+       <disabled>
+        <colorrole role="PlaceholderText">
+         <brush brushstyle="SolidPattern">
+          <color alpha="255">
+           <red>145</red>
+           <green>145</green>
+           <blue>144</blue>
+          </color>
+         </brush>
+        </colorrole>
+       </disabled>
+      </palette>
+     </property>
+     <property name="accessibleName">
+      <string>Station operator</string>
+     </property>
+     <property name="accessibleDescription">
+      <string>Station operator. Leave blank when same as Call.</string>
+     </property>
+     <property name="placeholderText">
+      <string>K6GTE</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QLabel" name="label_24">
+     <property name="text">
+      <string>Operator</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>

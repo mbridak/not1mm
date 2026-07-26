@@ -476,7 +476,7 @@ class BandMapWindow(QDockWidget):
         self.setDarkMode()
         self.update()
         self.request_workedlist()
-        self.request_contest()
+        self.callsignField.setText(self.settings.get("current_op", ""))
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
@@ -585,10 +585,6 @@ class BandMapWindow(QDockWidget):
             cmd["spots"] = []
             self.message.emit(cmd)
             return
-        if packet.get("cmd", "") == "CONTESTSTATUS":
-            if not self.callsignField.text():
-                self.callsignField.setText(packet.get("operator", "").upper())
-            return
         if packet.get("cmd", "") == "DARKMODE":
             self.setDarkMode()
 
@@ -642,12 +638,6 @@ class BandMapWindow(QDockWidget):
         """Request worked call list from logger"""
         cmd = {}
         cmd["cmd"] = "GETWORKEDLIST"
-        self.message.emit(cmd)
-
-    def request_contest(self):
-        """Request active contest from logger"""
-        cmd = {}
-        cmd["cmd"] = "GETCONTESTSTATUS"
         self.message.emit(cmd)
 
     def update_station_timer(self):
