@@ -38,6 +38,7 @@ class RigctldCAT(CAT):
         self.rigctld_bw = "0"
         self.interface = "rigctld"
         self.sync_vfos = False
+        self.current_vfo = "VFOA"
         self.reinit()
 
     def reinit(self):
@@ -136,6 +137,14 @@ class RigctldCAT(CAT):
                 fields["line"] = line
         return fields
 
+    def get_active_vfo(self) -> str:
+        """Get the currently selected VFO from rigctld."""
+        report = self.rigctld_parse(self.rigctld_command("v"))
+        vfo = report.get("VFO", report.get("line", "")).strip().upper()
+        if vfo in ("VFOA", "VFOB"):
+            self.current_vfo = vfo
+        return self.current_vfo
+
     def sendvoicememory(self, memoryspot=1):
         self.rigctld_command(f"\\send_voice_mem {memoryspot}")
 
@@ -149,11 +158,11 @@ class RigctldCAT(CAT):
 
     def set_cw_speed(self, speed):
         """Set CW speed via rigctld"""
-        self.rigctld_command(f"L VFOA KEYSPD {speed}")
+        self.rigctld_command(f"L {self.get_active_vfo()} KEYSPD {speed}")
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
-        report = self.rigctld_parse(self.rigctld_command("f VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"f {self.get_active_vfo()}"))
         freq = report.get("Frequency", "")
         if freq.isnumeric():
             return str(int(float(freq)))
@@ -164,7 +173,7 @@ class RigctldCAT(CAT):
         """Returns the current mode filter width of the radio"""
         # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
-        report = self.rigctld_parse(self.rigctld_command("m VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"m {self.get_active_vfo()}"))
         # get_mode:|Mode: CW|Passband: 500|RPRT 0
         self.rigctld_bw = report.get("Passband", "0")
         return report.get("Mode", "")
@@ -175,27 +184,31 @@ class RigctldCAT(CAT):
 
     def get_power(self) -> int:
         """Get power level from rig"""
-        report = self.rigctld_parse(self.rigctld_command("l VFOA RFPOWER"))
+        report = self.rigctld_parse(
+            self.rigctld_command(f"l {self.get_active_vfo()} RFPOWER")
+        )
         # get_level: RFPOWER |0.000000|RPRT 0
         return int(float(report.get("line", 0)) * 100)
 
     def get_ptt(self) -> str:
         """Get PTT state"""
-        report = self.rigctld_parse(self.rigctld_command("t VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"t {self.get_active_vfo()}"))
         return report.get("PTT", "0")
 
     def get_mode_list(self) -> list:
         "Get a list of modes supported by the radio"
         # set_mode: VFOA:?|AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D PSK PSKR
         # RPRT 0
-        report = self.rigctld_parse(self.rigctld_command("M VFOA ?"))
+        report = self.rigctld_parse(self.rigctld_command(f"M {self.get_active_vfo()} ?"))
         return report.get("line", "").split(" ")
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
-        self.rigctld_command(f"F VFOA {freq}")
+        active_vfo = self.get_active_vfo()
+        self.rigctld_command(f"F {active_vfo} {freq}")
         if self.sync_vfos:
-            self.rigctld_command(f"F VFOB {freq}")
+            other_vfo = "VFOB" if active_vfo == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
         return True
 
     def set_sync_vfos(self, sync_vfos: bool):
@@ -214,17 +227,18 @@ class RigctldCAT(CAT):
         )
         # sync now when activating
         if self.sync_vfos and (freq := self.get_vfo()):
-            self.rigctld_command(f"F VFOB {freq}")
+            other_vfo = "VFOB" if self.get_active_vfo() == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
-        self.rigctld_command(f"M VFOA {mode} 0")
+        self.rigctld_command(f"M {self.get_active_vfo()} {mode} 0")
         return True
 
     def set_power(self, power):
         """Sets the radios power"""
         if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
-            rig_cmd = f"L VFOA RFPOWER {str(float(power) / 100)}"
+            rig_cmd = f"L {self.get_active_vfo()} RFPOWER {str(float(power) / 100)}"
             self.rigctld_command(rig_cmd)
             return True
         else:
@@ -241,12 +255,12 @@ class RigctldCAT(CAT):
         # Get 'PTT' status.
         # Returns PTT as a value in set_ptt above.
         """
-        self.rigctld_command("T VFOA 1")
+        self.rigctld_command(f"T {self.get_active_vfo()} 1")
         return True
 
     def ptt_off(self) -> bool:
         """turn ptt on/off"""
-        self.rigctld_command("T VFOA 0")
+        self.rigctld_command(f"T {self.get_active_vfo()} 0")
         return True
 
     def send_cat_string(self, cmdstr=""):
