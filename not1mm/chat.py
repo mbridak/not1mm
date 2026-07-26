@@ -16,7 +16,6 @@ class ChatWindow(QDockWidget):
 
     message = pyqtSignal(dict)
     chatwindow_closed = pyqtSignal()
-    mycall = ""
     poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
 
     def __init__(self, action):
@@ -25,6 +24,7 @@ class ChatWindow(QDockWidget):
         self.active: bool = False
         uic.loadUi(fsutils.APP_DATA_PATH / "chat.ui", self)
         self.chat_input.returnPressed.connect(self.send_chat)
+        self.pref = Preferences.data()
 
     def send_chat(self):
         """Sends UDP chat packet with text entered in chat_entry field."""
@@ -37,7 +37,7 @@ class ChatWindow(QDockWidget):
     def display_chat(self, sender, body):
         """Displays the chat history."""
 
-        if self.mycall in body.upper():
+        if (mycall := self.pref.get("current_op", "")) and mycall in body.upper():
             self.chat_history.setTextColor(QtGui.QColor(245, 121, 0))
         self.chat_history.insertPlainText(f"\n{sender}: {body}")
         self.chat_history.setTextColor(QtGui.QColor(211, 215, 207))
@@ -50,26 +50,9 @@ class ChatWindow(QDockWidget):
             # {"cmd": "CHAT", "sender": "N2CQR", "message": "I worked your mama on 80 meters."}
             self.display_chat(packet.get("sender", ""), packet.get("message", ""))
             return
-        if packet.get("cmd", "") == "CONTESTSTATUS":
-            self.mycall = packet.get("operator", "").upper()
-            return
 
     def setActive(self, mode: bool) -> None:
         self.active: bool = bool(mode)
-
-    def load_pref(self) -> None:
-        """
-        Load preference file to get current db filename and sets the initial darkmode state.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        self.pref = Preferences.data()
 
     def closeEvent(self, event) -> None:
         self.action.setChecked(False)
