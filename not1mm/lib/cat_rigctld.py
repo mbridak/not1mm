@@ -7,6 +7,7 @@ GPL V3
 import logging
 import socket
 import os
+import threading
 from not1mm.lib.cat_interface import CAT
 
 if __name__ == "__main__":
@@ -35,6 +36,7 @@ class RigctldCAT(CAT):
         """
         super().__init__(host, port)
         self.rigctrlsocket = None
+        self._sock_lock = threading.RLock()  # reentrant (same thread can reacquire)
         self.rigctld_bw = "0"
         self.interface = "rigctld"
         self.sync_vfos = False
@@ -78,31 +80,36 @@ class RigctldCAT(CAT):
         The reply is expected to end with "RPRT N" which is guaranteed in the
         extended response protocol (prefix="+").
         """
-
-        if (
-            not self.online
-            or self.rigctrlsocket is None
-            or not hasattr(self.rigctrlsocket, "send")
-        ):
-            if auto_reinit:
-                self.reinit()
-        if not self.online:
-            return ""
-        try:
-            logger.debug("> %s", command)
-            self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
-            report = ""
-            while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
-                thegrab = self.rigctrlsocket.recv(1024).decode()
-                if thegrab == "":  # socket closed
-                    break
-                report += thegrab
-            logger.debug("< %s", report)
-            return report
-        except (TimeoutError, OSError, UnicodeDecodeError, socket.error) as exception:
-            self.online = False
-            logger.info("%s", f"{exception}")
-            self.rigctrlsocket = None
+        with self._sock_lock:  # protect against other threads sending commands
+            if (
+                not self.online
+                or self.rigctrlsocket is None
+                or not hasattr(self.rigctrlsocket, "send")
+            ):
+                if auto_reinit:
+                    self.reinit()
+            if not self.online:
+                return ""
+            try:
+                logger.debug("> %s", command)
+                self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
+                report = ""
+                while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
+                    thegrab = self.rigctrlsocket.recv(1024).decode()
+                    if thegrab == "":  # socket closed
+                        break
+                    report += thegrab
+                logger.debug("< %s", report)
+                return report
+            except (
+                TimeoutError,
+                OSError,
+                UnicodeDecodeError,
+                socket.error,
+            ) as exception:
+                self.online = False
+                logger.info("%s", f"{exception}")
+                self.rigctrlsocket = None
         return ""
 
     def rigctld_parse(self, report: str) -> dict:
@@ -199,7 +206,9 @@ class RigctldCAT(CAT):
         "Get a list of modes supported by the radio"
         # set_mode: VFOA:?|AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D PSK PSKR
         # RPRT 0
-        report = self.rigctld_parse(self.rigctld_command(f"M {self.get_active_vfo()} ?"))
+        report = self.rigctld_parse(
+            self.rigctld_command(f"M {self.get_active_vfo()} ?")
+        )
         return report.get("line", "").split(" ")
 
     def set_vfo(self, freq: str) -> bool:
@@ -222,9 +231,7 @@ class RigctldCAT(CAT):
         """
         self.sync_vfos = sync_vfos
         # turn on SY/Tracking on supported rigs
-        self.rigctld_command(
-            f"\\set_func VFOA SYNC {int(self.sync_vfos)}"
-        )
+        self.rigctld_command(f"\\set_func VFOA SYNC {int(self.sync_vfos)}")
         # sync now when activating
         if self.sync_vfos and (freq := self.get_vfo()):
             other_vfo = "VFOB" if self.get_active_vfo() == "VFOA" else "VFOA"
