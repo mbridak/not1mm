@@ -70,6 +70,7 @@ class Preferences:
         "cluster_expire": 1,
         "logwindow": False,
         "bandmapwindow": False,
+        "clusterwindow": False,
         "checkwindow": False,
         "vfowindow": False,
         "ratewindow": False,
