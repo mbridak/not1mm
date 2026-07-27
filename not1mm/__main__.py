@@ -75,6 +75,7 @@ from not1mm import fsutils
 from not1mm.bandmap import BandMapWindow
 from not1mm.chat import ChatWindow
 from not1mm.checkwindow import CheckWindow
+from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
@@ -172,6 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
     log_window = None
     check_window = None
     bandmap_window = None
+    cluster_window = None
     vfo_window = None
     rate_window = None
     statistics_window = None
@@ -332,6 +334,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.actionLog_Window.triggered.connect(self.launch_log_window)
         self.actionBandmap.triggered.connect(self.launch_bandmap_window)
+        self.actionCluster.triggered.connect(self.launch_cluster_window)
         self.actionCheck_Window.triggered.connect(self.launch_check_window)
         self.actionRate_Window.triggered.connect(self.launch_rate_window)
         self.actionStatistics.triggered.connect(self.launch_stats_window)
@@ -757,7 +760,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_window.hide()
         self.bandmap_window.cluster_expire.connect(self.cluster_expire_updated)
         self.bandmap_window.message.connect(self.dockwidget_message)
-        self.bandmap_window.callsignField.setText(self.pref.get("current_op", ""))
         self.bandmap_window.bandmapwindow_closed.connect(self.launch_bandmap_window)
 
         self.show_splash_msg("Setting up CheckWindow.")
@@ -857,6 +859,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.log_window.message.connect(self.dockwidget_message)
         self.log_window.logwindow_closed.connect(self.launch_log_window)
 
+        self.show_splash_msg("Setting up ClusterWindow.")
+        self.cluster_window = ClusterWindow(self.actionCluster, parent=self)
+        self.cluster_window.setObjectName("cluster-window")
+        if os.environ.get("WAYLAND_DISPLAY") and old_Qt is True:
+            self.cluster_window.setFeatures(dockfeatures)
+        self.addDockWidget(Qt.DockWidgetArea.TopDockWidgetArea, self.cluster_window)
+        self.cluster_window.hide()
+        self.cluster_window.message.connect(self.dockwidget_message)
+        self.cluster_window.clusterwindow_closed.connect(self.launch_cluster_window)
+
         self.clearinputs()
         self.show_splash_msg("Loading contest.")
         self.load_contest()
@@ -883,6 +895,12 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.bandmap_window.hide()
             self.bandmap_window.setActive(False)
+
+        self.actionCluster.setChecked(self.pref.get("clusterwindow", False))
+        if self.actionCluster.isChecked():
+            self.cluster_window.show()
+        else:
+            self.cluster_window.hide()
 
         self.actionGroup_Chat.setChecked(self.pref.get("chatwindow", False))
         if self.actionGroup_Chat.isChecked():
@@ -1372,6 +1390,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if msg.get("cmd", "") == "CHECKSPOTS" and self.check_window:
                 msg["call"] = self.callsign.text()
                 self.check_window.msg_from_main(msg)
+
+            if msg.get("cmd", "") == "DX" and self.bandmap_window:
+                self.bandmap_window.msg_from_main(msg)
 
             # '{"cmd": "LOOKUP_RESPONSE", "station": "fredo", "result": {"call": "K6GTE", "aliases": "KM6HQI", "dxcc": "291", "nickname": "Mike", "fname": "Michael C", "name": "Bridak", "addr1": "2854 W Bridgeport Ave", "addr2": "Anaheim", "state": "CA", "zip": "92804", "country": "United States", "lat": "33.825460", "lon": "-117.987510", "grid": "DM13at", "county": "Orange", "ccode": "271", "fips": "06059", "land": "United States", "efdate": "2021-01-13", "expdate": "2027-11-07", "class": "G", "codes": "HVIE", "email": "michael.bridak@gmail.com", "u_views": "3049", "bio": "7232", "biodate": "2023-04-10 17:56:55", "image": "https://cdn-xml.qrz.com/e/k6gte/qsl.png", "imageinfo": "285:545:99376", "moddate": "2021-04-08 21:41:07", "MSA": "5945", "AreaCode": "714", "TimeZone": "Pacific", "GMTOffset": "-8", "DST": "Y", "eqsl": "0", "mqsl": "1", "cqzone": "3", "ituzone": "6", "born": "1967", "lotw": "1", "user": "K6GTE", "geoloc": "geocode", "name_fmt": "Michael C \\"Mike\\" Bridak"}}'
 
@@ -2411,6 +2432,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.bandmap_window.hide()
             self.bandmap_window.setActive(False)
+
+    def launch_cluster_window(self) -> None:
+        """Launch or close the cluster window"""
+        self.pref["clusterwindow"] = self.actionCluster.isChecked()
+        Preferences.save()
+        if self.actionCluster.isChecked():
+            self.cluster_window.show()
+        else:
+            self.cluster_window.hide()
 
     def launch_check_window(self) -> None:
         """Launch or close the check window"""
