@@ -689,7 +689,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
         except (OSError, JSONDecodeError, TypeError):
-            logging.critical("There was an error parsing the BigCity file.")
+            logger.critical("There was an error parsing the BigCity file.")
             self.show_message_box(
                 "There ws an error parsing the BigCity file.", blocking=False
             )
@@ -1024,7 +1024,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     try:
                         self.server_channel.send_as_json(self.server_commands[index])
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
 
     def server_message(self) -> None:
         msg = self.server_channel.getpacket()
@@ -1079,7 +1079,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     try:
                         self.server_channel.send_as_json(cmd)
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
                 continue
 
             if json_data.get("cmd") == "RESPONSE":
@@ -1294,7 +1294,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     self.server_channel.send_as_json(msg)
                 except OSError as err:
-                    logging.warning("%s", err)
+                    logger.warning("%s", err)
 
             if (
                 msg.get("cmd", "") == "CONTACTCHANGED"
@@ -1310,7 +1310,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     self.server_channel.send_as_json(msg)
                 except OSError as err:
-                    logging.warning("%s", err)
+                    logger.warning("%s", err)
 
             # TODO
             if msg.get("cmd", "") in ["CONTACTCHANGED", "DELETE", "DELETED"]:
@@ -1412,7 +1412,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     self.server_channel.send_as_json(msg)
                 except OSError as err:
-                    logging.warning("%s", err)
+                    logger.warning("%s", err)
                 return
 
             if msg.get("cmd", "") == "SPACEWEATHER":
@@ -2228,7 +2228,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.server_channel.send_as_json(cmd)
                         # server_udp.sendto(bytesToSend, (multicast_group, int(multicast_port)))
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
 
                 if hasattr(self.contest, "columns"):
                     cmd = {}
@@ -2278,7 +2278,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     ) as ctyfile:
                         self.ctyfile = loads(ctyfile.read())
                 except (OSError, JSONDecodeError, TypeError) as err:
-                    logging.critical(
+                    logger.critical(
                         f"There was an error {err} parsing the BigCity file."
                     )
                     self.show_message_box(
@@ -2723,7 +2723,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 try:
                     self.server_channel.send_as_json(cmd)
                 except OSError as err:
-                    logging.warning("%s", err)
+                    logger.warning("%s", err)
         else:
             result = self.database.get_serial()
             self.current_sn = str(result.get("serial_nr", "1"))
@@ -2935,7 +2935,7 @@ class MainWindow(QtWidgets.QMainWindow):
         line = (
             f"vfoa:{round(vfoa, 2)} "
             f"mode:{self.radio_state.get('mode', '')} "
-            f"OP:{self.pref.get("current_op", "")} {contest_name} "
+            f"OP:{self.pref.get('current_op', '')} {contest_name} "
             f"{self.spaceweather} "
             f"- Not1MM v{__version__}"
         )
@@ -3060,9 +3060,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if not any(char.isalpha() for char in self.callsign.text()):
             return
-        self.contact["TS"] = datetime.datetime.now(datetime.timezone.utc).isoformat(
-            " "
-        )[:19]
+        self.contact["TS"] = datetime.datetime.now(datetime.UTC).isoformat(" ")[:19]
         self.contact["Call"] = self.callsign.text()
         if self.contact.get("Mode") not in (
             "CONTESTI",
@@ -3185,7 +3183,7 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 self.server_channel.send_as_json(self.contact)
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
@@ -4521,7 +4519,7 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 self.server_channel.send_as_json(cmd)
             except OSError as err:
-                logging.warning("%s", err)
+                logger.warning("%s", err)
         else:
             if self.contest.dupe_type == 1:
                 result = self.database.check_dupe(call)
@@ -4774,7 +4772,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     try:
                         self.server_channel.send_as_json(cmd)
                     except OSError as err:
-                        logging.warning("%s", err)
+                        logger.warning("%s", err)
             except TypeError as err:
                 logger.debug(f"{err=} {vfo=} {the_dict=}")
 
