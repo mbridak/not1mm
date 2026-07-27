@@ -12,7 +12,7 @@ import os
 import platform
 import re
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
@@ -20,7 +20,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
@@ -181,9 +181,7 @@ class Database:
                     spot["callsign"],
                     spot.get(
                         "ts",
-                        datetime.now(timezone.utc).replace(
-                            second=0, microsecond=0, tzinfo=None
-                        ),
+                        datetime.now(UTC).replace(second=0, microsecond=0, tzinfo=None),
                     ),
                     spot["freq"],
                     spot.get("mode", None),
@@ -483,7 +481,7 @@ class BandMapWindow(QDockWidget):
         self.request_workedlist()
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main screen."""
         if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
@@ -538,7 +536,7 @@ class BandMapWindow(QDockWidget):
         if packet.get("cmd", "") == "MARKDX":
             dx = packet.get("dx", "")
             freq = packet.get("freq", 0.0)
-            the_UTC_time = datetime.now(timezone.utc).isoformat(" ")[:19].split()[1]
+            the_UTC_time = datetime.now(UTC).isoformat(" ")[:19].split()[1]
             comment = packet.get("comment", "")
             spot = {
                 "ts": "2099-01-01 " + the_UTC_time,
@@ -660,7 +658,7 @@ class BandMapWindow(QDockWidget):
         # self.bandmap_scene.setFont(self.font)
         self.bandmap_scene.setFont(self.thefont)
         step, _digits = self.determine_step_digits()
-        steps = int(round((self.currentBand.end - self.currentBand.start) / step)) + 1
+        steps = round((self.currentBand.end - self.currentBand.start) / step) + 1
         self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
         # self.graphicsView.setFont(self.font)
@@ -943,7 +941,7 @@ class BandMapWindow(QDockWidget):
                 _time = parts[-1]
                 comment = " ".join(parts[5:-1])
                 spot = {}
-                spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
+                spot["ts"] = datetime.now(UTC).isoformat(" ")[:19]
                 spot["callsign"] = dx
                 spot["spotter"] = spotter
                 spot["comment"] = comment
@@ -998,9 +996,8 @@ class BandMapWindow(QDockWidget):
             print(f">>> {cmd}")
         tosend = bytes(cmd + "\r\n", encoding="ascii")
         logger.debug("Command sent to the cluster")
-        if self.socket:
-            if self.socket.isOpen():
-                self.socket.write(tosend)
+        if self.socket and self.socket.isOpen():
+            self.socket.write(tosend)
 
     def clear_spots(self) -> None:
         """Delete all spots from the database."""
