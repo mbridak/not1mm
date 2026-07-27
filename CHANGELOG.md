@@ -1,6 +1,11 @@
 # Changelog
 
-- [2026-07-26] Merge pull request #630 from ivica3730k/master
+- [2026-07-26] Merge pull request #631 from df7cb/actions
+- [2026-07-27] Add rotator actions
+  - Rotator: Add rotate 30° left/right buttons
+- [2026-07-26] Add actions to increment/decrement report and exchange
+  - Action names need to be UPPER CASE
+  - Merge pull request #630 from ivica3730k/master
   - fix: properly select VFO from rigctld
   - @mbridak Fix: RSGB IOTA call history.
   - Merge pull request #628 from df7cb/hotkey-help
@@ -2757,3 +2762,4 @@
   - hide crap
   - Relative reference to images.
   - Add pyc files.
+  - first commit
