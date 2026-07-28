@@ -400,6 +400,11 @@
      </item>
      <item>
       <property name="text">
+       <string>EUHFC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
