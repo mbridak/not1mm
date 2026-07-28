@@ -35,7 +35,7 @@ You shouldn't bother Tom or his Team. They be cranky...
 ### The What
 
 Not1MM is, in my opinion, a usable amateur radio, or HAM, contest logger. It's
-written in Python 3.10+, and uses Qt6 framework for the graphical interface
+written in Python 3.11+, and uses Qt6 framework for the graphical interface
 and SQLite for the database.
 
 ### Target Environment
