@@ -365,45 +365,9 @@ class FlrigCAT(CAT):
 
     def send_cat_string(self, cmdstr=""):
         """send a raw cat string to radio"""
-        cmdstr = cmdstr.strip()
-        test1 = cmdstr.replace(" ", "")
-        if test1 == "":
+        cmd, thisishex, ok = self._parse_cat_command(cmdstr)
+        if not ok or cmd == "":
             return True
-        working = cmdstr
-        test2 = [" ", " x", " X", "\\"]
-        test3 = "0123456789ABCDEF "  # trailing space
-        ishex = False
-        # does this look like hex?
-        for c2 in test2:
-            if c2 in working:
-                ishex = True
-        if ishex:
-            working = working.replace("x", "")
-            working = working.replace("X", "")
-            working = working.replace("\\", "")
-            working = working.upper()
-            # should be space-delimited now
-            # any illegal chars?
-            for c3 in working:
-                if c3 not in test3:
-                    logger.debug(f"Bad char in command string: [{cmdstr}]")
-                    return True
-            # hex checks out so far
-            spacesok = True
-            for i in range(len(working)):
-                if (i + 1) % 3 == 0:  # every 3rd char
-                    if working[i] != " ":
-                        spacesok = False
-            if not spacesok:
-                logger.debug(f"Bad delimiters in cmd string: [{cmdstr}]")
-                return True
-        else:
-            """not hex, but plain ascii text - do nothing"""
-
-        return self.__send_cat_string_flrig(working, ishex)
-
-    def __send_cat_string_flrig(self, cmd, thisishex):
-        """convert string to flrig format, send to flrig"""
         if thisishex:
             # make string " x" delimited (again) for flrig
             cmd = "x" + cmd

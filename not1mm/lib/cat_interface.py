@@ -97,3 +97,32 @@ class CAT:
 
     def ptt_off(self):
         """turn ptt on/off"""
+
+    @staticmethod
+    def _parse_cat_command(cmdstr: str) -> tuple[str, bool, bool]:
+        """Normalize an `RI:` macro payload into the form each CAT backend expects.
+
+        Returns (cmd, ishex, ok):
+        - cmd == "" and ok is True  -> whitespace input, nothing to send
+        - ok is False                   -> malformed; caller drops and logs
+        - ok is True, ishex is True     -> cmd holds hex bytes, space-delimited,
+                                           upper-case, every 3rd char is a space
+        - ok is True, ishex is False    -> cmd is ASCII text, returned as-is
+        """
+        cmdstr = cmdstr.strip()
+        if not cmdstr:
+            return "", False, True
+
+        ishex = any(tok in cmdstr for tok in (" ", " x", " X", "\\"))
+        if not ishex:
+            return cmdstr, False, True
+
+        cmd = cmdstr.replace("x", "").replace("X", "").replace("\\", "").upper()
+        if any(c not in "0123456789ABCDEF " for c in cmd):
+            logger.error("Bad char in RI: command string: [%s]", cmdstr)
+            return "", True, False
+        for i in range(2, len(cmd), 3):
+            if cmd[i] != " ":
+                logger.error("Bad delimiters in RI: cmd string: [%s]", cmdstr)
+                return "", True, False
+        return cmd, True, True
