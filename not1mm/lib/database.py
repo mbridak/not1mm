@@ -156,9 +156,9 @@ class DataBase:
             return
 
         fields, values, placeholders = [], [], []
-        for field in row.keys():
+        for field, value in row.items():
             fields.append(field)
-            values.append(row[field])
+            values.append(value)
             placeholders.append("?")
 
         self.exec_sql_commit(
@@ -173,11 +173,11 @@ class DataBase:
             return
 
         fields, values = [], []
-        for field in row.keys():
+        for field, value in row.items():
             if field == key:
                 continue
             fields.append(f"{field} = ?")
-            values.append(row[field])
+            values.append(value)
 
         self.exec_sql_commit(
             f"update {table} set {', '.join(fields)} where {key} = ?;",
@@ -446,7 +446,7 @@ class DataBase:
         self.exec_sql_commit("delete from CALLHISTORY;")
 
     def fetch_call_history(self, call: str):
-        """"""
+        """Returns call history values for matching a call."""
         return self.exec_sql("select * from CALLHISTORY where call = ?;", (call,))
 
     def fetch_all_contacts_asc(self) -> list:
