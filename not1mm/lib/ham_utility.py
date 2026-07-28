@@ -1,11 +1,11 @@
 """A sad collection of maybe useful things."""
 
 import logging
-import socket
 import re
+import socket
 from datetime import datetime
-from math import asin, atan2, cos, pi, radians, sin, sqrt
 from decimal import Decimal
+from math import asin, atan2, cos, pi, radians, sin, sqrt
 
 logger = logging.getLogger("ham_utility")
 
@@ -431,7 +431,7 @@ def update_time() -> None:
     """
     Update local and UTC time on screen.
     """
-    _now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
+    _now = datetime.now(tz=datetime.UTC).isoformat(" ")[5:19].replace("-", "/")
     _utcnow = datetime.utcnow().isoformat(" ")[1:19]
     # self.localtime.setText(now)
     # self.utctime.setText(utcnow)
