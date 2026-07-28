@@ -5,7 +5,7 @@ from PyQt6 import QtGui, uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,9 @@ class ChatWindow(QDockWidget):
 
     message = pyqtSignal(dict)
     chatwindow_closed = pyqtSignal()
-    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    poll_time = datetime.datetime.now(tz=datetime.UTC) + datetime.timedelta(
+        milliseconds=1000
+    )
 
     def __init__(self, action):
         super().__init__()
@@ -44,7 +46,7 @@ class ChatWindow(QDockWidget):
         self.chat_history.ensureCursorVisible()
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main window."""
 
         if packet.get("cmd", "") == "CHAT":
             # {"cmd": "CHAT", "sender": "N2CQR", "message": "I worked your mama on 80 meters."}
