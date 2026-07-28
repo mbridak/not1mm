@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 WSJT-x UDP Packet Watcher
 Email: michael.bridak@gmail.com
@@ -7,10 +6,9 @@ GPL V3
 """
 
 import logging
+import struct
 
 from PyQt6 import QtNetwork
-
-import struct
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +76,7 @@ class FT8Watcher:
         I Hope...
         """
         self.datadict = {}
-        datagram, sender_host, sender_port_number = self.udp_socket.readDatagram(
+        datagram, _sender_host, _sender_port_number = self.udp_socket.readDatagram(
             self.udp_socket.pendingDatagramSize()
         )
         logger.debug(f"{datagram=}")
@@ -102,7 +100,6 @@ class FT8Watcher:
             return
 
         if packettype == 1:  # Status
-            ...
             [dialfreq] = struct.unpack(">Q", payload[0:8])
             modelen = self.getint(payload[8:12])
             mode = payload[12 : 12 + modelen].decode()
