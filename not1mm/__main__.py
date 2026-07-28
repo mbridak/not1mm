@@ -3457,7 +3457,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Write the modified content back to the file
             with open(macro_file, "w") as file:
                 file.write(new_content)
-        except Exception as e:
+        except OSError as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
 
     def format_serial(self, serial: str) -> str:
