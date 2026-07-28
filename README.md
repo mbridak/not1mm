@@ -69,6 +69,11 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Merge pull request #633 from ivica3730k/master
+  - feat: add European HF Championship contest
+- [2026-07-27] Merge pull request #632 from df7cb/rigctld-lock
+  - Protect rigctld_command with a lock
 - [2026-07-26] Merge pull request #631 from df7cb/actions
 - [2026-07-27] Add rotator actions
   - Rotator: Add rotate 30° left/right buttons
