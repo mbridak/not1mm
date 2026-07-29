@@ -18,11 +18,11 @@ Enable send
 curl -d "<?xml version='1.0'?><methodCall><methodName>rig.cwio_send</methodName><params><param><value><i4>1</i4></value></param></params></methodCall>" http://localhost:12345
 """
 
+import http
 import logging
 import socket
 import xmlrpc.client
-import http
-import os
+
 from not1mm.lib.cat_interface import CAT
 
 if __name__ == "__main__":
@@ -63,7 +63,6 @@ class FlrigCAT(CAT):
             ConnectionRefusedError,
             xmlrpc.client.Fault,
             http.client.BadStatusLine,
-            socket.error,
             socket.gaierror,
             TimeoutError,
             OSError,

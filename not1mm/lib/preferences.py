@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Single source of truth for reading and writing not1mm.json.
 
@@ -14,15 +13,15 @@ from json import dumps, loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 
 logger = logging.getLogger("preferences")
 
 
 class Preferences:
     _path: Path = fsutils.CONFIG_FILE
-    _data: dict = {}
-    _defaults: dict = {
+    _data: dict = {}  # noqa: RUF012
+    _defaults: dict = {  # noqa: RUF012
         "sounddevice": "default",
         "useqrz": False,
         "lookupusername": "username",
@@ -113,5 +112,5 @@ class Preferences:
             with open(tmp_path, "wt", encoding="utf-8") as file_descriptor:
                 file_descriptor.write(dumps(cls._data, indent=4))
             os.replace(tmp_path, path)
-        except (IOError, TypeError, ValueError) as exc:
+        except (OSError, TypeError, ValueError) as exc:
             logger.critical("writepreferences: %s", exc)

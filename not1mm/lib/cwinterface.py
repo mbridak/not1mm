@@ -4,9 +4,9 @@ Email: michael.bridak@gmail.com
 GPL V3
 """
 
-from xmlrpc.client import ServerProxy, Error
-import socket
 import logging
+import socket
+from xmlrpc.client import Error, ServerProxy
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")

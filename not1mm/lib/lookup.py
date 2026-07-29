@@ -6,9 +6,10 @@ HamQTH
 """
 
 import logging
-import xmltodict
-import requests
 from functools import lru_cache
+
+import requests
+import xmltodict
 
 logger = logging.getLogger("lookup")
 

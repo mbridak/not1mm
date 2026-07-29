@@ -429,10 +429,10 @@ def has_internet():
 
 def update_time() -> None:
     """
-    Update local and UTC time on screen.
+    Returns UTC time '2026-07-29 18:30:53'
     """
-    _now = datetime.now(tz=datetime.UTC).isoformat(" ")[5:19].replace("-", "/")
-    _utcnow = datetime.utcnow().isoformat(" ")[1:19]
+    # _now = datetime.now(tz=datetime.UTC).isoformat(" ")[5:19].replace("-", "/")
+    _utcnow = datetime.now(datetime.UTC).isoformat(" ")[0:19]
     # self.localtime.setText(now)
     # self.utctime.setText(utcnow)
     return _utcnow
