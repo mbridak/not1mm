@@ -69,7 +69,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
+- [2026-07-28] Merge pull request #635 from mbridak/cqws
+  - @mbridak Add CQ World Scout plugin
+  - Merge pull request #634 from df7cb/cat-ri
+  - Refactor RI macro CAT functions
   - Merge pull request #633 from ivica3730k/master
   - feat: add European HF Championship contest
 - [2026-07-27] Merge pull request #632 from df7cb/rigctld-lock
