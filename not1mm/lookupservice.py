@@ -44,7 +44,7 @@ class LookupService(QDockWidget):
             )
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main window."""
         if packet.get("cmd", "") == "LOOKUP_CALL":
             if self.look_up:
                 call = packet.get("call", "")
