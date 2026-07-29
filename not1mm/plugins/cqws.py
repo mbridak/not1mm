@@ -16,34 +16,7 @@
 # Note: In the N1MM log window, stations using the messages or exchanges “RA, BP, RE, PT,
 # GE, CL, DB, DX, YL, FD, WS, QRP, HQ” are not being displayed as UF multipliers. However,
 # the CQWS official scoring software will correctly calculate them as multipliers.
-# FEDERAL UNITS
-# • Acre - AC
-# • Alagoas - AL
-# • Amapá - AP
-# • Amazonas - AM
-# • Bahia - BA
-# • Ceará - CE
-# • Distrito Federal - DF
-# • Espírito Santo - ES
-# • Goiás - GO
-# • Maranhão - MA
-# • Mato Grosso - MT
-# • Mato Grosso do Sul - MS
-# • Minas Gerais - MG
-# • Pará - PA
-# • Paraíba - PB
-# • Paraná - PR
-# • Pernambuco - PE
-# • Piauí - PI
-# • Rio de Janeiro - RJ
-# • Rio Grande do Sul - RS
-# • Rondônia - RO
-# • Rio Grande do Norte - RN
-# • Roraima - RR
-# • Santa Catarina - SC
-# • São Paulo - SP
-# • Sergipe - SE
-# • Tocantins - TO
+
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
 
@@ -69,7 +42,6 @@ columns = [
     "Snt",
     "Rcv",
     "Exchange1",
-    "M1",
     "PTS",
 ]
 
@@ -132,34 +104,6 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
     self.contact["Exchange1"] = self.other_2.text()
     self.contact["IsMultiplier1"] = 0
-    # # check if mult
-    # if "/MM" in self.contact.get("Call", ""):
-    #     return
-    # if self.contact["CountryPrefix"] == "K":
-    #     # check unique state.
-    #     query = f"select count(*) as count from dxlog where CountryPrefix = 'K' and Exchange1 = '{self.contact.get('Exchange1', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    #     result = self.database.exec_sql(query)
-    #     if result.get("count", 0) > 0:
-    #         self.contact["IsMultiplier1"] = 0
-    #     else:
-    #         self.contact["IsMultiplier1"] = 1
-    #     return
-    # if self.contact["CountryPrefix"] == "VE":
-    #     # check unique province.
-    #     query = f"select count(*) as count from dxlog where CountryPrefix = 'VE' and Exchange1 = '{self.contact.get('Exchange1', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    #     result = self.database.exec_sql(query)
-    #     if result.get("count", 0) > 0:
-    #         self.contact["IsMultiplier1"] = 0
-    #     else:
-    #         self.contact["IsMultiplier1"] = 1
-    #     return
-    # # check all others
-    # query = f"select count(*) as count from dxlog where CountryPrefix = '{self.contact.get('CountryPrefix', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    # result = self.database.exec_sql(query)
-    # if result.get("count", 0) > 0:
-    #     self.contact["IsMultiplier1"] = 0
-    # else:
-    #     self.contact["IsMultiplier1"] = 1
 
 
 def predupe(self):  # pylint: disable=unused-argument
@@ -172,43 +116,81 @@ def prefill(self):
 
 def points(self):
     """Calc point"""
-    # Maritime Mobile
+    # • CQWS Directing Stations (PY5UEB and A40ASM) = 10 pts (Hors Concours)
+    # • FD, YL, QRP Stations = 7 pts
+    # • PT, BP, RE, GE, or DB Stations = 5 pts
+    # • CL, HQ, RA, DX Stations = 3 pts
+
+    scoring = {
+        "AC": 1,
+        "AL": 1,
+        "AP": 1,
+        "AM": 1,
+        "BA": 1,
+        "CE": 1,
+        "DF": 1,
+        "ES": 1,
+        "GO": 1,
+        "MA": 1,
+        "MT": 1,
+        "MS": 1,
+        "MG": 1,
+        "PA": 1,
+        "PB": 1,
+        "PR": 1,
+        "PE": 1,
+        "PI": 1,
+        "RJ": 1,
+        "RS": 1,
+        "RO": 1,
+        "RN": 1,
+        "RR": 1,
+        "SC": 1,
+        "SP": 1,
+        "SE": 1,
+        "TO": 1,
+        "CL": 3,
+        "HQ": 3,
+        "RA": 3,
+        "DX": 3,
+        "PT": 5,
+        "BP": 5,
+        "RE": 5,
+        "GE": 5,
+        "DB": 5,
+        "FD": 7,
+        "YL": 7,
+        "QRP": 7,
+        "WS": 10,
+    }
 
     if self.contact_is_dupe > 0:
         return 0
 
-    # if "/MM" in self.contact.get("Call", ""):
-    #     return 5
-
-    # result = self.cty_lookup(self.station.get("Call", ""))
-    # if result is not None:
-    #     item = result.get(next(iter(result)))
-    #     mycountry = item.get("entity", "")
-    #     mycontinent = item.get("continent", "")
-    # result = self.cty_lookup(self.contact.get("Call", ""))
-    # if result is not None:
-    #     item = result.get(next(iter(result)))
-    #     entity = item.get("entity", "")
-    #     continent = item.get("continent", "")
-
-    #     # Both in same country
-    #     if mycountry.upper() == entity.upper():
-    #         return 2
-
-    #     # Same Continent
-    #     if mycontinent == continent:
-    #         return 5
-
-    #     # Different Continent
-    #     return 10
-    return 0
+    return scoring.get(self.contact.get("Exchange1", "").upper(), 0)
 
 
-def show_mults(self):
+def show_mults(self, rtc=None):
     """Return display string for mults"""
-    result = self.database.fetch_mult_count(1)
-    count = result.get("count", 0)
-    return count
+    # One multiplier for each distinct Brazilian Federal Units contacted per band.
+    # One multiplier for each distinct country, counted only once across all bands.
+
+    _BFU = 0
+    _country = 0
+
+    query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as count from dxlog where Points > 0 and ContestNR = '{self.pref.get('contest', '0')}'"
+    result = self.database.exec_sql(query)
+    if result.get("count", 0) > 0:
+        _BFU = int(result.get("count", 0))
+
+    result2 = self.database.fetch_country_band_count()
+    if result2:
+        _country = int(result2.get("cb_count", 0))
+
+    if rtc is not None:
+        return (_country, _BFU)
+    print(f"{_country=} {_BFU=}")
+    return _country + _BFU
 
 
 def show_qso(self):
@@ -227,9 +209,9 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        result = self.database.fetch_mult_count(1)
-        mults = int(result.get("count", 0))
-        return contest_points * mults
+
+        mults = show_mults(self)
+        return contest_points * (1 + mults)
     return 0
 
 
@@ -239,7 +221,7 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
+    """Outputs a single line of a cabrillo file"""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -253,7 +235,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz=datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -457,35 +439,6 @@ def trigger_update(self):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-    # all_contacts = self.database.fetch_all_contacts_asc()
-    # for contact in all_contacts:
-    #     time_stamp = contact.get("TS", "")
-    #     if contact.get("CountryPrefix", "") == "K":
-    #         query = f"select count(*) as count from dxlog where TS < '{time_stamp}' and CountryPrefix = 'K' and Exchange1 = '{contact.get('Exchange1', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    #         result = self.database.exec_sql(query)
-    #         if result.get("count", 0) == 0:
-    #             contact["IsMultiplier1"] = 1
-    #         else:
-    #             contact["IsMultiplier1"] = 0
-    #         self.database.change_contact(contact)
-    #         continue
-    #     if contact.get("CountryPrefix", "") == "VE":
-    #         query = f"select count(*) as count from dxlog where TS < '{time_stamp}' and CountryPrefix = 'VE' and Exchange1 = '{contact.get('Exchange1', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    #         result = self.database.exec_sql(query)
-    #         if result.get("count", 0) == 0:
-    #             contact["IsMultiplier1"] = 1
-    #         else:
-    #             contact["IsMultiplier1"] = 0
-    #         self.database.change_contact(contact)
-    #         continue
-    #     query = f"select count(*) as count from dxlog where TS < '{time_stamp}' and CountryPrefix = '{contact.get('CountryPrefix', '')}' and ContestNR = '{self.pref.get('contest', '0')}'"
-    #     result = self.database.exec_sql(query)
-    #     if result.get("count", 0) == 0:
-    #         contact["IsMultiplier1"] = 1
-    #     else:
-    #         contact["IsMultiplier1"] = 0
-    #     self.database.change_contact(contact)
-    # trigger_update(self)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -580,19 +533,20 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
 
 def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('State', '')}, {result.get('UserText', '...')}"
-        )
-    else:
-        self.history_info.setText("")
+    """Not Used"""
+    # result = self.database.fetch_call_history(self.callsign.text())
+    # if result:
+    #     self.history_info.setText(
+    #         f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('State', '')}, {result.get('UserText', '...')}"
+    #     )
+    # else:
+    #     self.history_info.setText("")
 
 
 def check_call_history(self):
-    """"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText', '')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('State', '')}")
+    """Not Used"""
+    # result = self.database.fetch_call_history(self.callsign.text())
+    # if result:
+    #     self.history_info.setText(f"{result.get('UserText', '')}")
+    #     if self.other_2.text() == "":
+    #         self.other_2.setText(f"{result.get('State', '')}")
