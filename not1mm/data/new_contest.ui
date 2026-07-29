@@ -335,6 +335,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CQWS</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CWT</string>
       </property>
      </item>
