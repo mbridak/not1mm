@@ -1,6 +1,7 @@
 """Settings Dialog Class"""
 
 import logging
+
 from PyQt6 import QtWidgets, uic
 
 from not1mm.lib.preferences import Preferences
@@ -314,7 +315,6 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwport"] = int(self.cwport_field.text())
         except ValueError:
             self.preference["cwport"] = None
-            ...
         cwpaddingchar_button = self.cwpaddingchar_group.checkedButton()
         self.preference["cwpaddingchar"] = (
             cwpaddingchar_button.text() if cwpaddingchar_button else "0"
@@ -373,7 +373,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
-        bandlist = list()
+        bandlist = []
         if self.activate_160m.isChecked():
             bandlist.append("160")
         if self.activate_80m.isChecked():

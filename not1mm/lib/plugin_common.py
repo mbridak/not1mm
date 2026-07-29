@@ -1,17 +1,15 @@
 """Common function(s) for all contest plugins"""
 
-import logging
 import datetime
+import logging
 import re
 import uuid
-import adif_io
-
 from decimal import Decimal
 from pathlib import Path
 
-from PyQt6.QtWidgets import QApplication, QDialog, QPushButton, QProgressDialog
-
+import adif_io
 from PyQt6.QtCore import QCoreApplication, Qt
+from PyQt6.QtWidgets import QApplication, QDialog, QProgressDialog, QPushButton
 
 from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_band_xlog
 from not1mm.lib.version import __version__
@@ -31,12 +29,12 @@ def online_score_xml(self):
     the_mults = ""
     for thing in mults:
         the_mults += (
-            f'<mult band="total" mode="ALL" type="{thing}">{mults.get(thing,0)}</mult>'
+            f'<mult band="total" mode="ALL" type="{thing}">{mults.get(thing, 0)}</mult>'
         )
 
     the_points = self.contest.just_points(self)
 
-    the_date_time = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[:19]
+    the_date_time = datetime.datetime.now(datetime.UTC).isoformat(" ")[:19]
     assisted = self.contest_settings.get("AssistedCategory", "")
     bands = self.contest_settings.get("BandCategory", "")
     modes = self.contest_settings.get("ModeCategory", "")
@@ -51,7 +49,7 @@ def online_score_xml(self):
         '<?xml version="1.0"?>'
         "<dynamicresults>"
         f"<contest>{self.contest.cabrillo_name}</contest>"
-        f'<call>{self.station.get("Call", "")}</call>'
+        f"<call>{self.station.get('Call', '')}</call>"
         # <ops>NR9Q</ops>
         f'<class power="{power}" assisted = "{assisted}" transmitter="{xmiter}" ops="{ops}" bands="{bands}" mode="{modes}" overlay="{overlay}"></class>'
         f"<club>{self.station.get('Club', '')}</club>"
@@ -59,11 +57,11 @@ def online_score_xml(self):
         f"<version>{__version__}</version>"
         "<qth>"
         # <dxcccountry>K</dxcccountry>
-        f"<cqzone>{self.station.get('CQZone','')}</cqzone>"
-        f"<iaruzone>{self.station.get('IARUZone','')}</iaruzone>"
+        f"<cqzone>{self.station.get('CQZone', '')}</cqzone>"
+        f"<iaruzone>{self.station.get('IARUZone', '')}</iaruzone>"
         f"<arrlsection>{self.station.get('ARRLSection', '')}</arrlsection>"
-        f"<stprvoth>{self.station.get('State','')}</stprvoth>"
-        f"<grid6>{self.station.get('GridSquare','')}</grid6>"
+        f"<stprvoth>{self.station.get('State', '')}</stprvoth>"
+        f"<grid6>{self.station.get('GridSquare', '')}</grid6>"
         "</qth>"
         "<breakdown>"
         f'<qso band="total" mode="ALL">{self.contest.show_qso(self)}</qso>'
@@ -80,9 +78,8 @@ def online_score_xml(self):
 def get_points(self):
     """Return raw points before mults"""
     result = self.database.fetch_points()
-    if result:
-        if result.get("Points", 0) is not None:
-            return int(result.get("Points", 0))
+    if result and result.get("Points", 0) is not None:
+        return int(result.get("Points", 0))
     return 0
 
 
@@ -90,7 +87,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
     """
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz=datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     station_callsign = self.station.get("Call", "").upper().replace("/", "-")
     filename = (
@@ -233,7 +230,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                             )
                     elif cabrillo_name in ("ICWC-MST"):
                         sent = (
-                            f'{self.contest_settings.get("SentExchange", "")} {sentnr}'
+                            f"{self.contest_settings.get('SentExchange', '')} {sentnr}"
                         )
                         if sent:
                             print(
@@ -358,9 +355,9 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 print("<EOR>", end="\r\n", file=file_descriptor)
-                print("", end="\r\n", file=file_descriptor)
+                print(end="\r\n", file=file_descriptor)
             self.show_message_box(f"ADIF saved to: {filename}")
-    except IOError as error:
+    except OSError as error:
         self.show_message_box(f"Error saving ADIF file: {error}")
 
 
@@ -378,17 +375,17 @@ def imp_adif(self):
     try:
         with open(filename, "rb") as file:
             file_content = file.read()
-    except Exception as e:
+    except OSError as e:
         self.show_message_box(f"Error: {e}")
         return
 
     # filter out anything beyond 7-bit ASCII
-    ascii_content = str("")
+    ascii_content = ""
     for b in file_content:
         if b < 128:
             ascii_content = ascii_content + chr(b)
 
-    qsos_raw, adif_header = adif_io.read_from_string(ascii_content)
+    qsos_raw, _adif_header = adif_io.read_from_string(ascii_content)
     qsos_sorted = sorted(qsos_raw, key=adif_io.time_on)
 
     num_qsos = len(qsos_sorted)
@@ -421,7 +418,7 @@ def imp_adif(self):
             logger.debug("Date/time not found in QSO #{q_num+1}")
             self.progress_dialog.close()
             self.show_message_box(
-                f"Date/time not found in QSO #{q_num+1}.\nImport cancelled."
+                f"Date/time not found in QSO #{q_num + 1}.\nImport cancelled."
             )
             return
 
@@ -431,7 +428,7 @@ def imp_adif(self):
             logger.debug("Callsign not found in QSO #{q_num+1}")
             self.progress_dialog.close()
             self.show_message_box(
-                f"Callsign not found in QSO #{q_num+1}.\nImport cancelled."
+                f"Callsign not found in QSO #{q_num + 1}.\nImport cancelled."
             )
             return
 
@@ -445,7 +442,7 @@ def imp_adif(self):
                 freq_mhz = None
 
         if freq_mhz is None:
-            logger.debug(f"Frequency not found in QSO #{q_num+1}")
+            logger.debug(f"Frequency not found in QSO #{q_num + 1}")
             self.progress_dialog.close()
             self.show_message_box(...)
             return
@@ -465,7 +462,7 @@ def imp_adif(self):
             logger.debug("Mode not found in QSO #{q_num+1}")
             self.progress_dialog.close()
             self.show_message_box(
-                f"Valid Mode not found in QSO #{q_num+1}.\nImport cancelled."
+                f"Valid Mode not found in QSO #{q_num + 1}.\nImport cancelled."
             )
             return
 

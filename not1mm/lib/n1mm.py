@@ -19,7 +19,7 @@ if __name__ == "__main__":
 class N1MM:
     """Send N1MM style packets"""
 
-    radio_info = {
+    radio_info = {  # noqa: RUF012
         "app": "NOT1MM",
         "StationName": "",
         "RadioNr": "1",
@@ -43,7 +43,7 @@ class N1MM:
         "AuxAntSelectedName": "",
     }
 
-    contact_info = {
+    contact_info = {  # noqa: RUF012
         "app": "NOT1MM",
         "contestname": "",
         "contestnr": "1",
@@ -93,7 +93,7 @@ class N1MM:
         "oldcall": "",
     }
 
-    contactdelete = {
+    contactdelete = {  # noqa: RUF012
         "app": "NOT1MM",
         "timestamp": "",
         "call": "",
@@ -102,7 +102,7 @@ class N1MM:
         "ID": "",
     }
 
-    score_report = {
+    score_report = {  # noqa: RUF012
         "app": "NOT1MM",
         "contest": "",
         "call": "",

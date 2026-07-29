@@ -6,8 +6,8 @@ GPL V3
 
 import logging
 import socket
-import os
 import threading
+
 from not1mm.lib.cat_interface import CAT
 
 if __name__ == "__main__":
@@ -65,7 +65,6 @@ class RigctldCAT(CAT):
             ConnectionRefusedError,
             TimeoutError,
             OSError,
-            socket.error,
             socket.gaierror,
         ) as exception:
             self.rigctrlsocket = None
@@ -85,9 +84,8 @@ class RigctldCAT(CAT):
                 not self.online
                 or self.rigctrlsocket is None
                 or not hasattr(self.rigctrlsocket, "send")
-            ):
-                if auto_reinit:
-                    self.reinit()
+            ) and auto_reinit:
+                self.reinit()
             if not self.online:
                 return ""
             try:
@@ -101,12 +99,7 @@ class RigctldCAT(CAT):
                     report += thegrab
                 logger.debug("< %s", report)
                 return report
-            except (
-                TimeoutError,
-                OSError,
-                UnicodeDecodeError,
-                socket.error,
-            ) as exception:
+            except (TimeoutError, OSError, UnicodeDecodeError) as exception:
                 self.online = False
                 logger.info("%s", f"{exception}")
                 self.rigctrlsocket = None
@@ -245,7 +238,7 @@ class RigctldCAT(CAT):
     def set_power(self, power):
         """Sets the radios power"""
         if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
-            rig_cmd = f"L {self.get_active_vfo()} RFPOWER {str(float(power) / 100)}"
+            rig_cmd = f"L {self.get_active_vfo()} RFPOWER {float(power) / 100}"
             self.rigctld_command(rig_cmd)
             return True
         else:

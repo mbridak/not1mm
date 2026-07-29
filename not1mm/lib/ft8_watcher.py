@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class FT8Watcher:
     """Main Window"""
 
-    datadict = {}
+    datadict = {}  # noqa: RUF012
 
     def __init__(self, *args, **kwargs):
         """Initialize"""
