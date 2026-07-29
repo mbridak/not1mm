@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -22,7 +21,7 @@ from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
 from not1mm.lib.preferences import Preferences
@@ -33,13 +32,13 @@ logger: logging.Logger = logging.getLogger(__name__)
 class VfoWindow(QDockWidget):
     """The VFO window."""
 
-    pref: dict = {}
+    pref: dict = {}  # noqa: RUF012
     old_vfo: int = 0
     old_pico: str = ""
     message_shown: bool = False
     current_palette: QPalette | None = None
     device_reconnect: bool = False
-    stale: datetime.datetime = datetime.datetime.now()
+    stale: datetime.datetime = datetime.datetime.now(datetime.UTC)
     vfowindow_closed = pyqtSignal()
 
     def __init__(self, action):
@@ -102,7 +101,7 @@ class VfoWindow(QDockWidget):
         if devices is None:
             return None
         if sys.platform == "darwin":
-            usb_devices = set([device for device in devices if "usb" in device])
+            usb_devices = {device for device in devices if "usb" in device}
             new_usb_devices = usb_devices - self.usb_devices
             self.usb_devices = usb_devices
             if len(new_usb_devices) == 0:
@@ -208,7 +207,7 @@ class VfoWindow(QDockWidget):
         """
         if not self.isVisible():
             return
-        if datetime.datetime.now() < self.stale:
+        if datetime.datetime.now(datetime.UTC) < self.stale:
             return
         if self.rig_control is not None:
             if self.rig_control.online is False:
@@ -244,9 +243,9 @@ class VfoWindow(QDockWidget):
                     result: str = self.pico.read(self.pico.in_waiting).decode().strip()
                     if self.old_pico != result:
                         self.old_pico: str = result
-                        self.stale: datetime.datetime = (
-                            datetime.datetime.now() + datetime.timedelta(seconds=1)
-                        )
+                        self.stale: datetime.datetime = datetime.datetime.now(
+                            datetime.UTC
+                        ) + datetime.timedelta(seconds=1)
                         if self.rig_control is not None:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)

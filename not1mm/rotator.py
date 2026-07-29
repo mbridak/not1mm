@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (
     QGraphicsScene,
 )
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.rot_interface import RotatorInterface
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class RotatorWindow(QDockWidget):
     message: pyqtSignal = pyqtSignal(dict)
-    pref: dict = {}
+    pref: dict = {}  # noqa: RUF012
     MAP_RESOLUTION: int = 600
     GLOBE_RADIUS: float = 100.0
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
@@ -71,14 +71,14 @@ class RotatorWindow(QDockWidget):
         self.watch_timer.start(1000)
 
     def set_host_port(self, host: str, port: int) -> None:
-        """"""
+        """Sets the networking host and port."""
         self.host = host
         self.port = port
         self.rotator.set_host_port(self.host, self.port)
         self.redrawMap()
 
     def msg_from_main(self, msg: dict) -> None:
-        """"""
+        """Process messages from the main window."""
         if self.active is True and isinstance(msg, dict):
             if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
                 ...
@@ -86,13 +86,13 @@ class RotatorWindow(QDockWidget):
                 ...
 
     def set_mygrid(self, mygrid: str) -> None:
-        """"""
+        """Sets the users gridsquare."""
         if isinstance(mygrid, str):
             self.mygrid = mygrid
             self.redrawMap()
 
     def setActive(self, active: bool) -> None:
-        """"""
+        """Sets a flag signaling the window is onscreen."""
         if isinstance(active, bool):
             self.active = active
 
@@ -179,7 +179,7 @@ class RotatorWindow(QDockWidget):
             self.set_requested_azimuth(None)
 
     def redrawMap(self) -> None:
-        """"""
+        """Translates the map to an azmithal map centered on the user."""
         self.compassScene: QGraphicsScene = QGraphicsScene()
         self.compassView.setScene(self.compassScene)
         self.compassView.setStyleSheet("background-color: transparent;")
@@ -203,7 +203,7 @@ class RotatorWindow(QDockWidget):
             QPixmap.fromImage(the_map)
         )
         if pixMapItem is None:
-            logging.error("Unable to add pixmap to scene")
+            logger.error("Unable to add pixmap to scene")
         else:
             pixMapItem.moveBy(-self.MAP_RESOLUTION / 2, -self.MAP_RESOLUTION / 2)
             pixMapItem.setTransformOriginPoint(

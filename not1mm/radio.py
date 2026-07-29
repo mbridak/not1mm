@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Not1MM Contest logger
 Email: michael.bridak@gmail.com
@@ -11,9 +9,9 @@ import logging
 
 from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 
+from not1mm.lib.cat_fake import FakeCAT
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
-from not1mm.lib.cat_fake import FakeCAT
 
 logger = logging.getLogger("radio")
 
@@ -26,15 +24,17 @@ class Radio(QObject):
     mode = "CW"
     bw = "500"
     delta = 500
-    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=delta)
+    poll_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+        milliseconds=delta
+    )
     time_to_quit = False
     online = False
     interface = None
     host = None
     port = None
     modes = ""
-    cw_list = ["CW", "CW-L", "CW-U", "CWR", "CW-R"]
-    rtty_list = [
+    cw_list = ["CW", "CW-L", "CW-U", "CWR", "CW-R"]  # noqa: RUF012
+    rtty_list = [  # noqa: RUF012
         "RTTY",
         "DIGI-L",
         "PKTLSB",
@@ -74,10 +74,10 @@ class Radio(QObject):
 
     def run(self):
         while not self.time_to_quit:
-            if datetime.datetime.now() > self.poll_time:
-                self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    milliseconds=self.delta
-                )
+            if datetime.datetime.now(datetime.UTC) > self.poll_time:
+                self.poll_time = datetime.datetime.now(
+                    datetime.UTC
+                ) + datetime.timedelta(milliseconds=self.delta)
                 vfoa = self.cat.get_vfo()
                 self.online = False
                 if vfoa:
@@ -166,13 +166,13 @@ class Radio(QObject):
         if self.cat:
             self.cat.set_vfo(vfo)
 
-        self.poll_time = datetime.datetime.now()
+        self.poll_time = datetime.datetime.now(datetime.UTC)
 
     def set_mode(self, mode):
         self.mode = mode
         if self.cat:
             self.cat.set_mode(mode)
-        self.poll_time = datetime.datetime.now()
+        self.poll_time = datetime.datetime.now(datetime.UTC)
 
     def get_modes(self):
         """get list of modes"""

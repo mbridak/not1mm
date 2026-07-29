@@ -5,7 +5,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.preferences import Preferences
 
@@ -17,8 +17,8 @@ class ZoneWindow(QDockWidget):
     dbname = None
     db = None
     model = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "Zone",
         1: "160m",
         2: "80m",
@@ -135,7 +135,7 @@ class ZoneWindow(QDockWidget):
         self.get_log()
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window."""
         if self.active is True and self.isVisible():
             if msg.get("cmd", "") in (
                 "UPDATELOG",
@@ -143,10 +143,8 @@ class ZoneWindow(QDockWidget):
                 "DELETE",
                 "DELETED",
             ):
-                ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
-                ...
                 self.load_new_db()
                 self.get_log()
             if msg.get("cmd", "") == "SCROLLTOZone":

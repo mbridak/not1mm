@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -14,7 +13,7 @@ from PyQt6 import uic
 from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.preferences import Preferences
 
@@ -26,8 +25,10 @@ class RateWindow(QDockWidget):
 
     message = pyqtSignal(dict)
     dbname = None
-    pref = {}
-    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    pref = {}  # noqa: RUF012
+    poll_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+        milliseconds=1000
+    )
     ratewindow_closed = pyqtSignal()
 
     def __init__(self, action):
@@ -46,7 +47,7 @@ class RateWindow(QDockWidget):
         self.timer.start(10000)
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main window."""
 
         if packet.get("cmd", "") == "NEWDB":
             self.load_pref()

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Not1MM Contest logger
 Email: michael.bridak@gmail.com
@@ -45,7 +43,7 @@ class Voice(QObject):
     data_path = None
     sounddevice = None
     nonblocking = False
-    voicings = []
+    voicings = []  # noqa: RUF012
 
     def __init__(self) -> None:
         super().__init__()
@@ -125,7 +123,7 @@ class Voice(QObject):
         op_path = self.data_path / self.pref.get("current_op", "").replace("/", "-")
         if "[" in the_string:
             sub_string = the_string.strip("[]").lower()
-            filename = f"{str(op_path)}/{sub_string}.wav"
+            filename = f"{op_path!s}/{sub_string}.wav"
             if Path(filename).is_file():
                 self.voicings.append(filename)
             return
@@ -133,7 +131,7 @@ class Voice(QObject):
             if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
                 if letter == " ":
                     letter = "space"
-                filename = f"{str(op_path)}/{letter}.wav"
+                filename = f"{op_path!s}/{letter}.wav"
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     self.voicings.append(filename)

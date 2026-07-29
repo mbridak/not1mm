@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -24,9 +23,9 @@ class RTCService(QObject):
 
     rtc_callback: pyqtSignal = pyqtSignal(dict)
     delta: int = 2  # two minutes
-    poll_time: datetime.datetime = datetime.datetime.now() + datetime.timedelta(
-        minutes=delta
-    )
+    poll_time: datetime.datetime = datetime.datetime.now(
+        datetime.UTC
+    ) + datetime.timedelta(minutes=delta)
     time_to_quit: bool = False
     xml: str = ""
 
@@ -39,11 +38,11 @@ class RTCService(QObject):
         """Send score xml object to rtc scoring site."""
         while not self.time_to_quit:
             # if self.pref.get("send_rtc_scores", False) is True:
-            if datetime.datetime.now() > self.poll_time:
+            if datetime.datetime.now(datetime.UTC) > self.poll_time:
                 response = ""
-                self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    minutes=self.delta
-                )
+                self.poll_time = datetime.datetime.now(
+                    datetime.UTC
+                ) + datetime.timedelta(minutes=self.delta)
                 if len(self.xml):
                     headers = {"Content-Type": "text/xml"}
                     try:

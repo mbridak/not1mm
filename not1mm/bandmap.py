@@ -35,7 +35,7 @@ CLEAR_FREQ = 0.1  # 100 Hz
 class Band:
     """the band"""
 
-    bands = {
+    bands = { # noqa: RUF012
         "160m":     (1800,     2000,    1.8),
         "80m":      (3500,     4000,    3.5),
         "60m":      (5102,     5407,    5.1),
@@ -396,7 +396,7 @@ class BandMapWindow(QDockWidget):
     """The BandMapWindow class."""
 
     default_zoom = 5
-    zoom_levels = [  # kHz per tick, decimal digits
+    zoom_levels = [  # kHz per tick, decimal digits  # noqa: RUF012
         (0.04, 1),
         (0.1, 1),
         (0.2, 0),
@@ -407,18 +407,18 @@ class BandMapWindow(QDockWidget):
         (10, 0),
     ]
     currentBand = Band("20m")
-    txMark = []
-    rxMark = []
+    txMark = []  # noqa: RUF012
+    rxMark = []  # noqa: RUF012
     rx_freq = None
     tx_freq = None
     something = None
-    lineitemlist = []
-    textItemList = []
+    lineitemlist = []  # noqa: RUF012
+    textItemList = []  # noqa: RUF012
     connected = False
     test_for_data = None
     bandwidth = 0
-    bandwidth_mark = []
-    worked_list = {}
+    bandwidth_mark = []  # noqa: RUF012
+    worked_list = {}  # noqa: RUF012
     multicast_interface = None
     text_color = QColor(45, 45, 45)
     worked_color = QColor(128, 128, 128)
@@ -917,7 +917,7 @@ class BandMapWindow(QDockWidget):
             except UnicodeDecodeError:
                 continue
 
-            if os.environ.get("SEND_CLUSTER", False) is not False:
+            if os.environ.get("SEND_CLUSTER", False) is not False:  # noqa: PLW1508
                 print(f"{data}")
 
             if (
@@ -992,7 +992,7 @@ class BandMapWindow(QDockWidget):
 
     def send_command(self, cmd: str) -> None:
         """Send a command to the cluster."""
-        if os.environ.get("SEND_CLUSTER", False) is not False:
+        if os.environ.get("SEND_CLUSTER", False) is not False:  # noqa: PLW1508
             print(f">>> {cmd}")
         tosend = bytes(cmd + "\r\n", encoding="ascii")
         logger.debug("Command sent to the cluster")
