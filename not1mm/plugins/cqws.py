@@ -177,19 +177,15 @@ def show_mults(self, rtc=None):
 
     _BFU = 0
     _country = 0
-
     query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as count from dxlog where Points > 0 and ContestNR = '{self.pref.get('contest', '0')}'"
     result = self.database.exec_sql(query)
     if result.get("count", 0) > 0:
         _BFU = int(result.get("count", 0))
-
     result2 = self.database.fetch_country_band_count()
     if result2:
         _country = int(result2.get("cb_count", 0))
-
     if rtc is not None:
         return (_country, _BFU)
-    print(f"{_country=} {_BFU=}")
     return _country + _BFU
 
 
