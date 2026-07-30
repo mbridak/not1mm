@@ -1,24 +1,32 @@
-"""CQ World Scout"""
-
-# Scoring
-# • All confirmed QSOs are valid; each station may be worked once per band.
-# • CQWS Directing Stations (PY5UEB and A40ASM) = 10 pts (Hors Concours)
-# • FD, YL, QRP Stations = 7 pts
-# • PT, BP, RE, GE, or DB Stations = 5 pts
-# • CL, HQ, RA, DX Stations = 3 pts
-
-# Multipliers
-# Two types of multipliers will be applied:
-# • One multiplier for each distinct Brazilian Federal Units contacted per band. Example:
-# PY1CJ logged on 28,000 kHz and 14,000 kHz counts as two multipliers.
-# • One multiplier for each distinct country, counted only once across all bands.
-# Example: K2MM logged on 28,000 kHz and 14,000 kHz counts as only one multiplier.
-# Note: In the N1MM log window, stations using the messages or exchanges “RA, BP, RE, PT,
-# GE, CL, DB, DX, YL, FD, WS, QRP, HQ” are not being displayed as UF multipliers. However,
-# the CQWS official scoring software will correctly calculate them as multipliers.
-
-
-# pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
+"""
+Hungarian DX Contest
+Status:	            Active historically, but unconfirmed
+Geographic Focus:	Worldwide
+Participation:	    Worldwide
+Mode:	            CW, SSB
+Bands:	            160, 80, 40, 20, 15, 10m
+Classes:	        Single Op All Band (CW/SSB)(Low/High)
+                    Single Op All Band Mixed (QRP/Low/High)
+                    Single Op Single Band
+                    Single Op 3 Band
+                    Multi-Single
+                    YOTA-6H
+Max power:	        HP: 1500 watts
+                    LP: 100 watts
+                    QRP: 5 watts
+Exchange:	        HA: RS(T) + 2-letter county
+                    non-HA: RS(T) + Serial No.
+Work stations:	    Once per band per mode
+QSO Points:	        2 points per QSO with same continent
+                    5 points per QSO with different continent
+                    10 points per QSO with HA station
+Multipliers:	    Each Hungarian county, once per band
+                    Each DXCC+WAE country, once per band
+Score Calculation:	Total score = total QSO points x total mults
+Upload log at:	    http://ha-dx.com/en/submit-log
+Find rules at:	    https://ha-dx.com/en/contest-rules
+Cabrillo name:	    HA-DX
+"""
 
 import datetime
 import logging
@@ -29,10 +37,10 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Station Type"
+EXCHANGE_HINT = "# or County"
 
-name = "CQ WORLD SCOUT"
-cabrillo_name = "CQWS"
+name = "HA DX"
+cabrillo_name = "HA-DX"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -41,14 +49,56 @@ columns = [
     "Freq",
     "Snt",
     "Rcv",
-    "Exchange1",
+    "SentNr",
+    "RcvNr",
     "PTS",
 ]
 
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
+dupe_type = 3
+
+# RAC_OFFICIAL_STATIONS = [
+#     "VA2RAC",
+#     "VA3RAC",
+#     "VE1RAC",
+#     "VE4RAC",
+#     "VE5RAC",
+#     "VE6RAC",
+#     "VE7RAC",
+#     "VE8RAC",
+#     "VE9RAC",
+#     "VO1RAC",
+#     "VO2RAC",
+#     "VY0RAC",
+#     "VY1RAC",
+#     "VY2RAC",
+#     "VE3RHQ",
+# ]
+
+HA_COUNTY = [
+    "BA",
+    "BE",
+    "BN",
+    "BO",
+    "BP",
+    "CS",
+    "FE",
+    "GY",
+    "HB",
+    "HE",
+    "SZ",
+    "KO",
+    "NG",
+    "PE",
+    "SO",
+    "SA",
+    "TO",
+    "VA",
+    "VE",
+    "ZA",
+]
 
 
 def init_contest(self):
@@ -63,15 +113,17 @@ def interface(self):
     """Setup user interface"""
     self.field1.show()
     self.field2.show()
-    self.field3.hide()
+    self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.exch_label.setText("Station type")
-    self.field4.setAccessibleName("Received Exchange")
+    self.other_label.setText("SentNR")
+    self.field3.setAccessibleName("Sent Number")
+    self.exch_label.setText("HA County or SN")
+    self.field4.setAccessibleName("Hungarian county or Serial Number")
 
 
-def reset_label(self):  # pylint: disable=unused-argument
+def reset_label(self):
     """reset label after field cleared"""
 
 
@@ -80,7 +132,7 @@ def set_tab_next(self):
     self.tab_next = {
         self.callsign: self.sent,
         self.sent: self.receive,
-        self.receive: self.other_2,
+        self.receive: self.other_1,
         self.other_1: self.other_2,
         self.other_2: self.callsign,
     }
@@ -93,100 +145,93 @@ def set_tab_prev(self):
         self.sent: self.callsign,
         self.receive: self.sent,
         self.other_1: self.receive,
-        self.other_2: self.receive,
+        self.other_2: self.other_1,
     }
+
+
+def validate(self):
+    """doc"""
+    return True
 
 
 def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
-    self.contact["Exchange1"] = self.other_2.text()
-    self.contact["IsMultiplier1"] = 0
+    self.contact["NR"] = self.other_2.text().upper()
+    self.contact["SentNr"] = self.other_1.text()
 
 
-def predupe(self):  # pylint: disable=unused-argument
+def predupe(self):
     """called after callsign entered"""
 
 
 def prefill(self):
-    """Fill SentNR"""
+    """Fill sentnr"""
+    # result = self.database.get_serial()
+    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    serial_nr = str(self.current_sn).zfill(3)
+    if serial_nr == "None":
+        serial_nr = "001"
+
+    exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(exchange)
 
 
 def points(self):
     """Calc point"""
-    # • CQWS Directing Stations (PY5UEB and A40ASM) = 10 pts (Hors Concours)
-    # • FD, YL, QRP Stations = 7 pts
-    # • PT, BP, RE, GE, or DB Stations = 5 pts
-    # • CL, HQ, RA, DX Stations = 3 pts
-
-    scoring = {
-        "AC": 1,
-        "AL": 1,
-        "AP": 1,
-        "AM": 1,
-        "BA": 1,
-        "CE": 1,
-        "DF": 1,
-        "ES": 1,
-        "GO": 1,
-        "MA": 1,
-        "MT": 1,
-        "MS": 1,
-        "MG": 1,
-        "PA": 1,
-        "PB": 1,
-        "PR": 1,
-        "PE": 1,
-        "PI": 1,
-        "RJ": 1,
-        "RS": 1,
-        "RO": 1,
-        "RN": 1,
-        "RR": 1,
-        "SC": 1,
-        "SP": 1,
-        "SE": 1,
-        "TO": 1,
-        "CL": 3,
-        "HQ": 3,
-        "RA": 3,
-        "DX": 3,
-        "PT": 5,
-        "BP": 5,
-        "RE": 5,
-        "GE": 5,
-        "DB": 5,
-        "FD": 7,
-        "YL": 7,
-        "QRP": 7,
-        "WS": 10,
-    }
+    # Contact with a Hungarian station:	 	10 points
+    # Contact with a station on your continent:	 	2 points
+    # Contact with a station on another continent:	 	5 points
 
     if self.contact_is_dupe > 0:
         return 0
 
-    return scoring.get(self.contact.get("Exchange1", "").upper(), 0)
+    if self.contact["NR"] in HA_COUNTY:
+        return 10
+
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if result is not None:
+        item = result.get(next(iter(result)))
+        my_continent = item.get("continent", "")
+
+    result = self.cty_lookup(self.contact.get("Call", ""))
+    if result is not None:
+        item = result.get(next(iter(result)))
+        their_continent = item.get("continent", "")
+
+    if my_continent == their_continent:
+        return 2
+    else:
+        return 5
 
 
-def show_mults(self, rtc=None):
+def show_mults(self):
     """Return display string for mults"""
-    # One multiplier for each distinct Brazilian Federal Units contacted per band.
-    # One multiplier for each distinct country, counted only once across all bands.
+    # DXCC + WAE list countries (exception HA) and Hungarian counties
+    # (BA, BE, BN, BO, BP, CS, FE, GY, HB, HE, SZ, KO, NG, PE, SO, SA, TO, VA, VE, ZA) per band, regardless of mode.
 
-    _BFU = 0
-    _country = 0
-    query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as count from dxlog where Points > 0 and ContestNR = '{self.pref.get('contest', '0')}'"
-    result = self.database.exec_sql(query)
-    if result.get("count", 0) > 0:
-        _BFU = int(result.get("count", 0))
-    result2 = self.database.fetch_country_band_count()
-    if result2:
-        _country = int(result2.get("cb_count", 0))
-    if rtc is not None:
-        return (_country, _BFU)
-    return _country + _BFU
+    mult1 = 0
+    mult2 = 0
+
+    sql = (
+        "select count(DISTINCT(NR || ':' || Band)) as mult_count from dxlog "
+        f"where ContestNR = {self.database.current_contest} and typeof(NR) = 'text' and Points = 10;"
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        mult1 = result.get("mult_count", 0)
+
+    sql = (
+        "select count(DISTINCT(CountryPrefix || ':' || Band)) as mult_count from dxlog "
+        f"where ContestNR = {self.database.current_contest} and typeof(NR) = 'integer';"
+    )
+    result = self.database.exec_sql(sql)
+    if result:
+        mult2 = result.get("mult_count", 0)
+
+    return mult1 + mult2
 
 
 def show_qso(self):
@@ -199,25 +244,27 @@ def show_qso(self):
 
 def calc_score(self):
     """Return calculated score"""
+    mults = show_mults(self)
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
         if score is None:
             score = "0"
+        if int(mults) > 0:
+            contest_points = int(score) * (1 + int(mults))
+            return contest_points
         contest_points = int(score)
-
-        mults = show_mults(self)
-        return contest_points * (1 + mults)
+        return contest_points
     return 0
 
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "CQ-WORLD-SCOUT")
+    gen_adif(self, cabrillo_name, "HADX")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """Outputs a single line of a cabrillo file"""
+    """"""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -227,11 +274,11 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
 
 def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
-    # https://www.cw160.com/cabrillo.htm
+    # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now(tz=datetime.UTC)
+    now = datetime.datetime.now(datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -412,7 +459,7 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('Exchange1', '')).ljust(6)}",
+                    f"{str(contact.get('NR', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -423,14 +470,6 @@ def cabrillo(self, file_encoding):
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
-
-
-def trigger_update(self):
-    """Triggers the log window to update."""
-    cmd = {}
-    cmd["cmd"] = "UPDATELOG"
-    if self.log_window:
-        self.log_window.msg_from_main(cmd)
 
 
 def recalculate_mults(self):
@@ -461,8 +500,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
     for a_button in [
         self.esm_dict["CQ"],
         self.esm_dict["EXCH"],
@@ -488,8 +525,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -510,8 +547,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -528,21 +565,20 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     self.process_function_key(button)
 
 
-def populate_history_info_line(self):
-    """Not Used"""
-    # result = self.database.fetch_call_history(self.callsign.text())
-    # if result:
-    #     self.history_info.setText(
-    #         f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('State', '')}, {result.get('UserText', '...')}"
-    #     )
-    # else:
-    #     self.history_info.setText("")
+def get_mults(self):
+    """"""
+
+    mults = {}
+    mults["state"] = show_mults(self)
+    return mults
 
 
-def check_call_history(self):
-    """Not Used"""
-    # result = self.database.fetch_call_history(self.callsign.text())
-    # if result:
-    #     self.history_info.setText(f"{result.get('UserText', '')}")
-    #     if self.other_2.text() == "":
-    #         self.other_2.setText(f"{result.get('State', '')}")
+def just_points(self):
+    """"""
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        return int(score)
+    return 0
