@@ -1,6 +1,7 @@
 # Changelog
 
 - [2026-07-28] Merge pull request #635 from mbridak/cqws
+  - @mbridak Add CQWS contest option to new contest UI
   - @mbridak Add CQ World Scout plugin
   - Merge pull request #634 from df7cb/cat-ri
   - Refactor RI macro CAT functions
