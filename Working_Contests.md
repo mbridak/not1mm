@@ -29,6 +29,7 @@
 - ES FIELD DAY HF
 - ES OPEN HF
 - Estonian LL Cup
+- HADX
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF

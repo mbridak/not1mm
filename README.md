@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-07-30] Merge pull request #636 from mbridak/add-hadx
+  - @mbridak Add HADX contest support and update UI for new contest entry
 - [2026-07-28] Merge pull request #635 from mbridak/cqws
   - @mbridak Add CQ World Scout plugin
   - Merge pull request #634 from df7cb/cat-ri

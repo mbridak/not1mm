@@ -1,6 +1,9 @@
 # Changelog
 
-- [2026-07-28] Merge pull request #635 from mbridak/cqws
+- [2026-07-30] Merge pull request #636 from mbridak/add-hadx
+  - @mbridak Add HADX contest support and update UI for new contest entry
+- [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Merge pull request #635 from mbridak/cqws
   - @mbridak Add CQWS contest option to new contest UI
   - @mbridak Add CQ World Scout plugin
   - Merge pull request #634 from df7cb/cat-ri
@@ -2766,3 +2769,8 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
