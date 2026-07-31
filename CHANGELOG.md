@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
 - [2026-07-30] Merge pull request #636 from mbridak/add-hadx
   - @mbridak Add HADX contest support and update UI for new contest entry
 - [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
@@ -2774,3 +2775,4 @@
   - hide crap
   - Relative reference to images.
   - Add pyc files.
+  - first commit
