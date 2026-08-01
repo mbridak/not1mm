@@ -138,7 +138,9 @@ No new configuration keys or code paths for either.
 `usetci_radioButton` joins the existing radio-button group next to
 `userigctld_radioButton` (`configuration.ui:501`) and `useflrig_radioButton`
 (`:535`), reusing the existing `CAT_ip` and `CAT_port` fields. **TCI defaults to
-port 40001.** The hint string at `not1mm/lib/settings.py:33` ("Usually 4532 for
+port 50001**, which is what the AetherSDR under test listens on. (40001 is the
+common default for other TCI servers such as ExpertSDR; the field is
+user-editable either way.) The hint string at `not1mm/lib/settings.py:33` ("Usually 4532 for
 rigctld and 12345 for flrig") gains a TCI mention.
 
 ## Error handling and recovery

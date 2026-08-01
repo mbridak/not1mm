@@ -91,7 +91,7 @@ from PyQt6.QtWebSockets import QWebSocket
 
 def main() -> None:
     host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
-    port = int(sys.argv[2]) if len(sys.argv) > 2 else 40001
+    port = int(sys.argv[2]) if len(sys.argv) > 2 else 50001
 
     app = QCoreApplication([])
     socket = QWebSocket()
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 Start AetherSDR with TCI enabled, then:
 
 ```bash
-.venv/bin/python -m not1mm.testing.tci_probe 127.0.0.1 40001 | tee /tmp/tci-handshake.txt
+.venv/bin/python -m not1mm.testing.tci_probe 127.0.0.1 50001 | tee /tmp/tci-handshake.txt
 ```
 
 While it runs, exercise the radio manually: turn the VFO dial, change mode to CW and back, change the filter width, and key/unkey PTT. This makes the server emit every frame the backend needs to parse.
@@ -473,7 +473,7 @@ def client():
     building one via __new__ leaves the C++ side uninitialized, which PyQt6
     rejects with "'__init__' method of object's base class not called".
     """
-    return TCIClient("127.0.0.1", 40001, autostart=False)
+    return TCIClient("127.0.0.1", 50001, autostart=False)
 
 
 def test_starts_offline_with_empty_state(client):
@@ -881,7 +881,7 @@ def cat():
     instance = TciCAT.__new__(TciCAT)
     instance.interface = "tci"
     instance.host = "127.0.0.1"
-    instance.port = 40001
+    instance.port = 50001
     instance.online = False
     instance.client = StubClient()
     return instance
@@ -1039,7 +1039,7 @@ class TciCAT(CAT):
 
         A string defining the host, example: 'localhost' or '127.0.0.1'
 
-        An integer defining the network port used. Commonly 40001 for TCI.
+        An integer defining the network port used. Commonly 50001 for TCI.
 
         A variable 'online' is set to True once the TCI server completes its
         handshake, otherwise False.
@@ -1275,7 +1275,8 @@ Update the port hint at `not1mm/lib/settings.py:32-34`:
 
 ```python
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld, 12345 for flrig, and 40001 for TCI."
+            "Usually 4532 for rigctld, 12345 for flrig, "
+            "and 50001 or 40001 for TCI."
         )
 ```
 
@@ -1304,7 +1305,7 @@ In `not1mm/__main__.py`, after the `userigctld` branch ending at line 3844 and b
             self.rig_control = Radio(
                 "tci",
                 self.pref.get("CAT_ip", "127.0.0.1"),
-                int(self.pref.get("CAT_port", 40001)),
+                int(self.pref.get("CAT_port", 50001)),
             )
 ```
 
@@ -1417,7 +1418,7 @@ class FakeTCIServer:
 
 
 def main() -> None:
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 40001
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 50001
     app = QCoreApplication([])
     server = FakeTCIServer(port)
     QTimer.singleShot(600000, app.quit)
@@ -1434,7 +1435,7 @@ if __name__ == "__main__":
 In one terminal:
 
 ```bash
-.venv/bin/python -m not1mm.testing.faketci 40001
+.venv/bin/python -m not1mm.testing.faketci 50001
 ```
 
 In another:
@@ -1445,7 +1446,7 @@ from PyQt6.QtCore import QCoreApplication, QThread
 from not1mm.lib.cat_tci import TciCAT
 
 app = QCoreApplication([])
-cat = TciCAT('127.0.0.1', 40001)
+cat = TciCAT('127.0.0.1', 50001)
 print('online:', cat.online)
 print('modes:', cat.get_mode_list())
 print('vfo:', cat.get_vfo())
@@ -1485,7 +1486,7 @@ from PyQt6.QtCore import QCoreApplication, QThread
 from not1mm.lib.cat_tci import TciCAT
 
 app = QCoreApplication([])
-cat = TciCAT('127.0.0.1', 40001)
+cat = TciCAT('127.0.0.1', 50001)
 for _ in range(30):
     QThread.msleep(1000)
     print('online:', cat.online, 'vfo:', repr(cat.get_vfo()), flush=True)
@@ -1521,7 +1522,7 @@ uv build
 uv tool install --force ./dist/not1mm-*-py3-none-any.whl
 ```
 
-Start AetherSDR with TCI enabled, then launch not1mm, open Settings, select **TCI** on the rig-control tab, set the address to `127.0.0.1` and the port to `40001`, and save.
+Start AetherSDR with TCI enabled, then launch not1mm, open Settings, select **TCI** on the rig-control tab, set the address to `127.0.0.1` and the port to `50001`, and save.
 
 - [ ] **Step 2: Verify radio state sync**
 
@@ -1558,7 +1559,7 @@ Add an entry to `CHANGELOG.md` in the existing format at the top of the file:
 
 ```
 Added TCI rig control support, for SDRs such as AetherSDR and ExpertSDR.
-Select TCI in the settings rig control tab; the default port is 40001.
+Select TCI in the settings rig control tab; the default port is 50001.
 CW keying over TCI works by also selecting "CW via CAT" on the CW tab.
 ```
 
