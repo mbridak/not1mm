@@ -56,6 +56,7 @@ class Preferences:
         "CAT_ip": "127.0.0.1",
         "userigctld": False,
         "useflrig": False,
+        "usetci": False,
         "cwip": "127.0.0.1",
         "cwport": 6789,
         "cwtype": 0,

@@ -1,5 +1,9 @@
 # Changelog
 
+- [2026-08-01] Add TCI rig control support, for SDRs such as AetherSDR and ExpertSDR
+  - Select TCI in the settings rig control tab; the default port is 50001
+  - CW keying over TCI works by also selecting "CW via CAT" on the CW tab
+  - Frequency, mode, and filter bandwidth sync in both directions, plus PTT
 - [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
 - [2026-07-30] Merge pull request #636 from mbridak/add-hadx
   - @mbridak Add HADX contest support and update UI for new contest entry
