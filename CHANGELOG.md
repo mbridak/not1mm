@@ -1,9 +1,22 @@
 # Changelog
 
-- [2026-08-01] Add TCI rig control support, for SDRs such as AetherSDR and ExpertSDR
-  - Select TCI in the settings rig control tab; the default port is 50001
-  - CW keying over TCI works by also selecting "CW via CAT" on the CW tab
-  - Frequency, mode, and filter bandwidth sync in both directions, plus PTT
+- [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
+  - docs: record cw_msg signature confirmed working on live AetherSDR
+  - docs: note TCI rig control support in changelog
+  - Wire TCI into vfo.py, fix online staleness, add missing send_cat_string stub
+  - test: add fake TCI server for integration testing
+  - Correct stale RTTY mode expectation in plan Task 4 test
+  - feat: wire TCI backend into radio dispatch, settings, and UI
+  - feat: add TciCAT backend implementing the CAT contract over TCI
+  - fix: release socket/timer on their own thread after close(), fix backoff double-increm...
+  - feat: add TCI websocket client with state cache
+  - feat: add TCI protocol parsing and mode translation
+  - docs: fix TCI handshake doc overclaim, wrong comment, and stat rounding
+  - Add TCI probe and record live AetherSDR handshake
+  - Ignore .superpowers scratch directory
+  - Correct TCI port to 50001 to match the AetherSDR under test
+  - Add implementation plan for TCI CAT backend (phase 1)
+  - Add design spec for TCI support (AetherSDR compatibility)
 - [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
 - [2026-07-30] Merge pull request #636 from mbridak/add-hadx
   - @mbridak Add HADX contest support and update UI for new contest entry
