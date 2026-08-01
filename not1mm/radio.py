@@ -12,6 +12,7 @@ from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 from not1mm.lib.cat_fake import FakeCAT
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.cat_tci import TciCAT
 
 logger = logging.getLogger("radio")
 
@@ -57,6 +58,8 @@ class Radio(QObject):
                 self.cat = FlrigCAT(self.host, self.port)
             elif self.interface == "rigctld":
                 self.cat = RigctldCAT(self.host, self.port)
+            elif self.interface == "tci":
+                self.cat = TciCAT(self.host, self.port)
             else:
                 self.cat = FakeCAT(self.host, self.port)
             self.online = self.cat.online
@@ -107,6 +110,11 @@ class Radio(QObject):
                 except QEventLoop:
                     ...
             QThread.msleep(100)
+        # Backends owning their own threads (TCI) must be torn down here, or
+        # the app hangs on exit. The others have no close() and no-op.
+        close = getattr(self.cat, "close", None)
+        if close is not None:
+            close()
 
     def store_last_data_mode(self, the_mode: str = ""):
         """if the last mode is a data mode, save it."""

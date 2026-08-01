@@ -30,7 +30,8 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld and 12345 for flrig."
+            "Usually 4532 for rigctld, 12345 for flrig, "
+            "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -125,6 +126,7 @@ class Settings(QtWidgets.QDialog):
         self.catpoll_field.setText(str(self.preference.get("CAT_polldelta", 500)))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
+        self.usetci_radioButton.setChecked(bool(self.preference.get("usetci")))
 
         self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
         self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
@@ -303,6 +305,7 @@ class Settings(QtWidgets.QDialog):
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
+        self.preference["usetci"] = self.usetci_radioButton.isChecked()
 
         self.preference["rotctld_address"] = self.rotctld_address.text()
         try:

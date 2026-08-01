@@ -559,6 +559,33 @@
           </widget>
          </item>
          <item>
+          <widget class="QRadioButton" name="usetci_radioButton">
+           <property name="font">
+            <font>
+             <family>JetBrains Mono</family>
+             <weight>100</weight>
+             <pointsize>12</pointsize>
+             <strikeout>false</strikeout>
+            </font>
+           </property>
+           <property name="accessibleName">
+            <string>t c i</string>
+           </property>
+           <property name="accessibleDescription">
+            <string>use t c i</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>TCI</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">cat_method_group</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
           <widget class="QRadioButton" name="radioButton">
            <property name="font">
             <font>
@@ -2867,6 +2894,7 @@
   <tabstop>rigcontrolip_field</tabstop>
   <tabstop>userigctld_radioButton</tabstop>
   <tabstop>useflrig_radioButton</tabstop>
+  <tabstop>usetci_radioButton</tabstop>
   <tabstop>radioButton</tabstop>
   <tabstop>rigcontrolport_field</tabstop>
   <tabstop>cwport_field</tabstop>
