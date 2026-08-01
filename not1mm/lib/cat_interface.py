@@ -98,6 +98,9 @@ class CAT:
     def ptt_off(self):
         """turn ptt on/off"""
 
+    def send_cat_string(self, cmdstr=""):
+        """send a raw cat string to radio"""
+
     @staticmethod
     def _parse_cat_command(cmdstr: str) -> tuple[str, bool, bool]:
         """Normalize an `RI:` macro payload into the form each CAT backend expects.

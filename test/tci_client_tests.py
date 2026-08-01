@@ -1,4 +1,7 @@
+import sys
+
 import pytest
+from PyQt6.QtCore import QCoreApplication, QTimer
 
 from not1mm.lib.tci_client import TCIClient
 
@@ -12,6 +15,78 @@ def client():
     rejects with "'__init__' method of object's base class not called".
     """
     return TCIClient("127.0.0.1", 50001, autostart=False)
+
+
+@pytest.fixture(scope="module")
+def qt_app():
+    """QTimer.start() needs a live QCoreApplication: without one it silently
+    no-ops and isActive() never flips true, so schedule_reconnect's isActive()
+    guard -- the thing the backoff regression test below depends on -- could
+    not be exercised at all."""
+    app = QCoreApplication.instance()
+    if app is None:
+        app = QCoreApplication(sys.argv)
+    return app
+
+
+@pytest.fixture
+def client_with_timer(qt_app):
+    """A client with a real QTimer standing in for reconnect_timer, the way
+    open_socket() wires it on the TCI thread. Built by hand because
+    autostart=False skips open_socket() entirely."""
+    reconnecting_client = TCIClient("127.0.0.1", 50001, autostart=False)
+    reconnecting_client.reconnect_timer = QTimer()
+    reconnecting_client.reconnect_timer.setSingleShot(True)
+    reconnecting_client.reconnect_timer.timeout.connect(
+        reconnecting_client.connect_to_server
+    )
+    return reconnecting_client
+
+
+class RecordingSocket:
+    """Stands in for QWebSocket: records what would have been sent."""
+
+    def __init__(self):
+        self.sent = []
+
+    def sendTextMessage(self, message):
+        self.sent.append(message)
+
+
+def test_schedule_reconnect_advances_backoff_by_one_per_call(client_with_timer):
+    """Regression test for a bug where `self.backoff += 1` lived outside the
+    isActive() guard: one connection failure fires both on_error and
+    on_disconnected, both call schedule_reconnect(), and the counter
+    double-advanced -- turning the intended 1000, 2000, 5000 ms ladder into
+    1000, 5000, 5000, skipping the 2000 ms rung entirely. The guard must make
+    a second call while the timer from the first is still pending a no-op.
+    """
+    client = client_with_timer
+    assert client.backoff == 0
+
+    client.schedule_reconnect()
+    assert client.backoff == 1
+
+    # Simulate on_error and on_disconnected both firing for the same failure
+    # while the first call's timer is still pending.
+    client.schedule_reconnect()
+    assert client.backoff == 1
+
+    client.reconnect_timer.stop()
+    client.schedule_reconnect()
+    assert client.backoff == 2
+
+
+def test_write_command_refuses_to_send_while_offline(client):
+    """Even with a live socket object, write_command must not touch it until
+    the handshake has completed -- an offline client has nothing to write
+    to, regardless of whether a socket happens to exist."""
+    client.socket = RecordingSocket()
+    assert client.online is False
+
+    client.write_command("vfo:0,0,14030000;")
+
+    assert client.socket.sent == []
 
 
 def test_starts_offline_with_empty_state(client):
