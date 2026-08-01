@@ -66,8 +66,15 @@ uv pip install -e . pytest
 
 - [ ] **Step 2: Verify pytest runs**
 
-Run: `.venv/bin/python -m pytest test/ -q`
-Expected: the existing suite collects and passes (`test/plugin_wag_tests.py`, `test/plugin_euhfc_tests.py`).
+Run: `.venv/bin/python -m pytest test/*_tests.py -q`
+Expected: 30 passed (`test/plugin_wag_tests.py`, `test/plugin_euhfc_tests.py`).
+
+**Note the glob.** Plain `pytest test/` collects **0** tests: this repo names its
+test files `*_tests.py`, which pytest's default `test_*.py` / `*_test.py`
+discovery patterns do not match, and the repo has no pytest config to widen
+them. Every test command in this plan therefore uses explicit paths or the
+`test/*_tests.py` glob. Do not "fix" this by adding pytest config to
+`pyproject.toml` — that file is off limits per the Global Constraints.
 
 - [ ] **Step 3: Write the probe script**
 
@@ -238,16 +245,24 @@ def test_build_command_roundtrips_through_parse_frame():
     "tci, not1mm",
     [
         ("cw", "CW"),
+        ("cwr", "CWR"),
         ("lsb", "LSB"),
         ("usb", "USB"),
         ("digl", "DIGI-L"),
         ("digu", "DIGI-U"),
-        ("nfm", "FM"),
+        ("rtty", "RTTY"),
+        ("fm", "FM"),
+        ("nfm", "NFM"),
         ("CW", "CW"),  # case insensitive
     ],
 )
 def test_tci_mode_to_not1mm(tci, not1mm):
     assert tci_mode_to_not1mm(tci) == not1mm
+
+
+def test_fm_and_nfm_do_not_collide():
+    """AetherSDR offers both; folding them together loses one on the way back."""
+    assert tci_mode_to_not1mm("fm") != tci_mode_to_not1mm("nfm")
 
 
 def test_tci_mode_to_not1mm_passes_through_unknown_modes_uppercased():
@@ -258,11 +273,12 @@ def test_tci_mode_to_not1mm_passes_through_unknown_modes_uppercased():
     "not1mm, tci",
     [
         ("CW", "cw"),
+        ("CWR", "cwr"),
         ("USB", "usb"),
         ("DIGI-L", "digl"),
-        ("RTTY", "digl"),
-        ("RTTY-R", "digu"),
-        ("FM", "nfm"),
+        ("RTTY", "rtty"),  # native on AetherSDR, not remapped to digl
+        ("FM", "fm"),
+        ("NFM", "nfm"),
     ],
 )
 def test_not1mm_mode_to_tci(not1mm, tci):
@@ -329,26 +345,32 @@ logger = logging.getLogger("tci_protocol")
 # Radio.cw_list / Radio.rtty_list (not1mm/radio.py:36-42) match the output of
 # get_mode_list() by exact string, so everything is normalized to not1mm's
 # uppercase names on the way in.
+# Verified against a live AetherSDR handshake on 2026-08-01; see
+# docs/superpowers/specs/2026-08-01-tci-handshake.md. AetherSDR reports:
+#   modulations_list:usb,lsb,cw,cwr,am,sam,fm,nfm,digu,digl,rtty;
 TCI_TO_NOT1MM_MODE = {
-    "cw": "CW",
-    "lsb": "LSB",
     "usb": "USB",
-    "dsb": "DSB",
+    "lsb": "LSB",
+    "cw": "CW",  # in Radio.cw_list
+    "cwr": "CWR",  # in Radio.cw_list
     "am": "AM",
     "sam": "SAM",
-    "nfm": "FM",
-    "wfm": "WFM",
-    "digl": "DIGI-L",
+    "fm": "FM",
+    # AetherSDR offers fm AND nfm. Folding nfm into FM would collide, and the
+    # reverse map would then lose fm entirely.
+    "nfm": "NFM",
     "digu": "DIGI-U",
+    "digl": "DIGI-L",  # in Radio.rtty_list
+    "rtty": "RTTY",  # in Radio.rtty_list -- native, never remapped to digl
+    # Not offered by AetherSDR; harmless, and correct for other TCI servers.
+    "dsb": "DSB",
+    "wfm": "WFM",
     "drm": "DRM",
 }
 
+# Plain inversion, no special cases: AetherSDR has a native rtty mode, so
+# not1mm's RTTY maps straight through.
 NOT1MM_TO_TCI_MODE = {v: k for k, v in TCI_TO_NOT1MM_MODE.items()}
-# not1mm uses RTTY as its generic data mode; TCI has no RTTY, so it lands on
-# the digital sidebands. Without this, selecting RTTY would send "rtty" and the
-# SDR would reject it.
-NOT1MM_TO_TCI_MODE["RTTY"] = "digl"
-NOT1MM_TO_TCI_MODE["RTTY-R"] = "digu"
 
 
 def parse_frame(frame: str) -> tuple[str, list[str]] | None:
@@ -427,7 +449,12 @@ Expected: PASS, all cases.
 
 - [ ] **Step 5: Reconcile with the recorded handshake**
 
-Open `docs/superpowers/specs/2026-08-01-tci-handshake.md` from Task 1. Compare the recorded `modulation_list:` names against `TCI_TO_NOT1MM_MODE`. Add any AetherSDR mode not in the table and add a test case for it. Remove nothing — unknown modes already pass through uppercased.
+The mode table above has **already been corrected** against the live handshake recorded in `docs/superpowers/specs/2026-08-01-tci-handshake.md`. Read that document's "Corrected mode table" section and confirm your `TCI_TO_NOT1MM_MODE` matches it exactly — all 14 entries.
+
+Three corrections it contains, so you recognize them as deliberate rather than mistakes:
+- The command is `modulations_list` (**plural**), not the singular form.
+- `fm` and `nfm` are **distinct** modes on AetherSDR and must not both map to `FM`.
+- AetherSDR has a **native `rtty`** mode, so `RTTY` maps straight through — do not remap it to `digl`.
 
 - [ ] **Step 6: Commit**
 
@@ -535,8 +562,8 @@ def test_trx_frame_sets_ptt(client, value, expected):
     assert client.get("ptt") == expected
 
 
-def test_modulation_list_is_normalized(client):
-    client.handle_frame("modulation_list", ["cw", "lsb", "usb", "digl"])
+def test_modulations_list_is_normalized(client):
+    client.handle_frame("modulations_list", ["cw", "lsb", "usb", "digl"])
     assert client.get("modes") == ["CW", "LSB", "USB", "DIGI-L"]
 
 
@@ -556,13 +583,13 @@ def test_clear_state_drops_everything_including_ready(client):
 
 def test_clear_state_preserves_mode_list(client):
     """Supported modes are a device property, not volatile state."""
-    client.handle_frame("modulation_list", ["cw", "usb"])
+    client.handle_frame("modulations_list", ["cw", "usb"])
     client.clear_state()
     assert client.get("modes") == ["CW", "USB"]
 
 
 def test_get_modes_returns_a_copy(client):
-    client.handle_frame("modulation_list", ["cw"])
+    client.handle_frame("modulations_list", ["cw"])
     client.get("modes").append("BOGUS")
     assert client.get("modes") == ["CW"]
 ```
@@ -720,7 +747,7 @@ class TCIClient(QObject):
                 self.set("bw", bandwidth)
         elif name == "trx" and len(args) >= 2 and args[0] == "0":
             self.set("ptt", "1" if args[1].strip().lower() == "true" else "0")
-        elif name == "modulation_list":
+        elif name == "modulations_list":
             self.set("modes", [tci_mode_to_not1mm(m) for m in args if m])
         else:
             logger.debug("Ignoring TCI frame: %s %s", name, args)
@@ -1311,8 +1338,8 @@ In `not1mm/__main__.py`, after the `userigctld` branch ending at line 3844 and b
 
 - [ ] **Step 7: Verify nothing regressed**
 
-Run: `.venv/bin/python -m pytest test/ -v`
-Expected: PASS — all tests including the three new files.
+Run: `.venv/bin/python -m pytest test/*_tests.py -v`
+Expected: PASS — all tests including the three new files. (The glob is required; see Task 1 Step 2.)
 
 Then confirm the UI file still parses and the new widget exists:
 
@@ -1367,16 +1394,28 @@ import sys
 from PyQt6.QtCore import QCoreApplication, QTimer
 from PyQt6.QtWebSockets import QWebSocketServer
 
+# Mirrors a real AetherSDR handshake captured 2026-08-01, including the noise
+# frames, so the client's ignore path gets exercised too. See
+# docs/superpowers/specs/2026-08-01-tci-handshake.md.
 HANDSHAKE = [
-    "protocol:ExpertSDR3,1.9;",
-    "device:FakeSDR;",
+    "vfo_limits:1000,75000000;",
+    "if_limits:-48000,48000;",
     "trx_count:1;",
-    "modulation_list:am,sam,dsb,lsb,usb,cw,nfm,digl,digu,wfm,drm;",
+    "channels_count:2;",
+    "device:FakeSDR;",
+    "receive_only:false;",
+    "modulations_list:usb,lsb,cw,cwr,am,sam,fm,nfm,digu,digl,rtty;",
+    "protocol:ExpertSDR3,1.5;",
     "vfo:0,0,14030000;",
+    "vfo:0,1,14030000;",
+    "dds:0,14176580;",
     "modulation:0,cw;",
     "rx_filter_band:0,-500,500;",
+    "agc_mode:0,fast;",
     "trx:0,false;",
+    "iq_samplerate:48000;",
     "ready;",
+    "start;",
 ]
 
 
@@ -1463,7 +1502,7 @@ Expected output:
 
 ```
 online: True
-modes: ['AM', 'SAM', 'DSB', 'LSB', 'USB', 'CW', 'FM', 'DIGI-L', 'DIGI-U', 'WFM', 'DRM']
+modes: ['USB', 'LSB', 'CW', 'CWR', 'AM', 'SAM', 'FM', 'NFM', 'DIGI-U', 'DIGI-L', 'RTTY']
 vfo: 14030000
 mode: CW
 bw: 1000
