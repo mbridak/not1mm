@@ -86,15 +86,21 @@ static, even though no in-session push was captured. Also note it reported
 `0,2800`-style asymmetric edges for USB, not the symmetric `-500,500` the
 spec's example assumed; `abs(high - low)` handles both.
 
-### 4. cw_msg — NOT YET CONFIRMED
+### 4. cw_msg — CONFIRMED WORKING 2026-08-01
 
-The probe is read-only, so no CW command was ever sent and the server had no
-occasion to accept or reject one. **This remains the one open question.**
-TCI 1.5 is the relevant version for looking up the signature.
+The probe itself is read-only, so the capture could not exercise this. It was
+instead verified end to end from the running application: with **TCI** selected
+as the rig backend and **CW via CAT** selected on the CW tab, a CW macro keyed
+the live AetherSDR and sent its text.
 
-Resolution: Task 4 implements the best-known signature, and **Task 7 Step 3
-verifies it against the live radio** with the operator present. If AetherSDR
-rejects it, correct `sendcw` and its test then.
+The signature implemented in `TciCAT.sendcw` is therefore correct as written:
+
+```
+cw_msg:0,,,<text>;
+```
+
+This was the least-certain line in the implementation, since it was the one
+command the read-only probe could never test. It is now settled.
 
 ### 5. ready; terminates the handshake — confirmed
 
