@@ -36,19 +36,20 @@ modulations_list:usb,lsb,cw,cwr,am,sam,fm,nfm,digu,digl,rtty;
 | `nfm` → `FM` | both `fm` **and** `nfm` | **Collision.** Two TCI modes would map to one not1mm mode, and the reverse map would lose `fm`. |
 | `dsb`, `wfm`, `drm` | absent | Harmless — kept in the table for other TCI servers; they simply never appear. |
 
-### 3. Argument order — confirmed as the spec assumed
+### 3. Argument order — two different evidence levels
+
+The four commands below do **not** all carry the same weight of evidence.
+Only one was ever observed pushed live; the other three are read from the
+passive initial state dump alone, across two separate 60-second captures.
+
+**`vfo:` — confirmed as a live push.** 10 `vfo:` frames appear in the first
+capture, 2 of them the initial state dump (channel 0 and channel 1) and the
+remaining 8 arriving unprompted while the operator turned the dial:
 
 ```
 vfo:0,0,14193000;          -> vfo:<trx>,<channel>,<hz>
 vfo:0,1,14193000;             (channel 1 = VFO B, ignored)
-modulation:0,usb;          -> modulation:<trx>,<mode>
-rx_filter_band:0,0,2800;   -> rx_filter_band:<trx>,<low>,<high>  (bw = 2800)
-trx:0,false;               -> trx:<trx>,<bool>
-```
-
-Live dial movement confirmed `vfo:` updates push unprompted and repeatedly:
-
-```
+...
 vfo:0,0,14043900;
 vfo:0,0,14121800;
 vfo:0,0,14121900;
@@ -56,8 +57,34 @@ vfo:0,0,14121900;
 vfo:0,0,14126000;
 ```
 
-Note `rx_filter_band` reported `0,2800` for USB — an asymmetric filter, not the
-symmetric `-500,500` the spec's example assumed. `abs(high - low)` handles both.
+**`modulation:`, `rx_filter_band:`, `trx:` — argument order read from the
+initial state dump only.** None of the three was ever observed as a live
+push, across two independent 60-second capture windows:
+
+```
+modulation:0,usb;          -> modulation:<trx>,<mode>
+rx_filter_band:0,0,2800;   -> rx_filter_band:<trx>,<low>,<high>  (bw = 2800)
+trx:0,false;               -> trx:<trx>,<bool>
+```
+
+Each appears exactly once in the first capture (the state dump) and exactly
+once again in a second, independent capture — `modulation:` 1, `rx_filter_band:`
+1, `trx:` 1 — with zero further pushes of any of the three after `start;` in
+either window. The argument formats above are unambiguous and not in doubt;
+what is unverified is that AetherSDR pushes unsolicited updates for these
+three the way it does for `vfo:`.
+
+This is deferred, not blocking: **Task 7 Step 2 verifies mode and filter
+sync, and Task 7 Step 3 verifies PTT**, both with the operator present. That
+is where live-push behavior for `modulation:`, `rx_filter_band:`, and `trx:`
+gets confirmed.
+
+One data point is still useful despite the small sample: `rx_filter_band`
+read `0,0,2800` in the first capture and `0,100,2800` in the second — the
+low-edge field moved between sessions. That's weak evidence the field is not
+static, even though no in-session push was captured. Also note it reported
+`0,2800`-style asymmetric edges for USB, not the symmetric `-500,500` the
+spec's example assumed; `abs(high - low)` handles both.
 
 ### 4. cw_msg — NOT YET CONFIRMED
 
@@ -76,9 +103,10 @@ Gating `online` on `ready;` is correct.
 
 ## Frames to ignore, and why the ignore path matters
 
-The server pushes a large amount of traffic not1mm does not care about. In a
-60-second capture, **279 of ~330 frames were `rx_smeter:`** — an S-meter update
-roughly every 200 ms.
+The server pushes a large amount of traffic not1mm does not care about. The
+raw capture is 339 lines total; excluding the 1-line `--- connected ---`
+banner that is 338 frames, of which **279 were `rx_smeter:`** — an S-meter
+update roughly every 200 ms.
 
 Ignored commands observed: `rx_smeter`, `dds`, `vfo_limits`, `if_limits`,
 `channels_count`, `receive_only`, `rx_enable`, `rit_enable`, `xit_enable`,
@@ -106,7 +134,7 @@ This replaces the spec's table. `TCI_TO_NOT1MM_MODE`:
     "sam": "SAM",
     "fm": "FM",
     "nfm": "NFM",     # distinct from fm -- must not collide
-    "digu": "DIGI-U", # in Radio.rtty_list via DIGI-L sibling
+    "digu": "DIGI-U", # not in Radio.cw_list or Radio.rtty_list -- plain mode
     "digl": "DIGI-L", # in Radio.rtty_list
     "rtty": "RTTY",   # in Radio.rtty_list -- native, do NOT remap to digl
     "dsb": "DSB",     # not on AetherSDR; kept for other TCI servers
