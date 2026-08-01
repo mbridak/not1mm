@@ -190,8 +190,8 @@ class TCIClient(QObject):
         if self.closing or self.reconnect_timer is None:
             return
         delay = RECONNECT_BACKOFF_MS[min(self.backoff, len(RECONNECT_BACKOFF_MS) - 1)]
-        self.backoff += 1
         if not self.reconnect_timer.isActive():
+            self.backoff += 1
             logger.debug("Reconnecting to TCI in %d ms", delay)
             self.reconnect_timer.start(delay)
 
@@ -221,10 +221,18 @@ class TCIClient(QObject):
             )
             self.thread.quit()
             self.thread.wait(500)
+            # Both objects still have affinity to the now-dead TCI thread;
+            # deleteLater() (queued in shutdown) handles their destruction on
+            # that thread. Drop the Python references so we do not also free
+            # them here on the calling thread.
+            self.socket = None
+            self.reconnect_timer = None
 
     @pyqtSlot()
     def shutdown(self) -> None:
         if self.reconnect_timer is not None:
             self.reconnect_timer.stop()
+            self.reconnect_timer.deleteLater()
         if self.socket is not None:
             self.socket.close()
+            self.socket.deleteLater()
