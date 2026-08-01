@@ -989,7 +989,7 @@ def test_set_mode_translates_to_tci_naming(cat):
     go_online(cat)
     cat.set_mode("CW")
     cat.set_mode("RTTY")
-    assert cat.client.sent == ["modulation:0,cw;", "modulation:0,digl;"]
+    assert cat.client.sent == ["modulation:0,cw;", "modulation:0,rtty;"]
 
 
 def test_ptt_on_and_off(cat):
