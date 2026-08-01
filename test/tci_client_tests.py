@@ -103,3 +103,30 @@ def test_get_modes_returns_a_copy(client):
     client.handle_frame("modulations_list", ["cw"])
     client.get("modes").append("BOGUS")
     assert client.get("modes") == ["CW"]
+
+
+def test_on_text_message_applies_every_frame_in_one_payload(client):
+    payload = "device:FakeSDR;modulations_list:cw,usb;vfo:0,0,14030000;ready;"
+    client.on_text_message(payload)
+    assert client.get("modes") == ["CW", "USB"]
+    assert client.get("vfo") == "14030000"
+    assert client.online is True
+
+
+def test_on_text_message_skips_unparseable_fragment_without_raising(client):
+    # ":bogus" parses to an empty command name -- parse_frame returns None
+    # for it -- while the frames around it are valid and must still apply.
+    payload = "vfo:0,0,14030000;:bogus;ready;"
+    client.on_text_message(payload)
+    assert client.get("vfo") == "14030000"
+    assert client.online is True
+
+
+def test_clear_state_resets_ptt(client):
+    client.handle_frame("trx", ["0", "true"])
+    client.clear_state()
+    assert client.get("ptt") == "0"
+
+
+def test_wait_for_ready_times_out_when_never_online(client):
+    assert client.wait_for_ready(100) is False
