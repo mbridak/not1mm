@@ -3843,6 +3843,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 int(self.pref.get("CAT_port", 4532)),
             )
 
+        elif self.pref.get("usetci", False) is True:
+            logger.debug(
+                "Using TCI: %s",
+                f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+            )
+            self.rig_control = Radio(
+                "tci",
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 50001)),
+            )
+
         else:
             self.rig_control = Radio(
                 "fake",
