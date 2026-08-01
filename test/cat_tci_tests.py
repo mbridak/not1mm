@@ -8,6 +8,7 @@ class StubClient:
 
     def __init__(self):
         self.sent = []
+        self.close_called = False
         self.state = {
             "vfo": "",
             "mode": "",
@@ -32,6 +33,7 @@ class StubClient:
         return self.online
 
     def close(self):
+        self.close_called = True
         self.state["ready"] = False
 
 
@@ -147,4 +149,4 @@ def test_sendcw_sends_text(cat):
 def test_close_delegates_to_client(cat):
     go_online(cat)
     cat.close()
-    assert cat.client.online is False
+    assert cat.client.close_called is True

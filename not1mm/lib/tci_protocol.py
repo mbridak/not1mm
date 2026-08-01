@@ -77,6 +77,11 @@ def split_frames(payload: str) -> list[str]:
 
     One payload may carry several commands, which is normal during the connect
     handshake.
+
+    Assumes each payload is a fully-assembled websocket text message (Qt's
+    QWebSocket delivers one signal per complete message, never a partial
+    fragment), so a trailing chunk with no ';' terminator is still treated as
+    a complete frame rather than buffered pending more data.
     """
     return [chunk + ";" for chunk in payload.split(";") if chunk.strip()]
 

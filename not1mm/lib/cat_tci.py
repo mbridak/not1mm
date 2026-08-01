@@ -48,12 +48,22 @@ class TciCAT(CAT):
         # Radio.__init__ reads get_mode_list() immediately, so give the
         # handshake a moment to land before returning.
         self.client.wait_for_ready(READY_TIMEOUT_MS)
-        self.online = self.client.online
 
-    def refresh_online(self) -> bool:
-        """Sync the public online flag with the transport and return it."""
-        self.online = self.client.online
-        return self.online
+    @property
+    def online(self) -> bool:
+        """True once the TCI server has completed its handshake.
+
+        Reads straight through to the transport rather than caching, so a
+        server that dies is reflected immediately instead of only after the
+        next getter call happens to refresh a stale flag.
+        """
+        return self.client.online
+
+    @online.setter
+    def online(self, _value: bool) -> None:
+        """No-op: CAT.__init__ does `self.online = False`, which would raise
+        against a read-only property. Swallow that one assignment; `online`
+        itself always reads through to the client."""
 
     # ---- getters ----
     # Offline returns "" rather than cached values: Radio only overwrites on a
@@ -62,25 +72,25 @@ class TciCAT(CAT):
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
-        if not self.refresh_online():
+        if not self.online:
             return ""
         return self.client.get("vfo", "")
 
     def get_mode(self) -> str:
         """Returns the current mode of the radio"""
-        if not self.refresh_online():
+        if not self.online:
             return ""
         return self.client.get("mode", "")
 
     def get_bw(self) -> str:
         """Get current vfo bandwidth"""
-        if not self.refresh_online():
+        if not self.online:
             return ""
         return self.client.get("bw", "")
 
     def get_ptt(self) -> str:
         """Get PTT state"""
-        if not self.refresh_online():
+        if not self.online:
             return "0"
         return self.client.get("ptt", "0")
 
@@ -96,28 +106,28 @@ class TciCAT(CAT):
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios VFO. Defaults to VFOA."""
-        if not self.refresh_online():
+        if not self.online:
             return False
         self.client.send(build_command("vfo", 0, 0, str(freq)))
         return True
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
-        if not self.refresh_online():
+        if not self.online:
             return False
         self.client.send(build_command("modulation", 0, not1mm_mode_to_tci(mode)))
         return True
 
     def ptt_on(self) -> bool:
         """turn ptt on"""
-        if not self.refresh_online():
+        if not self.online:
             return False
         self.client.send(build_command("trx", 0, "true"))
         return True
 
     def ptt_off(self) -> bool:
         """turn ptt off"""
-        if not self.refresh_online():
+        if not self.online:
             return False
         self.client.send(build_command("trx", 0, "false"))
         return True
@@ -126,19 +136,19 @@ class TciCAT(CAT):
 
     def sendcw(self, texttosend) -> None:
         """Send CW text through the radio's keyer"""
-        if not self.refresh_online():
+        if not self.online:
             return
         self.client.send(build_command("cw_msg", 0, "", "", texttosend))
 
     def stopcw(self) -> None:
         """Abort CW transmission"""
-        if not self.refresh_online():
+        if not self.online:
             return
         self.client.send(build_command("cw_terminate"))
 
     def set_cw_speed(self, speed: int) -> None:
         """Set the CW speed in wpm"""
-        if not self.refresh_online():
+        if not self.online:
             return
         self.client.send(build_command("cw_macros_speed", int(speed)))
 
