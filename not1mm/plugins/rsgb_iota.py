@@ -216,9 +216,7 @@ def show_mults(self):
     # plus the total of different IOTA references contacted on each band on SSB.
     # Island Multi-Op stations may not contact members of their own group for multiplier credit.
 
-    query = query = (
-        f"select count(DISTINCT(SUBSTR(Nr, INSTR(Nr, ' ') + 1) || ':' || Mode || ':' || Band)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} and INSTR(NR, ' ');"
-    )
+    query = f"select count(DISTINCT(SUBSTR(Nr, INSTR(Nr, ' ') + 1) || ':' || Mode || ':' || Band)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} and INSTR(NR, ' ');"
 
     # query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
     result = self.database.exec_sql(query)
@@ -254,7 +252,7 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
+    """Outputs a line of the cabrillo file in the correct encoding."""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -278,7 +276,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -583,14 +581,14 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
 
 def get_mults(self):
-    """"""
+    """..."""
 
     mults = {}
     return mults
 
 
 def just_points(self):
-    """"""
+    """Returns the sum of the points column from the DB."""
     return get_points(self)
 
 
@@ -605,7 +603,7 @@ def populate_history_info_line(self):
 
 
 def check_call_history(self):
-    """"""
+    """Populate text fields with past QSO information."""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(f"{result.get('UserText', '')}")
