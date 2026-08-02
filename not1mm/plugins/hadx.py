@@ -32,8 +32,10 @@ import datetime
 import logging
 from pathlib import Path
 
-from not1mm.lib.plugin_common import gen_adif
+from not1mm.lib.plugin_common import gen_adif, online_score_xml
 from not1mm.lib.version import __version__
+
+assert online_score_xml
 
 logger = logging.getLogger(__name__)
 

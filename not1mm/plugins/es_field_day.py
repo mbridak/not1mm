@@ -29,7 +29,7 @@ assert platform
 EXCHANGE_HINT = "#"
 
 name = "ES FIELD DAY"
-cabrillo_name = "ES-FIELD-DAY"
+cabrillo_name = "ES-OPEN-HF"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
