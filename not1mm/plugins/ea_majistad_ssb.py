@@ -57,7 +57,7 @@ EXCHANGE_HINT = "Province or #"
 
 name = "His Maj. King of Spain Contest, SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
-cabrillo_name = "EA-MAJESTAD-SSB"
+cabrillo_name = "KING-OF-SPAIN-SSB"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Automobile Code"
 
 name = "ARI 40 80"
-cabrillo_name = "40-80"
+cabrillo_name = "ARI-40-80"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
