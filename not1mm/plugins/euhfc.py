@@ -23,15 +23,17 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
+
+assert online_score_xml
 
 logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "Lic. Year (2 digits)"
 
 name = "EUHFC"
-cabrillo_name = "EU-HFC"
+cabrillo_name = "EUHFC"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -168,7 +170,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "EU-HFC")
+    gen_adif(self, cabrillo_name, "EUHFC")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
