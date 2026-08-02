@@ -145,6 +145,7 @@ class TciCAT(CAT):
         if not self.online:
             return
         self.client.send(build_command("cw_terminate"))
+        self.client.send(build_command("cw_macros_stop"))
 
     def set_cw_speed(self, speed: int) -> None:
         """Set the CW speed in wpm"""
