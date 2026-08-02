@@ -138,7 +138,8 @@ class TciCAT(CAT):
         """Send CW text through the radio's keyer"""
         if not self.online:
             return
-        self.client.send(build_command("cw_msg", 0, "", "", texttosend))
+        # self.client.send(build_command("cw_msg", 0, "", "", texttosend))
+        self.client.send(build_command("cw_macros", 0, texttosend))
 
     def stopcw(self) -> None:
         """Abort CW transmission"""
