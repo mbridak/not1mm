@@ -54,7 +54,7 @@ EXCHANGE_HINT = "4-character grid square"
 
 name = "ARRL VHF JAN"
 mode = "BOTH"  # CW SSB BOTH RTTY
-cabrillo_name = "ARRL-VHF-JAN"
+cabrillo_name = "ARRL-VHF"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
