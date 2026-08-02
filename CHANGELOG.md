@@ -1,5 +1,10 @@
 # Changelog
 
+- [2026-08-02] @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+  - @mbridak Fix: self assigned variable in rsgb-iota
+  - Merge pull request #639 from df7cb/euhfc
+  - Fix more Cabrillo names and enable online scores
+  - Online scoring for EUHFC
 - [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
   - docs: record cw_msg signature confirmed working on live AetherSDR
   - docs: note TCI rig control support in changelog
