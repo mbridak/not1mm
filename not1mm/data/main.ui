@@ -1586,6 +1586,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionBandmap"/>
+    <addaction name="actionCluster"/>
     <addaction name="actionCheck_Window"/>
     <addaction name="actionLog_Window"/>
     <addaction name="actionRate_Window"/>
@@ -2079,6 +2080,19 @@
    </property>
    <property name="shortcut">
     <string>Alt+B</string>
+   </property>
+  </action>
+  <action name="actionCluster">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cluster</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono Thin</family>
+    </font>
    </property>
   </action>
   <action name="actionQuit">
