@@ -201,6 +201,9 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_login_field.setText(
+            str(self.preference.get("cluster_login", ""))
+        )
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -373,6 +376,7 @@ class Settings(QtWidgets.QDialog):
             self.preference["cluster_port"] = int(self.cluster_port_field.text())
         except ValueError:
             ...
+        self.preference["cluster_login"] = self.cluster_login_field.text()
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
