@@ -125,7 +125,6 @@ class MainWindow(QtWidgets.QMainWindow):
     """
 
     ctyfile: typing.ClassVar = {}
-    appstarted = False
     contact: typing.ClassVar = {}
     contest = None
     contest_settings: typing.ClassVar = {}
@@ -134,21 +133,15 @@ class MainWindow(QtWidgets.QMainWindow):
     station: typing.ClassVar = {}
     spaceweather = ""
     current_mode = ""
-    current_band = ""
-    default_rst = "59"
     cw = None
-    look_up = None
     run_state = False
     fkeys: typing.ClassVar = {}
     about_dialog = None
-    qrz_dialog = None
     settings_dialog = None
     edit_macro_dialog = None
     edit_keys_dialog = None
     contest_dialog = None
     configuration_dialog = None
-    opon_dialog = None
-    rove_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state: typing.ClassVar = {}
     worked_list: typing.ClassVar = {}
@@ -180,7 +173,6 @@ class MainWindow(QtWidgets.QMainWindow):
     dxcc_window = None
     zone_window = None
     rotator_window = None
-    voice_window = None
     settings = None
     lookup_service = None
     fldigi_util = None
