@@ -585,6 +585,11 @@
      </item>
      <item>
       <property name="text">
+       <string>WIA REMEMBRANCE</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>WINTER FIELD DAY</string>
       </property>
      </item>
