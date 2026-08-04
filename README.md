@@ -69,7 +69,12 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-08-02] @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+- [2026-08-03] Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
   - @mbridak Fix: self assigned variable in rsgb-iota
   - Merge pull request #639 from df7cb/euhfc
   - Fix more Cabrillo names and enable online scores
