@@ -18,6 +18,8 @@ Exchange: A valid exchange consists of RS(T) followed by a number as follows:
 a. For a single operator, the number of years you have been a licenced Ham. For example, if this is your 1st year as a ham then you will sign RS(T) 001. Round off to the nearest whole number. All zeros are not accepted.
 
 b. For a multi-op or club station, the number of licenced years of the longest licenced Amateur present at the start of the contest.
+
+Dupes are not tracked. You should make use of the bottom half of the log window as you type in the call.
 """
 
 name = "WIA REMEMBRANCE"
@@ -368,12 +370,35 @@ def points(self):
 
     score = 1
 
-    # if 160 add 1
-    # if 23cm+ add 1
+    if self.contact.get("Band", 0) == "1.8":
+        score += 1
+    if float(self.contact.get("Band", 0)) >= 1240.0:
+        score += 1
+    if self.contact.get("Mode", "") in (
+        "CW",
+        "CW-U",
+        "CW-L",
+        "CWR",
+        "RTTY",
+        "RTTY-R",
+        "LSB-D",
+        "USB-D",
+        "AM-D",
+        "FM-D",
+        "DIGI-U",
+        "DIGI-L",
+        "DIG",
+        "RTTYR",
+        "PKTLSB",
+        "PKTUSB",
+        "FSK",
+        "PKT",
+    ):
+        score *= 2
     # CW and RTTY * 2
-    # between 0100 and 0600 * 3
+    if 100 >= int(datetime.datetime.now().astimezone().strftime("%H%M")) <= 600:
+        score *= 3
 
-    # Something wrong
     return score
 
 
