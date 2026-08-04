@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
 - [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
   - Merge pull request #641 from mbridak/rd-contest
   - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
@@ -2799,3 +2800,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit

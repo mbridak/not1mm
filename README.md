@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
 - [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
   - Merge pull request #641 from mbridak/rd-contest
   - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
