@@ -1,6 +1,11 @@
 # Changelog
 
-- [2026-08-02] @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+- [2026-08-03] Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
   - @mbridak Fix: self assigned variable in rsgb-iota
   - Merge pull request #639 from df7cb/euhfc
   - Fix more Cabrillo names and enable online scores
@@ -23,6 +28,7 @@
   - Add implementation plan for TCI CAT backend (phase 1)
   - Add design spec for TCI support (AetherSDR compatibility)
 - [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
+  - @mbridak Add WIA Remembrance contest support and update UI for new contest entry
 - [2026-07-30] Merge pull request #636 from mbridak/add-hadx
   - @mbridak Add HADX contest support and update UI for new contest entry
 - [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
@@ -2792,9 +2798,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
