@@ -317,8 +317,22 @@ def cabrillo(self, file_encoding):
                 themode = contact.get("Mode", "")
                 if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
                     themode = "CW"
-                if themode == "LSB" or themode == "USB":
+                if themode in ("LSB", "USB", "FM"):
                     themode = "PH"
+                if themode.strip() in (
+                    "RTTY",
+                    "RTTY-R",
+                    "LSB-D",
+                    "USB-D",
+                    "AM-D",
+                    "FM-D",
+                    "DIGI-U",
+                    "DIGI-L",
+                    "RTTYR",
+                    "PKTLSB",
+                    "PKTUSB",
+                ):
+                    themode = "RY"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
@@ -327,10 +341,10 @@ def cabrillo(self, file_encoding):
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
+                    f"{str(contact.get('SentNr', '0')).rjust(3, '0').ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{str(contact.get('NR', '')).rjust(3, '0').ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
