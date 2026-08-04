@@ -69,7 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-08-03] Merge pull request #641 from mbridak/rd-contest
+- [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
+  - Merge pull request #641 from mbridak/rd-contest
   - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
   - Merge pull request #640 from df7cb/clusterwindow
 - [2026-07-28] Create a Cluster window
