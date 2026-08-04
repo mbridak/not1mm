@@ -41,7 +41,7 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 4
+dupe_type = 5
 
 
 def init_contest(self):
@@ -543,3 +543,41 @@ def get_mults(self):
 def just_points(self):
     """Get points for RTC XML"""
     return get_points(self)
+
+
+def date_string_difference(date_str1, date_str2):
+    """
+    Compare two datetime strings and return the difference
+    between the two in %H%M format
+    """
+
+    date_format = "%Y-%m-%d %H:%M:%S"
+
+    dt1 = datetime.datetime.strptime(date_str1, date_format).astimezone(datetime.UTC)
+    dt2 = datetime.datetime.strptime(date_str2, date_format).astimezone(datetime.UTC)
+    diff = abs(dt1 - dt2)
+
+    # Extract total seconds to calculate hours and minutes
+    total_seconds = int(diff.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    return f"{hours:02d}{minutes:02d}"
+
+
+def specific_contest_check_dupe(self, call):
+    """
+    Calculates if call has been worked in current band/mode within 3hrs.
+    """
+
+    # get latest QSO w/ same band and mode.
+    query = f"select TS from DXLOG where Band={self.contact.get('Band', '')} and Mode='{self.radio_state.get('mode', '')}' and Call='{call}' and ContestNR = '{self.pref.get('contest', '0')}' order by TS DESC;"
+    result = self.database.exec_sql(query)
+    if result:
+        log_dt = result.get("TS", False)
+        if log_dt is not False:
+            now = datetime.datetime.now(datetime.UTC)
+            date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            delta = date_string_difference(log_dt, date_time)
+            if int(delta) < 300:
+                return {"isdupe": True}
+    return {"isdupe": False}
