@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -7,11 +6,11 @@ Class: ClusterWindow
 Purpose: Standalone dock widget for DX cluster traffic.
 """
 
-from datetime import datetime, timezone
 import logging
 import re
+from datetime import UTC, datetime
 
-from PyQt6 import uic, QtNetwork
+from PyQt6 import QtGui, QtNetwork, uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
@@ -69,7 +68,7 @@ class ClusterWindow(QDockWidget):
         self.socket.connectToHost(server, port)
         self.test_for_data = self.socket.bytesAvailable
         self.setWindowTitle(f"Cluster: {server}")
-        time = datetime.now(timezone.utc).strftime("%H:%M")
+        time = datetime.now(UTC).strftime("%H:%M")
         self.append_message(f"[{time}] Connecting.")
         self.connectButton.setText("Connecting")
         self.connected = True
@@ -85,8 +84,8 @@ class ClusterWindow(QDockWidget):
     def cluster_disconnected(self) -> None:
         """Called when socket is disconnected."""
         self.connected = False
-        self.setWindowTitle(f"Cluster")
-        time = datetime.now(timezone.utc).strftime("%H:%M")
+        self.setWindowTitle("Cluster")
+        time = datetime.now(UTC).strftime("%H:%M")
         self.append_message(f"[{time}] Disconnected.")
         self.connectButton.setText("Connect")
 
@@ -101,9 +100,8 @@ class ClusterWindow(QDockWidget):
         self.append_message(f">>> <b>{cmd}</b>")
         tosend = bytes(cmd + "\r\n", encoding="ascii")
         logger.debug(f">>> {cmd}")
-        if self.socket:
-            if self.socket.isOpen():
-                self.socket.write(tosend)
+        if self.socket and self.socket.isOpen():
+            self.socket.write(tosend)
 
     def cluster_receive(self) -> None:
         """Process waiting bytes"""
@@ -154,7 +152,7 @@ class ClusterWindow(QDockWidget):
                 comment = " ".join(parts[5:-1])
                 spot = {}
                 spot["cmd"] = "DX"
-                spot["ts"] = datetime.now(timezone.utc).isoformat(" ")[:19]
+                spot["ts"] = datetime.now(UTC).isoformat(" ")[:19]
                 spot["dx"] = dx
                 spot["spotter"] = spotter
                 spot["comment"] = comment
