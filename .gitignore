@@ -38,3 +38,10 @@ not1mm/pull_master_to_branch.md
 ui.xml
 not1mm/testing/temp.txt
 .superpowers
+not1mm.aux
+not1mm.idx
+not1mm.log
+.gitignore
+not1mm.synctex.gz
+not1mm.toc
+not1mm.out
