@@ -215,6 +215,11 @@
      </item>
      <item>
       <property name="text">
+       <string>AADX CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>AGCW QRP</string>
       </property>
      </item>
