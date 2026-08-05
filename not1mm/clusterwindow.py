@@ -184,6 +184,16 @@ class ClusterWindow(QDockWidget):
         self.cluster_send(data)
         self.clusterInput.clear()
 
+    def msg_from_main(self, packet):
+        """Process messages from the main screen."""
+
+        if packet.get("cmd", "") == "SPOTDX":
+            if "dx" in packet and "freq" in packet:
+                dx = packet.get("dx")
+                freq = packet.get("freq")
+                spotdx = f"dx {dx} {freq}"
+                self.cluster_send(spotdx)
+
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes. Cluster connection stays open."""
         self.action.setChecked(False)

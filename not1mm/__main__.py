@@ -2714,8 +2714,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.bandmap_window.msg_from_main(cmd)
 
     def spot_dx(self) -> None:
-        """If a bandmap_window exists, send it a SPOTDX command to forward info to the cluster."""
-        if self.bandmap_window:
+        """Build a SPOTDX command and send it to the cluster window."""
+        if self.cluster_window:
             freq = self.radio_state.get("vfoa")
             dx = self.callsign.text()
             if freq and dx:
@@ -2729,7 +2729,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 cmd = None
             if cmd:
-                self.bandmap_window.msg_from_main(cmd)
+                self.cluster_window.msg_from_main(cmd)
 
     def get_sn(self) -> None:
         """Generate a serial number."""
