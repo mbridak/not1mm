@@ -103,8 +103,8 @@ def SPOT_DX(self) -> None:
         cmd["cmd"] = "SPOTDX"
         cmd["dx"] = dx
         cmd["freq"] = float(int(freq) / 1000)
-        if self.bandmap_window:
-            self.bandmap_window.msg_from_main(cmd)
+        if self.cluster_window:
+            self.cluster_window.msg_from_main(cmd)
 
 
 def MARK_SPOT(self) -> None:
