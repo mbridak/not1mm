@@ -459,206 +459,212 @@ class MainWindow(QtWidgets.QMainWindow):
         self.F12.clicked.connect(lambda x: self.process_function_key(self.F12))
 
         self.cw_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "CW"
+            "160m", "CW"
         )
         self.cw_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "CW"
+            "80m", "CW"
         )
         self.cw_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "CW"
+            "60m", "CW"
         )
         self.cw_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "CW"
+            "40m", "CW"
         )
         self.cw_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            30, "CW"
+            "30m", "CW"
         )
         self.cw_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "CW"
+            "20m", "CW"
         )
         self.cw_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "CW"
+            "17m", "CW"
         )
         self.cw_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "CW"
+            "15m", "CW"
         )
         self.cw_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "CW"
+            "12m", "CW"
         )
         self.cw_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "CW"
+            "10m", "CW"
         )
-        self.cw_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(6, "CW")
-        self.cw_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(4, "CW")
-        self.cw_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(2, "CW")
+        self.cw_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            "6m", "CW"
+        )
+        self.cw_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            "4m", "CW"
+        )
+        self.cw_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
+            "2m", "CW"
+        )
         self.cw_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "CW"
+            "1.25m", "CW"
         )
         self.cw_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "CW"
+            "70cm", "CW"
         )
         self.cw_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "CW"
+            "33cm", "CW"
         )
         self.cw_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "CW"
+            "23cm", "CW"
         )
 
         self.ssb_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "SSB"
+            "160m", "SSB"
         )
         self.ssb_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "SSB"
+            "80m", "SSB"
         )
         self.ssb_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "SSB"
+            "60m", "SSB"
         )
         self.ssb_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "SSB"
+            "40m", "SSB"
         )
         self.ssb_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "SSB"
+            "20m", "SSB"
         )
         self.ssb_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "SSB"
+            "17m", "SSB"
         )
         self.ssb_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "SSB"
+            "15m", "SSB"
         )
         self.ssb_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "SSB"
+            "12m", "SSB"
         )
         self.ssb_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "SSB"
+            "10m", "SSB"
         )
         self.ssb_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            6, "SSB"
+            "6m", "SSB"
         )
         self.ssb_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            4, "SSB"
+            "4m", "SSB"
         )
         self.ssb_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            2, "SSB"
+            "2m", "SSB"
         )
         self.ssb_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "SSB"
+            "1.25m", "SSB"
         )
         self.ssb_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "SSB"
+            "70cm", "SSB"
         )
         self.ssb_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "SSB"
+            "33cm", "SSB"
         )
         self.ssb_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "SSB"
+            "23cm", "SSB"
         )
 
         self.rtty_band_160.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            160, "RTTY"
+            "160m", "RTTY"
         )
         self.rtty_band_80.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            80, "RTTY"
+            "80m", "RTTY"
         )
         self.rtty_band_60.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            60, "RTTY"
+            "60m", "RTTY"
         )
         self.rtty_band_40.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            40, "RTTY"
+            "40m", "RTTY"
         )
         self.rtty_band_30.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            30, "RTTY"
+            "30m", "RTTY"
         )
         self.rtty_band_20.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            20, "RTTY"
+            "20m", "RTTY"
         )
         self.rtty_band_17.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            17, "RTTY"
+            "17m", "RTTY"
         )
         self.rtty_band_15.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            15, "RTTY"
+            "15m", "RTTY"
         )
         self.rtty_band_12.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            12, "RTTY"
+            "12m", "RTTY"
         )
         self.rtty_band_10.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            10, "RTTY"
+            "10m", "RTTY"
         )
         self.rtty_band_6.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            6, "RTTY"
+            "6m", "RTTY"
         )
         self.rtty_band_4.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            4, "RTTY"
+            "4m", "RTTY"
         )
         self.rtty_band_2.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            2, "RTTY"
+            "2m", "RTTY"
         )
         self.rtty_band_125.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            222, "RTTY"
+            "1.25m", "RTTY"
         )
         self.rtty_band_70cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            432, "RTTY"
+            "70cm", "RTTY"
         )
         self.rtty_band_33cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            902, "RTTY"
+            "33cm", "RTTY"
         )
         self.rtty_band_23cm.mousePressEvent = lambda x: self.change_to_band_and_mode(
-            1240, "RTTY"
+            "23cm", "RTTY"
         )
 
         self.band_indicators_cw = {
-            "160": self.cw_band_160,
-            "80": self.cw_band_80,
-            "60": self.cw_band_60,
-            "40": self.cw_band_40,
-            "30": self.cw_band_30,
-            "20": self.cw_band_20,
-            "17": self.cw_band_17,
-            "15": self.cw_band_15,
-            "12": self.cw_band_12,
-            "10": self.cw_band_10,
-            "6": self.cw_band_6,
-            "4": self.cw_band_4,
-            "2": self.cw_band_2,
-            "1.25": self.cw_band_125,
+            "160m": self.cw_band_160,
+            "80m": self.cw_band_80,
+            "60m": self.cw_band_60,
+            "40m": self.cw_band_40,
+            "30m": self.cw_band_30,
+            "20m": self.cw_band_20,
+            "17m": self.cw_band_17,
+            "15m": self.cw_band_15,
+            "12m": self.cw_band_12,
+            "10m": self.cw_band_10,
+            "6m": self.cw_band_6,
+            "4m": self.cw_band_4,
+            "2m": self.cw_band_2,
+            "1.25m": self.cw_band_125,
             "70cm": self.cw_band_70cm,
             "33cm": self.cw_band_33cm,
             "23cm": self.cw_band_23cm,
         }
 
         self.band_indicators_ssb = {
-            "160": self.ssb_band_160,
-            "80": self.ssb_band_80,
-            "60": self.ssb_band_60,
-            "40": self.ssb_band_40,
-            "20": self.ssb_band_20,
-            "17": self.ssb_band_17,
-            "15": self.ssb_band_15,
-            "12": self.ssb_band_12,
-            "10": self.ssb_band_10,
-            "6": self.ssb_band_6,
-            "4": self.ssb_band_4,
-            "2": self.ssb_band_2,
-            "1.25": self.ssb_band_125,
+            "160m": self.ssb_band_160,
+            "80m": self.ssb_band_80,
+            "60m": self.ssb_band_60,
+            "40m": self.ssb_band_40,
+            "20m": self.ssb_band_20,
+            "17m": self.ssb_band_17,
+            "15m": self.ssb_band_15,
+            "12m": self.ssb_band_12,
+            "10m": self.ssb_band_10,
+            "6m": self.ssb_band_6,
+            "4m": self.ssb_band_4,
+            "2m": self.ssb_band_2,
+            "1.25m": self.ssb_band_125,
             "70cm": self.ssb_band_70cm,
             "33cm": self.ssb_band_33cm,
             "23cm": self.ssb_band_23cm,
         }
 
         self.band_indicators_rtty = {
-            "160": self.rtty_band_160,
-            "80": self.rtty_band_80,
-            "60": self.rtty_band_60,
-            "40": self.rtty_band_40,
-            "30": self.rtty_band_30,
-            "20": self.rtty_band_20,
-            "17": self.rtty_band_17,
-            "15": self.rtty_band_15,
-            "12": self.rtty_band_12,
-            "10": self.rtty_band_10,
-            "6": self.rtty_band_6,
-            "4": self.rtty_band_4,
-            "2": self.rtty_band_2,
-            "1.25": self.rtty_band_125,
+            "160m": self.rtty_band_160,
+            "80m": self.rtty_band_80,
+            "60m": self.rtty_band_60,
+            "40m": self.rtty_band_40,
+            "30m": self.rtty_band_30,
+            "20m": self.rtty_band_20,
+            "17m": self.rtty_band_17,
+            "15m": self.rtty_band_15,
+            "12m": self.rtty_band_12,
+            "10m": self.rtty_band_10,
+            "6m": self.rtty_band_6,
+            "4m": self.rtty_band_4,
+            "2m": self.rtty_band_2,
+            "1.25m": self.rtty_band_125,
             "70cm": self.rtty_band_70cm,
             "33cm": self.rtty_band_33cm,
             "23cm": self.rtty_band_23cm,
@@ -691,6 +697,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.show_splash_msg("Reading preferences.")
         self.pref = Preferences.load()
+
+        # Migrate legacy short-form band names ("160") to ADIF form ("160m")
+        # so band_indicators_* dict lookups work.
+        # If anything actually changed, write the new format to disk so the
+        # legacy form never reappears on subsequent loads.
+        _original_bands = self.pref.get("bands", [])
+        _migrated_bands = [f"{b}m" if b.isdigit() else b for b in _original_bands]
+        if _migrated_bands != _original_bands:
+            self.pref["bands"] = _migrated_bands
+            Preferences.save()
+
         self.apply_preferences()
 
         self.show_splash_msg("Starting LookUp Service.")
@@ -1640,23 +1657,28 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw.sendcw(newtext[len(self.oldtext) :])
         self.oldtext = newtext
 
-    def change_to_band_and_mode(self, band: int, mode: str) -> None:
+    def change_to_band_and_mode(self, band_name: str, mode: str) -> None:
         """
-        Gets a sane frequency for the chosen band and mode.
-        Then changes to that,
+        Look up a sensible frequency for the chosen band and mode via fakefreq(),
+        then push it to the rig (and bandmap) through change_freq() and change_mode().
+
+        Used by the on-screen band buttons (CW/SSB/RTTY x 17 bands). For modes other
+        than CW/SSB/RTTY the call is a no-op.
 
         Parameters
         ----------
-        band : int
+        band_name : str
+            ADIF band name, e.g. "20m", "70cm". Must be a key of the BANDS table.
         mode : str
+            One of "CW", "SSB", "RTTY" (others are silently ignored).
 
         Returns
         -------
-        Nothing
+        None
         """
 
         if mode in ["CW", "SSB", "RTTY"]:
-            freq = fakefreq(str(band), mode)
+            freq = fakefreq(band_name, mode)
             self.change_freq(freq)
             vfo = float(freq)
             vfo = int(vfo * 1000)
@@ -3936,12 +3958,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # If bands list is empty fill it with HF.
         if self.pref.get("bands", []) == []:
             self.pref["bands"] = [
-                "160",
-                "80",
-                "40",
-                "20",
-                "15",
-                "10",
+                "160m",
+                "80m",
+                "40m",
+                "20m",
+                "15m",
+                "10m",
             ]
 
         # Hide all the bands and then show only the wanted bands.

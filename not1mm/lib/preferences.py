@@ -30,7 +30,7 @@ class Preferences:
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
-        "bands": ["160", "80", "40", "20", "15", "10"],
+        "bands": ["160m", "80m", "40m", "20m", "15m", "10m"],
         "current_database": "ham.db",
         "contest": "",
         "multicast_group": "239.1.1.1",
