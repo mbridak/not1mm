@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-08-05] Merge pull request #644 from df7cb/spotdx
+  - Move SPOTDX to clusterwindow.py
 - [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
 - [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
   - Merge pull request #641 from mbridak/rd-contest
