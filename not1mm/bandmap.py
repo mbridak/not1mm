@@ -513,12 +513,7 @@ class BandMapWindow(QDockWidget):
                 cmd["spot"] = spot.get("callsign", "")
                 self.message.emit(cmd)
             return
-        if packet.get("cmd", "") == "SPOTDX":
-            dx = packet.get("dx", "")
-            freq = packet.get("freq", 0.0)
-            spotdx = f"dx {dx} {freq}"
-            self.send_command(spotdx)
-            return
+
         if packet.get("cmd", "") == "DX":
             spot = packet
             spot["callsign"] = packet.get("dx", "")  # rename field
