@@ -1,0 +1,282 @@
+"""
+K6GTE, CAT interface abstraction
+Email: michael.bridak@gmail.com
+GPL V3
+"""
+
+import logging
+import socket
+import threading
+
+from not1mm.lib.cat_interface import CAT
+
+if __name__ == "__main__":
+    print("I'm not the program you are looking for.")
+
+logger = logging.getLogger("cat_rigctld")
+
+
+class RigctldCAT(CAT):
+    """CAT control via rigctld"""
+
+    def __init__(self, host: str, port: int) -> None:
+        """
+        Computer Aided Transceiver abstraction class.
+        Offers a normalized interface; this is the rigctld class.
+
+        Takes 2 inputs to setup the class.
+
+        A string defining the host, example: 'localhost' or '127.0.0.1'
+
+        An integer defining the network port used.
+        Commonly 4532 for rigctld.
+
+        A variable 'online' is set to True if no error was encountered,
+        otherwise False.
+        """
+        super().__init__(host, port)
+        self.rigctrlsocket = None
+        self._sock_lock = threading.RLock()  # reentrant (same thread can reacquire)
+        self.rigctld_bw = "0"
+        self.interface = "rigctld"
+        self.sync_vfos = False
+        self.current_vfo = "VFOA"
+        self.reinit()
+
+    def reinit(self):
+        """initialise rigctld
+
+        This routine is called whenever the rig is initialized (startup,
+        settings changed), and each rigctld_command() call will use it when the
+        connection was lost in flight.
+
+        Rigctld is set into "VFO mode" which requires a VFO argument in most
+        commands ("f VFOA 1810000"). The advantage is this lets us get/set the
+        inactive VFO without flickering the display.
+        """
+        try:
+            logger.debug("Connecting to rigctrld %s %d", self.host, self.port)
+            self.rigctrlsocket = socket.socket()
+            self.rigctrlsocket.settimeout(1.0)
+            self.rigctrlsocket.connect((self.host, self.port))
+            logger.debug("Connected to rigctrld")
+            self.online = True
+        except (
+            ConnectionRefusedError,
+            TimeoutError,
+            OSError,
+            socket.gaierror,
+        ) as exception:
+            self.rigctrlsocket = None
+            self.online = False
+            logger.info("%s", f"{exception}")
+        # turn on "VFO mode" so we can set/get VFO A/B directly (no automatic reinit here to avoid loop)
+        self.rigctld_command("\\set_vfo_opt 1", auto_reinit=False)
+
+    def rigctld_command(self, command: str, prefix="+", auto_reinit=True) -> str:
+        """Send a command to rigctld and return the reply.
+
+        The reply is expected to end with "RPRT N" which is guaranteed in the
+        extended response protocol (prefix="+").
+        """
+        with self._sock_lock:  # protect against other threads sending commands
+            if (
+                not self.online
+                or self.rigctrlsocket is None
+                or not hasattr(self.rigctrlsocket, "send")
+            ) and auto_reinit:
+                self.reinit()
+            if not self.online:
+                return ""
+            try:
+                logger.debug("> %s", command)
+                self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
+                report = ""
+                while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
+                    thegrab = self.rigctrlsocket.recv(1024).decode()
+                    if thegrab == "":  # socket closed
+                        break
+                    report += thegrab
+                logger.debug("< %s", report)
+                return report
+            except (TimeoutError, OSError, UnicodeDecodeError) as exception:
+                self.online = False
+                logger.info("%s", f"{exception}")
+                self.rigctrlsocket = None
+        return ""
+
+    def rigctld_parse(self, report: str) -> dict:
+        """Parse a extended response protocol message (prefix +) into fields.
+
+        +\\get_vfo_list
+        get_vfo_list: currVFO
+        VFOs: Sub Main MEM
+        RPRT 0
+
+        -> {"get_vfo_list": "currVFO", "VFOs": "Sub Main MEM"}
+
+        +l VFOA RFPOWER
+        get_level: VFOA:RFPOWER
+        1
+        RPRT 0
+
+        If a line does not have a label, it is stored as "line":
+
+        -> {"get_level": "VFOA:RFPOWER", "line": "1"}
+        """
+
+        fields = {}
+        for line in report.splitlines():
+            if ": " in line:
+                k, _, v = line.partition(": ")
+                fields[k] = v
+            elif line.startswith("RPRT "):
+                k, _, v = line.partition(" ")
+                fields["RPRT"] = v
+            else:  # some response parts don't have labels
+                fields["line"] = line
+        return fields
+
+    def get_active_vfo(self) -> str:
+        """Get the currently selected VFO from rigctld."""
+        report = self.rigctld_parse(self.rigctld_command("v"))
+        vfo = report.get("VFO", report.get("line", "")).strip().upper()
+        if vfo in ("VFOA", "VFOB"):
+            self.current_vfo = vfo
+        return self.current_vfo
+
+    def sendvoicememory(self, memoryspot=1):
+        self.rigctld_command(f"\\send_voice_mem {memoryspot}")
+
+    def sendcw(self, texttosend):
+        """Send text via rigctld"""
+        self.rigctld_command(f"b {texttosend}")
+
+    def stopcw(self):
+        """Stop CW via rigctld"""
+        self.rigctld_command("\\stop_morse")
+
+    def set_cw_speed(self, speed):
+        """Set CW speed via rigctld"""
+        self.rigctld_command(f"L {self.get_active_vfo()} KEYSPD {speed}")
+
+    def get_vfo(self) -> str:
+        """Poll the radio for current vfo using the interface"""
+        report = self.rigctld_parse(self.rigctld_command(f"f {self.get_active_vfo()}"))
+        freq = report.get("Frequency", "")
+        if freq.isnumeric():
+            return str(int(float(freq)))
+        else:
+            return ""
+
+    def get_mode(self) -> str:
+        """Returns the current mode filter width of the radio"""
+        # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
+        # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
+        report = self.rigctld_parse(self.rigctld_command(f"m {self.get_active_vfo()}"))
+        # get_mode:|Mode: CW|Passband: 500|RPRT 0
+        self.rigctld_bw = report.get("Passband", "0")
+        return report.get("Mode", "")
+
+    def get_bw(self) -> str:
+        """Get current vfo bandwidth"""
+        return self.rigctld_bw
+
+    def get_power(self) -> int:
+        """Get power level from rig"""
+        report = self.rigctld_parse(
+            self.rigctld_command(f"l {self.get_active_vfo()} RFPOWER")
+        )
+        # get_level: RFPOWER |0.000000|RPRT 0
+        return int(float(report.get("line", 0)) * 100)
+
+    def get_ptt(self) -> str:
+        """Get PTT state"""
+        report = self.rigctld_parse(self.rigctld_command(f"t {self.get_active_vfo()}"))
+        return report.get("PTT", "0")
+
+    def get_mode_list(self) -> list:
+        "Get a list of modes supported by the radio"
+        # set_mode: VFOA:?|AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D PSK PSKR
+        # RPRT 0
+        report = self.rigctld_parse(
+            self.rigctld_command(f"M {self.get_active_vfo()} ?")
+        )
+        return report.get("line", "").split(" ")
+
+    def set_vfo(self, freq: str) -> bool:
+        """Sets the radios vfo"""
+        active_vfo = self.get_active_vfo()
+        self.rigctld_command(f"F {active_vfo} {freq}")
+        if self.sync_vfos:
+            other_vfo = "VFOB" if active_vfo == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
+        return True
+
+    def set_sync_vfos(self, sync_vfos: bool):
+        """
+        Turn on/off the Sync VFOs feature. Syncs frequencies once when turned
+        on and then with every set_vfo().
+
+        It also turns on VFO Tracking mode on supported rigs. On ICOM, setting
+        VFOA using CAT doesn't automatically update VFOB even when tracking is
+        active, so we still need to set VFOB explicitly.
+        """
+        self.sync_vfos = sync_vfos
+        # turn on SY/Tracking on supported rigs
+        self.rigctld_command(f"\\set_func VFOA SYNC {int(self.sync_vfos)}")
+        # sync now when activating
+        if self.sync_vfos and (freq := self.get_vfo()):
+            other_vfo = "VFOB" if self.get_active_vfo() == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
+
+    def set_mode(self, mode: str) -> bool:
+        """Sets the radios mode"""
+        self.rigctld_command(f"M {self.get_active_vfo()} {mode} 0")
+        return True
+
+    def set_power(self, power):
+        """Sets the radios power"""
+        if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
+            rig_cmd = f"L {self.get_active_vfo()} RFPOWER {float(power) / 100}"
+            self.rigctld_command(rig_cmd)
+            return True
+        else:
+            return False
+
+    def ptt_on(self) -> bool:
+        """turn ptt on/off
+
+        # T, set_ptt 'PTT'
+        # Set 'PTT'.
+        # PTT is a value: ‘0’ (RX), ‘1’ (TX), ‘2’ (TX mic), or ‘3’ (TX data).
+
+        # t, get_ptt
+        # Get 'PTT' status.
+        # Returns PTT as a value in set_ptt above.
+        """
+        self.rigctld_command(f"T {self.get_active_vfo()} 1")
+        return True
+
+    def ptt_off(self) -> bool:
+        """turn ptt on/off"""
+        self.rigctld_command(f"T {self.get_active_vfo()} 0")
+        return True
+
+    def send_cat_string(self, cmdstr=""):
+        """send a raw cat string to radio"""
+        cmd, thisishex, ok = self._parse_cat_command(cmdstr)
+        if not ok or cmd == "":
+            return True
+        if thisishex:
+            # make string "\0x" delimited for rigctld
+            payload = "w \\0x" + cmd.replace(" ", "\\0x")
+        else:
+            payload = "w " + cmd
+        logger.debug("%s", f"Sending rig command: [{payload}]")
+
+        report = self.rigctld_command(payload)
+        if "RPRT 0" not in report:
+            logger.info("rigctld rejected CAT cmd %r -> %s", payload, report.strip())
+            return False
+        return True

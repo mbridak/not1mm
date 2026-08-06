@@ -1,7 +1,7 @@
 """check newer version"""
 
-import xmltodict
 import requests
+import xmltodict
 
 
 class VersionTest:

@@ -1,19 +1,18 @@
-#!/usr/bin/env python3
-
 """
 Not1MM Contest logger
 Email: michael.bridak@gmail.com
 GPL V3
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import datetime
 import logging
 
-from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
-from not1mm.lib.cat_interface import CAT
+from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
+
+from not1mm.lib.cat_fake import FakeCAT
+from not1mm.lib.cat_flrig import FlrigCAT
+from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.cat_tci import TciCAT
 
 logger = logging.getLogger("radio")
 
@@ -22,21 +21,21 @@ class Radio(QObject):
     """Radio class"""
 
     poll_callback = pyqtSignal(dict)
-
-    cat = None
     vfoa = "14030000"
     mode = "CW"
     bw = "500"
     delta = 500
-    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=delta)
+    poll_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+        milliseconds=delta
+    )
     time_to_quit = False
     online = False
     interface = None
     host = None
     port = None
     modes = ""
-    cw_list = ["CW", "CW-L", "CW-U", "CWR", "CW-R"]
-    rtty_list = [
+    cw_list = ["CW", "CW-L", "CW-U", "CWR", "CW-R"]  # noqa: RUF012
+    rtty_list = [  # noqa: RUF012
         "RTTY",
         "DIGI-L",
         "PKTLSB",
@@ -52,10 +51,17 @@ class Radio(QObject):
         self.interface = interface
         self.host = host
         self.port = port
+        logger.debug("Using %s: %s %d", interface, host, port)
 
-    def run(self):
         try:
-            self.cat = CAT(self.interface, self.host, self.port)
+            if self.interface == "flrig":
+                self.cat = FlrigCAT(self.host, self.port)
+            elif self.interface == "rigctld":
+                self.cat = RigctldCAT(self.host, self.port)
+            elif self.interface == "tci":
+                self.cat = TciCAT(self.host, self.port)
+            else:
+                self.cat = FakeCAT(self.host, self.port)
             self.online = self.cat.online
             self.modes = self.cat.get_mode_list()
             for pos_cw in self.cw_list:
@@ -66,14 +72,15 @@ class Radio(QObject):
                 if pos_rtty in self.modes:
                     self.last_data_mode = pos_rtty
                     break
-
         except ConnectionResetError:
             ...
+
+    def run(self):
         while not self.time_to_quit:
-            if datetime.datetime.now() > self.poll_time:
-                self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    milliseconds=self.delta
-                )
+            if datetime.datetime.now(datetime.UTC) > self.poll_time:
+                self.poll_time = datetime.datetime.now(
+                    datetime.UTC
+                ) + datetime.timedelta(milliseconds=self.delta)
                 vfoa = self.cat.get_vfo()
                 self.online = False
                 if vfoa:
@@ -102,8 +109,12 @@ class Radio(QObject):
                     )
                 except QEventLoop:
                     ...
-            # QThread.msleep(int(self.delta / 2))
             QThread.msleep(100)
+        # Backends owning their own threads (TCI) must be torn down here, or
+        # the app hangs on exit. The others have no close() and no-op.
+        close = getattr(self.cat, "close", None)
+        if close is not None:
+            close()
 
     def store_last_data_mode(self, the_mode: str = ""):
         """if the last mode is a data mode, save it."""
@@ -142,43 +153,34 @@ class Radio(QObject):
         if self.cat:
             self.cat.sendcw(texttosend)
 
+    def stopcw(self):
+        logger.debug("Stopping CW")
+        if self.cat:
+            self.cat.stopcw()
+
+    def set_cw_speed(self, speed):
+        logger.debug("Setting CW speed %d", speed)
+        if self.cat:
+            self.cat.set_cw_speed(speed)
+
+    def set_cw_send(self, send: bool) -> None:
+        logger.debug("Setting CW send %s", send)
+        if self.cat:
+            self.cat.set_cw_send(send)
+
     def set_vfo(self, vfo):
         self.vfoa = vfo
 
         if self.cat:
             self.cat.set_vfo(vfo)
 
-        self.poll_time = datetime.datetime.now()
-        # try:
-        #     self.poll_callback.emit(
-        #         {
-        #             "vfoa": str(self.vfoa),
-        #             "mode": self.mode,
-        #             "bw": self.bw,
-        #             "online": self.online,
-        #         }
-        #     )
-        # except RuntimeError:
-        #     ...
+        self.poll_time = datetime.datetime.now(datetime.UTC)
 
     def set_mode(self, mode):
         self.mode = mode
-
         if self.cat:
             self.cat.set_mode(mode)
-
-        self.poll_time = datetime.datetime.now()
-        # try:
-        #     self.poll_callback.emit(
-        #         {
-        #             "vfoa": str(self.vfoa),
-        #             "mode": self.mode,
-        #             "bw": self.bw,
-        #             "online": self.online,
-        #         }
-        #     )
-        # except RuntimeError:
-        #     ...
+        self.poll_time = datetime.datetime.now(datetime.UTC)
 
     def get_modes(self):
         """get list of modes"""

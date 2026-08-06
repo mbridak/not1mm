@@ -1,0 +1,294 @@
+"""
+Functions called from key events
+
+Parameters: self (MainWindow)
+
+All UPPER CASE functions from this file (except when prefixed with _) appear in
+the Action dropdown list, in the order they are defined in this file.
+
+The function doc string is used as action description in the Edit Keys dialog.
+"""
+
+import re
+
+from not1mm import fsutils
+from not1mm.lib.edit_keys import EditKeys, hotkey_window
+from not1mm.lib.edit_opon import OpOn
+from not1mm.lib.preferences import Preferences
+
+default_key_bindings = {
+    "Ctrl+R": "TOGGLE_RUN",
+    "Ctrl+L": "LOG_NOW",
+    "Ctrl+=": "LOG_NOW",
+    "Ctrl+Shift+K": "TOGGLE_CW_INPUT",
+    "Callsign:Up": "PREV_SPOT",
+    "Callsign:Down": "NEXT_SPOT",
+    "Report:Up": "RST_INCR",
+    "Report:Down": "RST_DECR",
+    "Exchange:Up": "EXCH_INCR",
+    "Exchange:Down": "EXCH_DECR",
+    "Ctrl+G": "FIND_DX",
+    "Ctrl+M": "MARK_SPOT",
+    "Ctrl+Q": "JUMP_TO_CQ",
+    "Ctrl+S": "SPOT_DX",
+    "Ctrl+,": "VFO_DOWN",
+    "Ctrl+.": "VFO_UP",
+    "PgDown": "CW_SPEED_DOWN",
+    "PgUp": "CW_SPEED_UP",
+    "Ctrl+J": "ROTATE",
+    "Ctrl+Shift+J": "ROTATE_LP",
+    "[": "ROTATE_LEFT",
+    "]": "ROTATE_RIGHT",
+    "Ctrl+W": "CLEAR_INPUTS",
+    "Esc": "STOP_ALL",
+    "Ctrl+O": "OPON",
+    "Ctrl+T": "ADD_TEST_DATA",
+}
+
+# pylint: disable=invalid-name
+
+
+def NO_ACTION(self) -> None:  # pylint: disable=unused-argument
+    """Select key combination and action to bind"""
+
+
+def TOGGLE_RUN(self) -> None:
+    """Toggle between RUN and S&P"""
+    self.set_running(not self.pref["run_state"])
+
+
+def LOG_NOW(self) -> None:
+    """Log the current contact"""
+    self.save_contact()
+
+
+def TOGGLE_CW_INPUT(self) -> None:
+    """Toggle CW text entry field"""
+    self.toggle_cw_entry()
+
+
+def PREV_SPOT(self) -> None:
+    """Jump to the previous spot in the bandmap"""
+    cmd = {}
+    cmd["cmd"] = "PREVSPOT"
+    if self.bandmap_window:
+        self.bandmap_window.msg_from_main(cmd)
+
+
+def NEXT_SPOT(self) -> None:
+    """Jump to the next spot in the bandmap"""
+    cmd = {}
+    cmd["cmd"] = "NEXTSPOT"
+    if self.bandmap_window:
+        self.bandmap_window.msg_from_main(cmd)
+
+
+def FIND_DX(self) -> None:
+    """Tune to a spot matching the partial callsign"""
+    dx = self.callsign.text()
+    if dx:
+        cmd = {}
+        cmd["cmd"] = "FINDDX"
+        cmd["dx"] = dx
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+
+
+def SPOT_DX(self) -> None:
+    """Spot the callsign to the cluster"""
+    freq = self.radio_state.get("vfoa")
+    dx = self.callsign.text()
+    if freq and dx:
+        cmd = {}
+        cmd["cmd"] = "SPOTDX"
+        cmd["dx"] = dx
+        cmd["freq"] = float(int(freq) / 1000)
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+
+
+def MARK_SPOT(self) -> None:
+    """Mark callsign to work later"""
+    self.mark_spot(comment=f"{self.current_mode} MARKED")
+
+
+def JUMP_TO_CQ(self) -> None:
+    """Jump to the last CQ frequency"""
+    if self.cq_freq:
+        self.radio_state["vfoa"] = self.cq_freq
+        if self.rig_control:
+            self.rig_control.set_vfo(self.cq_freq)
+        self.set_running(True)
+        self.clearinputs()
+
+
+def VFO_DOWN(self) -> None:
+    """Step the VFO frequency down"""
+    freq = self.radio_state.get("vfoa")
+    selected_mode = self.radio_state.get("mode")
+    if selected_mode == "CW":
+        deltaf = 20
+    elif selected_mode in ["LSB", "USB", "SSB"]:
+        deltaf = 100
+    else:
+        deltaf = 0
+    vfo = int(freq) - deltaf
+    if self.rig_control:
+        self.rig_control.set_vfo(vfo)
+
+
+def VFO_UP(self) -> None:
+    """Step the VFO frequency up"""
+    freq = self.radio_state.get("vfoa")
+    selected_mode = self.radio_state.get("mode")
+    if selected_mode == "CW":
+        deltaf = 20
+    elif selected_mode in ["LSB", "USB", "SSB"]:
+        deltaf = 100
+    else:
+        deltaf = 0
+    vfo = int(freq) + deltaf
+    if self.rig_control:
+        self.rig_control.set_vfo(vfo)
+
+
+def TOGGLE_VFO_SYNC(self) -> None:
+    """Toggle the Synchronize VFOs mode"""
+    self.actionSynchronize_VFOs.setChecked(not self.actionSynchronize_VFOs.isChecked())
+    self.synchronize_vfos_triggered()
+
+
+def CW_SPEED_UP(self) -> None:
+    """Increase CW sending speed"""
+    if self.cw is not None:
+        self.cw.speed += self.pref.get("cwstepping", 1)
+        self.cw_speed.setValue(self.cw.speed)
+        if self.cw.servertype == 1:
+            self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        if self.cw.servertype == 2:
+            self.cw.set_winkeyer_speed(self.cw_speed.value())
+
+
+def CW_SPEED_DOWN(self) -> None:
+    """Decrease CW sending speed"""
+    if self.cw is not None:
+        self.cw.speed -= self.pref.get("cwstepping", 1)
+        self.cw_speed.setValue(self.cw.speed)
+        if self.cw.servertype == 1:
+            self.cw.sendcw(f"\x1b2{self.cw.speed}")
+        if self.cw.servertype == 2:
+            self.cw.set_winkeyer_speed(self.cw_speed.value())
+
+
+def RST_INCR(self, increment=1) -> None:
+    """Increment report in RST field"""
+    # use sent when that has focus, else use receive (so the action also works
+    # from elsewhere)
+    widget = self.sent if self.sent.hasFocus() else self.receive
+    text = widget.text()
+    # this assumes the "interesting" part of the report is always the 2nd digit
+    if len(text) >= 2 and text[1].isnumeric():
+        new_digit = int(text[1]) + increment
+        if 0 <= new_digit <= 9:
+            position = widget.cursorPosition()
+            widget.setText(text[:1] + str(new_digit) + text[2:])
+            widget.setCursorPosition(position)
+
+
+def RST_DECR(self) -> None:
+    """Decrement report in RST field"""
+    RST_INCR(self, increment=-1)
+
+
+def EXCH_INCR(self, increment=1) -> None:
+    """Increment number in exchange field"""
+    # use other_1 when that has focus, else use other_2 (so the action also
+    # works from elsewhere)
+    widget = self.other_1 if self.other_1.hasFocus() else self.other_2
+    # find the first number in the text (groups: prefix, number, suffix)
+    if m := re.match(r"(.*?)(\d+)(.*)", widget.text()):
+        len_number = len(m.group(2))
+        new_number = int(m.group(2)) + increment
+        if new_number >= 0:  # refuse to go negative
+            position = widget.cursorPosition()
+            # build a string with the same length
+            widget.setText(m.group(1) + str(new_number).zfill(len_number) + m.group(3))
+            if (
+                len(str(new_number)) > len_number
+                and position >= len(m.group(1)) + len_number
+            ):
+                position += 1  # 9 -> 10: move cursor one to the right
+            widget.setCursorPosition(position)
+
+
+def EXCH_DECR(self) -> None:
+    """Decrement number in exchange field"""
+    EXCH_INCR(self, increment=-1)
+
+
+def ROTATE(self) -> None:
+    """Rotate antenna towards current contact"""
+    self.rotator_window.the_eye_of_sauron()
+
+
+def ROTATE_LP(self) -> None:
+    """Rotate antenna to long-path bearing of contact"""
+    self.rotator_window.rotate_long_path()
+
+
+def ROTATE_LEFT(self) -> None:
+    """Rotate antenna 30° left (counter-clockwise)"""
+    self.rotator_window.rotate_left()
+
+
+def ROTATE_RIGHT(self) -> None:
+    """Rotate antenna 30° right (clockwise)"""
+    self.rotator_window.rotate_right()
+
+
+def CLEAR_INPUTS(self) -> None:
+    """Clear the input fields"""
+    self.clearinputs()
+
+
+def STOP_ALL(self) -> None:
+    """Stop CW sending and antenna rotation"""
+    self.stop_all()
+
+
+def OPON(self) -> None:
+    """
+    Ctrl+O Open the OPON dialog.
+    """
+
+    self.opon_dialog = OpOn(fsutils.APP_DATA_PATH, self)
+    if self.current_palette:
+        self.opon_dialog.setPalette(self.current_palette)
+    self.opon_dialog.open()
+
+
+def ADD_TEST_DATA(self) -> None:
+    """Add test data to the log"""
+    if hasattr(self.contest, "add_test_data"):
+        self.contest.add_test_data(self)
+
+
+def EDIT_KEYS(self) -> None:
+    """Open the Edit Keys dialog"""
+
+    def finished():
+        self.edit_keys_dialog = None
+
+    if self.edit_keys_dialog is None:
+        key_bindings = self.pref.get("key_bindings", default_key_bindings)
+        self.edit_keys_dialog = EditKeys(key_bindings=key_bindings, parent=self)
+        if self.current_palette:
+            self.edit_keys_dialog.setPalette(self.current_palette)
+        self.edit_keys_dialog.accepted.connect(self.edit_keys_dialog.save_keys)
+        self.edit_keys_dialog.finished.connect(finished)
+        self.edit_keys_dialog.show()
+
+
+def SHOW_HOTKEYS(self) -> None:
+    """Show the hotkeys help window"""
+    hotkey_window(self, default_key_bindings)

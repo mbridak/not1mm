@@ -3,21 +3,34 @@
   <id>io.github.mbridak.not1mm</id>
   
   <name>Not1MM</name>
-  <summary>Amateur radio contest logger</summary>
+  <summary>Ham radio contest logger</summary>
   
   <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   
   <description>
     <p>
-      An Amateur Radio contest logger supporting close to 50 contests. Allowing the user to easily log contacts and submit a Cabrillo or ADIF file at the end. Not1MM leverages Python, Qt6 and Sqlite to provide a visually pleasing interface.
+      Not1MM attempts to be a usable amateur radio, or Ham, contest logger. It&apos;s written in Python, and uses the Qt6 framework for the graphical interface and SQLite for the database. It supports CW, SSB, RTTY and other operating modes.
     </p>
   </description>
   
   <launchable type="desktop-id">k6gte-not1mm.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/mbridak/not1mm/raw/master/pic/main.png</image>
+      <image>https://raw.githubusercontent.com/mbridak/not1mm/master/pic/main.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/mbridak/not1mm/master/pic/view_menu.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/mbridak/not1mm/master/pic/esm_qrz.png</image>
     </screenshot>
   </screenshots>
+
+    <url type="homepage">https://github.com/mbridak/not1mm</url>
+    <url type="bugtracker">https://github.com/mbridak/not1mm/issues</url>
+    <url type="help">https://github.com/mbridak/not1mm/discussions</url>
+    <url type="donation">https://www.patreon.com/cw/K6GTE</url>
+    <url type="vcs-browser">https://github.com/mbridak/not1mm</url>
+    <url type="contribute">https://github.com/mbridak/not1mm/blob/master/CONTRIBUTING.md</url>
 </component>

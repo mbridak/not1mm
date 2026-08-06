@@ -21,21 +21,17 @@
 #   Cabrillo name:	DARC VHF
 #   Log Format: EDI
 
-
 import datetime
 import logging
-
 from pathlib import Path
 
-from PyQt6 import QtWidgets
-
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
-from not1mm.lib.version import __version__
 from not1mm.lib.ham_utility import distance
+from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "#"
+EXCHANGE_HINT = "# + 6char grid"
 
 name = "DARC VHF"
 mode = "BOTH"  # CW SSB BOTH RTTY
@@ -145,17 +141,14 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
-    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
-    if sent_sxchange_setting.strip() == "#":
-        # result = self.database.get_serial()
-        # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
-        serial_nr = str(self.current_sn).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(serial_nr)
-    else:
-        self.other_1.setText(sent_sxchange_setting)
+    exch = str(self.contest_settings.get("SentExchange", 0))
+    # result = self.database.get_serial()
+    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+    serial_nr = str(self.current_sn).zfill(3)
+    if serial_nr == "None":
+        serial_nr = "001"
+    if len(self.other_1.text()) == 0:
+        self.other_1.setText(exch.replace("#", serial_nr))
 
 
 def points(self):
@@ -212,7 +205,7 @@ def edi(self):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.edi"
+        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.edi"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -242,19 +235,19 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"PCall: {self.station.get('Call','')}",
+                f"PCall: {self.station.get('Call', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"PWWLo: {self.station.get('GridSquare','')}",
+                f"PWWLo: {self.station.get('GridSquare', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"PExch: ",
+                "PExch: ",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -266,13 +259,13 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"PAdr2:",
+                "PAdr2:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"PSect:{self.contest_settings.get('OperatorCategory','')}",
+                f"PSect:{self.contest_settings.get('OperatorCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -297,7 +290,7 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"RCall:{self.station.get('Call','')}",
+                f"RCall:{self.station.get('Call', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -333,7 +326,7 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"RPhon:",
+                "RPhon:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -345,13 +338,13 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"MOpe1:",
+                "MOpe1:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"MOpe2:",
+                "MOpe2:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -363,13 +356,13 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"SPowe:{self.contest_settings.get('PowerCategory','')}",
+                f"SPowe:{self.contest_settings.get('PowerCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"SRXEq:",
+                "SRXEq:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -400,37 +393,37 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CWWLs:0;0;1",
+                "CWWLs:0;0;1",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CWWLB:0",
+                "CWWLB:0",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CExcs:0;0;1",
+                "CExcs:0;0;1",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CExcB:0",
+                "CExcB:0",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CDXCs:0;0;1",
+                "CDXCs:0;0;1",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CDXCB:0",
+                "CDXCB:0",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -442,13 +435,13 @@ def edi(self):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CODXC:",
+                "CODXC:",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"[Remarks]",
+                "[Remarks]",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -468,7 +461,7 @@ def edi(self):
                 if themode == "CW" or themode == "CWL" or themode == "CWU":
                     modeCode = 2
                 # Unused variable
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+                # frequency = str(round(contact.get("Freq", "0"))).rjust(5)
                 loggedyear = the_date_and_time[2:4]
                 loggedmonth = the_date_and_time[5:7]
                 loggedday = the_date_and_time[8:10]
@@ -531,7 +524,7 @@ def cabrillo(self, file_encoding):
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -563,7 +556,7 @@ def cabrillo(self, file_encoding):
                     file_encoding,
                 )
             output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call','')}",
+                f"CALLSIGN: {self.station.get('Call', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -575,19 +568,19 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory','')}",
+                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory','')}",
+                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory','')}",
+                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -602,26 +595,26 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory','')}",
+                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             if self.contest_settings.get("OverlayCategory", "") != "N/A":
                 output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory','')}",
+                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
                 )
             output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare','')}",
+                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory','')}",
+                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -638,7 +631,7 @@ def cabrillo(self, file_encoding):
             for op in list_of_ops:
                 ops += f"{op.get('Operator', '')}, "
             if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call','')}"
+                ops += f"@{self.station.get('Call', '')}"
             else:
                 ops = ops.rstrip(", ")
             output_cabrillo_line(
@@ -704,10 +697,11 @@ def cabrillo(self, file_encoding):
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
+                    f"{str(contact.get('SentNr', '')).upper().ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{str(contact.get('NR', '')).ljust(6)} "
+                    f"{str(contact.get('Exchange1', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -833,7 +827,7 @@ def populate_history_info_line(self):
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText', '...')}"
         )
     else:
         self.history_info.setText("")
@@ -843,7 +837,7 @@ def check_call_history(self):
     """"""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
-        self.history_info.setText(f"{result.get('UserText','')}")
+        self.history_info.setText(f"{result.get('UserText', '')}")
         if self.other_1.text() == "":
             self.other_1.setText(f"{result.get('Exch1', '')}")
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -7,20 +6,14 @@ Class: RTCService
 Purpose: Service to post 'real time' scores.
 """
 
-# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
-# pylint: disable=logging-fstring-interpolation, line-too-long, no-name-in-module
-
 import datetime
 import logging
-import os
-from json import loads
 
 import requests
+from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 from requests.auth import HTTPBasicAuth
 
-from PyQt6.QtCore import QObject, pyqtSignal, QThread, QEventLoop
-
-import not1mm.fsutils as fsutils
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +23,9 @@ class RTCService(QObject):
 
     rtc_callback: pyqtSignal = pyqtSignal(dict)
     delta: int = 2  # two minutes
-    poll_time: datetime.datetime = datetime.datetime.now() + datetime.timedelta(
-        minutes=delta
-    )
+    poll_time: datetime.datetime = datetime.datetime.now(
+        datetime.UTC
+    ) + datetime.timedelta(minutes=delta)
     time_to_quit: bool = False
     xml: str = ""
 
@@ -45,11 +38,11 @@ class RTCService(QObject):
         """Send score xml object to rtc scoring site."""
         while not self.time_to_quit:
             # if self.pref.get("send_rtc_scores", False) is True:
-            if datetime.datetime.now() > self.poll_time:
+            if datetime.datetime.now(datetime.UTC) > self.poll_time:
                 response = ""
-                self.poll_time = datetime.datetime.now() + datetime.timedelta(
-                    minutes=self.delta
-                )
+                self.poll_time = datetime.datetime.now(
+                    datetime.UTC
+                ) + datetime.timedelta(minutes=self.delta)
                 if len(self.xml):
                     headers = {"Content-Type": "text/xml"}
                     try:
@@ -78,6 +71,4 @@ class RTCService(QObject):
 
     def get_settings(self) -> dict:
         """Get the settings."""
-        if os.path.exists(fsutils.CONFIG_FILE):
-            with open(fsutils.CONFIG_FILE, "rt", encoding="utf-8") as file_descriptor:
-                return loads(file_descriptor.read())
+        return Preferences.data()

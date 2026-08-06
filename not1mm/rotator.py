@@ -1,37 +1,36 @@
+import logging
+import math
+import os
+
+from PyQt6 import uic
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import (
+    QBrush,
+    QColor,
+    QImage,
+    QMouseEvent,
+    QPainterPath,
+    QPen,
+    QPixmap,
+    QResizeEvent,
+    QShowEvent,
+)
 from PyQt6.QtWidgets import (
     QDockWidget,
-    QGraphicsScene,
     QGraphicsPathItem,
     QGraphicsPixmapItem,
+    QGraphicsScene,
 )
 
-from PyQt6.QtGui import (
-    QImage,
-    QColor,
-    QPixmap,
-    QPen,
-    QBrush,
-    QPainterPath,
-    QShowEvent,
-    QResizeEvent,
-    QMouseEvent,
-)
-
-from PyQt6.QtCore import Qt, pyqtSignal, QTimer
-from PyQt6 import uic
-
+from not1mm import fsutils
 from not1mm.lib.rot_interface import RotatorInterface
-import not1mm.fsutils as fsutils
-import math
-import logging
-import os
 
 logger = logging.getLogger(__name__)
 
 
 class RotatorWindow(QDockWidget):
     message: pyqtSignal = pyqtSignal(dict)
-    pref: dict = {}
+    pref: dict = {}  # noqa: RUF012
     MAP_RESOLUTION: int = 600
     GLOBE_RADIUS: float = 100.0
     requestedAzimuthNeedle: QGraphicsPathItem | None = None
@@ -47,15 +46,20 @@ class RotatorWindow(QDockWidget):
         self.compassScene: QGraphicsScene | None = None
         self.mygrid: str = "DM13at"
         self.requestedAzimuth: float | None = None
+        self.requestedAzimuth_absolute: bool = True
         self.antennaAzimuth: float | None = None
         uic.loadUi(fsutils.APP_DATA_PATH / "rotator.ui", self)
         self.north_button.clicked.connect(self.set_north_azimuth)
         self.south_button.clicked.connect(self.set_south_azimuth)
         self.east_button.clicked.connect(self.set_east_azimuth)
         self.west_button.clicked.connect(self.set_west_azimuth)
-        self.move_button.clicked.connect(self.the_eye_of_sauron) # left-click
+        self.rotateleft_button.clicked.connect(self.rotate_left)
+        self.rotateright_button.clicked.connect(self.rotate_right)
+        self.move_button.clicked.connect(self.the_eye_of_sauron)  # left-click
         self.move_button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.move_button.customContextMenuRequested.connect(self.rotate_long_path) # right-click
+        self.move_button.customContextMenuRequested.connect(
+            self.rotate_long_path
+        )  # right-click
         self.stop_button.clicked.connect(self.stop)
         self.park_button.clicked.connect(lambda x: self.rotator.send_command("K"))
         self.redrawMap()
@@ -67,14 +71,14 @@ class RotatorWindow(QDockWidget):
         self.watch_timer.start(1000)
 
     def set_host_port(self, host: str, port: int) -> None:
-        """"""
+        """Sets the networking host and port."""
         self.host = host
         self.port = port
         self.rotator.set_host_port(self.host, self.port)
         self.redrawMap()
 
     def msg_from_main(self, msg: dict) -> None:
-        """"""
+        """Process messages from the main window."""
         if self.active is True and isinstance(msg, dict):
             if msg.get("cmd", "") in ("UPDATELOG", "CONTACTCHANGED", "DELETED"):
                 ...
@@ -82,23 +86,37 @@ class RotatorWindow(QDockWidget):
                 ...
 
     def set_mygrid(self, mygrid: str) -> None:
-        """"""
+        """Sets the users gridsquare."""
         if isinstance(mygrid, str):
             self.mygrid = mygrid
             self.redrawMap()
 
     def setActive(self, active: bool) -> None:
-        """"""
+        """Sets a flag signaling the window is onscreen."""
         if isinstance(active, bool):
             self.active = active
 
-    def set_requested_azimuth(self, azimuth: float) -> None:
+    def set_requested_azimuth(self, azimuth: float, absolute: bool = True) -> None:
+        """
+        Set requested azimuth (blue needle). If "absolute" is True, just set it.
+        If it's False, do a relative movement. If this is the first relative
+        movement, start with the current antenna position, else add to the last
+        computed requested azimuth.
+        """
         if isinstance(azimuth, float):
-            self.requestedAzimuth = azimuth
+            if absolute:
+                self.requestedAzimuth = azimuth
+            else:
+                if self.requestedAzimuth_absolute:
+                    relative_to = self.antennaAzimuth or 0.0
+                else:
+                    relative_to = self.requestedAzimuth or 0.0
+                self.requestedAzimuth = (relative_to + azimuth) % 360.0
             self.requestedAzimuthNeedle.setRotation(self.requestedAzimuth)
             self.requestedAzimuthNeedle.show()
         else:
             self.requestedAzimuthNeedle.hide()
+        self.requestedAzimuth_absolute = absolute
 
     def set_antenna_azimuth(self, azimuth: float) -> None:
         if isinstance(azimuth, float):
@@ -130,6 +148,20 @@ class RotatorWindow(QDockWidget):
         if self.rotator.connected:
             self.rotator.set_position(270.0)
 
+    def rotate_left(self) -> None:
+        """Rotate 30° left. Repeated presses rotate more.
+        We update the needle to indicate where we are going."""
+        if self.rotator.connected:
+            self.set_requested_azimuth(-30.0, absolute=False)
+            self.rotator.set_position(self.requestedAzimuth)
+
+    def rotate_right(self) -> None:
+        """Rotate 30° right. Repeated presses rotate more.
+        We update the needle to indicate where we are going."""
+        if self.rotator.connected:
+            self.set_requested_azimuth(30.0, absolute=False)
+            self.rotator.set_position(self.requestedAzimuth)
+
     def the_eye_of_sauron(self) -> None:
         """Move the antennas azimuth to match the contacts."""
         if self.rotator.connected and self.requestedAzimuth is not None:
@@ -141,11 +173,13 @@ class RotatorWindow(QDockWidget):
             self.rotator.set_position((self.requestedAzimuth + 180.0) % 360.0)
 
     def stop(self) -> None:
-        """Stop the rotator."""
+        """Stop the rotator. Cancel any relative movement."""
         self.rotator.send_command("S")
+        if self.requestedAzimuth_absolute is False:
+            self.set_requested_azimuth(None)
 
     def redrawMap(self) -> None:
-        """"""
+        """Translates the map to an azmithal map centered on the user."""
         self.compassScene: QGraphicsScene = QGraphicsScene()
         self.compassView.setScene(self.compassScene)
         self.compassView.setStyleSheet("background-color: transparent;")
@@ -169,7 +203,7 @@ class RotatorWindow(QDockWidget):
             QPixmap.fromImage(the_map)
         )
         if pixMapItem is None:
-            logging.error("Unable to add pixmap to scene")
+            logger.error("Unable to add pixmap to scene")
         else:
             pixMapItem.moveBy(-self.MAP_RESOLUTION / 2, -self.MAP_RESOLUTION / 2)
             pixMapItem.setTransformOriginPoint(
@@ -197,12 +231,6 @@ class RotatorWindow(QDockWidget):
         path.lineTo(0, -90)
         path.lineTo(4, 0)
         path.closeSubpath()
-
-        # path2: QPainterPath = QPainterPath()
-        # path2.lineTo(-1, 0)
-        # path2.lineTo(0, -90)
-        # path2.lineTo(1, 0)
-        # path2.closeSubpath()
 
         self.requestedAzimuthNeedle: QGraphicsPathItem | None = (
             self.compassScene.addPath(
@@ -364,7 +392,6 @@ class RotatorWindow(QDockWidget):
             dx: float = clickPos.x()
             dy: float = -1 * clickPos.y()
             if math.sqrt(math.pow(dx, 2) + math.pow(dy, 2)) <= self.GLOBE_RADIUS:
-
                 angle: float = math.degrees(math.atan2(dx, dy))
 
                 if angle < 0:

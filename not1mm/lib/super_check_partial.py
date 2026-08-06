@@ -3,14 +3,11 @@
 # pylint: disable=unused-argument
 
 import logging
-
-from pathlib import Path
-import requests
-
-from rapidfuzz import fuzz
-from rapidfuzz import process
-
 from functools import lru_cache
+from pathlib import Path
+
+import requests
+from rapidfuzz import fuzz, process
 
 MASTER_SCP_URL = "https://www.supercheckpartial.com/MASTER.SCP"
 
@@ -27,7 +24,7 @@ def prefer_prefix_score(query: str, candidate: str, **kwargs) -> int:
     )
     if not candidate.startswith(query):
         score = 0.8 * score
-    return int(round(score))
+    return round(score)
 
 
 @lru_cache(maxsize=1024)  # You can adjust this as needed
@@ -74,9 +71,9 @@ class SCP:
                 Path(self.app_data_path) / "MASTER.SCP", "r", encoding="utf-8"
             ) as file_descriptor:
                 self.scp = file_descriptor.readlines()
-                self.scp = list(map(lambda x: x.strip(), self.scp))
+                self.scp = [x.strip() for x in self.scp]
                 self.scp = [x for x in self.scp if not x.startswith("#")]
-        except IOError as exception:
+        except OSError as exception:
             logger.critical("read_scp: read error: %s", exception)
 
     def super_check(self, acall: str) -> list:

@@ -10,7 +10,7 @@ from not1mm.lib.ham_utility import gridtolatlon
 class EditStation(QtWidgets.QDialog):
     """Edit Station Settings"""
 
-    cty_file = {}
+    cty_file = {}  # noqa: RUF012
 
     def __init__(self, app_data_path):
         super().__init__(None)

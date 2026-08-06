@@ -11,7 +11,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/not1mm)](https://pypi.org/project/not1mm/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python: 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Made With:PyQt6](https://img.shields.io/badge/Made%20with-PyQt6-blue)](https://pypi.org/project/PyQt6/)
 [![Code Maturity:Snot Nosed](https://img.shields.io/badge/Code%20Maturity-Snot%20Nosed-red)](https://xkcd.com/1695/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/not1mm?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=Monthly%20Downloads)](https://pepy.tech/projects/not1mm)
@@ -35,7 +35,7 @@ You shouldn't bother Tom or his Team. They be cranky...
 ### The What
 
 Not1MM is, in my opinion, a usable amateur radio, or HAM, contest logger. It's
-written in Python 3.10+, and uses Qt6 framework for the graphical interface
+written in Python 3.11+, and uses Qt6 framework for the graphical interface
 and SQLite for the database.
 
 ### Target Environment
@@ -43,7 +43,7 @@ and SQLite for the database.
 The primary target for this application is Linux. It may be able to run on other
 platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
 
-I've recently purchased an M4 Mac Mini, So I'll probably put more effort into that platform as well.
+I've recently purchased an M4 Mac Mini, So I can confirm it works well on the MacOS platform.
 
 ### The Why
 
@@ -69,21 +69,35 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-06-17] Fix crash with bad config UI file.
-- [2026-06-16] Fix SQL queries in StatsWindow to include more CW modes.
-- [2026-06-14-1] Merge PR #591 from df7cb fixing startup crash when there is a new version.
-- [2026-06-14] Fixed dependency name adif_io to adif-io
-- [2026-06-11] Add EUDX contest.
-- [2026-06-09-1] Add check for non-existant sound device.
-- [2026-06-09] Stop triggering PTT when processing {} macros in CW mode. I hope.
-- [2026-06-08-1] Removed the use of dbus-python. More trouble than it was worth. Using QSystemTrayIcon instead.
-- [2026-06-07-1] Merge pull request #586 from df7cb Allow more time for CAT connection.
-  - Merge pull request #585 from df7cb Process more cluster spots per cycle.
-- [2026-06-07] Fix ADIF generation when callsign has a stroke character.
-- [2026-06-05-1] Fixed 2 bugs in ADIF imports
-- [2026-06-05] Merge pull request #579 Enhance error handling with message boxes and improve voice keying functionality.
-- [2026-06-02] Add D-Bus notification support for Linux and clean up code
-- [2026-06-01] Removed mismatched quote from fstring in dxpedition.py
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
+- [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
+  - Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+  - @mbridak Fix: self assigned variable in rsgb-iota
+  - Merge pull request #639 from df7cb/euhfc
+  - Fix more Cabrillo names and enable online scores
+  - Online scoring for EUHFC
+- [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
+  - docs: record cw_msg signature confirmed working on live AetherSDR
+  - docs: note TCI rig control support in changelog
+  - Wire TCI into vfo.py, fix online staleness, add missing send_cat_string stub
+  - test: add fake TCI server for integration testing
+  - Correct stale RTTY mode expectation in plan Task 4 test
+  - feat: wire TCI backend into radio dispatch, settings, and UI
+  - feat: add TciCAT backend implementing the CAT contract over TCI
+  - fix: release socket/timer on their own thread after close(), fix backoff double-increm...
+  - feat: add TCI websocket client with state cache
+  - feat: add TCI protocol parsing and mode translation
+  - docs: fix TCI handshake doc overclaim, wrong comment, and stat rounding
+  - Add TCI probe and record live AetherSDR handshake
+  - Ignore .superpowers scratch directory
+  - Correct TCI port to 50001 to match the AetherSDR under test
+  - Add implementation plan for TCI CAT backend (phase 1)
+  - Add design spec for TCI support (AetherSDR compatibility)
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

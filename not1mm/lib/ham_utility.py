@@ -1,11 +1,11 @@
 """A sad collection of maybe useful things."""
 
 import logging
-import socket
 import re
+import socket
 from datetime import datetime
-from math import asin, atan2, cos, pi, radians, sin, sqrt
 from decimal import Decimal
+from math import asin, atan2, cos, pi, radians, sin, sqrt
 
 logger = logging.getLogger("ham_utility")
 
@@ -429,10 +429,10 @@ def has_internet():
 
 def update_time() -> None:
     """
-    Update local and UTC time on screen.
+    Returns UTC time '2026-07-29 18:30:53'
     """
-    _now = datetime.now().isoformat(" ")[5:19].replace("-", "/")
-    _utcnow = datetime.utcnow().isoformat(" ")[1:19]
+    # _now = datetime.now(tz=datetime.UTC).isoformat(" ")[5:19].replace("-", "/")
+    _utcnow = datetime.now(datetime.UTC).isoformat(" ")[0:19]
     # self.localtime.setText(now)
     # self.utctime.setText(utcnow)
     return _utcnow

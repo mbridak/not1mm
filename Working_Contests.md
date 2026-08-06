@@ -29,6 +29,7 @@
 - ES FIELD DAY HF
 - ES OPEN HF
 - Estonian LL Cup
+- HADX
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
@@ -53,4 +54,5 @@
 - UK/EI DX
 - Weekly RTTY
 - Work All Germany
+- WIA Remembrance Day
 - Winter Field Day

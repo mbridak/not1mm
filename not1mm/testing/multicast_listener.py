@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Test multicasting"""
+
 # pylint: disable=invalid-name
 import socket
 import time
@@ -12,7 +13,7 @@ multicast_port = 2239
 multicast_group = "224.1.1.1"
 interface_ip = "0.0.0.0"
 
-os.system('clear')
+os.system("clear")
 print(f"Listening on multicast group {multicast_group} port {multicast_port}\n\n")
 
 fifo = queue.Queue()

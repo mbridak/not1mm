@@ -42,6 +42,9 @@
     <height>32</height>
    </size>
   </property>
+  <property name="dockOptions">
+   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
     <bool>true</bool>
@@ -1554,6 +1557,7 @@
     <addaction name="actionImport_ADIF"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
+    <addaction name="actionEdit_Keys"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_Call_History_File"/>
     <addaction name="actionUpdate_CTY"/>
@@ -1582,6 +1586,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionBandmap"/>
+    <addaction name="actionCluster"/>
     <addaction name="actionCheck_Window"/>
     <addaction name="actionLog_Window"/>
     <addaction name="actionRate_Window"/>
@@ -1600,6 +1605,8 @@
     </property>
     <addaction name="actionRecalculate_Mults"/>
     <addaction name="actionMark_Contacts_Dirty"/>
+    <addaction name="separator"/>
+    <addaction name="actionSynchronize_VFOs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -2048,6 +2055,17 @@
     </font>
    </property>
   </action>
+  <action name="actionEdit_Keys">
+   <property name="text">
+    <string>Edit Keys</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+     <weight>100</weight>
+    </font>
+   </property>
+  </action>
   <action name="actionBandmap">
    <property name="checkable">
     <bool>true</bool>
@@ -2062,6 +2080,19 @@
    </property>
    <property name="shortcut">
     <string>Alt+B</string>
+   </property>
+  </action>
+  <action name="actionCluster">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cluster</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono Thin</family>
+    </font>
    </property>
   </action>
   <action name="actionQuit">
@@ -2287,6 +2318,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+Z</string>
+   </property>
+  </action>
+  <action name="actionSynchronize_VFOs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Synchronize VFOs</string>
    </property>
   </action>
  </widget>

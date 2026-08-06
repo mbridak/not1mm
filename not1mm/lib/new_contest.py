@@ -1,7 +1,9 @@
 """New Contest Dialog"""
 
 import importlib
+
 from PyQt6 import QtWidgets, uic
+
 
 class NewContest(QtWidgets.QDialog):
     """New Contest"""
@@ -20,12 +22,15 @@ class NewContest(QtWidgets.QDialog):
         self.soapbox.setPlaceholderText("")
         self.exchange.setPlaceholderText("")
         contest_name = self.contest.currentText().lower().replace(" ", "_")
-        temp = importlib.import_module(f"not1mm.plugins.{contest_name}")
-        if hasattr(temp, "EXCHANGE_HINT"):
-            self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
-        else:
-            self.exchange.setPlaceholderText("")
-        if hasattr(temp, "SOAPBOX_HINT"):
-            self.soapbox.setPlaceholderText(temp.SOAPBOX_HINT)
-        else:
-            self.soapbox.setPlaceholderText("")
+        try:
+            temp = importlib.import_module(f"not1mm.plugins.{contest_name}")
+            if hasattr(temp, "EXCHANGE_HINT"):
+                self.exchange.setPlaceholderText(temp.EXCHANGE_HINT)
+            else:
+                self.exchange.setPlaceholderText("")
+            if hasattr(temp, "SOAPBOX_HINT"):
+                self.soapbox.setPlaceholderText(temp.SOAPBOX_HINT)
+            else:
+                self.soapbox.setPlaceholderText("")
+        except ModuleNotFoundError:
+            ...
