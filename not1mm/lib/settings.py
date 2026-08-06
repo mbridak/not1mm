@@ -1,7 +1,10 @@
 """Settings Dialog Class"""
 
 import logging
+
 from PyQt6 import QtWidgets, uic
+
+from not1mm.lib.preferences import Preferences
 
 try:
     import sounddevice as sd
@@ -27,7 +30,8 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld and 12345 for flrig."
+            "Usually 4532 for rigctld, 12345 for flrig, "
+            "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -122,6 +126,7 @@ class Settings(QtWidgets.QDialog):
         self.catpoll_field.setText(str(self.preference.get("CAT_polldelta", 500)))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
+        self.usetci_radioButton.setChecked(bool(self.preference.get("usetci")))
 
         self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
         self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
@@ -196,6 +201,9 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_login_field.setText(
+            str(self.preference.get("cluster_login", ""))
+        )
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -300,6 +308,7 @@ class Settings(QtWidgets.QDialog):
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
+        self.preference["usetci"] = self.usetci_radioButton.isChecked()
 
         self.preference["rotctld_address"] = self.rotctld_address.text()
         try:
@@ -312,7 +321,6 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwport"] = int(self.cwport_field.text())
         except ValueError:
             self.preference["cwport"] = None
-            ...
         cwpaddingchar_button = self.cwpaddingchar_group.checkedButton()
         self.preference["cwpaddingchar"] = (
             cwpaddingchar_button.text() if cwpaddingchar_button else "0"
@@ -368,10 +376,11 @@ class Settings(QtWidgets.QDialog):
             self.preference["cluster_port"] = int(self.cluster_port_field.text())
         except ValueError:
             ...
+        self.preference["cluster_login"] = self.cluster_login_field.text()
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
-        bandlist = list()
+        bandlist = []
         if self.activate_160m.isChecked():
             bandlist.append("160")
         if self.activate_80m.isChecked():
@@ -407,3 +416,4 @@ class Settings(QtWidgets.QDialog):
         if self.activate_23cm.isChecked():
             bandlist.append("23cm")
         self.preference["bands"] = bandlist
+        Preferences.save()

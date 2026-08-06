@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Test multicasting"""
+
 # pylint: disable=invalid-name
 import socket
 import time

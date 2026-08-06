@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -6,22 +5,17 @@ GPL V3
 Class: RateWindow
 Purpose: not sure yet
 """
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, c-extension-no-member
-# pylint: disable=logging-fstring-interpolation, line-too-long
 
 import datetime
 import logging
-import os
 
 from PyQt6 import uic
+from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import pyqtSignal, QTimer
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
-
-from json import loads
-from json.decoder import JSONDecodeError
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +25,11 @@ class RateWindow(QDockWidget):
 
     message = pyqtSignal(dict)
     dbname = None
-    pref = {}
-    poll_time = datetime.datetime.now() + datetime.timedelta(milliseconds=1000)
+    pref = {}  # noqa: RUF012
+    poll_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+        milliseconds=1000
+    )
     ratewindow_closed = pyqtSignal()
-
 
     def __init__(self, action):
         super().__init__()
@@ -46,15 +41,13 @@ class RateWindow(QDockWidget):
         )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-
         uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
-
         self.timer = QTimer()
         self.timer.timeout.connect(self.get_run_and_total_qs)
         self.timer.start(10000)
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main window."""
 
         if packet.get("cmd", "") == "NEWDB":
             self.load_pref()
@@ -63,7 +56,6 @@ class RateWindow(QDockWidget):
             )
             self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
             self.database.current_contest = self.pref.get("contest", 0)
-
         if packet.get("cmd", "") in ("CONTACTCHANGED", "UPDATELOG", "DELETE"):
             self.get_run_and_total_qs()
 
@@ -82,45 +74,10 @@ class RateWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info(f"loaded config file from {fsutils.CONFIG_FILE}")
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except (IOError, JSONDecodeError) as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def get_run_and_total_qs(self):
         """get numbers"""
-
-        # last_hour
-        # 10_last_qso
-        # hundred_last_qso
-        # since_lasthour_label since_lasthour
-        # --------------------
-        # time_on
-        # time_off
-        # --------------------
-        # run_qso
-        # sandp_qso
-        # hour_run_qso
-        # hour_sandp_qso
-        # --------------------
-        # avg_km
-        # avg_pts
-        # --------------------
-        # time_by_mult
-        # qso_counts
-        # mult_counts
-        # mult_worth
-        # {'runs': 3, 'totalqs': 3}
-
-        # WHERE datetime(timestamp) > datetime(current_timestamp, '-60 minutes')
 
         if not self.active or not self.isVisible():
             return

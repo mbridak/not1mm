@@ -22,7 +22,7 @@ EXCHANGE_HINT = "#"
 
 
 name = "ES OPEN"
-cabrillo_name = "ES-OPEN"
+cabrillo_name = "ES-OPEN-HF"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [

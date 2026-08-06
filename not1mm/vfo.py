@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -7,8 +6,6 @@ Class: VfoWindow
 Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig.
 """
 
-# pylint: disable=no-name-in-module, unused-import, no-member, invalid-name, logging-fstring-interpolation, c-extension-no-member
-
 # 115200 pico default speed
 # usb-Raspberry_Pi_Pico_E6612483CB1B242A-if00
 # usb-Raspberry_Pi_Pico_W_E6614C311B331139-if00
@@ -16,17 +13,19 @@ Purpose: Provide onscreen widget that interacts with DIY VFO knob and remote rig
 import datetime
 import logging
 import os
-from json import loads
 import sys
 
 import serial
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtCore import QTimer, pyqtSignal
-from PyQt6.QtWidgets import QDockWidget
 from PyQt6.QtGui import QPalette
+from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
-from not1mm.lib.cat_interface import CAT
+from not1mm import fsutils
+from not1mm.lib.cat_flrig import FlrigCAT
+from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.cat_tci import TciCAT
+from not1mm.lib.preferences import Preferences
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -34,13 +33,13 @@ logger: logging.Logger = logging.getLogger(__name__)
 class VfoWindow(QDockWidget):
     """The VFO window."""
 
-    pref: dict = {}
+    pref: dict = {}  # noqa: RUF012
     old_vfo: int = 0
     old_pico: str = ""
     message_shown: bool = False
     current_palette: QPalette | None = None
     device_reconnect: bool = False
-    stale: datetime.datetime = datetime.datetime.now()
+    stale: datetime.datetime = datetime.datetime.now(datetime.UTC)
     vfowindow_closed = pyqtSignal()
 
     def __init__(self, action):
@@ -48,7 +47,7 @@ class VfoWindow(QDockWidget):
         self.action = action
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-        self.rig_control: CAT | None = None
+        self.rig_control: FlrigCAT | RigctldCAT | TciCAT | None = None
         self.timer: QTimer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
@@ -66,24 +65,14 @@ class VfoWindow(QDockWidget):
         Load preference file.
         Get CAT interface.
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref: dict = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref: dict = Preferences.data()
 
         if self.pref.get("useflrig", False):
             logger.debug(
                 "Using flrig: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "flrig",
+            self.rig_control: FlrigCAT | None = FlrigCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 12345)),
             )
@@ -93,10 +82,19 @@ class VfoWindow(QDockWidget):
                 "Using rigctld: %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
             )
-            self.rig_control: CAT | None = CAT(
-                "rigctld",
+            self.rig_control: RigctldCAT | None = RigctldCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
+            )
+            self.timer.start(100)
+        if self.pref.get("usetci", False):
+            logger.debug(
+                "Using TCI: %s",
+                f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+            )
+            self.rig_control: TciCAT | None = TciCAT(
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 50001)),
             )
             self.timer.start(100)
 
@@ -114,7 +112,7 @@ class VfoWindow(QDockWidget):
         if devices is None:
             return None
         if sys.platform == "darwin":
-            usb_devices = set([device for device in devices if "usb" in device])
+            usb_devices = {device for device in devices if "usb" in device}
             new_usb_devices = usb_devices - self.usb_devices
             self.usb_devices = usb_devices
             if len(new_usb_devices) == 0:
@@ -179,16 +177,10 @@ class VfoWindow(QDockWidget):
             except OSError:
                 if self.message_shown is False and supress_msg is False:
                     self.message_shown: bool = True
-                    # self.show_message_box(
-                    #     "Unable to locate or open the VFO knob serial device."
-                    # )
                 self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
         else:
             if self.message_shown is False and supress_msg is False:
                 self.message_shown: bool = True
-                # self.show_message_box(
-                #     "Unable to locate or open the VFO knob serial device."
-                # )
             self.lcdNumber.setStyleSheet("QLCDNumber { color: red; }")
 
     def msg_from_main(self, msg_dict) -> None:
@@ -216,7 +208,7 @@ class VfoWindow(QDockWidget):
         """Display vfo value with dots"""
         dvfo: str = str(the_number)
         if len(dvfo) > 6:
-            dnum: str = f"{dvfo[:len(dvfo)-6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
+            dnum: str = f"{dvfo[: len(dvfo) - 6]}.{dvfo[-6:-3]}.{dvfo[-3:]}"
             self.lcdNumber.display(dnum)
 
     def poll_radio(self) -> None:
@@ -226,7 +218,7 @@ class VfoWindow(QDockWidget):
         """
         if not self.isVisible():
             return
-        if datetime.datetime.now() < self.stale:
+        if datetime.datetime.now(datetime.UTC) < self.stale:
             return
         if self.rig_control is not None:
             if self.rig_control.online is False:
@@ -236,8 +228,6 @@ class VfoWindow(QDockWidget):
                     vfo: int = int(self.rig_control.get_vfo())
                 except ValueError:
                     return
-                # if vfo < 1700000 or vfo > 60000000:
-                #     return
                 if vfo != self.old_vfo or self.device_reconnect is True:
                     self.old_vfo: int = vfo
                     logger.debug(f"{vfo}")
@@ -262,13 +252,11 @@ class VfoWindow(QDockWidget):
                 self.pico.write(b"f\r")
                 while self.pico.in_waiting:
                     result: str = self.pico.read(self.pico.in_waiting).decode().strip()
-                    # result = result.decode().strip()
-
                     if self.old_pico != result:
                         self.old_pico: str = result
-                        self.stale: datetime.datetime = (
-                            datetime.datetime.now() + datetime.timedelta(seconds=1)
-                        )
+                        self.stale: datetime.datetime = datetime.datetime.now(
+                            datetime.UTC
+                        ) + datetime.timedelta(seconds=1)
                         if self.rig_control is not None:
                             self.rig_control.set_vfo(result)
                             self.showNumber(result)

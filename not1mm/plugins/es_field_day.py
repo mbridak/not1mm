@@ -29,7 +29,7 @@ assert platform
 EXCHANGE_HINT = "#"
 
 name = "ES FIELD DAY"
-cabrillo_name = "ES-FIELD-DAY"
+cabrillo_name = "ES-OPEN-HF"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -286,7 +286,7 @@ def show_mults(self, rtc=None):
     # apply params
     params = estonian_regions
     # run query
-    result = self.database.exec_sql_params_mult(query, params)
+    result = self.database.exec_sql(query, params)
     if result:
         mult_count = result.get("mults", 0)
         return mult_count

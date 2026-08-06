@@ -9,7 +9,6 @@ import logging
 from json import JSONDecodeError, dumps, loads
 
 from dicttoxml import dicttoxml
-
 from PyQt6 import QtNetwork
 
 logger = logging.getLogger("multicast")

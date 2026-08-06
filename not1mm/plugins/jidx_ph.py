@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Prefecture or CQ Zone"
 
 name = "JIDX PH"
-cabrillo_name = "JIDX-PH"
+cabrillo_name = "JIDX-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 11, 15]
 columns = [

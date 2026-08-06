@@ -31,57 +31,10 @@
      <number>6</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Callsign</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="callsignField">
-        <property name="focusPolicy">
-         <enum>Qt::FocusPolicy::ClickFocus</enum>
-        </property>
-        <property name="accessibleName">
-         <string>callsign</string>
-        </property>
-        <property name="accessibleDescription">
-         <string>callsign used to sign in to dx cluster.</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">text-transform: uppercase;</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="connectButton">
-        <property name="focusPolicy">
-         <enum>Qt::FocusPolicy::NoFocus</enum>
-        </property>
-        <property name="toolTip">
-         <string>Connect to DX cluster.</string>
-        </property>
-        <property name="accessibleName">
-         <string>connect</string>
-        </property>
-        <property name="accessibleDescription">
-         <string>connect to d x cluster.</string>
-        </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
-        <weight>100</weight>
         <pointsize>9</pointsize>
        </font>
       </property>
@@ -97,13 +50,12 @@
          <x>0</x>
          <y>0</y>
          <width>328</width>
-         <height>579</height>
+         <height>609</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>JetBrains Mono</family>
-         <weight>100</weight>
          <pointsize>9</pointsize>
         </font>
        </property>
@@ -125,7 +77,6 @@
           <property name="font">
            <font>
             <family>JetBrains Mono</family>
-            <weight>100</weight>
             <pointsize>6</pointsize>
            </font>
           </property>

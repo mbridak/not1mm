@@ -340,6 +340,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CQWS</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CWT</string>
       </property>
      </item>
@@ -405,6 +410,16 @@
      </item>
      <item>
       <property name="text">
+       <string>EUHFC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>HADX</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>HELVETIA</string>
       </property>
      </item>
@@ -466,6 +481,11 @@
      <item>
       <property name="text">
        <string>NAQP SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>OK1WC</string>
       </property>
      </item>
      <item>
@@ -550,6 +570,11 @@
      </item>
      <item>
       <property name="text">
+        <string>TA VHF UHF CONTEST</string>  
+      </property>     
+     </item>
+     <item>
+      <property name="text">
        <string>UKEIDX</string>
       </property>
      </item>
@@ -561,6 +586,11 @@
      <item>
       <property name="text">
        <string>WEEKLY RTTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>WIA REMEMBRANCE</string>
       </property>
      </item>
      <item>

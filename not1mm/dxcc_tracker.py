@@ -1,28 +1,27 @@
-from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QBrush, QColor
-
-# from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6 import uic, QtWidgets
-import not1mm.fsutils as fsutils
-from not1mm.lib.database import DataBase
-import os
+import logging
 from json import loads
 from json.decoder import JSONDecodeError
 
-import logging
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QDockWidget
+
+from not1mm import fsutils
+from not1mm.lib.database import DataBase
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
 
 class DXCCWindow(QDockWidget):
     message = pyqtSignal(dict)
-    ctyfile = {}
+    ctyfile = {}  # noqa: RUF012
     dbname = None
     db = None
     model = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "DXCC",
         1: "160m",
         2: "80m",
@@ -33,7 +32,6 @@ class DXCCWindow(QDockWidget):
         7: "Total",
     }
     dxcc_trackerwindow_closed = pyqtSignal()
-
 
     def __init__(self, action):
         super().__init__()
@@ -69,8 +67,8 @@ class DXCCWindow(QDockWidget):
                 fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
-        except (IOError, JSONDecodeError, TypeError):
-            logging.critical("There was an error parsing the BigCity file.")
+        except (OSError, JSONDecodeError, TypeError):
+            logger.critical("There was an error parsing the BigCity file.")
 
     def dxcc_lookup(self, dxcc: str) -> str:
         """Lookup callsign in cty.dat file.
@@ -143,18 +141,7 @@ class DXCCWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def load_new_db(self) -> None:
         """
@@ -178,7 +165,7 @@ class DXCCWindow(QDockWidget):
         self.get_log()
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window"""
 
         if self.active is True and self.isVisible():
             if msg.get("cmd", "") in (
@@ -187,10 +174,8 @@ class DXCCWindow(QDockWidget):
                 "DELETE",
                 "DELETED",
             ):
-                ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
-                ...
                 self.load_new_db()
                 self.get_log()
             if msg.get("cmd", "") == "SCROLLTODXCC":

@@ -1,15 +1,13 @@
-from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtGui import QBrush, QColor
-
-# from PyQt6.QtCore import Qt
-from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6 import uic, QtWidgets
-import not1mm.fsutils as fsutils
-from not1mm.lib.database import DataBase
-import os
-from json import loads
-
 import logging
+
+from PyQt6 import QtWidgets, uic
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor
+from PyQt6.QtWidgets import QDockWidget
+
+from not1mm import fsutils
+from not1mm.lib.database import DataBase
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +17,8 @@ class ZoneWindow(QDockWidget):
     dbname = None
     db = None
     model = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "Zone",
         1: "160m",
         2: "80m",
@@ -113,18 +111,7 @@ class ZoneWindow(QDockWidget):
         -------
         None
         """
-        try:
-            if os.path.exists(fsutils.CONFIG_FILE):
-                with open(
-                    fsutils.CONFIG_FILE, "rt", encoding="utf-8"
-                ) as file_descriptor:
-                    self.pref = loads(file_descriptor.read())
-                    logger.info("%s", self.pref)
-            else:
-                self.pref["current_database"] = "ham.db"
-
-        except IOError as exception:
-            logger.critical("Error: %s", exception)
+        self.pref = Preferences.data()
 
     def load_new_db(self) -> None:
         """
@@ -148,7 +135,7 @@ class ZoneWindow(QDockWidget):
         self.get_log()
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window."""
         if self.active is True and self.isVisible():
             if msg.get("cmd", "") in (
                 "UPDATELOG",
@@ -156,10 +143,8 @@ class ZoneWindow(QDockWidget):
                 "DELETE",
                 "DELETED",
             ):
-                ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
-                ...
                 self.load_new_db()
                 self.get_log()
             if msg.get("cmd", "") == "SCROLLTOZone":
