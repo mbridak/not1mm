@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-08-06] Merge pull request #645 from df7cb/band
+- [2026-08-05] Consolidate band/frequency conversion into a single source-of-truth table
+- [2026-08-04] Remove some dead variables
 - [2026-08-05] Merge pull request #644 from df7cb/spotdx
   - Move SPOTDX to clusterwindow.py
 - [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
@@ -2802,9 +2805,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
