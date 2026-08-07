@@ -14,6 +14,8 @@ import argparse
 from random import randint
 from json import dumps, loads, JSONDecodeError
 
+from not1mm.lib.ham_utility import fakefreq
+
 parser = argparse.ArgumentParser(description="Simulate a Field Day participant.")
 parser.add_argument("-c", "--call", type=str, help="Your Callsign")
 parser.add_argument("-b", "--band", type=str, help="Your Band")
@@ -177,34 +179,6 @@ def generate_section(call):
     return sections[random.randint(0, len(sections) - 1)]
 
 
-def fakefreq(band, mode):
-    """
-    If unable to obtain a frequency from the rig,
-    This will return a sane value for a frequency mainly for the cabrillo and adif log.
-    Takes a band and mode as input and returns freq in khz.
-    """
-    _modes = {"CW": 0, "DI": 1, "PH": 2, "FT8": 1, "SSB": 2}
-    fakefreqs = {
-        "160": ["1830", "1805", "1840"],
-        "80": ["3530", "3559", "3970"],
-        "60": ["5332", "5373", "5405"],
-        "40": ["7030", "7040", "7250"],
-        "30": ["10130", "10130", "0000"],
-        "20": ["14030", "14070", "14250"],
-        "17": ["18080", "18100", "18150"],
-        "15": ["21065", "21070", "21200"],
-        "12": ["24911", "24920", "24970"],
-        "10": ["28065", "28070", "28400"],
-        "6": ["50.030", "50300", "50125"],
-        "2": ["144030", "144144", "144250"],
-        "222": ["222100", "222070", "222100"],
-        "432": ["432070", "432200", "432100"],
-        "SAT": ["144144", "144144", "144144"],
-    }
-    freqtoreturn = fakefreqs[band][_modes[mode]]
-    return freqtoreturn
-
-
 def log_contact():
     """Send a contgact to the server."""
     unique_id = uuid.uuid4().hex
@@ -216,7 +190,7 @@ def log_contact():
         "section": generate_section(callsign),
         "mode": MODE,
         "band": BAND,
-        "frequency": int(float(fakefreq(BAND, MODE)) * 1000),
+        "frequency": int(float(fakefreq(f"{BAND}m", MODE)) * 1000),
         "date_and_time": datetime.datetime.now(datetime.timezone.utc).strftime(
             "%Y-%m-%d %H:%M:%S"
         ),
