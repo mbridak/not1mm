@@ -3,6 +3,7 @@
 import logging
 import re
 import socket
+from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from math import asin, atan2, cos, pi, radians, sin, sqrt
@@ -85,334 +86,141 @@ def gridtolatlon(maiden):
         return 0, 0
 
 
-def getband(freq: str) -> str:
-    """
-    Convert a (string) frequency into a (string) band.
-    Returns a (string) band.
-    Returns a "0" if frequency is out of band.
-    """
-    # logger.info("getband: %s %s", type(freq), freq)
-    if freq.isnumeric():
-        frequency = int(float(freq))
-        if 2000000 >= frequency >= 1800000:
-            return "160"
-        if 4000000 >= frequency >= 3500000:
-            return "80"
-        if 5406000 >= frequency >= 5330000:
-            return "60"
-        if 7300000 >= frequency >= 7000000:
-            return "40"
-        if 10150000 >= frequency >= 10100000:
-            return "30"
-        if 14350000 >= frequency >= 14000000:
-            return "20"
-        if 18168000 >= frequency >= 18068000:
-            return "17"
-        if 21450000 >= frequency >= 21000000:
-            return "15"
-        if 24990000 >= frequency >= 24890000:
-            return "12"
-        if 29700000 >= frequency >= 28000000:
-            return "10"
-        if 54000000 >= frequency >= 50000000:
-            return "6"
-        if 70500000 >= frequency >= 70000000:
-            return "4"
-        if 148000000 >= frequency >= 144000000:
-            return "2"
-        if 225000000 >= frequency >= 222000000:
-            return "1.25"
-        if 450000000 >= frequency >= 420000000:
-            return "70cm"
-        if 928000000 >= frequency >= 902000000:
-            return "33cm"
-        if 1300000000 >= frequency >= 1240000000:
-            return "23cm"
-    return "0"
+@dataclass(frozen=True)
+class BandDef:
+    """A radio amateur band.
 
-
-def get_logged_band(freq: str) -> str:
-    """
-    Convert a (string) frequency into a (string) band.
-    Returns a (string) band.
-    Returns a "0" if frequency is out of band.
+    band_mhz is the canonical DXLOG.Band value (independent of band edges).
     """
 
-    if freq.isnumeric():
-        frequency = int(float(freq))
-        if 2000000 >= frequency >= 1800000:
-            return "1.8"
-        if 4000000 >= frequency >= 3500000:
-            return "3.5"
-        if 5406000 >= frequency >= 5330000:
-            return "5"
-        if 7300000 >= frequency >= 7000000:
-            return "7"
-        if 10150000 >= frequency >= 10100000:
-            return "10"
-        if 14350000 >= frequency >= 14000000:
-            return "14"
-        if 18168000 >= frequency >= 18068000:
-            return "18"
-        if 21450000 >= frequency >= 21000000:
-            return "21"
-        if 24990000 >= frequency >= 24890000:
-            return "24"
-        if 29700000 >= frequency >= 28000000:
-            return "28"
-        if 54000000 >= frequency >= 50000000:
-            return "50"
-        if 70500000 >= frequency >= 70000000:
-            return "70"
-        if 148000000 >= frequency >= 144000000:
-            return "144"
-        if 225000000 >= frequency >= 222000000:
-            return "222"
-        if 450000000 >= frequency >= 420000000:
-            return "432"
-        if 928000000 >= frequency >= 902000000:
-            return "902"
-        if 1300000000 >= frequency >= 1240000000:
-            return "1296"
-        if 10500000000 >= frequency >= 2300000000:
-            return "2300+"
-    return "0"
+    start: float  # kHz
+    end: float  # kHz
+    name: str  # "40m", "13cm"
+    band_mhz: float
+    cw_khz: int
+    digi_khz: int
+    ssb_khz: int
 
 
-def get_adif_band(freq: Decimal) -> str:
-    """xxx"""
-    if 7500000 >= freq >= 300000:
-        return "submm"
-    if 250000 >= freq >= 241000:
-        return "1mm"
-    if 149000 >= freq >= 134000:
-        return "2mm"
-    if 123000 >= freq >= 119980:
-        return "2.5mm"
-    if 81000 >= freq >= 75500:
-        return "4mm"
-    if 47200 >= freq >= 47000:
-        return "6mm"
-    if 24250 >= freq >= 24000:
-        return "1.25cm"
-    if 10500 >= freq >= 10000:
-        return "3cm"
-    if 5925 >= freq >= 5650:
-        return "6cm"
-    if 3500 >= freq >= 3300:
-        return "9cm"
-    if 2450 >= freq >= 2300:
-        return "13cm"
-    if 1300 >= freq >= 1240:
-        return "23cm"
-    if 928 >= freq >= 902:
-        return "33cm"
-    if 450 >= freq >= 420:
-        return "70cm"
-    if 225 >= freq >= 222:
-        return "1.25m"
-    if 148 >= freq >= 144:
-        return "2m"
-    if 71 >= freq >= 70:
-        return "4m"
-    if 69.9 >= freq >= 54.000001:
-        return "5m"
-    if 54 >= freq >= 50:
-        return "6m"
-    if 45 >= freq >= 40:
-        return "8m"
-    if 29.7 >= freq >= 28.0:
-        return "10m"
-    if 24.99 >= freq >= 24.890:
-        return "12m"
-    if 21.45 >= freq >= 21.0:
-        return "15m"
-    if 18.168 >= freq >= 18.068:
-        return "17m"
-    if 14.35 >= freq >= 14.0:
-        return "20m"
-    if 10.15 >= freq >= 10.1:
-        return "30m"
-    if 7.3 >= freq >= 7.0:
-        return "40m"
-    if 5.45 >= freq >= 5.06:
-        return "60m"
-    if 4.0 >= freq >= 3.5:
-        return "80m"
-    if 2.0 >= freq >= 1.8:
-        return "160m"
-    if 0.504 >= freq >= 0.501:
-        return "560m"
-    if 0.479 >= freq >= 0.472:
-        return "630m"
-    if 0.1378 >= freq >= 0.1357:
-        return "2190m"
-    return "0m"
+BANDS: tuple[BandDef, ...] = (
+    #       start (kHz)     end (kHz)      name      band_mhz  cw_khz     digi_khz   ssb_khz
+    #       -------------  --------------  --------  --------  ---------  ---------  ---------
+    BandDef(        135.7,          137.8,  "2190m",     0.137,         0,         0,         0),
+    BandDef(        472.0,          479.0,   "630m",     0.472,         0,         0,         0),
+    BandDef(        501.0,          504.0,   "560m",     0.502,         0,         0,         0),
+    BandDef(      1_800.0,        2_000.0,   "160m",       1.8,      1830,      1805,      1840),
+    BandDef(      3_500.0,        4_000.0,    "80m",       3.5,      3530,      3559,      3970),
+    BandDef(      5_060.0,        5_450.0,    "60m",       5.0,      5332,      5373,      5405),
+    BandDef(      7_000.0,        7_300.0,    "40m",       7.0,      7030,      7040,      7250),
+    BandDef(     10_100.0,       10_150.0,    "30m",      10.0,    10_130,    10_130,    10_130),
+    BandDef(     14_000.0,       14_350.0,    "20m",      14.0,    14_030,    14_070,    14_250),
+    BandDef(     18_068.0,       18_168.0,    "17m",      18.0,    18_080,    18_100,    18_150),
+    BandDef(     21_000.0,       21_450.0,    "15m",      21.0,    21_065,    21_070,    21_200),
+    BandDef(     24_890.0,       24_990.0,    "12m",      24.0,    24_911,    24_920,    24_970),
+    BandDef(     28_000.0,       29_700.0,    "10m",      28.0,    28_065,    28_070,    28_400),
+    BandDef(     40_000.0,       45_000.0,     "8m",      40.0,         0,         0,         0),
+    BandDef(     50_000.0,       54_000.0,     "6m",      50.0,    50_030,    50_300,    50_125),
+    BandDef(     54_000.0,       69_900.0,     "5m",      54.0,         0,         0,         0),
+    BandDef(     70_000.0,       71_000.0,     "4m",      70.0,    70_030,    70_300,    70_125),
+    BandDef(    144_000.0,      148_000.0,     "2m",     144.0,   144_030,   144_144,   144_250),
+    BandDef(    222_000.0,      225_000.0,  "1.25m",     222.0,   222_100,   222_070,   222_100),
+    BandDef(    420_000.0,      450_000.0,   "70cm",     432.0,   432_070,   432_200,   432_100),
+    BandDef(    902_000.0,      928_000.0,   "33cm",     902.0,   902_100,   902_100,   902_100),
+    BandDef(  1_240_000.0,    1_300_000.0,   "23cm",    1296.0, 1_296_100, 1_296_100, 1_296_100),
+    BandDef(  2_300_000.0,    2_450_000.0,   "13cm",    2300.0,         0,         0,         0),
+    BandDef(  3_300_000.0,    3_500_000.0,    "9cm",    3300.0,         0,         0,         0),
+    BandDef(  5_650_000.0,    5_925_000.0,    "6cm",    5650.0,         0,         0,         0),
+    BandDef( 10_000_000.0,   10_500_000.0,    "3cm",  10_000.0,         0,         0,         0),
+    BandDef( 24_000_000.0,   24_250_000.0, "1.25cm",  24_000.0,         0,         0,         0),
+    BandDef( 47_000_000.0,   47_200_000.0,    "6mm",  47_000.0,         0,         0,         0),
+    BandDef( 75_500_000.0,   81_000_000.0,    "4mm",  75_500.0,         0,         0,         0),
+    BandDef(119_980_000.0,  123_000_000.0,  "2.5mm", 119_980.0,         0,         0,         0),
+    BandDef(134_000_000.0,  149_000_000.0,    "2mm", 134_000.0,         0,         0,         0),
+    BandDef(241_000_000.0,  250_000_000.0,    "1mm", 241_000.0,         0,         0,         0),
+    BandDef(300_000_000.0, 7500_000_000.0,  "submm", 300_000.0,         0,         0,         0),
+)  # fmt: skip
+
+_UNKNOWN_BAND = BandDef(0.0, 1.0, "unknown", 0.0, 0, 0, 0)
+_BY_BAND_NAME: dict[str, BandDef] = {b.name: b for b in BANDS}
+_BY_BAND_MHZ: dict[float, BandDef] = {b.band_mhz: b for b in BANDS}
+
+
+def khz2banddef(freq_khz: Decimal, unknown_band=False) -> BandDef | None:
+    """Convert a frequency in kHz into a BandDef.
+
+    Returns None if the frequency is out of band unless unknown_band is True,
+    then returns _UNKNOWN_BAND (a 1 kHz window at 0 Hz).
+    """
+    for b in BANDS:
+        if b.start <= freq_khz < b.end:
+            return b
+    if unknown_band:
+        return _UNKNOWN_BAND
+    return None
+
+
+def band2banddef(band_name: str, unknown_band=False) -> BandDef | None:
+    """Look up band data for a given band name."""
+    if band := _BY_BAND_NAME.get(band_name):
+        return band
+    if unknown_band:
+        return _UNKNOWN_BAND
+    return None
+
+
+def getband(freq_hz: str) -> str:
+    """Convert a (string) frequency in Hz into a band name.
+
+    Returns "" if the frequency is out of band.
+    """
+    band = khz2banddef(Decimal(freq_hz) / 1000)
+    if band:
+        return band.name
+    return ""
+
+
+def get_logged_band(freq_hz: str) -> str:
+    """Convert a (string) frequency in Hz into a band_mhz (canonical DXLOG value).
+
+    Returns "0.0" if the frequency is out of band.
+    """
+    band = khz2banddef(Decimal(freq_hz) / 1000)
+    if band:
+        return str(band.band_mhz)
+    return "0.0"
+
+
+def get_adif_band(freq_mhz: Decimal) -> str:
+    """Convert a frequency in MHz into a band name.
+
+    Returns "" if the frequency is out of band.
+    """
+    band = khz2banddef(freq_mhz * 1000)
+    if band:
+        return band.name
+    return ""
 
 
 def get_not1mm_band(band: str) -> float:
-    if band == "2190m":
-        return 0.137
-    if band == "630m":
-        return 0.472
-    if band == "560m":
-        return 0.501
-    if band == "160m":
-        return 1.8
-    if band == "80m":
-        return 3.5
-    if band == "60m":
-        return 5.0
-    if band == "40m":
-        return 7.0
-    if band == "30m":
-        return 10.1
-    if band == "20m":
-        return 14.0
-    if band == "17m":
-        return 18.068
-    if band == "15m":
-        return 21.0
-    if band == "12m":
-        return 24.890
-    if band == "10m":
-        return 28.0
-    if band == "8m":
-        return 40.0
-    if band == "6m":
-        return 50.0
-    if band == "5m":
-        return 54.0
-    if band == "4m":
-        return 70.0
-    if band == "2m":
-        return 144.0
-    if band == "1.25m":
-        return 222.0
-    if band == "70cm":
-        return 420.0
-    if band == "33cm":
-        return 902.0
-    if band == "23cm":
-        return 1240.0
-    if band == "13cm":
-        return 2300.0
-    if band == "9cm":
-        return 3300.0
-    if band == "6cm":
-        return 5650.0
-    if band == "3cm":
-        return 10000.0
-    if band == "1.25cm":
-        return 24000.0
-    if band == "6mm":
-        return 47000.0
-    if band == "4mm":
-        return 75500.0
-    if band == "2.5mm":
-        return 119980.0
-    if band == "2mm":
-        return 134000.0
-    if band == "1mm":
-        return 241000.0
-    return 0.0
+    """Convert band name into band_mhz (canonical DXLOG value).
 
-
-def get_not1mm_band_xlog(band: str) -> float:
-    if band == "0.136":
-        return 0.137
-    if band == "0.472":
-        return 0.472
-    if band == "0.501":
-        return 0.501
-    if band == "1.8":
-        return 1.8
-    if band == "3.5":
-        return 3.5
-    if band == "5":
-        return 5.0
-    if band == "7":
-        return 7.0
-    if band == "10":
-        return 10.1
-    if band == "14":
-        return 14.0
-    if band == "18":
-        return 18.068
-    if band == "21":
-        return 21.0
-    if band == "24":
-        return 24.890
-    if band == "28":
-        return 28.0
-    if band == "50":
-        return 50.0
-    if band == "70":
-        return 70.0
-    if band == "144":
-        return 144.0
-    if band == "222":
-        return 222.0
-    if band == "420":
-        return 420.0
-    if band == "902":
-        return 902.0
-    if band == "1240":
-        return 1240.0
-    if band == "2300":
-        return 2300.0
-    if band == "3300":
-        return 3300.0
-    if band == "5650":
-        return 5650.0
-    if band == "10000":
-        return 10000.0
-    if band == "24000":
-        return 24000.0
-    if band == "47000":
-        return 47000.0
-    if band == "75500":
-        return 75500.0
-    if band == "120000":
-        return 119980.0
-    if band == "142000":
-        return 134000.0
-    if band == "241000":
-        return 241000.0
-    return "0"
-
-
-def fakefreq(band: str, mode: str) -> str:
+    Returns 0.0 if the band is unknown.
     """
-    If unable to obtain a frequency from the rig,
-    This will return a sane value for a frequency mainly for the cabrillo and adif log.
-    Takes a band and mode as input and returns freq in khz.
+    b = _BY_BAND_NAME.get(band)
+    return b.band_mhz if b else 0.0
+
+
+def fakefreq(band_name: str, mode: str) -> str:
+    """Return a sensible kHz-as-string frequency for cabrillo/ADIF when the rig is offline.
+
+    Looks up by ADIF band name (e.g., "20m"). Returns "" if band name is unknown
+    or the band has no fakefreq (cw_khz == 0). Unknown modes default to CW.
     """
-    # logger.info("fakefreq: band:%s mode:%s", band, mode)
-    modes = {"CW": 0, "RTTY": 1, "DG": 1, "PH": 2, "FT8": 1, "SSB": 2}
-    fakefreqs = {
-        "160": ["1830", "1805", "1840"],
-        "80": ["3530", "3559", "3970"],
-        "60": ["5332", "5373", "5405"],
-        "40": ["7030", "7040", "7250"],
-        "30": ["10130", "10130", "10130"],
-        "20": ["14030", "14070", "14250"],
-        "17": ["18080", "18100", "18150"],
-        "15": ["21065", "21070", "21200"],
-        "12": ["24911", "24920", "24970"],
-        "10": ["28065", "28070", "28400"],
-        "6": ["50030", "50300", "50125"],
-        "4": ["70030", "70300", "70125"],
-        "2": ["144030", "144144", "144250"],
-        "222": ["222100", "222070", "222100"],
-        "432": ["432070", "432200", "432100"],
-        "902": ["902100", "902100", "902100"],
-        "1240": ["1241000", "1241000", "1241000"],
-        "SAT": ["144144", "144144", "144144"],
-    }
-    freqtoreturn = fakefreqs[band][modes[mode]]
-    # logger.info("fakefreq: returning:%s", freqtoreturn)
-    return freqtoreturn
+    b = _BY_BAND_NAME.get(band_name)
+    if b is None or b.cw_khz == 0:
+        return ""
+    mode_idx = {"CW": 0, "RTTY": 1, "DG": 1, "PH": 2, "FT8": 1, "SSB": 2}.get(mode, 0)
+    return [str(b.cw_khz), str(b.digi_khz), str(b.ssb_khz)][mode_idx]
 
 
 def has_internet():

@@ -11,7 +11,7 @@ import adif_io
 from PyQt6.QtCore import QCoreApplication, Qt
 from PyQt6.QtWidgets import QApplication, QDialog, QProgressDialog, QPushButton
 
-from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band, get_not1mm_band_xlog
+from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -108,8 +108,9 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     themode = "CW"
                 if cabrillo_name in ("CQ-WW-RTTY", "WEEKLY-RTTY"):
                     themode = "RTTY"
-                frequency = str(Decimal(str(contact.get("Freq", 0))) / 1000)
-                band = get_adif_band(Decimal(str(contact.get("Freq", 0))) / 1000)
+                freq_mhz = Decimal(str(contact.get("Freq", 0))) / 1000
+                frequency = str(freq_mhz)
+                band = get_adif_band(freq_mhz)
                 sentrst = contact.get("SNT", "")
                 rcvrst = contact.get("RCV", "")
                 sentnr = str(contact.get("SentNr", "0"))
@@ -449,6 +450,15 @@ def imp_adif(self):
 
         this_contact["Freq"] = freq_mhz * 1000.0
 
+        # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
+        # 1st attempt: ADIF style like "18m"
+        if band := get_not1mm_band(str(q.get("BAND")).lower()):
+            this_contact["Band"] = band
+        else:
+            # convert the QSO frequency to a not1mm band float (0.0 when invalid)
+            band_name = get_adif_band(Decimal(str(freq_mhz)))
+            this_contact["Band"] = get_not1mm_band(band_name)
+
         if q.get("QSXFREQ"):
             this_contact["QSXFreq"] = float(q.get("QSXFREQ")) * 1000.0
         else:
@@ -538,29 +548,6 @@ def imp_adif(self):
             this_contact["Power"] = q.get("POWER")
         elif q.get("TX_PWR"):
             this_contact["Power"] = q.get("TX_PWR")
-
-        # ADIF Band is in Meters (eg, "20m"), not1mm is in (float) MHz
-        # xlog does not export a Band field, so Band should not be mandatory
-        # 1st attempt: ADIF style like "18m"
-        temp = str(q.get("BAND"))
-        temp = get_not1mm_band(temp.lower())
-        # 2nd attempt: no Band field, so take a Freq like "18.160" and double-convert
-        if q.get("FREQ"):
-            temp2 = get_adif_band(float(q.get("FREQ")))
-            temp3 = get_not1mm_band(temp2.lower())
-            temp4 = get_not1mm_band_xlog(q.get("FREQ"))
-        else:
-            temp3 = 0.0
-            temp4 = 0.0
-        if temp != 0.0:
-            this_contact["Band"] = temp
-        elif temp3 != 0.0:
-            this_contact["Band"] = temp3
-        elif temp4 != 0.0:
-            this_contact["Band"] = temp4
-        else:
-            # Well, we tried.
-            this_contact["Band"] = 0.0
 
         if q.get("WPXPREFIX"):
             this_contact["WPXPrefix"] = q.get("WPXPREFIX")

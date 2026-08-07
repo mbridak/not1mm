@@ -21,6 +21,7 @@ from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 from not1mm import fsutils
+from not1mm.lib.ham_utility import band2banddef, khz2banddef
 from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
@@ -30,41 +31,6 @@ logger = logging.getLogger(__name__)
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
 CLEAR_FREQ = 0.1  # 100 Hz
-
-
-class Band:
-    """the band"""
-
-    bands = { # noqa: RUF012
-        "160m":     (1800,     2000,    1.8),
-        "80m":      (3500,     4000,    3.5),
-        "60m":      (5102,     5407,    5.1),
-        "40m":      (7000,     7300,    7.0),
-        "30m":     (10100,    10150,   10.0),
-        "20m":     (14000,    14350,   14.0),
-        "17m":     (18068,    18168,   18.0),
-        "15m":     (21000,    21450,   21.0),
-        "12m":     (24890,    24990,   24.0),
-        "10m":     (28000,    29700,   28.0),
-        "6m":      (50000,    54000,   50.0),
-        "4m":      (70000,    71000,   70.0),
-        "2m":    (144_000,  148_000,  144.0),
-        "70cm":  (420_000,  450_000,  432.0),
-        "33cm":  (902_000,  928_000,  932.0),
-        "23cm": (1240_000, 1300_000, 1232.0),
-    }  # fmt: skip
-
-    def __init__(self, band: str) -> None:
-        self.start, self.end, self.altname = self.bands.get(band, (0.0, 1.0, 0.0))
-        self.name = band
-
-    def new_from_freq(freq: float) -> (float, float):
-        """Find band matching a frequency."""
-
-        for band, edges in Band.bands.items():
-            if edges[0] <= freq <= edges[1]:
-                return Band(band)
-        return Band("unknown")
 
 
 class Database:
@@ -153,9 +119,9 @@ class Database:
         """
 
         if "band" in spot:
-            band = Band(spot.get("band"))
+            band = band2banddef(spot.get("band", ""), unknown_band=True)
         else:
-            band = Band.new_from_freq(spot.get("freq"))
+            band = khz2banddef(spot.get("freq"), unknown_band=True)
 
         try:
             delete_call_q = (
@@ -406,7 +372,7 @@ class BandMapWindow(QDockWidget):
         (4, 0),
         (10, 0),
     ]
-    currentBand = Band("20m")
+    currentBand = band2banddef("20m")
     txMark = []  # noqa: RUF012
     rxMark = []  # noqa: RUF012
     rx_freq = None
@@ -472,12 +438,7 @@ class BandMapWindow(QDockWidget):
         if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
-            target_band_name = packet.get("band", "")
-            if len(target_band_name):
-                if target_band_name[-1:] == "m":
-                    self.set_band(target_band_name)
-                else:
-                    self.set_band(packet.get("band") + "m")
+            self.set_band(packet.get("band", ""))
             try:
                 if self.rx_freq != float(packet.get("vfoa")) / 1000:
                     self.rx_freq = float(packet.get("vfoa")) / 1000
@@ -621,6 +582,7 @@ class BandMapWindow(QDockWidget):
             ...
         # if self.active is False:
         #     return
+        self.setWindowTitle(f"BandMap: {self.currentBand.name}")
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -801,7 +763,7 @@ class BandMapWindow(QDockWidget):
                         pen_color = QColor(0, 160, 0)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
-                    if self.currentBand.altname in call_bandlist:
+                    if self.currentBand.band_mhz in call_bandlist:
                         pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
@@ -853,8 +815,8 @@ class BandMapWindow(QDockWidget):
 
     def set_band(self, band: str) -> None:
         """Change band being shown."""
-        if band != self.currentBand.name:
-            self.currentBand = Band(band)
+        if band and band != self.currentBand.name:
+            self.currentBand = band2banddef(band, unknown_band=True)
             self.update()
 
     def spot_aging(self) -> None:
