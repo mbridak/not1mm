@@ -1,13 +1,13 @@
-"""ALL ASIA CW plugin"""
+"""ALL ASIA SSB plugin"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
-# ALL ASIA DX Contest, CW
+# ALL ASIA DX Contest, SSB
 #  	Status:	Active
 #  	Geographic Focus:	Worldwide
 #  	Participation:	Worldwide
 #  	Awards:	Worldwide
-#  	Mode:	CW
+#  	Mode:	SSB
 #  	Bands:	160, 80, 40, 20, 15, 10m
 #  	Classes:	Single Op All Band (QRP/Low/High)
 # Single Op Single Band (Low/High)
@@ -17,7 +17,7 @@
 # Multi-Multi (Low/High)
 # LP: 100 watts
 
-#  	Exchange:	RST + age ( or 01 ) 
+#  	Exchange:	RS + age ( or 01 ) 
 #  	Work stations:	Once per band
 
 
@@ -40,11 +40,11 @@
 #           Different Asian Prefixes
 
 #  	Score Calculation:	Total score = total QSO points x total mults
-#  	E-mail logs to:	aacw@jarl.org
+#  	E-mail logs to:	aaph@jarl.org
 #  	Upload log at:  https://contest.jarl.org/upload-aa/	
 #  	Mail logs to:	(none)
 #  	Find rules at:	https://www.jarl.org/English/4_Library/A-4-3_Contests/aadx_eng.html
-#  	Cabrillo name:	ALL-ASIA-CW
+#  	Cabrillo name:	ALL-ASIA-SSB
 
 
 import datetime
@@ -62,10 +62,10 @@ logger = logging.getLogger(__name__)
 
 EXCHANGE_HINT = "age (or 01)"
 
-name = "AADX CW"
-cabrillo_name = "AADX-CW"
-mode = "CW"
-# columns = [0, 1, 2, 3, 4, 5, 6, 11, 15]
+name = "AADX SSB"
+cabrillo_name = "AADX-SSB"
+mode = "SSB"
+# columns = [0, 1, 2, 3, 4, 5, 6, 11, 15] 
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -75,7 +75,6 @@ columns = [
     "Rcv",
     "SentNr",
     "RcvNr",
-#   "WPX",
     "M1",
     "PTS",
 ]
@@ -291,7 +290,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "AADX-CW")
+    gen_adif(self, cabrillo_name, "AADX-SSB")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
