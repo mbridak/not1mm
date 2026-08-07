@@ -6,10 +6,12 @@ import datetime
 import logging
 from pathlib import Path
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+assert imp_adif
 
 EXCHANGE_HINT = "Years Licenced"
 SOAPBOX_HINT = """ 
