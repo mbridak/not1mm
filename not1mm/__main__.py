@@ -1041,7 +1041,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("useserver", False) is True:
             for index, item in enumerate(self.server_commands):
                 expired = datetime.datetime.strptime(
-                    item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f"
+                    item.get("expire"), "%Y-%m-%dT%H:%M:%S.%f%z"
                 ).astimezone(datetime.UTC)
                 if datetime.datetime.now(tz=datetime.UTC) > expired:
                     newexpire = datetime.datetime.now(
