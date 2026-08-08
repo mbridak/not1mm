@@ -187,7 +187,7 @@ class ClusterWindow(QDockWidget):
     def msg_from_main(self, packet):
         """Process messages from the main screen."""
 
-        if packet.get("cmd", "") == "SPOTDX":
+        if packet.get("cmd", "") == "SPOTDX":  # noqa: SIM102
             if "dx" in packet and "freq" in packet:
                 dx = packet.get("dx")
                 freq = packet.get("freq")

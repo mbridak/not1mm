@@ -294,7 +294,7 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
+    """Outputs a single line of cabrillo file in the proper encoding."""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,

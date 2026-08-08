@@ -4,12 +4,11 @@
 
 import datetime
 import logging
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -163,7 +162,7 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
+    """Outputs a single line of cabrillo file in the proper encoding."""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
