@@ -69,7 +69,12 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-08-06] Merge pull request #645 from df7cb/band
+- [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
+  - Merge pull request #647 from Koji-Kawano/all_asia
+  - All Asia DX contest 1st commit
+- [2026-08-06] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Update version to 26.8.6 and refresh changelog with recent changes
+  - Merge pull request #645 from df7cb/band
 - [2026-08-05] Consolidate band/frequency conversion into a single source-of-truth table
 - [2026-08-04] Remove some dead variables
 - [2026-08-05] Merge pull request #644 from df7cb/spotdx
