@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-08] Merge pull request #651 from mbridak/649-not1mm-2687-crashes-after-sending-qso-to-renfield
+  - @mbridak Fix: Update datetime parsing to handle timezone information in server command expiration
 - [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
   - Merge pull request #647 from Koji-Kawano/all_asia
   - All Asia DX contest 1st commit
