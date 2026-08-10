@@ -1,7 +1,12 @@
 # Changelog
 
+- [2026-08-09] Merge pull request #650 from IonixV/master
+  - Merge pull request #652 from mbridak/add-oceania-dx
+  - @mbridak Add Oceania DX CW and SSB plugins.
+  - Merge branch 'master' into master
 - [2026-08-08] Merge pull request #651 from mbridak/649-not1mm-2687-crashes-after-sending-qso-to-renfield
   - @mbridak Fix: Update datetime parsing to handle timezone information in server command expiration
+  - Fix formatting of the code of conduct header
 - [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
   - Merge pull request #647 from Koji-Kawano/all_asia
   - All Asia DX contest 1st commit
