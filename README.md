@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
+  - @mbridak Add JOHN MOYLE FIELD DAY plugin
 - [2026-08-09] Merge pull request #650 from IonixV/master
   - Merge pull request #652 from mbridak/add-oceania-dx
   - @mbridak Add Oceania DX CW and SSB plugins.
