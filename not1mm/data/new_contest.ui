@@ -490,6 +490,16 @@
      </item>
      <item>
       <property name="text">
+       <string>OCEANIA DX CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>OCEANIA DX SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>OK1WC</string>
       </property>
      </item>
