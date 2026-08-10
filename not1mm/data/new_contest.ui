@@ -460,6 +460,11 @@
      </item>
      <item>
       <property name="text">
+       <string>JOHN MOYLE FIELD DAY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>K1USN SST</string>
       </property>
      </item>
