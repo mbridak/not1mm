@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
+  - @mbridak Add JOHN MOYLE FIELD DAY plugin
 - [2026-08-09] Merge pull request #650 from IonixV/master
   - Merge pull request #652 from mbridak/add-oceania-dx
   - @mbridak Add Oceania DX CW and SSB plugins.
@@ -2819,3 +2821,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
