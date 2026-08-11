@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-08-11] Merge pull request #654 from mbridak/add-trans-tasman
+  - @mbridak Add Trans Tasman contest support and update UI
+  - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins
 - [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
   - @mbridak Add JOHN MOYLE FIELD DAY plugin
 - [2026-08-09] Merge pull request #650 from IonixV/master
