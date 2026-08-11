@@ -39,7 +39,7 @@ assert QtWidgets
 assert imp_adif
 assert online_score_xml
 
-EXCHANGE_HINT = "Serial No."
+EXCHANGE_HINT = "#"
 
 name = "John Moyle Field Day"
 cabrillo_name = "WIA-JMMFD"
