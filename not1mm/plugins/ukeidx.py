@@ -28,7 +28,7 @@ ukei_pfx = [
 ]
 
 name = "UKEI-DX"
-cabrillo_name = "UKEI-DX"
+cabrillo_name = "UKEIDX"
 mode = "BOTH"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [

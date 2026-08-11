@@ -1,6 +1,57 @@
 # Changelog
 
+- [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
+  - @mbridak Add JOHN MOYLE FIELD DAY plugin
+- [2026-08-09] Merge pull request #650 from IonixV/master
+  - Merge pull request #652 from mbridak/add-oceania-dx
+  - @mbridak Add Oceania DX CW and SSB plugins.
+  - Merge branch 'master' into master
+- [2026-08-08] Merge pull request #651 from mbridak/649-not1mm-2687-crashes-after-sending-qso-to-renfield
+  - @mbridak Fix: Update datetime parsing to handle timezone information in server command expiration
+  - Fix formatting of the code of conduct header
+- [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
+  - Merge pull request #647 from Koji-Kawano/all_asia
+  - All Asia DX contest 1st commit
+- [2026-08-06] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Update version to 26.8.6 and refresh changelog with recent changes
+  - Merge pull request #645 from df7cb/band
+- [2026-08-05] Consolidate band/frequency conversion into a single source-of-truth table
+- [2026-08-04] Remove some dead variables
+- [2026-08-06] Merge branch 'master' into all_asia
+- [2026-08-05] Merge pull request #644 from df7cb/spotdx
+  - Move SPOTDX to clusterwindow.py
+  - temporary commit for All Asia
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
+- [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
+  - Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+  - @mbridak Fix: self assigned variable in rsgb-iota
+  - Merge pull request #639 from df7cb/euhfc
+  - Fix more Cabrillo names and enable online scores
+  - Online scoring for EUHFC
+- [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
+  - docs: record cw_msg signature confirmed working on live AetherSDR
+  - docs: note TCI rig control support in changelog
+  - Wire TCI into vfo.py, fix online staleness, add missing send_cat_string stub
+  - test: add fake TCI server for integration testing
+  - Correct stale RTTY mode expectation in plan Task 4 test
+  - feat: wire TCI backend into radio dispatch, settings, and UI
+  - feat: add TciCAT backend implementing the CAT contract over TCI
+  - fix: release socket/timer on their own thread after close(), fix backoff double-increm...
+  - feat: add TCI websocket client with state cache
+  - feat: add TCI protocol parsing and mode translation
+  - docs: fix TCI handshake doc overclaim, wrong comment, and stat rounding
+  - Add TCI probe and record live AetherSDR handshake
+  - Ignore .superpowers scratch directory
+  - Correct TCI port to 50001 to match the AetherSDR under test
+  - Add implementation plan for TCI CAT backend (phase 1)
+  - Add design spec for TCI support (AetherSDR compatibility)
 - [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
+  - @mbridak Add WIA Remembrance contest support and update UI for new contest entry
 - [2026-07-30] Merge pull request #636 from mbridak/add-hadx
   - @mbridak Add HADX contest support and update UI for new contest entry
 - [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm

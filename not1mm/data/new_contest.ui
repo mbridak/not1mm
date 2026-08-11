@@ -215,6 +215,16 @@
      </item>
      <item>
       <property name="text">
+       <string>AADX CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>AADX SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>AGCW QRP</string>
       </property>
      </item>
@@ -450,6 +460,11 @@
      </item>
      <item>
       <property name="text">
+       <string>JOHN MOYLE FIELD DAY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>K1USN SST</string>
       </property>
      </item>
@@ -476,6 +491,16 @@
      <item>
       <property name="text">
        <string>NAQP SSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>OCEANIA DX CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>OCEANIA DX SSB</string>
       </property>
      </item>
      <item>
@@ -581,6 +606,11 @@
      <item>
       <property name="text">
        <string>WEEKLY RTTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>WIA REMEMBRANCE</string>
       </property>
      </item>
      <item>

@@ -69,65 +69,53 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
-- [2026-07-30] Merge pull request #636 from mbridak/add-hadx
-  - @mbridak Add HADX contest support and update UI for new contest entry
-- [2026-07-28] Merge pull request #635 from mbridak/cqws
-  - @mbridak Add CQ World Scout plugin
-  - Merge pull request #634 from df7cb/cat-ri
-  - Refactor RI macro CAT functions
-  - Merge pull request #633 from ivica3730k/master
-  - feat: add European HF Championship contest
-- [2026-07-27] Merge pull request #632 from df7cb/rigctld-lock
-  - Protect rigctld_command with a lock
-- [2026-07-26] Merge pull request #631 from df7cb/actions
-- [2026-07-27] Add rotator actions
-  - Rotator: Add rotate 30° left/right buttons
-- [2026-07-26] Add actions to increment/decrement report and exchange
-  - Action names need to be UPPER CASE
-  - Merge pull request #630 from ivica3730k/master
-  - fix: properly select VFO from rigctld
-  - @mbridak Fix: RSGB IOTA call history.
-  - Merge pull request #628 from df7cb/hotkey-help
-  - Merge branch 'master' into hotkey-help
-  - Merge pull request #626 from df7cb/operator
-  - Merge pull request #627 from df7cb/radio-race
-  - Merge pull request #625 from df7cb/nesteddocks
-  - Build Hotkeys help window from actual key bindings
-- [2026-07-25] Make OPON an action and connect it to Ctrl+O
-  - Move current operator to preferences
-  - Initialize rig_control.cat earlier
-  - Set MainWindow dock option AllowNestedDocks
-- [2026-07-24] @mbridak Update Python version requirement to 3.11, 3.10 EOL in October.
-  - @mbridak Refactor datetime handling to use UTC. Combined nested if statments with 'and...
-- [2026-07-23] Merge pull request #623 from df7cb/contestnr
-- [2026-07-24] Fix corruption of current_contest after changing settings
-- [2026-07-20] Merge pull request #621 from df7cb/sync-vfos
-  - Synchronize VFOs
-- [2026-07-19] @mbridak Fix: Replace slashes in current_op with dashes for file path consistency
-- [2026-07-18] Merge pull request #619 from df7cb/edit-keys
-  - Configure key bindings in a new Edit Keys dialog
-- [2026-07-16] Merge pull request #618 from df7cb/preferences
-  - Save bandmap zoom level in preferences
-- [2026-07-16] Refactor lookupservice setup
-  - Move preferences handling into a single place
-- [2026-07-13] Merge pull request #616 from df7cb/refactor-rigctld
-  - Refactor rigctld methods and align PTT state across CAT backends
-- [2026-07-12] Merge pull request #615 from df7cb/bandmap-zoom
-  - Fix bandmap zoom on 160m
-- [2026-07-11] @mbridak Add MacOS classifier to project metadata
-- [2026-07-10] Merge pull request #614 from df7cb/database-race
-  - Fix race condition opening the database
-- [2026-07-06] Create AGENTS.md
-- [2026-07-05] Merge pull request #613 from df7cb/cat-classes
-  - Fix: Handle float format frequency responses in certain rigctld emulators
-- [2026-07-03] Split CAT class into three separate for flrig, rigctld and fake
-- [2026-07-04] @mbridak Fix: lz-dx points, Oddly the dict was accessed as a list...
-- [2026-07-03] @mbridak Fix contest name casing and improve error handling in New Contest dialog
-- [2026-07-02] Merge pull request #606 from df7cb/commit
-  - Add "commit" parameter to exec_sql_commit
-- [2026-06-29] Merge pull request #603 from dawkagaming/dawkagaming-patch-1
-  - Update the metainfo file
+- [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
+  - @mbridak Add JOHN MOYLE FIELD DAY plugin
+- [2026-08-09] Merge pull request #650 from IonixV/master
+  - Merge pull request #652 from mbridak/add-oceania-dx
+  - @mbridak Add Oceania DX CW and SSB plugins.
+  - Merge branch 'master' into master
+- [2026-08-08] Merge pull request #651 from mbridak/649-not1mm-2687-crashes-after-sending-qso-to-renfield
+  - @mbridak Fix: Update datetime parsing to handle timezone information in server command expiration
+- [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
+  - Merge pull request #647 from Koji-Kawano/all_asia
+  - All Asia DX contest 1st commit
+- [2026-08-06] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Update version to 26.8.6 and refresh changelog with recent changes
+  - Merge pull request #645 from df7cb/band
+- [2026-08-05] Consolidate band/frequency conversion into a single source-of-truth table
+- [2026-08-04] Remove some dead variables
+- [2026-08-05] Merge pull request #644 from df7cb/spotdx
+  - Move SPOTDX to clusterwindow.py
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
+- [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
+  - Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+  - @mbridak Fix: self assigned variable in rsgb-iota
+  - Merge pull request #639 from df7cb/euhfc
+  - Fix more Cabrillo names and enable online scores
+  - Online scoring for EUHFC
+- [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
+  - docs: record cw_msg signature confirmed working on live AetherSDR
+  - docs: note TCI rig control support in changelog
+  - Wire TCI into vfo.py, fix online staleness, add missing send_cat_string stub
+  - test: add fake TCI server for integration testing
+  - Correct stale RTTY mode expectation in plan Task 4 test
+  - feat: wire TCI backend into radio dispatch, settings, and UI
+  - feat: add TciCAT backend implementing the CAT contract over TCI
+  - fix: release socket/timer on their own thread after close(), fix backoff double-increm...
+  - feat: add TCI websocket client with state cache
+  - feat: add TCI protocol parsing and mode translation
+  - docs: fix TCI handshake doc overclaim, wrong comment, and stat rounding
+  - Add TCI probe and record live AetherSDR handshake
+  - Ignore .superpowers scratch directory
+  - Correct TCI port to 50001 to match the AetherSDR under test
+  - Add implementation plan for TCI CAT backend (phase 1)
+  - Add design spec for TCI support (AetherSDR compatibility)
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 

@@ -3,13 +3,15 @@
 import logging
 
 from not1mm.lib.ham_utility import distance
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
 assert get_points
 assert __version__
 
 logger = logging.getLogger(__name__)
+
+assert imp_adif
 
 EXCHANGE_HINT = "# + 6char grid"
 

@@ -36,8 +36,11 @@ import datetime
 import logging
 from pathlib import Path
 
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
+
+assert online_score_xml
+assert imp_adif
 
 logger = logging.getLogger(__name__)
 
@@ -422,7 +425,7 @@ def cabrillo(self, file_encoding):
                 )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return

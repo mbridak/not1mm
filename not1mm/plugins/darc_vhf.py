@@ -26,10 +26,12 @@ import logging
 from pathlib import Path
 
 from not1mm.lib.ham_utility import distance
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+assert imp_adif
 
 EXCHANGE_HINT = "# + 6char grid"
 
@@ -474,20 +476,20 @@ def edi(self):
                     f"{loggedtime};"
                     f"{contact.get('Call', '')};"
                     f"{modeCode};"
-                    f"{str(contact.get('SNT', ''))};"
+                    f"{contact.get('SNT', '')!s};"
                     f"{NumberSend:03d};"
-                    f"{str(contact.get('RCV', ''))};"
+                    f"{contact.get('RCV', '')!s};"
                     f"{NumberReceived:03d};"
                     f";"
-                    f"{str(contact.get('Exchange1', ''))};"
-                    f"{str(contact.get('Points', ''))};"
+                    f"{contact.get('Exchange1', '')!s};"
+                    f"{contact.get('Points', '')!s};"
                     f"; ; ; ",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
                 )
             self.show_message_box(f"EDI saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("EDI: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving EDI: {exception} {filename}")
         return
@@ -708,7 +710,7 @@ def cabrillo(self, file_encoding):
                 )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return

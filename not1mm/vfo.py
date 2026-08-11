@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import QDockWidget
 from not1mm import fsutils
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
+from not1mm.lib.cat_tci import TciCAT
 from not1mm.lib.preferences import Preferences
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ class VfoWindow(QDockWidget):
         self.action = action
         uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
         self.setWindowTitle("VFO Window")
-        self.rig_control: FlrigCAT | RigctldCAT | None = None
+        self.rig_control: FlrigCAT | RigctldCAT | TciCAT | None = None
         self.timer: QTimer = QTimer()
         self.timer.timeout.connect(self.getwaiting)
         self.load_pref()
@@ -84,6 +85,16 @@ class VfoWindow(QDockWidget):
             self.rig_control: RigctldCAT | None = RigctldCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 4532)),
+            )
+            self.timer.start(100)
+        if self.pref.get("usetci", False):
+            logger.debug(
+                "Using TCI: %s",
+                f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+            )
+            self.rig_control: TciCAT | None = TciCAT(
+                self.pref.get("CAT_ip", "127.0.0.1"),
+                int(self.pref.get("CAT_port", 50001)),
             )
             self.timer.start(100)
 

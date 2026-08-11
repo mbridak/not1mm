@@ -21,6 +21,7 @@ from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 from not1mm import fsutils
+from not1mm.lib.ham_utility import band2banddef, khz2banddef
 from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
@@ -30,41 +31,6 @@ logger = logging.getLogger(__name__)
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
 CLEAR_FREQ = 0.1  # 100 Hz
-
-
-class Band:
-    """the band"""
-
-    bands = { # noqa: RUF012
-        "160m":     (1800,     2000,    1.8),
-        "80m":      (3500,     4000,    3.5),
-        "60m":      (5102,     5407,    5.1),
-        "40m":      (7000,     7300,    7.0),
-        "30m":     (10100,    10150,   10.0),
-        "20m":     (14000,    14350,   14.0),
-        "17m":     (18068,    18168,   18.0),
-        "15m":     (21000,    21450,   21.0),
-        "12m":     (24890,    24990,   24.0),
-        "10m":     (28000,    29700,   28.0),
-        "6m":      (50000,    54000,   50.0),
-        "4m":      (70000,    71000,   70.0),
-        "2m":    (144_000,  148_000,  144.0),
-        "70cm":  (420_000,  450_000,  432.0),
-        "33cm":  (902_000,  928_000,  932.0),
-        "23cm": (1240_000, 1300_000, 1232.0),
-    }  # fmt: skip
-
-    def __init__(self, band: str) -> None:
-        self.start, self.end, self.altname = self.bands.get(band, (0.0, 1.0, 0.0))
-        self.name = band
-
-    def new_from_freq(freq: float) -> (float, float):
-        """Find band matching a frequency."""
-
-        for band, edges in Band.bands.items():
-            if edges[0] <= freq <= edges[1]:
-                return Band(band)
-        return Band("unknown")
 
 
 class Database:
@@ -153,9 +119,9 @@ class Database:
         """
 
         if "band" in spot:
-            band = Band(spot.get("band"))
+            band = band2banddef(spot.get("band", ""), unknown_band=True)
         else:
-            band = Band.new_from_freq(spot.get("freq"))
+            band = khz2banddef(spot.get("freq"), unknown_band=True)
 
         try:
             delete_call_q = (
@@ -406,11 +372,10 @@ class BandMapWindow(QDockWidget):
         (4, 0),
         (10, 0),
     ]
-    currentBand = Band("20m")
+    currentBand = band2banddef("20m")
     txMark = []  # noqa: RUF012
     rxMark = []  # noqa: RUF012
     rx_freq = None
-    tx_freq = None
     something = None
     lineitemlist = []  # noqa: RUF012
     textItemList = []  # noqa: RUF012
@@ -424,10 +389,6 @@ class BandMapWindow(QDockWidget):
     worked_color = QColor(128, 128, 128)
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
-    date_pattern = r"^\d{2}-[A-Za-z]{3}-\d{4}$"
-    wwv_pattern = (
-        r"(\d{2}-\w{3}-\d{4})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s+<(\w+)>"
-    )
     bandmapwindow_closed = pyqtSignal()
 
     def __init__(self, action):
@@ -453,14 +414,7 @@ class BandMapWindow(QDockWidget):
         self.clearmarkedButton.setIcon(icon)
         self.zoominButton.clicked.connect(self.zoom_in)
         self.zoomoutButton.clicked.connect(self.zoom_out)
-        self.connectButton.clicked.connect(self.connect)
         self.spots = Database()
-        self.socket = QtNetwork.QTcpSocket()
-        self.test_for_data = self.socket.bytesAvailable
-        self.socket.readyRead.connect(self.receive)
-        self.socket.connected.connect(self.maybeconnected)
-        self.socket.disconnected.connect(self.disconnected)
-        self.socket.errorOccurred.connect(self.socket_error)
         self.bandmap_scene = BandMapScene(self)
         self.bandmap_scene.setFont(self.thefont)
         self.bandmap_scene.clear()
@@ -474,7 +428,6 @@ class BandMapWindow(QDockWidget):
         self.setDarkMode()
         self.update()
         self.request_workedlist()
-        self.callsignField.setText(self.settings.get("current_op", ""))
 
     def setActive(self, mode: bool):
         self.active = bool(mode)
@@ -485,16 +438,10 @@ class BandMapWindow(QDockWidget):
         if self.active is False or not self.isVisible():
             return
         if packet.get("cmd", "") == "RADIO_STATE":
-            target_band_name = packet.get("band", "")
-            if len(target_band_name):
-                if target_band_name[-1:] == "m":
-                    self.set_band(target_band_name)
-                else:
-                    self.set_band(packet.get("band") + "m")
+            self.set_band(packet.get("band", ""))
             try:
                 if self.rx_freq != float(packet.get("vfoa")) / 1000:
                     self.rx_freq = float(packet.get("vfoa")) / 1000
-                    self.tx_freq = self.rx_freq
                     self.center_on_rxfreq()
             except ValueError:
                 print(f"vfo value error {packet.get('vfoa')}")
@@ -527,11 +474,12 @@ class BandMapWindow(QDockWidget):
                 cmd["spot"] = spot.get("callsign", "")
                 self.message.emit(cmd)
             return
-        if packet.get("cmd", "") == "SPOTDX":
-            dx = packet.get("dx", "")
-            freq = packet.get("freq", 0.0)
-            spotdx = f"dx {dx} {freq}"
-            self.send_command(spotdx)
+
+        if packet.get("cmd", "") == "DX":
+            spot = packet
+            spot["callsign"] = packet.get("dx", "")  # rename field
+            self.spots.addspot(spot, clear_freq=True)
+            self.update_stations()
             return
         if packet.get("cmd", "") == "MARKDX":
             dx = packet.get("dx", "")
@@ -605,22 +553,6 @@ class BandMapWindow(QDockWidget):
             self.worked_color = QColor(178, 178, 178)
             self.update()
 
-    def connect(self):
-        """Connect to the cluster."""
-        if not self.callsignField.text():
-            self.callsignField.setFocus()
-            return
-        if self.connected is True:
-            self.close_cluster()
-            return
-        server = self.settings.get("cluster_server", "dxc.nc7j.com")
-        port = self.settings.get("cluster_port", 7373)
-        logger.info(f"connecting to dx cluster {server} {port}")
-        self.socket.connectToHost(server, port)
-        self.test_for_data = self.socket.bytesAvailable
-        self.connectButton.setText("Connecting")
-        self.connected = True
-
     def spot_clicked(self):
         """dunno"""
         items = self.bandmap_scene.selectedItems()
@@ -650,6 +582,7 @@ class BandMapWindow(QDockWidget):
             ...
         # if self.active is False:
         #     return
+        self.setWindowTitle(f"BandMap: {self.currentBand.name}")
         self.clear_all_callsign_from_scene()
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
@@ -830,7 +763,7 @@ class BandMapWindow(QDockWidget):
                         pen_color = QColor(0, 160, 0)
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
-                    if self.currentBand.altname in call_bandlist:
+                    if self.currentBand.band_mhz in call_bandlist:
                         pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
@@ -882,8 +815,8 @@ class BandMapWindow(QDockWidget):
 
     def set_band(self, band: str) -> None:
         """Change band being shown."""
-        if band != self.currentBand.name:
-            self.currentBand = Band(band)
+        if band and band != self.currentBand.name:
+            self.currentBand = band2banddef(band, unknown_band=True)
             self.update()
 
     def spot_aging(self) -> None:
@@ -907,98 +840,6 @@ class BandMapWindow(QDockWidget):
                 self.bandmap_scene.removeItem(mark)
         currentPolygon.clear()
 
-    def receive(self) -> None:
-        """Process waiting bytes"""
-        while self.test_for_data():
-            data = self.socket.readLine()
-
-            try:
-                data = str(data, "utf-8").strip()
-            except UnicodeDecodeError:
-                continue
-
-            if os.environ.get("SEND_CLUSTER", False) is not False:  # noqa: PLW1508
-                print(f"{data}")
-
-            if (
-                "login:" in data.lower()
-                or "call:" in data.lower()
-                or "callsign:" in data.lower()
-            ):
-                self.send_command(self.callsignField.text())
-
-            if "password:" in data.lower():
-                self.send_command(self.settings.get("cluster_password", ""))
-
-            if "BEACON" in data:
-                pass
-
-            if "DX de" in data:
-                parts = data.split()
-                spotter = parts[2]
-                freq = parts[3]
-                dx = parts[4]
-                _time = parts[-1]
-                comment = " ".join(parts[5:-1])
-                spot = {}
-                spot["ts"] = datetime.now(UTC).isoformat(" ")[:19]
-                spot["callsign"] = dx
-                spot["spotter"] = spotter
-                spot["comment"] = comment
-                logger.debug(f"{spot}")
-                try:
-                    spot["freq"] = float(freq)
-                    self.spots.addspot(spot)
-                except ValueError:
-                    logger.debug(f"couldn't parse freq from datablock {data}")
-
-            if "HELLO" in data.upper():
-                self.connectButton.setText("Connected")
-                self.test_for_data = self.socket.canReadLine
-                self.send_command(self.settings.get("cluster_filter", ""))
-                self.send_command("set dx extension Section")
-                self.send_command(
-                    "set dx mode " + self.settings.get("cluster_mode", "OPEN")
-                )
-                self.send_command("sh wwv 1")
-                logger.debug(f"callsign login acknowledged {data}")
-
-            match = re.search(self.wwv_pattern, data)
-
-            if match:
-                cmd = {}
-                cmd["cmd"] = "SPACEWEATHER"
-                cmd["date"] = match.group(1)
-                cmd["hour"] = match.group(2)
-                cmd["sfi"] = match.group(3)
-                cmd["aindex"] = match.group(4)
-                cmd["kindex"] = match.group(5)
-                cmd["conditions"] = match.group(6).strip()
-                cmd["source"] = match.group(7)
-                self.message.emit(cmd)
-
-    def maybeconnected(self) -> None:
-        """Update visual state of the connect button."""
-        self.connectButton.setText("Connecting")
-
-    def socket_error(self) -> None:
-        """Oopsie"""
-        logger.warning("An Error occurred.")
-
-    def disconnected(self) -> None:
-        """Called when socket is disconnected."""
-        self.connected = False
-        self.connectButton.setText("Closed")
-
-    def send_command(self, cmd: str) -> None:
-        """Send a command to the cluster."""
-        if os.environ.get("SEND_CLUSTER", False) is not False:  # noqa: PLW1508
-            print(f">>> {cmd}")
-        tosend = bytes(cmd + "\r\n", encoding="ascii")
-        logger.debug("Command sent to the cluster")
-        if self.socket and self.socket.isOpen():
-            self.socket.write(tosend)
-
     def clear_spots(self) -> None:
         """Delete all spots from the database."""
         self.spots.delete_spots(0)
@@ -1015,17 +856,8 @@ class BandMapWindow(QDockWidget):
     def showContextMenu(self) -> None:
         """doc string for the linter"""
 
-    def close_cluster(self) -> None:
-        """Close socket connection"""
-        if self.socket and self.socket.isOpen():
-            logger.info("Closing dx cluster connection")
-            self.socket.close()
-            self.connected = False
-            self.connectButton.setText("Closed")
-
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes."""
-        self.close_cluster()
         self.action.setChecked(False)
         self.bandmapwindow_closed.emit()
         _event.accept()
