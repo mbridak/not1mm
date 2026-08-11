@@ -595,6 +595,11 @@
      </item>
      <item>
       <property name="text">
+        <string>TRANS TASMAN</string>  
+      </property>     
+     </item>
+     <item>
+      <property name="text">
        <string>UKEIDX</string>
       </property>
      </item>
