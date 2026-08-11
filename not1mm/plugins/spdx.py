@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Province/Territory"
 
 name = "SPDX"
-cabrillo_name = "SPDX"
+cabrillo_name = "SP-DX"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [

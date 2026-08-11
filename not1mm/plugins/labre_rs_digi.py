@@ -44,7 +44,7 @@ EXCHANGE_HINT = "4-character grid square"
 
 name = "LABRE-RS Digi"
 mode = "RTTY"  # CW SSB BOTH RTTY
-cabrillo_name = "LABRE-DIGI"
+cabrillo_name = "LABRE-RS-DIGI"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",

@@ -30,7 +30,8 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld and 12345 for flrig."
+            "Usually 4532 for rigctld, 12345 for flrig, "
+            "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -125,6 +126,7 @@ class Settings(QtWidgets.QDialog):
         self.catpoll_field.setText(str(self.preference.get("CAT_polldelta", 500)))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
+        self.usetci_radioButton.setChecked(bool(self.preference.get("usetci")))
 
         self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
         self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
@@ -199,6 +201,9 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_login_field.setText(
+            str(self.preference.get("cluster_login", ""))
+        )
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -208,21 +213,21 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.cluster_mode.setCurrentIndex(index)
 
-        self.activate_160m.setChecked(bool("160" in self.preference.get("bands", [])))
-        self.activate_80m.setChecked(bool("80" in self.preference.get("bands", [])))
-        self.activate_60m.setChecked(bool("60" in self.preference.get("bands", [])))
-        self.activate_40m.setChecked(bool("40" in self.preference.get("bands", [])))
-        self.activate_30m.setChecked(bool("30" in self.preference.get("bands", [])))
-        self.activate_20m.setChecked(bool("20" in self.preference.get("bands", [])))
-        self.activate_17m.setChecked(bool("17" in self.preference.get("bands", [])))
-        self.activate_15m.setChecked(bool("15" in self.preference.get("bands", [])))
-        self.activate_12m.setChecked(bool("12" in self.preference.get("bands", [])))
-        self.activate_10m.setChecked(bool("10" in self.preference.get("bands", [])))
-        self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
-        self.activate_4m.setChecked(bool("4" in self.preference.get("bands", [])))
-        self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
+        self.activate_160m.setChecked(bool("160m" in self.preference.get("bands", [])))
+        self.activate_80m.setChecked(bool("80m" in self.preference.get("bands", [])))
+        self.activate_60m.setChecked(bool("60m" in self.preference.get("bands", [])))
+        self.activate_40m.setChecked(bool("40m" in self.preference.get("bands", [])))
+        self.activate_30m.setChecked(bool("30m" in self.preference.get("bands", [])))
+        self.activate_20m.setChecked(bool("20m" in self.preference.get("bands", [])))
+        self.activate_17m.setChecked(bool("17m" in self.preference.get("bands", [])))
+        self.activate_15m.setChecked(bool("15m" in self.preference.get("bands", [])))
+        self.activate_12m.setChecked(bool("12m" in self.preference.get("bands", [])))
+        self.activate_10m.setChecked(bool("10m" in self.preference.get("bands", [])))
+        self.activate_6m.setChecked(bool("6m" in self.preference.get("bands", [])))
+        self.activate_4m.setChecked(bool("4m" in self.preference.get("bands", [])))
+        self.activate_2m.setChecked(bool("2m" in self.preference.get("bands", [])))
         self.activate_1dot25.setChecked(
-            bool("1.25" in self.preference.get("bands", []))
+            bool("1.25m" in self.preference.get("bands", []))
         )
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
@@ -303,6 +308,7 @@ class Settings(QtWidgets.QDialog):
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
+        self.preference["usetci"] = self.usetci_radioButton.isChecked()
 
         self.preference["rotctld_address"] = self.rotctld_address.text()
         try:
@@ -370,38 +376,39 @@ class Settings(QtWidgets.QDialog):
             self.preference["cluster_port"] = int(self.cluster_port_field.text())
         except ValueError:
             ...
+        self.preference["cluster_login"] = self.cluster_login_field.text()
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
         bandlist = []
         if self.activate_160m.isChecked():
-            bandlist.append("160")
+            bandlist.append("160m")
         if self.activate_80m.isChecked():
-            bandlist.append("80")
+            bandlist.append("80m")
         if self.activate_60m.isChecked():
-            bandlist.append("60")
+            bandlist.append("60m")
         if self.activate_40m.isChecked():
-            bandlist.append("40")
+            bandlist.append("40m")
         if self.activate_30m.isChecked():
-            bandlist.append("30")
+            bandlist.append("30m")
         if self.activate_20m.isChecked():
-            bandlist.append("20")
+            bandlist.append("20m")
         if self.activate_17m.isChecked():
-            bandlist.append("17")
+            bandlist.append("17m")
         if self.activate_15m.isChecked():
-            bandlist.append("15")
+            bandlist.append("15m")
         if self.activate_12m.isChecked():
-            bandlist.append("12")
+            bandlist.append("12m")
         if self.activate_10m.isChecked():
-            bandlist.append("10")
+            bandlist.append("10m")
         if self.activate_6m.isChecked():
-            bandlist.append("6")
+            bandlist.append("6m")
         if self.activate_4m.isChecked():
-            bandlist.append("4")
+            bandlist.append("4m")
         if self.activate_2m.isChecked():
-            bandlist.append("2")
+            bandlist.append("2m")
         if self.activate_1dot25.isChecked():
-            bandlist.append("1.25")
+            bandlist.append("1.25m")
         if self.activate_70cm.isChecked():
             bandlist.append("70cm")
         if self.activate_33cm.isChecked():

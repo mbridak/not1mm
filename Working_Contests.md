@@ -54,4 +54,5 @@
 - UK/EI DX
 - Weekly RTTY
 - Work All Germany
+- WIA Remembrance Day
 - Winter Field Day
