@@ -1,34 +1,25 @@
-"""OCEANIA DX SSB plugin"""
+"""TRANS TASMAN plugin"""
 
-# pylint: disable=invalid-name, c-extension-no-member, unused-import
-
-# Oceania DX Contest, SSB
+# Trans-Tasman Low-Band Contest
 #   Status:    Active
-#   Geographic Focus:    Oceania
-#   Participation:    Worldwide
-#   Awards:    Worldwide
-#   Mode:    SSB
-#   Bands:    160, 80, 40, 20, 15, 10m
-#   Classes:    Single Op All Band (QRP/Low/High)
-#   Single Op Single Band (QRP/Low/High)
-#   Multi-Single (Low/High)
-#   Multi-Two
-#   Multi-Multi
-#   SWL
-#   Exchange:    RS(T) + serial number
-#   Work stations:    Once per band
-#   QSO Points:    160m - 20 points
-#           80m - 10 points
-#           40m - 5 points
-#           20m - 1 point
-#           15m - 2 points
-#           10m - 3 points
-#   Multipliers:    Each different prefix worked once on each band
-#   Score Calculation:    Total score = total QSO points x total mults
-#   E-mail logs to:    (none)
-#   Upload log at:    https://ocdx.contesting.com/submitlog.php
-#   Find rules at:    https://www.oceaniadxcontest.com/
-#   Cabrillo name:    OCEANIA-DX-SSB
+#   Geographic Focus:    Australia (VK) and New Zealand (ZL)
+#   Participation:    VK and ZL stations only
+#   Awards:    Oceania
+#   Mode:    SSB / CW / Digital (RTTY or PSK)
+#   Bands:    160, 80 and 40m only
+#   Classes:    Single Op HP/LP/QRP, Multi-One, Multi-Multi, YOUTH overlay
+#   Exchange:    RS(T) + serial number (001 per band for multi-multi)
+#   Work stations:    Once per band per mode in every 2-hour block
+#                     (3 blocks from 0800 UTC)
+#   QSO Points:    All valid VK/ZL contacts - 1 point
+#   Multipliers:    Each different prefix used by VK or ZL stations, once per
+#                   band per block
+#   Score Calculation:    For each block: contacts in block x prefixes in
+#                         block, summed over the 3 blocks
+#   E-mail logs to:    ttlogs@wia.org.au
+#   Upload log at:    https://www.vklogchecker.com/
+#   Find rules at:    https://www.wia.org.au/members/contests/transtasman/
+#   Cabrillo name:    WIA-TRANS TASMAN
 
 import datetime
 import logging
@@ -36,6 +27,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import calculate_wpx_prefix, get_logged_band
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -46,15 +38,17 @@ assert imp_adif
 assert online_score_xml
 
 EXCHANGE_HINT = "#"
+SOAPBOX_HINT = "This has not been tested. Good Luck."
 
-name = "Oceania DX SSB"
-cabrillo_name = "OCEANIA-DX-SSB"
-mode = "SSB"
+name = "Trans Tasman"
+cabrillo_name = "WIA-TRANS TASMAN"
+mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
     "Freq",
+    "Mode",
     "Snt",
     "Rcv",
     "SentNr",
@@ -66,34 +60,84 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-# Rule: the same station may only be counted once on each band.
-dupe_type = 2
+# Rule: a station can be worked once per band per mode per 2-hour block.
+dupe_type = 5
 
-my_continent = ""
-my_country = ""
+_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM")
 
-_BAND_POINTS = {
-    "1.8": 20,
-    "3.5": 10,
-    "7.0": 5,
-    "14.0": 1,
-    "21.0": 2,
-    "28.0": 3,
-    "0.0": 0,
-}
+# Prefixes used by stations operating within Australia or New Zealand and
+# their external territories (eg VK9, VK0, ZK, ZM). cty.json maps the entities
+# but not all external territories to a VK/ZL primary_pfx, so match the WPX
+# prefix instead. The contest counts e.g. VK9 once, not per island.
+_VK_ZL_PREFIXES = ("VK", "ZL", "ZK", "ZM")
+
+
+def _band_from_contact(contact: dict) -> str:
+    """Return the canonical DXLOG band value (e.g. '7.0') for a contact."""
+    band = str(contact.get("Band", ""))
+    if not band or band == "0.0":
+        freq = contact.get("Freq", 0)
+        if freq:
+            band = get_logged_band(str(float(freq) * 1_000_000))
+    return str(float(band))
+
+
+def _get_band(self) -> str:
+    """Return the canonical DXLOG band value for the current contact."""
+    return _band_from_contact(self.contact)
+
+
+def _mode_group(mode: str) -> str:
+    """Group a radio mode into PH, CW or DIGI per the contest rules.
+
+    SSB, CW and Digital (RTTY/PSK) are the three allowed mode classes.
+    """
+    if mode in _PHONE_MODES:
+        return "PH"
+    if str(mode).startswith("CW"):
+        return "CW"
+    return "DIGI"
+
+
+def _block_from_ts(ts: str) -> int:
+    """Return the 2-hour block (0-2) for a UTC timestamp string.
+
+    Blocks run 0800-1000, 1000-1200 and 1200-1400 UTC.
+    """
+    if len(ts) < 13:
+        return 0
+    hour = int(ts[11:13])
+    if hour < 8:
+        return 0
+    if hour > 13:
+        return 2
+    return (hour - 8) // 2
+
+
+def _block_boundaries(now: datetime.datetime) -> tuple:
+    """Return the (start, end) UTC datetimes of the current 2-hour block."""
+    if now.hour < 8:
+        block = 0
+    elif now.hour > 13:
+        block = 2
+    else:
+        block = (now.hour - 8) // 2
+    block_start = now.replace(hour=8 + 2 * block, minute=0, second=0, microsecond=0)
+    block_end = block_start + datetime.timedelta(hours=2)
+    return block_start, block_end
+
+
+def _is_vk_zl_prefix(wpx: str) -> bool:
+    """Return True if a WPX prefix belongs to a VK or ZL station.
+
+    Covers mainland VK/ZL calls and their external territories (VK9, VK0, ZK,
+    ZM). ZK and ZM are New Zealand prefixes that cty.json maps to ZL.
+    """
+    return wpx.startswith(_VK_ZL_PREFIXES)
 
 
 def init_contest(self):
     """setup plugin"""
-    global my_continent
-    global my_country
-
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        my_country = item.get("entity", "")
-        my_continent = item.get("continent", "")
-
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
@@ -147,16 +191,16 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.other_1.text()
     self.contact["NR"] = self.other_2.text()
 
-    band = self.contact.get("Band", "0.0")
+    # stash the 2-hour block so dupes/mults can be checked per block.
+    self.contact["MiscText"] = str(_block_from_ts(self.contact.get("TS", "")))
+
+    band = _get_band(self)
     wpx = self.contact.get("WPXPrefix", "")
-    if my_continent != "OC" and self.contact.get("Continent", "") != "OC":
-        self.contact["IsMultiplier1"] = 0
-        return
-    if not wpx or band not in _BAND_POINTS:
+    if not wpx or not _is_vk_zl_prefix(wpx):
         self.contact["IsMultiplier1"] = 0
         return
 
-    result = fetch_wpx_exists_before_me(self, wpx, self.contact.get("TS", ""), band)
+    result = fetch_wpx_exists_before_me(self, wpx, band, self.contact.get("TS", ""))
     if result.get("wpx_count", ""):
         self.contact["IsMultiplier1"] = 0
     else:
@@ -168,8 +212,20 @@ def predupe(self):  # pylint: disable=unused-argument
 
 
 def prefill(self):
-    """Fill SentNR with next serial number"""
-    serial_nr = str(self.current_sn).zfill(3)
+    """Fill SentNR with next serial number.
+
+    Single Op runs the serial consecutively across all bands. Multi Op
+    (multi-multi per the rules) restarts at 001 on each band.
+    """
+    operator_category = self.contest_settings.get("OperatorCategory", "")
+    if operator_category == "SINGLE-OP":
+        serial_nr = str(self.current_sn).zfill(3)
+    else:
+        result = self.database.exec_sql(
+            "select max(SentNR) + 1 as serial_nr from DXLOG where ContestNR = ? and Band = ?;",
+            (self.pref.get("contest", "1"), _get_band(self)),
+        )
+        serial_nr = str(result.get("serial_nr", "1")).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
     if len(self.other_1.text()) == 0:
@@ -177,41 +233,102 @@ def prefill(self):
 
 
 def points(self):
-    """Calc point"""
+    """All valid VK/ZL contacts are worth one point.
+
+    Points are only awarded for contacts between two VK or ZL stations.
+    """
     if self.contact_is_dupe > 0:
         return 0
-
-    if my_continent != "OC" and self.contact.get("Continent", "") != "OC":
+    if not _is_vk_zl_prefix(self.contact.get("WPXPrefix", "")):
         return 0
+    my_wpx = calculate_wpx_prefix(self.station.get("Call", ""))
+    if not _is_vk_zl_prefix(my_wpx):
+        return 0
+    return 1
 
-    return _BAND_POINTS.get(self.contact.get("Band", "0.0"), 0)
+
+def _block_sql_expr() -> str:
+    """SQL expression deriving the 2-hour block from a DXLOG TS value."""
+    return (
+        "CASE WHEN CAST(substr(TS,12,2) AS INTEGER) < 8 THEN 0 "
+        "WHEN CAST(substr(TS,12,2) AS INTEGER) > 13 THEN 2 "
+        "ELSE (CAST(substr(TS,12,2) AS INTEGER) - 8) / 2 END"
+    )
+
+
+def _vk_zl_wpx_filter(alias: str = "") -> str:
+    """SQL WHERE fragment restricting a column to VK/ZL prefixes."""
+    col = "WPXPrefix"
+    if alias:
+        col = f"{alias}.WPXPrefix"
+    return (
+        f"({col} like 'VK%' or {col} like 'ZL%' "
+        f"or {col} like 'ZK%' or {col} like 'ZM%')"
+    )
 
 
 def show_mults(self):
-    """Return display string for mults"""
-    mult_data = self.database.fetch_mult_count(1)
-    mults = int(mult_data.get("count", 0))
-    return mults
+    """Return display string for mults.
+
+    Each different prefix used by VK or ZL stations counts once per band per
+    block.
+    """
+    contest_nr = self.pref.get("contest", "0")
+    query = f"""
+        select count(DISTINCT(
+            WPXPrefix || ':' || Band || ':' || {_block_sql_expr()}
+        )) as mults
+        from DXLOG
+        where ContestNR = {contest_nr}
+        and {_vk_zl_wpx_filter()};
+        """
+    result = self.database.exec_sql(query)
+    if result:
+        return int(result.get("mults", 0))
+    return 0
 
 
 def show_qso(self):
-    """Return qso count"""
-    result = self.database.fetch_qso_count()
+    """Return qso count (only VK/ZL contacts score in this contest)."""
+    contest_nr = self.pref.get("contest", "0")
+    query = f"""
+        select count(*) as qsos
+        from DXLOG
+        where ContestNR = {contest_nr}
+        and {_vk_zl_wpx_filter()};
+        """
+    result = self.database.exec_sql(query)
     if result:
         return int(result.get("qsos", 0))
     return 0
 
 
 def calc_score(self):
-    """Return calculated score"""
-    mults = show_mults(self)
-    points = get_points(self)
-    return points * mults
+    """Return calculated score.
+
+    For each of the three 2-hour blocks: contacts in that block multiplied by
+    the number of different prefixes worked on each band in that block. The
+    final score is the sum of the three block scores.
+    """
+    contacts = self.database.fetch_all_contacts_asc()
+    qso_count = {}
+    mult_count = {}
+    for contact in contacts:
+        wpx = contact.get("WPXPrefix", "")
+        if not _is_vk_zl_prefix(wpx):
+            continue
+        block = _block_from_ts(contact.get("TS", ""))
+        qso_count[block] = qso_count.get(block, 0) + 1
+        mult_count.setdefault(block, set()).add((contact.get("Band", ""), wpx))
+    score = 0
+    for block in (0, 1, 2):
+        score += qso_count.get(block, 0) * len(mult_count.get(block, ()))
+    return score
 
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "OCEANIA-DX-SSB")
+    gen_adif(self, cabrillo_name, "WIA-TRANS TASMAN")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -394,11 +511,17 @@ def cabrillo(self, file_encoding):
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
                 themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode == "LSB" or themode == "USB":
+                if themode in _PHONE_MODES:
                     themode = "PH"
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+                elif themode.startswith("CW"):
+                    themode = "CW"
+                elif themode.startswith("RTTY"):
+                    themode = "RTTY"
+                elif themode.startswith("PSK"):
+                    themode = "PSK"
+                else:
+                    themode = "PH"
+                frequency = str(round(float(contact.get("Freq", "0")) * 1000))
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
@@ -406,10 +529,10 @@ def cabrillo(self, file_encoding):
                     f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
                     f"{contact.get('StationPrefix', '').ljust(13)} "
                     f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
+                    f"{str(contact.get('SentNr', '0')).rjust(3, '0').ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).zfill(2).ljust(6)}",
+                    f"{str(contact.get('NR', '0')).rjust(3, '0').ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -424,43 +547,83 @@ def cabrillo(self, file_encoding):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-
+    self.contact_is_dupe = 0
     all_contacts = self.database.fetch_all_contacts_asc()
     for contact in all_contacts:
         self.contact = contact
-
         contact["Points"] = points(self)
-        time_stamp = contact.get("TS", "")
         wpx = contact.get("WPXPrefix", "")
-        band = contact.get("Band", "")
+        band = str(contact.get("Band", ""))
+        time_stamp = contact.get("TS", "")
+        contact["MiscText"] = str(_block_from_ts(time_stamp))
 
-        result = fetch_wpx_exists_before_me(self, wpx, time_stamp, band)
-        if wpx and contact["Points"] > 0 and result.get("wpx_count", 1) == 0:
+        result = fetch_wpx_exists_before_me(self, wpx, band, time_stamp)
+        if wpx and _is_vk_zl_prefix(wpx) and result.get("wpx_count", 1) == 0:
             contact["IsMultiplier1"] = 1
         else:
             contact["IsMultiplier1"] = 0
-
-        if my_continent != "OC" and self.contact.get("Continent", "") != "OC":
-            contact["IsMultiplier1"] = 0
-
         self.database.change_contact(contact)
 
 
-def fetch_wpx_exists_before_me(self, wpx, time_stamp, band) -> dict:
-    """returns a dict key of wpx_count for specific band."""
+def fetch_wpx_exists_before_me(self, wpx, band, time_stamp) -> dict:
+    """returns a dict key of wpx_count for specific band and block."""
     contest_nr = self.pref.get("contest")
+    block = _block_from_ts(time_stamp)
 
-    query = (
-        f"select count(*) as wpx_count from dxlog where "
-        f" TS < '{time_stamp}' "
-        f"and WPXPrefix = '{wpx}' "
-        f"and ContestNR = {contest_nr} "
-        f"and Band = '{band}' "
-        f";"
+    query = """
+        select count(*) as wpx_count from dxlog where
+        TS < ?
+        and WPXPrefix = ?
+        and ContestNR = ?
+        and Band = ?
+        and CASE WHEN CAST(substr(TS,12,2) AS INTEGER) < 8 THEN 0
+                 WHEN CAST(substr(TS,12,2) AS INTEGER) > 13 THEN 2
+                 ELSE (CAST(substr(TS,12,2) AS INTEGER) - 8) / 2 END = ?
+        ;"""
+
+    result = self.database.exec_sql(
+        query,
+        (time_stamp, wpx, contest_nr, band, block),
     )
-
-    result = self.database.exec_sql(query)
     return result
+
+
+def specific_contest_check_dupe(self, call):
+    """Return dict with isdupe True if the call was worked on this band and
+    mode-group in the current 2-hour block."""
+    mode = self.radio_state.get("mode", "")
+    mode_group = _mode_group(mode)
+
+    band = self.contact.get("Band", "")
+    now = datetime.datetime.now(datetime.UTC)
+    block_start, block_end = _block_boundaries(now)
+
+    query = """
+        select count(*) as isdupe from dxlog where
+        Call = ?
+        and Band = ?
+        and ContestNR = ?
+        and TS >= ?
+        and TS < ?
+        and CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH'
+                 WHEN Mode like 'CW%' THEN 'CW'
+                 ELSE 'DIGI' END = ?
+        ;"""
+
+    result = self.database.exec_sql(
+        query,
+        (
+            call,
+            band,
+            self.pref.get("contest", "0"),
+            block_start.strftime("%Y-%m-%d %H:%M:%S"),
+            block_end.strftime("%Y-%m-%d %H:%M:%S"),
+            mode_group,
+        ),
+    )
+    if result:
+        return result
+    return {"isdupe": False}
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -486,8 +649,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
 
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
 
     for a_button in [
         self.F1,
