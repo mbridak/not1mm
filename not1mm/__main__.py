@@ -5066,10 +5066,14 @@ class MainWindow(QtWidgets.QMainWindow):
         return list(result)[0]
 
 
+def is_flatpak() -> bool:
+    return "FLATPAK_ID" in os.environ
+
+
 def install_icons() -> None:
     """Install icons"""
 
-    if sys.platform == "linux":
+    if sys.platform == "linux" and not is_flatpak():
         os.system(
             "xdg-icon-resource install --size 32 --context apps --mode user "
             f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-32.png k6gte-not1mm"
