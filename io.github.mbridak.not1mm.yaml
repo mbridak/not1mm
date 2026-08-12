@@ -24,6 +24,7 @@ finish-args:
   - --filesystem=/mnt:rw
   - --filesystem=/run/media:rw
   - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
 
 modules:
   - name: portaudio
