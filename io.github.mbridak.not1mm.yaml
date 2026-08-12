@@ -1,9 +1,9 @@
 id: io.github.mbridak.not1mm
 runtime: org.kde.Platform
-runtime-version: '6.9'
+runtime-version: '6.11'
 sdk: org.kde.Sdk
 base: com.riverbankcomputing.PyQt.BaseApp
-base-version: '6.9'
+base-version: '6.11'
 command: not1mm
 cleanup-commands:
   - /app/cleanup-BaseApp.sh
@@ -19,8 +19,11 @@ finish-args:
   - --device=all
   - --share=network
   - --socket=cups
-  - --filesystem=host:rw
-  - --talk-name=org.freedesktop.Flatpak
+  - --filesystem=home
+  - --filesystem=/media:rw
+  - --filesystem=/mnt:rw
+  - --filesystem=/run/media:rw
+  - --talk-name=org.freedesktop.Notifications
 
 modules:
   - python3-modules.yaml
