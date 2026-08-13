@@ -171,7 +171,7 @@ A quick feature list, See the user manual for more details.
 
 - 45+ [supported contests](Working_Contests.md)
 - Lookup, QRZ and HamQTH
-- CAT Control, rigctld and flrig
+- CAT Control, rigctld, flrig, TCI
 - CW Keyer Interface, winkeyer and cwdaemon
 - Cluster and Bandmap
 - Rotator control, rotctld
