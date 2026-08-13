@@ -1,6 +1,16 @@
 # Changelog
 
-- [2026-08-11] Merge pull request #654 from mbridak/add-trans-tasman
+- [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
+  - @mbridak Add RDXC contest.
+- [2026-08-12] @mbridak Update installation instructions for Flatpak support
+  - Merge pull request #655 from mbridak/flatpak
+  - @mbridak Generate flatpak.
+  - @mbridak Test is running as flatpak and don't do the xdg menu stuff.
+  - @mbridak Add DBus access.
+- [2026-08-11] @mbridak Add portaudio module with build configuration and source URL
+  - @mbridak Update Flatpak configuration: bump runtime and base versions, adjust filesyst...
+  - @mbridak Add build script and update Flatpak configuration for not1mm
+  - Merge pull request #654 from mbridak/add-trans-tasman
   - @mbridak Add Trans Tasman contest support and update UI
   - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins
 - [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
