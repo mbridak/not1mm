@@ -124,7 +124,26 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 ## Installation
 
-### TL;DR
+### Via Flatpak
+
+I'm pretty sure the flatpak works now. Let me know if it doesn't.
+
+Grab the [flatpak file](https://github.com/mbridak/not1mm/blob/master/not1mm.flatpak).
+
+#### Install
+
+```bash
+flatpak install --user not1mm.flatpak
+```
+#### Run it
+
+```bash
+flatpak run io.github.mbridak.not1mm 
+```
+
+Or find it in your launcher.
+
+### Via uv installer
 
 #### Prerequisites
 
