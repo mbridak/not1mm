@@ -210,6 +210,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        self.setStyleSheet("QDockWidget { border: 2px solid grey; }")
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
