@@ -113,10 +113,26 @@ At present, there are no specific \index{State QSO parties}State QSO parties. Th
 \newpage
 \section{Installation}
 
-\subsection{Not1MM Dependencies}
+\subsection{Flatpak}
+Not1MM can now be installed via flatpak. Look in the Github repos README.md for a link to download the not1mm.flatpak file.
+\subsubsection{Flatpak Install}
+Once downloaded you can install the flatpak with:
+
+\begin{verbatim}
+    flatpak install --user not1mm.flatpak
+\end{verbatim}
+
+\subsubsection{Run it}
+\begin{verbatim}
+    flatpak run io.github.mbridak.not1mm
+\end{verbatim}
+ 
+Or find it in your launcher.
+
+\subsection{Installing via uv}
 Install these software packages through your distribution package manager before continuing:
 \begin{itemize}
-    \item Python 3.10+
+    \item Python 3.11+
     \item PyQt6
     \item libportaudio2
     \item libxcb-cursor0 (maybe... Depends on the distro)
@@ -129,27 +145,27 @@ Install these software packages through your distribution package manager before
 \subsubsection{Single line install}
 From the terminal type:
 \begin{verbatim}
-    • curl -LsSf uvx.sh/not1mm/install.sh | sh
+    curl -LsSf uvx.sh/not1mm/install.sh | sh
 \end{verbatim}
-\subsubsection{Multiple line install}
+\subsubsection{Multiple line install and updates}
 Install uv as described at \url{https://docs.astral.sh/uv/}. Run the following line in the terminal:
 \begin{verbatim}
-    • curl -LsSf https://astral.sh/uv/install.sh | sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 \end{verbatim}
-Instruct it to run Not1MM:
+Instruct it to run Not1MM without installing:
 \begin{verbatim}
-    • uvx not1mm@latest
+    uvx not1mm@latest
 \end{verbatim}
-or install it with:
+Either install or update it with:
 \begin{verbatim}
-    • uv tool install not1mm@latest
+    uv tool install not1mm@latest
 \end{verbatim}
 
 \noindent That's it... it will go out, fetch the latest version of Not1MM, setup a Python virtual environment, get all the needed python libraries, cache everything, and run Not1MM. 
 \subsubsection{Running the software}
 Start Not1MM from the command line by typing: 
 \begin{verbatim}
-    • not1mm
+    not1mm
 \end{verbatim}
 The first time it runs will take a minute, but on subsequent launches it's lightning quick and will automatically check for updates. You will prompted to download the latest version. A lovely non-AI generated icon may appear on the desktop that can be clicked to launch the application.
 \subsubsection{Python versions and rollbacks}
@@ -157,13 +173,13 @@ The first time it runs will take a minute, but on subsequent launches it's light
 If your Linux distro is not current it may be using an older version Python -- perhaps 3.10. There can be significant performance benefits to using the latest Python release, but simply downloading and installing it will likely corrupt your system. The much safer approach is to run Not1MM inside a virtual environment with the desired Python version. To run Not1MM with Python 3.14, for example, you would type this line in the terminal:
 
 \begin{verbatim}
-    • uvx --python 3.14 not1mm@latest
+    uvx --python 3.14 not1mm@latest
 \end{verbatim}
 
-\noindent You can also rollback to an earlier version of Not1MM if the latest update has a bug (This happens a lot as we test in production).To run version 23.5.29 of the software with Python 3.10, for example, you would type:
+\noindent You can also rollback to an earlier version of Not1MM if the latest update has a bug (This happens a lot as we test in production). To run version 23.5.29 of the software with Python 3.11, for example, you would type:
 
 \begin{verbatim}
-    • uvx --python 3.10 not1mm==23.5.19
+    • uvx --python 3.11 not1mm==23.5.19
 \end{verbatim}
 
 Pow! Enjoy the pain... 
@@ -589,6 +605,9 @@ Note that CAT/CI-V command macros are only available when either FLRig\index{FLR
 	\hline
 \end{tabular}
 \subsubsection{And how to edit them}
+\vspace{0.5cm}
+\includegraphics[width=0.9\linewidth]{pic/edit_keys.png}
+\vspace{0.5cm}\\
 Luckily now you don't have to be stuck with my preferred bindings. The \index{key bindings} key bindings can now be edited \textbf{File >> Edit Keys}.
 
 \newpage
@@ -654,17 +673,19 @@ You cannot directly edit the multiplier\index{multiplier} status of a contact. S
 
 \newpage
 
-\subsection{The Bandmap Window}
+\subsection{The Bandmap and Cluster Windows}
 
-\textbf{Window >> Bandmap}`
+\textbf{Window >> Bandmap} and \textbf{Window >> Cluster} respectively.
 
-The bandmap displays worked stations and spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress.
+The Cluster window is used to connect to the cluster node specified in the Configuration Settings. Press the Connect button in the cluster window to start the inflow of spots. The Bandmap window displays worked stations and spots that have been received by the Cluster window, sorted by frequency.  When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap.png}
 \vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/cluster_spots.png}
+\vspace{0.5cm}
 
-The VFO\index{VFO} frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth\index{bandwidth} if available via CAT\index{CAT}.
+The VFO\index{VFO} frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth\index{bandwidth} reported by the radio if available via CAT\index{CAT}.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
