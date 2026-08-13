@@ -69,6 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
+  - @mbridak Add RDXC contest.
+- [2026-08-12] @mbridak Update installation instructions for Flatpak support
 - [2026-08-11] Merge pull request #654 from mbridak/add-trans-tasman
   - @mbridak Add Trans Tasman contest support and update UI
   - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins

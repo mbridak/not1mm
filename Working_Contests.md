@@ -46,6 +46,7 @@
 - REF CW, SSB
 - RSGB 80M CC
 - RSGB IOTA
+- Russia DX
 - SAC CW, SSB
 - SPDX
 - SSA MT
