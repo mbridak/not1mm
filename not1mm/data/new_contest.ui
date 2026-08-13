@@ -533,16 +533,21 @@
        <string>RAEM</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>RANDOMGRAM</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>REF CW</string>
-      </property>
-     </item>
+      <item>
+       <property name="text">
+        <string>RANDOMGRAM</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RDXC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>REF CW</string>
+       </property>
+      </item>
      <item>
       <property name="text">
        <string>REF SSB</string>

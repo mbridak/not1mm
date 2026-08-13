@@ -486,6 +486,29 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
     ],
+    "RDXC": [
+        {
+            "callsign": "UA3ABC",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "001",
+            "other_2": "MOS",
+        },
+        {
+            "callsign": "UA3ABC",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "002",
+            "other_2": "MOS",
+        },
+        {
+            "callsign": "K6GTE",
+            "sent": "599",
+            "receive": "599",
+            "other_1": "003",
+            "other_2": "123",
+        },
+    ],
     "SSA MT CW": [
         {
             "callsign": "KF0NRV",
