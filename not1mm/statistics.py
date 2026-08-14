@@ -1,12 +1,13 @@
 import datetime
 import logging
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget, QTableWidgetItem
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class StatsWindow(QDockWidget):
         )
         self.database: DataBase = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        uic.loadUi(fsutils.APP_DATA_PATH / "statistics.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "statistics.ui")
 
     def msg_from_main(self, packet):
         """Process messages from the main window."""

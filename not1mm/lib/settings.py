@@ -2,9 +2,9 @@
 
 import logging
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 
-from not1mm.lib.i18n import available_languages
+from not1mm.lib.i18n import available_languages, load_ui
 from not1mm.lib.preferences import Preferences
 
 try:
@@ -20,7 +20,7 @@ class Settings(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
-        uic.loadUi(app_data_path / "configuration.ui", self)
+        load_ui(self, app_data_path / "configuration.ui")
         # self.tabWidget.setTabVisible(5, False)
         # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)

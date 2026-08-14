@@ -1373,46 +1373,6 @@
       <translation>Seleccionar la S del RST al entrar en el campo</translation>
     </message>
     <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Edit Keys</source>
-      <translation>Editar Teclas</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Context</source>
-      <translation>Contexto</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Key</source>
-      <translation>Tecla</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Action</source>
-      <translation>Acción</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Description</source>
-      <translation>Descripción</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Add</source>
-      <translation>Añadir</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Remove</source>
-      <translation>Quitar</translation>
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Reset all</source>
-      <translation>Restablecer todo</translation>
-    </message>
-    <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Edit Contact</source>
       <translation>Editar Contacto</translation>
@@ -1883,6 +1843,46 @@
       <location filename="../editcontact.ui" line="0" />
       <source>Delete</source>
       <translation>Eliminar</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Edit Keys</source>
+      <translation>Editar Teclas</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Context</source>
+      <translation>Contexto</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Key</source>
+      <translation>Tecla</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Action</source>
+      <translation>Acción</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Description</source>
+      <translation>Descripción</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Add</source>
+      <translation>Añadir</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Remove</source>
+      <translation>Quitar</translation>
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Reset all</source>
+      <translation>Restablecer todo</translation>
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
@@ -3403,6 +3403,11 @@
       <location filename="../main.ui" line="0" />
       <source>Misc</source>
       <translation>Varios</translation>
+    </message>
+    <message>
+      <location filename="../main.ui" line="0" />
+      <source>Language</source>
+      <translation>Idioma</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />

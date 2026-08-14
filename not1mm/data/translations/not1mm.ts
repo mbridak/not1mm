@@ -1373,46 +1373,6 @@
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Edit Keys</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Context</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Key</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Action</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Description</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Add</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Remove</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../edit_keys.ui" line="0" />
-      <source>Reset all</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Edit Contact</source>
       <translation type="unfinished" />
@@ -1882,6 +1842,46 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Delete</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Edit Keys</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Context</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Key</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Action</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Description</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Add</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Remove</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../edit_keys.ui" line="0" />
+      <source>Reset all</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -3402,6 +3402,11 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Misc</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../main.ui" line="0" />
+      <source>Language</source>
       <translation type="unfinished" />
     </message>
     <message>

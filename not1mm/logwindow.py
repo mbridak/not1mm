@@ -11,13 +11,14 @@ import logging
 import math
 import queue
 
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_contact import EditContact
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.preferences import Preferences
 
@@ -103,7 +104,7 @@ class LogWindow(QDockWidget):
 
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
-        uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "logwindow.ui")
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )

@@ -38,7 +38,7 @@ if sys.platform == "darwin":
         pass
 
 
-from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets
 from PyQt6.QtCore import (
     PYQT_VERSION_STR,
     QT_VERSION_STR,
@@ -96,7 +96,12 @@ from not1mm.lib.ham_utility import (
     getband,
     reciprocal,
 )
-from not1mm.lib.i18n import install_language
+from not1mm.lib.i18n import (
+    available_languages,
+    install_language,
+    load_ui,
+    retranslate_all,
+)
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
@@ -211,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-        uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "main.ui")
         self.setStyleSheet("QDockWidget { border: 2px solid grey; }")
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
@@ -886,6 +891,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_contest()
         self.show_splash_msg("Reading macros.")
         self.read_macros()
+        self.setup_language_menu()
 
         self.show_splash_msg("Restoring window states.")
         self.settings = QSettings("K6GTE", "not1mm")
@@ -1850,11 +1856,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.pref.get("language", "en_US") != self.previous_language:
             install_language(app, self.pref.get("language", "en_US"))
-            self.show_message_box(
-                "The interface language will change the next time "
-                "not1mm is restarted.",
-                blocking=False,
-            )
+            retranslate_all()
+            self.read_macros()
+            for key, action in self.language_actions.items():
+                action.setChecked(key == self.pref.get("language", "en_US"))
 
     def new_database(self) -> None:
         """
@@ -4988,6 +4993,35 @@ class MainWindow(QtWidgets.QMainWindow):
         if "F12" in keys:
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
+
+    def setup_language_menu(self) -> None:
+        """Populate the Language menu with one checkable action per language."""
+        self.language_actions = {}
+        language_group = QtGui.QActionGroup(self)
+        language_group.setExclusive(True)
+        current = self.pref.get("language", "en_US")
+        for code, name in available_languages():
+            action = QtGui.QAction(name, self)
+            action.setCheckable(True)
+            action.setChecked(code == current)
+            action.triggered.connect(
+                lambda checked=False, c=code: self.change_language(c)
+            )
+            language_group.addAction(action)
+            self.language_actions[code] = action
+            self.menuLanguage.addAction(action)
+
+    def change_language(self, code: str) -> None:
+        """Switch the interface language immediately, without a restart."""
+        if self.pref.get("language", "en_US") == code:
+            return
+        self.pref["language"] = code
+        Preferences.save()
+        install_language(app, code)
+        retranslate_all()
+        self.read_macros()
+        for key, action in self.language_actions.items():
+            action.setChecked(key == code)
 
     def generate_adif(self) -> None:
         """

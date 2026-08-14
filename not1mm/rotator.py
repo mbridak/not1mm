@@ -2,7 +2,6 @@ import logging
 import math
 import os
 
-from PyQt6 import uic
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import (
     QBrush,
@@ -23,6 +22,7 @@ from PyQt6.QtWidgets import (
 )
 
 from not1mm import fsutils
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.rot_interface import RotatorInterface
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class RotatorWindow(QDockWidget):
         self.requestedAzimuth: float | None = None
         self.requestedAzimuth_absolute: bool = True
         self.antennaAzimuth: float | None = None
-        uic.loadUi(fsutils.APP_DATA_PATH / "rotator.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "rotator.ui")
         self.north_button.clicked.connect(self.set_north_azimuth)
         self.south_button.clicked.connect(self.set_south_azimuth)
         self.east_button.clicked.connect(self.set_east_azimuth)

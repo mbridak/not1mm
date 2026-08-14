@@ -6,54 +6,54 @@
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>BandMap</source>
-      <translation>Bandmap</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>spots</source>
-      <translation>Spots</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>spots from cluster.</source>
-      <translation>Spots vom Cluster.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Erase All Spots</source>
-      <translation>Alle Spots löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <location filename="../bandmap.ui" line="0" />
       <source>clear spots</source>
-      <translation>Spots löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Spots</source>
-      <translation>Spots</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Erase Marked Spots</source>
-      <translation>Markierte Spots löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Marked</source>
-      <translation>Markiert</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Zoom In</source>
-      <translation>Vergrößern</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <location filename="../bandmap.ui" line="0" />
       <source>zoom in</source>
-      <translation>vergrößern</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
@@ -63,13 +63,13 @@
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Zoom Out</source>
-      <translation>Verkleinern</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <location filename="../bandmap.ui" line="0" />
       <source>zoom out</source>
-      <translation>verkleinern</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
@@ -84,27 +84,27 @@
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Clear spots older than x minutes old</source>
-      <translation>Spots älter als x Minuten löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>clear spots older than</source>
-      <translation>Spots älter löschen als</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>removes spots older than x amount of minutes ago.</source>
-      <translation>entfernt Spots, die älter als x Minuten sind.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source>Never</source>
-      <translation>Nie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../bandmap.ui" line="0" />
       <source> min(s)</source>
-      <translation> Min.</translation>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -112,22 +112,22 @@
     <message>
       <location filename="../checkwindow.ui" line="0" />
       <source>CheckPartial</source>
-      <translation>Teilabgleich</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../checkwindow.ui" line="0" />
       <source>Log</source>
-      <translation>Log</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../checkwindow.ui" line="0" />
       <source>Master</source>
-      <translation>Master</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../checkwindow.ui" line="0" />
       <source>Telnet</source>
-      <translation>Telnet</translation>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -135,12 +135,12 @@
     <message>
       <location filename="../clusterwindow.ui" line="0" />
       <source>Cluster</source>
-      <translation>Cluster</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../clusterwindow.ui" line="0" />
       <source>Connect</source>
-      <translation>Verbinden</translation>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -158,12 +158,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Configuration Settings</source>
-      <translation>Konfiguration</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Lookup</source>
-      <translation>Suche</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -174,7 +174,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Use HamQTH</source>
-      <translation>HamQTH verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -185,7 +185,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Use QRZ</source>
-      <translation>QRZ verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -198,17 +198,17 @@
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>None</source>
-      <translation>Keine</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>user name</source>
-      <translation>Benutzername</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>user name for look up service.</source>
-      <translation>Benutzername für den Lookup-Dienst.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -224,49 +224,49 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Use HamDB</source>
-      <translation>HamDB verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>Password:</source>
-      <translation>Passwort:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>User Name:</source>
-      <translation>Benutzername:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>password</source>
-      <translation>Passwort</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>lookup service password.</source>
-      <translation>Passwort des Lookup-Dienstes.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Sound</source>
-      <translation>Sound</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Output Sound Device</source>
-      <translation>Audioausgabegerät</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>output sound device</source>
-      <translation>Audioausgabegerät</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>available output sound devices.</source>
-      <translation>verfügbare Audioausgabegeräte.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -278,12 +278,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>port number</source>
-      <translation>Portnummer</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>port number of rig control d or f l rig.</source>
-      <translation>Portnummer der Rig-Steuerung.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -309,7 +309,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Rig Control IP:</source>
-      <translation>Rig-Control-IP:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -319,7 +319,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>use rig control d</source>
-      <translation>rigctld verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -334,7 +334,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>use f l rig</source>
-      <translation>flrig verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -349,7 +349,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>use t c i</source>
-      <translation>TCI verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -365,12 +365,12 @@
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>Port:</source>
-      <translation>Port:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>CAT Poll Interval (ms):</source>
-      <translation>CAT-Abfrageintervall (ms):</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -381,12 +381,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>c w port number</source>
-      <translation>CW-Portnummer</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>port number of c w keyer.</source>
-      <translation>Portnummer des CW-Geber-Geräts.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -396,7 +396,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as 5NN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;599 als 5NN senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -416,7 +416,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as O (oscar) in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 als O (oscar) in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -438,7 +438,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 1 as A in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1 als A in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -458,7 +458,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with 0 (zeros)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seriennummer mit 0 (Nullen) auffüllen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -491,12 +491,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Serial Number Padding Character:</source>
-      <translation>Auffüllzeichen der Seriennummer:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Network Address:</source>
-      <translation>Netzwerkadresse:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -517,7 +517,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with T&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seriennummer mit T auffüllen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -539,17 +539,17 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Send 1 in Serial Number as:</source>
-      <translation>1 in Seriennummer senden als:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Network Port:</source>
-      <translation>Netzwerkport:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as 0 (zero) in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 als 0 (Null) in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -559,12 +559,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Speed Increment for PgUp/PgDown:</source>
-      <translation>Geschwindigkeitsstufe für PgUp/PgDown:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 1 as 1 in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;1 als 1 in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -581,17 +581,17 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Send 0 in Serial Number as:</source>
-      <translation>0 in Seriennummer senden als:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Keying Method:</source>
-      <translation>Tastmethode:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 0 as T in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 als T in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -601,7 +601,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 9 as N in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;9 als N in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -621,7 +621,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 9 as 9 in serial numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;9 als 9 in Seriennummern senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -637,17 +637,17 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Send 9 in Serial Number as:</source>
-      <translation>9 in Seriennummer senden als:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>c w address</source>
-      <translation>CW-Adresse</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>i p address or hostname of c w keyer.</source>
-      <translation>IP-Adresse oder Hostname des CW-Geber-Geräts.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -657,7 +657,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as ENN&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;599 als ENN senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -677,12 +677,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Send 599 RST as:</source>
-      <translation>RST 599 senden als:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Send 599 as 599&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;599 als 599 senden&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -702,22 +702,22 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>c w padding character</source>
-      <translation>Auffüllzeichen CW</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>number of padding characters to send when sending c w exchange number.</source>
-      <translation>Anzahl der Auffüllzeichen beim Senden der CW-Austauschnummer.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Padding Length (1 for none):</source>
-      <translation>Auffülllänge (1 für keine):</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pad serial number with O (oscar)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seriennummer mit O (oscar) auffüllen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -727,12 +727,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>c w page up/down stepping</source>
-      <translation>CW-Geschwindigkeitsstufe Bild auf/ab</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>The page up/down keys change the sending speed by this many w p m.</source>
-      <translation>Die Tasten Bild auf/ab ändern die Sende-Geschwindigkeit um diesen Wert (wpm).</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -747,17 +747,17 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Rotator</source>
-      <translation>Rotor</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>rotctld address:</source>
-      <translation>rotctld-Adresse:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>rotctld port:</source>
-      <translation>rotctld-Port:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -767,53 +767,53 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Cluster</source>
-      <translation>Cluster</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>port</source>
-      <translation>Port</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>network port of the d x cluster server.</source>
-      <translation>Netzwerkport des DX-Cluster-Servers.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>filter</source>
-      <translation>Filter</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>cluster filter.</source>
-      <translation>Cluster-Filter.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Filter:</source>
-      <translation>Filter:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Mode:</source>
-      <translation>Modus:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Server:</source>
-      <translation>Server:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>mode</source>
-      <translation>Modus</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>cluster mode.</source>
-      <translation>Cluster-Modus.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -828,34 +828,34 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>server</source>
-      <translation>Server</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>address of d x cluster server.</source>
-      <translation>Adresse des DX-Cluster-Servers.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Only If Needed</source>
-      <translation>Nur bei Bedarf</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Login:</source>
-      <translation>Login:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../opon.ui" line="0" />
       <location filename="../new_contest.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>Operator</source>
-      <translation>Operator</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Group</source>
-      <translation>Gruppe</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -865,12 +865,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Interface IP:</source>
-      <translation>Schnittstellen-IP:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>This is not functional ignore this tab, Just move along.</source>
-      <translation>Dieser Reiter ist nicht funktional, bitte ignorieren.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -885,22 +885,22 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Multicast Port:</source>
-      <translation>Multicast-Port:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Multicast Group:</source>
-      <translation>Multicast-Gruppe:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Be the master</source>
-      <translation>Master sein</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Connect to server</source>
-      <translation>Mit Server verbinden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -910,120 +910,120 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Lookup:</source>
-      <translation>Suche:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>station name</source>
-      <translation>Stationsname</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>n 1 m m station name</source>
-      <translation>N1MM-Stationsname</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send score packets</source>
-      <translation>Score-Pakete senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send n 1 m m score packets.</source>
-      <translation>N1MM-Score-Pakete senden.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Operator Name:</source>
-      <translation>Operatorname:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send n 1 m m packets.</source>
-      <translation>N1MM-Pakete senden.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send n 1 m m packets</source>
-      <translation>N1MM-Pakete senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Send N1MM packets</source>
-      <translation>N1MM-Pakete senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Score:</source>
-      <translation>Score:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>score packet address and port</source>
-      <translation>Adresse und Port des Score-Pakets</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>lookup packet address and port</source>
-      <translation>Adresse und Port des Lookup-Pakets</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Radio:</source>
-      <translation>Funkgerät:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>operator name</source>
-      <translation>Operatorname</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>n 1 m m operator name</source>
-      <translation>N1MM-Operatorname</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send lookup packets</source>
-      <translation>Lookup-Pakete senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send n 1 m m lookup packets.</source>
-      <translation>N1MM-Lookup-Pakete senden.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Station Name:</source>
-      <translation>Stationsname:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send radio packets</source>
-      <translation>Funk-Pakete senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>send n 1 m m radio packets.</source>
-      <translation>N1MM-Funk-Pakete senden.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>radio packet address and port</source>
-      <translation>Adresse und Port des Funk-Pakets</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Contact:</source>
-      <translation>Kontakt:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Bands</source>
-      <translation>Bänder</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -1121,12 +1121,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Options</source>
-      <translation>Optionen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Enable ESM</source>
-      <translation>ESM aktivieren</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1274,23 +1274,23 @@
       <location filename="../configuration.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>DISABLED</source>
-      <translation>DEAKTIVIERT</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>My Call</source>
-      <translation>Mein Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>His Call</source>
-      <translation>Sein Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../configuration.ui" line="0" />
       <source>Exchange</source>
-      <translation>Austausch</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1305,7 +1305,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>QSO B4</source>
-      <translation>QSO bereits</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1315,12 +1315,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Use Call History</source>
-      <translation>Call-History verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Use RTC score reporting</source>
-      <translation>RTC-Score-Meldung verwenden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1340,12 +1340,12 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>username</source>
-      <translation>Benutzername</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Post Interval (minutes)</source>
-      <translation>Sendeintervall (Minuten)</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1355,7 +1355,7 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Auto CQ Delay (Seconds)</source>
-      <translation>Auto-CQ-Verzögerung (Sekunden)</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
@@ -1365,33 +1365,33 @@
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>S&amp;&amp;P QSY on Freq Change</source>
-      <translation>S&amp;P-QSY bei Frequenzwechsel</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../configuration.ui" line="0" />
       <source>Select the S in RST when field entered</source>
-      <translation>S in RST markieren, wenn Feld betreten wird</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Edit Contact</source>
-      <translation>Kontakt bearbeiten</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Call</source>
-      <translation>Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>TimeStamp</source>
-      <translation>Zeitstempel</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>timestamp</source>
-      <translation>Zeitstempel</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1401,180 +1401,180 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>r x frequency</source>
-      <translation>Rx-Frequenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>received frequency</source>
-      <translation>Empfangsfrequenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Tx Freq</source>
-      <translation>Tx-Frequenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>t x frequency</source>
-      <translation>Tx-Frequenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>transmitter frequency</source>
-      <translation>Senderfrequenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>Mode</source>
-      <translation>Modus</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>mode used.</source>
-      <translation>verwendeter Modus.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Contest</source>
-      <translation>Wettbewerb</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>contest</source>
-      <translation>Wettbewerb</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>cabrillo name of the contest.</source>
-      <translation>Cabrillo-Name des Wettbewerbs.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>RST Sent</source>
-      <translation>RST gesendet</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>r s t sent</source>
-      <translation>RST gesendet</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>RST RCV</source>
-      <translation>RST empfangen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>r s t received</source>
-      <translation>RST empfangen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Country</source>
-      <translation>Land</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>country</source>
-      <translation>Land</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>country of contact.</source>
-      <translation>Land des Kontakts.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Station Call</source>
-      <translation>Stationsrufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>station call</source>
-      <translation>Stationsrufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>callsign of the station.</source>
-      <translation>Rufzeichen der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Name</source>
-      <translation>Name</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>name</source>
-      <translation>Name</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>name of contact</source>
-      <translation>Name des Kontakts</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>QTH</source>
-      <translation>QTH</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>q t h</source>
-      <translation>QTH</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>q t h of contact.</source>
-      <translation>QTH des Kontakts.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Comment</source>
-      <translation>Kommentar</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>comment</source>
-      <translation>Kommentar</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged comment.</source>
-      <translation>protokollierter Kommentar.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>call</source>
-      <translation>Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>callsign of contact.</source>
-      <translation>Rufzeichen des Kontakts.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>number</source>
-      <translation>Nummer</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>number received.</source>
-      <translation>empfangene Nummer.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>check field</source>
-      <translation>Prüffeld</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged check.</source>
-      <translation>protokolliertes Prüffeld.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1591,22 +1591,22 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>multiplier three not editable.</source>
-      <translation>Multiplikator drei nicht editierbar.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>section</source>
-      <translation>Sektion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged section</source>
-      <translation>protokollierte Sektion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Nr Sent</source>
-      <translation>Nr. gesendet</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1622,28 +1622,28 @@
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>run 1/2</source>
-      <translation>Run 1/2</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>number sent</source>
-      <translation>gesendete Nummer</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>precidence</source>
-      <translation>Präzedenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged precidence.</source>
-      <translation>protokollierte Präzedenz.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Points</source>
-      <translation>Punkte</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1653,17 +1653,17 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logging operators callsign.</source>
-      <translation>Rufzeichen des loggenden Operators.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>power</source>
-      <translation>Leistung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged power.</source>
-      <translation>protokollierte Leistung.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1678,23 +1678,23 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>grid</source>
-      <translation>Locator</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged grid square.</source>
-      <translation>protokolliertes Locator.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>Band</source>
-      <translation>Band</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Run 1/2</source>
-      <translation>Run 1/2</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1704,49 +1704,49 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>band</source>
-      <translation>Band</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged band.</source>
-      <translation>protokolliertes Band.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>points</source>
-      <translation>Punkte</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>points for contact.</source>
-      <translation>Punkte für den Kontakt.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>zone</source>
-      <translation>Zone</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged zone.</source>
-      <translation>protokollierte Zone.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Zone</source>
-      <translation>Zone</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>radio</source>
-      <translation>Funkgerät</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>Power</source>
-      <translation>Leistung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1756,22 +1756,22 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>multiplier two not editable.</source>
-      <translation>Multiplikator zwei nicht editierbar.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Misc</source>
-      <translation>Sonstiges</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>misc</source>
-      <translation>sonstiges</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>miscellaneous</source>
-      <translation>Sonstiges</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
@@ -1781,171 +1781,171 @@
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged w p x.</source>
-      <translation>protokollierter WPX.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Nr</source>
-      <translation>Nr.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Grid</source>
-      <translation>Locator</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Section</source>
-      <translation>Sektion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Check</source>
-      <translation>Prüfung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>exchange</source>
-      <translation>Austausch</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>logged exchanged.</source>
-      <translation>protokollierter Austausch.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Radio</source>
-      <translation>Funkgerät</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Rover QTH</source>
-      <translation>Rover-QTH</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <location filename="../editcontact.ui" line="0" />
       <source>rover q t h</source>
-      <translation>Rover-QTH</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>delete</source>
-      <translation>löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>delete contact.</source>
-      <translation>Kontakt löschen.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editcontact.ui" line="0" />
       <source>Delete</source>
-      <translation>Löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Edit Keys</source>
-      <translation>Tasten bearbeiten</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Context</source>
-      <translation>Kontext</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Key</source>
-      <translation>Taste</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Action</source>
-      <translation>Aktion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Description</source>
-      <translation>Beschreibung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Add</source>
-      <translation>Hinzufügen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Remove</source>
-      <translation>Entfernen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../edit_keys.ui" line="0" />
       <source>Reset all</source>
-      <translation>Alles zurücksetzen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <source>Edit Macro</source>
-      <translation>Makro bearbeiten</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <source>Edit macro dialog</source>
-      <translation>Makro-Bearbeitungsdialog</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <source>Macro Label</source>
-      <translation>Makro-Label</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <source>Macro</source>
-      <translation>Makro</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <location filename="../editmacro.ui" line="0" />
       <source>macro label</source>
-      <translation>Makro-Label</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../editmacro.ui" line="0" />
       <location filename="../editmacro.ui" line="0" />
       <source>macro</source>
-      <translation>Makro</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>New Contest</source>
-      <translation>Neuer Wettbewerb</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Soap Box</source>
-      <translation>Anmerkungen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>The soap box</source>
-      <translation>Die Anmerkungen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Start UTC</source>
-      <translation>Start UTC</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../new_contest.ui" line="0" />
       <source>Assisted</source>
-      <translation>Assistiert</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Assisted category.</source>
-      <translation>Assistierte Kategorie.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -1960,22 +1960,22 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Sent exchange</source>
-      <translation>Gesendeter Austausch</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>sent exchange, excluding r s t.</source>
-      <translation>gesendeter Austausch, ohne RST.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Operating mode</source>
-      <translation>Betriebsmodus</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Mode category</source>
-      <translation>Moduskategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2015,32 +2015,32 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Sent Exchange</source>
-      <translation>Gesendeter Austausch</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Station</source>
-      <translation>Station</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Select Contest Type for New Log</source>
-      <translation>Wettbewerbstyp für neues Log wählen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Contest Selector</source>
-      <translation>Wettbewerbs-Auswahl</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Contest or log type.</source>
-      <translation>Wettbewerbs- oder Logtyp.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>General Logging</source>
-      <translation>Allgemeines Logging</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2480,7 +2480,7 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Start of contest Date and U T C Time</source>
-      <translation>Datum und UTC-Zeit des Wettbewerbsbeginns</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2490,28 +2490,28 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Overlay</source>
-      <translation>Overlay</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../new_contest.ui" line="0" />
       <source>Operators</source>
-      <translation>Operatoren</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Log Type</source>
-      <translation>Logtyp</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Operator Category</source>
-      <translation>Operatorkategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Operator category.</source>
-      <translation>Operatorkategorie.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2531,12 +2531,12 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Power Category</source>
-      <translation>Leistungskategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Power category</source>
-      <translation>Leistungskategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2557,17 +2557,17 @@
       <location filename="../new_contest.ui" line="0" />
       <location filename="../new_contest.ui" line="0" />
       <source>Transmitter</source>
-      <translation>Sender</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Soapbox</source>
-      <translation>Anmerkungen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Transmitter category.</source>
-      <translation>Senderkategorie.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2597,12 +2597,12 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Band Category</source>
-      <translation>Bandkategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Band category.</source>
-      <translation>Bandkategorie.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2697,13 +2697,13 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Exclude RST</source>
-      <translation>RST ausschließen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <location filename="../new_contest.ui" line="0" />
       <source>Overlay category</source>
-      <translation>Overlay-Kategorie</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2748,17 +2748,17 @@
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>operators in contest.</source>
-      <translation>Operatoren im Wettbewerb.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Station type</source>
-      <translation>Stationstyp</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
       <source>Station type.</source>
-      <translation>Stationstyp.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../new_contest.ui" line="0" />
@@ -2819,32 +2819,32 @@
     <message>
       <location filename="../opon.ui" line="0" />
       <source>Operator:</source>
-      <translation>Operator:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../opon.ui" line="0" />
       <source>Callsign of current operator.</source>
-      <translation>Rufzeichen des aktuellen Operators.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../pickcontest.ui" line="0" />
       <source>Choose a Contest</source>
-      <translation>Wettbewerb wählen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rover.ui" line="0" />
       <source>Rove Location:</source>
-      <translation>Rover-Standort:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rover.ui" line="0" />
       <source>Location</source>
-      <translation>Standort</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rover.ui" line="0" />
       <source>Current Rove Location.</source>
-      <translation>Aktueller Rover-Standort.</translation>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -2852,23 +2852,23 @@
     <message>
       <location filename="../chat.ui" line="0" />
       <source>Chat</source>
-      <translation>Chat</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../chat.ui" line="0" />
       <source>Type chat stuff and press Enter.</source>
-      <translation>Chat-Nachricht eingeben und Enter drücken.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../dxcc_tracker.ui" line="0" />
       <source>DXCC Multiplier Tracker</source>
-      <translation>DXCC-Multiplikator-Tracker</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../zone_tracker.ui" line="0" />
       <location filename="../dxcc_tracker.ui" line="0" />
       <source>Scroll to</source>
-      <translation>Scrollen zu</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../vfo.ui" line="0" />
@@ -2879,17 +2879,17 @@
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>RateWindow</source>
-      <translation>Rate-Fenster</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>All bands - All modes</source>
-      <translation>Alle Bänder - Alle Modi</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>Last Hour:</source>
-      <translation>Letzte Stunde:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
@@ -2911,7 +2911,7 @@
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>Since 1400z:</source>
-      <translation>Seit 1400z:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
@@ -2921,7 +2921,7 @@
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>Run QSO:</source>
-      <translation>Run-QSO:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
@@ -2934,27 +2934,27 @@
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source>S&amp;P QSO:</source>
-      <translation>S&amp;P-QSO:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source> Hour Run QSO:</source>
-      <translation> Stündliche Run-QSOs:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../ratewindow.ui" line="0" />
       <source> Hour S&amp;P QSO:</source>
-      <translation> Stündliche S&amp;P-QSOs:</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../statistics.ui" line="0" />
       <source>Stats</source>
-      <translation>Statistik</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../zone_tracker.ui" line="0" />
       <source>Zone Multiplier Tracker</source>
-      <translation>Zonen-Multiplikator-Tracker</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../zone_tracker.ui" line="0" />
@@ -2972,7 +2972,7 @@
     <message>
       <location filename="../logwindowx.ui" line="0" />
       <source>QSO Logs</source>
-      <translation>QSO-Protokolle</translation>
+      <translation type="unfinished" />
     </message>
   </context>
   <context>
@@ -2980,7 +2980,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Not1MM</source>
-      <translation>Not1MM</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3119,17 +3119,17 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Callsign</source>
-      <translation>Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>callsign</source>
-      <translation>Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>enter callsign here</source>
-      <translation>Rufzeichen hier eingeben</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3139,7 +3139,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>RST Sent</source>
-      <translation>RST gesendet</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3149,7 +3149,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>RST Received</source>
-      <translation>RST empfangen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3164,32 +3164,32 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Run Mode</source>
-      <translation>Run-Modus</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Run</source>
-      <translation>Run</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Search and Pounce</source>
-      <translation>Suche und Pounce</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>S&amp;&amp;P</source>
-      <translation>S&amp;P</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>CW Keyer Speed</source>
-      <translation>CW-Gebergeschwindigkeit</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Dupe</source>
-      <translation>Duplikat</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3314,17 +3314,17 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Esc: STOP</source>
-      <translation>Esc: STOPP</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Wipe</source>
-      <translation>Löschen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Log It</source>
-      <translation>Loggen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3336,17 +3336,17 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Mark</source>
-      <translation>Markieren</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Spot It</source>
-      <translation>Spot senden</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Heading and Distance</source>
-      <translation>Peilung und Entfernung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3356,7 +3356,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>QSOs/Mults</source>
-      <translation>QSOs/Mults</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3366,105 +3366,105 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Points</source>
-      <translation>Punkte</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Score</source>
-      <translation>Punkte</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Type here to send CW, press Enter to close.</source>
-      <translation>Hier tippen, um CW zu senden, Enter zum Schließen.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>File</source>
-      <translation>Datei</translation>
+      <translation>Fichier</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <location filename="../main.ui" line="0" />
       <source>Help</source>
-      <translation>Hilfe</translation>
+      <translation>Aide</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>View</source>
-      <translation>Ansicht</translation>
+      <translation>Affichage</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Window</source>
-      <translation>Fenster</translation>
+      <translation>Fenêtre</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Misc</source>
-      <translation>Sonstiges</translation>
+      <translation>Divers</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Language</source>
-      <translation>Sprache</translation>
+      <translation>Langue</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>About</source>
-      <translation>Über</translation>
+      <translation>À propos</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <location filename="../main.ui" line="0" />
       <location filename="../main.ui" line="0" />
       <source>Command Buttons</source>
-      <translation>Befehlstasten</translation>
+      <translation>Boutons de commande</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Macros</source>
-      <translation>Makros</translation>
+      <translation>Macros</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Mode and Bands</source>
-      <translation>Modus und Bänder</translation>
+      <translation>Mode et bandes</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Force Dark Mode</source>
-      <translation>Dunklen Modus erzwingen</translation>
+      <translation>Forcer le mode sombre</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Station Settings</source>
-      <translation>Stations-Einstellungen</translation>
+      <translation>Paramètres de la station</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>QRZ Settings</source>
-      <translation>QRZ-Einstellungen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Configuration Settings</source>
-      <translation>Konfiguration</translation>
+      <translation>Paramètres de configuration</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Generate Cabrillo ASCII</source>
-      <translation>Cabrillo ASCII erzeugen</translation>
+      <translation>Générer Cabrillo ASCII</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Generate Cabrillo UTF-8</source>
-      <translation>Cabrillo UTF-8 erzeugen</translation>
+      <translation>Générer Cabrillo UTF-8</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>QSO Log</source>
-      <translation>QSO-Protokoll</translation>
+      <translation>Journal QSO</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3474,62 +3474,62 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Generate ADIF</source>
-      <translation>ADIF erzeugen</translation>
+      <translation>Générer ADIF</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Generate EDI</source>
-      <translation>EDI erzeugen</translation>
+      <translation>Générer EDI</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Import ADIF</source>
-      <translation>ADIF importieren</translation>
+      <translation>Importer ADIF</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Recalculate Mults</source>
-      <translation>Multiplikatoren neu berechnen</translation>
+      <translation>Recalculer les multis</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>New Contest</source>
-      <translation>Neuer Wettbewerb</translation>
+      <translation>Nouveau concours</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>New Database</source>
-      <translation>Neue Datenbank</translation>
+      <translation>Nouvelle base de données</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Open Database</source>
-      <translation>Datenbank öffnen</translation>
+      <translation>Ouvrir une base de données</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Open Contest</source>
-      <translation>Wettbewerb öffnen</translation>
+      <translation>Ouvrir un concours</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Edit Macros</source>
-      <translation>Makros bearbeiten</translation>
+      <translation>Modifier les macros</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Edit Current Contest</source>
-      <translation>Aktuellen Wettbewerb bearbeiten</translation>
+      <translation>Modifier le concours en cours</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Edit Keys</source>
-      <translation>Tasten bearbeiten</translation>
+      <translation>Modifier les raccourcis</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Bandmap</source>
-      <translation>Bandmap</translation>
+      <translation>Carte des bandes</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3544,27 +3544,27 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Quit</source>
-      <translation>Beenden</translation>
+      <translation>Quitter</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>HotKeys</source>
-      <translation>Tastenkürzel</translation>
+      <translation>Raccourcis clavier</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Update MASTER.SCP</source>
-      <translation>MASTER.SCP aktualisieren</translation>
+      <translation>Mettre à jour MASTER.SCP</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Update CTY</source>
-      <translation>CTY aktualisieren</translation>
+      <translation>Mettre à jour CTY</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Check Partial</source>
-      <translation>Teilabgleich</translation>
+      <translation>Vérification partielle</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3574,7 +3574,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Rate Window</source>
-      <translation>Rate-Fenster</translation>
+      <translation>Fenêtre de cadence</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3594,17 +3594,17 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Dark Mode</source>
-      <translation>Dunkler Modus</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Load Call History File</source>
-      <translation>Call-History-Datei laden</translation>
+      <translation>Charger le fichier d'historique</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Statistics</source>
-      <translation>Statistik</translation>
+      <translation>Statistiques</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3624,7 +3624,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Rotator</source>
-      <translation>Rotor</translation>
+      <translation>Rotateur</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3634,12 +3634,12 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Mark Contacts Dirty</source>
-      <translation>Kontakte als geändert markieren</translation>
+      <translation>Marquer les contacts</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
       <source>Group Chat</source>
-      <translation>Gruppen-Chat</translation>
+      <translation>Discussion de groupe</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
@@ -3654,7 +3654,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Synchronize VFOs</source>
-      <translation>VFOs synchronisieren</translation>
+      <translation>Synchroniser les VFO</translation>
     </message>
   </context>
   <context>
@@ -3662,32 +3662,32 @@
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Rotator</source>
-      <translation>Rotor</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Stop</source>
-      <translation>Stopp</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Left-click to rotate antenna towards selected station. Right-click to rotate to long-path direction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Linksklick zum Drehen der Antenne zur gewählten Station. Rechtsklick zum Drehen in Long-Path-Richtung.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Move</source>
-      <translation>Bewegen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Park</source>
-      <translation>Parken</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Rotate 30° left (counter-clockwise)</source>
-      <translation>30° nach links drehen (gegen den Uhrzeigersinn)</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
@@ -3717,7 +3717,7 @@
     <message>
       <location filename="../rotator.ui" line="0" />
       <source>Rotate 30° right (clockwise)</source>
-      <translation>30° nach rechts drehen (im Uhrzeigersinn)</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../rotator.ui" line="0" />
@@ -3730,24 +3730,24 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Station Settings</source>
-      <translation>Stations-Einstellungen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>State</source>
-      <translation>Bundesland</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Ant. Height</source>
-      <translation>Ant.-Höhe</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>Name</source>
-      <translation>Name</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3768,33 +3768,33 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Longitude</source>
-      <translation>Längengrad</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>CQ Zone</source>
-      <translation>CQ-Zone</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Email address</source>
-      <translation>E-Mail-Adresse</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>City</source>
-      <translation>Stadt</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>license</source>
-      <translation>Lizenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>license class of the station.</source>
-      <translation>Lizenzklasse der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3814,18 +3814,18 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>ARRL Section</source>
-      <translation>ARRL-Sektion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>Country</source>
-      <translation>Land</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Country of the station.</source>
-      <translation>Land der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3836,12 +3836,12 @@
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>Grid Square</source>
-      <translation>Locator</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>4 to 6 character maidenhead grid square.</source>
-      <translation>4- bis 6-stelliges Maidenhead-Locator.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3851,7 +3851,7 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>City of the station.</source>
-      <translation>Stadt der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3861,65 +3861,65 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>longitude</source>
-      <translation>Längengrad</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>station longitude.</source>
-      <translation>Längengrad der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>power</source>
-      <translation>Leistung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>station power</source>
-      <translation>Sendeleistung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>antenna</source>
-      <translation>Antenne</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>Address</source>
-      <translation>Adresse</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>License</source>
-      <translation>Lizenz</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Club</source>
-      <translation>Club</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>station t x. r x.</source>
-      <translation>Stations-TX/RX.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Antenna</source>
-      <translation>Antenne</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Zip</source>
-      <translation>PLZ</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>State of the station.</source>
-      <translation>Bundesland der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3930,12 +3930,12 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Street Address</source>
-      <translation>Straße</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Street Address of the station.</source>
-      <translation>Straße der Station.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3945,35 +3945,35 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>ITU Zone</source>
-      <translation>ITU-Zone</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>antenna height</source>
-      <translation>Antennenhöhe</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>a r r l section</source>
-      <translation>ARRL-Sektion</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Rover QTH</source>
-      <translation>Rover-QTH</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Call</source>
-      <translation>Rufzeichen</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <location filename="../settings.ui" line="0" />
       <source>Station callsign.</source>
-      <translation>Stationsrufzeichen.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -3994,12 +3994,12 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>email</source>
-      <translation>E-Mail</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>email address of log submitter.</source>
-      <translation>E-Mail-Adresse des Log-Einreichers.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4009,12 +4009,12 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Zip Code</source>
-      <translation>Postleitzahl</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Zip code portion of the address.</source>
-      <translation>Postleitzahl der Adresse.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4024,17 +4024,17 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Station TX/RX</source>
-      <translation>Stations-TX/RX</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>club</source>
-      <translation>Club</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>club name</source>
-      <translation>Clubname</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4044,7 +4044,7 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Power</source>
-      <translation>Leistung</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4055,17 +4055,17 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Latitude</source>
-      <translation>Breitengrad</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>latitude</source>
-      <translation>Breitengrad</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>station latitude</source>
-      <translation>Breitengrad der Station</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4076,12 +4076,12 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Station operator</source>
-      <translation>Stationsoperator</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Station operator. Leave blank when same as Call.</source>
-      <translation>Stationsoperator. Leer lassen, wenn gleich Call.</translation>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../settings.ui" line="0" />
@@ -4091,7 +4091,7 @@
     <message>
       <location filename="../settings.ui" line="0" />
       <source>Operator</source>
-      <translation>Operator</translation>
+      <translation type="unfinished" />
     </message>
   </context>
 </TS>
