@@ -49,6 +49,7 @@ exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test", "usb
 
 [tool.setuptools.package-data]
 "not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html", "*.metainfo.xml",]
+"not1mm.data.translations" = ["*.ts", "*.qm",]
 "not1mm.data.phonetics" = ["*.wav",]
 "not1mm.icon" = ["*.png",]
 
