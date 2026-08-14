@@ -10,7 +10,6 @@ import logging
 import queue
 from dataclasses import dataclass
 
-from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtWidgets import QApplication, QDockWidget, QLabel, QVBoxLayout, QWidget
@@ -18,6 +17,7 @@ from rapidfuzz.distance import Levenshtein
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 from not1mm.lib.super_check_partial import SCP
 
@@ -58,7 +58,7 @@ class CheckWindow(QDockWidget):
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
 
-        uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "checkwindow.ui")
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()

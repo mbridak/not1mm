@@ -10,11 +10,12 @@ import logging
 import re
 from datetime import UTC, datetime
 
-from PyQt6 import QtGui, QtNetwork, uic
+from PyQt6 import QtGui, QtNetwork
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class ClusterWindow(QDockWidget):
         self.parent = parent
 
         self.pref = Preferences.data()
-        uic.loadUi(fsutils.APP_DATA_PATH / "clusterwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "clusterwindow.ui")
         self.setObjectName("cluster-window")
         self.clusterOutput.document().setMaximumBlockCount(1000)
         self.clusterInput.returnPressed.connect(self.input_to_cluster)

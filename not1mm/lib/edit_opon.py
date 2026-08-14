@@ -1,7 +1,8 @@
 """Edit OpOn"""
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 
@@ -10,7 +11,7 @@ class OpOn(QtWidgets.QDialog):
 
     def __init__(self, app_data_path, parent):
         super().__init__(parent)
-        uic.loadUi(app_data_path / "opon.ui", self)
+        load_ui(self, app_data_path / "opon.ui")
         self.parent = parent
         self.accepted.connect(self.new_op)
 

@@ -2,13 +2,14 @@ import logging
 from json import loads
 from json.decoder import JSONDecodeError
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ class DXCCWindow(QDockWidget):
         super().__init__()
         self.action = action
         self.active = False
-        uic.loadUi(fsutils.APP_DATA_PATH / "dxcc_tracker.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "dxcc_tracker.ui")
         self.dxcc_table.setColumnCount(len(self.columns))
         for column_number, column_name in self.columns.items():
             self.dxcc_table.setHorizontalHeaderItem(
