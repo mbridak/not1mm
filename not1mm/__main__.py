@@ -96,6 +96,7 @@ from not1mm.lib.ham_utility import (
     getband,
     reciprocal,
 )
+from not1mm.lib.i18n import install_language
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.new_contest import NewContest
@@ -183,6 +184,7 @@ class MainWindow(QtWidgets.QMainWindow):
     rtc_pass = ""
 
     current_widget = None
+    previous_language = "en_US"
 
     auto_cq = False
     auto_cq_then = datetime.datetime.now(tz=datetime.UTC)
@@ -1825,6 +1827,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
+        self.previous_language = self.pref.get("language", "en_US")
 
     def edit_configuration_return(self) -> None:
         """
@@ -1844,6 +1847,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # logger.debug("%s", f"{self.pref}")
         self.apply_preferences()
         self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
+
+        if self.pref.get("language", "en_US") != self.previous_language:
+            install_language(app, self.pref.get("language", "en_US"))
+            self.show_message_box(
+                "The interface language will change the next time "
+                "not1mm is restarted.",
+                blocking=False,
+            )
 
     def new_database(self) -> None:
         """
@@ -5126,6 +5137,11 @@ def run() -> None:
         color=QColor(255, 255, 0),
     )
     QCoreApplication.processEvents()
+
+    # Install the interface translator before any widgets are built so the
+    # chosen language applies to everything shown on screen.
+    pref = Preferences.load()
+    install_language(app, pref.get("language", "en_US"))
 
     # families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
     # logger.info(f"font families {families}")
