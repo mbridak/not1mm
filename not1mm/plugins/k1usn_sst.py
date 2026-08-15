@@ -69,9 +69,9 @@ def interface(self):
     self.field2.hide()
     self.field3.show()
     self.field4.show()
-    self.other_label.setText("Name")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Name"))
     self.other_1.setAccessibleName("Name")
-    self.exch_label.setText("SPC")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SPC"))
     self.other_2.setAccessibleName("SPC")
 
 

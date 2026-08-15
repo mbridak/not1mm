@@ -24,6 +24,8 @@ import datetime
 import logging
 from pathlib import Path
 
+from PyQt6 import QtWidgets
+
 from not1mm.lib.plugin_common import gen_adif, imp_adif
 from not1mm.lib.version import __version__
 
@@ -69,7 +71,7 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.exch_label.setText("Station type")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Station type"))
     self.field4.setAccessibleName("Received Exchange")
 
 

@@ -2,6 +2,8 @@
 
 import logging
 
+from PyQt6 import QtWidgets
+
 from not1mm.lib.ham_utility import distance
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
@@ -57,8 +59,8 @@ def interface(self):
     self.field4.show()  # exchange field
 
     self.snt_label.setText("SNT")
-    self.other_label.setText("SNTNR")
-    self.exch_label.setText("RCV NR + GRID")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SNTNR"))
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "RCV NR + GRID"))
 
     self.sent.setText("59")
     self.receive.setText("59")

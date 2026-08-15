@@ -88,7 +88,7 @@ def interface(self):
     self.sent.setAccessibleName("Snt")
     self.rcv_label.setText("Rcv RST")
     self.receive.setAccessibleName("Rcv")
-    self.other_label.setText("County/State/DX")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "County/State/DX"))
     # self.sent.setText("")
 
 
