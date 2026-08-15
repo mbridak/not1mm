@@ -69,6 +69,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-14] Merge pull request #658 from mbridak/language-translations
+  - @mbridak Refactor plugin interfaces to use Qt translation for labels
+  - @mbridak Add initial translations.
+  - @mbridak Add internationalization support and language preferences
 - [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
   - @mbridak Add RDXC contest.
 - [2026-08-12] @mbridak Update installation instructions for Flatpak support
