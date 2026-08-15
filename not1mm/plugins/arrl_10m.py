@@ -101,10 +101,10 @@ def interface(self):
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
     # label = self.field3.findChild(QtWidgets.QLabel)
-    self.other_label.setText("SentNR")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
     self.field3.setAccessibleName("Sent Number")
     # label = self.field4.findChild(QtWidgets.QLabel)
-    self.exch_label.setText("State|Prov|SN|ITU")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "State|Prov|SN|ITU"))
     self.field4.setAccessibleName("State Province Serial Number or I T U Section")
 
 

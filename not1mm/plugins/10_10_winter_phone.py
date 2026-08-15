@@ -52,7 +52,7 @@ def interface(self):
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
     # label = self.field4.findChild(QtWidgets.QLabel)
-    self.exch_label.setText("Name 1010# SPC")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Name 1010# SPC"))
     self.field4.setAccessibleName("Name 10 10 # SPC")
 
 

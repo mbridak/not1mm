@@ -15,13 +15,14 @@ import sqlite3
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QColorConstants, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 from not1mm import fsutils
 from not1mm.lib.ham_utility import band2banddef, khz2banddef
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
@@ -397,7 +398,7 @@ class BandMapWindow(QDockWidget):
         self.active = False
         self._udpwatch = None
 
-        uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "bandmap.ui")
         # self.thefont = QFont("JetBrains Mono", 10, QFont.Weight.Thin)
         self.thefont = QFont("JetBrains Mono", 10)
         self.settings = Preferences.data()

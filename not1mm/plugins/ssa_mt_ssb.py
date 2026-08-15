@@ -11,6 +11,8 @@ import datetime
 import logging
 from pathlib import Path
 
+from PyQt6 import QtWidgets
+
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
@@ -127,9 +129,9 @@ def interface(self):
     self.snt_label.setText("Sent")
     self.rcv_label.setText("Received")
     self.field1.setAccessibleName("Signal report Sent")
-    self.other_label.setText("Nr")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Nr"))
     self.field3.setAccessibleName("Received Serial Number")
-    self.exch_label.setText("Locator")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Locator"))
     self.field4.setAccessibleName("Received Locator")
 
 

@@ -16,7 +16,7 @@ import os
 import sys
 
 import serial
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtGui import QPalette
 from PyQt6.QtWidgets import QDockWidget
@@ -25,6 +25,7 @@ from not1mm import fsutils
 from not1mm.lib.cat_flrig import FlrigCAT
 from not1mm.lib.cat_rigctld import RigctldCAT
 from not1mm.lib.cat_tci import TciCAT
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class VfoWindow(QDockWidget):
     def __init__(self, action):
         super().__init__()
         self.action = action
-        uic.loadUi(fsutils.APP_DATA_PATH / "vfo.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "vfo.ui")
         self.setWindowTitle("VFO Window")
         self.rig_control: FlrigCAT | RigctldCAT | TciCAT | None = None
         self.timer: QTimer = QTimer()

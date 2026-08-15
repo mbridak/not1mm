@@ -76,7 +76,7 @@ def interface(self):
     self.field4.hide()
     self.snt_label.setText("SNT")
     self.sent.setAccessibleName("RST Sent")
-    self.other_label.setText("Grid")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Grid"))
     self.other_1.setAccessibleName("Grid")
 
 

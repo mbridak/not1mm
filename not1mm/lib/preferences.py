@@ -76,6 +76,7 @@ class Preferences:
         "ratewindow": False,
         "statisticswindow": False,
         "darkmode": True,
+        "language": "en_US",
     }
 
     @classmethod
