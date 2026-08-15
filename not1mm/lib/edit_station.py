@@ -2,9 +2,10 @@
 
 from json import loads
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 
 from not1mm.lib.ham_utility import gridtolatlon
+from not1mm.lib.i18n import load_ui
 
 
 class EditStation(QtWidgets.QDialog):
@@ -14,7 +15,7 @@ class EditStation(QtWidgets.QDialog):
 
     def __init__(self, app_data_path):
         super().__init__(None)
-        uic.loadUi(app_data_path / "settings.ui", self)
+        load_ui(self, app_data_path / "settings.ui")
         self.buttonBox.clicked.connect(self.store)
         self.GridSquare.textEdited.connect(self.gridchanged)
         self.Call.textEdited.connect(self.call_changed)

@@ -153,9 +153,9 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    self.other_label.setText("Sent")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
     self.field3.setAccessibleName("Sent")
-    self.exch_label.setText("SN")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SN"))
     self.field4.setAccessibleName("SN")
 
 

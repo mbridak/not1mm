@@ -93,9 +93,9 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    self.other_label.setText("Sent")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
     self.other_1.setAccessibleName("Sent")
-    self.exch_label.setText("Dep/Pfx/SN")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Dep/Pfx/SN"))
     self.other_2.setAccessibleName("Department, Prefix or SN")
 
 
