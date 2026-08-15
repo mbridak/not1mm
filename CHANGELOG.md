@@ -1,5 +1,9 @@
 # Changelog
 
+- [2026-08-14] Merge pull request #658 from mbridak/language-translations
+  - @mbridak Refactor plugin interfaces to use Qt translation for labels
+  - @mbridak Add initial translations.
+  - @mbridak Add internationalization support and language preferences
 - [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
   - @mbridak Add RDXC contest.
 - [2026-08-12] @mbridak Update installation instructions for Flatpak support
@@ -2834,9 +2838,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
