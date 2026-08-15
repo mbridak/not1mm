@@ -198,4 +198,5 @@ class ClusterWindow(QDockWidget):
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes. Cluster connection stays open."""
         self.action.setChecked(False)
+        self.clusterwindow_closed.emit()
         _event.accept()
