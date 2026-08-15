@@ -60,15 +60,15 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("SentNR")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
     self.field3.setAccessibleName("Sent Number")
-    self.exch_label.setText("sn prec ck sec")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "sn prec ck sec"))
     self.field4.setAccessibleName("Serial Number Precident Check Section")
 
 
 def reset_label(self):
     """reset label after field cleared"""
-    self.exch_label.setText("sn prec ck sec")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "sn prec ck sec"))
 
 
 def set_tab_next(self):

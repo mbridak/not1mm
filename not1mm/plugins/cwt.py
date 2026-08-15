@@ -79,9 +79,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("Name")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Name"))
     self.field3.setAccessibleName("Name")
-    self.exch_label.setText("Number or State")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Number or State"))
     self.field4.setAccessibleName("Number or State")
 
 

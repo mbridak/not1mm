@@ -5020,8 +5020,23 @@ class MainWindow(QtWidgets.QMainWindow):
         install_language(app, code)
         retranslate_all()
         self.read_macros()
+        self.retranslate_contest_labels()
         for key, action in self.language_actions.items():
             action.setChecked(key == code)
+
+    def retranslate_contest_labels(self) -> None:
+        """Re-apply the active contest plugin's field labels.
+
+        retranslate_all() restores the main.ui default label texts, so after a
+        language switch the loaded contest's exchange labels are set again.
+        """
+        contest = getattr(self, "contest", None)
+        if contest is None or not hasattr(contest, "interface"):
+            return
+        try:
+            contest.interface(self)
+        except AttributeError as exc:
+            logger.warning("Could not re-apply plugin interface: %s", exc)
 
     def generate_adif(self) -> None:
         """

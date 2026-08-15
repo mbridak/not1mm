@@ -144,6 +144,377 @@
     </message>
   </context>
   <context>
+    <name>ContestPlugin</name>
+    <message>
+      <location filename="../../plugins/10_10_winter_phone.py" line="55" />
+      <location filename="../../plugins/10_10_summer_phone.py" line="55" />
+      <location filename="../../plugins/10_10_spring_cw.py" line="53" />
+      <location filename="../../plugins/10_10_fall_cw.py" line="54" />
+      <source>Name 1010# SPC</source>
+      <translation>Имя 1010# SPC</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/trans_tasman.py" line="155" />
+      <location filename="../../plugins/spdx.py" line="56" />
+      <location filename="../../plugins/sac_ssb.py" line="104" />
+      <location filename="../../plugins/sac_cw.py" line="104" />
+      <location filename="../../plugins/rsgb_80m_cc.py" line="78" />
+      <location filename="../../plugins/rdxc.py" line="100" />
+      <location filename="../../plugins/pacc.py" line="72" />
+      <location filename="../../plugins/ok1wc.py" line="63" />
+      <location filename="../../plugins/oceania_dx_ssb.py" line="111" />
+      <location filename="../../plugins/oceania_dx_cw.py" line="111" />
+      <location filename="../../plugins/labre_rs_digi.py" line="81" />
+      <location filename="../../plugins/john_moyle_field_day.py" line="183" />
+      <location filename="../../plugins/jidx_ph.py" line="57" />
+      <location filename="../../plugins/iaru_fieldday_r1_ssb.py" line="88" />
+      <location filename="../../plugins/iaru_fieldday_r1_cw.py" line="88" />
+      <location filename="../../plugins/hadx.py" line="125" />
+      <location filename="../../plugins/eudx.py" line="90" />
+      <location filename="../../plugins/ea_rtty.py" line="102" />
+      <location filename="../../plugins/ea_majistad_ssb.py" line="98" />
+      <location filename="../../plugins/ea_majistad_cw.py" line="98" />
+      <location filename="../../plugins/darc_vhf.py" line="79" />
+      <location filename="../../plugins/cwo.py" line="81" />
+      <location filename="../../plugins/cq_wpx_ssb.py" line="58" />
+      <location filename="../../plugins/cq_wpx_rtty.py" line="97" />
+      <location filename="../../plugins/cq_wpx_cw.py" line="95" />
+      <location filename="../../plugins/canada_day.py" line="90" />
+      <location filename="../../plugins/arrl_ss_phone.py" line="63" />
+      <location filename="../../plugins/arrl_ss_cw.py" line="63" />
+      <location filename="../../plugins/arrl_rtty_ru.py" line="86" />
+      <location filename="../../plugins/arrl_10m.py" line="104" />
+      <location filename="../../plugins/aadx_ssb.py" line="116" />
+      <location filename="../../plugins/aadx_cw.py" line="117" />
+      <source>SentNR</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/trans_tasman.py" line="157" />
+      <location filename="../../plugins/sac_ssb.py" line="106" />
+      <location filename="../../plugins/sac_cw.py" line="106" />
+      <location filename="../../plugins/rsgb_80m_cc.py" line="80" />
+      <location filename="../../plugins/ok1wc.py" line="65" />
+      <location filename="../../plugins/oceania_dx_ssb.py" line="113" />
+      <location filename="../../plugins/oceania_dx_cw.py" line="113" />
+      <location filename="../../plugins/john_moyle_field_day.py" line="185" />
+      <location filename="../../plugins/jidx_ph.py" line="59" />
+      <location filename="../../plugins/iaru_fieldday_r1_ssb.py" line="90" />
+      <location filename="../../plugins/iaru_fieldday_r1_cw.py" line="90" />
+      <location filename="../../plugins/cq_wpx_ssb.py" line="60" />
+      <location filename="../../plugins/cq_wpx_rtty.py" line="99" />
+      <location filename="../../plugins/cq_wpx_cw.py" line="97" />
+      <location filename="../../plugins/aadx_ssb.py" line="118" />
+      <location filename="../../plugins/aadx_cw.py" line="119" />
+      <source>RcvNR</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/wia_remembrance.py" line="65" />
+      <location filename="../../plugins/ref_ssb.py" line="111" />
+      <location filename="../../plugins/ref_cw.py" line="96" />
+      <location filename="../../plugins/lz-dx.py" line="119" />
+      <location filename="../../plugins/helvetia.py" line="121" />
+      <location filename="../../plugins/es_open.py" line="156" />
+      <location filename="../../plugins/es_manual_key.py" line="147" />
+      <location filename="../../plugins/es_ll_kv.py" line="156" />
+      <location filename="../../plugins/es_field_day.py" line="190" />
+      <location filename="../../plugins/agcw_qrp.py" line="180" />
+      <source>Sent</source>
+      <translation>Отправлено</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/agcw_qrp.py" line="182" />
+      <source>SN Pwr MbrNr</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/ari_40_80.py" line="57" />
+      <source>Automobile Code</source>
+      <translation>Код автомобиля</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/spdx.py" line="58" />
+      <location filename="../../plugins/pacc.py" line="74" />
+      <location filename="../../plugins/ea_rtty.py" line="104" />
+      <location filename="../../plugins/ea_majistad_ssb.py" line="100" />
+      <location filename="../../plugins/ea_majistad_cw.py" line="100" />
+      <location filename="../../plugins/ari_dx.py" line="93" />
+      <source>Prov or SN</source>
+      <translation>Провинция или SN</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/arrl_10m.py" line="107" />
+      <source>State|Prov|SN|ITU</source>
+      <translation>Штат|Провинция|SN|ITU</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/arrl_160m.py" line="57" />
+      <source>ARRL/RAC Section</source>
+      <translation>Секция ARRL/RAC</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/arrl_dx_ssb.py" line="58" />
+      <location filename="../../plugins/arrl_dx_cw.py" line="58" />
+      <source>Power/State/Province</source>
+      <translation>Мощность/Штат/Провинция</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/winter_field_day.py" line="66" />
+      <location filename="../../plugins/arrl_field_day.py" line="57" />
+      <source>Class</source>
+      <translation>Класс</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/winter_field_day.py" line="68" />
+      <location filename="../../plugins/arrl_field_day.py" line="60" />
+      <source>Section</source>
+      <translation>Секция</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/arrl_rtty_ru.py" line="89" />
+      <source>State|Prov|SN</source>
+      <translation>Штат|Провинция|SN</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/arrl_ss_phone.py" line="71" />
+      <location filename="../../plugins/arrl_ss_phone.py" line="65" />
+      <location filename="../../plugins/arrl_ss_cw.py" line="71" />
+      <location filename="../../plugins/arrl_ss_cw.py" line="65" />
+      <source>sn prec ck sec</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/vhf_sprint.py" line="60" />
+      <location filename="../../plugins/arrl_vhf_sep.py" line="59" />
+      <location filename="../../plugins/arrl_vhf_jun.py" line="59" />
+      <location filename="../../plugins/arrl_vhf_jan.py" line="91" />
+      <source>Sent Grid</source>
+      <translation>Отправленная сетка</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/vhf_sprint.py" line="62" />
+      <location filename="../../plugins/stew_perry_topband.py" line="79" />
+      <location filename="../../plugins/labre_rs_digi.py" line="83" />
+      <location filename="../../plugins/arrl_vhf_sep.py" line="61" />
+      <location filename="../../plugins/arrl_vhf_jun.py" line="61" />
+      <location filename="../../plugins/arrl_vhf_jan.py" line="93" />
+      <source>Grid</source>
+      <translation>Сетка</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/canada_day.py" line="92" />
+      <source>Prov/territory or SN</source>
+      <translation>Провинция/территория или SN</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/cq_160_ssb.py" line="58" />
+      <location filename="../../plugins/cq_160_cw.py" line="58" />
+      <source>ST/Prov/CQ Zone</source>
+      <translation>ST/Провинция/CQ зона</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/cqws.py" line="74" />
+      <source>Station type</source>
+      <translation>Тип станции</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/cq_ww_ssb.py" line="90" />
+      <location filename="../../plugins/cq_ww_rtty.py" line="96" />
+      <location filename="../../plugins/cq_ww_cw.py" line="95" />
+      <source>CQ Zone</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/cq_ww_rtty.py" line="98" />
+      <source>State/Prov</source>
+      <translation>Штат/Провинция</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/cwo.py" line="83" />
+      <source>Recd Number and Name</source>
+      <translation>Полученные номер и имя</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/weekly_rtty.py" line="79" />
+      <location filename="../../plugins/phone_weekly_test.py" line="76" />
+      <location filename="../../plugins/naqp_ssb.py" line="56" />
+      <location filename="../../plugins/naqp_rtty.py" line="89" />
+      <location filename="../../plugins/naqp_cw.py" line="86" />
+      <location filename="../../plugins/k1usn_sst.py" line="72" />
+      <location filename="../../plugins/general_logging.py" line="50" />
+      <location filename="../../plugins/cwt.py" line="82" />
+      <source>Name</source>
+      <translation>Имя</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/cwt.py" line="84" />
+      <source>Number or State</source>
+      <translation>Номер или штат</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/darc_vhf.py" line="87" />
+      <location filename="../../plugins/darc_vhf.py" line="81" />
+      <source># Grid</source>
+      <translation># Сетка</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/wag.py" line="103" />
+      <location filename="../../plugins/darc_xmas.py" line="80" />
+      <source>DOK/# Sent</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/wag.py" line="105" />
+      <location filename="../../plugins/darc_xmas.py" line="82" />
+      <source>DOK/# RCVD</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/es_open.py" line="158" />
+      <location filename="../../plugins/es_manual_key.py" line="149" />
+      <location filename="../../plugins/es_ll_kv.py" line="158" />
+      <location filename="../../plugins/es_field_day.py" line="192" />
+      <source>SN</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/eudx.py" line="93" />
+      <source>ITU/EU Union Region</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/euhfc.py" line="74" />
+      <source>Lic Year</source>
+      <translation>Год лицензии</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/general_logging.py" line="52" />
+      <source>Comment</source>
+      <translation>Комментарий</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/hadx.py" line="127" />
+      <source>HA County or SN</source>
+      <translation>Округ HA или SN</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/helvetia.py" line="123" />
+      <source>Canton/SN</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/iaru_hf.py" line="72" />
+      <source>ITU Zone</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/icwc_mst.py" line="80" />
+      <source>Sent S/N</source>
+      <translation>Отправленная S/N</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/icwc_mst.py" line="82" />
+      <source>Name + S/N</source>
+      <translation>Имя + S/N</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/weekly_rtty.py" line="81" />
+      <location filename="../../plugins/k1usn_sst.py" line="74" />
+      <source>SPC</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/lz-dx.py" line="121" />
+      <source>District/ITU</source>
+      <translation>Район/ITU</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/phone_weekly_test.py" line="78" />
+      <location filename="../../plugins/naqp_ssb.py" line="58" />
+      <location filename="../../plugins/naqp_rtty.py" line="91" />
+      <location filename="../../plugins/naqp_cw.py" line="88" />
+      <source>State</source>
+      <translation>Штат</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/qso_party_sn.py" line="91" />
+      <location filename="../../plugins/qso_party_rst.py" line="91" />
+      <source>County/State/DX</source>
+      <translation>Округ/Штат/DX</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/raem.py" line="100" />
+      <source>Rcv S/N</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/raem.py" line="102" />
+      <source>Exchange</source>
+      <translation>Обмен</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/randomgram.py" line="58" />
+      <source>SentRG</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/randomgram.py" line="60" />
+      <source>RcvRG</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/rdxc.py" line="102" />
+      <source>Serial or Oblast</source>
+      <translation>Серийный номер или область</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/ref_ssb.py" line="113" />
+      <location filename="../../plugins/ref_cw.py" line="98" />
+      <source>Dep/Pfx/SN</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/ukeidx.py" line="65" />
+      <location filename="../../plugins/rsgb_iota.py" line="97" />
+      <source>Sent Nr</source>
+      <translation>Отправленный Nr</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/ukeidx.py" line="67" />
+      <location filename="../../plugins/rsgb_iota.py" line="99" />
+      <source># and Dist</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/ssa_mt_ssb.py" line="132" />
+      <location filename="../../plugins/ssa_mt_cw.py" line="130" />
+      <source>Nr</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/ssa_mt_ssb.py" line="134" />
+      <location filename="../../plugins/ssa_mt_cw.py" line="132" />
+      <source>Locator</source>
+      <translation>Локатор</translation>
+    </message>
+    <message>
+      <location filename="../../plugins/ta_vhf_uhf_contest.py" line="62" />
+      <source>SNTNR</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/ta_vhf_uhf_contest.py" line="63" />
+      <source>RCV NR + GRID</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../plugins/wia_remembrance.py" line="67" />
+      <source>Years Licenced</source>
+      <translation>Годы лицензии</translation>
+    </message>
+  </context>
+  <context>
     <name>Dialog</name>
     <message>
       <location filename="../about.ui" line="0" />
@@ -3119,7 +3490,7 @@
     <message>
       <location filename="../main.ui" line="0" />
       <source>Callsign</source>
-      <translation type="unfinished" />
+      <translation>Позывной</translation>
     </message>
     <message>
       <location filename="../main.ui" line="0" />
