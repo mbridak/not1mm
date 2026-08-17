@@ -1697,6 +1697,38 @@ class MainWindow(QtWidgets.QMainWindow):
                 mode = self.rig_control.last_data_mode
             self.change_mode(mode, intended_freq=vfo)
 
+    def _shutdown(self) -> None:
+        """Common cleanup for quit_app and closeEvent."""
+
+        if self.tray_icon is not None:
+            self.tray_icon.hide()
+
+        try:
+            if self.radio_thread.isRunning():
+                self.rig_control.time_to_quit = True
+                self.radio_thread.quit()
+                self.radio_thread.wait(1000)
+        except (RuntimeError, AttributeError):
+            ...
+
+        try:
+            if self.rtc_thread.isRunning():
+                self.rtc_service.time_to_quit = True
+                self.rtc_thread.quit()
+                self.rtc_thread.wait(1000)
+        except (RuntimeError, AttributeError):
+            ...
+
+        cmd = {"cmd": "HALT"}
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
+
+        Preferences.save()
+
     def quit_app(self) -> None:
         """
         Send multicast quit message, then quit the program.
@@ -1709,11 +1741,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        Preferences.save()
-        cmd = {}
-        cmd["cmd"] = "HALT"
-        if self.lookup_service:
-            self.lookup_service.msg_from_main(cmd)
+        self._shutdown()
         app.quit()
 
     def show_message_box(self, message: str, blocking: bool = True) -> None:
@@ -2620,24 +2648,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("windowState", self.saveState())
         self.settings.sync()
 
-        try:  # Shutdown the radio thread.
-            if self.radio_thread.isRunning():
-                self.rig_control.time_to_quit = True
-                self.radio_thread.quit()
-                self.radio_thread.wait(1000)
-
-        except (RuntimeError, AttributeError):
-            ...
-
-        cmd = {}
-        cmd["cmd"] = "HALT"
-        if self.bandmap_window:
-            self.bandmap_window.msg_from_main(cmd)
-        if self.log_window:
-            self.log_window.msg_from_main(cmd)
-        if self.lookup_service:
-            self.lookup_service.msg_from_main(cmd)
-        Preferences.save()
+        self._shutdown()
+        _event.accept()
 
     def cty_lookup(self, callsign: str) -> dict:
         """Lookup callsign in cty.dat file.
