@@ -38,6 +38,12 @@ class ClusterWindow(QDockWidget):
         self.clusterOutput.document().setMaximumBlockCount(1000)
         self.clusterInput.returnPressed.connect(self.input_to_cluster)
         self.connectButton.clicked.connect(self.cluster_connect)
+        self.fontSizeMinus.clicked.connect(lambda: self._change_font_size(-1))
+        self.fontSizePlus.clicked.connect(lambda: self._change_font_size(+1))
+
+        font = self.clusterOutput.font()
+        font.setPointSize(self.pref.get("cluster_font_size", 10))
+        self.clusterOutput.setFont(font)
 
         # wire up the socket
         self.connected = False
@@ -57,6 +63,14 @@ class ClusterWindow(QDockWidget):
 
         if at_bottom:
             sb.setValue(sb.maximum())
+
+    def _change_font_size(self, delta: int) -> None:
+        font = self.clusterOutput.font()
+        size = max(6, min(72, font.pointSize() + delta))
+        font.setPointSize(size)
+        self.clusterOutput.setFont(font)
+        self.pref["cluster_font_size"] = size
+        Preferences.save()
 
     def cluster_connect(self):
         """Connect to the cluster."""

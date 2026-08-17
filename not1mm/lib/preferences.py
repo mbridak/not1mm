@@ -65,6 +65,7 @@ class Preferences:
         "CAT_port": 4532,
         "cluster_server": "dxc.nc7j.com",
         "cluster_port": 7373,
+        "cluster_font_size": 10,
         "cluster_filter": "Set DX Filter SpotterCont=NA",
         "cluster_mode": "OPEN",
         "cluster_expire": 1,
