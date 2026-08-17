@@ -17,28 +17,33 @@
 - ARRL VHF January, June, September
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
+- CQ World Scout
 - CQ World Wide CW, RTTY, SSB
 - CWOps CWT, CWO
 - DARC Xmas
 - DARC VHF
 - Dutch PACC
-- EA Majistad CW
-- EA Majistad SSB
+- EA Majistad CW, SSB
 - EA RTTY
 - ES OPEN HF
 - ES FIELD DAY HF
 - ES OPEN HF
 - Estonian LL Cup
+- EUDX
+- European HF Championship
 - HADX
 - Helvetia
 - IARU Fieldday R1 CW, SSB
 - IARU HF
 - ICWC MST
 - Japan International DX CW, SSB
+- John Moyle Memorial FD
 - K1USN Slow Speed Test
 - Labre RS Digi
 - LZ DX
 - NAQP CW, RTTY, SSB
+- Oceania DX
+- OK1WC
 - Phone Weekly Test
 - RAEM
 - RandomGram
@@ -52,6 +57,8 @@
 - SSA MT
 - State QSO (limited)
 - Stew Perry Topband
+- TA VHF UHF
+- Trans Tasman
 - UK/EI DX
 - Weekly RTTY
 - Work All Germany
