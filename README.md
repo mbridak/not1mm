@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-16] @mbridak Fix:  The tray icon and other stuff sometimes persisted after quit.
+- [2026-08-15] @mbridak Fix: clusterwindow always opened at program lanch.
 - [2026-08-14] Merge pull request #658 from mbridak/language-translations
   - @mbridak Refactor plugin interfaces to use Qt translation for labels
   - @mbridak Add initial translations.
