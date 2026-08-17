@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
+  - @mbridak Add cluster window font resize buttons.
+  - @mbridak Fix: main window title.
 - [2026-08-16] @mbridak Fix:  The tray icon and other stuff sometimes persisted after quit.
 - [2026-08-15] @mbridak Fix: clusterwindow always opened at program lanch.
 - [2026-08-14] Merge pull request #658 from mbridak/language-translations
@@ -2840,3 +2843,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
