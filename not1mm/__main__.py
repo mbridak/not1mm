@@ -5035,6 +5035,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.retranslate_contest_labels()
         for key, action in self.language_actions.items():
             action.setChecked(key == code)
+        self.set_window_title()
 
     def retranslate_contest_labels(self) -> None:
         """Re-apply the active contest plugin's field labels.
