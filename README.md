@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-18] @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
+  - @mbridak disable darkmode in gnome.
 - [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
   - @mbridak Add cluster window font resize buttons.
   - @mbridak Fix: main window title.
