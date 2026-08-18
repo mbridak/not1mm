@@ -388,6 +388,10 @@ class BandMapWindow(QDockWidget):
     multicast_interface = None
     text_color = QColor(45, 45, 45)
     worked_color = QColor(128, 128, 128)
+
+    dark_text_color = QColor(205, 214, 244)       # Catppuccin Text
+    dark_worked_color = QColor(108, 112, 134)      # Catppuccin Overlay0
+    dark_marked_color = QColor(249, 226, 175)      # Catppuccin Yellow
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     bandmapwindow_closed = pyqtSignal()
@@ -546,8 +550,8 @@ class BandMapWindow(QDockWidget):
 
         setdarkmode = self.is_it_dark()
         if setdarkmode is True:
-            self.text_color = QColorConstants.White
-            self.worked_color = QColor(108, 108, 108)
+            self.text_color = self.dark_text_color
+            self.worked_color = self.dark_worked_color
             self.update()
         else:
             self.text_color = QColorConstants.Black
@@ -759,7 +763,7 @@ class BandMapWindow(QDockWidget):
                 if "MARKED" in items.get("comment"):
                     setdarkmode = self.is_it_dark()
                     if setdarkmode is True:
-                        pen_color = QColor(254, 194, 17)
+                        pen_color = self.dark_marked_color
                     else:
                         pen_color = QColor(0, 160, 0)
                 if items.get("callsign") in self.worked_list:

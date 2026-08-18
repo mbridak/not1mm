@@ -58,7 +58,6 @@ from PyQt6.QtGui import (
     QIcon,
     QKeyEvent,
     QKeySequence,
-    QPalette,
     QPixmap,
 )
 from PyQt6.QtWidgets import (
@@ -77,6 +76,7 @@ from not1mm.chat import ChatWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
+from not1mm.lib import catppuccin
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -217,7 +217,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         load_ui(self, fsutils.APP_DATA_PATH / "main.ui")
-        self.setStyleSheet("QDockWidget { border: 2px solid grey; }")
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
@@ -1194,8 +1193,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def is_it_dark(self) -> bool:
         """Returns if the DE has a dark theme active."""
-        if os.getenv("XDG_CURRENT_DESKTOP", "Nope").upper() == "GNOME":
-            return False
         hints = QtGui.QGuiApplication.styleHints()
         scheme = hints.colorScheme()
         return scheme == Qt.ColorScheme.Dark
@@ -1263,24 +1260,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it blue."""
         if the_button is not None:
-            pal = QPalette()
-            pal.isCopyOf(self.current_palette)
-            blueColor = QColor(0, 0, 128)
-            pal.setBrush(QPalette.ColorRole.Button, blueColor)
-            the_button.setPalette(pal)
+            the_button.setStyleSheet(
+                f"background-color: {catppuccin.BLUE}; color: {catppuccin.BASE};"
+            )
 
     def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it green."""
         if the_button is not None:
-            pal = QPalette()
-            pal.isCopyOf(self.current_palette)
-            greenColor = QColor(127, 127, 0)
-            pal.setBrush(QPalette.ColorRole.Button, greenColor)
-            the_button.setPalette(pal)
+            the_button.setStyleSheet(
+                f"background-color: {catppuccin.GREEN}; color: {catppuccin.BASE};"
+            )
 
     def restore_button_color(self, the_button: QtWidgets.QPushButton) -> None:
         """Restores the color of the button"""
-        the_button.setPalette(self.current_palette)
+        the_button.setStyleSheet("")
 
     def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
@@ -1524,52 +1517,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
-        """Forces a darkmode palette."""
+        """Apply Catppuccin Mocha (dark) or system palette (light)."""
 
         logger.debug(f"Dark mode set to: {setdarkmode}")
 
-        cmd = {}
-        cmd["cmd"] = "DARKMODE"
-        cmd["state"] = setdarkmode
+        cmd = {"cmd": "DARKMODE", "state": setdarkmode}
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
 
         if setdarkmode:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
+            darkPalette = catppuccin.build_palette()
 
             self.current_palette = darkPalette
             self.setPalette(darkPalette)
-            self.text_color = QColorConstants.White
+            self.setStyleSheet(catppuccin.STYLESHEET)
+            self.text_color = QColor(catppuccin.TEXT)
             self.menuFile.setPalette(darkPalette)
             self.menuHelp.setPalette(darkPalette)
             self.menuOther.setPalette(darkPalette)
@@ -1585,6 +1547,7 @@ class MainWindow(QtWidgets.QMainWindow):
             palette = self.style().standardPalette()
             self.current_palette = palette
             self.setPalette(palette)
+            self.setStyleSheet("")
             self.menuFile.setPalette(palette)
             self.menuHelp.setPalette(palette)
             self.menuOther.setPalette(palette)
