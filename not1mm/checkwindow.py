@@ -239,11 +239,11 @@ class CheckWindow(QDockWidget):
             text_lightness = palette.windowText().color().lightness()
             background_lightness = palette.window().color().lightness()
             if background_lightness < text_lightness:
-                # dark mode
+                # dark mode – Catppuccin Mocha
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#dd3333",
-                    character_add_color="#3333dd",
-                    character_match_color="#33bb33",
+                    character_remove_color="#f38ba8",
+                    character_add_color="#89b4fa",
+                    character_match_color="#a6e3a1",
                 )
             else:
                 # light mode
