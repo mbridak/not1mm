@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-08-18] @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
+  - @mbridak disable darkmode in gnome.
 - [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
   - @mbridak Add cluster window font resize buttons.
   - @mbridak Fix: main window title.
@@ -2843,9 +2845,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
