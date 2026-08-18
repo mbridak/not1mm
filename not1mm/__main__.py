@@ -1194,6 +1194,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def is_it_dark(self) -> bool:
         """Returns if the DE has a dark theme active."""
+        if os.getenv("XDG_CURRENT_DESKTOP", "Nope").upper() == "GNOME":
+            return False
         hints = QtGui.QGuiApplication.styleHints()
         scheme = hints.colorScheme()
         return scheme == Qt.ColorScheme.Dark
