@@ -3722,7 +3722,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self._is_phone_mode():
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
-            # self.voice_string(self.process_macro(function_key.toolTip()))
             return
         if self.radio_state.get("mode") in [
             "RTTY",
