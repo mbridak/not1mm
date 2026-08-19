@@ -1,6 +1,7 @@
 # Changelog
 
-- [2026-08-18] @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
+- [2026-08-18] @mbridak Add Catppuccin Latte theme for light mode.
+  - @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
   - @mbridak disable darkmode in gnome.
 - [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
   - @mbridak Add cluster window font resize buttons.
