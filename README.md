@@ -69,7 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-08-19] Merge pull request #664 from mbridak/add-wpx-to-stats
+- [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
+  - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
+  - Merge pull request #664 from mbridak/add-wpx-to-stats
   - @mbridak Add WPX statistics to the stats window
   - Merge pull request #663 from mbridak/improve-voice-keying
   - @mbridak Refactor voice keying logic to improve handling.
