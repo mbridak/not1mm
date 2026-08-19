@@ -389,9 +389,13 @@ class BandMapWindow(QDockWidget):
     text_color = QColor(45, 45, 45)
     worked_color = QColor(128, 128, 128)
 
-    dark_text_color = QColor(205, 214, 244)       # Catppuccin Text
-    dark_worked_color = QColor(108, 112, 134)      # Catppuccin Overlay0
-    dark_marked_color = QColor(249, 226, 175)      # Catppuccin Yellow
+    dark_text_color = QColor(205, 214, 244)       # Catppuccin Mocha Text
+    dark_worked_color = QColor(108, 112, 134)      # Catppuccin Mocha Overlay0
+    dark_marked_color = QColor(249, 226, 175)      # Catppuccin Mocha Yellow
+
+    light_text_color = QColor(76, 79, 105)         # Catppuccin Latte Text
+    light_worked_color = QColor(156, 160, 176)      # Catppuccin Latte Overlay0
+    light_marked_color = QColor(223, 142, 29)       # Catppuccin Latte Yellow
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     bandmapwindow_closed = pyqtSignal()
@@ -554,8 +558,8 @@ class BandMapWindow(QDockWidget):
             self.worked_color = self.dark_worked_color
             self.update()
         else:
-            self.text_color = QColorConstants.Black
-            self.worked_color = QColor(178, 178, 178)
+            self.text_color = self.light_text_color
+            self.worked_color = self.light_worked_color
             self.update()
 
     def spot_clicked(self):
@@ -765,7 +769,7 @@ class BandMapWindow(QDockWidget):
                     if setdarkmode is True:
                         pen_color = self.dark_marked_color
                     else:
-                        pen_color = QColor(0, 160, 0)
+                        pen_color = self.light_marked_color
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.band_mhz in call_bandlist:

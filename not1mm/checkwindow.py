@@ -246,11 +246,11 @@ class CheckWindow(QDockWidget):
                     character_match_color="#a6e3a1",
                 )
             else:
-                # light mode
+                # light mode – Catppuccin Latte
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#ffcccc",
-                    character_add_color="#ccccff",
-                    character_match_color="#ccffcc",
+                    character_remove_color="#d20f39",
+                    character_add_color="#1e66f5",
+                    character_match_color="#40a02b",
                 )
         return self.background_colors_cache
 

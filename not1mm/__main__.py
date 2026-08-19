@@ -1544,22 +1544,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_2.setPalette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
         else:
-            palette = self.style().standardPalette()
-            self.current_palette = palette
-            self.setPalette(palette)
-            self.setStyleSheet("")
-            self.menuFile.setPalette(palette)
-            self.menuHelp.setPalette(palette)
-            self.menuOther.setPalette(palette)
-            self.menuView.setPalette(palette)
-            self.menuWindow.setPalette(palette)
-            self.callsign.setPalette(palette)
-            self.sent.setPalette(palette)
-            self.receive.setPalette(palette)
-            self.other_1.setPalette(palette)
-            self.other_2.setPalette(palette)
-            self.cw_entry.setPalette(palette)
-            self.text_color = QColorConstants.Black
+            lightPalette = catppuccin.build_latte_palette()
+
+            self.current_palette = lightPalette
+            self.setPalette(lightPalette)
+            self.setStyleSheet(catppuccin.LATTE_STYLESHEET)
+            self.text_color = QColor(catppuccin.L_TEXT)
+            self.menuFile.setPalette(lightPalette)
+            self.menuHelp.setPalette(lightPalette)
+            self.menuOther.setPalette(lightPalette)
+            self.menuView.setPalette(lightPalette)
+            self.menuWindow.setPalette(lightPalette)
+            self.callsign.setPalette(lightPalette)
+            self.sent.setPalette(lightPalette)
+            self.receive.setPalette(lightPalette)
+            self.other_1.setPalette(lightPalette)
+            self.other_2.setPalette(lightPalette)
+            self.cw_entry.setPalette(lightPalette)
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -2595,6 +2596,12 @@ class MainWindow(QtWidgets.QMainWindow):
             if indicator:
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet("color: rgb(127,127,0);")
+
+    def changeEvent(self, event) -> None:
+        if event.type() == QEvent.Type.WindowActivate:
+            scheme = QApplication.instance().styleHints().colorScheme()
+            self.setDarkMode(setdarkmode=scheme == Qt.ColorScheme.Dark)
+        super().changeEvent(event)
 
     def closeEvent(self, _event: QCloseEvent) -> None:
         """
