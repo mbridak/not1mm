@@ -1,6 +1,9 @@
 # Changelog
 
-- [2026-08-18] @mbridak Add Catppuccin Latte theme for light mode.
+- [2026-08-19] Merge pull request #663 from mbridak/improve-voice-keying
+  - @mbridak Refactor voice keying logic to improve handling.
+- [2026-08-18] @mbridak Update UI elements in bandmap and cluster windows to use icons instead of tex...
+  - @mbridak Add Catppuccin Latte theme for light mode.
   - @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
   - @mbridak disable darkmode in gnome.
 - [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
@@ -2846,3 +2849,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
