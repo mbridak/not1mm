@@ -83,9 +83,9 @@ class StatsWindow(QDockWidget):
         self.tableWidget.clear()
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setColumnCount(8)
         self.tableWidget.setHorizontalHeaderLabels(
-            ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "PTS"]
+            ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "WPX", "PTS"]
         )
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setEditTriggers(
@@ -99,7 +99,7 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setRowCount(len(result) + 1)
         row = 0
         for band in result:
-            query = f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}';"
+            query = f"select count(*) as qs, count(DISTINCT(WPXPrefix)) as wpx, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}';"
             result = self.database.exec_sql(query)
             item: QTableWidgetItem = QTableWidgetItem(
                 str(band.get("band", "")).replace("None", "")
@@ -120,7 +120,14 @@ class StatsWindow(QDockWidget):
                 str(result.get("points", "0")).replace("None", "0")
             )
             item.setTextAlignment(0x0002)
+            self.tableWidget.setItem(row, 7, item)
+
+            item: QTableWidgetItem = QTableWidgetItem(
+                str(result.get("wpx", "0")).replace("None", "0")
+            )
+            item.setTextAlignment(0x0002)
             self.tableWidget.setItem(row, 6, item)
+
             query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
             result: dict = self.database.exec_sql(query)
             item: QTableWidgetItem = QTableWidgetItem(
@@ -140,7 +147,7 @@ class StatsWindow(QDockWidget):
             self.tableWidget.setItem(row, 5, item)
 
             row += 1
-        query: str = f"select count(*) as qs, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
+        query: str = f"select count(*) as qs, count(DISTINCT(Call)) as calls, count(DISTINCT(WPXPrefix || ':' || Band)) as wpx, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
         result: dict = self.database.exec_sql(query)
         item: QTableWidgetItem = QTableWidgetItem("TOTAL")
         item.setTextAlignment(0x0002)
@@ -155,11 +162,18 @@ class StatsWindow(QDockWidget):
         )
         item.setTextAlignment(0x0002)
         self.tableWidget.setItem(row, 2, item)
+
+        item: QTableWidgetItem = QTableWidgetItem(
+            str(result.get("wpx", "0")).replace("None", "0")
+        )
+        item.setTextAlignment(0x0002)
+        self.tableWidget.setItem(row, 6, item)
+
         item: QTableWidgetItem = QTableWidgetItem(
             str(result.get("points", "0")).replace("None", "0")
         )
         item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 6, item)
+        self.tableWidget.setItem(row, 7, item)
 
         query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
         result: dict = self.database.exec_sql(query)
