@@ -1,6 +1,8 @@
 # Changelog
 
-- [2026-08-19] Merge pull request #664 from mbridak/add-wpx-to-stats
+- [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
+  - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
+  - Merge pull request #664 from mbridak/add-wpx-to-stats
   - @mbridak Add WPX statistics to the stats window
   - Merge pull request #663 from mbridak/improve-voice-keying
   - @mbridak Refactor voice keying logic to improve handling.
@@ -2851,9 +2853,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
