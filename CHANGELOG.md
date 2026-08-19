@@ -1,6 +1,8 @@
 # Changelog
 
-- [2026-08-19] Merge pull request #663 from mbridak/improve-voice-keying
+- [2026-08-19] Merge pull request #664 from mbridak/add-wpx-to-stats
+  - @mbridak Add WPX statistics to the stats window
+  - Merge pull request #663 from mbridak/improve-voice-keying
   - @mbridak Refactor voice keying logic to improve handling.
 - [2026-08-18] @mbridak Update UI elements in bandmap and cluster windows to use icons instead of tex...
   - @mbridak Add Catppuccin Latte theme for light mode.
