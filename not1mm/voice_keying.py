@@ -125,14 +125,12 @@ class Voice(QObject):
         char_iterator = iter(the_string.lower())
 
         for char in char_iterator:
-            print(f"{char}")
             if char == "[":
                 substring = ""
                 for sub_char in char_iterator:
                     if sub_char == "]":
                         break
                     substring += sub_char
-                    print(f"{substring=} {sub_char=}")
                 filename = f"{op_path!s}/{substring}.wav"
                 if Path(filename).is_file():
                     self.voicings.append(filename)
