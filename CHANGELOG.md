@@ -1,6 +1,7 @@
 # Changelog
 
-- [2026-08-20] @mbridak Fix: light mode band indicators. Refactor font weight.
+- [2026-08-20] @mbridak Add Portuguese language support for Brazil and Portugal
+  - @mbridak Fix: light mode band indicators. Refactor font weight.
 - [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
   - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
   - Merge pull request #664 from mbridak/add-wpx-to-stats
