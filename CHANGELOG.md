@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-08-20] @mbridak Fix: light mode band indicators. Refactor font weight.
 - [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
   - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
   - Merge pull request #664 from mbridak/add-wpx-to-stats
@@ -2853,3 +2854,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
