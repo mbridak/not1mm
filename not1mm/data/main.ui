@@ -23,7 +23,6 @@
    <font>
     <family>JetBrains Mono</family>
     <pointsize>11</pointsize>
-    <weight>100</weight>
    </font>
   </property>
   <property name="focusPolicy">
@@ -751,7 +750,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -796,7 +794,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -837,8 +834,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>20</pointsize>
-                   <weight>100</weight>
+                   <pointsize>20</pointsize>                   
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -874,7 +870,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -916,7 +911,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -1073,7 +1067,6 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>11</pointsize>
-                <weight>100</weight>
                </font>
               </property>
               <property name="text">
@@ -1533,8 +1526,6 @@
     <property name="font">
      <font>
       <family>JetBrains Mono</family>
-      <pointsize>11</pointsize>
-      <weight>100</weight>
      </font>
     </property>
     <property name="title">
@@ -1630,7 +1621,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1662,7 +1652,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1688,7 +1677,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1714,7 +1702,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -1731,7 +1718,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1751,7 +1737,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1771,7 +1756,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -1782,7 +1766,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1802,7 +1785,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1822,7 +1804,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1845,7 +1826,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1868,7 +1848,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1891,7 +1870,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1914,7 +1892,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1937,7 +1914,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1957,7 +1933,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1977,7 +1952,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1997,7 +1971,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2017,7 +1990,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2037,7 +2009,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2057,7 +2028,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2068,7 +2038,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2097,7 +2066,7 @@
    </property>
    <property name="font">
     <font>
-     <family>JetBrains Mono Thin</family>
+     <family>JetBrains Mono</family>
     </font>
    </property>
   </action>
@@ -2113,7 +2082,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2129,7 +2097,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2148,7 +2115,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2165,7 +2131,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2182,7 +2147,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2202,7 +2166,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2234,7 +2197,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2251,7 +2213,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2268,7 +2229,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2278,12 +2238,6 @@
   <action name="actionMark_Contacts_Dirty">
    <property name="text">
     <string>Mark Contacts Dirty</string>
-   </property>
-   <property name="font">
-    <font>
-     <family>JetBrains Mono</family>
-     <weight>100</weight>
-    </font>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -2305,7 +2259,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2319,7 +2272,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
