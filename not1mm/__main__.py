@@ -2571,10 +2571,9 @@ class MainWindow(QtWidgets.QMainWindow):
         for indicators in self.all_mode_indicators.values():
             for indicator in indicators.values():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-                if self.text_color == QColorConstants.Black:
-                    indicator.setStyleSheet("color: black;")
-                else:
-                    indicator.setStyleSheet("color: white;")
+                indicator.setStyleSheet(
+                    f"color: {self.text_color.name()};"
+                )
 
     def set_band_indicator(self, band: str) -> None:
         """
