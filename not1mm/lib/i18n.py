@@ -36,6 +36,8 @@ SUPPORTED_LANGUAGES = {
     "it": "Italiano",
     "ja": "日本語",
     "ko": "한국어",
+    "pt_BR": "Português (Brasil)",
+    "pt_PT": "Português (Portugal)",
     "ru": "Русский",
     "zh_CN": "简体中文",
 }
