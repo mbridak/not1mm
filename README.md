@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-21] Merge pull request #669 from mbridak/Fix-bandmap-marked-spots-disappearing
+  - @mbridak Fix: marked spots retention.
 - [2026-08-20] @mbridak Add Portuguese language support for Brazil and Portugal
   - @mbridak Fix: light mode band indicators. Refactor font weight.
 - [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
