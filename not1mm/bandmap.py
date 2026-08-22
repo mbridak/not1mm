@@ -162,8 +162,11 @@ class Database:
             ...
 
     def markspot(self, spot: dict, clear_freq=False) -> None:
-        "..."
-        print(f"{spot=}")
+        """
+        Marks a spot that was rightclicked.
+        Changes the time to the future so the marked spot does not get
+        removed with the other normal spots.
+        """
         the_UTC_time = datetime.now(UTC).isoformat(" ")[:19].split()[1]
         ts = "2099-01-01 " + the_UTC_time
         try:
