@@ -50,6 +50,7 @@
 - RAC Canada Day
 - REF CW, SSB
 - RSGB 80M CC
+- RSBG Commonwealth BERU
 - RSGB IOTA
 - Russia DX
 - SAC CW, SSB
