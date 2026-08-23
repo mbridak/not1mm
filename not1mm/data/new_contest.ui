@@ -345,6 +345,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CQ WW VHF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CQWS</string>
       </property>
      </item>
