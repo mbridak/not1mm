@@ -69,6 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-23] Merge pull request #670 from mbridak/add-rsgb-beru
+  - @mbridak fix: improve code readability and update exchange hint
+- [2026-08-22] @mbridak first try adding rsgb beru
 - [2026-08-21] Merge pull request #669 from mbridak/Fix-bandmap-marked-spots-disappearing
   - @mbridak Fix: marked spots retention.
 - [2026-08-20] @mbridak Add Portuguese language support for Brazil and Portugal
