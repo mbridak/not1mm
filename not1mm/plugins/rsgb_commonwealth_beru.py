@@ -29,21 +29,20 @@
 #  	Cabrillo name:	RSGB-COMMONWEALTH
 #  	Cabrillo name aliases:	RSGB-BERU
 
-
 import datetime
 import logging
 import re
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
 
+assert imp_adif, online_score_xml
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Serial No."
+EXCHANGE_HINT = "#"
 
 name = "RSGB Commonwealth BERU"
 cabrillo_name = "RSGB-COMMONWEALTH"
@@ -249,7 +248,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
+    self.other_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "SentNR")
+    )
     self.field3.setAccessibleName("Sent Number")
     self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "RcvNR"))
     self.field4.setAccessibleName("Received Number")
@@ -307,7 +308,8 @@ def get_base_call(call: str) -> str:
         with_digit = [
             part
             for part in parts
-            if any(char.isdigit() for char in part) and any(char.isalpha() for char in part)
+            if any(char.isdigit() for char in part)
+            and any(char.isalpha() for char in part)
         ]
         if len(with_digit) > 1:
             return min(with_digit, key=len)
@@ -431,11 +433,7 @@ def scoring_info(self) -> dict | None:
 
     # Rule 4(d): QSOs between the seven home nations don't count,
     # unless the distant station is an HQ station.
-    if (
-        not hq_station
-        and my_area in HOME_NATIONS
-        and their_area in HOME_NATIONS
-    ):
+    if not hq_station and my_area in HOME_NATIONS and their_area in HOME_NATIONS:
         eligible = False
 
     return {
@@ -556,7 +554,7 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
+    """Outputs a line for the Cabrillo file in the proper encoding."""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -570,12 +568,12 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
         + "/"
-        + f"{self.station.get('Call', '').upper().replace('/','-')}_{cabrillo_name}_{date_time}.log"
+        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.log"
     )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
@@ -607,7 +605,7 @@ def cabrillo(self, file_encoding):
                     file_encoding,
                 )
             output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call','')}",
+                f"CALLSIGN: {self.station.get('Call', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -619,19 +617,19 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory','')}",
+                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory','')}",
+                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory','')}",
+                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -646,13 +644,13 @@ def cabrillo(self, file_encoding):
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory','')}",
+                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
             )
             output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory','')}",
+                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
                 "\r\n",
                 file_descriptor,
                 file_encoding,
@@ -669,7 +667,7 @@ def cabrillo(self, file_encoding):
             for op in list_of_ops:
                 ops += f"{op.get('Operator', '')}, "
             if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call','')}"
+                ops += f"@{self.station.get('Call', '')}"
             else:
                 ops = ops.rstrip(", ")
             output_cabrillo_line(
@@ -745,7 +743,7 @@ def cabrillo(self, file_encoding):
                 )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
