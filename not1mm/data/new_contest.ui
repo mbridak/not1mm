@@ -370,6 +370,11 @@
      </item>
      <item>
       <property name="text">
+       <string>DARC SCHWABEN</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>DXPEDITION</string>
       </property>
      </item>
