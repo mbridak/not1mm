@@ -560,6 +560,11 @@
      </item>
      <item>
       <property name="text">
+       <string>RSGB COMMONWEALTH BERU</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>RSGB IOTA</string>
       </property>
      </item>
