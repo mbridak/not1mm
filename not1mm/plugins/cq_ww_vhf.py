@@ -53,7 +53,7 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
+dupe_type = 5
 
 
 def init_contest(self):
@@ -126,9 +126,9 @@ def validate_exchange(text: str) -> bool:
 def points_for_band(band: str) -> int:
     """Return QSO points for a band. 6m = 1 point, 2m = 2 points."""
 
-    if band in ("50", "6"):
+    if band in ("50.0", "6"):
         return 1
-    if band in ("144", "2"):
+    if band in ("144.0", "2"):
         return 2
     return 0
 
@@ -175,15 +175,41 @@ def set_contact_vars(self):
     self.contact["SentNr"] = normalize_grid(self.other_1.text())
 
 
+def specific_contest_check_dupe(self, call):
+    """Return dict with isdupe True if the call was worked on this band and
+    mode-group in the current 3-hour block."""
+    band = self.contact.get("Band", "")
+    sentnr = ""
+    if self.RoverLocation:
+        sentnr = str(self.RoverLocation)
+    else:
+        sentnr = str(self.contest_settings.get("SentExchange", "")).upper()
+
+    sql = (
+        "select count(*) "
+        "as dupe "
+        f"from dxlog where ContestNR = {self.database.current_contest} and "
+        f"Call = '{call}' and Band = {band} and SentNr = '{sentnr}';"
+    )
+    result = self.database.exec_sql(sql)
+
+    if result and result.get("dupe", 0) > 0:
+        return {"isdupe": True}
+    return {"isdupe": False}
+
+
 def predupe(self):
     """called after callsign entered"""
+
+    if self.RoverLocation:
+        self.other_1.setText(str(self.RoverLocation))
+    else:
+        self.other_1.setText(str(self.contest_settings.get("SentExchange", "")).upper())
 
 
 def prefill(self):
     """Fill sentnr"""
-    exchange = self.contest_settings.get("SentExchange", "").upper()
-    if len(self.other_1.text()) == 0:
-        self.other_1.setText(exchange)
+    # self.other_1.setText(str(self.contest_settings.get("SentExchange", "")).upper())
 
 
 def points(self):
@@ -206,7 +232,7 @@ def show_mults(self):
     dx = 0
 
     sql = (
-        "select count(DISTINCT(NR || ':' || Band || ':' || RoverLocation)) "
+        "select count(DISTINCT(NR || ':' || Band || ':' || SentNr)) "
         "as mult_count "
         f"from dxlog where ContestNR = {self.database.current_contest} "
         "and typeof(NR) = 'text';"
