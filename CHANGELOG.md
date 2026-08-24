@@ -1,6 +1,8 @@
 # Changelog
 
-- [2026-08-23] Merge pull request #670 from mbridak/add-rsgb-beru
+- [2026-08-23] @mbridak Add CQ WW VHF
+  - @mbridak Add DARC Schwaben
+  - Merge pull request #670 from mbridak/add-rsgb-beru
   - @mbridak fix: improve code readability and update exchange hint
 - [2026-08-22] @mbridak first try adding rsgb beru
 - [2026-08-21] Merge pull request #669 from mbridak/Fix-bandmap-marked-spots-disappearing
@@ -2860,9 +2862,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
