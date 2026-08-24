@@ -3544,7 +3544,7 @@
     <message>
         <location filename="../main.ui" line="0" />
         <source>Run</source>
-        <translation>Executar</translation>
+        <translation>Run</translation>
     </message>
     <message>
         <location filename="../main.ui" line="0" />
@@ -3889,7 +3889,7 @@
     <message>
         <location filename="../main.ui" line="0" />
         <source>Edit Macros</source>
-        <translation>Editar cacros</translation>
+        <translation>Editar macros</translation>
     </message>
     <message>
         <location filename="../main.ui" line="0" />
