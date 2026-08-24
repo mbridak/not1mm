@@ -18,7 +18,7 @@
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
 - CQ World Scout
-- CQ World Wide CW, RTTY, SSB
+- CQ World Wide CW, RTTY, SSB, VHF
 - CWOps CWT, CWO
 - DARC Xmas
 - DARC VHF

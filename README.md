@@ -69,6 +69,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-24] @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+  - @mbridak Correct spelling of Majestad.
+  - @mbridak remove redundant language.
+  - @mbridak Some Portuguese corrections.
 - [2026-08-23] @mbridak Add CQ WW VHF
   - @mbridak Add DARC Schwaben
   - Merge pull request #670 from mbridak/add-rsgb-beru
