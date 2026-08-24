@@ -160,8 +160,8 @@
         <location filename="../../plugins/hadx.py" line="125" />
         <location filename="../../plugins/eudx.py" line="90" />
         <location filename="../../plugins/ea_rtty.py" line="102" />
-        <location filename="../../plugins/ea_majistad_ssb.py" line="98" />
-        <location filename="../../plugins/ea_majistad_cw.py" line="98" />
+        <location filename="../../plugins/ea_majestad_ssb.py" line="98" />
+        <location filename="../../plugins/ea_majestad_cw.py" line="98" />
         <location filename="../../plugins/darc_vhf.py" line="79" />
         <location filename="../../plugins/cwo.py" line="81" />
         <location filename="../../plugins/cq_wpx_ssb.py" line="58" />
@@ -226,8 +226,8 @@
         <location filename="../../plugins/spdx.py" line="58" />
         <location filename="../../plugins/pacc.py" line="74" />
         <location filename="../../plugins/ea_rtty.py" line="104" />
-        <location filename="../../plugins/ea_majistad_ssb.py" line="100" />
-        <location filename="../../plugins/ea_majistad_cw.py" line="100" />
+        <location filename="../../plugins/ea_majestad_ssb.py" line="100" />
+        <location filename="../../plugins/ea_majestad_cw.py" line="100" />
         <location filename="../../plugins/ari_dx.py" line="93" />
         <source>Prov or SN</source>
         <translation>Provincia o SN</translation>
@@ -2597,12 +2597,12 @@
     </message>
     <message>
         <location filename="../new_contest.ui" line="0" />
-        <source>EA MAJISTAD CW</source>
+        <source>EA MAJESTAD CW</source>
         <translation type="unfinished" />
     </message>
     <message>
         <location filename="../new_contest.ui" line="0" />
-        <source>EA MAJISTAD SSB</source>
+        <source>EA MAJESTAD SSB</source>
         <translation type="unfinished" />
     </message>
     <message>

@@ -1070,7 +1070,7 @@
   - Merge pull request #280 from DD5MJ/darc_vhf
   - Add darc_vhf contest
 - [2025-03-18] @mbridak Update list of contests.
-  - Merge pull request #279 from mbridak/add_ea_majistad_cw
+  - Merge pull request #279 from mbridak/add_ea_majestad_cw
   - @mbridak Add His Maj King of Spain CW.
 - [2025-03-17] @mbridak change watch string in fldigi qso packet to SRX_STRING
   - Merge pull request #278 from mbridak/add_ea_rtty
