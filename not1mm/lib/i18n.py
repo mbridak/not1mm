@@ -36,8 +36,7 @@ SUPPORTED_LANGUAGES = {
     "it": "Italiano",
     "ja": "日本語",
     "ko": "한국어",
-    "pt_BR": "Português (Brasil)",
-    "pt_PT": "Português (Portugal)",
+    "pt_PT": "Português",
     "ru": "Русский",
     "zh_CN": "简体中文",
 }
@@ -56,7 +55,7 @@ def available_languages() -> list:
     languages = [("en_US", SUPPORTED_LANGUAGES["en_US"])]
     if TRANSLATIONS_DIR.is_dir():
         for path in sorted(TRANSLATIONS_DIR.glob("not1mm_*.qm")):
-            code = path.stem[len("not1mm_"):]
+            code = path.stem[len("not1mm_") :]
             if code == "en_US":
                 continue
             languages.append((code, SUPPORTED_LANGUAGES.get(code, code)))
@@ -84,9 +83,7 @@ def install_language(app, language: str = "en_US") -> None:
         _translators.append(app_translator)
         logger.info("Loaded interface translations for %s", language)
 
-    qt_translations = Path(
-        QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
-    )
+    qt_translations = Path(QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
     qt_translator = QTranslator()
     if qt_translator.load(f"qt_{language}", str(qt_translations)):
         app.installTranslator(qt_translator)
@@ -121,9 +118,7 @@ def retranslate_widget(widget) -> None:
         try:
             form.retranslateUi(widget)
         except AttributeError as exc:
-            logger.warning(
-                "retranslateUi failed for %s: %s", widget.objectName(), exc
-            )
+            logger.warning("retranslateUi failed for %s: %s", widget.objectName(), exc)
 
 
 def retranslate_all() -> None:
