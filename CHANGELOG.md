@@ -1,5 +1,9 @@
 # Changelog
 
+- [2026-08-24] @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+  - @mbridak Correct spelling of Majestad.
+  - @mbridak remove redundant language.
+  - @mbridak Some Portuguese corrections.
 - [2026-08-23] @mbridak Add CQ WW VHF
   - @mbridak Add DARC Schwaben
   - Merge pull request #670 from mbridak/add-rsgb-beru
@@ -1070,7 +1074,7 @@
   - Merge pull request #280 from DD5MJ/darc_vhf
   - Add darc_vhf contest
 - [2025-03-18] @mbridak Update list of contests.
-  - Merge pull request #279 from mbridak/add_ea_majestad_cw
+  - Merge pull request #279 from mbridak/add_ea_majistad_cw
   - @mbridak Add His Maj King of Spain CW.
 - [2025-03-17] @mbridak change watch string in fldigi qso packet to SRX_STRING
   - Merge pull request #278 from mbridak/add_ea_rtty
@@ -2862,3 +2866,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
