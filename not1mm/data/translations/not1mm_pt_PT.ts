@@ -3256,7 +3256,7 @@
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source>RateWindow</source>
-        <translation>Janela de taxa</translation>
+        <translation>Janela da evolução dos QSOs</translation>
     </message>
     <message>
         <location filename="../ratewindow.ui" line="0" />
@@ -3278,12 +3278,12 @@
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source>10 Last QSO:</source>
-        <translation type="unfinished" />
+        <translation>10 últimos QSOs:</translation>
     </message>
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source>100 Last QSO:</source>
-        <translation type="unfinished" />
+        <translation>100 últimos QSOs:</translation>
     </message>
     <message>
         <location filename="../ratewindow.ui" line="0" />
@@ -3298,7 +3298,7 @@
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source>Run QSO:</source>
-        <translation>Execução do QSO:</translation>
+        <translation>QSOs em RUN:</translation>
     </message>
     <message>
         <location filename="../ratewindow.ui" line="0" />
@@ -3316,12 +3316,12 @@
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source> Hour Run QSO:</source>
-        <translation type="unfinished" />
+        <translation>QSOs por hora em RUN:</translation>
     </message>
     <message>
         <location filename="../ratewindow.ui" line="0" />
         <source> Hour S&amp;P QSO:</source>
-        <translation type="unfinished" />
+        <translation>QSOs por hora em S&amp;P:</translation>
     </message>
     <message>
         <location filename="../statistics.ui" line="0" />
