@@ -1,6 +1,9 @@
 # Changelog
 
-- [2026-08-24] @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+- [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
+- [2026-08-24] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak More Portuguese updates.
+  - @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
   - @mbridak Correct spelling of Majestad.
   - @mbridak remove redundant language.
   - @mbridak Some Portuguese corrections.
@@ -2866,9 +2869,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

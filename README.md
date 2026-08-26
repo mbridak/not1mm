@@ -69,7 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-08-24] @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+- [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
+- [2026-08-24] @mbridak More Portuguese updates.
+  - @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
   - @mbridak Correct spelling of Majestad.
   - @mbridak remove redundant language.
   - @mbridak Some Portuguese corrections.
