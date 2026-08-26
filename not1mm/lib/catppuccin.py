@@ -6,7 +6,6 @@ and Catppuccin Latte (light).
 See https://github.com/catppuccin/catppuccin for colour definitions.
 """
 
-from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPalette
 
 
@@ -20,54 +19,60 @@ def _qcolor(hex_str: str) -> QColor:
 # ═══════════════════════════════════════════════════════════════════════════
 
 ROSEWATER = "#f5e0dc"
-FLAMINGO  = "#f2cdcd"
-PINK      = "#f5c2e7"
-MAUVE     = "#cba6f7"
-RED       = "#f38ba8"
-MARoon    = "#eba0ac"
-PEACH     = "#fab387"
-YELLOW    = "#f9e2af"
-GREEN     = "#a6e3a1"
-TEAL      = "#94e2d5"
-SKY       = "#89dceb"
-SAPPHIRE  = "#74c7ec"
-BLUE      = "#89b4fa"
-LAVENDER  = "#b4befe"
+FLAMINGO = "#f2cdcd"
+PINK = "#f5c2e7"
+MAUVE = "#cba6f7"
+RED = "#f38ba8"
+MARoon = "#eba0ac"
+PEACH = "#fab387"
+YELLOW = "#f9e2af"
+GREEN = "#a6e3a1"
+TEAL = "#94e2d5"
+SKY = "#89dceb"
+SAPPHIRE = "#74c7ec"
+BLUE = "#89b4fa"
+LAVENDER = "#b4befe"
 
-TEXT      = "#cdd6f4"
-SUBTEXT1  = "#bac2de"
-SUBTEXT0  = "#a6adc8"
-OVERLAY2  = "#9399b2"
-OVERLAY1  = "#7f849c"
-OVERLAY0  = "#6c7086"
-SURFACE2  = "#585b70"
-SURFACE1  = "#45475a"
-SURFACE0  = "#313244"
-BASE      = "#1e1e2e"
-MANTLE    = "#181825"
-CRUST     = "#11111b"
+TEXT = "#eaffea"
+SUBTEXT1 = "#bac2de"
+SUBTEXT0 = "#a6adc8"
+OVERLAY2 = "#9399b2"
+OVERLAY1 = "#7f849c"
+OVERLAY0 = "#6c7086"
+SURFACE2 = "#585b70"
+SURFACE1 = "#45475a"
+SURFACE0 = "#313244"
+BASE = "#1e1e2e"
+MANTLE = "#181825"
+CRUST = "#11111b"
 
 
 def build_palette() -> QPalette:
     """Return a QPalette dressed in Catppuccin Mocha."""
     p = QPalette()
 
-    p.setColor(QPalette.ColorRole.Window,          _qcolor(BASE))
-    p.setColor(QPalette.ColorRole.WindowText,       _qcolor(TEXT))
-    p.setColor(QPalette.ColorRole.Base,             _qcolor(MANTLE))
-    p.setColor(QPalette.ColorRole.AlternateBase,    _qcolor(SURFACE0))
-    p.setColor(QPalette.ColorRole.Text,             _qcolor(TEXT))
-    p.setColor(QPalette.ColorRole.Button,           _qcolor(SURFACE0))
-    p.setColor(QPalette.ColorRole.ButtonText,       _qcolor(TEXT))
-    p.setColor(QPalette.ColorRole.BrightText,       _qcolor(FLAMINGO))
-    p.setColor(QPalette.ColorRole.Link,             _qcolor(BLUE))
-    p.setColor(QPalette.ColorRole.Highlight,        _qcolor(MAUVE))
-    p.setColor(QPalette.ColorRole.HighlightedText,  _qcolor(BASE))
-    p.setColor(QPalette.ColorRole.PlaceholderText,  _qcolor(OVERLAY0))
+    p.setColor(QPalette.ColorRole.Window, _qcolor(BASE))
+    p.setColor(QPalette.ColorRole.WindowText, _qcolor(TEXT))
+    p.setColor(QPalette.ColorRole.Base, _qcolor(MANTLE))
+    p.setColor(QPalette.ColorRole.AlternateBase, _qcolor(SURFACE0))
+    p.setColor(QPalette.ColorRole.Text, _qcolor(TEXT))
+    p.setColor(QPalette.ColorRole.Button, _qcolor(SURFACE0))
+    p.setColor(QPalette.ColorRole.ButtonText, _qcolor(TEXT))
+    p.setColor(QPalette.ColorRole.BrightText, _qcolor(FLAMINGO))
+    p.setColor(QPalette.ColorRole.Link, _qcolor(BLUE))
+    p.setColor(QPalette.ColorRole.Highlight, _qcolor(MAUVE))
+    p.setColor(QPalette.ColorRole.HighlightedText, _qcolor(BASE))
+    p.setColor(QPalette.ColorRole.PlaceholderText, _qcolor(OVERLAY0))
 
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText,      _qcolor(OVERLAY1))
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.HighlightedText, _qcolor(OVERLAY1))
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text,            _qcolor(OVERLAY1))
+    p.setColor(
+        QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, _qcolor(OVERLAY1)
+    )
+    p.setColor(
+        QPalette.ColorGroup.Disabled,
+        QPalette.ColorRole.HighlightedText,
+        _qcolor(OVERLAY1),
+    )
+    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, _qcolor(OVERLAY1))
 
     return p
 
@@ -77,54 +82,62 @@ def build_palette() -> QPalette:
 # ═══════════════════════════════════════════════════════════════════════════
 
 L_ROSEWATER = "#dc8a78"
-L_FLAMINGO  = "#dd7878"
-L_PINK      = "#ea76cb"
-L_MAUVE     = "#8839ef"
-L_RED       = "#d20f39"
-L_MAROON    = "#e64553"
-L_PEACH     = "#fe640b"
-L_YELLOW    = "#df8e1d"
-L_GREEN     = "#40a02b"
-L_TEAL      = "#179299"
-L_SKY       = "#04a5e5"
-L_SAPPHIRE  = "#209fb5"
-L_BLUE      = "#1e66f5"
-L_LAVENDER  = "#7287fd"
+L_FLAMINGO = "#dd7878"
+L_PINK = "#ea76cb"
+L_MAUVE = "#8839ef"
+L_RED = "#d20f39"
+L_MAROON = "#e64553"
+L_PEACH = "#fe640b"
+L_YELLOW = "#df8e1d"
+L_GREEN = "#40a02b"
+L_TEAL = "#179299"
+L_SKY = "#04a5e5"
+L_SAPPHIRE = "#209fb5"
+L_BLUE = "#1e66f5"
+L_LAVENDER = "#7287fd"
 
-L_TEXT      = "#4c4f69"
-L_SUBTEXT1  = "#5c5f77"
-L_SUBTEXT0  = "#6c6f85"
-L_OVERLAY2  = "#7c7f93"
-L_OVERLAY1  = "#8c8fa1"
-L_OVERLAY0  = "#9ca0b0"
-L_SURFACE2  = "#acb0be"
-L_SURFACE1  = "#bcc0cc"
-L_SURFACE0  = "#ccd0da"
-L_BASE      = "#eff1f5"
-L_MANTLE    = "#e6e9ef"
-L_CRUST     = "#dce0e8"
+L_TEXT = "#000000"
+L_SUBTEXT1 = "#5c5f77"
+L_SUBTEXT0 = "#6c6f85"
+L_OVERLAY2 = "#7c7f93"
+L_OVERLAY1 = "#8c8fa1"
+L_OVERLAY0 = "#9ca0b0"
+L_SURFACE2 = "#acb0be"
+L_SURFACE1 = "#bcc0cc"
+L_SURFACE0 = "#ccd0da"
+L_BASE = "#eff1f5"
+L_MANTLE = "#e6e9ef"
+L_CRUST = "#dce0e8"
 
 
 def build_latte_palette() -> QPalette:
     """Return a QPalette dressed in Catppuccin Latte."""
     p = QPalette()
 
-    p.setColor(QPalette.ColorRole.Window,          _qcolor(L_BASE))
-    p.setColor(QPalette.ColorRole.WindowText,       _qcolor(L_TEXT))
-    p.setColor(QPalette.ColorRole.Base,             _qcolor(L_MANTLE))
-    p.setColor(QPalette.ColorRole.AlternateBase,    _qcolor(L_SURFACE0))
-    p.setColor(QPalette.ColorRole.Text,             _qcolor(L_TEXT))
-    p.setColor(QPalette.ColorRole.Button,           _qcolor(L_SURFACE0))
-    p.setColor(QPalette.ColorRole.ButtonText,       _qcolor(L_TEXT))
-    p.setColor(QPalette.ColorRole.BrightText,       _qcolor(L_RED))
-    p.setColor(QPalette.ColorRole.Link,             _qcolor(L_BLUE))
-    p.setColor(QPalette.ColorRole.Highlight,        _qcolor(L_MAUVE))
-    p.setColor(QPalette.ColorRole.HighlightedText,  _qcolor(L_BASE))
-    p.setColor(QPalette.ColorRole.PlaceholderText,  _qcolor(L_OVERLAY0))
+    p.setColor(QPalette.ColorRole.Window, _qcolor(L_BASE))
+    p.setColor(QPalette.ColorRole.WindowText, _qcolor(L_TEXT))
+    p.setColor(QPalette.ColorRole.Base, _qcolor(L_MANTLE))
+    p.setColor(QPalette.ColorRole.AlternateBase, _qcolor(L_SURFACE0))
+    p.setColor(QPalette.ColorRole.Text, _qcolor(L_TEXT))
+    p.setColor(QPalette.ColorRole.Button, _qcolor(L_SURFACE0))
+    p.setColor(QPalette.ColorRole.ButtonText, _qcolor(L_TEXT))
+    p.setColor(QPalette.ColorRole.BrightText, _qcolor(L_RED))
+    p.setColor(QPalette.ColorRole.Link, _qcolor(L_BLUE))
+    p.setColor(QPalette.ColorRole.Highlight, _qcolor(L_MAUVE))
+    p.setColor(QPalette.ColorRole.HighlightedText, _qcolor(L_BASE))
+    p.setColor(QPalette.ColorRole.PlaceholderText, _qcolor(L_OVERLAY0))
 
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText,      _qcolor(L_OVERLAY1))
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.HighlightedText, _qcolor(L_OVERLAY1))
-    p.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text,            _qcolor(L_OVERLAY1))
+    p.setColor(
+        QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, _qcolor(L_OVERLAY1)
+    )
+    p.setColor(
+        QPalette.ColorGroup.Disabled,
+        QPalette.ColorRole.HighlightedText,
+        _qcolor(L_OVERLAY1),
+    )
+    p.setColor(
+        QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, _qcolor(L_OVERLAY1)
+    )
 
     return p
 
