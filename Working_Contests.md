@@ -15,6 +15,7 @@
 - ARRL RTTY Roundup
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
+- CAQP
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
 - CQ World Scout
