@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-08-26] Merge pull request #672 from mbridak/add-CQP
+  - @mbridak Add California QSO Party plugin and UI updates.
+  - @mbridak Update schwaben add ESM, adjust advance_on_space configuration
 - [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
 - [2026-08-24] Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak More Portuguese updates.
