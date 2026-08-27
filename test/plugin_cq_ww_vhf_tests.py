@@ -5,12 +5,12 @@ from not1mm.plugins import cq_ww_vhf
 @pytest.mark.parametrize(
     "band, expected_points",
     [
-        ("50", 1),
+        ("50.0", 1),
         ("6", 1),
-        ("144", 2),
+        ("144.0", 2),
         ("2", 2),
-        ("432", 0),
-        ("20", 0),
+        ("432.0", 0),
+        ("20.0", 0),
         ("", 0),
     ],
 )

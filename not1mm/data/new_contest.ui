@@ -300,6 +300,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CA QSO PARTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CANADA DAY</string>
       </property>
      </item>
