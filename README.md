@@ -69,6 +69,9 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-26] Merge pull request #672 from mbridak/add-CQP
+  - @mbridak Add California QSO Party plugin and UI updates.
+  - @mbridak Update schwaben add ESM, adjust advance_on_space configuration
 - [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
 - [2026-08-24] @mbridak More Portuguese updates.
   - @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
