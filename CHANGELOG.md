@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-08-28] Merge pull request #673 from ra0sms/add-rda-contest
+  - Add RDA Contest plugin
 - [2026-08-26] Merge pull request #672 from mbridak/add-CQP
   - @mbridak Add California QSO Party plugin and UI updates.
   - @mbridak Update schwaben add ESM, adjust advance_on_space configuration
@@ -2872,3 +2874,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit

@@ -54,6 +54,7 @@
 - RSBG Commonwealth BERU
 - RSGB IOTA
 - Russia DX
+- Russian District Award (RDA)
 - SAC CW, SSB
 - SPDX
 - SSA MT
