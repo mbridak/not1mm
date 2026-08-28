@@ -560,6 +560,11 @@
       </item>
       <item>
        <property name="text">
+        <string>RDA Contest</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>REF CW</string>
        </property>
       </item>
