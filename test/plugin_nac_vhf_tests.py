@@ -74,6 +74,30 @@ def test_large_square(grid, expected):
 @pytest.mark.parametrize(
     "band,expected",
     [
+        ("ALL", "ALL"),
+        ("6M", "50 MHz"),
+        ("2M", "144 MHz"),
+        ("432", "432 MHz"),
+        ("1.2G", "1,3 GHz"),
+        ("2.3G", "2,3 GHz"),
+        ("3.4G", "3,4 GHz"),
+        ("47G", "47 GHz"),
+        ("75G", "75 GHz"),
+    ],
+)
+def test_bandinMHz_maps_ui_band_categories(band, expected):
+    assert nac.bandinMHz(band) == expected
+
+
+def test_bandinMHz_never_returns_literal_error():
+    # Unmapped / blank bands must not produce the bogus "Invalid input" literal.
+    for band in ("LIGHT", "VHF-3-BAND", "VHF-FM-ONLY", ""):
+        assert "Invalid" not in nac.bandinMHz(band)
+
+
+@pytest.mark.parametrize(
+    "band,expected",
+    [
         ("2M", 1),
         ("6M", 1),
         ("432", 1),
