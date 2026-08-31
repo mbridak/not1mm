@@ -144,7 +144,7 @@ class DataBase:
             cursor.execute(query, params)
             if commit:
                 self.conn.commit()
-        except sqlite3.OperationalError as exception:
+        except (sqlite3.OperationalError, sqlite3.IntegrityError) as exception:
             error_logger("%s", exception)
 
     def commit_it(self):

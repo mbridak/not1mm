@@ -1,5 +1,61 @@
 # Changelog
 
+- [2026-08-30] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak CWO plugin: improved contact variable handling
+- [2026-08-28] @mbridak correct cabrillo name in ukei-dx
+  - Merge pull request #673 from ra0sms/add-rda-contest
+  - Add RDA Contest plugin
+- [2026-08-26] Merge pull request #672 from mbridak/add-CQP
+  - @mbridak Add California QSO Party plugin and UI updates.
+  - @mbridak Update schwaben add ESM, adjust advance_on_space configuration
+- [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
+- [2026-08-24] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak More Portuguese updates.
+  - @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+  - @mbridak Correct spelling of Majestad.
+  - @mbridak remove redundant language.
+  - @mbridak Some Portuguese corrections.
+- [2026-08-23] @mbridak Add CQ WW VHF
+  - @mbridak Add DARC Schwaben
+  - Merge pull request #670 from mbridak/add-rsgb-beru
+  - @mbridak fix: improve code readability and update exchange hint
+- [2026-08-22] @mbridak first try adding rsgb beru
+- [2026-08-21] Merge pull request #669 from mbridak/Fix-bandmap-marked-spots-disappearing
+  - @mbridak Fix: marked spots retention.
+- [2026-08-20] @mbridak Add Portuguese language support for Brazil and Portugal
+  - @mbridak Fix: light mode band indicators. Refactor font weight.
+- [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
+  - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
+  - Merge pull request #664 from mbridak/add-wpx-to-stats
+  - @mbridak Add WPX statistics to the stats window
+  - Merge pull request #663 from mbridak/improve-voice-keying
+  - @mbridak Refactor voice keying logic to improve handling.
+- [2026-08-18] @mbridak Update UI elements in bandmap and cluster windows to use icons instead of tex...
+  - @mbridak Add Catppuccin Latte theme for light mode.
+  - @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
+  - @mbridak disable darkmode in gnome.
+- [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
+  - @mbridak Add cluster window font resize buttons.
+  - @mbridak Fix: main window title.
+- [2026-08-16] @mbridak Fix:  The tray icon and other stuff sometimes persisted after quit.
+- [2026-08-15] @mbridak Fix: clusterwindow always opened at program lanch.
+- [2026-08-14] Merge pull request #658 from mbridak/language-translations
+  - @mbridak Refactor plugin interfaces to use Qt translation for labels
+  - @mbridak Add initial translations.
+  - @mbridak Add internationalization support and language preferences
+- [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
+  - @mbridak Add RDXC contest.
+- [2026-08-12] @mbridak Update installation instructions for Flatpak support
+  - Merge pull request #655 from mbridak/flatpak
+  - @mbridak Generate flatpak.
+  - @mbridak Test is running as flatpak and don't do the xdg menu stuff.
+  - @mbridak Add DBus access.
+- [2026-08-11] @mbridak Add portaudio module with build configuration and source URL
+  - @mbridak Update Flatpak configuration: bump runtime and base versions, adjust filesyst...
+  - @mbridak Add build script and update Flatpak configuration for not1mm
+  - Merge pull request #654 from mbridak/add-trans-tasman
+  - @mbridak Add Trans Tasman contest support and update UI
+  - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins
 - [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
   - @mbridak Add JOHN MOYLE FIELD DAY plugin
 - [2026-08-09] Merge pull request #650 from IonixV/master
@@ -2821,9 +2877,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

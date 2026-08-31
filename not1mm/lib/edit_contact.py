@@ -1,6 +1,8 @@
 """Edit Contact Dialog"""
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
+
+from not1mm.lib.i18n import load_ui
 
 
 class EditContact(QtWidgets.QDialog):
@@ -8,7 +10,7 @@ class EditContact(QtWidgets.QDialog):
 
     def __init__(self, app_data_path):
         super().__init__(None)
-        uic.loadUi(app_data_path / "editcontact.ui", self)
+        load_ui(self, app_data_path / "editcontact.ui")
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):

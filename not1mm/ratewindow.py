@@ -9,12 +9,12 @@ Purpose: not sure yet
 import datetime
 import logging
 
-from PyQt6 import uic
 from PyQt6.QtCore import QTimer, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class RateWindow(QDockWidget):
         )
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
-        uic.loadUi(fsutils.APP_DATA_PATH / "ratewindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "ratewindow.ui")
         self.timer = QTimer()
         self.timer.timeout.connect(self.get_run_and_total_qs)
         self.timer.start(10000)

@@ -10,7 +10,6 @@ import logging
 import queue
 from dataclasses import dataclass
 
-from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtWidgets import QApplication, QDockWidget, QLabel, QVBoxLayout, QWidget
@@ -18,6 +17,7 @@ from rapidfuzz.distance import Levenshtein
 
 from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 from not1mm.lib.super_check_partial import SCP
 
@@ -58,7 +58,7 @@ class CheckWindow(QDockWidget):
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
 
-        uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "checkwindow.ui")
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -239,18 +239,18 @@ class CheckWindow(QDockWidget):
             text_lightness = palette.windowText().color().lightness()
             background_lightness = palette.window().color().lightness()
             if background_lightness < text_lightness:
-                # dark mode
+                # dark mode – Catppuccin Mocha
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#dd3333",
-                    character_add_color="#3333dd",
-                    character_match_color="#33bb33",
+                    character_remove_color="#d20f39",
+                    character_add_color="#0c3589",
+                    character_match_color="#1e5713",
                 )
             else:
-                # light mode
+                # light mode – Catppuccin Latte
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#ffcccc",
-                    character_add_color="#ccccff",
-                    character_match_color="#ccffcc",
+                    character_remove_color="#f38ba8",
+                    character_add_color="#89b4fa",
+                    character_match_color="#a6e3a1",
                 )
         return self.background_colors_cache
 

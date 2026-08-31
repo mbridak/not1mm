@@ -177,9 +177,9 @@ def interface(self):
     self.field2.show()
     self.field3.show()
     self.field4.show()
-    self.other_label.setText("Sent")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
     self.other_1.setAccessibleName("Sent")
-    self.exch_label.setText("SN Pwr MbrNr")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SN Pwr MbrNr"))
     self.other_2.setAccessibleName("Serial Number Power Class Member Number")
 
 

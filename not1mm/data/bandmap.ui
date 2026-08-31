@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>342</width>
+    <width>322</width>
     <height>700</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>322</width>
+    <height>204</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>BandMap</string>
@@ -49,8 +55,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>328</width>
-         <height>609</height>
+         <width>306</width>
+         <height>579</height>
         </rect>
        </property>
        <property name="font">
@@ -177,7 +183,10 @@
          <string>zoom in</string>
         </property>
         <property name="text">
-         <string>+</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomIn"/>
         </property>
        </widget>
       </item>
@@ -202,7 +211,10 @@
          <string>zoom out</string>
         </property>
         <property name="text">
-         <string>-</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomOut"/>
         </property>
        </widget>
       </item>

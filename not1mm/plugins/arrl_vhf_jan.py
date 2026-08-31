@@ -88,9 +88,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("Sent Grid")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent Grid"))
     self.field3.setAccessibleName("Sent Grid")
-    self.exch_label.setText("Grid")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Grid"))
     self.field4.setAccessibleName("Gridsquare")
 
 

@@ -2,8 +2,9 @@
 
 import logging
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 
+from not1mm.lib.i18n import available_languages, load_ui
 from not1mm.lib.preferences import Preferences
 
 try:
@@ -19,7 +20,7 @@ class Settings(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
-        uic.loadUi(app_data_path / "configuration.ui", self)
+        load_ui(self, app_data_path / "configuration.ui")
         # self.tabWidget.setTabVisible(5, False)
         # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
@@ -233,6 +234,13 @@ class Settings(QtWidgets.QDialog):
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
         self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))
 
+        for code, name in available_languages():
+            self.language.addItem(name, code)
+        value = self.preference.get("language", "en_US")
+        index = self.language.findData(value)
+        if index != -1:
+            self.language.setCurrentIndex(index)
+
     def set_cwdaemon_port_hint(self):
         """Sets placeholder hint for the CW interface."""
         self.cwip_field.setEnabled(True)
@@ -416,4 +424,5 @@ class Settings(QtWidgets.QDialog):
         if self.activate_23cm.isChecked():
             bandlist.append("23cm")
         self.preference["bands"] = bandlist
+        self.preference["language"] = self.language.currentData()
         Preferences.save()

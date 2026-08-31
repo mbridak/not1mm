@@ -1,11 +1,12 @@
 import datetime
 import logging
 
-from PyQt6 import QtGui, uic
+from PyQt6 import QtGui
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ class ChatWindow(QDockWidget):
         super().__init__()
         self.action = action
         self.active: bool = False
-        uic.loadUi(fsutils.APP_DATA_PATH / "chat.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "chat.ui")
         self.chat_input.returnPressed.connect(self.send_chat)
         self.pref = Preferences.data()
 

@@ -13,7 +13,7 @@
   <property name="font">
    <font>
     <family>JetBrains Mono</family>
-    <weight>100</weight>
+    
    </font>
   </property>
   <property name="windowTitle">
@@ -300,6 +300,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CA QSO PARTY</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CANADA DAY</string>
       </property>
      </item>
@@ -345,6 +350,11 @@
      </item>
      <item>
       <property name="text">
+       <string>CQ WW VHF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>CQWS</string>
       </property>
      </item>
@@ -370,17 +380,22 @@
      </item>
      <item>
       <property name="text">
+       <string>DARC SCHWABEN</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>DXPEDITION</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>EA MAJISTAD CW</string>
+       <string>EA MAJESTAD CW</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>EA MAJISTAD SSB</string>
+       <string>EA MAJESTAD SSB</string>
       </property>
      </item>
      <item>
@@ -533,16 +548,26 @@
        <string>RAEM</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>RANDOMGRAM</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>REF CW</string>
-      </property>
-     </item>
+      <item>
+       <property name="text">
+        <string>RANDOMGRAM</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RDXC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RDA Contest</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>REF CW</string>
+       </property>
+      </item>
      <item>
       <property name="text">
        <string>REF SSB</string>
@@ -551,6 +576,11 @@
      <item>
       <property name="text">
        <string>RSGB 80M CC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RSGB COMMONWEALTH BERU</string>
       </property>
      </item>
      <item>
@@ -591,6 +621,11 @@
      <item>
       <property name="text">
         <string>TA VHF UHF CONTEST</string>  
+      </property>     
+     </item>
+     <item>
+      <property name="text">
+        <string>TRANS TASMAN</string>  
       </property>     
      </item>
      <item>

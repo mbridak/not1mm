@@ -1,9 +1,10 @@
 """Edit key bindings dialog."""
 
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 import not1mm.actions
 from not1mm import fsutils
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 _KNOWN_CONTEXTS = [
@@ -28,7 +29,7 @@ class EditKeys(QtWidgets.QDialog):
         """Open Edit Keys dialog window and populate it"""
 
         super().__init__(parent)
-        uic.loadUi(fsutils.APP_DATA_PATH / "edit_keys.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "edit_keys.ui")
 
         # load known actions by inspecting the not1mm.actions module
         self.actions = []

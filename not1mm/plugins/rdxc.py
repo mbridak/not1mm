@@ -1,63 +1,66 @@
+"""Russian DX Contest (RDXC) plugin.
+
+Status:            Active
+Geographic Focus:  Worldwide
+Participation:     Worldwide
+Awards:            Worldwide
+Mode:              CW, SSB
+Bands:             160, 80, 40, 20, 15, 10m
+Classes:           Single Op All Band (QRP/Low/High)
+                   Single Op Single Band
+                   Multi-Single
+                   Multi-Two
+                   Multi-Multi
+Max power:         HP: >100 watts
+                   LP: 100 watts
+                   QRP: 5 watts
+Exchange:          Russian stations: RS(T) + oblast code
+                   non-Russian stations: RS(T) + Serial No.
+Work stations:     Once per band per mode
+QSO Points:        Russian stations:
+                     2 pts QSO with Russia on your continent
+                     5 pts QSO with Russia on another continent
+                     3 pts QSO with different country on your continent
+                     5 pts QSO with another continent
+                   Non-Russian stations:
+                     10 pts QSO with Russian station
+                     2 pts QSO with your own country
+                     3 pts QSO with different country on your continent
+                     5 pts QSO with another continent
+                     5 pts QSO with /MM station
+Multipliers:       Each Russian oblast once per band
+                   Each country (DXCC + WAE) once per band
+Score Calculation: Total score = total QSO points x total mults
+Find rules at:     https://www.rdxc.org/rules_eng
+Cabrillo name:     RDXC
 """
-His Maj. King of Spain Contest, CW
-Status:	            Active
-Geographic Focus:	Worldwide
-Participation:	    Worldwide
-Awards:	            Worldwide
-Mode:	            CW
-Bands:	            160, 80, 40, 20, 15, 10m
-Classes:	        Single Op All Band (QRP/Low/High)
-                    Single Op All Band Youth
-                    Single Op Single Band
-                    Multi-Op (Low/High)
-Max power:	        HP: >100 watts
-                    LP: 100 watts
-                    QRP: 5 watts
-Exchange:	        EA: RST + province
-                    non-EA: RST + Serial No.
-Work stations:	    Once per band
-QSO Points:	        (see rules)
-Multipliers:	    Each EA province once per band
-                    Each EADX100 entity once per band
-                    Each special (EA0) station once per band
-Score Calculation:	Total score = total QSO points x total mults
-E-mail logs to:	    (none)
-Upload log at:	    https://concursos.ure.es/en/logs/
-Mail logs to:	    (none)
-Find rules at:	    https://concursos.ure.es/en/s-m-el-rey-de-espana-cw/bases/
-Cabrillo name:	    EA-MAJESTAD-CW
-"""
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
-
-# EA1: AV, BU, C, LE, LO, LU, O, OU, P, PO, S, SA, SG, SO, VA, ZA
-# EA2: BI, HU, NA, SS, TE, VI, Z
-# EA3: B, GI, L, T
-# EA4: BA, CC, CR, CU, GU, M, TO
-# EA5: A, AB, CS, MU, V
-# EA6: IB
-# EA7: AL, CA, CO, GR, H, J, MA, SE
-# EA8: GC, TF
-# EA9: CE, ML
-
+# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
 import datetime
 import logging
-
 from pathlib import Path
+
 from PyQt6 import QtWidgets
 
-from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Province or #"
+assert QtWidgets
+assert imp_adif
+assert online_score_xml
 
-name = "His Maj. King of Spain Contest, CW"
-mode = "CW"  # CW SSB BOTH RTTY
-cabrillo_name = "KING-OF-SPAIN-CW"
+EXCHANGE_HINT = "# or Oblast"
+
+# Primary prefixes assigned to Russian stations by the country file.
+# UA = European Russia, UA9 = Asiatic Russia, UA2 = Kaliningrad.
+RUSSIA_PREFIXES = ("UA", "UA9", "UA2")
+
+name = "RDXC"
+cabrillo_name = "RDXC"
+mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -67,16 +70,18 @@ columns = [
     "Rcv",
     "SentNr",
     "RcvNr",
+    "M1",
+    "M2",
     "PTS",
 ]
 
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
+dupe_type = 3
 
 
-def init_contest(self) -> None:
+def init_contest(self):
     """setup plugin"""
     set_tab_next(self)
     set_tab_prev(self)
@@ -84,35 +89,26 @@ def init_contest(self) -> None:
     self.next_field = self.other_2
 
 
-def interface(self) -> None:
-    """
-    Setup the user interface.
-    Unhides the input fields and sets the lebels.
-    """
+def interface(self):
+    """Setup user interface"""
     self.field1.show()
     self.field2.show()
     self.field3.show()
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("SentNR")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
     self.field3.setAccessibleName("Sent Number")
-    self.exch_label.setText("Prov or SN")
-    self.field4.setAccessibleName("Province or Serial Number")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Serial or Oblast"))
+    self.field4.setAccessibleName("Serial Number or Russian Oblast")
 
 
-def reset_label(self) -> None:
-    """
-    Reset label after field cleared.
-    Not needed for this contest.
-    """
+def reset_label(self):  # pylint: disable=unused-argument
+    """reset label after field cleared"""
 
 
-def set_tab_next(self) -> None:
-    """
-    Set TAB Advances.
-    Defines which which of the fields are next to get focus when the TAB key is pressed.
-    """
+def set_tab_next(self):
+    """Set TAB Advances"""
     self.tab_next = {
         self.callsign: self.sent,
         self.sent: self.receive,
@@ -122,11 +118,8 @@ def set_tab_next(self) -> None:
     }
 
 
-def set_tab_prev(self) -> None:
-    """
-    Set TAB Advances.
-    Defines which which of the fields are next to get focus when the Shift-TAB key is pressed.
-    """
+def set_tab_prev(self):
+    """Set TAB Advances"""
     self.tab_prev = {
         self.callsign: self.other_2,
         self.sent: self.callsign,
@@ -136,129 +129,162 @@ def set_tab_prev(self) -> None:
     }
 
 
-def validate(self) -> bool:
-    """Not Used"""
-    return True
+def is_russian_prefix(prefix: str) -> bool:
+    """Return True if the country prefix belongs to a Russian station."""
+    return prefix.upper() in RUSSIA_PREFIXES
 
 
-def set_contact_vars(self) -> None:
+def country_mult_prefix(prefix: str) -> str:
+    """Return a single grouping key for Russian stations.
+
+    European and Asiatic Russia are one DXCC country so they share one
+    country multiplier per band.  Kaliningrad is a separate DXCC entity.
+    """
+    prefix = prefix.upper()
+    if prefix in ("UA", "UA9"):
+        return "R"
+    return prefix
+
+
+def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
-    self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
+    self.contact["NR"] = self.other_2.text().upper()
+    self.contact["IsMultiplier1"] = 0
+    self.contact["IsMultiplier2"] = 0
+
+    if self.contact_is_dupe > 0:
+        return
+
+    countryprefix = self.contact.get("CountryPrefix", "")
+    if not countryprefix:
+        result = self.cty_lookup(self.contact.get("Call", ""))
+        if result:
+            item = result.get(next(iter(result)))
+            countryprefix = item.get("primary_pfx", "")
+
+    band = float(self.contact.get("Band", 0))
+    oblast = self.contact.get("NR", "")
+
+    if is_russian_prefix(countryprefix) and oblast:
+        query = (
+            "select count(*) as mult_count from dxlog where "
+            "ContestNR = ? and NR = ? and Band = ? and "
+            "CountryPrefix in ('UA', 'UA9', 'UA2');"
+        )
+        result = self.database.exec_sql(
+            query, (self.pref.get("contest", "1"), oblast, band)
+        )
+        if result.get("mult_count", 0) == 0:
+            self.contact["IsMultiplier1"] = 1
+
+    call = self.contact.get("Call", "")
+    if "/MM" not in call.upper():
+        mult_prefix = country_mult_prefix(countryprefix)
+        rows = self.database.exec_sql_mult(
+            "select CountryPrefix from dxlog where ContestNR = ? and "
+            "Band = ? and Call not like '%/MM%';",
+            (self.pref.get("contest", "1"), band),
+        )
+        seen = {country_mult_prefix(row.get("CountryPrefix", "")) for row in rows}
+        if mult_prefix not in seen:
+            self.contact["IsMultiplier2"] = 1
 
 
-def predupe(self) -> None:
-    """called after callsign entered. Not needed here."""
+def predupe(self):  # pylint: disable=unused-argument
+    """called after callsign entered"""
 
 
-def prefill(self) -> None:
-    """
-    Fill the SentNR field with either the next serial number or the province.
-    """
-    # result = self.database.get_serial()
-    # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
+def prefill(self):
+    """Fill SentNR"""
     serial_nr = str(self.current_sn).zfill(3)
     if serial_nr == "None":
         serial_nr = "001"
-
-    exchange = self.contest_settings.get("SentExchange", "").replace("#", serial_nr)
     if len(self.other_1.text()) == 0:
-        self.other_1.setText(exchange)
+        self.other_1.setText(serial_nr)
 
 
-def points(self) -> int:
-    """
-    Calculate the points for this contact.
-    """
-    # EA: 2 points per QSO with EA
-    # EA: 1 point per QSO with non-EA
-    # non-EA: 3 points per QSO with EA
-    # non-EA: 1 point per QSO with non-EA
-
+def points(self):
+    """Calc point"""
     if self.contact_is_dupe > 0:
         return 0
 
-    ea_prefixes = ["EA", "EA1", "EA2", "EA3", "EA4", "EA5", "EA6", "EA7", "EA8", "EA9"]
+    call = self.contact.get("Call", "")
+    if call.upper().endswith("/MM"):
+        return 5
 
-    me = None
-    him = None
+    mycountry = ""
+    mycontinent = ""
+    hiscountry = ""
+    hiscontinent = ""
 
     result = self.cty_lookup(self.station.get("Call", ""))
     if result is not None:
         item = result.get(next(iter(result)))
-        me = item.get("primary_pfx", "")
+        mycountry = item.get("entity", "")
+        mycontinent = item.get("continent", "")
 
-    result = self.cty_lookup(self.contact.get("Call", ""))
+    result = self.cty_lookup(call)
     if result is not None:
         item = result.get(next(iter(result)))
-        him = item.get("primary_pfx", "")
+        hiscountry = item.get("entity", "")
+        hiscontinent = item.get("continent", "")
 
-    if me is not None and him is not None:
-        if me in ea_prefixes and him in ea_prefixes:
-            return 2
-        elif me in ea_prefixes and him not in ea_prefixes:
-            return 1
-        elif me not in ea_prefixes and him in ea_prefixes:
-            return 3
-        else:
-            return 1
+    if not hiscountry:
+        return 0
 
-    return 1
+    his_is_russian = hiscountry in ("European Russia", "Asiatic Russia", "Kaliningrad")
+
+    if mycountry in ("European Russia", "Asiatic Russia", "Kaliningrad"):
+        # Russian station
+        if his_is_russian:
+            if mycontinent == hiscontinent:
+                return 2  # QSO with Russia on your continent
+            return 5  # QSO with Russia on another continent
+        if mycontinent == hiscontinent:
+            return 3  # QSO with a different country on your continent
+        return 5  # QSO with another continent
+
+    # Non-Russian station
+    if his_is_russian:
+        return 10  # QSO with Russian station
+    if mycountry == hiscountry:
+        return 2  # QSO with your own country
+    if mycontinent == hiscontinent:
+        return 3  # QSO with a different country on your continent
+    return 5  # QSO with another continent
 
 
-def show_mults(self, rtc=None) -> int:
+def show_mults(self, rtc=None):
     """Return display string for mults"""
+    mult1 = 0  # oblasts
+    mult2 = 0  # countries
 
-    ea_provinces = 0
-    # dx = 0
-    ef0f = 0
-    eadx100 = 0
-
-    # Each EADX100 entity once per band
-    sql = (
-        "select count(DISTINCT(CountryPrefix || ':' || Band)) as mult_count "
-        f"from dxlog where ContestNR = {self.database.current_contest};"
+    query = (
+        "select count(DISTINCT(NR || ':' || Band)) as mult_count from dxlog "
+        "where ContestNR = ? and CountryPrefix in ('UA', 'UA9', 'UA2') and NR != '';"
     )
-    result = self.database.exec_sql(sql)
+    result = self.database.exec_sql(query, (self.database.current_contest,))
     if result:
-        eadx100 = result.get("mult_count", 0)
+        mult1 = int(result.get("mult_count", 0))
 
-    # Each EA province once per band
-    sql = (
-        "select count(DISTINCT(NR || ':' || Band)) as mult_count "
-        f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+    query = (
+        "select count(DISTINCT(CASE WHEN CountryPrefix in ('UA', 'UA9') "
+        "THEN 'R' ELSE CountryPrefix END || ':' || Band)) as mult_count "
+        "from dxlog where ContestNR = ? and Call not like '%/MM%';"
     )
-    result = self.database.exec_sql(sql)
+    result = self.database.exec_sql(query, (self.database.current_contest,))
     if result:
-        ea_provinces = result.get("mult_count", 0)
-
-    # # Each USA, VE, JA or VK call area once per band
-    # sql = (
-    #     "select count(DISTINCT(CountryPrefix || ':' || substr(WPXPrefix, -1) || ':' || Band)) as mult_count "
-    #     f"from dxlog where CountryPrefix in ('K', 'VE', 'VK', 'JA') and ContestNR = {self.database.current_contest};"
-    # )
-    # result = self.database.exec_sql(sql)
-    # if result:
-    #     dx = result.get("mult_count", 0)
-
-    # Each QSO with EF0F/8 once per band
-    sql = (
-        "select count(DISTINCT(Band)) as mult_count "
-        f"from dxlog where Call = 'EF0F/8' and ContestNR = {self.database.current_contest};"
-    )
-    result = self.database.exec_sql(sql)
-    if result:
-        ef0f = result.get("mult_count", 0)
+        mult2 = int(result.get("mult_count", 0))
 
     if rtc is not None:
-        return 0, 0
+        return (mult2, mult1)
+    return mult1 + mult2
 
-    return ea_provinces + ef0f + eadx100
 
-
-def show_qso(self) -> int:
+def show_qso(self):
     """Return qso count"""
     result = self.database.fetch_qso_count()
     if result:
@@ -266,17 +292,22 @@ def show_qso(self) -> int:
     return 0
 
 
-def calc_score(self) -> int:
+def calc_score(self):
     """Return calculated score"""
-    _points = get_points(self)
-    _mults = show_mults(self)
+    result = self.database.fetch_points()
+    if result is not None:
+        score = result.get("Points", "0")
+        if score is None:
+            score = "0"
+        contest_points = int(score)
+        mults = show_mults(self)
+        return contest_points * mults
+    return 0
 
-    return _points * _mults
 
-
-def adif(self) -> None:
+def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, contest_id=cabrillo_name)
+    gen_adif(self, cabrillo_name, "RDXC")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -290,7 +321,6 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
 
 def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
-    # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
@@ -325,7 +355,7 @@ def cabrillo(self, file_encoding):
             )
             if self.station.get("Club", ""):
                 output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '')}",
+                    f"CLUB: {self.station.get('Club', '').upper()}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -464,8 +494,6 @@ def cabrillo(self, file_encoding):
                     themode = "CW"
                 if themode == "LSB" or themode == "USB":
                     themode = "PH"
-                if themode == "RTTY":
-                    themode = "RY"
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
@@ -490,8 +518,61 @@ def cabrillo(self, file_encoding):
         return
 
 
-def recalculate_mults(self) -> None:
+def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    all_contacts = self.database.fetch_all_contacts_asc()
+
+    for contact in all_contacts:
+        countryprefix = contact.get("CountryPrefix", "")
+        if not countryprefix:
+            result = self.cty_lookup(contact.get("Call", ""))
+            if result:
+                item = result.get(next(iter(result)))
+                countryprefix = item.get("primary_pfx", "")
+
+        band = float(contact.get("Band", 0))
+        oblast = contact.get("NR", "")
+
+        contact["IsMultiplier1"] = 0
+        contact["IsMultiplier2"] = 0
+
+        if is_russian_prefix(countryprefix) and oblast:
+            query = (
+                "select count(*) as mult_count from dxlog where TS < ? and "
+                "NR = ? and Band = ? and CountryPrefix in ('UA', 'UA9', 'UA2') "
+                "and ContestNR = ?;"
+            )
+            result = self.database.exec_sql(
+                query,
+                (
+                    contact.get("TS", ""),
+                    oblast,
+                    band,
+                    self.pref.get("contest", "1"),
+                ),
+            )
+            if result.get("mult_count", 0) == 0:
+                contact["IsMultiplier1"] = 1
+
+        if "/MM" not in contact.get("Call", "").upper():
+            mult_prefix = country_mult_prefix(countryprefix)
+            query = (
+                "select CountryPrefix from dxlog where TS < ? and Band = ? "
+                "and Call not like '%/MM%' and ContestNR = ?;"
+            )
+            rows = self.database.exec_sql_mult(
+                query,
+                (
+                    contact.get("TS", ""),
+                    band,
+                    self.pref.get("contest", "1"),
+                ),
+            )
+            seen = {country_mult_prefix(row.get("CountryPrefix", "")) for row in rows}
+            if mult_prefix not in seen:
+                contact["IsMultiplier2"] = 1
+
+        self.database.change_contact(contact)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -518,8 +599,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
     if new_focused_widget is not None:
         self.current_widget = self.inputs_dict.get(new_focused_widget)
 
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
     for a_button in [
         self.esm_dict["CQ"],
         self.esm_dict["EXCH"],
@@ -545,8 +624,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["HISCALL"])
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
-        elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -560,9 +639,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                     if button == "LOGIT":
                         self.save_contact()
                         continue
-                    if button == self.esm_dict["HISCALL"]:
-                        self.process_function_key(button, rttysendrx=False)
-                        continue
                     self.process_function_key(button)
     else:
         if self.current_widget == "callsign":
@@ -570,8 +646,8 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["MYCALL"])
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
-        elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+        elif self.current_widget in ["other_1", "other_2"]:
+            if self.other_1.text() == "" or self.other_2.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -592,7 +668,7 @@ def populate_history_info_line(self):
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
+            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
         )
     else:
         self.history_info.setText("")
@@ -608,139 +684,12 @@ def check_call_history(self):
 
 
 def get_mults(self):
-    """"""
+    """Get mults for RTC XML"""
     mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
+    mults["country"], mults["oblast"] = show_mults(self, rtc=True)
     return mults
 
 
 def just_points(self):
-    """"""
+    """Get points for RTC XML"""
     return get_points(self)
-
-
-def set_self(the_outie):
-    """..."""
-    globals()["ALTEREGO"] = the_outie
-
-
-def ft8_handler(the_packet: dict):
-    print(f"{the_packet=}")
-    """Process FT8 QSO packets
-    # FT8
-    # {
-    #     'CALL': 'KE0OG',
-    #     'GRIDSQUARE': 'DM10AT',
-    #     'MODE': 'FT8',
-    #     'RST_SENT': '',
-    #     'RST_RCVD': '',
-    #     'QSO_DATE': '20210329',
-    #     'TIME_ON': '183213',
-    #     'QSO_DATE_OFF': '20210329',
-    #     'TIME_OFF': '183213',
-    #     'BAND': '20M',
-    #     'FREQ': '14.074754',
-    #     'STATION_CALLSIGN': 'K6GTE',
-    #     'MY_GRIDSQUARE': 'DM13AT',
-    #     'CONTEST_ID': 'ARRL-FIELD-DAY',
-    #     'SRX_STRING': '1D UT',
-    #     'CLASS': '1D',
-    #     'ARRL_SECT': 'UT'
-    # }
-    # FlDigi
-    # {
-    #     'CALL': 'K5TUS', 
-    #     'MODE': 'RTTY', 
-    #     'FREQ': '14.068415', 
-    #     'BAND': '20M', 
-    #     'QSO_DATE': '20250103', 
-    #     'TIME_ON': '2359', 
-    #     'QSO_DATE_OFF': '20250103', 
-    #     'TIME_OFF': '2359', 
-    #     'NAME': '', 
-    #     'QTH': '', 
-    #     'STATE': 'ORG', 
-    #     'VE_PROV': '', 
-    #     'COUNTRY': 'USA', 
-    #     'RST_SENT': '599', 
-    #     'RST_RCVD': '599', 
-    #     'TX_PWR': '0', 
-    #     'CNTY': '', 
-    #     'DXCC': '', 
-    #     'CQZ': '5', 
-    #     'IOTA': '', 
-    #     'CONT': '', 
-    #     'ITUZ': '', 
-    #     'GRIDSQUARE': '', 
-    #     'QSLRDATE': '', 
-    #     'QSLSDATE': '', 
-    #     'EQSLRDATE': '', 
-    #     'EQSLSDATE': '', 
-    #     'LOTWRDATE': '', 
-    #     'LOTWSDATE': '', 
-    #     'QSL_VIA': '', 
-    #     'NOTES': '', 
-    #     'SRX': '', 
-    #     'STX': '000', 
-    #     'SRX_STRING': '', 
-    #     'STX_STRING': 'CA', 
-
-
-    #     'SRX': '666', 
-    #     'STX': '000', 
-    #     'SRX_STRING': '', 
-    #     'STX_STRING': 'CA',
-
-    #     'SRX': '004', 'STX': '000', 'SRX_STRING': '', 'STX_STRING': '#',
-
-    #     'CLASS': '', 
-    #     'ARRL_SECT': '', 
-    #     'OPERATOR': 'K6GTE', 
-    #     'STATION_CALLSIGN': 'K6GTE', 
-    #     'MY_GRIDSQUARE': 'DM13AT', 
-    #     'MY_CITY': 'ANAHEIM, CA', 
-    #     'CHECK': '', 
-    #     'AGE': '', 
-    #     'TEN_TEN': '', 
-    #     'CWSS_PREC': '', 
-    #     'CWSS_SECTION': '', 
-    #     'CWSS_SERNO': '', 
-    #     'CWSS_CHK': ''
-    # }
-
-    # """
-
-    # logger.debug(f"{the_packet=}")
-    # if ALTEREGO is not None:
-    #     ALTEREGO.callsign.setText(the_packet.get("CALL"))
-    #     ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-    #     ALTEREGO.contact["SNT"] = the_packet.get("RST_SENT", "599")
-    #     ALTEREGO.contact["RCV"] = the_packet.get("RST_RCVD", "599")
-
-    #     sent_string = the_packet.get("STX_STRING", "")
-    #     if sent_string != "":
-    #         ALTEREGO.contact["SentNr"] = sent_string
-    #         ALTEREGO.other_1.setText(str(sent_string))
-    #     else:
-    #         ALTEREGO.contact["SentNr"] = the_packet.get("STX", "000")
-    #         ALTEREGO.other_1.setText(str(the_packet.get("STX", "000")))
-
-    #     rx_string = the_packet.get("SRX_STRING", "")
-    #     if rx_string != "":
-    #         ALTEREGO.contact["NR"] = rx_string
-    #         ALTEREGO.other_2.setText(str(rx_string))
-    #     else:
-    #         ALTEREGO.contact["NR"] = the_packet.get("SRX", "000")
-    #         ALTEREGO.other_2.setText(str(the_packet.get("SRX", "000")))
-
-    #     ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
-    #     ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
-    #     ALTEREGO.contact["QSXFreq"] = round(
-    #         float(the_packet.get("FREQ", "0.0")) * 1000, 2
-    #     )
-    #     ALTEREGO.contact["Band"] = get_logged_band(
-    #         str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
-    #     )
-    #     logger.debug(f"{ALTEREGO.contact=}")
-
-    #     ALTEREGO.save_contact()

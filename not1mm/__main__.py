@@ -38,7 +38,7 @@ if sys.platform == "darwin":
         pass
 
 
-from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets
 from PyQt6.QtCore import (
     PYQT_VERSION_STR,
     QT_VERSION_STR,
@@ -58,7 +58,6 @@ from PyQt6.QtGui import (
     QIcon,
     QKeyEvent,
     QKeySequence,
-    QPalette,
     QPixmap,
 )
 from PyQt6.QtWidgets import (
@@ -77,6 +76,7 @@ from not1mm.chat import ChatWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
+from not1mm.lib import catppuccin
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -95,6 +95,12 @@ from not1mm.lib.ham_utility import (
     get_logged_band,
     getband,
     reciprocal,
+)
+from not1mm.lib.i18n import (
+    available_languages,
+    install_language,
+    load_ui,
+    retranslate_all,
 )
 from not1mm.lib.multicast import Multicast
 from not1mm.lib.n1mm import N1MM
@@ -183,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
     rtc_pass = ""
 
     current_widget = None
+    previous_language = "en_US"
 
     auto_cq = False
     auto_cq_then = datetime.datetime.now(tz=datetime.UTC)
@@ -209,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.TopLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
-        uic.loadUi(fsutils.APP_DATA_PATH / "main.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "main.ui")
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
@@ -883,6 +890,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_contest()
         self.show_splash_msg("Reading macros.")
         self.read_macros()
+        self.setup_language_menu()
 
         self.show_splash_msg("Restoring window states.")
         self.settings = QSettings("K6GTE", "not1mm")
@@ -1252,24 +1260,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it blue."""
         if the_button is not None:
-            pal = QPalette()
-            pal.isCopyOf(self.current_palette)
-            blueColor = QColor(0, 0, 128)
-            pal.setBrush(QPalette.ColorRole.Button, blueColor)
-            the_button.setPalette(pal)
+            the_button.setStyleSheet(
+                f"background-color: {catppuccin.BLUE}; color: {catppuccin.BASE};"
+            )
 
     def make_button_green(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it green."""
         if the_button is not None:
-            pal = QPalette()
-            pal.isCopyOf(self.current_palette)
-            greenColor = QColor(127, 127, 0)
-            pal.setBrush(QPalette.ColorRole.Button, greenColor)
-            the_button.setPalette(pal)
+            the_button.setStyleSheet(
+                f"background-color: {catppuccin.GREEN}; color: {catppuccin.BASE};"
+            )
 
     def restore_button_color(self, the_button: QtWidgets.QPushButton) -> None:
         """Restores the color of the button"""
-        the_button.setPalette(self.current_palette)
+        the_button.setStyleSheet("")
 
     def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
@@ -1513,52 +1517,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
-        """Forces a darkmode palette."""
+        """Apply Catppuccin Mocha (dark) or system palette (light)."""
 
         logger.debug(f"Dark mode set to: {setdarkmode}")
 
-        cmd = {}
-        cmd["cmd"] = "DARKMODE"
-        cmd["state"] = setdarkmode
+        cmd = {"cmd": "DARKMODE", "state": setdarkmode}
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
 
         if setdarkmode:
-            darkPalette = QPalette()
-            darkColor = QColor(56, 56, 56)
-            disabledColor = QColor(127, 127, 127)
-            darkPalette.setColor(QPalette.ColorRole.Window, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.WindowText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
-            darkPalette.setColor(QPalette.ColorRole.AlternateBase, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.Text, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.Button, darkColor)
-            darkPalette.setColor(QPalette.ColorRole.ButtonText, QColorConstants.White)
-            darkPalette.setColor(QPalette.ColorRole.BrightText, QColorConstants.Red)
-            darkPalette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-            darkPalette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-            darkPalette.setColor(
-                QPalette.ColorRole.HighlightedText, QColorConstants.Black
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.ButtonText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.HighlightedText,
-                disabledColor,
-            )
-            darkPalette.setColor(
-                QPalette.ColorGroup.Disabled,
-                QPalette.ColorRole.Text,
-                disabledColor,
-            )
+            darkPalette = catppuccin.build_palette()
 
             self.current_palette = darkPalette
             self.setPalette(darkPalette)
-            self.text_color = QColorConstants.White
+            self.setStyleSheet(catppuccin.STYLESHEET)
+            self.text_color = QColor(catppuccin.TEXT)
             self.menuFile.setPalette(darkPalette)
             self.menuHelp.setPalette(darkPalette)
             self.menuOther.setPalette(darkPalette)
@@ -1571,21 +1544,23 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_2.setPalette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
         else:
-            palette = self.style().standardPalette()
-            self.current_palette = palette
-            self.setPalette(palette)
-            self.menuFile.setPalette(palette)
-            self.menuHelp.setPalette(palette)
-            self.menuOther.setPalette(palette)
-            self.menuView.setPalette(palette)
-            self.menuWindow.setPalette(palette)
-            self.callsign.setPalette(palette)
-            self.sent.setPalette(palette)
-            self.receive.setPalette(palette)
-            self.other_1.setPalette(palette)
-            self.other_2.setPalette(palette)
-            self.cw_entry.setPalette(palette)
-            self.text_color = QColorConstants.Black
+            lightPalette = catppuccin.build_latte_palette()
+
+            self.current_palette = lightPalette
+            self.setPalette(lightPalette)
+            self.setStyleSheet(catppuccin.LATTE_STYLESHEET)
+            self.text_color = QColor(catppuccin.L_TEXT)
+            self.menuFile.setPalette(lightPalette)
+            self.menuHelp.setPalette(lightPalette)
+            self.menuOther.setPalette(lightPalette)
+            self.menuView.setPalette(lightPalette)
+            self.menuWindow.setPalette(lightPalette)
+            self.callsign.setPalette(lightPalette)
+            self.sent.setPalette(lightPalette)
+            self.receive.setPalette(lightPalette)
+            self.other_1.setPalette(lightPalette)
+            self.other_2.setPalette(lightPalette)
+            self.cw_entry.setPalette(lightPalette)
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -1688,6 +1663,38 @@ class MainWindow(QtWidgets.QMainWindow):
                 mode = self.rig_control.last_data_mode
             self.change_mode(mode, intended_freq=vfo)
 
+    def _shutdown(self) -> None:
+        """Common cleanup for quit_app and closeEvent."""
+
+        if self.tray_icon is not None:
+            self.tray_icon.hide()
+
+        try:
+            if self.radio_thread.isRunning():
+                self.rig_control.time_to_quit = True
+                self.radio_thread.quit()
+                self.radio_thread.wait(1000)
+        except (RuntimeError, AttributeError):
+            ...
+
+        try:
+            if self.rtc_thread.isRunning():
+                self.rtc_service.time_to_quit = True
+                self.rtc_thread.quit()
+                self.rtc_thread.wait(1000)
+        except (RuntimeError, AttributeError):
+            ...
+
+        cmd = {"cmd": "HALT"}
+        if self.bandmap_window:
+            self.bandmap_window.msg_from_main(cmd)
+        if self.log_window:
+            self.log_window.msg_from_main(cmd)
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
+
+        Preferences.save()
+
     def quit_app(self) -> None:
         """
         Send multicast quit message, then quit the program.
@@ -1700,11 +1707,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        Preferences.save()
-        cmd = {}
-        cmd["cmd"] = "HALT"
-        if self.lookup_service:
-            self.lookup_service.msg_from_main(cmd)
+        self._shutdown()
         app.quit()
 
     def show_message_box(self, message: str, blocking: bool = True) -> None:
@@ -1824,6 +1827,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.configuration_dialog.usehamdb_radioButton.hide()
         self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
+        self.previous_language = self.pref.get("language", "en_US")
 
     def edit_configuration_return(self) -> None:
         """
@@ -1843,6 +1847,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # logger.debug("%s", f"{self.pref}")
         self.apply_preferences()
         self.voice_process.sounddevice = self.pref.get("sounddevice", "default")
+
+        if self.pref.get("language", "en_US") != self.previous_language:
+            install_language(app, self.pref.get("language", "en_US"))
+            retranslate_all()
+            self.read_macros()
+            for key, action in self.language_actions.items():
+                action.setChecked(key == self.pref.get("language", "en_US"))
 
     def new_database(self) -> None:
         """
@@ -2560,10 +2571,9 @@ class MainWindow(QtWidgets.QMainWindow):
         for indicators in self.all_mode_indicators.values():
             for indicator in indicators.values():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-                if self.text_color == QColorConstants.Black:
-                    indicator.setStyleSheet("color: black;")
-                else:
-                    indicator.setStyleSheet("color: white;")
+                indicator.setStyleSheet(
+                    f"color: {self.text_color.name()};"
+                )
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -2586,6 +2596,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.Box)
                 indicator.setStyleSheet("color: rgb(127,127,0);")
 
+    def changeEvent(self, event) -> None:
+        if event.type() == QEvent.Type.WindowActivate:
+            scheme = QApplication.instance().styleHints().colorScheme()
+            self.setDarkMode(setdarkmode=scheme == Qt.ColorScheme.Dark)
+        super().changeEvent(event)
+
     def closeEvent(self, _event: QCloseEvent) -> None:
         """
         Write window size and position to config file.
@@ -2603,24 +2619,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("windowState", self.saveState())
         self.settings.sync()
 
-        try:  # Shutdown the radio thread.
-            if self.radio_thread.isRunning():
-                self.rig_control.time_to_quit = True
-                self.radio_thread.quit()
-                self.radio_thread.wait(1000)
-
-        except (RuntimeError, AttributeError):
-            ...
-
-        cmd = {}
-        cmd["cmd"] = "HALT"
-        if self.bandmap_window:
-            self.bandmap_window.msg_from_main(cmd)
-        if self.log_window:
-            self.log_window.msg_from_main(cmd)
-        if self.lookup_service:
-            self.lookup_service.msg_from_main(cmd)
-        Preferences.save()
+        self._shutdown()
+        _event.accept()
 
     def cty_lookup(self, callsign: str) -> dict:
         """Lookup callsign in cty.dat file.
@@ -3721,7 +3721,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.n1mm.radio_info["FunctionKeyCaption"] = function_key.text()
         if self._is_phone_mode():
             self.voice_process.voice_string(self.process_macro(function_key.toolTip()))
-            # self.voice_string(self.process_macro(function_key.toolTip()))
             return
         if self.radio_state.get("mode") in [
             "RTTY",
@@ -4977,6 +4976,51 @@ class MainWindow(QtWidgets.QMainWindow):
             self.F12.setText(f"F12: {self.fkeys['F12'][0]}")
             self.F12.setToolTip(self.fkeys["F12"][1])
 
+    def setup_language_menu(self) -> None:
+        """Populate the Language menu with one checkable action per language."""
+        self.language_actions = {}
+        language_group = QtGui.QActionGroup(self)
+        language_group.setExclusive(True)
+        current = self.pref.get("language", "en_US")
+        for code, name in available_languages():
+            action = QtGui.QAction(name, self)
+            action.setCheckable(True)
+            action.setChecked(code == current)
+            action.triggered.connect(
+                lambda checked=False, c=code: self.change_language(c)
+            )
+            language_group.addAction(action)
+            self.language_actions[code] = action
+            self.menuLanguage.addAction(action)
+
+    def change_language(self, code: str) -> None:
+        """Switch the interface language immediately, without a restart."""
+        if self.pref.get("language", "en_US") == code:
+            return
+        self.pref["language"] = code
+        Preferences.save()
+        install_language(app, code)
+        retranslate_all()
+        self.read_macros()
+        self.retranslate_contest_labels()
+        for key, action in self.language_actions.items():
+            action.setChecked(key == code)
+        self.set_window_title()
+
+    def retranslate_contest_labels(self) -> None:
+        """Re-apply the active contest plugin's field labels.
+
+        retranslate_all() restores the main.ui default label texts, so after a
+        language switch the loaded contest's exchange labels are set again.
+        """
+        contest = getattr(self, "contest", None)
+        if contest is None or not hasattr(contest, "interface"):
+            return
+        try:
+            contest.interface(self)
+        except AttributeError as exc:
+            logger.warning("Could not re-apply plugin interface: %s", exc)
+
     def generate_adif(self) -> None:
         """
         Calls the contest ADIF file generator.
@@ -5066,10 +5110,14 @@ class MainWindow(QtWidgets.QMainWindow):
         return list(result)[0]
 
 
+def is_flatpak() -> bool:
+    return "FLATPAK_ID" in os.environ
+
+
 def install_icons() -> None:
     """Install icons"""
 
-    if sys.platform == "linux":
+    if sys.platform == "linux" and not is_flatpak():
         os.system(
             "xdg-icon-resource install --size 32 --context apps --mode user "
             f"{fsutils.APP_DATA_PATH}/k6gte.not1mm-32.png k6gte-not1mm"
@@ -5121,6 +5169,11 @@ def run() -> None:
         color=QColor(255, 255, 0),
     )
     QCoreApplication.processEvents()
+
+    # Install the interface translator before any widgets are built so the
+    # chosen language applies to everything shown on screen.
+    pref = Preferences.load()
+    install_language(app, pref.get("language", "en_US"))
 
     # families = load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
     # logger.info(f"font families {families}")
