@@ -494,6 +494,11 @@
       </property>
      </item>
      <item>
+       <property name="text">
+        <string>NAC VHF</string>
+       </property>
+      </item>
+     <item>
       <property name="text">
        <string>NAQP CW</string>
       </property>
@@ -503,16 +508,16 @@
        <string>NAQP RTTY</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>NAQP SSB</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>OCEANIA DX CW</string>
-      </property>
-     </item>
+      <item>
+       <property name="text">
+        <string>NAQP SSB</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>OCEANIA DX CW</string>
+       </property>
+      </item>
      <item>
       <property name="text">
        <string>OCEANIA DX SSB</string>
