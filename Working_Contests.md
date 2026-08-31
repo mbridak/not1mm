@@ -42,6 +42,7 @@
 - K1USN Slow Speed Test
 - Labre RS Digi
 - LZ DX
+- NAC VHF
 - NAQP CW, RTTY, SSB
 - Oceania DX
 - OK1WC
