@@ -508,8 +508,14 @@ def edi(self):
                 loggedday = the_date_and_time[8:10]
                 loggeddate = loggedyear + loggedmonth + loggedday
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                NumberSend = contact.get("SentNr", "")
-                NumberReceived = contact.get("NR", "")
+                try:
+                    NumberSend = int(float(contact.get("SentNr", 0)))
+                except (TypeError, ValueError):
+                    NumberSend = 0
+                try:
+                    NumberReceived = int(float(contact.get("NR", 0)))
+                except (TypeError, ValueError):
+                    NumberReceived = 0
                 output_cabrillo_line(
                     f"{loggeddate};"
                     f"{loggedtime};"
@@ -536,6 +542,13 @@ def edi(self):
 
 def bandinMHz(band):
     switch = {
+        "ALL": "ALL",
+        "160M": "1,8 MHz",
+        "80M": "3,5 MHz",
+        "40M": "7 MHz",
+        "20M": "14 MHz",
+        "15M": "21 MHz",
+        "10M": "28 MHz",
         "6M": "50 MHz",
         "2M": "144 MHz",
         "222": "222 MHz",
@@ -548,8 +561,15 @@ def bandinMHz(band):
         "10G": "10 GHz",
         "24G": "24 GHz",
         "47G": "47 GHz",
+        "75G": "75 GHz",
+        "119G": "119 GHz",
+        "142G": "142 GHz",
+        "241G": "241 GHz",
     }
-    return switch.get(band, "Invalid input {band}")
+    # For any band not explicitly mapped (e.g. ALL, LIGHT, VHF-3-BAND,
+    # VHF-FM-ONLY) fall back to the band string itself rather than
+    # emitting a bogus literal.
+    return switch.get(band, band or "ALL")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
