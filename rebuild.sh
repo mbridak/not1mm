@@ -1,6 +1,7 @@
 #!/bin/bash
-pip uninstall -y not1mm
-rm dist/*
-uv build
-uv pip install -e .
+pip3 uninstall -y not1mm
+rm -rf ./build/*
+rm -rf ./dist/*
+python3 -m build
+pip3 install -e .
 

@@ -25,6 +25,8 @@ import datetime
 import logging
 from pathlib import Path
 
+from PyQt6 import QtWidgets
+
 from not1mm.lib.ham_utility import distance
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
@@ -74,15 +76,15 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText("SentNR")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
     self.field3.setAccessibleName("Sent Number")
-    self.exch_label.setText("# Grid")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "# Grid"))
     self.field4.setAccessibleName("Gridsquare")
 
 
 def reset_label(self):
     """reset label after field cleared"""
-    self.exch_label.setText("# Grid")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "# Grid"))
 
 
 def set_tab_next(self):

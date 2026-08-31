@@ -121,17 +121,23 @@ class Voice(QObject):
             logger.warning("No available output sound device for voice keying.")
             return
         op_path = self.data_path / self.pref.get("current_op", "").replace("/", "-")
-        if "[" in the_string:
-            sub_string = the_string.strip("[]").lower()
-            filename = f"{op_path!s}/{sub_string}.wav"
-            if Path(filename).is_file():
-                self.voicings.append(filename)
-            return
-        for letter in the_string.lower():
-            if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
-                if letter == " ":
-                    letter = "space"
-                filename = f"{op_path!s}/{letter}.wav"
+
+        char_iterator = iter(the_string.lower())
+
+        for char in char_iterator:
+            if char == "[":
+                substring = ""
+                for sub_char in char_iterator:
+                    if sub_char == "]":
+                        break
+                    substring += sub_char
+                filename = f"{op_path!s}/{substring}.wav"
+                if Path(filename).is_file():
+                    self.voicings.append(filename)
+            if char in "abcdefghijklmnopqrstuvwxyz 1234567890[]":
+                if char == " ":
+                    char = "space"
+                filename = f"{op_path!s}/{char}.wav"
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     self.voicings.append(filename)

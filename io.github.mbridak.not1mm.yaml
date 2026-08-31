@@ -1,9 +1,9 @@
 id: io.github.mbridak.not1mm
-runtime: org.kde.Sdk
-runtime-version: '6.9'
+runtime: org.kde.Platform
+runtime-version: '6.11'
 sdk: org.kde.Sdk
 base: com.riverbankcomputing.PyQt.BaseApp
-base-version: '6.9'
+base-version: '6.11'
 command: not1mm
 cleanup-commands:
   - /app/cleanup-BaseApp.sh
@@ -11,15 +11,66 @@ build-options:
   env:
     - BASEAPP_REMOVE_PYWEBENGINE=1
 finish-args:
-  - --talk-name=org.freedesktop.Flatpak
+  - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
-  - --filesystem=host:rw
+  - --socket=pulseaudio
+  - --device=dri
+  - --device=all
   - --share=network
   - --socket=cups
-  - --device=dri
-  - --share=ipc
+  - --filesystem=home
+  - --filesystem=/media:rw
+  - --filesystem=/mnt:rw
+  - --filesystem=/run/media:rw
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
 
 modules:
+  - name: portaudio
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: https://files.portaudio.com/archives/pa_stable_v190700_20210406.tgz
+        sha256: 47efbf42c77c19a05d22e627d42873e991ec0c1357219c0d74ce6a2948cb2def
+    cleanup:
+      - /bin
+      - /share
   - python3-modules.yaml
-
+  - name: not1mm
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-deps --no-build-isolation --prefix=${FLATPAK_DEST} .
+      - install -Dm644 not1mm/data/k6gte-not1mm.desktop ${FLATPAK_DEST}/share/applications/io.github.mbridak.not1mm.desktop
+      - sed -i 's#^Icon=k6gte-not1mm$#Icon=io.github.mbridak.not1mm#' ${FLATPAK_DEST}/share/applications/io.github.mbridak.not1mm.desktop
+      - install -Dm644 not1mm/data/io.github.mbridak.not1mm.metainfo.xml ${FLATPAK_DEST}/share/metainfo/io.github.mbridak.not1mm.metainfo.xml
+      - sed -i 's#k6gte-not1mm.desktop#io.github.mbridak.not1mm.desktop#' ${FLATPAK_DEST}/share/metainfo/io.github.mbridak.not1mm.metainfo.xml
+      - install -Dm644 not1mm/data/k6gte.not1mm-32.png ${FLATPAK_DEST}/share/icons/hicolor/32x32/apps/io.github.mbridak.not1mm.png
+      - install -Dm644 not1mm/data/k6gte.not1mm-64.png ${FLATPAK_DEST}/share/icons/hicolor/64x64/apps/io.github.mbridak.not1mm.png
+      - install -Dm644 not1mm/data/k6gte.not1mm-128.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/io.github.mbridak.not1mm.png
+      - install -Dm644 not1mm/data/k6gte.not1mm.svg ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.mbridak.not1mm.svg
+    sources:
+      - type: dir
+        path: .
+        skip:
+          - .git
+          - .venv
+          - .continue
+          - .github
+          - .DS_Store
+          - dist
+          - pic
+          - docs
+          - test
+          - usb_vfo_knob
+          - not1mm.egg-info
+          - not1mm.aux
+          - not1mm.idx
+          - not1mm.log
+          - not1mm.out
+          - not1mm.pdf
+          - not1mm.synctex.gz
+          - not1mm.toc
+          - not1mm.tex
+          - scratch.txt
+          - uv.lock

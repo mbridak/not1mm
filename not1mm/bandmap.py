@@ -8,20 +8,19 @@ Purpose: Onscreen widget to show realtime spots from an AR cluster.
 """
 
 import logging
-import os
 import platform
-import re
 import sqlite3
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from PyQt6 import QtCore, QtGui, QtNetwork, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QColorConstants, QFont
+from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import QDockWidget, QStyle
 
 from not1mm import fsutils
 from not1mm.lib.ham_utility import band2banddef, khz2banddef
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 # from not1mm.lib.multicast import Multicast
@@ -135,7 +134,10 @@ class Database:
             )
 
             if clear_freq:
-                clear_freq_q = "delete from spots where freq between ? and ?;"
+                clear_freq_q = "delete from spots where freq between ? and ?"
+                if "MARKED" not in spot.get("comment", ""):
+                    clear_freq_q += " and comment not like '%MARKED%'"
+                clear_freq_q += ";"
                 self.cursor.execute(
                     clear_freq_q,
                     (spot.get("freq") - CLEAR_FREQ, spot.get("freq") + CLEAR_FREQ),
@@ -154,6 +156,22 @@ class Database:
                     spot.get("spotter", platform.node()),
                     spot.get("comment", ""),
                 ),
+            )
+            self.db.commit()
+        except sqlite3.IntegrityError:
+            ...
+
+    def markspot(self, spot: dict, clear_freq=False) -> None:
+        """
+        Marks a spot that was rightclicked.
+        Changes the time to the future so the marked spot does not get
+        removed with the other normal spots.
+        """
+        the_UTC_time = datetime.now(UTC).isoformat(" ")[:19].split()[1]
+        ts = "2099-01-01 " + the_UTC_time
+        try:
+            self.cursor.execute(
+                f"update spots set ts='{ts}', comment='{spot.get('comment', '')}' where freq='{spot.get('freq', '')}' and callsign='{spot.get('callsign', '')}';"
             )
             self.db.commit()
         except sqlite3.IntegrityError:
@@ -289,7 +307,7 @@ class Database:
         None
         """
         self.cursor.execute(
-            "delete from spots where ts < datetime('now', ?);",
+            "delete from spots where ts < datetime('now', ?) and comment not like '%MARKED%';",
             (f"-{minutes} minutes",),
         )
 
@@ -341,7 +359,7 @@ class BandMapScene(QtWidgets.QGraphicsScene):
             else:
                 menu.addAction(
                     "Mark",
-                    lambda: self.parent.spots.addspot(
+                    lambda: self.parent.spots.markspot(
                         {
                             "callsign": callsign,
                             "freq": freq,
@@ -387,6 +405,14 @@ class BandMapWindow(QDockWidget):
     multicast_interface = None
     text_color = QColor(45, 45, 45)
     worked_color = QColor(128, 128, 128)
+
+    dark_text_color = QColor(205, 214, 244)  # Catppuccin Mocha Text
+    dark_worked_color = QColor(108, 112, 134)  # Catppuccin Mocha Overlay0
+    dark_marked_color = QColor(249, 226, 175)  # Catppuccin Mocha Yellow
+
+    light_text_color = QColor(76, 79, 105)  # Catppuccin Latte Text
+    light_worked_color = QColor(156, 160, 176)  # Catppuccin Latte Overlay0
+    light_marked_color = QColor(223, 142, 29)  # Catppuccin Latte Yellow
     cluster_expire = pyqtSignal(str)
     message = pyqtSignal(dict)
     bandmapwindow_closed = pyqtSignal()
@@ -397,7 +423,7 @@ class BandMapWindow(QDockWidget):
         self.active = False
         self._udpwatch = None
 
-        uic.loadUi(fsutils.APP_DATA_PATH / "bandmap.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "bandmap.ui")
         # self.thefont = QFont("JetBrains Mono", 10, QFont.Weight.Thin)
         self.thefont = QFont("JetBrains Mono", 10)
         self.settings = Preferences.data()
@@ -545,12 +571,12 @@ class BandMapWindow(QDockWidget):
 
         setdarkmode = self.is_it_dark()
         if setdarkmode is True:
-            self.text_color = QColorConstants.White
-            self.worked_color = QColor(108, 108, 108)
+            self.text_color = self.dark_text_color
+            self.worked_color = self.dark_worked_color
             self.update()
         else:
-            self.text_color = QColorConstants.Black
-            self.worked_color = QColor(178, 178, 178)
+            self.text_color = self.light_text_color
+            self.worked_color = self.light_worked_color
             self.update()
 
     def spot_clicked(self):
@@ -758,9 +784,9 @@ class BandMapWindow(QDockWidget):
                 if "MARKED" in items.get("comment"):
                     setdarkmode = self.is_it_dark()
                     if setdarkmode is True:
-                        pen_color = QColor(254, 194, 17)
+                        pen_color = self.dark_marked_color
                     else:
-                        pen_color = QColor(0, 160, 0)
+                        pen_color = self.light_marked_color
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
                     if self.currentBand.band_mhz in call_bandlist:

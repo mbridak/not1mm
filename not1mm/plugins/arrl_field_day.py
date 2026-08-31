@@ -54,10 +54,10 @@ def interface(self):
     self.field3.show()
     self.field4.show()
     # label = self.field3.findChild(QtWidgets.QLabel)
-    self.other_label.setText("Class")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Class"))
     self.field3.setAccessibleName("Class")
     # label = self.field4.findChild(QtWidgets.QLabel)
-    self.exch_label.setText("Section")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Section"))
     self.field4.setAccessibleName("Section")
 
 

@@ -6,6 +6,8 @@ import datetime
 import logging
 from pathlib import Path
 
+from PyQt6 import QtWidgets
+
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
@@ -60,9 +62,9 @@ def interface(self):
     self.field2.show()
     self.field3.hide()
     self.field4.show()
-    self.other_label.setText("Sent")
+    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
     self.other_1.setAccessibleName("Sent")
-    self.exch_label.setText("Years Licenced")
+    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Years Licenced"))
     self.other_2.setAccessibleName("Years Licenced")
 
 

@@ -50,6 +50,44 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="fontSizeMinus">
+        <property name="maximumSize">
+         <size>
+          <width>27</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomOut"/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="fontSizePlus">
+        <property name="maximumSize">
+         <size>
+          <width>27</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomIn"/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="connectButton">
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::NoFocus</enum>

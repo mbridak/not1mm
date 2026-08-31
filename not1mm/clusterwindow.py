@@ -10,11 +10,12 @@ import logging
 import re
 from datetime import UTC, datetime
 
-from PyQt6 import QtGui, QtNetwork, uic
+from PyQt6 import QtGui, QtNetwork
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
 from not1mm import fsutils
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -32,11 +33,17 @@ class ClusterWindow(QDockWidget):
         self.parent = parent
 
         self.pref = Preferences.data()
-        uic.loadUi(fsutils.APP_DATA_PATH / "clusterwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "clusterwindow.ui")
         self.setObjectName("cluster-window")
         self.clusterOutput.document().setMaximumBlockCount(1000)
         self.clusterInput.returnPressed.connect(self.input_to_cluster)
         self.connectButton.clicked.connect(self.cluster_connect)
+        self.fontSizeMinus.clicked.connect(lambda: self._change_font_size(-1))
+        self.fontSizePlus.clicked.connect(lambda: self._change_font_size(+1))
+
+        font = self.clusterOutput.font()
+        font.setPointSize(self.pref.get("cluster_font_size", 10))
+        self.clusterOutput.setFont(font)
 
         # wire up the socket
         self.connected = False
@@ -56,6 +63,14 @@ class ClusterWindow(QDockWidget):
 
         if at_bottom:
             sb.setValue(sb.maximum())
+
+    def _change_font_size(self, delta: int) -> None:
+        font = self.clusterOutput.font()
+        size = max(6, min(72, font.pointSize() + delta))
+        font.setPointSize(size)
+        self.clusterOutput.setFont(font)
+        self.pref["cluster_font_size"] = size
+        Preferences.save()
 
     def cluster_connect(self):
         """Connect to the cluster."""
@@ -197,4 +212,5 @@ class ClusterWindow(QDockWidget):
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes. Cluster connection stays open."""
         self.action.setChecked(False)
+        self.clusterwindow_closed.emit()
         _event.accept()
