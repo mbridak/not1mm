@@ -458,6 +458,7 @@ def ft8_handler(the_packet: dict):
         'RST_SENT': '599',
         'BAND': '40M',
         'SRX': '1234',
+        'SRX_STRING': '1234',
         'STX': '5678',
         'OPERATOR': 'K6GTE',
         'STATION_CALLSIGN': 'K6GTE',
@@ -467,15 +468,26 @@ def ft8_handler(the_packet: dict):
     logger.debug(f"{the_packet=}")
     if ALTEREGO is not None:
         their_name = the_packet.get("NAME", "").upper()
-        their_nr = the_packet.get("SRX", "")
+        their_nr = (
+            the_packet.get("SRX_STRING", "") or the_packet.get("SRX", "")
+        ).upper()
         our_nr = the_packet.get("STX", "") or ALTEREGO.other_1.text()
+        # Some loggers put the whole received exchange into SRX_STRING.
+        if " " in their_nr:
+            exchange = their_nr.split()[:2]
+        else:
+            exchange = [part for part in (their_nr, their_name) if part]
+        their_name = next((part for part in exchange if part.isalpha()), "")
+        their_nr = next((part for part in exchange if not part.isalpha()), "")
         ALTEREGO.callsign.setText(the_packet.get("CALL", ""))
         ALTEREGO.other_1.setText(our_nr)
-        # set_contact_vars() re-parses this field as "number name", it only
-        # copes with both halves being present, so leave it empty otherwise
-        # and rely on the Name and NR set here.
-        if their_nr and their_name:
-            ALTEREGO.other_2.setText(f"{their_nr} {their_name}")
+        # set_contact_vars() re-parses this field as "number name" and only
+        # copes with both halves being present. Always overwrite it so a
+        # partial packet cannot inherit the previous QSO's exchange, and rely
+        # on the Name and NR set here when a half is missing.
+        ALTEREGO.other_2.setText(
+            f"{their_nr} {their_name}" if their_nr and their_name else ""
+        )
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
         ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
         ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
