@@ -191,3 +191,17 @@ def test_cwo_does_not_leak_previous_exchange():
     assert window.saved["Call"] == "K6GTE"
     assert window.saved["Name"] == "MIKE"
     assert window.saved["NR"] == ""
+
+
+def test_mst_number_only():
+    """MST must not store a received serial as the name when no name was copied."""
+    contact = log_packet(icwc_mst, SRX="1234", STX="5678")
+    assert contact["Name"] == ""
+    assert contact["NR"] == "1234"
+
+
+def test_mst_srx_string_number_first():
+    """MST accepts the whole exchange in SRX_STRING in either order."""
+    contact = log_packet(icwc_mst, SRX_STRING="1234 BOB", STX="5678")
+    assert contact["Name"] == "BOB"
+    assert contact["NR"] == "1234"
