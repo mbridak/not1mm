@@ -69,6 +69,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
+  - @mbridak Add NAC VHF contest
 - [2026-08-30] Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak CWO plugin: improved contact variable handling
 - [2026-08-28] Merge pull request #673 from ra0sms/add-rda-contest
