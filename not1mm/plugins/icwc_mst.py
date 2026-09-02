@@ -441,22 +441,28 @@ def ft8_handler(the_packet: dict):
             the_packet.get("SRX_STRING", "") or the_packet.get("SRX", "")
         ).upper()
         our_nr = the_packet.get("STX", "") or ALTEREGO.other_1.text()
-        # set_contact_vars() splits this field on a single space into Name and
-        # NR, so it must never be handed more than two words. Some loggers put
-        # the whole received exchange into SRX_STRING.
+        # Some loggers put the whole received exchange into SRX_STRING.
         if " " in their_nr:
             exchange = their_nr.split()[:2]
         else:
             exchange = [part for part in (their_name, their_nr) if part]
+        their_name = next((part for part in exchange if part.isalpha()), "")
+        their_nr = next((part for part in exchange if not part.isalpha()), "")
+        # set_contact_vars() splits this field on a single space into Name and
+        # NR, and treats a lone word as the Name. So hand it "name number" when
+        # both were copied, just the name when only that was, and nothing when
+        # only the number was (NR set below then survives).
         ALTEREGO.callsign.setText(the_packet.get("CALL", ""))
         ALTEREGO.other_1.setText(our_nr)
-        ALTEREGO.other_2.setText(" ".join(exchange))
+        ALTEREGO.other_2.setText(
+            f"{their_name} {their_nr}" if their_name and their_nr else their_name
+        )
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
         ALTEREGO.contact["SNT"] = "599"
         ALTEREGO.contact["RCV"] = "599"
         ALTEREGO.contact["SentNr"] = our_nr
-        ALTEREGO.contact["Name"] = exchange[0] if exchange else ""
-        ALTEREGO.contact["NR"] = exchange[1] if len(exchange) > 1 else ""
+        ALTEREGO.contact["Name"] = their_name
+        ALTEREGO.contact["NR"] = their_nr
         ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
         ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         ALTEREGO.contact["QSXFreq"] = round(
