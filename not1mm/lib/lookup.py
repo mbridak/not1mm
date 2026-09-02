@@ -63,7 +63,7 @@ class HamDBlookup:
         try:
             self.error = False
             query_result = requests.get(
-                self.url + call + "/xml/wfd_logger", timeout=10.0
+                self.url + call + "/xml/wfd_logger", timeout=2.0
             )
         except requests.exceptions.Timeout as exception:
             self.error = True
@@ -153,7 +153,7 @@ class QRZlookup:
         self.session = False
         try:
             payload = {"username": self.username, "password": self.password}
-            query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
+            query_result = requests.get(self.qrzurl, params=payload, timeout=2.0)
             if query_result.status_code == 200:
                 try:
                     baseroot = xmltodict.parse(query_result.text)
@@ -205,7 +205,7 @@ class QRZlookup:
         if self.session:
             payload = {"s": self.session, "callsign": call}
             try:
-                query_result = requests.get(self.qrzurl, params=payload, timeout=10.0)
+                query_result = requests.get(self.qrzurl, params=payload, timeout=2.0)
             except (
                 requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,
@@ -229,7 +229,7 @@ class QRZlookup:
                 if self.session:
                     payload = {"s": self.session, "callsign": call}
                     query_result = requests.get(
-                        self.qrzurl, params=payload, timeout=3.0
+                        self.qrzurl, params=payload, timeout=2.0
                     )
                     baseroot = xmltodict.parse(query_result.text)
                     root = baseroot.get("QRZDatabase", {})
@@ -292,8 +292,12 @@ class HamQTH:
         if self.session:
             payload = {"id": self.session, "callsign": call, "prg": "not1mm"}
             try:
-                query_result = requests.get(self.url, params=payload, timeout=10.0)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                query_result = requests.get(self.url, params=payload, timeout=2.0)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ) as the_error:
+                logger.warning(f"{the_error=}")
                 self.error = True
                 return the_result
             logger.info("resultcode: %s", query_result.status_code)
@@ -320,10 +324,19 @@ class HamQTH:
             )
 
             if the_result.get("error_text") == "Callsign not found":
+                logger.info("Callsign not found")
                 return the_result
             if the_result.get("error_text") == "Session does not exist or expired":
+                logger.info("Session does not exist or expired")
                 self.getsession()
-                query_result = requests.get(self.url, params=payload, timeout=10.0)
+                logger.info("Requerying")
+                try:
+                    query_result = requests.get(self.url, params=payload, timeout=2.0)
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                ) as the_error:
+                    logger.warning(f"{the_error=}")
                 the_result["grid"] = (
                     query_dict.get("HamQTH", {}).get("search", {}).get("grid", False)
                 )
