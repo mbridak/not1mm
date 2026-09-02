@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-09-02] @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
+- [2026-09-01] Add script to automate flatpak update process
 - [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
   - Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak Add NAC VHF contest
@@ -2880,3 +2882,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
