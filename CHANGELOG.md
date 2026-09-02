@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-09-02] Add ft8_handler to CWT, K1USN SST, ICWC MST and CWOPS Open plugins
 - [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
   - Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak Add NAC VHF contest

@@ -29,10 +29,13 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import get_logged_band
 from not1mm.lib.plugin_common import gen_adif
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+ALTEREGO = None
 
 EXCHANGE_HINT = "# Name"
 SOAPBOX_HINT = """When completing the "Recd Number and Name" field, place a space between the received serial number
@@ -428,6 +431,67 @@ def recalculate_mults(self):
         else:
             contact["IsMultiplier1"] = 0
         self.database.change_contact(contact)
+
+
+def set_self(the_outie):
+    """..."""
+    globals()["ALTEREGO"] = the_outie
+
+
+def ft8_handler(the_packet: dict):
+    """Process a logged QSO packet from WSJT-X or FlDigi.
+
+    The ADIF record is handed to us as a dict with uppercased ADIF field
+    names.
+
+    FlDigi
+    {
+        'FREQ': '7.029500',
+        'CALL': 'DL2DSL',
+        'MODE': 'CW',
+        'NAME': 'BOB',
+        'QSO_DATE': '20240904',
+        'QSO_DATE_OFF': '20240904',
+        'TIME_OFF': '212825',
+        'TIME_ON': '212800',
+        'RST_RCVD': '599',
+        'RST_SENT': '599',
+        'BAND': '40M',
+        'SRX': '1234',
+        'STX': '5678',
+        'OPERATOR': 'K6GTE',
+        'STATION_CALLSIGN': 'K6GTE',
+        'MY_STATE': 'CA'
+    }
+    """
+    logger.debug(f"{the_packet=}")
+    if ALTEREGO is not None:
+        their_name = the_packet.get("NAME", "").upper()
+        their_nr = the_packet.get("SRX", "")
+        our_nr = the_packet.get("STX", "") or ALTEREGO.other_1.text()
+        ALTEREGO.callsign.setText(the_packet.get("CALL", ""))
+        ALTEREGO.other_1.setText(our_nr)
+        # set_contact_vars() re-parses this field as "number name", it only
+        # copes with both halves being present, so leave it empty otherwise
+        # and rely on the Name and NR set here.
+        if their_nr and their_name:
+            ALTEREGO.other_2.setText(f"{their_nr} {their_name}")
+        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
+        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
+        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
+        ALTEREGO.contact["SentNr"] = our_nr
+        ALTEREGO.contact["Name"] = their_name
+        ALTEREGO.contact["NR"] = their_nr
+        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
+        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
+        ALTEREGO.contact["QSXFreq"] = round(
+            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+        )
+        ALTEREGO.contact["Band"] = get_logged_band(
+            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+        )
+        logger.debug(f"{ALTEREGO.contact=}")
+        ALTEREGO.save_contact()
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):
