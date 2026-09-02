@@ -162,3 +162,32 @@ def test_cwo_partial_exchange_is_still_logged():
     contact = log_packet(cwo, SRX="1234", STX="5678")
     assert contact["NR"] == "1234"
     assert contact["Name"] == ""
+
+
+def test_cwo_falls_back_to_srx_string():
+    """CW Open reads the serial from SRX_STRING like the other sprint plugins."""
+    contact = log_packet(cwo, NAME="BOB", SRX_STRING="1234", STX="5678")
+    assert contact["NR"] == "1234"
+    assert contact["Name"] == "BOB"
+
+
+def test_cwo_srx_string_holding_whole_exchange():
+    """CW Open copes with a logger that puts the whole exchange in SRX_STRING."""
+    contact = log_packet(cwo, SRX_STRING="1234 BOB", STX="5678")
+    assert contact["NR"] == "1234"
+    assert contact["Name"] == "BOB"
+
+
+def test_cwo_does_not_leak_previous_exchange():
+    """A partial packet must not reuse the exchange left over from the last QSO."""
+    window = FakeMainWindow(cwo)
+    cwo.set_self(window)
+    cwo.ft8_handler({**BASE_PACKET, "NAME": "BOB", "SRX": "1234", "STX": "5678"})
+    assert window.saved["Name"] == "BOB"
+    assert window.saved["NR"] == "1234"
+
+    cwo.ft8_handler({**BASE_PACKET, "CALL": "K6GTE", "NAME": "MIKE", "STX": "5679"})
+    assert window.other_2.text() == ""
+    assert window.saved["Call"] == "K6GTE"
+    assert window.saved["Name"] == "MIKE"
+    assert window.saved["NR"] == ""
