@@ -2571,9 +2571,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for indicators in self.all_mode_indicators.values():
             for indicator in indicators.values():
                 indicator.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-                indicator.setStyleSheet(
-                    f"color: {self.text_color.name()};"
-                )
+                indicator.setStyleSheet(f"color: {self.text_color.name()};")
 
     def set_band_indicator(self, band: str) -> None:
         """
@@ -5106,8 +5104,8 @@ class MainWindow(QtWidgets.QMainWindow):
         for _fi in QDir(directory).entryInfoList(["*.ttf", "*.woff", "*.woff2"]):
             _id = QFontDatabase.addApplicationFont(_fi.absoluteFilePath())
             font_families |= set(QFontDatabase.applicationFontFamilies(_id))
-        result = set((max(font_families, key=len),))
-        return list(result)[0]
+        result = {max(font_families, key=len)}
+        return next(iter(result))
 
 
 def is_flatpak() -> bool:
