@@ -69,7 +69,17 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-09-02] @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
+- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
+  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
+- [2026-09-02] Merge pull request #677 from sblanchard/master
+  - fix: MST ft8_handler no longer logs a lone received serial as the name
+  - fix: CWO ft8_handler reads SRX_STRING and never leaks the previous exchange
+  - Merge upstream mbridak/master (PR #4): callbook timeout 2s, v26.9.2
+  - Merge pull request #3 from sblanchard/ft8-handler-cw-sprints
+  - @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
+  - Add ft8_handler to CWT, SST, MST and CW Open plugins
 - [2026-09-01] Add script to automate flatpak update process
 - [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
   - @mbridak Add NAC VHF contest
