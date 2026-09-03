@@ -76,7 +76,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
+    self.other_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "SentNR")
+    )
     self.field3.setAccessibleName("Sent Number")
     self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "# Grid"))
     self.field4.setAccessibleName("Gridsquare")
@@ -204,7 +206,7 @@ def edi(self):
     logger.debug("******EDI*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -509,7 +511,6 @@ def bandinMHz(band):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -523,7 +524,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -838,7 +839,6 @@ def populate_history_info_line(self):
 
 
 def check_call_history(self):
-    """"""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(f"{result.get('UserText', '')}")
