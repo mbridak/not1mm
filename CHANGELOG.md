@@ -1,11 +1,21 @@
 # Changelog
 
-- [2026-09-02] Add ft8_handler to CWT, K1USN SST, ICWC MST and CWOPS Open plugins
+- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
+  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
+- [2026-09-02] Merge pull request #677 from sblanchard/master
+  - fix: MST ft8_handler no longer logs a lone received serial as the name
+  - fix: CWO ft8_handler reads SRX_STRING and never leaks the previous exchange
+  - Merge upstream mbridak/master (PR #4): callbook timeout 2s, v26.9.2
+  - Merge pull request #3 from sblanchard/ft8-handler-cw-sprints
   - @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
+  - Add ft8_handler to CWT, SST, MST and CW Open plugins
 - [2026-09-01] Add script to automate flatpak update process
 - [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
   - Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak Add NAC VHF contest
+  - Merge pull request #2 from mbridak/master
 - [2026-08-30] Merge branch 'master' of https://github.com/mbridak/not1mm
   - @mbridak CWO plugin: improved contact variable handling
 - [2026-08-28] @mbridak correct cabrillo name in ukei-dx
@@ -62,6 +72,7 @@
   - Merge pull request #654 from mbridak/add-trans-tasman
   - @mbridak Add Trans Tasman contest support and update UI
   - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins
+  - Merge pull request #1 from mbridak/master
 - [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
   - @mbridak Add JOHN MOYLE FIELD DAY plugin
 - [2026-08-09] Merge pull request #650 from IonixV/master
