@@ -362,6 +362,267 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
         self.show_message_box(f"Error saving ADIF file: {error}")
 
 
+def gen_edi(
+    self,
+    cabrillo_name: str,
+    contest_name: str,
+    start_date: str,
+    end_date: str,
+    band_display: str = "",
+    qso_fmt=None,
+    get_points=None,
+    separator: str = "=",
+):
+    """Generate a REG1TEST EDI contest log file.
+
+    Parameters
+    ----------
+    self :
+        The main window instance providing ``self.station``,
+        ``self.contest_settings``, ``self.database``, and
+        ``self.show_message_box``.
+    cabrillo_name : str
+        Short contest identifier used in the output filename
+        (e.g. ``"DARC VHF"``).
+    contest_name : str
+        Full contest name written into the ``TName`` header field.
+    start_date, end_date : str
+        Contest dates in ``YYYYMMDD`` format, written to ``TDate``.
+    band_display : str, optional
+        Human-readable band string for ``PBand``
+        (e.g. ``"144 MHz"``).  Defaults to the value from
+        ``BandCategory`` passed through the standard EDI band
+        table, or ``"ALL"`` if unavailable.
+    qso_fmt : callable, optional
+        ``f(contact, mode_code, my_grid) -> str`` returning the
+        semicolon-delimited QSO record line for *contact*.
+        Defaults to the standard Region-1 record using the
+        ``Points`` field already stored in the database.
+    get_points : callable, optional
+        ``f() -> int`` returning the claimed total QSO points.
+        Defaults to summing the ``Points`` column via the
+        database.
+    separator : str, optional
+        Character placed between EDI keywords and values.
+        Defaults to ``"="`` per the REG1TEST specification.
+
+    Data sources
+    -------------
+    **Station** (``self.station``)::
+
+        Call, GridSquare, Name, Street1, Street2, Zip, City,
+        Country, Club, Email, STXeq, SAnte, SAntH1
+
+    **Contest settings** (``self.contest_settings``)::
+
+        StartDate, OperatorCategory, BandCategory, PowerCategory
+
+    **Database** (``self.database``)::
+
+        fetch_all_contacts_asc(), fetch_qso_count(), fetch_points()
+
+    The default ``qso_fmt`` reads the following keys from each
+    contact dict returned by ``fetch_all_contacts_asc()``:
+
+    TS, Call, Mode, SNT, SentNr, RCV, NR, Exchange1, Points
+    """
+
+    file_encoding = "ascii"
+
+    # ── mode string → EDI numeric code ──────────────────────
+    _mode_code = {
+        "SSB": 1,
+        "LSB": 1,
+        "USB": 1,
+        "CW": 2,
+        "CWL": 2,
+        "CWU": 2,
+        "AM": 5,
+        "FM": 6,
+        "RTTY": 7,
+        "SSTV": 8,
+        "ATV": 9,
+    }
+
+    def _edi_mode_code(mode_str):
+        """Map a mode string to an EDI mode code (default 0)."""
+        return _mode_code.get(str(mode_str).upper(), 0)
+
+    # ── default QSO record formatter ────────────────────────
+    def _default_qso_fmt(contact, mode_code, _my_grid):
+        the_ts = contact.get("TS", "")
+        date_str = the_ts[2:4] + the_ts[5:7] + the_ts[8:10]
+        time_str = the_ts[11:13] + the_ts[14:16]
+        try:
+            sent_nr = f"{int(str(contact.get('SentNr', '0')).split()[0]):03d}"
+        except (TypeError, ValueError):
+            sent_nr = "000"
+        try:
+            rcv_nr = f"{int(contact.get('NR', 0)):03d}"
+        except (TypeError, ValueError):
+            rcv_nr = "000"
+        return (
+            f"{date_str};"
+            f"{time_str};"
+            f"{contact.get('Call', '')};"
+            f"{mode_code};"
+            f"{contact.get('SNT', '')};"
+            f"{sent_nr};"
+            f"{contact.get('RCV', '')};"
+            f"{rcv_nr};"
+            f";"
+            f"{contact.get('Exchange1', '')};"
+            f"{contact.get('Points', '')};"
+            f"; ; ; "
+        )
+
+    if qso_fmt is None:
+        qso_fmt = _default_qso_fmt
+
+    # ── default points getter ───────────────────────────────
+    if get_points is None:
+
+        def _default_get_points():
+            result = self.database.fetch_points()
+            if result is not None:
+                score = result.get("Points", "0")
+                if score is None:
+                    score = "0"
+                return int(score)
+            return 0
+
+        get_points = _default_get_points
+
+    # ── retrieve data ───────────────────────────────────────
+    log = self.database.fetch_all_contacts_asc()
+    number_of_qsos = len(log)
+    total_points = get_points()
+
+    # Band display: caller-provided, else derive from settings
+    if not band_display:
+        band_cat = (
+            self.contest_settings.get("BandCategory", "")
+            if self.contest_settings
+            else ""
+        )
+        band_display = _edi_band_table(band_cat)
+
+    # ── build filename ──────────────────────────────────────
+    now = datetime.datetime.now().astimezone()
+    date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
+    station_call = self.station.get("Call", "").upper().replace("/", "-")
+    filename = (
+        str(Path.home()) + "/" + f"{station_call}_{cabrillo_name}_{date_time}.edi"
+    )
+
+    logger.debug("EDI output: %s", filename)
+
+    try:
+        with open(filename, "w", encoding=file_encoding, newline="") as fh:
+
+            def _out(line):
+                """Write one EDI line encoded to ASCII with CR LF."""
+                print(
+                    line.encode(file_encoding, errors="ignore").decode(),
+                    end="\r\n",
+                    file=fh,
+                )
+
+            # ── header section ──────────────────────────────
+            _out("[REG1TEST;1]")
+            _out(f"TName{separator}{contest_name}")
+            _out(f"TDate{separator}{start_date};{end_date}")
+            _out(f"PCall{separator}{self.station.get('Call', '')}")
+            _out(f"PWWLo{separator}{self.station.get('GridSquare', '')}")
+            _out(f"PExch{separator}")
+            _out(
+                f"PAdr1{separator}"
+                f"{self.station.get('Street1', '')}, "
+                f"{self.station.get('Zip', '')}  "
+                f"{self.station.get('City', '')}, "
+                f"{self.station.get('Country', '')}"
+            )
+            _out(f"PAdr2{separator}")
+            _out(
+                f"PSect{separator}"
+                f"{self.contest_settings.get('OperatorCategory', '') if self.contest_settings else ''}"
+            )
+            _out(f"PBand{separator}{band_display}")
+            _out(f"PClub{separator}{self.station.get('Club', '').upper()}")
+            _out(f"RName{separator}{self.station.get('Name', '')}")
+            _out(f"RCall{separator}{self.station.get('Call', '')}")
+            _out(f"RAdr1{separator}{self.station.get('Street1', '')}")
+            _out(f"RAdr2{separator}{self.station.get('Street2', '')}")
+            _out(f"RPoCo{separator}{self.station.get('Zip', '')}")
+            _out(f"RCity{separator}{self.station.get('City', '')}")
+            _out(f"RCoun{separator}{self.station.get('Country', '')}")
+            _out(f"RPhon{separator}")
+            _out(f"RHBBS{separator}{self.station.get('Email', '')}")
+            _out(f"MOpe1{separator}")
+            _out(f"MOpe2{separator}")
+            _out(f"STXEq{separator}{self.station.get('STXeq', '')}")
+            _out(
+                f"SPowe{separator}"
+                f"{self.contest_settings.get('PowerCategory', '') if self.contest_settings else ''}"
+            )
+            _out(f"SRXEq{separator}")
+            _out(f"SAnte{separator}{self.station.get('SAnte', '')}")
+            _out(f"SAntH{separator}{self.station.get('SAntH1', '')}")
+
+            # ── summary section ─────────────────────────────
+            _out(f"CQSOs{separator}{number_of_qsos};1")
+            _out(f"CQSOP{separator}{total_points}")
+            _out(f"CWWLs{separator}0;0;1")
+            _out(f"CWWLB{separator}0")
+            _out(f"CExcs{separator}0;0;1")
+            _out(f"CExcB{separator}0")
+            _out(f"CDXCs{separator}0;0;1")
+            _out(f"CDXCB{separator}0")
+            _out(f"CToSc{separator}{total_points}")
+            _out(f"CODXC{separator}")
+            _out("[Remarks]")
+            _out(f"[QSORecords;{number_of_qsos}]")
+
+            # ── QSO records ─────────────────────────────────
+            my_grid = self.station.get("GridSquare", "")
+            for contact in log:
+                mode_code = _edi_mode_code(contact.get("Mode", ""))
+                _out(qso_fmt(contact, mode_code, my_grid))
+
+        self.show_message_box(f"EDI saved to: {filename}")
+    except OSError as exception:
+        logger.critical("EDI: IO error: %s, writing to %s", exception, filename)
+        self.show_message_box(f"Error saving EDI: {exception} {filename}")
+
+
+def _edi_band_table(band_category):
+    """Map a not1mm BandCategory string to an EDI ``PBand`` value."""
+    return {
+        "ALL": "ALL",
+        "160M": "1,8 MHz",
+        "80M": "3,5 MHz",
+        "40M": "7 MHz",
+        "20M": "14 MHz",
+        "15M": "21 MHz",
+        "10M": "28 MHz",
+        "6M": "50 MHz",
+        "4M": "70 MHz",
+        "2M": "144 MHz",
+        "70cm": "432 MHz",
+        "23cm": "1,3 GHz",
+        "2.3G": "2,3 GHz",
+        "3.4G": "3,4 GHz",
+        "5.7G": "5,7 GHz",
+        "10G": "10 GHz",
+        "24G": "24 GHz",
+        "47G": "47 GHz",
+        "75G": "76 GHz",
+        "119G": "120 GHz",
+        "142G": "144 GHz",
+        "241G": "248 GHz",
+    }.get(band_category, band_category or "ALL")
+
+
 def imp_adif(self):
     """
     Imports an ADIF file into the current contest.
