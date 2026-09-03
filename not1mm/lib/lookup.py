@@ -292,7 +292,7 @@ class HamQTH:
         if self.session:
             payload = {"id": self.session, "callsign": call, "prg": "not1mm"}
             try:
-                query_result = requests.get(self.url, params=payload, timeout=2.0)
+                query_result = requests.get(self.url, params=payload, timeout=1.0)
             except (
                 requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,
