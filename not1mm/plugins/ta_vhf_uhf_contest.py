@@ -60,7 +60,9 @@ def interface(self):
 
     self.snt_label.setText("SNT")
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SNTNR"))
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "RCV NR + GRID"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "RCV NR + GRID")
+    )
 
     self.sent.setText("59")
     self.receive.setText("59")
@@ -203,18 +205,18 @@ def edi(self, parent=None):
         ts = q.get("Timestamp", "")
         if ts:
             try:
-                dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+                dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone()
                 timestamps.append(dt)
-            except:
+            except ValueError:
                 pass
     if timestamps:
         start_date = min(timestamps).strftime("%Y%m%d")
         end_date = max(timestamps).strftime("%Y%m%d")
     else:
-        start_date = datetime.datetime.now().strftime("%Y%m%d")
+        start_date = datetime.datetime.now().astimezone().strftime("%Y%m%d")
         end_date = start_date
 
-    date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    date_time = datetime.datetime.now().astimezone().strftime("%Y-%m-%d_%H-%M-%S")
     filename = Path.home() / f"{my_call}_{cabrillo_name}_{date_time}.edi"
 
     bands = {}
@@ -293,12 +295,12 @@ def edi(self, parent=None):
 
         qso_lines = []
         for q in band_qsos:
-            ts = q.get("Timestamp", "")
+            ts = q.get("TS", "")
             try:
-                dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+                dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone()
                 date_str = dt.strftime("%y%m%d")
                 time_str = dt.strftime("%H%M")
-            except:
+            except ValueError:
                 date_str = start_date[-6:]
                 time_str = "0000"
 
