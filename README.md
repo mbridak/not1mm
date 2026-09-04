@@ -86,7 +86,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
-## Installation
+## Installation Flatpak or UV
 
 ### Via Flatpak
 
@@ -135,13 +135,13 @@ A quick feature list, See the user manual for more details.
 
 - 60+ [supported contests](Working_Contests.md)
 - Lookup, QRZ and HamQTH
-- CAT Control, rigctld, flrig, TCI
-- CW Keyer Interface, winkeyer and cwdaemon
+- CAT Control via rigctld, flrig or TCI
+- CW Keyer Interface, [winkeyer](https://github.com/mbridak/PyWinKeyerSerial) and cwdaemon
 - Cluster and Bandmap
-- Rotator control, rotctld
-- [Multi Multi](Multi-Multi.md) (The super sketchy not ready for prime time)
+- Rotator control via rotctld
+- [Multi Multi](Multi-Multi.md) (Kinda sketchy, but give t a try)
 - N1MM Packet output for nodered
-- WSJT-X FT8/FT4/ETC and FLDIGI RTTY
+- WSJT-X FT8/FT4/ETC and RTTY via FLDIGI
 - ADIF and Cabrillo output.
 - And *Other Stuff*
 
