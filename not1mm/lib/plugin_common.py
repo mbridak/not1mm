@@ -89,9 +89,11 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     now = datetime.datetime.now(tz=datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-    station_callsign = self.station.get("Call", "").upper().replace("/", "-")
+    station_callsign = self.station.get("Call", "").upper()
     filename = (
-        str(Path.home()) + "/" + f"{station_callsign}_{cabrillo_name}_{date_time}.adi"
+        str(Path.home())
+        + "/"
+        + f"{station_callsign.replace("/", "-")}_{cabrillo_name}_{date_time}.adi"
     )
     log = self.database.fetch_all_contacts_asc()
     try:
