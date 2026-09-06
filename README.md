@@ -99,7 +99,7 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 I'm pretty sure the flatpak works now. Let me know if it doesn't.
 
-Grab the [flatpak file](https://github.com/mbridak/not1mm/raw/refs/heads/master/not1mm.flatpak).
+Grab the [flatpak file](https://github.com/mbridak/not1mm/releases/download/26.9.5/not1mm.flatpak).
 
 #### Install
 
