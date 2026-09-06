@@ -1,5 +1,8 @@
 # Changelog
 
+- [2026-09-05] remove flatpak file
+  - Merge pull request #678 from df7cb/adif-callsign
+  - Fix /P callsigns in adif export
 - [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
   - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
   - Merge branch 'master' of https://github.com/mbridak/not1mm
@@ -2894,9 +2897,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

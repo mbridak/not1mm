@@ -69,6 +69,13 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-09-05] remove flatpak file
+  - Merge pull request #678 from df7cb/adif-callsign
+  - Fix /P callsigns in adif export
+- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
+  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
 - [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
   - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
   - Merge branch 'master' of https://github.com/mbridak/not1mm
