@@ -398,8 +398,8 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{str(self.station.get('Name', '')).partition(' ')[0]} "
                     f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('Name', '')).ljust(10)} "  # Name from DB
-                    f"{str(contact.get('NR', '')).ljust(6)}",  # Received number
+                    f"{str(contact.get('NR', '')).ljust(6)}"  # Received number
+                    f"{str(contact.get('Name', '')).ljust(10)} ",  # Name from DB
                     "\r\n",
                     file_descriptor,
                     file_encoding,
