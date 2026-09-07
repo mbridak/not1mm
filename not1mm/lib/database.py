@@ -653,11 +653,27 @@ class DataBase:
             (dxcc, self.current_contest),
         )
 
+    def fetch_dxcc_band_exists(self, dxcc, band) -> dict:
+        """Return the count of a DXCC entity on a band in the current contest."""
+        return self.exec_sql(
+            "select count(*) as dxcc_band_count from dxlog "
+            "where CountryPrefix = ? and Band = ? and ContestNR = ?;",
+            (dxcc, band, self.current_contest),
+        )
+
     def fetch_dxcc_exists_before_me(self, dxcc, time_stamp) -> dict:
         """returns the dict dxcc_count of dxcc existing in current contest."""
         return self.exec_sql(
             "select count(*) as dxcc_count from dxlog where TS < ? and CountryPrefix = ? and ContestNR = ?;",
             (time_stamp, dxcc, self.current_contest),
+        )
+
+    def fetch_dxcc_exists_before_me_on_band(self, dxcc, time_stamp, band) -> dict:
+        """Return earlier QSOs with a DXCC entity on a band in this contest."""
+        return self.exec_sql(
+            "select count(*) as dxcc_band_count from dxlog "
+            "where TS < ? and CountryPrefix = ? and Band = ? and ContestNR = ?;",
+            (time_stamp, dxcc, band, self.current_contest),
         )
 
     def fetch_wpx_exists(self, wpx) -> dict:
