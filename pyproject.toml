@@ -53,5 +53,9 @@ exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test", "usb
 "not1mm.data.phonetics" = ["*.wav",]
 "not1mm.icon" = ["*.png",]
 
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+
 [project.scripts]
 not1mm = "not1mm.__main__:run"
