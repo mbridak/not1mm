@@ -124,8 +124,10 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.other_1.text()
     self.contact["NR"] = self.other_2.text()
     if self.contact.get("CountryPrefix", ""):
-        result = self.database.fetch_dxcc_exists(self.contact.get("CountryPrefix", ""))
-        if result.get("dxcc_count", ""):
+        result = self.database.fetch_dxcc_band_exists(
+            self.contact.get("CountryPrefix", ""), self.contact.get("Band", "")
+        )
+        if result.get("dxcc_band_count", ""):
             self.contact["IsMultiplier1"] = 0
         else:
             self.contact["IsMultiplier1"] = 1
@@ -230,6 +232,13 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
         end=ending,
         file=file_descriptor,
     )
+
+def format_received_serial(value):
+    if value is None:
+        return ""
+
+    serial = str(value).strip()
+    return "000" if serial == "0" else serial
 
 
 def cabrillo(self, file_encoding):
@@ -419,7 +428,7 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{format_received_serial(contact.get('NR', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
@@ -440,8 +449,11 @@ def recalculate_mults(self):
         contact["Points"] = points(self)
         time_stamp = contact.get("TS", "")
         dxcc = contact.get("CountryPrefix", "")
-        result = self.database.fetch_dxcc_exists_before_me(dxcc, time_stamp)
-        dxcc_count = result.get("dxcc_count", 1)
+        band = contact.get("Band", "")
+        result = self.database.fetch_dxcc_exists_before_me_on_band(
+            dxcc, time_stamp, band
+        )
+        dxcc_count = result.get("dxcc_band_count", 1)
         if dxcc_count == 0:
             contact["IsMultiplier1"] = 1
         else:
