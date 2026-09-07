@@ -4,7 +4,7 @@ This section will hopefully get you started with installing Not1MM.
 
 ## Via Flatpak
 
-Grab the [flatpak file](https://github.com/mbridak/not1mm/blob/master/not1mm.flatpak).
+Go to the latest [Release](https://github.com/mbridak/not1mm/releases) and grab the flatpak file.
 
 ### Install
 

@@ -105,7 +105,7 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 I'm pretty sure the flatpak works now. Let me know if it doesn't.
 
-Grab the [flatpak file](https://github.com/mbridak/not1mm/releases/download/26.9.7/not1mm.flatpak).
+Go to the latest [Release](https://github.com/mbridak/not1mm/releases) and grab the flatpak file.
 
 #### Install
 
