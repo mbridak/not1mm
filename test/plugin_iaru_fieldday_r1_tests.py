@@ -9,6 +9,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from not1mm.lib.database import DataBase
 
 REPO = Path(__file__).resolve().parents[1]
@@ -53,6 +55,66 @@ class Field:
 
     def text(self):
         return self.value
+
+
+@pytest.mark.parametrize(
+    "received_serial, expected",
+    [
+        pytest.param(0, "000", id="integer-zero"),
+        pytest.param("0", "000", id="string-zero"),
+        pytest.param("00", "00", id="string-zero"),
+        pytest.param(" 0 ", "000", id="zero-with-whitespace"),
+        pytest.param("000", "000", id="padded-zero"),
+        pytest.param(None, "", id="none"),
+        pytest.param("", "", id="empty"),
+        pytest.param("   ", "", id="whitespace-only"),
+        pytest.param(23, "23", id="integer-serial"),
+        pytest.param("007", "007", id="leading-zeros"),
+        pytest.param(" 23 ", "23", id="serial-with-whitespace"),
+    ],
+)
+@pytest.mark.parametrize("kind", PLUGIN_PATHS)
+def test_cabrillo_formats_received_serials(kind, received_serial, expected, tmp_path):
+    plugin = load_plugin(kind)
+    report = "599" if kind == "cw" else "59"
+    contact = {
+        "TS": "2026-09-05 16:00:00",
+        "Freq": 14000,
+        "Mode": "CW" if kind == "cw" else "USB",
+        "StationPrefix": "DM1ABC/P",
+        "SNT": report,
+        "SentNr": 0,
+        "Call": "DL1AAA",
+        "RCV": report,
+        "NR": received_serial,
+    }
+    app = types.SimpleNamespace(
+        station={"Call": "DM1ABC/P"},
+        contest_settings={},
+        database=types.SimpleNamespace(
+            fetch_all_contacts_asc=lambda: [contact],
+            get_ops=lambda: [],
+        ),
+        show_message_box=lambda _message: None,
+    )
+    with (
+        patch.object(plugin.Path, "home", return_value=tmp_path),
+        patch.object(plugin, "calc_score", return_value=0),
+    ):
+        plugin.cabrillo(app, "ascii")
+
+    log_files = list(tmp_path.glob("*.log"))
+    assert len(log_files) == 1
+    qso_lines = [
+        line
+        for line in log_files[0].read_text(encoding="ascii").splitlines()
+        if line.startswith("QSO:")
+    ]
+    assert len(qso_lines) == 1
+    line = qso_lines[0]
+    assert line[-6:] == expected.ljust(6)
+    # Placeholder formatting must not change the sent serial.
+    assert line.split()[7] == "0"
 
 
 class FieldDayRegressionTests(unittest.TestCase):

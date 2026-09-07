@@ -233,6 +233,13 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
         file=file_descriptor,
     )
 
+def format_received_serial(value):
+    if value is None:
+        return ""
+
+    serial = str(value).strip()
+    return "000" if serial == "0" else serial
+
 
 def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
@@ -421,7 +428,7 @@ def cabrillo(self, file_encoding):
                     f"{str(contact.get('SentNr', '')).ljust(6)} "
                     f"{contact.get('Call', '').ljust(13)} "
                     f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
+                    f"{format_received_serial(contact.get('NR', '')).ljust(6)}",
                     "\r\n",
                     file_descriptor,
                     file_encoding,
