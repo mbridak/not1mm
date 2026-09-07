@@ -1,5 +1,11 @@
 # Changelog
 
+- [2026-09-07] Merge pull request #681 from Cryptems-Industries/fix-iaru-fieldday-r1-scoring
+  - fixed output of 0 to 000 to conform to iaru rg 1 fd cabrillo logging rules
+  - added option for automatic test discovery
+  - fixed wrong multiplier calculation for iaru fd r1
+- [2026-09-06] Merge pull request #680 from microphonon/cwo
+  - fix Cabrillo formatting
 - [2026-09-05] remove flatpak file
   - Merge pull request #678 from df7cb/adif-callsign
   - Fix /P callsigns in adif export
@@ -2897,3 +2903,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
