@@ -69,6 +69,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-09-10] @mbridak Refactor dialog handling to use exec() instead of open() for modal behavior
 - [2026-09-07] Merge pull request #681 from Cryptems-Industries/fix-iaru-fieldday-r1-scoring
   - fixed output of 0 to 000 to conform to iaru rg 1 fd cabrillo logging rules
   - added option for automatic test discovery
