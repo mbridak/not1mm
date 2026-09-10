@@ -1825,8 +1825,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.current_palette:
             self.configuration_dialog.setPalette(self.current_palette)
         self.configuration_dialog.usehamdb_radioButton.hide()
-        self.configuration_dialog.show()
         self.configuration_dialog.accepted.connect(self.edit_configuration_return)
+        self.configuration_dialog.exec()
         self.previous_language = self.pref.get("language", "en_US")
 
     def edit_configuration_return(self) -> None:
@@ -2115,7 +2115,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.dateTimeEdit.setTime(
             QtCore.QTime.fromString(the_time, "hh:mm:ss")
         )
-        self.contest_dialog.open()
+        self.contest_dialog.exec()
 
     def save_edited_contest(self) -> None:
         """
@@ -3283,7 +3283,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.dateTimeEdit.setTime(QtCore.QTime(0, 0))
         self.contest_dialog.power.setCurrentText("LOW")
         self.contest_dialog.station.setCurrentText("FIXED")
-        self.contest_dialog.open()
+        self.contest_dialog.exec()
 
     def save_contest(self) -> None:
         """
@@ -3375,7 +3375,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings_dialog.RoverQTH.setText(self.station.get("RoverQTH", ""))
         self.settings_dialog.Club.setText(self.station.get("Club", ""))
         self.settings_dialog.Email.setText(self.station.get("Email", ""))
-        self.settings_dialog.open()
+        self.settings_dialog.exec()
 
     def save_settings(self) -> None:
         """
