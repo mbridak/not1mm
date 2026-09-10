@@ -458,16 +458,21 @@
        <string>IARU FIELDDAY R1 SSB</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>IARU HF</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>JIDX CW</string>
-      </property>
-     </item>
+      <item>
+       <property name="text">
+        <string>IARU HF</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>IARU R1 VHF</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>JIDX CW</string>
+       </property>
+      </item>
      <item>
       <property name="text">
        <string>JIDX PH</string>
@@ -921,21 +926,26 @@
        <string>10M</string>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>6M</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2M</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>222</string>
-      </property>
-     </item>
+      <item>
+       <property name="text">
+        <string>6M</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4M</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2M</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>222</string>
+       </property>
+      </item>
      <item>
       <property name="text">
        <string>432</string>
