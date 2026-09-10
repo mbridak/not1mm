@@ -239,7 +239,7 @@ class LogWindow(QDockWidget):
                 self.pref.get("n1mm_radioport", "127.0.0.1:12060"),
                 self.pref.get("n1mm_contactport", "127.0.0.1:12061"),
                 self.pref.get("n1mm_lookupport", "127.0.0.1:12060"),
-                self.pref.get("n1mm_scoreport", "127.0.0.1:12060"),
+                self.pref.get("n1mm_scoreport", "127.0.0.1:12062"),
             )
         except ValueError:
             logger.warning("%s", f"{ValueError}")
