@@ -47,7 +47,7 @@ class Preferences:
         "n1mm_radioport": "127.0.0.1:12060",
         "n1mm_contactport": "127.0.0.1:12060",
         "n1mm_lookupport": "127.0.0.1:12060",
-        "n1mm_scoreport": "127.0.0.1:12060",
+        "n1mm_scoreport": "127.0.0.1:12062",
         "usehamdb": False,
         "usehamqth": False,
         "cloudlog": False,

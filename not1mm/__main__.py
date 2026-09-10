@@ -182,6 +182,7 @@ class MainWindow(QtWidgets.QMainWindow):
     settings = None
     lookup_service = None
     fldigi_util = None
+    n1mm = None
     rtc_service = None
     rtc_interval = 2
     rtc_user = ""
@@ -299,6 +300,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.server_message_watch_timer = QtCore.QTimer()
         self.server_message_watch_timer.timeout.connect(self.check_udp_queue)
         self.server_message_watch_timer.start(1000)
+        # Re-send the contest score to the RTC poster / N1MM score port on a
+        # slow cadence, so it keeps updating during a lull and a scoreboard
+        # that restarts mid-contest re-syncs without waiting for the next QSO.
+        self.score_report_timer = QtCore.QTimer()
+        self.score_report_timer.timeout.connect(self.update_rtc_xml)
+        self.score_report_timer.start(60000)
         self.inputs_dict = {
             self.callsign: "callsign",
             self.sent: "sent",
@@ -3246,15 +3253,28 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rate_window.msg_from_main(cmd)
 
     def update_rtc_xml(self) -> None:
-        """Update RTC XML"""
-        if self.pref.get("send_rtc_scores", False):
-            if self.contest is None:
-                return
-            if (
-                hasattr(self.contest, "online_score_xml")
-                and self.rtc_service is not None
-            ):
-                self.rtc_service.xml = self.contest.online_score_xml(self)
+        """Refresh the contest score XML and hand it to any enabled reporter.
+
+        Feeds the RTC (real-time contest) HTTP poster and, when "Send N1MM
+        score packets" is enabled, an N1MM-style <dynamicresults> UDP datagram
+        to the configured score port. Called after every logged QSO and on a
+        slow timer so the score keeps flowing during a lull.
+        """
+        if self.contest is None or not hasattr(self.contest, "online_score_xml"):
+            return
+
+        want_rtc = (
+            self.pref.get("send_rtc_scores", False) and self.rtc_service is not None
+        )
+        want_udp = self.n1mm is not None and self.n1mm.send_score_packets
+        if not (want_rtc or want_udp):
+            return
+
+        score_xml = self.contest.online_score_xml(self)
+        if want_rtc:
+            self.rtc_service.xml = score_xml
+        if want_udp:
+            self.n1mm.send_score(score_xml)
 
     def new_contest_dialog(self) -> None:
         """
@@ -3931,7 +3951,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.pref.get("n1mm_radioport", "127.0.0.1:12060"),
                     self.pref.get("n1mm_contactport", "127.0.0.1:12061"),
                     self.pref.get("n1mm_lookupport", "127.0.0.1:12060"),
-                    self.pref.get("n1mm_scoreport", "127.0.0.1:12060"),
+                    self.pref.get("n1mm_scoreport", "127.0.0.1:12062"),
                 )
             except ValueError:
                 logger.warning("%s", f"{ValueError}")

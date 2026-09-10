@@ -102,21 +102,6 @@ class N1MM:
         "ID": "",
     }
 
-    score_report = {  # noqa: RUF012
-        "app": "NOT1MM",
-        "contest": "",
-        "call": "",
-        "class": {
-            "ops": "SINGLE-OP",
-            "mode": "MIXED",
-            "power": "LOW",
-            "bands": "ALL",
-            "transmitter": "ONE",
-        },
-        "score": 0,
-        "timestamp": "",
-    }
-
     def __init__(
         self,
         radioport="127.0.0.1:12060",
@@ -174,13 +159,44 @@ class N1MM:
         """Send lookup request"""
         self._send(self.lookup_port, self.contact_info, "lookupinfo")
 
-    def send_score(self):
-        """Send score"""
-        self._send(self.score_port, self.score_report, "scoreinfo")
+    def send_score(self, score_xml):
+        """Send a contest score report.
 
-    def send_realtime_score(self):
-        """Send score"""
-        self._send(self.score_port, self.score_report, "dynamicresults")
+        Unlike the other senders the payload is already-serialized XML - the
+        active contest plugin's online_score_xml() builds the <dynamicresults>
+        document - so it goes out verbatim rather than through dicttoxml().
+        """
+        self._send_raw(self.score_port, score_xml)
+
+    def _send_raw(self, port_list, payload):
+        """UDP-send an already-serialized payload to every ip:port in a
+        space-separated list."""
+        bytes_to_send = payload.encode() if isinstance(payload, str) else payload
+        logger.debug("********* %s", f"score {port_list}")
+        for connection in port_list.split():
+            try:
+                ip_address, port = connection.split(":")
+                port = int(port)
+            except ValueError as returned_error:
+                logger.debug(
+                    "%s", f"Bad IP:Port combination {connection} {returned_error}"
+                )
+                continue
+            try:
+                score_socket = socket.socket(
+                    family=socket.AF_INET, type=socket.SOCK_DGRAM
+                )
+                logger.debug(
+                    "********* %s", f"{ip_address} {int(port)} {bytes_to_send}"
+                )
+                score_socket.sendto(
+                    bytes_to_send,
+                    (ip_address, int(port)),
+                )
+            except PermissionError as exception:
+                logger.critical("%s", f"{exception}")
+            except socket.gaierror as exception:
+                logger.critical("%s", f"{exception}")
 
     def _send(self, port_list, payload, package_name):
         """Send XML data"""
