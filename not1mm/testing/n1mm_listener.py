@@ -2,13 +2,14 @@
 """Test multicasting"""
 
 # pylint: disable=invalid-name
-import socket
-import time
-import threading
 import queue
+import socket
+import threading
+import time
+
 import xmltodict
 
-multicast_port = 12061
+multicast_port = 12060
 multicast_group = "127.0.0.1"
 interface_ip = "0.0.0.0"
 
@@ -27,7 +28,7 @@ def watch_udp():
     while True:
         try:
             datagram = s.recv(1500)
-        except socket.timeout:
+        except TimeoutError:
             time.sleep(1)
             continue
         if datagram:
