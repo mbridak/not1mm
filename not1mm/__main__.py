@@ -3030,6 +3030,24 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mults.setText(multstring)
             score = self.contest.calc_score(self)
             self.score.setText(str(score))
+            if self.n1mm and self.n1mm.send_score_packets:
+                self.n1mm.score_report["score"] = score
+                self.n1mm.score_report["timestamp"] = datetime.datetime.now(
+                    datetime.UTC
+                ).isoformat(" ")[:19]
+                self.n1mm.score_report["contest"] = self.contest.cabrillo_name.replace(
+                    "-", ""
+                )
+                self.n1mm.score_report["call"] = self.pref.get("current_op", "")
+                self.n1mm.score_report["class"] = {
+                    "ops": self.contest_settings.get("OperatorCategory", ""),
+                    "mode": self.contest_settings.get("ModeCategory", ""),
+                    "power": self.contest_settings.get("PowerCategory", ""),
+                    "bands": self.contest_settings.get("BandCategory", ""),
+                    "transmitter": self.contest_settings.get("TransmitterCategory", ""),
+                }
+                self.update_n1mm_score()
+
             self.contest.reset_label(self)
             if (
                 self.contest.name != "ICWC Medium Speed Test"
@@ -3163,6 +3181,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("packets %s", f"{self.n1mm.send_contact_packets}")
             if self.n1mm.send_contact_packets:
                 self.n1mm.contact_info["timestamp"] = self.contact["TS"]
+                self.n1mm.score_report["timestamp"] = self.contact["TS"]
                 self.n1mm.contact_info["oldcall"] = self.n1mm.contact_info["call"] = (
                     self.contact["Call"]
                 )
@@ -3173,11 +3192,15 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["contestname"] = self.contact[
                     "ContestName"
                 ].replace("-", "")
+                self.n1mm.score_report["contest"] = self.contact["ContestName"].replace(
+                    "-", ""
+                )
                 self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
                 self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
                 self.n1mm.contact_info["wpxprefix"] = self.contact["WPXPrefix"]
                 self.n1mm.contact_info["IsRunQSO"] = self.contact["IsRunQSO"]
                 self.n1mm.contact_info["operator"] = self.contact["Operator"]
+                self.n1mm.score_report["call"] = self.contact["Operator"]
                 self.n1mm.contact_info["mycall"] = self.contact["Operator"]
                 self.n1mm.contact_info["StationName"] = self.n1mm.contact_info[
                     "NetBiosName"
@@ -3244,6 +3267,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.zone_window.msg_from_main(cmd)
         if self.rate_window:
             self.rate_window.msg_from_main(cmd)
+
+    def update_n1mm_score(self) -> None:
+        if self.n1mm and self.n1mm.send_score_packets:
+            self.n1mm.send_score()
 
     def update_rtc_xml(self) -> None:
         """Update RTC XML"""
