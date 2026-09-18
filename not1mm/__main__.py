@@ -3198,6 +3198,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["contestnr"] = self.contact["ContestNR"]
                 self.n1mm.contact_info["stationprefix"] = self.contact["StationPrefix"]
                 self.n1mm.contact_info["wpxprefix"] = self.contact["WPXPrefix"]
+                self.n1mm.contact_info["continent"] = self.contact.get("Continent", "")
+                self.n1mm.contact_info["countryprefix"] = self.contact.get(
+                    "CountryPrefix", ""
+                )
                 self.n1mm.contact_info["IsRunQSO"] = self.contact["IsRunQSO"]
                 self.n1mm.contact_info["operator"] = self.contact["Operator"]
                 self.n1mm.score_report["call"] = self.contact["Operator"]
@@ -3224,7 +3228,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.contact_info["section"] = self.contact["Sect"]
                 self.n1mm.contact_info["prec"] = self.contact["Prec"]
                 self.n1mm.contact_info["ck"] = self.contact["CK"]
-                self.n1mm.contact_info["zn"] = self.contact["ZN"]
+                self.n1mm.contact_info["zone"] = self.contact["ZN"]
                 self.n1mm.contact_info["power"] = self.contact["Power"]
                 self.n1mm.contact_info["band"] = self.contact["Band"]
                 logger.debug("%s", f"{self.n1mm.contact_info}")
