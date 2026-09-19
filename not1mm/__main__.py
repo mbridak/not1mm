@@ -3035,10 +3035,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.n1mm.score_report["timestamp"] = datetime.datetime.now(
                     datetime.UTC
                 ).isoformat(" ")[:19]
-                self.n1mm.score_report["contest"] = self.contest.cabrillo_name.replace(
-                    "-", ""
-                )
-                self.n1mm.score_report["call"] = self.pref.get("current_op", "")
+                self.n1mm.score_report["contest"] = self.contest.cabrillo_name
+                self.n1mm.score_report["call"] = self.station.get("Call", "")
+                self.n1mm.score_report["ops"] = self.pref.get("current_op", "")
                 self.n1mm.score_report["class"] = {
                     "ops": self.contest_settings.get("OperatorCategory", ""),
                     "mode": self.contest_settings.get("ModeCategory", ""),
