@@ -2702,6 +2702,16 @@
             </item>
            </widget>
           </item>
+          <item row="8" column="0" colspan="2">
+           <widget class="QCheckBox" name="esm_send_corrected_call">
+            <property name="toolTip">
+             <string>When a busted callsign is corrected after the exchange has already been sent in Run mode, automatically send the corrected callsign before the QRZ/TU message.</string>
+            </property>
+            <property name="text">
+             <string>Send corrected call before QRZ/TU (Run mode ESM)</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
          <item row="0" column="1">

@@ -107,6 +107,10 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.esm_qsob4.setCurrentIndex(index)
 
+        self.esm_send_corrected_call.setChecked(
+            bool(self.preference.get("esm_send_corrected_call", False))
+        )
+
         for device in self.devices:
             if device.get("max_output_channels"):
                 self.sounddevice.addItem(device.get("name"))
@@ -298,6 +302,9 @@ class Settings(QtWidgets.QDialog):
         self.preference["esm_mycall"] = self.esm_mycall.currentText()
         self.preference["esm_qrz"] = self.esm_qrz.currentText()
         self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
+        self.preference["esm_send_corrected_call"] = (
+            self.esm_send_corrected_call.isChecked()
+        )
 
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
