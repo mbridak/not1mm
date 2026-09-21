@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 ALTEREGO = None
 
-EXCHANGE_HINT = "NAME"
+EXCHANGE_HINT = "Name + QSO Serial Number (single box, space separated)"
 
 name = "ICWC Medium Speed Test"
 cabrillo_name = "ICWC-MST"
@@ -109,20 +109,45 @@ def set_tab_prev(self):
     }
 
 
+def split_exchange(text):
+    """Split the combined 'Name SerialNumber' exchange box into its parts.
+
+    The name is the first word, everything after the first space is the
+    QSO serial number. Returns (name, number), both upper cased and
+    stripped.
+    """
+    parts = text.upper().split(None, 1)
+    exchange_name = parts[0] if parts else ""
+    exchange_number = parts[1].strip() if len(parts) > 1 else ""
+    return exchange_name, exchange_number
+
+
 def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = "599"
     self.contact["RCV"] = "599"
     self.contact["SentNr"] = self.other_1.text()
-    exch = self.other_2.text().upper()
-    if " " in exch:
-        self.contact["Name"], self.contact["NR"] = exch.split(" ")
-    else:
-        self.contact["Name"] = exch
+    exchange_name, exchange_number = split_exchange(self.other_2.text())
+    self.contact["Name"] = exchange_name
+    self.contact["NR"] = exchange_number
 
 
-def predupe(self):  # pylint: disable=unused-argument
-    """called after callsign entered"""
+def predupe(self):
+    """Prefill his exchange with the last known Name for this call.
+
+    Only the name is prefilled -- the QSO serial number always increments,
+    so the operator still has to key in the received serial themselves.
+    """
+    if self.other_2.text() == "":
+        call = self.callsign.text().upper()
+        query = f"select Name from dxlog where Call = '{call}' and ContestName = 'ICWC-MST' order by ts desc;"
+        logger.debug(query)
+        result = self.database.exec_sql(query)
+        logger.debug("%s", f"{result}")
+        if result:
+            value = result.get("Name", "").upper().strip()
+            if value:
+                self.other_2.setText(value)
 
 
 def prefill(self):
@@ -441,22 +466,13 @@ def ft8_handler(the_packet: dict):
             the_packet.get("SRX_STRING", "") or the_packet.get("SRX", "")
         ).upper()
         our_nr = the_packet.get("STX", "") or ALTEREGO.other_1.text()
-        # Some loggers put the whole received exchange into SRX_STRING.
-        if " " in their_nr:
-            exchange = their_nr.split()[:2]
-        else:
-            exchange = [part for part in (their_name, their_nr) if part]
-        their_name = next((part for part in exchange if part.isalpha()), "")
-        their_nr = next((part for part in exchange if not part.isalpha()), "")
-        # set_contact_vars() splits this field on a single space into Name and
-        # NR, and treats a lone word as the Name. So hand it "name number" when
-        # both were copied, just the name when only that was, and nothing when
-        # only the number was (NR set below then survives).
+        # Some loggers put the whole received exchange ("NAME NR") into
+        # SRX_STRING instead of a separate NAME field.
+        if not their_name and " " in their_nr:
+            their_name, their_nr = split_exchange(their_nr)
         ALTEREGO.callsign.setText(the_packet.get("CALL", ""))
         ALTEREGO.other_1.setText(our_nr)
-        ALTEREGO.other_2.setText(
-            f"{their_name} {their_nr}" if their_name and their_nr else their_name
-        )
+        ALTEREGO.other_2.setText(f"{their_name} {their_nr}".strip())
         ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
         ALTEREGO.contact["SNT"] = "599"
         ALTEREGO.contact["RCV"] = "599"
@@ -527,7 +543,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
         elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+            if len(self.other_2.text().split()) < 2:
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -549,7 +565,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["MYCALL"])
 
         elif self.current_widget in ["other_2"]:
-            if self.other_2.text() == "":
+            if len(self.other_2.text().split()) < 2:
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
@@ -564,7 +580,6 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         self.save_contact()
                         continue
                     self.process_function_key(button)
-
 
 def populate_history_info_line(self):
     result = self.database.fetch_call_history(self.callsign.text())
