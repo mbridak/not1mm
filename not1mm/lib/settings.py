@@ -31,7 +31,7 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld, 12345 for flrig, " "and 50001 or 40001 for TCI."
+            "Usually 4532 for rigctld, 12345 for flrig, and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:

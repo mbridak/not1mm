@@ -6,7 +6,6 @@ from not1mm.lib.i18n import load_ui
 
 
 class EditMacro(QtWidgets.QDialog):
-
     def __init__(self, function_key, app_data_path):
         self.function_key = function_key
         parent = None
