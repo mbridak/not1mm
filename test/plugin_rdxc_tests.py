@@ -172,27 +172,21 @@ def test_set_contact_vars_dupe_does_not_mark_mult():
 
 
 def test_set_contact_vars_marks_new_oblast_mult():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"})
     ctx.database.exec_sql.return_value = {"mult_count": 0}
     rdxc.set_contact_vars(ctx)
     assert ctx.contact["IsMultiplier1"] == 1
 
 
 def test_set_contact_vars_skips_known_oblast():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"})
     ctx.database.exec_sql.return_value = {"mult_count": 3}
     rdxc.set_contact_vars(ctx)
     assert ctx.contact["IsMultiplier1"] == 0
 
 
 def test_set_contact_vars_marks_new_country_mult():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "DL", "Band": 20, "Call": "DL1ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "DL", "Band": 20, "Call": "DL1ABC"})
     ctx.database.exec_sql_mult.return_value = [
         {"CountryPrefix": "K"},
         {"CountryPrefix": "UA9"},
@@ -202,9 +196,7 @@ def test_set_contact_vars_marks_new_country_mult():
 
 
 def test_set_contact_vars_ua_and_ua9_share_country_mult():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"})
     ctx.database.exec_sql_mult.return_value = [{"CountryPrefix": "UA9"}]
     rdxc.set_contact_vars(ctx)
     assert ctx.contact["IsMultiplier2"] == 0

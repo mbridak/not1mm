@@ -142,7 +142,9 @@ def test_unparseable_filter_band_leaves_bandwidth_untouched(client):
     assert client.get("bw") == "1000"
 
 
-@pytest.mark.parametrize("value, expected", [("true", "1"), ("false", "0"), ("TRUE", "1")])
+@pytest.mark.parametrize(
+    "value, expected", [("true", "1"), ("false", "0"), ("TRUE", "1")]
+)
 def test_trx_frame_sets_ptt(client, value, expected):
     client.handle_frame("trx", ["0", value])
     assert client.get("ptt") == expected

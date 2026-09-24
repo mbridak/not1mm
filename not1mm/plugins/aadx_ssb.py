@@ -17,12 +17,12 @@
 # Multi-Multi (Low/High)
 # LP: 100 watts
 
-#  	Exchange:	RS + age ( or 01 ) 
+#  	Exchange:	RS + age ( or 01 )
 #  	Work stations:	Once per band
 
 
 # < Asian Stations >
-#  	QSO Points:	
+#  	QSO Points:
 #           160m band......3 points per Asian QSO. 9 points per Non-Asian QSO.
 #           80m band ......2 points per Asian QSO. 6 points per Non-Asian QSO.
 #           10m band ......2 points per Asian QSO. 6 points per Non-Asian QSO.
@@ -31,8 +31,8 @@
 #           Different entities (according to the DXCC List) worked per band.
 
 # < Non-Asian Stations >
-#       QSO Points:     
-#           160m band......3 points per Asian QSO. 
+#       QSO Points:
+#           160m band......3 points per Asian QSO.
 #           80m band ......2 points per Asian QSO.
 #           10m band ......2 points per Asian QSO.
 #           Other bands....1 point per Asian QSO.
@@ -41,7 +41,7 @@
 
 #  	Score Calculation:	Total score = total QSO points x total mults
 #  	E-mail logs to:	aaph@jarl.org
-#  	Upload log at:  https://contest.jarl.org/upload-aa/	
+#  	Upload log at:  https://contest.jarl.org/upload-aa/
 #  	Mail logs to:	(none)
 #  	Find rules at:	https://www.jarl.org/English/4_Library/A-4-3_Contests/aadx_eng.html
 #  	Cabrillo name:	ALL-ASIA-SSB
@@ -65,7 +65,7 @@ EXCHANGE_HINT = "age (or 01)"
 name = "AADX SSB"
 cabrillo_name = "AADX-SSB"
 mode = "SSB"
-# columns = [0, 1, 2, 3, 4, 5, 6, 11, 15] 
+# columns = [0, 1, 2, 3, 4, 5, 6, 11, 15]
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -87,12 +87,13 @@ dupe_type = 2
 my_continent = ""
 my_country = ""
 
+
 def init_contest(self):
     """setup plugin"""
 
     global my_continent
     global my_country
-    
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result is not None:
         item = result.get(next(iter(result)))
@@ -113,7 +114,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
+    self.other_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "SentNR")
+    )
     self.field3.setAccessibleName("Sent Number")
     self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "RcvNR"))
     self.field4.setAccessibleName("Received Number")
@@ -163,12 +166,11 @@ def set_contact_vars(self):
         their_country = item.get("entity", "")
         their_continent = item.get("continent", "")
 
-
     if my_country.upper() == their_country.upper():
         self.contact["IsMultiplier1"] = 0
         return
 
-    if my_continent == "AS": 
+    if my_continent == "AS":
 
         dxcc = self.contact.get("CountryPrefix", "")
         band = self.contact.get("Band", "")
@@ -188,12 +190,17 @@ def set_contact_vars(self):
     else:
         if their_continent != "AS":
             self.contact["IsMultiplier1"] = 0
-            return 
-        
+            return
+
         if self.contact.get("WPXPrefix", ""):
-            result = fetch_wpx_exists_before_me(self , self.contact.get("WPXPrefix", "") , self.contact.get("TS", "") , self.contact.get("Band", ""))
+            result = fetch_wpx_exists_before_me(
+                self,
+                self.contact.get("WPXPrefix", ""),
+                self.contact.get("TS", ""),
+                self.contact.get("Band", ""),
+            )
             # result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
-            if result.get("wpx_count", "") :
+            if result.get("wpx_count", ""):
                 self.contact["IsMultiplier1"] = 0
             else:
                 self.contact["IsMultiplier1"] = 1
@@ -209,6 +216,7 @@ def prefill(self):
     # serial_nr = str(result.get("serial_nr", "1")).zfill(3)
 
     self.other_1.setText(str(self.contest_settings.get("SentExchange", 0)))
+
 
 def points(self):
     """Calc point"""
@@ -304,7 +312,7 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
 
 def cabrillo(self, file_encoding):
     """Generates Cabrillo file. Maybe."""
-    # 
+    #
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
@@ -509,39 +517,40 @@ def recalculate_mults(self):
     global my_country
 
     all_contacts = self.database.fetch_all_contacts_asc()
-    
+
     if my_continent == "AS":
         for contact in all_contacts:
             self.contact = contact
             contact["Points"] = points(self)
             time_stamp = contact.get("TS", "")
             # dxcc = contact.get("CountryPrefix", "")
-            result = self.cty_lookup( contact.get("Call", ""))
+            result = self.cty_lookup(contact.get("Call", ""))
             if result is not None:
                 item = result.get(next(iter(result)))
                 their_country = item.get("entity", "")
-                primary_pfx = item.get("primary_pfx", "") 
-                contact["CountryPrefix"] = primary_pfx 
+                primary_pfx = item.get("primary_pfx", "")
+                contact["CountryPrefix"] = primary_pfx
 
-                
             band = contact.get("Band", "")
-            result = fetch_dxcc_exists_before_me(self,primary_pfx, time_stamp, band)
+            result = fetch_dxcc_exists_before_me(self, primary_pfx, time_stamp, band)
             dxcc_count = result.get("dxcc_count", 1)
             if dxcc_count == 0 and my_country.upper() != their_country.upper():
                 contact["IsMultiplier1"] = 1
             else:
                 contact["IsMultiplier1"] = 0
             self.database.change_contact(contact)
-    else:  
+    else:
         for contact in all_contacts:
             self.contact = contact
             contact["Points"] = points(self)
             time_stamp = contact.get("TS", "")
             # wpx = contact.get("WPXPrefix", "")
-            wpx =  calculate_wpx_prefix(contact.get("Call", ""))
+            wpx = calculate_wpx_prefix(contact.get("Call", ""))
             contact["WPXPrefix"] = wpx
 
-            result = fetch_wpx_exists_before_me(self, wpx, time_stamp, self.contact.get("Band", ""))
+            result = fetch_wpx_exists_before_me(
+                self, wpx, time_stamp, self.contact.get("Band", "")
+            )
             # wpx_count = result.get("wpx_count", 1)
             if contact["Points"] > 0 and result.get("wpx_count", 1) == 0:
                 contact["IsMultiplier1"] = 1
@@ -549,11 +558,12 @@ def recalculate_mults(self):
                 contact["IsMultiplier1"] = 0
             self.database.change_contact(contact)
 
-def fetch_dxcc_exists_before_me( self,dxcc, time_stamp, band ) -> dict:
+
+def fetch_dxcc_exists_before_me(self, dxcc, time_stamp, band) -> dict:
     """returns the dict dxcc_count of dxcc existing in current contest."""
-    
+
     contest_nr = self.pref.get("contest")
-    
+
     query = (
         f"select count(*) as dxcc_count from dxlog where "
         f"TS < '{time_stamp}' "
@@ -562,14 +572,15 @@ def fetch_dxcc_exists_before_me( self,dxcc, time_stamp, band ) -> dict:
         f"and ContestNR = {contest_nr} "
         f";"
     )
-    
+
     result = self.database.exec_sql(query)
     return result
+
 
 def fetch_wpx_exists_before_me(self, wpx, time_stamp, band) -> dict:
     """returns a dict key of wpx_count for specific band."""
     contest_nr = self.pref.get("contest")
-    
+
     query = (
         f"select count(*) as wpx_count from dxlog where "
         f" TS < '{time_stamp}' "
@@ -578,7 +589,7 @@ def fetch_wpx_exists_before_me(self, wpx, time_stamp, band) -> dict:
         f"and Band = '{band}' "
         f";"
     )
-    
+
     result = self.database.exec_sql(query)
     return result
 

@@ -49,7 +49,9 @@ def interface(self):
     self.field1.setAccessibleName("RST Sent")
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Name"))
     self.field3.setAccessibleName("Name")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Comment"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Comment")
+    )
     self.field4.setAccessibleName("Comment")
     """Disable forced uppercase from main.ui"""
     self.other_1.setStyleSheet("text-transform: none;")

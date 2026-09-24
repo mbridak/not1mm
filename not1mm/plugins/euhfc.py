@@ -71,7 +71,9 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Lic Year"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Lic Year")
+    )
     self.field4.setAccessibleName("License Year")
 
 
