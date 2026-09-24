@@ -21,8 +21,17 @@ TRANS_DIR = ROOT / "not1mm" / "data" / "translations"
 
 
 NOISE_DIRS = {
-    ".Trash", "Trash", ".cache", ".git", "__pycache__", "node_modules",
-    ".npm", ".cargo", ".lmstudio", ".local/lib/python3", ".rustup",
+    ".Trash",
+    "Trash",
+    ".cache",
+    ".git",
+    "__pycache__",
+    "node_modules",
+    ".npm",
+    ".cargo",
+    ".lmstudio",
+    ".local/lib/python3",
+    ".rustup",
 }
 
 
@@ -79,8 +88,7 @@ def main() -> int:
     pylupdate(template)
 
     languages = sorted(
-        path.stem[len("not1mm_"):]
-        for path in TRANS_DIR.glob("not1mm_*.ts")
+        path.stem[len("not1mm_") :] for path in TRANS_DIR.glob("not1mm_*.ts")
     )
     if not languages:
         print("No not1mm_<lang>.ts files found.", file=sys.stderr)

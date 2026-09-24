@@ -159,6 +159,10 @@ class MainWindow(QtWidgets.QMainWindow):
     use_esm = False
     use_call_history = False
     esm_dict: typing.ClassVar = {}
+    # Callsign that was last sent via the ESM "His Call" macro in Run mode,
+    # used to detect a busted-call correction so it can be resent ahead of
+    # the QRZ/TU macro. See process_esm() in the contest plugins.
+    esm_call_sent = ""
     sandpfreq = 0
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.

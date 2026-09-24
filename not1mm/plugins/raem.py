@@ -97,9 +97,13 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("Sent S/N")
     self.sent.setAccessibleName("Sent Serial Number")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Rcv S/N"))
+    self.other_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Rcv S/N")
+    )
     self.other_1.setAccessibleName("Serial Number")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Exchange"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Exchange")
+    )
     self.other_2.setAccessibleName("Exchange")
     self.sent.setText("")
 
@@ -572,6 +576,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if len(self.callsign.text()) < 3:
                 self.make_button_green(self.esm_dict["CQ"])
                 buttons_to_send.append(self.esm_dict["CQ"])
+                self.esm_call_sent = ""
             elif len(self.callsign.text()) > 2:
                 self.make_button_green(self.esm_dict["HISCALL"])
                 self.make_button_green(self.esm_dict["EXCH"])
@@ -583,6 +588,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
             else:
+                # If the operator corrected a busted callsign after the
+                # exchange was already sent, resend the corrected call
+                # ahead of the QRZ/TU macro so the other station logs the
+                # right callsign before the QSO is wiped.
+                if (
+                    self.pref.get("esm_send_corrected_call")
+                    and self.esm_call_sent
+                    and self.callsign.text() != self.esm_call_sent
+                ):
+                    self.make_button_green(self.esm_dict["HISCALL"])
+                    buttons_to_send.append(self.esm_dict["HISCALL"])
                 self.make_button_green(self.esm_dict["QRZ"])
                 buttons_to_send.append(self.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
@@ -592,7 +608,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 if button:
                     if button == "LOGIT":
                         self.save_contact()
+                        self.esm_call_sent = ""
                         continue
+                    if button == self.esm_dict.get("HISCALL"):
+                        self.esm_call_sent = self.callsign.text()
                     self.process_function_key(button)
     else:
         if self.current_widget == "callsign":

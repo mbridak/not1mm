@@ -131,7 +131,9 @@ def interface(self):
     self.field1.setAccessibleName("Signal report Sent")
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Nr"))
     self.field3.setAccessibleName("Received Serial Number")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Locator"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Locator")
+    )
     self.field4.setAccessibleName("Received Locator")
 
 
@@ -544,6 +546,7 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
             if len(self.callsign.text()) < 3:
                 self.make_button_green(self.esm_dict["CQ"])
                 buttons_to_send.append(self.esm_dict["CQ"])
+                self.esm_call_sent = ""
             elif self.contact_is_dupe:
                 self.make_button_green(self.esm_dict["QSOB4"])
                 buttons_to_send.append(self.esm_dict["QSOB4"])
@@ -567,6 +570,17 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 self.make_button_green(self.F12)
                 buttons_to_send.append(self.F12)
             else:
+                # If the operator corrected a busted callsign after the
+                # exchange was already sent, resend the corrected call
+                # ahead of the QRZ/TU macro so the other station logs the
+                # right callsign before the QSO is wiped.
+                if (
+                    self.pref.get("esm_send_corrected_call")
+                    and self.esm_call_sent
+                    and self.callsign.text() != self.esm_call_sent
+                ):
+                    self.make_button_green(self.esm_dict["HISCALL"])
+                    buttons_to_send.append(self.esm_dict["HISCALL"])
                 self.make_button_green(self.esm_dict["QRZ"])
                 buttons_to_send.append(self.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
@@ -583,7 +597,10 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                         ):
                             return
                         self.save_contact()
+                        self.esm_call_sent = ""
                         continue
+                    if button == self.esm_dict.get("HISCALL"):
+                        self.esm_call_sent = self.callsign.text()
                     self.process_function_key(button)
             if self.contact_is_dupe:
                 return

@@ -31,8 +31,7 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld, 12345 for flrig, "
-            "and 50001 or 40001 for TCI."
+            "Usually 4532 for rigctld, 12345 for flrig, " "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -106,6 +105,10 @@ class Settings(QtWidgets.QDialog):
         index = self.esm_qsob4.findText(value)
         if index != -1:
             self.esm_qsob4.setCurrentIndex(index)
+
+        self.esm_send_corrected_call.setChecked(
+            bool(self.preference.get("esm_send_corrected_call", False))
+        )
 
         for device in self.devices:
             if device.get("max_output_channels"):
@@ -202,9 +205,7 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
-        self.cluster_login_field.setText(
-            str(self.preference.get("cluster_login", ""))
-        )
+        self.cluster_login_field.setText(str(self.preference.get("cluster_login", "")))
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -298,6 +299,9 @@ class Settings(QtWidgets.QDialog):
         self.preference["esm_mycall"] = self.esm_mycall.currentText()
         self.preference["esm_qrz"] = self.esm_qrz.currentText()
         self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
+        self.preference["esm_send_corrected_call"] = (
+            self.esm_send_corrected_call.isChecked()
+        )
 
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()

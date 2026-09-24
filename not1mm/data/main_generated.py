@@ -14,7 +14,10 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.WindowModality.NonModal)
         MainWindow.resize(886, 589)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
@@ -26,10 +29,18 @@ class Ui_MainWindow(object):
         MainWindow.setFont(font)
         MainWindow.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("not1mm/data/k6gte.not1mm-32.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(
+            QtGui.QPixmap("not1mm/data/k6gte.not1mm-32.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         MainWindow.setWindowIcon(icon)
         MainWindow.setIconSize(QtCore.QSize(32, 32))
-        MainWindow.setDockOptions(QtWidgets.QMainWindow.DockOption.AllowNestedDocks|QtWidgets.QMainWindow.DockOption.AllowTabbedDocks|QtWidgets.QMainWindow.DockOption.AnimatedDocks)
+        MainWindow.setDockOptions(
+            QtWidgets.QMainWindow.DockOption.AllowNestedDocks
+            | QtWidgets.QMainWindow.DockOption.AllowTabbedDocks
+            | QtWidgets.QMainWindow.DockOption.AnimatedDocks
+        )
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setEnabled(True)
         self.centralwidget.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
@@ -120,7 +131,12 @@ class Ui_MainWindow(object):
         self.cw_band_23cm.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.cw_band_23cm.setObjectName("cw_band_23cm")
         self.bandmode_vertline.addWidget(self.cw_band_23cm)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.bandmode_vertline.addItem(spacerItem)
         self.mainsection.addWidget(self.Band_Mode_Frame_CW)
         self.Band_Mode_Frame_SSB = QtWidgets.QFrame(parent=self.centralwidget)
@@ -199,7 +215,12 @@ class Ui_MainWindow(object):
         self.ssb_band_23cm.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.ssb_band_23cm.setObjectName("ssb_band_23cm")
         self.verticalLayout_4.addWidget(self.ssb_band_23cm)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.verticalLayout_4.addItem(spacerItem1)
         self.mainsection.addWidget(self.Band_Mode_Frame_SSB)
         self.Band_Mode_Frame_RTTY = QtWidgets.QFrame(parent=self.centralwidget)
@@ -283,7 +304,12 @@ class Ui_MainWindow(object):
         self.rtty_band_23cm.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.rtty_band_23cm.setObjectName("rtty_band_23cm")
         self.verticalLayout_3.addWidget(self.rtty_band_23cm)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.verticalLayout_3.addItem(spacerItem2)
         self.mainsection.addWidget(self.Band_Mode_Frame_RTTY)
         self.main_dialog = QtWidgets.QVBoxLayout()
@@ -295,7 +321,11 @@ class Ui_MainWindow(object):
         self.input_call = QtWidgets.QVBoxLayout(self.callsignfield)
         self.input_call.setObjectName("input_call")
         self.callsign_label = QtWidgets.QLabel(parent=self.callsignfield)
-        self.callsign_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.callsign_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignBottom
+            | QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+        )
         self.callsign_label.setObjectName("callsign_label")
         self.input_call.addWidget(self.callsign_label)
         self.callsign = QtWidgets.QLineEdit(parent=self.callsignfield)
@@ -314,7 +344,11 @@ class Ui_MainWindow(object):
         self.input_snt = QtWidgets.QVBoxLayout(self.field1)
         self.input_snt.setObjectName("input_snt")
         self.snt_label = QtWidgets.QLabel(parent=self.field1)
-        self.snt_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.snt_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignBottom
+            | QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+        )
         self.snt_label.setObjectName("snt_label")
         self.input_snt.addWidget(self.snt_label)
         self.sent = QtWidgets.QLineEdit(parent=self.field1)
@@ -334,7 +368,11 @@ class Ui_MainWindow(object):
         self.input_rcv = QtWidgets.QVBoxLayout(self.field2)
         self.input_rcv.setObjectName("input_rcv")
         self.rcv_label = QtWidgets.QLabel(parent=self.field2)
-        self.rcv_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.rcv_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignBottom
+            | QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+        )
         self.rcv_label.setObjectName("rcv_label")
         self.input_rcv.addWidget(self.rcv_label)
         self.receive = QtWidgets.QLineEdit(parent=self.field2)
@@ -354,7 +392,11 @@ class Ui_MainWindow(object):
         self.input_other = QtWidgets.QVBoxLayout(self.field3)
         self.input_other.setObjectName("input_other")
         self.other_label = QtWidgets.QLabel(parent=self.field3)
-        self.other_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.other_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignBottom
+            | QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+        )
         self.other_label.setObjectName("other_label")
         self.input_other.addWidget(self.other_label)
         self.other_1 = QtWidgets.QLineEdit(parent=self.field3)
@@ -371,11 +413,17 @@ class Ui_MainWindow(object):
         self.field4 = QtWidgets.QFrame(parent=self.centralwidget)
         self.field4.setObjectName("field4")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.field4)
-        self.verticalLayout_2.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.verticalLayout_2.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.exch_label = QtWidgets.QLabel(parent=self.field4)
         self.exch_label.setTextFormat(QtCore.Qt.TextFormat.AutoText)
-        self.exch_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.exch_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignBottom
+            | QtCore.Qt.AlignmentFlag.AlignLeading
+            | QtCore.Qt.AlignmentFlag.AlignLeft
+        )
         self.exch_label.setObjectName("exch_label")
         self.verticalLayout_2.addWidget(self.exch_label)
         self.other_2 = QtWidgets.QLineEdit(parent=self.field4)
@@ -396,7 +444,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setStretch(4, 2)
         self.main_dialog.addLayout(self.horizontalLayout)
         self.run_vs_sanp = QtWidgets.QHBoxLayout()
-        self.run_vs_sanp.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.run_vs_sanp.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.run_vs_sanp.setSpacing(6)
         self.run_vs_sanp.setObjectName("run_vs_sanp")
         self.leftdot = QtWidgets.QLabel(parent=self.centralwidget)
@@ -404,10 +454,14 @@ class Ui_MainWindow(object):
         self.leftdot.setObjectName("leftdot")
         self.run_vs_sanp.addWidget(self.leftdot)
         self.cwprogressBar = QtWidgets.QProgressBar(parent=self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.cwprogressBar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.cwprogressBar.sizePolicy().hasHeightForWidth()
+        )
         self.cwprogressBar.setSizePolicy(sizePolicy)
         self.cwprogressBar.setMinimumSize(QtCore.QSize(0, 0))
         self.cwprogressBar.setMaximumSize(QtCore.QSize(5, 29))
@@ -435,7 +489,9 @@ class Ui_MainWindow(object):
         self.radioButton_sp.setObjectName("radioButton_sp")
         self.run_vs_sanp.addWidget(self.radioButton_sp)
         self.cw_speed = QtWidgets.QSpinBox(parent=self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.cw_speed.sizePolicy().hasHeightForWidth())
@@ -444,7 +500,9 @@ class Ui_MainWindow(object):
         self.cw_speed.setWrapping(False)
         self.cw_speed.setFrame(True)
         self.cw_speed.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.cw_speed.setButtonSymbols(QtWidgets.QAbstractSpinBox.ButtonSymbols.UpDownArrows)
+        self.cw_speed.setButtonSymbols(
+            QtWidgets.QAbstractSpinBox.ButtonSymbols.UpDownArrows
+        )
         self.cw_speed.setSuffix("")
         self.cw_speed.setPrefix("")
         self.cw_speed.setMinimum(5)
@@ -471,13 +529,20 @@ class Ui_MainWindow(object):
         self.dupe_indicator.setStyleSheet("color: rgb(246, 10, 10);")
         self.dupe_indicator.setObjectName("dupe_indicator")
         self.run_vs_sanp.addWidget(self.dupe_indicator)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.run_vs_sanp.addItem(spacerItem3)
         self.main_dialog.addLayout(self.run_vs_sanp)
         self.Button_Row1 = QtWidgets.QFrame(parent=self.centralwidget)
         self.Button_Row1.setObjectName("Button_Row1")
         self.ButtonRow1 = QtWidgets.QHBoxLayout(self.Button_Row1)
-        self.ButtonRow1.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetNoConstraint)
+        self.ButtonRow1.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetNoConstraint
+        )
         self.ButtonRow1.setContentsMargins(0, 0, 0, 0)
         self.ButtonRow1.setObjectName("ButtonRow1")
         self.F1 = QtWidgets.QPushButton(parent=self.Button_Row1)
@@ -576,7 +641,9 @@ class Ui_MainWindow(object):
         self.ButtonRow3.addWidget(self.qrz)
         self.main_dialog.addWidget(self.Command_Buttons)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_6.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.horizontalLayout_6.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.heading_distance = QtWidgets.QLabel(parent=self.centralwidget)
         self.heading_distance.setObjectName("heading_distance")
@@ -589,22 +656,37 @@ class Ui_MainWindow(object):
         self.history_info.setObjectName("history_info")
         self.verticalLayout.addWidget(self.history_info)
         self.StatusLine = QtWidgets.QHBoxLayout()
-        self.StatusLine.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.StatusLine.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.StatusLine.setObjectName("StatusLine")
         self.dx_entity = QtWidgets.QLabel(parent=self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dx_entity.sizePolicy().hasHeightForWidth())
         self.dx_entity.setSizePolicy(sizePolicy)
         self.dx_entity.setObjectName("dx_entity")
         self.StatusLine.addWidget(self.dx_entity)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.StatusLine.addItem(spacerItem4)
         self.mults = QtWidgets.QLabel(parent=self.centralwidget)
         self.mults.setObjectName("mults")
         self.StatusLine.addWidget(self.mults)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.StatusLine.addItem(spacerItem5)
         self.score = QtWidgets.QLabel(parent=self.centralwidget)
         self.score.setObjectName("score")
@@ -723,7 +805,9 @@ class Ui_MainWindow(object):
         self.actionGenerate_Cabrillo_ASCII.setAutoRepeat(False)
         self.actionGenerate_Cabrillo_ASCII.setIconVisibleInMenu(False)
         self.actionGenerate_Cabrillo_ASCII.setShortcutVisibleInContextMenu(False)
-        self.actionGenerate_Cabrillo_ASCII.setObjectName("actionGenerate_Cabrillo_ASCII")
+        self.actionGenerate_Cabrillo_ASCII.setObjectName(
+            "actionGenerate_Cabrillo_ASCII"
+        )
         self.actionGenerate_Cabrillo_UTF8 = QtGui.QAction(parent=MainWindow)
         font = QtGui.QFont()
         font.setFamily("JetBrains Mono")
@@ -1069,7 +1153,9 @@ class Ui_MainWindow(object):
         self.rtty_band_23cm.setText(_translate("MainWindow", "23cm"))
         self.callsign_label.setText(_translate("MainWindow", "Callsign"))
         self.callsign.setAccessibleName(_translate("MainWindow", "callsign"))
-        self.callsign.setAccessibleDescription(_translate("MainWindow", "enter callsign here"))
+        self.callsign.setAccessibleDescription(
+            _translate("MainWindow", "enter callsign here")
+        )
         self.snt_label.setText(_translate("MainWindow", "SNT"))
         self.sent.setAccessibleName(_translate("MainWindow", "RST Sent"))
         self.rcv_label.setText(_translate("MainWindow", "RCV"))
@@ -1078,7 +1164,9 @@ class Ui_MainWindow(object):
         self.exch_label.setText(_translate("MainWindow", "OTHER_2"))
         self.radioButton_run.setAccessibleName(_translate("MainWindow", "Run Mode"))
         self.radioButton_run.setText(_translate("MainWindow", "Run"))
-        self.radioButton_sp.setAccessibleName(_translate("MainWindow", "Search and Pounce"))
+        self.radioButton_sp.setAccessibleName(
+            _translate("MainWindow", "Search and Pounce")
+        )
         self.radioButton_sp.setText(_translate("MainWindow", "S&&P"))
         self.cw_speed.setToolTip(_translate("MainWindow", "CW Keyer Speed"))
         self.dupe_indicator.setText(_translate("MainWindow", "Dupe"))
@@ -1120,7 +1208,9 @@ class Ui_MainWindow(object):
         self.mults.setText(_translate("MainWindow", "mults"))
         self.score.setToolTip(_translate("MainWindow", "Points"))
         self.score.setText(_translate("MainWindow", "Score"))
-        self.cw_entry.setPlaceholderText(_translate("MainWindow", "Type here to send CW, press Enter to close."))
+        self.cw_entry.setPlaceholderText(
+            _translate("MainWindow", "Type here to send CW, press Enter to close.")
+        )
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
@@ -1134,28 +1224,40 @@ class Ui_MainWindow(object):
         self.actionDark_Mode.setText(_translate("MainWindow", "Force Dark Mode"))
         self.actionStationSettings.setText(_translate("MainWindow", "Station Settings"))
         self.actionQRZ_Settings.setText(_translate("MainWindow", "QRZ Settings"))
-        self.actionConfiguration_Settings.setText(_translate("MainWindow", "Configuration Settings"))
-        self.actionGenerate_Cabrillo_ASCII.setText(_translate("MainWindow", "Generate Cabrillo ASCII"))
-        self.actionGenerate_Cabrillo_UTF8.setText(_translate("MainWindow", "Generate Cabrillo UTF-8"))
+        self.actionConfiguration_Settings.setText(
+            _translate("MainWindow", "Configuration Settings")
+        )
+        self.actionGenerate_Cabrillo_ASCII.setText(
+            _translate("MainWindow", "Generate Cabrillo ASCII")
+        )
+        self.actionGenerate_Cabrillo_UTF8.setText(
+            _translate("MainWindow", "Generate Cabrillo UTF-8")
+        )
         self.actionLog_Window.setText(_translate("MainWindow", "QSO Log"))
         self.actionLog_Window.setShortcut(_translate("MainWindow", "Alt+L"))
         self.actionGenerate_ADIF.setText(_translate("MainWindow", "Generate ADIF"))
         self.actionGenerate_EDI.setText(_translate("MainWindow", "Generate EDI"))
         self.actionImport_ADIF.setText(_translate("MainWindow", "Import ADIF"))
-        self.actionRecalculate_Mults.setText(_translate("MainWindow", "Recalculate Mults"))
+        self.actionRecalculate_Mults.setText(
+            _translate("MainWindow", "Recalculate Mults")
+        )
         self.actionNew_Contest.setText(_translate("MainWindow", "New Contest"))
         self.actionNew_Database.setText(_translate("MainWindow", "New Database"))
         self.actionOpen_Database.setText(_translate("MainWindow", "Open Database"))
         self.actionOpen_Contest.setText(_translate("MainWindow", "Open Contest"))
         self.actionEdit_Macros.setText(_translate("MainWindow", "Edit Macros"))
-        self.actionEdit_Current_Contest.setText(_translate("MainWindow", "Edit Current Contest"))
+        self.actionEdit_Current_Contest.setText(
+            _translate("MainWindow", "Edit Current Contest")
+        )
         self.actionEdit_Keys.setText(_translate("MainWindow", "Edit Keys"))
         self.actionBandmap.setText(_translate("MainWindow", "Bandmap"))
         self.actionBandmap.setShortcut(_translate("MainWindow", "Alt+B"))
         self.actionCluster.setText(_translate("MainWindow", "Cluster"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
         self.actionHotKeys.setText(_translate("MainWindow", "HotKeys"))
-        self.actionUpdate_MASTER_SCP.setText(_translate("MainWindow", "Update MASTER.SCP"))
+        self.actionUpdate_MASTER_SCP.setText(
+            _translate("MainWindow", "Update MASTER.SCP")
+        )
         self.actionHelp.setText(_translate("MainWindow", "Help"))
         self.actionUpdate_CTY.setText(_translate("MainWindow", "Update CTY"))
         self.actionCheck_Window.setText(_translate("MainWindow", "Check Partial"))
@@ -1165,17 +1267,27 @@ class Ui_MainWindow(object):
         self.actionVFO.setText(_translate("MainWindow", "VFO"))
         self.actionVFO.setShortcut(_translate("MainWindow", "Alt+V"))
         self.actionDark_Mode_2.setText(_translate("MainWindow", "Dark Mode"))
-        self.actionLoad_Call_History_File.setText(_translate("MainWindow", "Load Call History File"))
-        self.actionShow_Command_Buttons.setText(_translate("MainWindow", "Command Buttons"))
-        self.actionCommand_Buttons_2.setText(_translate("MainWindow", "Command Buttons"))
+        self.actionLoad_Call_History_File.setText(
+            _translate("MainWindow", "Load Call History File")
+        )
+        self.actionShow_Command_Buttons.setText(
+            _translate("MainWindow", "Command Buttons")
+        )
+        self.actionCommand_Buttons_2.setText(
+            _translate("MainWindow", "Command Buttons")
+        )
         self.actionStatistics.setText(_translate("MainWindow", "Statistics"))
         self.actionStatistics.setShortcut(_translate("MainWindow", "Alt+S"))
         self.actionDXCC.setText(_translate("MainWindow", "DXCC"))
         self.actionDXCC.setShortcut(_translate("MainWindow", "Alt+D"))
         self.actionRotator.setText(_translate("MainWindow", "Rotator"))
         self.actionRotator.setShortcut(_translate("MainWindow", "Alt+P"))
-        self.actionMark_Contacts_Dirty.setText(_translate("MainWindow", "Mark Contacts Dirty"))
+        self.actionMark_Contacts_Dirty.setText(
+            _translate("MainWindow", "Mark Contacts Dirty")
+        )
         self.actionGroup_Chat.setText(_translate("MainWindow", "Group Chat"))
         self.actionZone.setText(_translate("MainWindow", "Zone"))
         self.actionZone.setShortcut(_translate("MainWindow", "Alt+Z"))
-        self.actionSynchronize_VFOs.setText(_translate("MainWindow", "Synchronize VFOs"))
+        self.actionSynchronize_VFOs.setText(
+            _translate("MainWindow", "Synchronize VFOs")
+        )
