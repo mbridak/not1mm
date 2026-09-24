@@ -5,8 +5,8 @@ Not1MM is an open-source project and we welcome contributions from the community
 If you'd like to contribute, please fork the repository and make changes as
 you'd like. Pull requests are welcome.
 
-Please be kind and run your code thru [black](https://github.com/psf/black)
-before submitting: After `pip install black`, run `black not1mm test`.
+Please be kind and run your code thru [ruff](https://astral.sh/blog/the-ruff-formatter)
+before submitting: After `pip install ruff`, run `ruff format not1mm test`.
 
 For additional Karma, also consider running the automated tests:
 After `pip install pytest pytest-qt`, run
