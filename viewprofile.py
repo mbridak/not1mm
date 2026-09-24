@@ -5,7 +5,6 @@ from pstats import SortKey
 
 from not1mm.__main__ import run
 
-
 cProfile.run("sys.exit(run())", "stats")
 
 p = pstats.Stats("stats")

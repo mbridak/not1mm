@@ -145,7 +145,7 @@ class FieldDayRegressionTests(unittest.TestCase):
         for kind in PLUGIN_PATHS:
             with self.subTest(kind=kind):
                 plugin = load_plugin(kind)
-                
+
                 database = DataBase(":memory:", REPO / "not1mm/data", current_contest=5)
                 try:
                     app = types.SimpleNamespace(
@@ -178,7 +178,16 @@ class FieldDayRegressionTests(unittest.TestCase):
                     database.exec_sql_commit(
                         "INSERT INTO dxlog (ID, TS, Call, CountryPrefix, Band, ContestNR, Run1Run2, Continent) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        ("ID2", "2026-09-03 16:00:00", "ON1AAC", "ON", 14.0, 5, 0, "EU"),
+                        (
+                            "ID2",
+                            "2026-09-03 16:00:00",
+                            "ON1AAC",
+                            "ON",
+                            14.0,
+                            5,
+                            0,
+                            "EU",
+                        ),
                     )
                     plugin.set_contact_vars(app)
                     self.assertEqual(app.contact["IsMultiplier1"], 1)
@@ -186,7 +195,16 @@ class FieldDayRegressionTests(unittest.TestCase):
                     database.exec_sql_commit(
                         "INSERT INTO dxlog (ID, TS, Call, CountryPrefix, Band, ContestNR, Run1Run2, Continent) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        ("ID3", "2026-09-04 16:00:00", "DL1AAD", "DL", 14.0, 5, 0, "EU"),
+                        (
+                            "ID3",
+                            "2026-09-04 16:00:00",
+                            "DL1AAD",
+                            "DL",
+                            14.0,
+                            5,
+                            0,
+                            "EU",
+                        ),
                     )
                     plugin.set_contact_vars(app)
                     self.assertEqual(app.contact["IsMultiplier1"], 0)
@@ -218,19 +236,45 @@ class FieldDayRegressionTests(unittest.TestCase):
                     database.exec_sql_commit(
                         "INSERT INTO dxlog (ID, TS, Call, CountryPrefix, Band, ContestNR, Run1Run2, Continent) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        ("ID4", "2026-09-04 16:00:00", "ON1AAD", "ON", 14.0, 5, 0, "EU"),
+                        (
+                            "ID4",
+                            "2026-09-04 16:00:00",
+                            "ON1AAD",
+                            "ON",
+                            14.0,
+                            5,
+                            0,
+                            "EU",
+                        ),
                     )
                     database.exec_sql_commit(
                         "INSERT INTO dxlog (ID, TS, Call, CountryPrefix, Band, ContestNR, Run1Run2, Continent) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        ("ID5", "2026-09-05 16:00:00", "ON1AAE", "ON", 14.0, 5, 0, "EU"),
+                        (
+                            "ID5",
+                            "2026-09-05 16:00:00",
+                            "ON1AAE",
+                            "ON",
+                            14.0,
+                            5,
+                            0,
+                            "EU",
+                        ),
                     )
                     database.exec_sql_commit(
                         "INSERT INTO dxlog (ID, TS, Call, CountryPrefix, Band, ContestNR, Run1Run2, Continent) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        ("ID6", "2026-09-06 16:00:00", "DL1AAF", "DL", 14.0, 5, 0, "EU"),
+                        (
+                            "ID6",
+                            "2026-09-06 16:00:00",
+                            "DL1AAF",
+                            "DL",
+                            14.0,
+                            5,
+                            0,
+                            "EU",
+                        ),
                     )
-
 
                     app = types.SimpleNamespace(
                         database=database,
@@ -239,7 +283,11 @@ class FieldDayRegressionTests(unittest.TestCase):
                     )
                     plugin.recalculate_mults(app)
                     self.assertEqual(
-                        [item["IsMultiplier1"] for item in database.fetch_all_contacts_asc()], [1, 1, 0, 1, 0, 1]
+                        [
+                            item["IsMultiplier1"]
+                            for item in database.fetch_all_contacts_asc()
+                        ],
+                        [1, 1, 0, 1, 0, 1],
                     )
                 finally:
                     database.conn.close()
