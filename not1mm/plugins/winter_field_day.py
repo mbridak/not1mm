@@ -65,7 +65,9 @@ def interface(self):
     self.field4.show()
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Class"))
     self.other_1.setAccessibleName("Class")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Section"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Section")
+    )
     self.other_2.setAccessibleName("Section")
 
 
