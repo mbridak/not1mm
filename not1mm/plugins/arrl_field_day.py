@@ -57,7 +57,9 @@ def interface(self):
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Class"))
     self.field3.setAccessibleName("Class")
     # label = self.field4.findChild(QtWidgets.QLabel)
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Section"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Section")
+    )
     self.field4.setAccessibleName("Section")
 
 

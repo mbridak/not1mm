@@ -129,7 +129,9 @@ def interface(self):
     self.field1.setAccessibleName("Signal Report Sent")
     self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Nr"))
     self.field3.setAccessibleName("Received Serial Number")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Locator"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "Locator")
+    )
     self.field4.setAccessibleName("Received Locator")
 
 

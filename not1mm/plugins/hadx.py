@@ -122,9 +122,13 @@ def interface(self):
     self.field4.show()
     self.snt_label.setText("SNT")
     self.field1.setAccessibleName("RST Sent")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SentNR"))
+    self.other_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "SentNR")
+    )
     self.field3.setAccessibleName("Sent Number")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "HA County or SN"))
+    self.exch_label.setText(
+        QtWidgets.QApplication.translate("ContestPlugin", "HA County or SN")
+    )
     self.field4.setAccessibleName("Hungarian county or Serial Number")
 
 

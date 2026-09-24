@@ -31,8 +31,7 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld, 12345 for flrig, "
-            "and 50001 or 40001 for TCI."
+            "Usually 4532 for rigctld, 12345 for flrig, " "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -206,9 +205,7 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
-        self.cluster_login_field.setText(
-            str(self.preference.get("cluster_login", ""))
-        )
+        self.cluster_login_field.setText(str(self.preference.get("cluster_login", "")))
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
