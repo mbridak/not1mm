@@ -1,5 +1,11 @@
 # Changelog
 
+- [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
+  - ran black not1mm test . on this branch
+- [2026-09-20] Apply corrected-call-before-QRZ/TU to all remaining ESM plugins
+  - Apply corrected-call-before-QRZ/TU to CWT plugin
+  - Add option to resend corrected callsign before QRZ/TU in Run-mode ESM
+- [2026-09-19] @mbridak Fix: update score report fields for contest and operator information
 - [2026-09-18] Merge branch 'master' of http://github.com/mbridak/not1mm
   - @mbridak Add send n1mm score packet.
   - @mbridak Fix: quotation marks inside f-srtring.
@@ -2912,9 +2918,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
