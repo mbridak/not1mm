@@ -40,10 +40,8 @@ and SQLite for the database.
 
 ### Target Environment
 
-The primary target for this application is Linux. It may be able to run on other
+The primary target for this application is Linux and MacOS. It may be able to run on other
 platforms, BSD and Windows. But I don't have a way, or desire, to directly support them.
-
-I've recently purchased an M4 Mac Mini, So I can confirm it works well on the MacOS platform.
 
 ### The Why
 
@@ -164,10 +162,10 @@ A quick feature list, See the user manual for more details.
 - 60+ [supported contests](Working_Contests.md)
 - Lookup, QRZ and HamQTH
 - CAT Control via rigctld, flrig or TCI
-- CW Keyer Interface, [winkeyer](https://github.com/mbridak/PyWinKeyerSerial) and cwdaemon
+- CW Keyer Interface, [SwiftKeyer](https://github.com/mbridak/SwiftKeyer) for MacOS, [winkeyer](https://github.com/mbridak/PyWinKeyerSerial) and cwdaemon for Linux 
 - Cluster and Bandmap
 - Rotator control via rotctld
-- [Multi Multi](Multi-Multi.md) (Kinda sketchy, but give t a try)
+- [Multi Multi](Multi-Multi.md) (Kinda sketchy, but give it a try)
 - N1MM Packet output for nodered
 - WSJT-X FT8/FT4/ETC and RTTY via FLDIGI
 - ADIF and Cabrillo output.
