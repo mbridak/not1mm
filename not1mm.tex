@@ -30,8 +30,7 @@ Not1MM attempts to be a usable ham/amateur radio contest logger. It's written in
 \subsection{The Why}
 \textbf{Currently, this exists for my own personal enjoyment}. I recently retired after 35+ years working for 'The Phone Company', GTE → Verizon → Frontier. And being a Gentleman of Leisure, I needed something to do in my free time. I am a casual contester and could not find any contesting software for Linux that I wanted to use. \textbf{Tucnak} is very robust and mature contest logger that is available at \url{http://tucnak.nagano.cz/}. It just wasn't for me.
 \subsection{Target Environment}
-The target operating system for this application is \index{Linux}Linux. It may be able to run on other platforms such as \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 \index{Mac}Mac Mini, so I'll probably put more effort into that platform as well.
-\subsection{Current State or Code Maturity}
+The target operating system for this application is \index{Linux}Linux and \index{MacOS}MacOS. It may be able to run on other platforms such as \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. 
 Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi-Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 \subsection{Known Issues}
 \begin{itemize}
@@ -342,11 +341,11 @@ A small transceiver icon changes color to indicate the CAT status. Green: Connec
 Under the CW tab, there are three options:
 
 \begin{itemize}
- \item cwdaemon\index{cwdaemon} normally uses IP 127.0.0.1 and port 6789
+ \item cwdaemon\index{cwdaemon} normally uses IP 127.0.0.1 and port 6789. There are versions of cwdaemon that key via the serial or parallel port, and one that talks to the K1EL keyer chip.
 
- \item pywinkeyer normally uses IP 127.0.0.1 and port 8000
+ \item pywinkeyer normally uses IP 127.0.0.1 and port 8000. It will interface with my K1EL winkeyer client for Linux https://github.com/mbridak/PyWinKeyerSerial or https://github.com/mbridak/SwiftKeyer for MacOS.
 
- \item CAT can be used if your radio supports it. Morse characters are sent via rigctld\index{rigctld}.
+ \item CAT can be used if your radio supports it. Morse characters will be sent via rigctld\index{rigctld}.
 \end{itemize}
 
 Other CW configuration settings:
