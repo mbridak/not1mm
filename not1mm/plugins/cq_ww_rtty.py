@@ -40,20 +40,26 @@
 
 import datetime
 import logging
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
 from not1mm.lib.ham_utility import get_logged_band
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
+assert online_score_xml
+assert imp_adif
+
 ALTEREGO = None
 
-EXCHANGE_HINT = "RST + CQ Zone + (state/VE area)"
+EXCHANGE_HINT = "CQ Zone + (state/VE area)"
+
+SOAPBOX_HINT = """If you are outside North America, In your station settings, set the ARRL Section to DX.
+
+Please make sure you set the Mode to RTTY Above."""
 
 name = "CQ WW RTTY"
 cabrillo_name = "CQ-WW-RTTY"
@@ -131,11 +137,18 @@ def set_tab_prev(self):
 
 def set_contact_vars(self):
     """Contest Specific"""
+
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["ZN"] = self.other_1.text()
-    self.contact["Exchange1"] = self.other_2.text()
-    self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    if self.other_2.text() == "":
+        self.contact["Exchange1"] = "DX"
+    else:
+        self.contact["Exchange1"] = self.other_2.text()
+    if " " in str(self.contest_settings.get("SentExchange", 0)):
+        self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
+    else:
+        self.contact["SentNr"] = f"{self.contest_settings.get('SentExchange', 0)} DX"
 
 
 def predupe(self):
@@ -229,7 +242,6 @@ def adif(self):
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
     print(
         line_to_output.encode(file_encoding, errors="ignore").decode(),
         end=ending,
@@ -243,7 +255,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -449,7 +461,7 @@ def cabrillo(self, file_encoding):
                 )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
@@ -599,10 +611,15 @@ def process_esm(self, new_focused_widget=None, with_enter=False):
                 buttons_to_send.append(self.esm_dict["EXCH"])
 
         elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_2.text() == "" or self.other_1.text() == "":
+            if (
+                self.contact.get("Continent", "") == "NA" and self.other_2.text() == ""
+            ) or self.other_1.text() == "":
                 self.make_button_green(self.esm_dict["AGN"])
                 buttons_to_send.append(self.esm_dict["AGN"])
-            elif self.other_1.text().isnumeric() and self.other_2.text().isalpha():
+            elif self.other_1.text().isnumeric() and (
+                self.other_2.text().isalpha()
+                or self.contact.get("Continent", "") != "NA"
+            ):
                 # If the operator corrected a busted callsign after the
                 # exchange was already sent, resend the corrected call
                 # ahead of the QRZ/TU macro so the other station logs the
@@ -673,7 +690,6 @@ def populate_history_info_line(self):
 
 
 def check_call_history(self):
-    """"""
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(f"{result.get('UserText', '')}")
