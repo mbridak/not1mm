@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
+  - @mbridak Added link to SwiftKeyer.
 - [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
   - ran black not1mm test . on this branch
 - [2026-09-20] Apply corrected-call-before-QRZ/TU to all remaining ESM plugins
