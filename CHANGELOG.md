@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-10-01] @mbridak correct exchange for CQP.
+  - @mbridak Update main.py to supress 59/9 insertions for CQP.
 - [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
   - @mbridak Added link to SwiftKeyer.
 - [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
@@ -2920,3 +2922,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
