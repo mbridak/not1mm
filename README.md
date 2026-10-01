@@ -67,7 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-10-01] @mbridak correct exchange for CQP.
+- [2026-10-01] @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
+  - @mbridak correct exchange for CQP.
   - @mbridak Update main.py to supress 59/9 insertions for CQP.
 - [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
   - @mbridak Added link to SwiftKeyer.

@@ -1,7 +1,9 @@
 # Changelog
 
-- [2026-10-01] @mbridak correct exchange for CQP.
+- [2026-10-01] @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
+  - @mbridak correct exchange for CQP.
   - @mbridak Update main.py to supress 59/9 insertions for CQP.
+  - Implement feature X to enhance user experience and optimize performance
 - [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
   - @mbridak Added link to SwiftKeyer.
 - [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
