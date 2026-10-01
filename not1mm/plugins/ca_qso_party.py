@@ -38,8 +38,13 @@ from not1mm.lib.version import __version__
 logger = logging.getLogger(__name__)
 
 ALTEREGO = None
-EXCHANGE_HINT = "State/Province (non-CA) or County (CA)"
-SOAPBOX_HINT = "California QSO Party - Exchange: serial + state/county abbreviation"
+EXCHANGE_HINT = "# State/Prov or CA County."
+SOAPBOX_HINT = """California QSO Party
+
+In CA set Sent Exchange to # and a 4 character county.
+Out of CA set it to # and a 2 char State/Prov.
+
+Set Exchange macro to {EXCH}"""
 
 name = "California QSO Party"
 mode = "BOTH"  # CW SSB BOTH RTTY
@@ -201,7 +206,7 @@ def init_contest(self):
     set_tab_next(self)
     set_tab_prev(self)
     interface(self)
-    self.next_field = self.other_1
+    self.next_field = self.receive
 
 
 def interface(self):
@@ -305,11 +310,11 @@ def predupe(self):
 
 def prefill(self):
     """Fill SentNR"""
-    # serial_nr = str(self.current_sn).zfill(3)
-    # if serial_nr == "None":
-    #     serial_nr = "001"
-    # if len(self.sent.text()) == 0:
-    #     self.sent.setText(serial_nr)
+    serial_nr = str(self.current_sn).zfill(3)
+    if serial_nr == "None":
+        serial_nr = "001"
+    if len(self.sent.text()) == 0:
+        self.sent.setText(serial_nr)
 
     # exchange = self.contest_settings.get("SentExchange", "").upper()
     # if len(self.other_1.text()) == 0 and exchange:
