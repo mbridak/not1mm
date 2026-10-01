@@ -3052,10 +3052,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.update_n1mm_score()
 
             self.contest.reset_label(self)
-            if (
-                self.contest.name != "ICWC Medium Speed Test"
-                and self.contest.name != "RAEM"
-                and self.contest.name != "QSO PARTY SN"
+            if not self.contest.name in (
+                "ICWC Medium Speed Test",
+                "RAEM",
+                "QSO PARTY SN",
+                "California QSO Party",
             ):
                 match self.current_mode:
                     case "LSB" | "USB" | "SSB" | "FM" | "AM":
@@ -4214,7 +4215,10 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         The text in the receive field has changed.
         """
-        if self.contest and "DX-Pedition" in self.contest.name:
+        if self.contest and self.contest.name in [
+            "DX-Pedition",
+            "California QSO Party",
+        ]:
             text = self.receive.text()
             text = text.upper()
             position = self.receive.cursorPosition()
