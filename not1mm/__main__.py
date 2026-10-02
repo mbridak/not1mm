@@ -1566,6 +1566,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.other_2.setPalette(lightPalette)
             self.cw_entry.setPalette(lightPalette)
 
+        edit_dialog = getattr(self.log_window, "edit_contact_dialog", None)
+        if edit_dialog is not None:
+            edit_dialog.setPalette(self.current_palette)
+            edit_dialog.apply_theme()
+
     def set_radio_icon(self, state: int) -> None:
         """
         Change CAT icon state

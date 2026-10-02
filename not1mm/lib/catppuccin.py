@@ -142,6 +142,29 @@ def build_latte_palette() -> QPalette:
     return p
 
 
+def accent_for(dark: bool) -> str:
+    """
+    Return the accent colour used for destructive or attention states.
+
+    This is the same colour the built palettes assign to the BrightText
+    role, exposed directly so callers can style with it. Read it from here
+    rather than from a live QPalette: once a widget carries a stylesheet,
+    QWidget.palette() reports stylesheet-resolved values that no longer
+    track a palette pushed with setPalette().
+
+    Parameters
+    ----------
+    dark : bool
+        True for Catppuccin Mocha, False for Catppuccin Latte.
+
+    Returns
+    -------
+    str
+        The '#rrggbb' accent colour.
+    """
+    return FLAMINGO if dark else L_RED
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 #  Mocha stylesheet (dark)
 # ═══════════════════════════════════════════════════════════════════════════

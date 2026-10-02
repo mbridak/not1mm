@@ -753,9 +753,6 @@
          <property name="accessibleDescription">
           <string>delete contact.</string>
          </property>
-         <property name="styleSheet">
-          <string notr="true">color: rgb(255, 120, 0);</string>
-         </property>
          <property name="text">
           <string>Delete</string>
          </property>
