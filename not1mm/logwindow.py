@@ -637,7 +637,7 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.mult_3.setChecked(
             bool(self.contact.get("IsMultiplier3", ""))
         )
-        self.edit_contact_dialog.show()
+        self.edit_contact_dialog.exec()
         debugline = f"Right Clicked Item: {uuid}"
         logger.debug(debugline)
 

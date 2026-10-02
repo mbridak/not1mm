@@ -264,4 +264,4 @@ def hotkey_window(self, default_key_bindings) -> None:
     if self.current_palette:
         self.hotkey_help.setPalette(self.current_palette)
     self.hotkey_help.setWindowModality(QtCore.Qt.WindowModality.NonModal)
-    self.hotkey_help.show()
+    self.hotkey_help.exec()
