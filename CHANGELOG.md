@@ -1,6 +1,7 @@
 # Changelog
 
-- [2026-10-01] @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
+- [2026-10-01] @mbridak fix: exclude DX from spc count. Fixes #694
+  - @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
   - @mbridak correct exchange for CQP.
   - @mbridak Update main.py to supress 59/9 insertions for CQP.
   - Implement feature X to enhance user experience and optimize performance
