@@ -124,7 +124,7 @@ See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
 I'm pretty sure the flatpak works now. Let me know if it doesn't.
 
-Go to the latest [Release](https://github.com/mbridak/not1mm/releases) and grab the flatpak file.
+Go to the latest [Release](https://github.com/mbridak/not1mm/releases/latest) and grab the flatpak file.
 
 #### Install
 
@@ -159,7 +159,7 @@ For more in depth info, please see the [installation](INSTALL.md) section.
 
 ## Documentation
 
-I've nuked 90% of the README.md and moved it to a LaTeX file. So now you can get the [user manual](https://github.com/mbridak/not1mm/releases) as a PDF file. I know some WILL NOT LIKE THIS. Sorry, not sorry.
+I've nuked 90% of the README.md and moved it to a LaTeX file. So now you can get the [user manual](https://github.com/mbridak/not1mm/releases/latest) as a PDF file. I know some WILL NOT LIKE THIS. Sorry, not sorry.
 
 ## Features
 
