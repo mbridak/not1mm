@@ -401,7 +401,7 @@ def recalculate_mults(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "QSO_PARTY")
+    gen_adif(self, cabrillo_name, "CA-QSO-PARTY")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
