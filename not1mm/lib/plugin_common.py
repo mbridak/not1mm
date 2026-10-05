@@ -205,26 +205,50 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    print(
-                        f"<RST_SENT:{len(sentrst)}>{sentrst}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
+                    if len(sentrst) >= 1:
+                        print(
+                            f"<RST_SENT:{len(sentrst)}>{sentrst}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
                 except TypeError:
                     ...
 
                 try:
-                    print(
-                        f"<RST_RCVD:{len(rcvrst)}>{rcvrst}",
-                        end="\r\n",
-                        file=file_descriptor,
-                    )
+                    if len(rcvrst) >= 1:
+                        print(
+                            f"<RST_RCVD:{len(rcvrst)}>{rcvrst}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError:
+                    ...
+
+                # STX Context Dependent
+                try:
+                    if cabrillo_name in ("CQP") and len(sentnr) >= 1:
+                        print(
+                            f"<STX:{len(sentnr)}>{sentnr}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
+                except TypeError as te:
+                    print(f"{te=}")
+
+                # SRX, Context Dependent
+                try:
+                    if cabrillo_name in ("CQP") and len(rcvnr) >= 1:
+                        print(
+                            f"<SRX:{len(rcvnr)}>{rcvnr}",
+                            end="\r\n",
+                            file=file_descriptor,
+                        )
                 except TypeError:
                     ...
 
                 try:
-                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY"):
-                        sent = self.contest_settings.get("SentExchange", "")
+                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY", "CQP"):
+                        sent = self.contest_settings.get("SentExchange", "").strip("# ")
                         if sent:
                             print(
                                 f"<STX_STRING:{len(sent)}>{sent.upper()}",
@@ -273,7 +297,12 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 file=file_descriptor,
                             )
                     # ------------CQ 160---------------
-                    elif cabrillo_name in ("CQ-160-CW", "CQ-160-SSB", "WEEKLY-RTTY"):
+                    elif cabrillo_name in (
+                        "CQ-160-CW",
+                        "CQ-160-SSB",
+                        "WEEKLY-RTTY",
+                        "CQP",
+                    ):
                         rcv = f"{contact.get('Exchange1', '')}"
                         if len(rcv) > 1:
                             print(
