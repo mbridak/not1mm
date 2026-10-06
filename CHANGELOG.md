@@ -1,5 +1,10 @@
 # Changelog
 
+- [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
+  - @mbridak Fix: ADIF contest name to preferred enumerated value.
+  - @mbridak Adjust CW place holder text to make it clear that it's not an actual value in the field.
+- [2026-10-02] @mbridak fix: EditContact dialog had no theme applied.
+  - @mbridak made contact edit and edit keys dialogs modal so they would appear above floating windows.
 - [2026-10-01] @mbridak fix: exclude DX from spc count. Fixes #694
   - @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
   - @mbridak correct exchange for CQP.
@@ -2925,9 +2930,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

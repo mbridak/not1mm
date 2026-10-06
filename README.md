@@ -67,54 +67,16 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
+  - @mbridak Fix: ADIF contest name to preferred enumerated value.
+  - @mbridak Adjust CW place holder text to make it clear that it's not an actual value in the field.
+- [2026-10-02] @mbridak fix: EditContact dialog had no theme applied.
+  - @mbridak made contact edit and edit keys dialogs modal so they would appear above floating windows.
 - [2026-10-01] @mbridak fix: exclude DX from spc count. Fixes #694
   - @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
   - @mbridak correct exchange for CQP.
   - @mbridak Update main.py to supress 59/9 insertions for CQP.
-- [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
-  - @mbridak Added link to SwiftKeyer.
-- [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
-  - ran black not1mm test . on this branch
-- [2026-09-20] Apply corrected-call-before-QRZ/TU to all remaining ESM plugins
-  - Apply corrected-call-before-QRZ/TU to CWT plugin
-  - Add option to resend corrected callsign before QRZ/TU in Run-mode ESM
-- [2026-09-19] @mbridak Fix: update score report fields for contest and operator information
-- [2026-09-18] Merge branch 'master' of http://github.com/mbridak/not1mm
-  - @mbridak Add send n1mm score packet.
-  - @mbridak Fix: quotation marks inside f-srtring.
-- [2026-09-11] Merge pull request #687 from chibondking/contactinfo-zone-key
-  - contactinfo: fix the key so CQ zone actually reaches the packet
-- [2026-09-10] Merge pull request #686 from chibondking/contactinfo-continent-prefix
-  - Remove stray editor swap file committed by mistake
-  - contactinfo: send the real Continent and CountryPrefix
-  - @mbridak Refactor dialog handling to use exec() instead of open() for modal behavior
-- [2026-09-07] Merge pull request #681 from Cryptems-Industries/fix-iaru-fieldday-r1-scoring
-  - fixed output of 0 to 000 to conform to iaru rg 1 fd cabrillo logging rules
-  - added option for automatic test discovery
-  - fixed wrong multiplier calculation for iaru fd r1
-- [2026-09-06] Merge pull request #680 from microphonon/cwo
-  - fix Cabrillo formatting
-- [2026-09-05] remove flatpak file
-  - Merge pull request #678 from df7cb/adif-callsign
-  - Fix /P callsigns in adif export
-- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
-  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
-  - Merge branch 'master' of https://github.com/mbridak/not1mm
-  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
-- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
-  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
-  - Merge branch 'master' of https://github.com/mbridak/not1mm
-  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
-- [2026-09-02] Merge pull request #677 from sblanchard/master
-  - fix: MST ft8_handler no longer logs a lone received serial as the name
-  - fix: CWO ft8_handler reads SRX_STRING and never leaks the previous exchange
-  - Merge upstream mbridak/master (PR #4): callbook timeout 2s, v26.9.2
-  - Merge pull request #3 from sblanchard/ft8-handler-cw-sprints
-  - @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
-  - Add ft8_handler to CWT, SST, MST and CW Open plugins
-- [2026-09-01] Add script to automate flatpak update process
-- [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
-  - @mbridak Add NAC VHF contest
+
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
 
