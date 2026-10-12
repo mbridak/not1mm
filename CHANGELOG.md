@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.
 - [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
   - @mbridak Fix: ADIF contest name to preferred enumerated value.
   - @mbridak Adjust CW place holder text to make it clear that it's not an actual value in the field.
