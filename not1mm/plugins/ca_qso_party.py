@@ -583,10 +583,7 @@ def cabrillo(self, file_encoding):
                         themode = "PH"
                     case "CW" | "CW-U" | "CW-L" | "CWR" | "CW-R":
                         themode = "CW"
-
-                freq = contact.get("Freq", "0") / 1000
-
-                frequency = str(round(freq)).rjust(5)
+                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
