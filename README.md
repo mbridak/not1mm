@@ -143,4 +143,4 @@ A quick feature list, See the user manual for more details.
 ## Known Issues
 
 - Hamlib before 4.6.3 had a problem with sending CW and changing/reading the keying speed.
-- wfview before version 2.2 has issues with frequency reporting and CW sending.
+- wfview ~~before version 2.2~~ has issues with frequency reporting and CW sending.
