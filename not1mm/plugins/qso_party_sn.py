@@ -32,19 +32,25 @@ Cabrillo name:	QSO_PARTY
 
 import datetime
 import logging
-import platform
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
-
+from not1mm.lib.plugin_common import gen_adif, get_points
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "County"
+EXCHANGE_HINT = "# State/Prov or County"
+SOAPBOX_HINT = """
+If you're on a county line enter each separated by a '/'
+Example: # ORAN/SBER
+
+Set Exchange macro to {EXCH}
+
+If contact being logged is on a county line,
+input each county separated by a '/'.
+"""
 
 name = "QSO PARTY SN"
 cabrillo_name = "QSO_PARTY"
@@ -445,30 +451,42 @@ def cabrillo(self, file_encoding):
 
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                if contact.get("RoverLocation", ""):
-                    location = f"{contact.get('RoverLocation').ljust(15).upper()}"
-                elif self.contest_settings.get("SentExchange", ""):
-                    location = f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()}"
-                else:
-                    # user did not provide any location info,
-                    # so insert a placeholder in cabrillo file
-                    location = f"*              "
 
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
-                    f"{location} "
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('NR', '')).ljust(6)} "
-                    f"{str(contact.get('Exchange1', '')).ljust(15)}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
+                sent_nr = str(contact.get("SentNr", "")).strip()
+                sent_qth = str(contact.get("Exchange1", "")).upper().strip()
+
+                recv_nr = str(contact.get("NR", "")).strip()
+
+                my_qth = self.contest_settings.get("SentExchange", "").upper()
+                mycountyline = my_qth.strip("# ").split("/")
+                countyline = sent_qth.split("/")
+
+                # if contact.get("RoverLocation", ""):
+                #     location = f"{contact.get('RoverLocation').ljust(15).upper()}"
+                # elif self.contest_settings.get("SentExchange", ""):
+                #     location = f"{self.contest_settings.get('SentExchange', '').ljust(15).upper()}"
+                # else:
+                #     # user did not provide any location info,
+                #     # so insert a placeholder in cabrillo file
+                #     location = "*              "
+
+                for _, mcl in enumerate(mycountyline):
+                    for _, the_qth in enumerate(countyline):
+                        output_cabrillo_line(
+                            f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
+                            f"{contact.get('StationPrefix', '').ljust(13)} "
+                            f"{sent_nr.ljust(6)} "
+                            f"{mcl.ljust(5)} "
+                            f"{contact.get('Call', '').ljust(13)} "
+                            f"{recv_nr.ljust(6)} "
+                            f"{the_qth.ljust(5)}",
+                            "\r\n",
+                            file_descriptor,
+                            file_encoding,
+                        )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
