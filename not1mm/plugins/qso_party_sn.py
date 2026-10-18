@@ -268,7 +268,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -453,12 +453,21 @@ def cabrillo(self, file_encoding):
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
 
                 sent_nr = str(contact.get("SentNr", "")).strip()
-                sent_qth = str(contact.get("Exchange1", "")).upper().strip()
-
                 recv_nr = str(contact.get("NR", "")).strip()
 
-                my_qth = self.contest_settings.get("SentExchange", "").upper()
-                mycountyline = my_qth.strip("# ").split("/")
+                location = "*              "
+                if contact.get("RoverLocation", ""):
+                    location = str(contact.get("RoverLocation", "")).upper().strip()
+                elif self.contest_settings.get("SentExchange", ""):
+                    location = (
+                        str(self.contest_settings.get("SentExchange", ""))
+                        .upper()
+                        .strip("# ")
+                    )
+
+                mycountyline = location.split("/")
+
+                sent_qth = str(contact.get("Exchange1", "")).upper().strip()
                 countyline = sent_qth.split("/")
 
                 # if contact.get("RoverLocation", ""):

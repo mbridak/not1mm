@@ -589,17 +589,28 @@ def cabrillo(self, file_encoding):
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
 
                 sent_nr = str(contact.get("SentNr", "")).strip()
-                sent_qth = str(contact.get("Exchange1", "")).upper().strip()
 
                 recv_nr = str(contact.get("NR", "")).strip()
+
+                location = "*              "
+                if contact.get("RoverLocation", ""):
+                    location = str(contact.get("RoverLocation", "")).upper().strip()
+                elif self.contest_settings.get("SentExchange", ""):
+                    location = (
+                        str(self.contest_settings.get("SentExchange", ""))
+                        .upper()
+                        .strip("# ")
+                    )
+
+                mycountyline = location.split("/")
+                sent_qth = str(contact.get("Exchange1", "")).upper().strip()
+                countyline = sent_qth.split("/")
 
                 # In Cabrillo: our sent QTH goes in sent position,
                 # their received QTH goes in received position.
                 # The Cabrillo format is:
                 # QSO: freq mo date time my_call sent_nr sent_qth their_call recv_nr recv_qth
-                my_qth = self.contest_settings.get("SentExchange", "").upper()
-                mycountyline = my_qth.strip("# ").split("/")
-                countyline = sent_qth.split("/")
+
                 for _, mcl in enumerate(mycountyline):
                     for _, the_qth in enumerate(countyline):
                         output_cabrillo_line(
