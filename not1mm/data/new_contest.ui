@@ -450,7 +450,7 @@
      </item>
      <item>
       <property name="text">
-       <string>IARU FIELDDAY R1 CW</string>
+       <string>IARU R1 VHF</string>
       </property>
      </item>
      <item>
@@ -461,6 +461,11 @@
      <item>
       <property name="text">
        <string>IARU HF</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>IARU FIELDDAY R1 CW</string>
       </property>
      </item>
      <item>
