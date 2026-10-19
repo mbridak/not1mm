@@ -67,6 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
+- [2026-10-17] @mbridak Fix: Cabrillo output formatting for multiple county lines.
 - [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.
 - [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
   - @mbridak Fix: ADIF contest name to preferred enumerated value.
