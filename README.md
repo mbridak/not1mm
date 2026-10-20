@@ -133,7 +133,7 @@ A quick feature list, See the user manual for more details.
 - 60+ [supported contests](Working_Contests.md)
 - Lookup, QRZ and HamQTH
 - CAT Control via rigctld, flrig or TCI
-- CW Keyer Interface, [SwiftKeyer](https://github.com/mbridak/SwiftKeyer) for MacOS, [winkeyer](https://github.com/mbridak/PyWinKeyerSerial) and cwdaemon for Linux 
+- CW Keyer Interface, [SwiftKeyer](https://github.com/mbridak/SwiftKeyer) for MacOS, [pywinkeyer](https://github.com/mbridak/PyWinKeyerSerial) or cwdaemon for Linux 
 - Cluster and Bandmap
 - Rotator control via rotctld
 - [Multi Multi](Multi-Multi.md) (Kinda sketchy, but give it a try)
