@@ -67,6 +67,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-10-23] @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
 - [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
 - [2026-10-17] @mbridak Fix: Cabrillo output formatting for multiple county lines.
 - [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.

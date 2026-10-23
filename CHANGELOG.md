@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-10-23] Merge branch 'master' of http://github.com/mbridak/not1mm
+  - @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
 - [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
 - [2026-10-17] @mbridak Fix: Cabrillo output formatting for multiple county lines.
 - [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.
@@ -2933,3 +2935,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
