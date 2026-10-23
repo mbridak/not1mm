@@ -36,17 +36,20 @@
 import datetime
 import logging
 import re
-
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import (
     gen_adif,
-)  # , imp_adif, get_points, online_score_xml
+    get_points,
+    online_score_xml,
+)  # , imp_adif
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
+
+assert online_score_xml
 
 __plugin_version__ = "0.1"
 
@@ -302,7 +305,7 @@ def cabrillo(self, file_encoding):
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
+    now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     filename = (
         str(Path.home())
@@ -490,7 +493,7 @@ def cabrillo(self, file_encoding):
                 )
             output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
         self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
+    except OSError as exception:
         logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
         self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
         return
@@ -693,13 +696,6 @@ def check_call_history(self):
             self.other_2.setText(f"{result.get('Exch1', '').lstrip()}")
 
 
-# def get_mults(self):
-#     """Get mults for RTC XML"""
-#     mults = {}
-#     mults["state"], mults["wpxprefix"] = show_mults(self, rtc=True)
-#     return mults
-
-
 def trigger_update(self):
     """Triggers the log window to update."""
     cmd = {}
@@ -724,3 +720,15 @@ def get_district(dok):
     if district:
         return district.group(0)
     return None
+
+
+def get_mults(self):
+    """Get mults for RTC XML"""
+    mults = {}
+    mults["country"] = show_mults(self)
+    return mults
+
+
+def just_points(self):
+    """Get points for RTC XML"""
+    return get_points(self)

@@ -24,7 +24,7 @@ assert QPushButton
 
 def online_score_xml(self):
     """generate online xml"""
-
+    # state, country, zone, prefix
     mults = self.contest.get_mults(self)
     the_mults = ""
     for thing in mults:
