@@ -3643,6 +3643,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
+        if "{VOICE0}" in macro:
+            macro = macro.replace("{VOICE0}", "")
+            if self.rig_control:
+                self.rig_control.sendvoicememory(memoryspot=0)
         if "{VOICE1}" in macro:
             macro = macro.replace("{VOICE1}", "")
             if self.rig_control:
