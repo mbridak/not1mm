@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-10-26] @mbridak Fix: Add is_floatable method to validate float conversion for frequency checks
 - [2026-10-23] Merge branch 'master' of http://github.com/mbridak/not1mm
   - @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
 - [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
