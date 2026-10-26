@@ -43,6 +43,13 @@ class RigctldCAT(CAT):
         self.current_vfo = "VFOA"
         self.reinit()
 
+    def is_floatable(self, thing_to_test):
+        try:
+            float(thing_to_test)
+            return True
+        except ValueError:
+            return False
+
     def reinit(self):
         """initialise rigctld
 
@@ -164,7 +171,7 @@ class RigctldCAT(CAT):
         """Poll the radio for current vfo using the interface"""
         report = self.rigctld_parse(self.rigctld_command(f"f {self.get_active_vfo()}"))
         freq = report.get("Frequency", "")
-        if freq.isnumeric():
+        if self.is_floatable(freq):
             return str(int(float(freq)))
         else:
             return ""
