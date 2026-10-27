@@ -67,6 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-10-27] @mbridak Fix: Add drain_socket method to toss stale data.
+- [2026-10-26] @mbridak Fix: Add support for {VOICE0} macro to trigger voice memory 0
 - [2026-10-26] @mbridak Fix: Add is_floatable method to validate float conversion for frequency checks.
 - [2026-10-23] @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
 - [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
