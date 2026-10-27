@@ -96,6 +96,7 @@ class RigctldCAT(CAT):
             if not self.online:
                 return ""
             try:
+                # self.drain_socket()
                 logger.debug("> %s", command)
                 self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
                 report = ""
@@ -111,6 +112,17 @@ class RigctldCAT(CAT):
                 logger.info("%s", f"{exception}")
                 self.rigctrlsocket = None
         return ""
+
+    def drain_socket(self):
+        orig_timeout = self.rigctrlsocket.gettimeout()
+        self.rigctrlsocket.settimeout(0.001)
+        try:
+            while True:
+                _ = self.rigctrlsocket.recv(4096)
+        except socket.socket.timeout:
+            pass
+        finally:
+            self.rigctrlsocket.settimeout(orig_timeout)
 
     def rigctld_parse(self, report: str) -> dict:
         """Parse a extended response protocol message (prefix +) into fields.
