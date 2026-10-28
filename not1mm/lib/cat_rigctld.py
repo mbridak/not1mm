@@ -96,8 +96,8 @@ class RigctldCAT(CAT):
             if not self.online:
                 return ""
             try:
-                # self.drain_socket()
-                logger.debug("> %s", command)
+                self.drain_socket()
+                logger.debug(f">{prefix}{command}")
                 self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
                 report = ""
                 while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
@@ -105,7 +105,7 @@ class RigctldCAT(CAT):
                     if thegrab == "":  # socket closed
                         break
                     report += thegrab
-                logger.debug("< %s", report)
+                logger.debug(f"<{report}")
                 return report
             except (TimeoutError, OSError, UnicodeDecodeError) as exception:
                 self.online = False
@@ -119,7 +119,7 @@ class RigctldCAT(CAT):
         try:
             while True:
                 _ = self.rigctrlsocket.recv(4096)
-        except socket.socket.timeout:
+        except TimeoutError:
             pass
         finally:
             self.rigctrlsocket.settimeout(orig_timeout)
@@ -154,6 +154,7 @@ class RigctldCAT(CAT):
                 fields["RPRT"] = v
             else:  # some response parts don't have labels
                 fields["line"] = line
+        logger.debug(f"{fields}")
         return fields
 
     def get_active_vfo(self) -> str:
