@@ -55,6 +55,10 @@ class Database:
         self.cursor.execute("CREATE INDEX spot_call_index ON spots (callsign);")
         self.cursor.execute("CREATE INDEX spot_freq_index ON spots (freq);")
         self.cursor.execute("CREATE INDEX spot_ts_index ON spots (ts);")
+        self.cursor.execute(
+            "CREATE INDEX spot_call_freq_idx ON spots (callsign, freq);"
+        )
+        self.cursor.execute("CREATE INDEX spot_ts_marked_idx ON spots (ts, comment);")
 
         self.db.commit()
 
