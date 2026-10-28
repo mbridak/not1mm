@@ -67,6 +67,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-10-28] @mbridak Fix: Enable socket draining and improve logging format in rigctld_command and...
 - [2026-10-27] @mbridak Fix: Add drain_socket method to toss stale data.
 - [2026-10-26] @mbridak Fix: Add support for {VOICE0} macro to trigger voice memory 0
 - [2026-10-26] @mbridak Fix: Add is_floatable method to validate float conversion for frequency checks.
