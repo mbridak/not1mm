@@ -77,6 +77,17 @@ from not1mm.checkwindow import CheckWindow
 from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib import catppuccin
+from not1mm.lib.entry_rows import (
+    ENTRY_ROLES,
+    FRAME_NAMES,
+    LABEL_NAMES,
+    FanOut,
+    RadioIndicator,
+    build_entry_row,
+    indicator_states,
+)
+from not1mm.lib.flexcat_tx import FlexCatTxSelect
+from not1mm.lib.so2v_tx import So2vTxArbiter
 from not1mm.lib.about import About
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -164,6 +175,23 @@ class MainWindow(QtWidgets.QMainWindow):
     # the QRZ/TU macro. See process_esm() in the contest plugins.
     esm_call_sent = ""
     sandpfreq = 0
+    # SO2V over TCI: trx 0 is the Run radio, trx 1 the S&P radio. Each keeps
+    # its own partially entered QSO while the other is active.
+    tci_active_trx = 0
+    radio_buffers: dict = {}
+    tx_select = None
+    tx_arbiter = None
+    so2v_pending_swap = None  # Run/S&P target waiting for TX to go idle
+    so2v_deferred: list = []
+    so2v_send_kind = "manual"
+    so2v_focus_role = None  # field clicked in the inactive row
+    active_entry_row = 0
+    entry_rows: list = []
+    entry_frames: list = []
+    sp_entry_row = None
+    radio_indicators: list = []
+    prefilled: dict = {}  # entry row -> {role: text the contest prefilled}
+    dark_mode = False
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.
     voice_output_available = False
@@ -408,6 +436,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.other_2.textEdited.connect(self.other_2_changed)
         self.other_2.cursorPositionChanged.connect(self.check_esm)
         self.other_2.installEventFilter(self)
+        self.so2v_deferred = []
+        self.radio_buffers = {}
+        self.prefilled = {}
+        self.setup_entry_rows()
+        self.so2v_timer = QtCore.QTimer()
+        self.so2v_timer.timeout.connect(self.so2v_tick)
+        self.so2v_timer.start(25)
 
         self.sent.setText("59")
         self.receive.setText("59")
@@ -1369,6 +1404,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 return
             if msg.get("cmd", "") == "TUNE":
                 # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
+                if self.so2v_active():
+                    self.tune_so2v(msg)
+                    return
                 self.clearinputs()
                 if self.vfo_window:
                     self.vfo_window.msg_from_main(msg)
@@ -1524,6 +1562,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Apply Catppuccin Mocha (dark) or system palette (light)."""
 
         logger.debug(f"Dark mode set to: {setdarkmode}")
+        self.dark_mode = bool(setdarkmode)
+        self.apply_indicator_colors()
 
         cmd = {"cmd": "DARKMODE", "state": setdarkmode}
         if self.bandmap_window:
@@ -1541,11 +1581,11 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(darkPalette)
             self.menuView.setPalette(darkPalette)
             self.menuWindow.setPalette(darkPalette)
-            self.callsign.setPalette(darkPalette)
-            self.sent.setPalette(darkPalette)
-            self.receive.setPalette(darkPalette)
-            self.other_1.setPalette(darkPalette)
-            self.other_2.setPalette(darkPalette)
+            for entry_row in self.entry_rows or [
+                {role: getattr(self, role) for role in ENTRY_ROLES}
+            ]:
+                for widget in entry_row.values():
+                    widget.setPalette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
         else:
             lightPalette = catppuccin.build_latte_palette()
@@ -1559,17 +1599,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(lightPalette)
             self.menuView.setPalette(lightPalette)
             self.menuWindow.setPalette(lightPalette)
-            self.callsign.setPalette(lightPalette)
-            self.sent.setPalette(lightPalette)
-            self.receive.setPalette(lightPalette)
-            self.other_1.setPalette(lightPalette)
-            self.other_2.setPalette(lightPalette)
+            for entry_row in self.entry_rows or [
+                {role: getattr(self, role) for role in ENTRY_ROLES}
+            ]:
+                for widget in entry_row.values():
+                    widget.setPalette(lightPalette)
             self.cw_entry.setPalette(lightPalette)
-
-        edit_dialog = getattr(self.log_window, "edit_contact_dialog", None)
-        if edit_dialog is not None:
-            edit_dialog.setPalette(self.current_palette)
-            edit_dialog.apply_theme()
 
     def set_radio_icon(self, state: int) -> None:
         """
@@ -1636,7 +1671,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.oldtext = newtext
             return
         if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-            self.rig_control.sendcw(newtext[len(self.oldtext) :])
+            self.send_cw_text(newtext[len(self.oldtext) :])
         elif self.cw is not None:
             self.cw.sendcw(newtext[len(self.oldtext) :])
         self.oldtext = newtext
@@ -2187,8 +2222,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.database.current_contest = self.pref.get("contest")
                     if self.contest_settings.get("ContestName"):
                         """Reset these in case a contest disabled them"""
-                        self.other_1.setStyleSheet("text-transform: uppercase;")
-                        self.other_2.setStyleSheet("text-transform: uppercase;")
+                        for entry_row in self.entry_rows or [
+                            {"other_1": self.other_1, "other_2": self.other_2}
+                        ]:
+                            entry_row["other_1"].setStyleSheet("text-transform: uppercase;")
+                            entry_row["other_2"].setStyleSheet("text-transform: uppercase;")
                         """Reset this too, in case user set it"""
                         self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
@@ -2682,6 +2720,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def stop_cw(self) -> None:
         """Stops CW output"""
         self.auto_cq = False
+        if self.tx_arbiter is not None:
+            self.tx_arbiter.clear()
         self.leftdot.hide()
         self.cwprogressBar.hide()
         if self.cw is not None:
@@ -2822,6 +2862,18 @@ class MainWindow(QtWidgets.QMainWindow):
         then forwarded to MainWindow.keyPressEvent.
         """
 
+        if (
+            event.type() == QEvent.Type.FocusIn
+            and self.so2v_active()
+            and self.entry_rows
+            and obj in self.entry_rows[1 - self.active_entry_row].values()
+        ):
+            # Clicked into the other radio's row: make it the active radio.
+            self.so2v_focus_role = self.entry_role_of(obj)
+            QtCore.QTimer.singleShot(
+                0, lambda: self.set_running(self.active_entry_row == 1)
+            )
+            return False
         if event.type() != QEvent.Type.KeyPress:
             return False
         return self.process_key_bindings(event, obj=obj)
@@ -2916,6 +2968,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.highlight_599(next_tab)
                 return
         if event.key() == Qt.Key.Key_F1:
+            if (
+                event.modifiers() == Qt.KeyboardModifier.ShiftModifier
+                and self.so2v_active()
+            ):
+                # SO2V: start the run radio's CQ loop. The first CQ goes as soon
+                # as TX is free, from whichever row has focus (so2v_tick).
+                self.leftdot.show()
+                self.cwprogressBar.setValue(100)
+                self.cwprogressBar.show()
+                self.auto_cq = True
+                self.auto_cq_then = datetime.datetime.now(tz=datetime.UTC)
+                self.auto_cq_time = self.auto_cq_then
+                return
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 self.set_running(True)
                 # self.make_button_blue(self.F1)
@@ -3027,6 +3092,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.dupe_indicator.hide()
         self.callsign.setStyleSheet("")
+        self.prefilled[self.active_entry_row] = {}
         self.contact = self.database.empty_contact.copy()
         self.heading_distance.setText("")
         self.history_info.setText("")
@@ -3057,11 +3123,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.update_n1mm_score()
 
             self.contest.reset_label(self)
-            if not self.contest.name in (
-                "ICWC Medium Speed Test",
-                "RAEM",
-                "QSO PARTY SN",
-                "California QSO Party",
+            if (
+                self.contest.name != "ICWC Medium Speed Test"
+                and self.contest.name != "RAEM"
+                and self.contest.name != "QSO PARTY SN"
             ):
                 match self.current_mode:
                     case "LSB" | "USB" | "SSB" | "FM" | "AM":
@@ -3265,6 +3330,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.worked_list = self.database.get_calls_and_bands()
         self.send_worked_list()
         self.clearinputs()
+        self.refresh_parked_prefill()
         self.update_rtc_xml()
         cmd = {}
         cmd["cmd"] = "UPDATELOG"
@@ -3643,10 +3709,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if "{WIPE}" in macro:
             macro = macro.replace("{WIPE}", "")
             self.clearinputs()
-        if "{VOICE0}" in macro:
-            macro = macro.replace("{VOICE0}", "")
-            if self.rig_control:
-                self.rig_control.sendvoicememory(memoryspot=0)
         if "{VOICE1}" in macro:
             macro = macro.replace("{VOICE1}", "")
             if self.rig_control:
@@ -3782,7 +3844,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if macro_contests == "":
                 return
             if self.pref.get("cwtype") == 3 and self.rig_control is not None:
-                self.rig_control.sendcw(macro_contests + " ")
+                self.send_cw_text(macro_contests + " ", self.so2v_send_kind)
                 return
             self.cw.sendcw(macro_contests + " ")
             if self.pref.get("cwtype") == 2:
@@ -3814,10 +3876,492 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        self.pref["run_state"] = self.radioButton_run.isChecked()
+        was_running = self.pref.get("run_state", False)
+        wants_run = self.radioButton_run.isChecked()
+        if self.so2v_active() and wants_run != was_running and self.so2v_tx_in_progress():
+            # Swap after the current transmission, never during it. Put the
+            # buttons back; so2v_tick() performs the swap once TX is idle.
+            if was_running:
+                self.radioButton_run.setChecked(True)
+            else:
+                self.radioButton_sp.setChecked(True)
+            self.so2v_defer(wants_run)
+            return
+        self.pref["run_state"] = wants_run
+        if self.so2v_active() and self.pref["run_state"] != was_running:
+            self.swap_tci_radio(0 if self.pref["run_state"] else 1)
         Preferences.save()
         self.read_macros()
         self.check_esm()
+
+    def tune_so2v(self, msg: dict) -> None:
+        """Bandmap click with SO2V on. Swap to the right radio *before*
+        setting the VFO, or the run radio gets QSY'd onto the spot."""
+        spot = msg.get("spot", "")
+        if self.so2v_tx_in_progress():
+            # The click waits, with its swap, until the transmission ends.
+            self.so2v_defer(spot == "CQ", lambda: self.tune_so2v(msg))
+            return
+        self.set_running(spot == "CQ")
+        if spot != "CQ":
+            # A new spot replaces whatever was half-entered on the S&P radio.
+            # Jumping back to the CQ frequency keeps the run radio's QSO.
+            self.clearinputs()
+        if self.vfo_window:
+            self.vfo_window.msg_from_main(msg)
+        vfo = int(float(msg.get("freq")) * 1000)
+        self.radio_state["vfoa"] = vfo
+        self.sandpfreq = vfo
+        if self.rig_control:
+            self.rig_control.set_vfo(vfo)
+        if spot == "CQ":
+            return
+        self.callsign.setText(spot)
+        self.callsign_changed()
+        self.callsign.setFocus()
+        self.callsign.activateWindow()
+
+    def so2v_active(self) -> bool:
+        """True when Run/S&P is coupled to TCI trx 0/1."""
+        return bool(
+            self.pref.get("usetci", False)
+            and self.pref.get("tci_so2v", False)
+            and self.rig_control is not None
+            and self.rig_control.interface == "tci"
+        )
+
+    # ---- SO2V audio ----
+
+    def toggle_so2v_audio(self) -> None:
+        """Toggle SO2V audio between mono (active radio in both ears, other
+        radio muted) and stereo (run radio left, S&P radio right)."""
+        if not self.so2v_active():
+            logger.debug("toggle_so2v_audio ignored: TCI SO2V not enabled")
+            return
+        self.pref["tci_audio_stereo"] = not self.pref.get("tci_audio_stereo", False)
+        Preferences.save()
+        self.apply_so2v_audio()
+
+    def apply_so2v_audio(self) -> None:
+        """Send the current SO2V audio arrangement to both slices."""
+        if self.rig_control is None:
+            return
+        if self.pref.get("tci_audio_stereo", False):
+            run_pan = int(self.pref.get("tci_stereo_pan_run", 15))
+            sp_pan = int(self.pref.get("tci_stereo_pan_sp", 85))
+            sent = self.rig_control.set_rx_audio(0, run_pan, False)
+            self.rig_control.set_rx_audio(1, sp_pan, False)
+            logger.info("SO2V audio: stereo (run pan %d, S&P pan %d)", run_pan, sp_pan)
+        else:
+            active = self.tci_active_trx
+            sent = self.rig_control.set_rx_audio(active, 50, False)
+            self.rig_control.set_rx_audio(1 - active, 50, True)
+            logger.info("SO2V audio: mono on trx %d", active)
+        if not sent:
+            logger.warning("SO2V audio not applied: TCI offline")
+        self.update_radio_indicators()
+
+    # ---- SO2V transmit ----
+
+    def tci_transmitting(self) -> bool:
+        """True while either TCI trx reports transmitting. AetherSDR
+        broadcasts trx:<n>,true/false on every transmit edge, CWX included."""
+        cat = getattr(self.rig_control, "cat", None)
+        is_tx = getattr(cat, "is_transmitting", None)
+        return bool(is_tx and is_tx())
+
+    def so2v_tx_in_progress(self) -> bool:
+        """A transmission is on the air, starting, or being aborted."""
+        if self.tci_transmitting():
+            return True
+        arbiter = self.tx_arbiter
+        return bool(arbiter and (arbiter.current is not None or arbiter.abort_until))
+
+    def so2v_defer(self, run: bool, action=None) -> None:
+        """Hold a swap (and optionally what follows it) until TX is idle."""
+        self.so2v_pending_swap = bool(run)
+        self.so2v_deferred = [action] if action else []
+        logger.debug("SO2V: swap to %s deferred until TX idle", "Run" if run else "S&P")
+
+    def so2v_tick(self) -> None:
+        """Timer-driven: runs the TX arbiter, deferred swaps and auto-CQ."""
+        if not self.so2v_active() or self.tx_arbiter is None:
+            return
+        self.tx_arbiter.tick()
+        if self.so2v_pending_swap is not None and not self.so2v_tx_in_progress():
+            target = self.so2v_pending_swap
+            actions = self.so2v_deferred
+            self.so2v_pending_swap = None
+            self.so2v_deferred = []
+            self.set_running(target)
+            for action in actions:
+                action()
+            return
+        if (
+            self.auto_cq
+            and self.so2v_pending_swap is None
+            and datetime.datetime.now(tz=datetime.UTC) > self.auto_cq_time
+            and not self.tx_arbiter.busy()
+        ):
+            # As soon as TX is free -- including right after an S&P
+            # transmission that interrupted the previous CQ.
+            now = datetime.datetime.now(tz=datetime.UTC)
+            self.auto_cq_then = now
+            self.auto_cq_time = now + datetime.timedelta(milliseconds=self.auto_cq_delay)
+            self.so2v_send_auto_cq()
+
+    def so2v_cq_interrupted(self) -> None:
+        """An S&P send cut a CQ short: send the CQ again once TX is free."""
+        self.auto_cq_time = datetime.datetime.now(tz=datetime.UTC)
+
+    def send_cw_text(self, text: str, kind: str = "manual") -> None:
+        """Every CW-via-CAT send goes through here. With SO2V it is routed to
+        the radio it belongs to; otherwise straight to the radio as before."""
+        if self.rig_control is None:
+            return
+        if self.so2v_active() and self.tx_arbiter is not None:
+            self.tx_arbiter.send(self.tci_active_trx, text, kind)
+            return
+        self.rig_control.sendcw(text)
+
+    def so2v_send_auto_cq(self) -> None:
+        """Send the run radio's F1 CQ, from whichever row has focus."""
+        run_vfo = None
+        cat = getattr(self.rig_control, "cat", None)
+        if cat is not None and hasattr(cat, "client"):
+            run_vfo = cat.client.get_trx("vfo", 0)
+        if self.active_entry_row == 0:
+            self.so2v_send_kind = "cq"
+            try:
+                self.process_function_key(self.F1)
+            finally:
+                self.so2v_send_kind = "manual"
+        else:
+            run_mode = cat.client.get_trx("mode", 0) if cat is not None else ""
+            if run_mode not in ("CW", "CWR", "CW-U", "CW-L"):
+                # The arbiter routes CW only; a phone CQ would key the S&P radio.
+                logger.info("SO2V: auto-CQ from the S&P row needs the run radio in CW")
+                return
+            text = self.run_macro_text("F1", run_mode)
+            # Control tags would act on the S&P radio the operator is working.
+            for tag in ("{RUN}", "{SANDP}", "{LOGIT}", "{WIPE}", "{MARK}", "{SPOT}", "{TX}", "{RX}"):
+                text = text.replace(tag, "")
+            if not text.strip():
+                return
+            self.bind_entry_row(0, visual=False)  # {HISCALL} etc. from the run row
+            try:
+                processed = self.process_macro(text)
+            finally:
+                self.bind_entry_row(1, visual=False)
+            if processed.strip():
+                self.tx_arbiter.send(0, processed + " ", "cq")
+        if run_vfo and run_vfo.isnumeric() and self.bandmap_window and run_vfo != self.cq_freq:
+            cmd = {
+                "cmd": "MARKDX",
+                "dx": "CQ",
+                "freq": float(int(run_vfo) / 1000),
+                "comment": f"CQ {self.current_mode} MARKED",
+            }
+            self.bandmap_window.msg_from_main(cmd)
+            self.cq_freq = run_vfo
+
+    def run_macro_text(self, fkey: str, run_mode: str = "CW") -> str:
+        """The run-mode macro for an F key, from the macro file for the run
+        radio's mode -- not the mode of the radio that happens to be active."""
+        active_mode = self.radio_state.get("mode")
+        self.radio_state["mode"] = run_mode
+        try:
+            macro_file = self.get_macro_filename()
+        finally:
+            self.radio_state["mode"] = active_mode
+        try:
+            with open(macro_file, "r", encoding="utf-8") as file_descriptor:
+                for line in file_descriptor:
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    mode, key, _name, cwtext = line.split("|")
+                    if mode.strip().upper() == "R" and key.strip() == fkey:
+                        return cwtext.strip()
+        except (OSError, ValueError) as err:
+            logger.info("run_macro_text: %s", err)
+        return ""
+
+    # ---- SO2V radio swap ----
+
+    def swap_radio(self) -> None:
+        """Swap between the Run (trx 0) and S&P (trx 1) radios.
+
+        Everything goes through Run/S&P so the buttons, macros, ESM and the
+        trx can never disagree; run_sp_buttons_clicked does the actual swap.
+        Pressed again while a swap is waiting for TX to end, it cancels it.
+        """
+        if not self.so2v_active():
+            logger.debug("swap_radio ignored: TCI SO2V not enabled")
+            return
+        if self.so2v_pending_swap is not None:
+            self.so2v_pending_swap = None
+            self.so2v_deferred = []
+            logger.debug("SO2V: pending swap cancelled")
+            return
+        self.set_running(not self.pref.get("run_state", False))
+
+    def swap_tci_radio(self, new_trx: int) -> None:
+        """Make the other radio and its entry row active."""
+        old_trx = self.tci_active_trx
+        if new_trx == old_trx:
+            return
+        self.radio_buffers[old_trx] = self.capture_entry_buffer()
+        self.tci_active_trx = new_trx
+        self.pref["tci_trx"] = new_trx
+        self.rig_control.set_tci_trx(new_trx)
+        if self.tx_arbiter is not None:
+            self.tx_arbiter.set_focus(new_trx)  # TX follows once idle
+        self.bind_entry_row(new_trx)
+        if not self.pref.get("tci_audio_stereo", False):
+            self.apply_so2v_audio()  # mono follows the active radio
+        logger.debug("SO2V swap: trx %s -> trx %s", old_trx, new_trx)
+
+        # Bring band, mode and frequency displays over to the new radio now
+        # rather than on the next poll. sandpfreq is re-seeded first so the
+        # S&P-QSY-clears-inputs option does not read the jump from the other
+        # radio's frequency as a QSY.
+        vfo = str(self.rig_control.vfoa or "")
+        if vfo.isnumeric():
+            self.sandpfreq = int(vfo)
+            self.poll_radio(
+                {
+                    "vfoa": vfo,
+                    "mode": self.rig_control.mode,
+                    "bw": self.rig_control.bw,
+                    "online": self.rig_control.online,
+                    "trx": new_trx,
+                }
+            )
+        self.restore_entry_buffer(self.radio_buffers.pop(new_trx, None))
+        if self.vfo_window:
+            self.vfo_window.msg_from_main({"cmd": "SET_TCI_TRX", "trx": new_trx})
+
+    def capture_entry_buffer(self) -> dict:
+        """What a row's QSO owns beyond the text in its own fields."""
+        focus = "callsign"
+        for widget, name in self.inputs_dict.items():
+            if widget.hasFocus():
+                focus = name
+        return {
+            "focus": focus,
+            "contact": self.contact.copy(),
+            "dx_entity": self.dx_entity.text(),
+            "heading_distance": self.heading_distance.text(),
+            "history_info": self.history_info.text(),
+            "dupe": self.dupe_indicator.isVisible(),
+            "sandpfreq": self.sandpfreq,
+        }
+
+    def restore_entry_buffer(self, buffer: dict | None) -> None:
+        """Put back a row's QSO state, or start the row clean."""
+        focus_role = self.so2v_focus_role
+        self.so2v_focus_role = None
+        if not buffer:
+            self.clearinputs()
+        else:
+            self.contact = buffer["contact"]
+            self.dx_entity.setText(buffer["dx_entity"])
+            self.heading_distance.setText(buffer["heading_distance"])
+            self.history_info.setText(buffer["history_info"])
+            self.dupe_indicator.setVisible(buffer["dupe"])
+            if buffer.get("sandpfreq"):
+                self.sandpfreq = buffer["sandpfreq"]
+            cmd = {"cmd": "CALLCHANGED", "call": self.callsign.text()}
+            for window in (self.log_window, self.bandmap_window, self.check_window):
+                if window:
+                    window.msg_from_main(cmd)
+            focus_role = focus_role or buffer["focus"]
+        if focus_role:
+            target = self.entry_rows[self.active_entry_row].get(focus_role, self.callsign)
+            target.setFocus()
+            target.deselect()
+
+    # ---- SO2V entry rows ----
+
+    def setup_entry_rows(self) -> None:
+        """Build the S&P entry row under the run row (hidden until SO2V)."""
+        row = build_entry_row(fsutils.APP_DATA_PATH / "main.ui", self.horizontalLayout)
+        row.setObjectName("sp_entry_row")
+        self.sp_entry_row = row
+        self.main_dialog.insertWidget(1, row)
+        self.entry_rows = [
+            {role: getattr(self, role) for role in ENTRY_ROLES},
+            {role: getattr(row, role) for role in ENTRY_ROLES},
+        ]
+        self.entry_frames = [
+            [getattr(self, name) for name in FRAME_NAMES],
+            [getattr(row, name) for name in FRAME_NAMES],
+        ]
+        for role in ENTRY_ROLES:
+            run_widget, sp_widget = self.entry_rows[0][role], self.entry_rows[1][role]
+            sp_widget.setFont(run_widget.font())
+            sp_widget.setPalette(run_widget.palette())
+            sp_widget.setStyleSheet(run_widget.styleSheet())
+        # Plugins hide fields and rename labels through these names: do it on
+        # both rows so the columns always match.
+        for name in FRAME_NAMES + LABEL_NAMES:
+            setattr(self, name, FanOut(getattr(self, name), getattr(row, name)))
+        sp = self.entry_rows[1]
+        sp["callsign"].textEdited.connect(self.callsign_changed)
+        sp["callsign"].returnPressed.connect(self.check_esm_with_enter)
+        sp["callsign"].cursorPositionChanged.connect(self.check_esm)
+        for role, edited in (
+            ("sent", self.sent_changed),
+            ("receive", self.receive_changed),
+            ("other_1", self.other_1_changed),
+            ("other_2", self.other_2_changed),
+        ):
+            sp[role].returnPressed.connect(self.check_esm_with_enter)
+            sp[role].textEdited.connect(edited)
+            sp[role].cursorPositionChanged.connect(self.check_esm)
+        for widget in sp.values():
+            widget.installEventFilter(self)
+        # Radio / audio indicators, left of each callsign box.
+        self.radio_indicators = [
+            RadioIndicator(self.entry_rows[0]["callsign"]),
+            RadioIndicator(self.entry_rows[1]["callsign"]),
+        ]
+        self.horizontalLayout.insertWidget(0, self.radio_indicators[0], 0)
+        row.layout().insertWidget(0, self.radio_indicators[1], 0)
+        self.apply_indicator_colors()
+        row.hide()
+
+    def entry_role_of(self, widget) -> str | None:
+        for entry_row in self.entry_rows:
+            for role, row_widget in entry_row.items():
+                if row_widget is widget:
+                    return role
+        return None
+
+    def bind_entry_row(self, index: int, visual: bool = True) -> None:
+        """Point the entry widget names (and everything keyed by them) at one
+        row. visual=False is a temporary rebind with no display change."""
+        target = self.entry_rows[index]
+
+        def translate(widget):
+            role = self.entry_role_of(widget)
+            return target[role] if role else widget
+
+        for role, widget in target.items():
+            setattr(self, role, widget)
+        tab_next = getattr(self, "tab_next", {}) or {}
+        tab_prev = getattr(self, "tab_prev", {}) or {}
+        self.tab_next = {translate(k): translate(v) for k, v in tab_next.items()}
+        self.tab_prev = {translate(k): translate(v) for k, v in tab_prev.items()}
+        self.next_field = translate(getattr(self, "next_field", None))
+        self.inputs_dict = {widget: role for role, widget in target.items()}
+        self.active_entry_row = index
+        if visual:
+            self.update_entry_row_visuals()
+
+    def run_prefill(self) -> None:
+        """Run the contest's prefill on the active row, remembering what it
+        wrote so a serial number it filled can be refreshed later."""
+        roles = {role: widget.text() for widget, role in self.inputs_dict.items()}
+        self.contest.prefill(self)
+        filled = self.prefilled.setdefault(self.active_entry_row, {})
+        for widget, role in self.inputs_dict.items():
+            if widget.text() != roles[role]:
+                filled[role] = widget.text()
+
+    def refresh_parked_prefill(self) -> None:
+        """A QSO was just logged on the active radio. The other radio's row may
+        hold a serial number prefilled before that QSO -- the one just sent.
+        Refill whatever prefill wrote there, unless the operator changed it."""
+        if not (self.so2v_active() and self.contest and self.entry_rows):
+            return
+        parked = 1 - self.active_entry_row
+        filled = self.prefilled.get(parked)
+        if not filled:
+            return
+        active = self.active_entry_row
+        self.bind_entry_row(parked, visual=False)
+        try:
+            stale = [
+                role
+                for role, value in filled.items()
+                if self.entry_rows[parked][role].text() == value
+            ]
+            if not stale:
+                return
+            for role in stale:
+                self.entry_rows[parked][role].clear()
+                del filled[role]
+            self.get_sn()
+            self.run_prefill()
+            logger.debug(
+                "SO2V: refreshed prefill on row %d: %s",
+                parked,
+                {role: self.entry_rows[parked][role].text() for role in stale},
+            )
+        finally:
+            self.bind_entry_row(active, visual=False)
+
+    def apply_indicator_colors(self) -> None:
+        """Green of the ESM next-key highlight; gray of an idle F key."""
+        dark = self.dark_mode
+        for indicator in self.radio_indicators:
+            indicator.set_colors(
+                catppuccin.GREEN,
+                catppuccin.SURFACE0 if dark else catppuccin.L_SURFACE0,
+                catppuccin.SURFACE1 if dark else catppuccin.L_SURFACE1,
+            )
+
+    def update_radio_indicators(self) -> None:
+        """Show which radio is active and what is in your ears (SO2V only)."""
+        if not self.radio_indicators:
+            return
+        so2v = self.so2v_active()
+        states = indicator_states(
+            bool(self.pref.get("tci_audio_stereo", False)), self.active_entry_row
+        )
+        for indicator, (shape, active) in zip(self.radio_indicators, states):
+            indicator.setVisible(so2v)
+            indicator.set_state(shape, active)
+
+    def update_entry_row_visuals(self) -> None:
+        """Show the S&P row only with SO2V; dim and lock the inactive row."""
+        so2v = self.so2v_active()
+        self.sp_entry_row.setVisible(so2v)
+        for index, frames in enumerate(self.entry_frames):
+            active = (not so2v) or index == self.active_entry_row
+            for frame in frames:
+                if active:
+                    frame.setGraphicsEffect(None)
+                else:
+                    effect = QtWidgets.QGraphicsOpacityEffect(frame)
+                    effect.setOpacity(0.45)
+                    frame.setGraphicsEffect(effect)
+            for widget in self.entry_rows[index].values():
+                widget.setReadOnly(not active)
+        self.update_radio_indicators()
+
+    def configure_so2v(self) -> None:
+        """(Re)start SO2V after the radio connection is (re)built."""
+        self.so2v_pending_swap = None
+        self.so2v_deferred = []
+        self.tx_arbiter = None
+        if not self.so2v_active():
+            self.bind_entry_row(0)
+            return
+        select = self.tx_select.select_tx if self.tx_select else (lambda _trx: False)
+        self.tx_arbiter = So2vTxArbiter(
+            is_transmitting=self.tci_transmitting,
+            select_tx=select,
+            sendcw=lambda trx, text: self.rig_control.sendcw(text, trx=trx),
+            stopcw=lambda: self.rig_control.stopcw(),
+            settle_s=int(self.pref.get("so2v_tx_settle_ms", 150)) / 1000,
+            on_cq_interrupted=self.so2v_cq_interrupted,
+        )
+        self.tx_arbiter.init_tx(self.tci_active_trx)
+        self.bind_entry_row(self.tci_active_trx)
+        self.apply_so2v_audio()
 
     def apply_preferences(self) -> None:
         """
@@ -3929,14 +4473,33 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
         elif self.pref.get("usetci", False) is True:
+            if self.pref.get("tci_so2v", False):
+                # Run/S&P decides the radio: trx 0 runs, trx 1 searches.
+                self.tci_active_trx = 0 if self.pref.get("run_state", False) else 1
+            else:
+                self.tci_active_trx = int(self.pref.get("tci_trx", 0))
+            self.radio_buffers = {}
+            if self.tx_select is not None:
+                self.tx_select.close()
+                self.tx_select = None
+            tx_port = int(self.pref.get("tci_tx_select_port", 5001) or 0)
+            if self.pref.get("tci_so2v", False) and tx_port:
+                # TCI cannot move TX without keying; AetherSDR's FlexCAT
+                # port can.
+                self.tx_select = FlexCatTxSelect(
+                    self.pref.get("CAT_ip", "127.0.0.1"), tx_port
+                )
             logger.debug(
-                "Using TCI: %s",
+                "Using TCI: %s trx %s so2v %s",
                 f"{self.pref.get('CAT_ip')} {self.pref.get('CAT_port')}",
+                self.tci_active_trx,
+                self.pref.get("tci_so2v", False),
             )
             self.rig_control = Radio(
                 "tci",
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 50001)),
+                self.tci_active_trx,
             )
 
         else:
@@ -3951,6 +4514,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.radio_thread.finished.connect(self.rig_control.deleteLater)
         self.rig_control.poll_callback.connect(self.poll_radio)
         self.radio_thread.start()
+        self.configure_so2v()
 
         self.cw = None
         if (
@@ -4224,10 +4788,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         The text in the receive field has changed.
         """
-        if self.contest and self.contest.name in [
-            "DX-Pedition",
-            "California QSO Party",
-        ]:
+        if self.contest and "DX-Pedition" in self.contest.name:
             text = self.receive.text()
             text = text.upper()
             position = self.receive.cursorPosition()
@@ -4325,7 +4886,9 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
-        if self.auto_cq is True:
+        if self.auto_cq is True and not (
+            self.so2v_active() and self.active_entry_row == 1
+        ):
             self.stop_cw()
             self.voice_process.stop_voice()
         self.get_sn()
@@ -4370,7 +4933,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 ):
                     self.contest.check_call_history(self)
                 if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
-                    self.contest.prefill(self)
+                    self.run_prefill()
             return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
@@ -4585,7 +5148,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 and "CQ WW" not in self.contest.name
                 and "IARU HF" not in self.contest.name
             ):
-                self.contest.prefill(self)
+                self.run_prefill()
 
     def check_dupe(self, call: str) -> bool:
         # TODO multi multi
@@ -4654,7 +5217,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.receive.setText("599")
                     self.read_macros()
                     if self.contest.name == "ICWC Medium Speed Test":
-                        self.contest.prefill(self)
+                        self.run_prefill()
                 self.show_CW_macros()
             return
 
@@ -4759,7 +5322,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 percentage_complete = min(100, percentage_complete)
                 self.cwprogressBar.setValue(100 - percentage_complete)
 
-            if now > self.auto_cq_time:
+            if now > self.auto_cq_time and not self.so2v_active():
                 self.auto_cq_then = now
                 self.auto_cq_time = now + datetime.timedelta(
                     milliseconds=self.auto_cq_delay
@@ -4770,6 +5333,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # The following pertains to radio polling.
         logger.debug(f"{the_dict=}")
+        polled_at = the_dict.get("polled_at")
+        if polled_at is not None and polled_at < getattr(self.rig_control, "vfo_set_at", 0.0):
+            # Read before our own frequency change: it would look like a QSY
+            # back and, with "S&P QSY clears inputs", wipe the entry fields.
+            return
+        polled_trx = the_dict.get("trx")
+        if (
+            polled_trx is not None
+            and self.so2v_active()
+            and int(polled_trx) != self.tci_active_trx
+        ):
+            # Queued before a trx swap: it describes the radio we just left.
+            return
         info_dirty = False
         vfo = the_dict.get("vfoa", "")
         mode = the_dict.get("mode", "")

@@ -412,7 +412,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="4">
+       <item row="6" column="0" colspan="4">
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -447,18 +447,71 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1" colspan="3">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="3" column="2" colspan="2" alignment="Qt::AlignTop">
+        <widget class="QCheckBox" name="tci_so2v_checkbox">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
+         <property name="toolTip">
+          <string>SO2V: TRX 0 is the Run radio and TRX 1 the S&amp;P radio. Switching Run/S&amp;P (or pressing \) swaps radios and keeps each radio's partial QSO.</string>
          </property>
-        </spacer>
+         <property name="accessibleName">
+          <string>t c i s o 2 v</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>run on t r x zero, search and pounce on t r x one.</string>
+         </property>
+         <property name="text">
+          <string>SO2V: Run on TRX 0, S&amp;&amp;P on TRX 1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" alignment="Qt::AlignTop">
+        <widget class="QLabel" name="tci_tx_select_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>AetherSDR FlexCAT port (VFO A = TRX 0 slice, VFO B = TRX 1 slice) used to move TX between radios on an SO2V swap. TCI cannot move TX without keying. 0 disables.</string>
+         </property>
+         <property name="text">
+          <string>FlexCAT TX Port:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" alignment="Qt::AlignTop">
+        <widget class="QLineEdit" name="tci_tx_select_port_field">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>AetherSDR FlexCAT port (VFO A = TRX 0 slice, VFO B = TRX 1 slice) used to move TX between radios on an SO2V swap. TCI cannot move TX without keying. 0 disables.</string>
+         </property>
+         <property name="accessibleName">
+          <string>flex cat t x select port</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>port of the aether s d r flex cat server used to move transmit between slices.</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_6">
@@ -479,7 +532,97 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="4">
+       <item row="4" column="0">
+        <widget class="QLabel" name="tci_pan_run_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>Stereo Pan Run:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="tci_pan_run_spin">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Stereo pan: 0 = hard left, 50 = centre, 100 = hard right.</string>
+         </property>
+         <property name="accessibleName">
+          <string>stereo pan run radio</string>
+         </property>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>15</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="tci_pan_sp_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>S&amp;&amp;P:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QSpinBox" name="tci_pan_sp_spin">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Stereo pan: 0 = hard left, 50 = centre, 100 = hard right.</string>
+         </property>
+         <property name="accessibleName">
+          <string>stereo pan search and pounce radio</string>
+         </property>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>85</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="4">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="sizeConstraint">
           <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
@@ -665,6 +808,55 @@
        </item>
        <item row="2" column="1">
         <widget class="QLineEdit" name="catpoll_field"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="tci_trx_label">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="text">
+          <string>TCI TRX:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QComboBox" name="tci_trx_combo">
+         <property name="font">
+          <font>
+           <family>JetBrains Mono</family>
+           <pointsize>12</pointsize>
+           <bold>false</bold>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>TCI transceiver to control. In AetherSDR, TRX 0 is the first slice and TRX 1 the second.</string>
+         </property>
+         <property name="accessibleName">
+          <string>t c i transceiver</string>
+         </property>
+         <property name="accessibleDescription">
+          <string>select t c i transceiver zero or one.</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -2943,6 +3135,11 @@
   <tabstop>userigctld_radioButton</tabstop>
   <tabstop>useflrig_radioButton</tabstop>
   <tabstop>usetci_radioButton</tabstop>
+  <tabstop>tci_trx_combo</tabstop>
+  <tabstop>tci_so2v_checkbox</tabstop>
+  <tabstop>tci_tx_select_port_field</tabstop>
+  <tabstop>tci_pan_run_spin</tabstop>
+  <tabstop>tci_pan_sp_spin</tabstop>
   <tabstop>radioButton</tabstop>
   <tabstop>rigcontrolport_field</tabstop>
   <tabstop>cwport_field</tabstop>

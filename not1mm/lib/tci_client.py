@@ -41,17 +41,31 @@ logger = logging.getLogger("tci_client")
 
 RECONNECT_BACKOFF_MS = (1000, 2000, 5000)
 
+# Live state TCI reports per transceiver, and its value before any frame for
+# that trx has arrived.
+PER_TRX_DEFAULTS = {"vfo": "", "mode": "", "bw": "", "ptt": "0"}
+PER_TRX_KEYS = frozenset(PER_TRX_DEFAULTS)
+
 
 class TCIClient(QObject):
     """Websocket transport and state cache for a TCI server."""
 
     send_requested = pyqtSignal(str)
 
-    def __init__(self, host: str, port: int, autostart: bool = True) -> None:
+    def __init__(
+        self, host: str, port: int, trx: int = 0, autostart: bool = True
+    ) -> None:
         super().__init__()
         self.host = host
         self.port = port
         self.init_state()
+        # Which transceiver the getters report. TCI addresses every per-radio
+        # frame by a leading trx index; AetherSDR maps trx 0/1 to its first
+        # two slices. State for every trx is cached regardless, so switching
+        # the active trx (set_trx) is instant -- TCI only pushes on change, so
+        # a client that tracked one trx would have nothing for the other
+        # until its slice happened to move.
+        self.trx = str(int(trx))
         self.thread = QThread()
         # autostart=False gives tests a cache-only instance with no thread and
         # no socket, while still constructing the QObject properly.
@@ -69,26 +83,46 @@ class TCIClient(QObject):
         self.closing = False
         self.mutex = QMutex()
         self.state = {
-            "vfo": "",
-            "mode": "",
-            "bw": "",
-            "ptt": "0",
             "modes": [],
+            "trx_count": 0,
             "ready": False,
         }
+        # trx index (str) -> {"vfo", "mode", "bw", "ptt"}
+        self.trx_state = {}
 
     # ---- cache access: safe to call from any thread ----
 
     def get(self, key: str, default=""):
+        """Read a cached value. Per-trx keys report the active trx."""
+        if key in PER_TRX_KEYS:
+            return self.get_trx(key, self.trx, default)
         with QMutexLocker(self.mutex):
             value = self.state.get(key, default)
             if isinstance(value, list):
                 return list(value)  # copy, so callers cannot mutate the cache
             return value
 
+    def get_trx(self, key: str, trx, default=""):
+        """Read a per-trx cached value for a specific trx."""
+        with QMutexLocker(self.mutex):
+            entry = self.trx_state.get(str(trx))
+            if entry is None:
+                return PER_TRX_DEFAULTS.get(key, default)
+            return entry.get(key, default)
+
     def set(self, key: str, value) -> None:
         with QMutexLocker(self.mutex):
             self.state[key] = value
+
+    def set_for_trx(self, trx: str, key: str, value) -> None:
+        with QMutexLocker(self.mutex):
+            entry = self.trx_state.setdefault(trx, dict(PER_TRX_DEFAULTS))
+            entry[key] = value
+
+    def set_trx(self, trx: int) -> None:
+        """Change which trx the getters report. Safe from any thread."""
+        self.trx = str(int(trx))
+        logger.debug("TCI active trx now %s", self.trx)
 
     @property
     def online(self) -> bool:
@@ -100,9 +134,8 @@ class TCIClient(QObject):
         device capability, not live state, and re-querying it costs a round
         trip we do not need."""
         with QMutexLocker(self.mutex):
-            self.state.update(
-                {"vfo": "", "mode": "", "bw": "", "ptt": "0", "ready": False}
-            )
+            self.state["ready"] = False
+            self.trx_state.clear()
 
     def send(self, command: str) -> None:
         """Queue a command onto the TCI thread. Safe from any thread -- the
@@ -127,20 +160,31 @@ class TCIClient(QObject):
 
     def handle_frame(self, name: str, args: list) -> None:
         """Update the cache from one parsed frame."""
+        trx = args[0] if args and args[0].isdigit() else None
         if name == "ready":
             logger.debug("TCI handshake complete")
+            count = self.get("trx_count", 0)
+            if count and int(self.trx) >= count:
+                logger.warning(
+                    "TCI trx %s selected but server reports only %d trx",
+                    self.trx,
+                    count,
+                )
             self.set("ready", True)
-        elif name == "vfo" and len(args) >= 3 and args[0] == "0" and args[1] == "0":
+        elif name == "trx_count" and trx is not None:
+            self.set("trx_count", int(trx))
+        elif name == "vfo" and trx is not None and len(args) >= 3 and args[1] == "0":
             if args[2].isnumeric():  # Radio rejects non-numeric VFO values
-                self.set("vfo", args[2])
-        elif name == "modulation" and len(args) >= 2 and args[0] == "0":
-            self.set("mode", tci_mode_to_not1mm(args[1]))
-        elif name == "rx_filter_band" and len(args) >= 3 and args[0] == "0":
+                self.set_for_trx(trx, "vfo", args[2])
+        elif name == "modulation" and trx is not None and len(args) >= 2:
+            self.set_for_trx(trx, "mode", tci_mode_to_not1mm(args[1]))
+        elif name == "rx_filter_band" and trx is not None and len(args) >= 3:
             bandwidth = bandwidth_from_filter_band(args[1], args[2])
             if bandwidth:
-                self.set("bw", bandwidth)
-        elif name == "trx" and len(args) >= 2 and args[0] == "0":
-            self.set("ptt", "1" if args[1].strip().lower() == "true" else "0")
+                self.set_for_trx(trx, "bw", bandwidth)
+        elif name == "trx" and trx is not None and len(args) >= 2:
+            ptt = "1" if args[1].strip().lower() == "true" else "0"
+            self.set_for_trx(trx, "ptt", ptt)
         elif name == "modulations_list":
             self.set("modes", [tci_mode_to_not1mm(m) for m in args if m])
         else:

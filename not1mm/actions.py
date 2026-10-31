@@ -18,6 +18,8 @@ from not1mm.lib.preferences import Preferences
 
 default_key_bindings = {
     "Ctrl+R": "TOGGLE_RUN",
+    "\\": "SWAP_RADIO",
+    "Ctrl+\\": "TOGGLE_SO2V_AUDIO",
     "Ctrl+L": "LOG_NOW",
     "Ctrl+=": "LOG_NOW",
     "Ctrl+Shift+K": "TOGGLE_CW_INPUT",
@@ -55,6 +57,16 @@ def NO_ACTION(self) -> None:  # pylint: disable=unused-argument
 def TOGGLE_RUN(self) -> None:
     """Toggle between RUN and S&P"""
     self.set_running(not self.pref["run_state"])
+
+
+def SWAP_RADIO(self) -> None:
+    """Swap Run (TCI TRX 0) and S&P (TCI TRX 1) radios"""
+    self.swap_radio()
+
+
+def TOGGLE_SO2V_AUDIO(self) -> None:
+    """Toggle SO2V audio: active radio in both ears / run left, S&P right"""
+    self.toggle_so2v_audio()
 
 
 def LOG_NOW(self) -> None:
@@ -114,6 +126,17 @@ def MARK_SPOT(self) -> None:
 
 def JUMP_TO_CQ(self) -> None:
     """Jump to the last CQ frequency"""
+    if self.cq_freq and self.so2v_active():
+        # Swap to the run radio first, or the S&P radio is what gets moved.
+        # The run radio's half-entered QSO is kept.
+        if self.so2v_tx_in_progress():
+            self.so2v_defer(True, lambda: JUMP_TO_CQ(self))
+            return
+        self.set_running(True)
+        self.radio_state["vfoa"] = self.cq_freq
+        if self.rig_control:
+            self.rig_control.set_vfo(self.cq_freq)
+        return
     if self.cq_freq:
         self.radio_state["vfoa"] = self.cq_freq
         if self.rig_control:

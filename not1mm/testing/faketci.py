@@ -15,11 +15,12 @@ from PyQt6.QtWebSockets import QWebSocketServer
 
 # Mirrors a real AetherSDR handshake captured 2026-08-01, including the noise
 # frames, so the client's ignore path gets exercised too. See
-# docs/superpowers/specs/2026-08-01-tci-handshake.md.
+# docs/superpowers/specs/2026-08-01-tci-handshake.md. Extended to two trx
+# (AetherSDR with two slices) so trx 1 selection can be exercised.
 HANDSHAKE = [
     "vfo_limits:1000,75000000;",
     "if_limits:-48000,48000;",
-    "trx_count:1;",
+    "trx_count:2;",
     "channels_count:2;",
     "device:FakeSDR;",
     "receive_only:false;",
@@ -32,6 +33,11 @@ HANDSHAKE = [
     "rx_filter_band:0,-500,500;",
     "agc_mode:0,fast;",
     "trx:0,false;",
+    "vfo:1,0,7025000;",
+    "vfo:1,1,7025000;",
+    "modulation:1,usb;",
+    "rx_filter_band:1,100,2900;",
+    "trx:1,false;",
     "iq_samplerate:48000;",
     "ready;",
     "start;",
