@@ -494,6 +494,16 @@
       </property>
      </item>
      <item>
+      <property name="text">
+       <string>NA SPRINT CW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NA SPRINT RTTY</string>
+      </property>
+     </item>
+     <item>
        <property name="text">
         <string>NAC VHF</string>
        </property>
