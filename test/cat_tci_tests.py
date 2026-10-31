@@ -26,8 +26,19 @@ class StubClient:
         value = self.state.get(key, default)
         return list(value) if isinstance(value, list) else value
 
+    trx_state = {}
+
+    def get_trx(self, key, trx, default=""):
+        return self.trx_state.get(str(trx), {}).get(key, default)
+
     def send(self, command):
         self.sent.append(command)
+
+    def set_for_trx(self, trx, key, value):
+        self.trx_state.setdefault(str(trx), {})[key] = value
+
+    def set_trx(self, trx):
+        self.trx = int(trx)
 
     def wait_for_ready(self, timeout_ms):
         return self.online
@@ -45,8 +56,16 @@ def cat():
     instance.host = "127.0.0.1"
     instance.port = 50001
     instance.online = False
+    instance.trx = 0
     instance.client = StubClient()
     return instance
+
+
+@pytest.fixture
+def cat_trx1(cat):
+    """The same stubbed TciCAT, pointed at the second transceiver."""
+    cat.trx = 1
+    return cat
 
 
 def go_online(cat, **state):
@@ -143,10 +162,118 @@ def test_set_cw_speed_sends_macros_speed(cat):
 def test_sendcw_sends_text(cat):
     go_online(cat)
     cat.sendcw("CQ TEST")
-    assert cat.client.sent == ["cw_msg:0,,,CQ TEST;"]
+    assert cat.client.sent == ["cw_macros:0,CQ TEST;"]
 
 
 def test_close_delegates_to_client(cat):
     go_online(cat)
     cat.close()
     assert cat.client.close_called is True
+
+
+# ---- trx 1: every per-radio command carries the selected trx index ----
+
+
+def test_trx1_set_vfo_addresses_trx1(cat_trx1):
+    go_online(cat_trx1)
+    cat_trx1.set_vfo("7025000")
+    assert cat_trx1.client.sent == ["vfo:1,0,7025000;"]
+
+
+def test_trx1_set_mode_addresses_trx1(cat_trx1):
+    go_online(cat_trx1)
+    cat_trx1.set_mode("USB")
+    assert cat_trx1.client.sent == ["modulation:1,usb;"]
+
+
+def test_trx1_ptt_addresses_trx1(cat_trx1):
+    go_online(cat_trx1)
+    cat_trx1.ptt_on()
+    cat_trx1.ptt_off()
+    assert cat_trx1.client.sent == ["trx:1,true;", "trx:1,false;"]
+
+
+def test_trx1_sendcw_addresses_trx1(cat_trx1):
+    go_online(cat_trx1)
+    cat_trx1.sendcw("TEST")
+    assert cat_trx1.client.sent == ["cw_macros:1,TEST;"]
+
+
+def test_cw_speed_and_stop_are_global(cat_trx1):
+    """cw_macros_speed and the stop commands take no trx argument."""
+    go_online(cat_trx1)
+    cat_trx1.set_cw_speed(30)
+    cat_trx1.stopcw()
+    assert cat_trx1.client.sent == [
+        "cw_macros_speed:30;",
+        "cw_terminate;",
+        "cw_macros_stop;",
+    ]
+
+
+def test_set_trx_retargets_commands_and_client(cat):
+    go_online(cat)
+    cat.set_trx(1)
+    assert cat.client.trx == 1
+    cat.set_vfo("14250000")
+    cat.set_mode("USB")
+    cat.set_trx(0)
+    cat.set_vfo("14030000")
+    assert cat.client.sent == [
+        "vfo:1,0,14250000;",
+        "modulation:1,usb;",
+        "vfo:0,0,14030000;",
+    ]
+
+
+# ---- transmit lockout for SO2V swaps ----
+
+
+def test_is_transmitting_false_when_offline(cat):
+    cat.client.trx_state = {"0": {"ptt": "1"}}
+    assert cat.is_transmitting() is False
+
+
+def test_is_transmitting_sees_either_trx(cat):
+    go_online(cat)
+    cat.client.trx_state = {"0": {"ptt": "0"}, "1": {"ptt": "1"}}
+    assert cat.is_transmitting() is True
+    cat.client.trx_state = {"0": {"ptt": "0"}, "1": {"ptt": "0"}}
+    assert cat.is_transmitting() is False
+
+
+# ---- per-trx receive audio for SO2V ----
+
+
+def test_set_rx_audio_sends_balance_and_mute(cat_trx1):
+    go_online(cat_trx1)
+    cat_trx1.set_rx_audio(0, 20, False)
+    cat_trx1.set_rx_audio(1, 80, True)
+    assert cat_trx1.client.sent == [
+        "rx_balance:0,-30;",
+        "rx_mute:0,false;",
+        "rx_balance:1,30;",
+        "rx_mute:1,true;",
+    ]
+
+
+def test_set_rx_audio_centre_and_clamping(cat):
+    go_online(cat)
+    cat.set_rx_audio(0, 50, False)
+    cat.set_rx_audio(0, -10, False)
+    cat.set_rx_audio(0, 150, False)
+    balances = [c for c in cat.client.sent if c.startswith("rx_balance")]
+    assert balances == ["rx_balance:0,0;", "rx_balance:0,-50;", "rx_balance:0,50;"]
+
+
+def test_set_rx_audio_sends_nothing_offline(cat):
+    assert cat.set_rx_audio(0, 50, False) is False
+    assert cat.client.sent == []
+
+
+def test_set_vfo_updates_cache_before_the_echo(cat_trx1):
+    """No stale-frequency window between set_vfo and the server's echo."""
+    go_online(cat_trx1)
+    cat_trx1.client.trx_state = {"1": {"vfo": "7025000"}}
+    cat_trx1.set_vfo("7030000")
+    assert cat_trx1.client.get_trx("vfo", 1) == "7030000"

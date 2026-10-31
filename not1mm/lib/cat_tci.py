@@ -28,7 +28,7 @@ READY_TIMEOUT_MS = 1500
 class TciCAT(CAT):
     """CAT control via the TCI protocol"""
 
-    def __init__(self, host: str, port: int) -> None:
+    def __init__(self, host: str, port: int, trx: int = 0) -> None:
         """
         Computer Aided Transceiver abstraction class.
         Offers a normalized interface; this is the TCI class.
@@ -39,15 +39,28 @@ class TciCAT(CAT):
 
         An integer defining the network port used. Commonly 50001 for TCI.
 
+        An optional integer selecting the TCI transceiver to control, 0 or 1.
+        AetherSDR exposes its first two slices as trx 0 and trx 1.
+
         A variable 'online' is set to True once the TCI server completes its
         handshake, otherwise False.
         """
         super().__init__(host, port)
         self.interface = "tci"
-        self.client = TCIClient(host, port)
+        self.trx = int(trx)
+        self.client = TCIClient(host, port, trx=self.trx)
         # Radio.__init__ reads get_mode_list() immediately, so give the
         # handshake a moment to land before returning.
         self.client.wait_for_ready(READY_TIMEOUT_MS)
+
+    def set_trx(self, trx: int) -> None:
+        """Switch which TCI transceiver this backend reads and commands.
+
+        No reconnect: the client caches every trx, so the getters report the
+        new trx's state immediately.
+        """
+        self.trx = int(trx)
+        self.client.set_trx(self.trx)
 
     @property
     def online(self) -> bool:
@@ -94,6 +107,24 @@ class TciCAT(CAT):
             return "0"
         return self.client.get("ptt", "0")
 
+    def set_rx_audio(self, trx: int, pan: int, mute: bool) -> bool:
+        """Pan (0 = hard left, 50 = centre, 100 = hard right) and mute one
+        trx's receive audio. Unlike cw_macros, AetherSDR applies rx_balance
+        and rx_mute to the slice the trx index names."""
+        if not self.online:
+            return False
+        balance = max(0, min(100, int(pan))) - 50  # TCI balance: 0 = centre
+        self.client.send(build_command("rx_balance", int(trx), balance))
+        self.client.send(build_command("rx_mute", int(trx), "true" if mute else "false"))
+        return True
+
+    def is_transmitting(self) -> bool:
+        """True while any trx reports transmitting, whichever is active."""
+        if not self.online:
+            return False
+        count = max(int(self.client.get("trx_count", 0) or 0), 2)
+        return any(self.client.get_trx("ptt", trx) == "1" for trx in range(count))
+
     def get_mode_list(self) -> list:
         """Get a list of modes supported by the radio.
 
@@ -108,38 +139,44 @@ class TciCAT(CAT):
         """Sets the radios VFO. Defaults to VFOA."""
         if not self.online:
             return False
-        self.client.send(build_command("vfo", 0, 0, str(freq)))
+        self.client.send(build_command("vfo", self.trx, 0, str(freq)))
+        # Update the cache now rather than on the server's echo. A poll that
+        # read the old value in between would look like a QSY back and, with
+        # "S&P QSY clears inputs", wipe the call a bandmap click just entered.
+        if str(freq).isnumeric():
+            self.client.set_for_trx(str(self.trx), "vfo", str(freq))
         return True
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
         if not self.online:
             return False
-        self.client.send(build_command("modulation", 0, not1mm_mode_to_tci(mode)))
+        self.client.send(build_command("modulation", self.trx, not1mm_mode_to_tci(mode)))
         return True
 
     def ptt_on(self) -> bool:
         """turn ptt on"""
         if not self.online:
             return False
-        self.client.send(build_command("trx", 0, "true"))
+        self.client.send(build_command("trx", self.trx, "true"))
         return True
 
     def ptt_off(self) -> bool:
         """turn ptt off"""
         if not self.online:
             return False
-        self.client.send(build_command("trx", 0, "false"))
+        self.client.send(build_command("trx", self.trx, "false"))
         return True
 
     # ---- CW, reached via the existing "CW via CAT" option (cwtype == 3) ----
 
-    def sendcw(self, texttosend) -> None:
-        """Send CW text through the radio's keyer"""
+    def sendcw(self, texttosend, trx: int | None = None) -> None:
+        """Send CW text through the radio's keyer. AetherSDR keys whichever
+        slice holds TX; trx names the radio the text is meant for."""
         if not self.online:
             return
-        # self.client.send(build_command("cw_msg", 0, "", "", texttosend))
-        self.client.send(build_command("cw_macros", 0, texttosend))
+        target = self.trx if trx is None else int(trx)
+        self.client.send(build_command("cw_macros", target, texttosend))
 
     def stopcw(self) -> None:
         """Abort CW transmission"""

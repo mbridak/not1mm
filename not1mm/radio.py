@@ -6,6 +6,7 @@ GPL V3
 
 import datetime
 import logging
+import time
 
 from PyQt6.QtCore import QEventLoop, QObject, QThread, pyqtSignal
 
@@ -42,15 +43,19 @@ class Radio(QObject):
         "LSB-D",
     ]
     last_data_mode = "RTTY"
+    vfo_set_at = 0.0
     last_cw_mode = "CW"
     last_ph_mode = "SSB"
 
-    def __init__(self, interface: str, host: str, port: int) -> None:
+    def __init__(
+        self, interface: str, host: str, port: int, tci_trx: int = 0
+    ) -> None:
         super().__init__()
         """setup interface"""
         self.interface = interface
         self.host = host
         self.port = port
+        self.tci_trx = tci_trx
         logger.debug("Using %s: %s %d", interface, host, port)
 
         try:
@@ -59,7 +64,7 @@ class Radio(QObject):
             elif self.interface == "rigctld":
                 self.cat = RigctldCAT(self.host, self.port)
             elif self.interface == "tci":
-                self.cat = TciCAT(self.host, self.port)
+                self.cat = TciCAT(self.host, self.port, self.tci_trx)
             else:
                 self.cat = FakeCAT(self.host, self.port)
             self.online = self.cat.online
@@ -81,6 +86,10 @@ class Radio(QObject):
                 self.poll_time = datetime.datetime.now(
                     datetime.UTC
                 ) + datetime.timedelta(milliseconds=self.delta)
+                # Captured before reading, so a trx swap mid-poll tags these
+                # readings with the trx they actually came from.
+                polled_trx = getattr(self.cat, "trx", None)
+                polled_at = time.monotonic()
                 vfoa = self.cat.get_vfo()
                 self.online = False
                 if vfoa:
@@ -105,6 +114,12 @@ class Radio(QObject):
                             "mode": self.mode,
                             "bw": self.bw,
                             "online": self.cat.online,
+                            # Lets the main window drop a poll that was
+                            # queued before a TCI trx swap and lands after.
+                            "trx": polled_trx,
+                            # Lets the main window drop a poll that was read
+                            # before its own set_vfo but delivered after it.
+                            "polled_at": polled_at,
                         }
                     )
                 except QEventLoop:
@@ -147,11 +162,14 @@ class Radio(QObject):
         if self.cat:
             self.cat.sendvoicememory(memoryspot)
 
-    def sendcw(self, texttosend):
+    def sendcw(self, texttosend, trx=None):
         """..."""
         logger.debug(f"Send CW: {texttosend}")
         if self.cat:
-            self.cat.sendcw(texttosend)
+            if trx is None:
+                self.cat.sendcw(texttosend)
+            else:
+                self.cat.sendcw(texttosend, trx=trx)
 
     def stopcw(self):
         logger.debug("Stopping CW")
@@ -168,8 +186,30 @@ class Radio(QObject):
         if self.cat:
             self.cat.set_cw_send(send)
 
+    def set_rx_audio(self, trx: int, pan: int, mute: bool) -> bool:
+        """Per-trx receive pan/mute, for backends that support it (TCI)."""
+        set_audio = getattr(self.cat, "set_rx_audio", None)
+        return bool(set_audio and set_audio(trx, pan, mute))
+
+    def set_tci_trx(self, trx: int) -> bool:
+        """Switch the TCI backend to another transceiver. Returns False for
+        backends that have no notion of trx."""
+        set_trx = getattr(self.cat, "set_trx", None)
+        if set_trx is None:
+            return False
+        self.tci_trx = int(trx)
+        set_trx(self.tci_trx)
+        # Drop the previous trx's cached readings so the next poll carries the
+        # new trx's state rather than holding the old one on a falsy getter.
+        self.vfoa = self.cat.get_vfo() or self.vfoa
+        self.mode = self.cat.get_mode() or self.mode
+        self.bw = self.cat.get_bw() or self.bw
+        self.poll_time = datetime.datetime.now(datetime.UTC)
+        return True
+
     def set_vfo(self, vfo):
         self.vfoa = vfo
+        self.vfo_set_at = time.monotonic()
 
         if self.cat:
             self.cat.set_vfo(vfo)

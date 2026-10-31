@@ -96,8 +96,16 @@ class VfoWindow(QDockWidget):
             self.rig_control: TciCAT | None = TciCAT(
                 self.pref.get("CAT_ip", "127.0.0.1"),
                 int(self.pref.get("CAT_port", 50001)),
+                self.tci_trx(),
             )
             self.timer.start(100)
+
+    def tci_trx(self) -> int:
+        """The trx the knob should drive: with SO2V on, the one matching
+        Run/S&P; otherwise the configured one."""
+        if self.pref.get("tci_so2v", False):
+            return 0 if self.pref.get("run_state", False) else 1
+        return int(self.pref.get("tci_trx", 0))
 
     def discover_device(self) -> str | None:
         """
@@ -189,6 +197,13 @@ class VfoWindow(QDockWidget):
         Watch for a 'HALT' UPD packet from not1mm.
         Exit app if found.
         """
+        if msg_dict.get("cmd", "") == "SET_TCI_TRX":
+            # SO2V swap: the knob follows the active radio.
+            set_trx = getattr(self.rig_control, "set_trx", None)
+            if set_trx is not None:
+                set_trx(int(msg_dict.get("trx", 0)))
+                self.device_reconnect = True  # push the new trx's frequency
+            return
         if msg_dict.get("cmd", "") == "TUNE":
             # b'{"cmd": "TUNE", "freq": 7.0235, "spot": "MM0DGI"}'
             try:

@@ -116,7 +116,7 @@ def test_non_numeric_vfo_is_rejected(client):
     assert client.get("vfo") == ""
 
 
-def test_vfo_for_other_trx_is_ignored(client):
+def test_vfo_for_other_trx_does_not_show_on_active_trx(client):
     client.handle_frame("vfo", ["1", "0", "14030000"])
     assert client.get("vfo") == ""
 
@@ -142,9 +142,7 @@ def test_unparseable_filter_band_leaves_bandwidth_untouched(client):
     assert client.get("bw") == "1000"
 
 
-@pytest.mark.parametrize(
-    "value, expected", [("true", "1"), ("false", "0"), ("TRUE", "1")]
-)
+@pytest.mark.parametrize("value, expected", [("true", "1"), ("false", "0"), ("TRUE", "1")])
 def test_trx_frame_sets_ptt(client, value, expected):
     client.handle_frame("trx", ["0", value])
     assert client.get("ptt") == expected
@@ -207,3 +205,119 @@ def test_clear_state_resets_ptt(client):
 
 def test_wait_for_ready_times_out_when_never_online(client):
     assert client.wait_for_ready(100) is False
+
+
+# ---- trx selection ----
+
+
+@pytest.fixture
+def client_trx1():
+    return TCIClient("127.0.0.1", 50001, trx=1, autostart=False)
+
+
+def test_trx1_client_tracks_trx1_frames(client_trx1):
+    client_trx1.handle_frame("vfo", ["1", "0", "7025000"])
+    client_trx1.handle_frame("modulation", ["1", "usb"])
+    client_trx1.handle_frame("rx_filter_band", ["1", "100", "2900"])
+    client_trx1.handle_frame("trx", ["1", "true"])
+    assert client_trx1.get("vfo") == "7025000"
+    assert client_trx1.get("mode") == "USB"
+    assert client_trx1.get("bw") == "2800"
+    assert client_trx1.get("ptt") == "1"
+
+
+def test_trx1_client_does_not_report_trx0_frames(client_trx1):
+    client_trx1.handle_frame("vfo", ["0", "0", "14030000"])
+    client_trx1.handle_frame("modulation", ["0", "cw"])
+    client_trx1.handle_frame("rx_filter_band", ["0", "-500", "500"])
+    client_trx1.handle_frame("trx", ["0", "true"])
+    assert client_trx1.get("vfo") == ""
+    assert client_trx1.get("mode") == ""
+    assert client_trx1.get("bw") == ""
+    assert client_trx1.get("ptt") == "0"
+
+
+def test_trx1_client_ignores_channel_b(client_trx1):
+    client_trx1.handle_frame("vfo", ["1", "1", "7030000"])
+    assert client_trx1.get("vfo") == ""
+
+
+def test_trx_count_is_cached(client):
+    client.handle_frame("trx_count", ["2"])
+    assert client.get("trx_count") == 2
+
+
+def test_selecting_missing_trx_still_comes_online(client_trx1):
+    """A trx the server does not have is logged, not fatal: the server may
+    gain a slice later and start sending frames for it."""
+    client_trx1.handle_frame("trx_count", ["1"])
+    client_trx1.handle_frame("ready", [])
+    assert client_trx1.online is True
+
+
+def test_full_two_trx_handshake_selects_trx1(client_trx1):
+    payload = (
+        "trx_count:2;vfo:0,0,14030000;modulation:0,cw;"
+        "vfo:1,0,7025000;modulation:1,usb;ready;"
+    )
+    client_trx1.on_text_message(payload)
+    assert client_trx1.get("vfo") == "7025000"
+    assert client_trx1.get("mode") == "USB"
+    assert client_trx1.online is True
+
+
+# ---- both trx cached, active one switchable at runtime (SO2V) ----
+
+
+def test_both_trx_are_cached_and_set_trx_switches_instantly(client):
+    client.on_text_message(
+        "vfo:0,0,14030000;modulation:0,cw;rx_filter_band:0,-250,250;"
+        "vfo:1,0,14250000;modulation:1,usb;rx_filter_band:1,100,2900;ready;"
+    )
+    assert (client.get("vfo"), client.get("mode"), client.get("bw")) == (
+        "14030000",
+        "CW",
+        "500",
+    )
+    client.set_trx(1)
+    assert (client.get("vfo"), client.get("mode"), client.get("bw")) == (
+        "14250000",
+        "USB",
+        "2800",
+    )
+    client.set_trx(0)
+    assert client.get("vfo") == "14030000"
+
+
+def test_inactive_trx_keeps_updating_while_parked(client):
+    client.handle_frame("vfo", ["1", "0", "7025000"])
+    client.handle_frame("vfo", ["1", "0", "7031000"])
+    assert client.get("vfo") == ""
+    assert client.get_trx("vfo", 1) == "7031000"
+    client.set_trx(1)
+    assert client.get("vfo") == "7031000"
+
+
+def test_ptt_is_tracked_per_trx(client):
+    client.handle_frame("trx", ["1", "true"])
+    assert client.get("ptt") == "0"
+    assert client.get_trx("ptt", 1) == "1"
+
+
+def test_unknown_trx_reports_defaults(client):
+    client.set_trx(1)
+    assert client.get("vfo") == ""
+    assert client.get("ptt") == "0"
+
+
+def test_clear_state_drops_every_trx(client):
+    client.handle_frame("vfo", ["0", "0", "14030000"])
+    client.handle_frame("vfo", ["1", "0", "7025000"])
+    client.clear_state()
+    assert client.get_trx("vfo", 0) == ""
+    assert client.get_trx("vfo", 1) == ""
+
+
+def test_non_numeric_trx_index_is_ignored(client):
+    client.handle_frame("vfo", ["x", "0", "14030000"])
+    assert client.get_trx("vfo", "x") == ""

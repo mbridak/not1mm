@@ -27,11 +27,14 @@ class Settings(QtWidgets.QDialog):
         self.usecwdaemon_radioButton.clicked.connect(self.set_cwdaemon_port_hint)
         self.usepywinkeyer_radioButton.clicked.connect(self.set_winkeyer_port_hint)
         self.usecwviacat_radioButton.clicked.connect(self.set_catforcw_port_hint)
+        self.usetci_radioButton.toggled.connect(self.update_tci_controls)
+        self.tci_so2v_checkbox.toggled.connect(self.update_tci_controls)
         self.cwport_field.setToolTip(
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld, 12345 for flrig, and 50001 or 40001 for TCI."
+            "Usually 4532 for rigctld, 12345 for flrig, "
+            "and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -39,6 +42,23 @@ class Settings(QtWidgets.QDialog):
         else:
             self.devices = []
         self.setup()
+
+    def update_tci_controls(self, *_args) -> None:
+        """TRX choice only applies to TCI, and SO2V picks the TRX itself
+        from Run/S&P."""
+        tci = self.usetci_radioButton.isChecked()
+        self.tci_so2v_checkbox.setEnabled(tci)
+        self.tci_trx_combo.setEnabled(tci and not self.tci_so2v_checkbox.isChecked())
+        so2v = tci and self.tci_so2v_checkbox.isChecked()
+        self.tci_tx_select_port_field.setEnabled(so2v)
+        self.tci_tx_select_label.setEnabled(so2v)
+        for widget in (
+            self.tci_pan_run_label,
+            self.tci_pan_run_spin,
+            self.tci_pan_sp_label,
+            self.tci_pan_sp_spin,
+        ):
+            widget.setEnabled(so2v)
 
     def setup(self):
         """setup dialog"""
@@ -131,6 +151,15 @@ class Settings(QtWidgets.QDialog):
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
         self.usetci_radioButton.setChecked(bool(self.preference.get("usetci")))
+        tci_trx = int(self.preference.get("tci_trx", 0))
+        self.tci_trx_combo.setCurrentIndex(tci_trx if tci_trx in (0, 1) else 0)
+        self.tci_so2v_checkbox.setChecked(bool(self.preference.get("tci_so2v")))
+        self.tci_tx_select_port_field.setText(
+            str(self.preference.get("tci_tx_select_port", 5001))
+        )
+        self.tci_pan_run_spin.setValue(int(self.preference.get("tci_stereo_pan_run", 15)))
+        self.tci_pan_sp_spin.setValue(int(self.preference.get("tci_stereo_pan_sp", 85)))
+        self.update_tci_controls()
 
         self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
         self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
@@ -205,7 +234,9 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
-        self.cluster_login_field.setText(str(self.preference.get("cluster_login", "")))
+        self.cluster_login_field.setText(
+            str(self.preference.get("cluster_login", ""))
+        )
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -246,15 +277,15 @@ class Settings(QtWidgets.QDialog):
         """Sets placeholder hint for the CW interface."""
         self.cwip_field.setEnabled(True)
         self.cwport_field.setEnabled(True)
-        self.cwip_field.setPlaceholderText("Try 127.0.0.1")
-        self.cwport_field.setPlaceholderText("Try 6789")
+        self.cwip_field.setPlaceholderText("127.0.0.1")
+        self.cwport_field.setPlaceholderText("6789")
 
     def set_winkeyer_port_hint(self):
         """Sets placeholder hint for the CW interface."""
         self.cwip_field.setEnabled(True)
         self.cwport_field.setEnabled(True)
-        self.cwip_field.setPlaceholderText("Try 127.0.0.1")
-        self.cwport_field.setPlaceholderText("Try 8000")
+        self.cwip_field.setPlaceholderText("127.0.0.1")
+        self.cwport_field.setPlaceholderText("8000")
 
     def set_catforcw_port_hint(self):
         """Sets placeholder hint for the CW interface."""
@@ -321,6 +352,16 @@ class Settings(QtWidgets.QDialog):
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
         self.preference["usetci"] = self.usetci_radioButton.isChecked()
+        self.preference["tci_trx"] = self.tci_trx_combo.currentIndex()
+        self.preference["tci_so2v"] = self.tci_so2v_checkbox.isChecked()
+        self.preference["tci_stereo_pan_run"] = self.tci_pan_run_spin.value()
+        self.preference["tci_stereo_pan_sp"] = self.tci_pan_sp_spin.value()
+        try:
+            self.preference["tci_tx_select_port"] = int(
+                self.tci_tx_select_port_field.text() or 0
+            )
+        except ValueError:
+            ...
 
         self.preference["rotctld_address"] = self.rotctld_address.text()
         try:
