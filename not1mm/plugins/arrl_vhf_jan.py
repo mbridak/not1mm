@@ -1,4 +1,4 @@
-"""ARRL Jan VHF"""
+"""ARRL JAN VHF"""
 
 # Status:	Active
 # Geographic Focus:	United States/Canada
@@ -69,7 +69,11 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
+dupe_type = 4
+
+def is_rover_call(call: str) -> bool:
+    """Rovers sign /R; they can be worked again from each new grid."""
+    return call.strip().upper().endswith("/R")
 
 
 def init_contest(self):
@@ -78,7 +82,9 @@ def init_contest(self):
     set_tab_prev(self)
     interface(self)
     self.next_field = self.other_2
-
+    if not getattr(self, "_vhf_dupe_hooked", False):
+        self.other_2.textChanged.connect(lambda _text: update_dupe(self))
+        self._vhf_dupe_hooked = True
 
 def interface(self):
     """Setup user interface"""
@@ -126,19 +132,67 @@ def validate(self):
     #         return True
     # return False
     return True
-
-
+    
 def set_contact_vars(self):
     """Contest Specific"""
     self.contact["SNT"] = self.sent.text()
     self.contact["RCV"] = self.receive.text()
     self.contact["NR"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.other_1.text()
+    update_dupe(self)      
+    
+# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
+#dupe_type = 2
+
+
+def is_rover_call(call: str) -> bool:
+    """Rovers sign /R; they can be worked again from each new grid."""
+    return call.strip().upper().endswith("/R")
+    
+def _band_key(band) -> str:
+    """Normalize band so '144', 144 and '144.0' compare equal."""
+    try:
+        return str(float(band))
+    except (TypeError, ValueError):
+        return str(band).strip().upper()
+
+def is_dupe(self) -> bool:
+    """Normal calls: call + band. /R calls: call + band + grid."""
+    call = self.callsign.text().strip().upper()
+    band = _band_key(self.contact.get("Band", ""))
+    if not call or band == "":
+        return False
+
+    rover = is_rover_call(call)
+    grid = self.other_2.text().strip().upper()[:4]
+    if rover and not grid:
+        return False  # can't judge a rover until the grid is entered
+
+    for logged in self.database.fetch_all_contacts_asc():
+        if str(logged.get("Call", "")).strip().upper() != call:
+            continue
+        if _band_key(logged.get("Band", "")) != band:
+            continue
+        if rover and str(logged.get("NR", "")).strip().upper()[:4] != grid:
+            continue
+        return True
+    return False 
+    
+def update_dupe(self):
+    """Set the dupe flag and show/hide the indicator."""
+    dupe = is_dupe(self)
+    self.contact_is_dupe = 1 if dupe else 0
+    indicator = getattr(self, "dupe_indicator", None)
+    if indicator is not None:
+        if dupe:
+            indicator.show()
+        else:
+            indicator.hide()       
 
 
 def predupe(self):
     """called after callsign entered"""
-
+    update_dupe(self)
 
 def prefill(self):
     """Fill sentnr"""
@@ -161,17 +215,28 @@ def points(self):
     # 4 points per 902 or 1296 MHz QSO
     # 8 points per 2.3 GHz or higher QSO
 
-    if self.contact_is_dupe > 0:
+    if (self.contact_is_dupe or 0) > 0:
         return 0
 
-    _band = self.contact.get("Band", "")
-    if _band in ["50", "144"]:
+    try:
+        mhz = float(self.contact.get("Freq", 0)) / 1000
+    except (TypeError, ValueError):
+        mhz = 0
+
+    logger.debug(
+        "points: band=%s freq_mhz=%s dupe=%s",
+        self.contact.get("Band", ""),
+        mhz,
+        self.contact_is_dupe,
+    )
+
+    if 50 <= mhz < 54 or 144 <= mhz < 148:
         return 1
-    if _band in ["222", "432"]:
+    if 222 <= mhz < 225 or 420 <= mhz < 450:
         return 2
-    if _band in ["902", "1296"]:
+    if 902 <= mhz < 928 or 1240 <= mhz < 1300:
         return 4
-    if _band in ["2300+"]:
+    if mhz >= 2300:
         return 8
     return 0
 
