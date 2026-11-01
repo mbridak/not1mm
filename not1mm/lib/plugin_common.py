@@ -9,9 +9,16 @@ from pathlib import Path
 
 import adif_io
 from PyQt6.QtCore import QCoreApplication, Qt
-from PyQt6.QtWidgets import QApplication, QDialog, QProgressDialog, QPushButton
+from PyQt6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QFileDialog,
+    QProgressDialog,
+    QPushButton,
+)
 
 from not1mm.lib.ham_utility import get_adif_band, get_not1mm_band
+from not1mm.lib.preferences import Preferences
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -83,6 +90,29 @@ def get_points(self):
     return 0
 
 
+def get_export_filename(self, default_name: str, file_filter: str) -> str | None:
+    """
+    Show a save dialog for a log export file.
+    The dialog starts in the directory of the last export.
+    If this directory does not exist, the dialog starts in the home directory.
+    Returns the selected path, or None if the user cancels.
+    """
+    export_dir = self.pref.get("export_dir", "")
+    if not export_dir or not Path(export_dir).is_dir():
+        export_dir = str(Path.home())
+    filename, _ = QFileDialog.getSaveFileName(
+        self,
+        "Save Log File",
+        str(Path(export_dir) / default_name),
+        file_filter,
+    )
+    if not filename:
+        return None
+    self.pref["export_dir"] = str(Path(filename).parent)
+    Preferences.save()
+    return filename
+
+
 def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
@@ -90,11 +120,13 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
     now = datetime.datetime.now(tz=datetime.UTC)
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     station_callsign = self.station.get("Call", "").upper()
-    filename = (
-        str(Path.home())
-        + "/"
-        + f"{station_callsign.replace('/', '-')}_{cabrillo_name}_{date_time}.adi"
+    filename = get_export_filename(
+        self,
+        f"{station_callsign.replace('/', '-')}_{cabrillo_name}_{date_time}.adi",
+        "ADIF (*.adi *.adif)",
     )
+    if not filename:
+        return
     log = self.database.fetch_all_contacts_asc()
     try:
         with open(filename, "w", encoding="utf-8", newline="") as file_descriptor:
@@ -542,9 +574,11 @@ def gen_edi(
     now = datetime.datetime.now().astimezone()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
     station_call = self.station.get("Call", "").upper().replace("/", "-")
-    filename = (
-        str(Path.home()) + "/" + f"{station_call}_{cabrillo_name}_{date_time}.edi"
+    filename = get_export_filename(
+        self, f"{station_call}_{cabrillo_name}_{date_time}.edi", "EDI (*.edi)"
     )
+    if not filename:
+        return
 
     logger.debug("EDI output: %s", filename)
 
