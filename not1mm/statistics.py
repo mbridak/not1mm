@@ -76,16 +76,23 @@ class StatsWindow(QDockWidget):
         """
         self.pref = Preferences.data()
 
+    def _set_cell(self, row: int, col: int, value, none_as: str = "0") -> None:
+        """Put a right-aligned value in the table."""
+        item = QTableWidgetItem(str(value).replace("None", none_as))
+        item.setTextAlignment(0x0002)
+        self.tableWidget.setItem(row, col, item)
+
     def get_run_and_total_qs(self):
         """get numbers"""
         if self.active is False:
             return
+        contest = self.database.current_contest
         self.tableWidget.clear()
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.tableWidget.setColumnCount(8)
+        self.tableWidget.setColumnCount(10)
         self.tableWidget.setHorizontalHeaderLabels(
-            ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "WPX", "PTS"]
+            ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "WPX", "CTY", "ZN", "PTS"]
         )
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setEditTriggers(
@@ -94,104 +101,81 @@ class StatsWindow(QDockWidget):
         self.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SelectionMode.NoSelection
         )
-        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {self.database.current_contest} ORDER BY band DESC;"
-        result = self.database.exec_sql_mult(query)
-        self.tableWidget.setRowCount(len(result) + 1)
+
+        mode_case = (
+            "CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' "
+            "WHEN Mode IN ('CW','CW-U','CW-L','CW-R','CWR') THEN 'CW' "
+            "WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' "
+            "ELSE 'OTHER' END"
+        )
+
+        query = f"select DISTINCT(Band) as band from DXLOG where ContestNR = {contest} ORDER BY band DESC;"
+        bands = self.database.exec_sql_mult(query)
+        self.tableWidget.setRowCount(len(bands) + 1)
         row = 0
-        for band in result:
-            query = f"select count(*) as qs, count(DISTINCT(WPXPrefix)) as wpx, count(DISTINCT(Call)) as calls, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}';"
+        for band in bands:
+            query = (
+                "select count(*) as qs, "
+                "count(DISTINCT(WPXPrefix)) as wpx, "
+                "count(DISTINCT(Call)) as calls, "
+                "count(DISTINCT(NULLIF(CountryPrefix, ''))) as countries, "
+                "count(DISTINCT(NULLIF(ZN, 0))) as zones, "
+                "sum(Points) as points "
+                f"from DXLOG where ContestNR = {contest} and Band = '{band['band']}';"
+            )
             result = self.database.exec_sql(query)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(band.get("band", "")).replace("None", "")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 0, item)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("qs", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 1, item)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("calls", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 2, item)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("points", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 7, item)
+            self._set_cell(row, 0, band.get("band", ""), none_as="")
+            self._set_cell(row, 1, result.get("qs", "0"))
+            self._set_cell(row, 2, result.get("calls", "0"))
+            self._set_cell(row, 6, result.get("wpx", "0"))
+            self._set_cell(row, 7, result.get("countries", "0"))
+            self._set_cell(row, 8, result.get("zones", "0"))
+            self._set_cell(row, 9, result.get("points", "0"))
 
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("wpx", "0")).replace("None", "0")
+            query = (
+                "select sum(sortedmode.mode == 'CW') as CW, "
+                "sum(sortedmode.mode == 'PH') as PH, "
+                "sum(sortedmode.mode == 'DI') as DI "
+                f"from (select {mode_case} mode from DXLOG "
+                f"where ContestNR = {contest} and Band = '{band['band']}') as sortedmode;"
             )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 6, item)
-
-            query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode IN ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest} and Band = '{band['band']}') as sortedmode;"
-            result: dict = self.database.exec_sql(query)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("CW", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 3, item)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("PH", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 4, item)
-            item: QTableWidgetItem = QTableWidgetItem(
-                str(result.get("DI", "0")).replace("None", "0")
-            )
-            item.setTextAlignment(0x0002)
-            self.tableWidget.setItem(row, 5, item)
-
+            result = self.database.exec_sql(query)
+            self._set_cell(row, 3, result.get("CW", "0"))
+            self._set_cell(row, 4, result.get("PH", "0"))
+            self._set_cell(row, 5, result.get("DI", "0"))
             row += 1
-        query: str = f"select count(*) as qs, count(DISTINCT(Call)) as calls, count(DISTINCT(WPXPrefix || ':' || Band)) as wpx, sum(Points) as points from DXLOG where ContestNR = {self.database.current_contest};"
-        result: dict = self.database.exec_sql(query)
-        item: QTableWidgetItem = QTableWidgetItem("TOTAL")
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 0, item)
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("qs", "0")).replace("None", "0")
-        )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 1, item)
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("calls", "0")).replace("None", "0")
-        )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 2, item)
 
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("wpx", "0")).replace("None", "0")
+        # TOTAL row (multipliers counted per band, same as the existing WPX total)
+        query = (
+            "select count(*) as qs, "
+            "count(DISTINCT(Call)) as calls, "
+            "count(DISTINCT(WPXPrefix || ':' || Band)) as wpx, "
+            "count(DISTINCT(CASE WHEN CountryPrefix != '' THEN CountryPrefix || ':' || Band END)) as countries, "
+            "count(DISTINCT(CASE WHEN ZN > 0 THEN ZN || ':' || Band END)) as zones, "
+            "sum(Points) as points "
+            f"from DXLOG where ContestNR = {contest};"
         )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 6, item)
+        result = self.database.exec_sql(query)
+        self._set_cell(row, 0, "TOTAL")
+        self._set_cell(row, 1, result.get("qs", "0"))
+        self._set_cell(row, 2, result.get("calls", "0"))
+        self._set_cell(row, 6, result.get("wpx", "0"))
+        self._set_cell(row, 7, result.get("countries", "0"))
+        self._set_cell(row, 8, result.get("zones", "0"))
+        self._set_cell(row, 9, result.get("points", "0"))
 
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("points", "0")).replace("None", "0")
+        query = (
+            "select sum(sortedmode.mode == 'CW') as CW, "
+            "sum(sortedmode.mode == 'PH') as PH, "
+            "sum(sortedmode.mode == 'DI') as DI "
+            f"from (select {mode_case} mode from DXLOG "
+            f"where ContestNR = {contest}) as sortedmode;"
         )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 7, item)
+        result = self.database.exec_sql(query)
+        self._set_cell(row, 3, result.get("CW", "0"))
+        self._set_cell(row, 4, result.get("PH", "0"))
+        self._set_cell(row, 5, result.get("DI", "0"))
 
-        query: str = f"select sum(sortedmode.mode == 'CW') as CW, sum(sortedmode.mode == 'PH') as PH, sum(sortedmode.mode == 'DI') as DI from (select CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' WHEN Mode IN ('CW', 'CW-U', 'CW-L', 'CW-R', 'CWR') THEN 'CW' WHEN Mode In ('FT8','FT4','RTTY','PSK31','FSK441','MSK144','JT65','JT9','Q65') THEN 'DI' ELSE 'OTHER' END mode from DXLOG where ContestNR = {self.database.current_contest}) as sortedmode;"
-        result: dict = self.database.exec_sql(query)
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("CW", "0")).replace("None", "0")
-        )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 3, item)
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("PH", "0")).replace("None", "0")
-        )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 4, item)
-        item: QTableWidgetItem = QTableWidgetItem(
-            str(result.get("DI", "0")).replace("None", "0")
-        )
-        item.setTextAlignment(0x0002)
-        self.tableWidget.setItem(row, 5, item)
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.resizeRowsToContents()
 

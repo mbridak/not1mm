@@ -506,18 +506,20 @@ def populate_history_info_line(self):
     result = self.database.fetch_call_history(self.callsign.text())
     if result:
         self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Exchange1', '')}"
+            f"{result.get('Call', '')}, {result.get('Exch1', '')} {result.get('UserText', '')}".strip()
         )
     else:
         self.history_info.setText("")
 
 
 def check_call_history(self):
-    """"""
+    """Show history and prefill the county field"""
     result = self.database.fetch_call_history(self.callsign.text())
-    print(f"{result=}")
     if result:
-        self.history_info.setText(f"{result.get('Exchange1', '')}")
+        county = result.get("Exch1", "")
+        self.history_info.setText(f"{county} {result.get('UserText', '')}".strip())
+        if county and not self.other_1.text():
+            self.other_1.setText(county)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):

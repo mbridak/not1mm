@@ -5114,7 +5114,14 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("******Cabrillo*****")
-        self.contest.cabrillo(self, file_encoding)
+        if self.contest is None:
+            self.show_message_box("You have no contest defined.")
+            return
+        try:
+            self.contest.cabrillo(self, file_encoding)
+        except Exception as exception:
+            logger.exception("cabrillo: export failed")
+            self.show_message_box(f"Error saving Cabrillo: {exception}")
 
     def import_adif(self) -> None:
         """

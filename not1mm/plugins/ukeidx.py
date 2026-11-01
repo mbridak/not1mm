@@ -451,13 +451,17 @@ def cabrillo(self, file_encoding):
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 sentnr = str(contact.get("SentNr", "")).upper().split()
-                if len(sentnr) == 2:
+                if not sentnr:
+                    sentnr = "000 --"
+                elif len(sentnr) == 2:
                     sentnr = sentnr[0].zfill(3) + " " + sentnr[1]
                 else:
                     sentnr = sentnr[0].zfill(3) + " --"
 
                 nr = str(contact.get("NR", "")).upper().split()
-                if len(nr) == 2:
+                if not nr:
+                    nr = "000 --"
+                elif len(nr) == 2:
                     nr = nr[0].zfill(3) + " " + nr[1]
                 else:
                     if nr[0][-2:].isalpha():
