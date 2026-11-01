@@ -164,6 +164,8 @@ class MainWindow(QtWidgets.QMainWindow):
     # the QRZ/TU macro. See process_esm() in the contest plugins.
     esm_call_sent = ""
     sandpfreq = 0
+    # The radio poll can read cq_freq before __init__ sets it.
+    cq_freq = None
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.
     voice_output_available = False
@@ -2712,14 +2714,16 @@ class MainWindow(QtWidgets.QMainWindow):
         Mark CQ frequency in bandmap. Remember the last frequency so we don't re-add a new spot every few seconds.
         """
         freq = self.radio_state.get("vfoa")
-        if freq and freq != self.cq_freq and self.bandmap_window:
+        if not freq or int(freq) == self.cq_freq:
+            return
+        self.cq_freq = int(freq)
+        if self.bandmap_window:
             cmd = {}
             cmd["cmd"] = "MARKDX"
             cmd["dx"] = "CQ"
-            cmd["freq"] = float(int(freq) / 1000)
+            cmd["freq"] = float(self.cq_freq / 1000)
             cmd["comment"] = f"CQ {self.current_mode} MARKED"
             self.bandmap_window.msg_from_main(cmd)
-            self.cq_freq = freq
 
     def mark_spot(self, comment="") -> None:
         """Send a command to the bandmap window to mark the current call."""
@@ -2928,7 +2932,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     tz=datetime.UTC
                 ) + datetime.timedelta(milliseconds=self.auto_cq_delay)
             self.process_function_key(self.F1)
-            self.mark_cq()
             return
         if event.key() == Qt.Key.Key_F2:
             self.process_function_key(self.F2)
@@ -3748,6 +3751,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         logger.debug("Function Key: %s", function_key.text())
+        if function_key is self.F1 and self.pref["run_state"]:
+            self.mark_cq()
         if self._is_phone_mode():
             self.voice_output_available = has_output_device(
                 self.pref.get("sounddevice", "default")
@@ -4795,6 +4800,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 and max(int(vfo), self.sandpfreq) - min(int(vfo), self.sandpfreq) > 500
             ):
                 self.clearinputs()
+            if (
+                self.pref.get("run_to_sp_on_qsy", False) is True
+                and self.radioButton_run.isChecked()
+                and self.cq_freq
+                and abs(int(vfo) - self.cq_freq) > 500
+            ):
+                self.set_running(False)
         band = getband(str(vfo))
         self.radio_state["band"] = band
         self.contact["Band"] = get_logged_band(str(vfo))

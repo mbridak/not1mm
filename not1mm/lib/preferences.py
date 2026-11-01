@@ -27,6 +27,7 @@ class Preferences:
         "lookupusername": "username",
         "lookuppassword": "password",
         "run_state": True,
+        "run_to_sp_on_qsy": False,
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
