@@ -150,6 +150,7 @@ class MainWindow(QtWidgets.QMainWindow):
     configuration_dialog = None
     dbname = fsutils.USER_DATA_PATH, "/ham.db"
     radio_state: typing.ClassVar = {}
+    band_memory_key: typing.ClassVar = {}
     worked_list: typing.ClassVar = {}
     cw_entry_visible = False
     last_focus = None
@@ -1643,8 +1644,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def change_to_band_and_mode(self, band_name: str, mode: str) -> None:
         """
-        Look up a sensible frequency for the chosen band and mode via fakefreq(),
-        then push it to the rig (and bandmap) through change_freq() and change_mode().
+        Tune to the last frequency used on the chosen band and mode. The
+        frequency is read from the "band_memory" preference, which
+        poll_radio() keeps up to date for each VFO. If nothing is stored,
+        use fakefreq(). Push the frequency to the rig (and bandmap) through
+        change_freq() and change_mode().
 
         Used by the on-screen band buttons (CW/SSB/RTTY x 17 bands). For modes other
         than CW/SSB/RTTY the call is a no-op.
@@ -1663,14 +1667,60 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if mode in ["CW", "SSB", "RTTY"]:
             freq = fakefreq(band_name, mode)
+            # The stored value is in Hz. Use it only if it is in the band.
+            stored = str(self.get_band_memory("vfoa").get(f"{band_name}|{mode}", ""))
+            if stored.isnumeric() and getband(stored) == band_name:
+                freq = str(int(stored) / 1000)
+            if not freq:
+                return
             self.change_freq(freq)
             vfo = float(freq)
-            vfo = int(vfo * 1000)
+            vfo = round(vfo * 1000)
             if mode == "CW":
                 mode = self.rig_control.last_cw_mode
             if mode == "RTTY":
                 mode = self.rig_control.last_data_mode
             self.change_mode(mode, intended_freq=vfo)
+
+    def get_band_memory(self, vfo_name: str) -> dict:
+        """
+        Return the stored frequencies of one VFO from the "band_memory"
+        preference. The dict maps "<band>|<mode>" to a frequency in Hz.
+        Each VFO (or radio) has its own dict, e.g. "vfoa".
+        """
+        band_memory = self.pref.get("band_memory")
+        if not isinstance(band_memory, dict):
+            return {}
+        memory = band_memory.get(vfo_name)
+        return memory if isinstance(memory, dict) else {}
+
+    def update_band_memory(self, vfo_name: str, vfo: str) -> None:
+        """
+        Store the frequency of a VFO for its band and the current mode in
+        the "band_memory" preference. Called from poll_radio() for every
+        frequency the rig reports.
+
+        The dict changes in memory on every new frequency. It is written to
+        disk only when the band or mode changes, and on shutdown.
+        """
+        if not str(vfo).isnumeric() or self.current_mode not in ("CW", "SSB", "RTTY"):
+            return
+        band = getband(str(vfo))
+        if not band:
+            return
+        key = f"{band}|{self.current_mode}"
+        memory = self.get_band_memory(vfo_name)
+        if memory.get(key) == int(vfo):
+            return
+        last_key = self.band_memory_key.get(vfo_name)
+        # Build new dicts. Do not change the dict in Preferences._defaults.
+        band_memory = self.pref.get("band_memory")
+        band_memory = dict(band_memory) if isinstance(band_memory, dict) else {}
+        band_memory[vfo_name] = {**memory, key: int(vfo)}
+        self.pref["band_memory"] = band_memory
+        self.band_memory_key[vfo_name] = key
+        if key != last_key:
+            Preferences.save()
 
     def _shutdown(self) -> None:
         """Common cleanup for quit_app and closeEvent."""
@@ -4409,7 +4459,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         vfo = float(stripped_text)
-        vfo = int(vfo * 1000)
+        vfo = round(vfo * 1000)
 
         if self.rig_control:
             self.rig_control.set_vfo(vfo)
@@ -4830,6 +4880,8 @@ class MainWindow(QtWidgets.QMainWindow):
             "PKT",
         ):
             self.setmode("RTTY")
+
+        self.update_band_memory("vfoa", vfo)
 
         if self.bandmap_window:
             cmd = {}

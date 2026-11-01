@@ -31,6 +31,7 @@ class Preferences:
         "cw_macros": True,
         "bands_modes": True,
         "bands": ["160m", "80m", "40m", "20m", "15m", "10m"],
+        "band_memory": {},
         "current_database": "ham.db",
         "contest": "",
         "multicast_group": "239.1.1.1",
