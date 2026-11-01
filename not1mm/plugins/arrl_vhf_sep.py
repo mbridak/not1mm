@@ -141,13 +141,6 @@ def set_contact_vars(self):
     self.contact["SentNr"] = self.other_1.text()
     update_dupe(self)      
     
-# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-#dupe_type = 2
-
-
-def is_rover_call(call: str) -> bool:
-    """Rovers sign /R; they can be worked again from each new grid."""
-    return call.strip().upper().endswith("/R")
     
 def _band_key(band) -> str:
     """Normalize band so '144', 144 and '144.0' compare equal."""
