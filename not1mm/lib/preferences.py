@@ -78,6 +78,7 @@ class Preferences:
         "statisticswindow": False,
         "darkmode": True,
         "language": "en_US",
+        "export_dir": "",
     }
 
     @classmethod

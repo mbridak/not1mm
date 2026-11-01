@@ -6,7 +6,6 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-from pathlib import Path
 
 from PyQt6 import QtWidgets
 
@@ -14,6 +13,7 @@ from not1mm.lib.plugin_common import (
     gen_adif,
     imp_adif,
     get_points,
+    get_export_filename,
 )
 
 from not1mm.lib.version import __version__
@@ -336,11 +336,13 @@ def cabrillo(self, file_encoding):
     logger.debug("Contest: %s", f"{self.contest_settings}")
     now = datetime.now()
     date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = (
-        str(Path.home())
-        + "/"
-        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.log"
+    filename = get_export_filename(
+        self,
+        f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.log",
+        "Cabrillo (*.log)",
     )
+    if not filename:
+        return
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:
