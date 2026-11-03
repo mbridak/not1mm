@@ -1,4 +1,7 @@
-"""Dutch PACC Contest"""
+"""Dutch PACC Contest
+
+Find rules at: https://veron.nl/vereniging/commissies-en-werkgroepen/traffic-bureau/
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -135,43 +138,38 @@ def prefill(self):
         self.other_1.setText(exchange)
 
 
+def _is_pa(self, call) -> bool:
+    """True when the callsign belongs to a Dutch station."""
+    result = self.cty_lookup(call)
+    if not result:
+        return False
+    item = result.get(next(iter(result)), {})
+    return item.get("entity", "") == "Netherlands"
+
+
+def im_dutch(self):
+    """True when the entrant is a Dutch station."""
+    return _is_pa(self, self.station.get("Call", ""))
+
+
 def points(self):
     """Calc point"""
 
-    # Each valid contact with another participating contest station is worth one (1) point. For foreign stations: only contacts
-    # with Dutch (PA) stations count. In MIXED mode (CW/SSB) a valid qso counts once per mode per band. For PA stations:
-    # cross contest contacts (e.g. if the PACC coincides with the RSGB 160m contest) are considered valid as a long as a serial
-    # number is received. No cross mode or cross band contacts are allowed.
+    # Rule 7.1: each valid contact with another participating station is one
+    # point, but for a foreign station only contacts with Dutch (PA) stations
+    # count.  Which side the entrant is on, and whether the other station is
+    # Dutch, is decided from cty.dat now: the old test read the received
+    # exchange out of the entry field, which is empty once a log is imported
+    # or re-scored, so a foreign entrant's log scored nothing.
 
     if self.contact_is_dupe > 0:
         return 0
 
-    # Am I a dutch station.
-    im_dutch = False
-    theyre_dutch = False
-
-    my_exchange = str(self.contest_settings.get("SentExchange", 0))
-    if my_exchange.isalpha():
-        im_dutch = True
-
-    their_exchange = self.other_2.text().upper()
-    if their_exchange.isalpha():
-        theyre_dutch = True
-
-    if im_dutch:
+    if im_dutch(self):
         return 1
-    else:
-        if theyre_dutch:
-            return 1
-
+    if _is_pa(self, self.contact.get("Call", "")):
+        return 1
     return 0
-
-
-def im_dutch(self):
-    my_exchange = str(self.contest_settings.get("SentExchange", 0))
-    if my_exchange.isalpha():
-        return True
-    return False
 
 
 def show_mults(self):
@@ -198,7 +196,11 @@ def show_qso(self):
 
 
 def calc_score(self):
-    """Return calculated score"""
+    """Return calculated score.
+
+    Rule 10: QSO points x the sum of the multipliers.  There is no extra
+    multiplier, so the old `+ 1` is gone.
+    """
     mults = show_mults(self)
     result = self.database.fetch_points()
     if result is not None:
@@ -206,10 +208,8 @@ def calc_score(self):
         if score is None:
             score = "0"
         if int(mults) > 0:
-            contest_points = int(score) * (int(mults) + 1)
-            return contest_points
-        contest_points = int(score)
-        return contest_points
+            return int(score) * int(mults)
+        return int(score)
     return 0
 
 

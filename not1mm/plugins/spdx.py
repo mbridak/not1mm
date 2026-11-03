@@ -1,4 +1,7 @@
-"""sp dx contest"""
+"""sp dx contest
+
+Find rules at: https://spdxcontest.pzk.org.pl/2026/rules.php
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -14,7 +17,7 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Province/Territory"
+EXCHANGE_HINT = "Province or #"
 
 name = "SPDX"
 cabrillo_name = "SP-DX"
@@ -158,13 +161,42 @@ def points(self):
     return 0
 
 
-def show_mults(self):
-    """Return display string for mults"""
+_POLISH_PROVINCES = (
+    "B", "C", "D", "F", "G", "J", "K", "L", "M",
+    "O", "P", "R", "S", "U", "W", "Z",
+)
 
-    sql = (
-        "select count(DISTINCT(NR || ':' || Band || ':' || Mode)) as mult_count from dxlog "
-        "where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
-    )
+
+def _is_sp(self) -> bool:
+    """True when the entrant is a Polish station."""
+    result = self.cty_lookup(self.station.get("Call", ""))
+    if not result:
+        return False
+    item = result.get(next(iter(result)), {})
+    return item.get("entity", "") == "Poland"
+
+
+def show_mults(self):
+    """Return display string for mults.
+
+    Rule 9: a Polish station counts the DXCC countries it worked - Poland
+    itself excepted - and a foreign station counts the Polish provinces, each
+    once per band and regardless of mode.  The query also wants its f, and
+    the province is one letter, not the whole exchange.
+    """
+    contest = self.database.current_contest
+    if _is_sp(self):
+        sql = (
+            "select count(DISTINCT CountryPrefix || ':' || Band) as mult_count "
+            f"from dxlog where ContestNR = {contest} "
+            "and CountryPrefix != '' and CountryPrefix != 'SP';"
+        )
+    else:
+        provinces = ", ".join(f"'{province}'" for province in _POLISH_PROVINCES)
+        sql = (
+            "select count(DISTINCT NR || ':' || Band) as mult_count "
+            f"from dxlog where ContestNR = {contest} and NR in ({provinces});"
+        )
     result = self.database.exec_sql(sql)
     if result:
         return result.get("mult_count", 0)
