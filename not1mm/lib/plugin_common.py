@@ -82,7 +82,6 @@ def get_points(self):
         return int(result.get("Points", 0))
     return 0
 
-
 def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
@@ -991,3 +990,31 @@ def imp_adif(self):
     logger.debug(f"Saved {saves} ADIF records to contest {self.contest.name}")
     self.show_message_box(f"Saved {saves} ADIF records to this contest.")
     return
+
+
+def import_adif(mainwindow) -> None:
+    """Import an ADIF file into the current contest.
+
+    ``imp_adif`` is shared rather than per-plugin, so call it directly. A few
+    plugins never re-exported it, which made their ADIF import raise
+    AttributeError.
+    """
+    imp_adif(mainwindow)
+
+
+def generate_edi(mainwindow) -> None:
+    """Export the current contest as an EDI file, when the plugin supports it."""
+    if hasattr(mainwindow.contest, "edi"):
+        mainwindow.contest.edi(mainwindow)
+
+
+def generate_cabrillo(mainwindow, file_encoding: str) -> None:
+    """Export the current contest as a Cabrillo file."""
+    if mainwindow.contest is None:
+        mainwindow.show_message_box("You have no contest defined.")
+        return
+    try:
+        mainwindow.contest.cabrillo(mainwindow, file_encoding)
+    except Exception as exception:  # noqa: BLE001
+        logger.exception("cabrillo: export failed")
+        mainwindow.show_message_box(f"Error saving Cabrillo: {exception}")
