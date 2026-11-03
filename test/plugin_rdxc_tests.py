@@ -9,7 +9,7 @@ import pytest
 from not1mm.plugins import rdxc
 
 CTY = {
-    "K5TUX": {"entity": "United States", "continent": "NA", "primary_pfx": "K"},
+    "K6GTE": {"entity": "United States", "continent": "NA", "primary_pfx": "K"},
     "W1AW": {"entity": "United States", "continent": "NA", "primary_pfx": "W"},
     "DL1ABC": {"entity": "Germany", "continent": "EU", "primary_pfx": "DL"},
     "RA3AAA": {"entity": "European Russia", "continent": "EU", "primary_pfx": "UA"},
@@ -29,7 +29,7 @@ def _fake_cty(call):
     return {call: item}
 
 
-def _make_ctx(contact=None, is_dupe=0, station_call="K5TUX"):
+def _make_ctx(contact=None, is_dupe=0, station_call="K6GTE", all_contacts=None):
     """Build a minimal fake `self` for the plugin module functions."""
     if contact is None:
         contact = {}
@@ -45,6 +45,7 @@ def _make_ctx(contact=None, is_dupe=0, station_call="K5TUX"):
     ctx.database.exec_sql_mult.return_value = []
     ctx.database.fetch_points.return_value = {"Points": "0"}
     ctx.database.fetch_qso_count.return_value = {"qsos": 0}
+    ctx.database.fetch_all_contacts_asc.return_value = list(all_contacts or [])
     return ctx
 
 
@@ -87,9 +88,11 @@ def test_is_russian_prefix_false(prefix):
 @pytest.mark.parametrize(
     "prefix,expected",
     [
-        ("UA", "R"),
-        ("UA9", "R"),
-        ("ua9", "R"),
+        # rule 9 keys on the DXCC entity list, where European Russia and
+        # Asiatic Russia are separate countries, as is Kaliningrad
+        ("UA", "UA"),
+        ("UA9", "UA9"),
+        ("ua9", "UA9"),
         ("UA2", "UA2"),
         ("K", "K"),
         ("W", "W"),
@@ -98,6 +101,23 @@ def test_is_russian_prefix_false(prefix):
 )
 def test_country_mult_prefix(prefix, expected):
     assert rdxc.country_mult_prefix(prefix) == expected
+
+
+@pytest.mark.parametrize(
+    "prefix,call,expected",
+    [
+        ("UA", "UA3ABC", True),
+        ("UA9", "UA9ABC", True),
+        ("UA2", "UA2F", True),  # Kaliningrad
+        ("R1FJ", "R1FJ", True),  # Franz Josef Land, rule 7.3
+        ("CE9", "RI1AN", True),  # Russian Antarctic, rule 7.3
+        ("K", "K6GTE", False),
+        ("CE9", "CE9ABC", False),  # Chilean Antarctic is not Russian
+        ("", "DL1ABC", False),
+    ],
+)
+def test_is_russian_station(prefix, call, expected):
+    assert rdxc.is_russian_station(prefix, call) is expected
 
 
 def test_points_dupe_returns_zero():
@@ -116,17 +136,17 @@ def test_points_unresolvable_call_returns_zero():
 
 
 def test_points_non_russian_to_russia_is_ten():
-    ctx = _make_ctx(contact={"Call": "UA3ABC"}, station_call="K5TUX")
+    ctx = _make_ctx(contact={"Call": "UA3ABC"}, station_call="K6GTE")
     assert rdxc.points(ctx) == 10
 
 
 def test_points_same_country_is_two():
-    ctx = _make_ctx(contact={"Call": "W1AW"}, station_call="K5TUX")
+    ctx = _make_ctx(contact={"Call": "W1AW"}, station_call="K6GTE")
     assert rdxc.points(ctx) == 2
 
 
 def test_points_different_continent_is_five():
-    ctx = _make_ctx(contact={"Call": "DL1ABC"}, station_call="K5TUX")
+    ctx = _make_ctx(contact={"Call": "DL1ABC"}, station_call="K6GTE")
     assert rdxc.points(ctx) == 5
 
 
@@ -195,78 +215,89 @@ def test_set_contact_vars_marks_new_country_mult():
     assert ctx.contact["IsMultiplier2"] == 1
 
 
-def test_set_contact_vars_ua_and_ua9_share_country_mult():
+def test_set_contact_vars_ua_and_ua9_are_separate_country_mults():
+    """Rule 9 uses the DXCC list: European and Asiatic Russia differ."""
     ctx = _make_entry_ctx(contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"})
     ctx.database.exec_sql_mult.return_value = [{"CountryPrefix": "UA9"}]
     rdxc.set_contact_vars(ctx)
-    assert ctx.contact["IsMultiplier2"] == 0
+    assert ctx.contact["IsMultiplier2"] == 1
 
 
 def test_set_contact_vars_mm_skipped_for_country_mult():
     ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "K", "Band": 20, "Call": "K5TUX/MM"}
+        contact={"CountryPrefix": "K", "Band": 20, "Call": "K6GTE/MM"}
     )
     rdxc.set_contact_vars(ctx)
     assert ctx.contact["IsMultiplier2"] == 0
     ctx.database.exec_sql_mult.assert_not_called()
 
 
+# UA and UA9 are separate countries; R1FJ is Franz Josef Land, whose oblast
+# counts under rule 7.3. Three oblasts (MO, SV, AR), four countries.
+MULT_CONTACTS = [
+    {"Call": "RA3AAA", "CountryPrefix": "UA", "NR": "MO", "Band": 14.0},
+    {"Call": "UA9ABC", "CountryPrefix": "UA9", "NR": "SV", "Band": 14.0},
+    {"Call": "R1FJ", "CountryPrefix": "R1FJ", "NR": "AR", "Band": 14.0},
+    {"Call": "DL1ABC", "CountryPrefix": "DL", "NR": "", "Band": 14.0},
+]
+
+
 def test_show_mults_sums_oblast_and_country():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
-    ctx.database.exec_sql.side_effect = [{"mult_count": 3}, {"mult_count": 4}]
+    ctx = _make_ctx(all_contacts=MULT_CONTACTS)
     assert rdxc.show_mults(ctx) == 7
 
 
 def test_show_mults_rtc_tuple():
     """RTC tuple follows repo convention: (country, oblast)."""
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
-    ctx.database.exec_sql.side_effect = [{"mult_count": 3}, {"mult_count": 4}]
+    ctx = _make_ctx(all_contacts=MULT_CONTACTS)
     assert rdxc.show_mults(ctx, rtc=True) == (4, 3)
 
 
 def test_show_mults_zero_when_no_rows():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
-    ctx.database.exec_sql.return_value = {}
+    ctx = _make_ctx(all_contacts=[])
     assert rdxc.show_mults(ctx) == 0
 
 
-def test_show_mults_queries_split_by_band():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
-    ctx.database.exec_sql.return_value = {}
-    rdxc.show_mults(ctx)
-    queries = [call[0][0] for call in ctx.database.exec_sql.call_args_list]
-    assert len(queries) == 2
-    assert all("Band" in q for q in queries)
-    # oblast query is limited to Russian prefixes
-    assert "CountryPrefix in ('UA', 'UA9', 'UA2')" in queries[0]
-    # country query excludes maritime mobile stations
-    assert "not like '%/MM%'" in queries[1]
+def test_show_mults_counts_per_band_and_skips_mm():
+    """Both multipliers are per band, and rule 7.4 gives /MM neither."""
+    ctx = _make_ctx(
+        all_contacts=[
+            {"Call": "RA3AAA", "CountryPrefix": "UA", "NR": "MO", "Band": 14.0},
+            {"Call": "RA3AAA", "CountryPrefix": "UA", "NR": "MO", "Band": 7.0},
+            {"Call": "UA3ABC/MM", "CountryPrefix": "UA", "NR": "MM", "Band": 14.0},
+        ]
+    )
+    assert rdxc.oblast_multipliers(ctx) == 2
+    assert rdxc.country_multipliers(ctx) == 2
+
+
+def test_rule_7_3_specials_get_both_multipliers():
+    """UA2F, RI1FJ and RI1AN are separate countries *and* separate oblasts."""
+    ctx = _make_ctx(
+        all_contacts=[
+            {"Call": "UA2F", "CountryPrefix": "UA2", "NR": "KA", "Band": 14.0},
+            {"Call": "R1FJ", "CountryPrefix": "R1FJ", "NR": "AR", "Band": 14.0},
+            {"Call": "RI1AN", "CountryPrefix": "CE9", "NR": "AN", "Band": 14.0},
+        ]
+    )
+    assert rdxc.oblast_multipliers(ctx) == 3
+    assert rdxc.country_multipliers(ctx) == 3
 
 
 def test_calc_score_multiplies_points_by_mults():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
+    ctx = _make_ctx(all_contacts=MULT_CONTACTS)
     ctx.database.fetch_points.return_value = {"Points": "42"}
-    ctx.database.exec_sql.side_effect = [{"mult_count": 3}, {"mult_count": 4}]
     assert rdxc.calc_score(ctx) == 294
 
 
 def test_calc_score_handles_none_points():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
+    ctx = _make_ctx(all_contacts=MULT_CONTACTS)
     ctx.database.fetch_points.return_value = {"Points": None}
-    ctx.database.exec_sql.side_effect = [{"mult_count": 1}, {"mult_count": 1}]
     assert rdxc.calc_score(ctx) == 0
 
 
 def test_get_mults_shape():
-    ctx = _make_ctx()
-    ctx.database.current_contest = "1"
-    ctx.database.exec_sql.side_effect = [{"mult_count": 3}, {"mult_count": 4}]
+    ctx = _make_ctx(all_contacts=MULT_CONTACTS)
     assert rdxc.get_mults(ctx) == {"country": 4, "oblast": 3}
 
 
@@ -303,7 +334,7 @@ def test_qso_line_format():
         "TS": "2026-03-21 10:15:30",
         "Mode": "CW",
         "Freq": 14025.0,
-        "StationPrefix": "K5TUX",
+        "StationPrefix": "K6GTE",
         "SNT": "599",
         "SentNr": "001",
         "Call": "UA3ABC",

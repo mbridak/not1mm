@@ -31,7 +31,7 @@
 #  	E-mail logs to:	(none)
 #  	Upload log at:	https://www.cqww.com/logcheck/
 #  	Mail logs to:	(none)
-#  	Find rules at:	https://www.cqww.com/rules.htm
+#  	Find rules at:	https://www.cqww.com/rules/
 #  	Cabrillo name:	CQ-WW-CW
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
@@ -179,16 +179,34 @@ def points(self):
     return 0
 
 
+def country_multipliers(self) -> int:
+    """Count distinct (country, band) pairs worked.
+
+    CQ WW rule IV.C.2: one multiplier per country per band, where the country
+    is the DXCC/WAE entity -- and IG9 (African Italy) and IH9 (Pantelleria)
+    count separately from Italy. Maritime mobiles count only for a zone, so
+    they are left out here.
+    """
+    countries = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        call = str(contact.get("Call", "")).upper()
+        if call.endswith("/MM") or call.startswith("MM/"):
+            continue
+        prefix = contact.get("CountryPrefix", "")
+        if prefix == "I" and call[:3] in ("IG9", "IH9"):
+            prefix = call[:3]
+        countries.add((prefix, contact.get("Band")))
+    return len(countries)
+
+
 def show_mults(self, rtc=None):
     """Return display string for mults"""
     _zone = 0
     _country = 0
     result1 = self.database.fetch_zn_band_count()
-    result2 = self.database.fetch_country_band_count()
+    _country = country_multipliers(self)
     if result1:
         _zone = int(result1.get("zb_count", 0))
-    if result2:
-        _country = int(result2.get("cb_count", 0))
     if rtc is not None:
         return (_country, _zone)
     return _country + _zone

@@ -143,24 +143,24 @@ def test_is_hq_station(exchange, expected):
     ],
 )
 def test_get_commonwealth_area_multi_area_countries(call, expected):
-    fake = make_self("K5TUX", call)
+    fake = make_self("K6GTE", call)
     assert beru.get_commonwealth_area(fake, call) == expected
 
 
 def test_points_same_continent_commonwealth():
-    fake = make_self("K5TUX", "VE3ABC")
+    fake = make_self("K6GTE", "VE3ABC")
     fake.contact["IsMultiplier2"] = 0
     assert beru.points(fake) == 5
 
 
 def test_points_different_continent_commonwealth():
-    fake = make_self("K5TUX", "ZL1KL")
+    fake = make_self("K6GTE", "ZL1KL")
     fake.contact["IsMultiplier2"] = 0
     assert beru.points(fake) == 10
 
 
 def test_points_non_commonwealth_zero():
-    fake = make_self("K5TUX", "JAIABC")
+    fake = make_self("K6GTE", "JAIABC")
     assert beru.points(fake) == 0
     fake = make_self("G4ABC", "FABCD")
     assert beru.points(fake) == 0
@@ -194,36 +194,36 @@ def test_points_hq_in_own_call_area():
 
 
 def test_points_dupe():
-    fake = make_self("K5TUX", "VE3ABC", dupe=True)
+    fake = make_self("K6GTE", "VE3ABC", dupe=True)
     assert beru.points(fake) == 0
 
 
 def test_bonus_flag_first_three_per_band():
-    fake = make_self("K5TUX", "VE3ABC", bonus_count=0)
+    fake = make_self("K6GTE", "VE3ABC", bonus_count=0)
     beru.set_contact_vars(fake)
     assert fake.contact["IsMultiplier2"] == 1
     assert beru.points(fake) == 25
 
-    fake = make_self("K5TUX", "VE3ABC", bonus_count=2)
+    fake = make_self("K6GTE", "VE3ABC", bonus_count=2)
     beru.set_contact_vars(fake)
     assert fake.contact["IsMultiplier2"] == 1
     assert beru.points(fake) == 25
 
-    fake = make_self("K5TUX", "VE3ABC", bonus_count=3)
+    fake = make_self("K6GTE", "VE3ABC", bonus_count=3)
     beru.set_contact_vars(fake)
     assert fake.contact["IsMultiplier2"] == 0
     assert beru.points(fake) == 5
 
 
 def test_no_bonus_for_non_commonwealth():
-    fake = make_self("K5TUX", "JAIABC", bonus_count=0)
+    fake = make_self("K6GTE", "JAIABC", bonus_count=0)
     beru.set_contact_vars(fake)
     assert fake.contact["IsMultiplier2"] == 0
     assert beru.points(fake) == 0
 
 
 def test_set_contact_vars_stores_exchange():
-    fake = make_self("K5TUX", "VU2XYZ", rcv_nr="047", bonus_count=0)
+    fake = make_self("K6GTE", "VU2XYZ", rcv_nr="047", bonus_count=0)
     beru.set_contact_vars(fake)
     assert fake.contact["SNT"] == "599"
     assert fake.contact["RCV"] == "599"
@@ -234,7 +234,7 @@ def test_set_contact_vars_stores_exchange():
 
 
 def test_recalculate_mults_caps_three_bonuses_per_band():
-    fake = make_self("K5TUX", "VE3ABC")
+    fake = make_self("K6GTE", "VE3ABC")
 
     def make_contact(idx, call, band):
         return {
@@ -266,7 +266,7 @@ def test_recalculate_mults_caps_three_bonuses_per_band():
 
 
 def test_show_mults_and_score():
-    fake = make_self("K5TUX", "VE3ABC")
+    fake = make_self("K6GTE", "VE3ABC")
 
     class DB(FakeDatabase):
         def fetch_qso_count(self):

@@ -56,7 +56,7 @@ EXCHANGE_HINT = "Province or #"
 
 name = "His Maj. King of Spain Contest, CW"
 mode = "CW"  # CW SSB BOTH RTTY
-cabrillo_name = "KING-OF-SPAIN-CW"
+cabrillo_name = "EA-MAJESTAD-CW"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -73,6 +73,24 @@ advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
+
+# The Spanish provinces the rules count, grouped by call area (see the header).
+# 'SMR' and 'HQ' are not provinces: they are the special stations, and each is
+# a multiplier of its own.
+EA_PROVINCES = frozenset(
+    (
+        "AV", "BU", "C", "LE", "LO", "LU", "O", "OU", "P", "PO", "S", "SA",
+        "SG", "SO", "VA", "ZA",
+        "BI", "HU", "NA", "SS", "TE", "VI", "Z",
+        "B", "GI", "L", "T",
+        "BA", "CC", "CR", "CU", "GU", "M", "TO",
+        "A", "AB", "CS", "MU", "V",
+        "IB",
+        "AL", "CA", "CO", "GR", "H", "J", "MA", "SE",
+        "GC", "TF",
+        "CE", "ML",
+    )
+)
 
 
 def init_contest(self) -> None:
@@ -229,9 +247,11 @@ def show_mults(self, rtc=None) -> int:
         eadx100 = result.get("mult_count", 0)
 
     # Each EA province once per band
+    provinces = ",".join(f"'{province}'" for province in sorted(EA_PROVINCES))
     sql = (
         "select count(DISTINCT(NR || ':' || Band)) as mult_count "
-        f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+        f"from dxlog where ContestNR = {self.database.current_contest} "
+        f"and upper(NR) in ({provinces});"
     )
     result = self.database.exec_sql(sql)
     if result:
@@ -246,17 +266,20 @@ def show_mults(self, rtc=None) -> int:
     # if result:
     #     dx = result.get("mult_count", 0)
 
-    # Each QSO with EF0F/8 once per band
+    # The King of Spain's special station, EF0F, counts once per band; it
+    # sends SMR in place of a province.
     sql = (
         "select count(DISTINCT(Band)) as mult_count "
-        f"from dxlog where Call = 'EF0F/8' and ContestNR = {self.database.current_contest};"
+        f"from dxlog where Call like 'EF0F%' and ContestNR = {self.database.current_contest};"
     )
     result = self.database.exec_sql(sql)
     if result:
         ef0f = result.get("mult_count", 0)
 
     if rtc is not None:
-        return 0, 0
+        # The online score feed splits the total into a country and a state
+        # side; the entities and EF0F are both country-side.
+        return eadx100 + ef0f, ea_provinces
 
     return ea_provinces + ef0f + eadx100
 

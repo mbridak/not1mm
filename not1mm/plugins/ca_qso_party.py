@@ -1,4 +1,7 @@
-"""California QSO Party plugin"""
+"""California QSO Party plugin
+
+Find rules at: https://www.cqp.org/Rules.html
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -281,6 +284,35 @@ def normalize_exchange(text: str) -> str:
     return text.upper().strip()
 
 
+def is_ca_station(self) -> bool:
+    """Return True if the operating station is in California.
+
+    A California station works everyone and counts states and provinces; a
+    station elsewhere counts only the California counties it works.
+    """
+
+    return str(self.station.get("State", "")).strip().upper() == "CA"
+
+
+def multiplier_key(self, exchange: str):
+    """Return the multiplier an exchange contributes, or None.
+
+    A California station counts the state or province it is sent, and its
+    first California county contact is its California multiplier whichever
+    county it is.  A station elsewhere counts each California county.  DX and
+    anything unrecognised contribute nothing.
+    """
+
+    exch = (exchange or "").upper().strip()
+    if is_ca_station(self):
+        if exch in CA_COUNTIES:
+            return "CA"
+        if exch in CA_MULTS:
+            return exch
+        return None
+    return exch if exch in CA_COUNTIES else None
+
+
 def points_for_qso(mode: str, is_dupe: bool) -> int:
     """Return QSO points. 3 points for both Phone and CW. 0 for dupes."""
 
@@ -298,16 +330,13 @@ def set_contact_vars(self):
     self.contact["IsMultiplier1"] = 0
     self.contact["IsMultiplier2"] = 0
 
-    exch = self.contact.get("Exchange1", "").upper()
-    if exch and exch != "DX":
-        query = (
-            f"select count(*) as exch_count from dxlog where "
-            f"Exchange1 = '{exch}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
-        result = self.database.exec_sql(query)
-        count = int(result.get("exch_count", 0))
-        if count == 0:
+    key = multiplier_key(self, self.contact.get("Exchange1", ""))
+    if key is not None:
+        seen = {
+            multiplier_key(self, row.get("Exchange1", ""))
+            for row in self.database.fetch_all_contacts_asc()
+        }
+        if key not in seen:
             self.contact["IsMultiplier1"] = 1
 
 
@@ -329,31 +358,38 @@ def prefill(self):
 
 
 def points(self):
-    """Calc point - 3 points per QSO for both Phone and CW"""
+    """Calc point - 3 points per QSO for both Phone and CW
 
-    return points_for_qso(self.contact.get("Mode", ""), self.contact_is_dupe > 0)
+    A station outside California only scores the California stations it
+    works, which send a 4-letter county: non-CA to non-CA contacts count for
+    neither credit nor penalty, so they score nothing.
+    """
+
+    if self.contact_is_dupe > 0:
+        return 0
+    if not is_ca_station(self) and not is_valid_ca_county(
+        self.contact.get("Exchange1", "")
+    ):
+        return 0
+    return points_for_qso(self.contact.get("Mode", ""), False)
 
 
 def show_mults(self):
-    """Return display string for mults"""
-    # CA stations: states/provinces (capped at 58)
-    # Non-CA stations: CA counties (capped at 58)
-    # The 58 cap is natural since those are the max possible distinct values
+    """Return display string for mults
 
-    dx = 0
-    sql = (
-        "select count(DISTINCT Exchange1) as mult_count "
-        "from dxlog where "
-        f"ContestNR = {self.database.current_contest} "
-        "and typeof(Exchange1) = 'text' "
-        "and Exchange1 != 'DX';"
-    )
-    result = self.database.exec_sql(sql)
+    A California station counts the US states (California through its first
+    county contact) and Canadian provinces/territories it is sent, DX
+    excepted; a station elsewhere counts the California counties it works.
+    Either way the score counts at most 58.
+    """
 
-    if result:
-        dx = result.get("mult_count", 0)
+    seen = set()
+    for row in self.database.fetch_all_contacts_asc():
+        key = multiplier_key(self, row.get("Exchange1", ""))
+        if key is not None:
+            seen.add(key)
 
-    return min(dx, 58)
+    return min(len(seen), 58)
 
 
 def show_qso(self):
@@ -376,19 +412,12 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    seen = set()
     for contact in all_contacts:
         contact["IsMultiplier1"] = 0
-
-        time_stamp = contact.get("TS", "")
-        exch = contact.get("Exchange1", "")
-        query = (
-            f"select count(*) as exch_count from dxlog where TS < '{time_stamp}' "
-            f"and Exchange1 = '{exch.upper()}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
-        result = self.database.exec_sql(query)
-        count = int(result.get("exch_count", 0))
-        if count == 0:
+        key = multiplier_key(self, contact.get("Exchange1", ""))
+        if key is not None and key not in seen:
+            seen.add(key)
             contact["IsMultiplier1"] = 1
 
         self.database.change_contact(contact)

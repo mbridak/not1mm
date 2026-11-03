@@ -1,4 +1,7 @@
-"""SSA Manadstest SSB plugin"""
+"""SSA Manadstest SSB plugin
+
+Find rules at: https://hfcontest.ssa.se/ssa-mt/regler.html
+"""
 
 # SSA Manadstest - Swedish monthly HF contest, SSB mode.
 #   Exchange:   RST + serial number + 6-character Maidenhead locator
@@ -439,7 +442,7 @@ def recalculate_mults(self):
         exch = contact.get("Exchange1", "")
         band = contact.get("Band", "")
         if len(exch) >= 4:
-            key = exch[:4].upper() + ":" + band
+            key = f"{exch[:4].upper()}:{band}"
             if key not in seen:
                 seen.add(key)
                 contact["IsMultiplier1"] = 1

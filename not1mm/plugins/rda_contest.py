@@ -149,13 +149,12 @@ def is_russian_prefix(prefix: str) -> bool:
 def country_mult_prefix(prefix: str) -> str:
     """Return a single grouping key for DXCC country multipliers.
 
-    European and Asiatic Russia are one DXCC country so they share one
-    country multiplier.  Kaliningrad is a separate DXCC entity.
+    European Russia (UA) and Asiatic Russia (UA9) are two DXCC entities, as
+    is Kaliningrad (UA2), so each counts as its own country multiplier.  Only
+    the *points* for a Kaliningrad QSO are counted as for European Russia
+    (rule 9.3); they used to share one multiplier with European Russia.
     """
-    prefix = prefix.upper()
-    if prefix in ("UA", "UA9"):
-        return "R"
-    return prefix
+    return prefix.upper()
 
 
 def is_maritime_mobile(call: str) -> bool:
@@ -234,8 +233,8 @@ def set_contact_vars(self):
             mult_prefix = country_mult_prefix(countryprefix)
             rows = self.database.exec_sql_mult(
                 "select CountryPrefix from dxlog where ContestNR = ? and "
-                "Call not like '%/MM%';",
-                (self.pref.get("contest", "1"),),
+                "Band = ? and Call not like '%/MM%';",
+                (self.pref.get("contest", "1"), self.contact.get("Band", "")),
             )
             seen = {country_mult_prefix(row.get("CountryPrefix", "")) for row in rows}
             if mult_prefix not in seen:
@@ -314,9 +313,11 @@ def show_mults(self, rtc=None):
         mult_rda = int(result.get("mult_count", 0))
 
     if my_station_is_russian(self):
+        # Rule 10.1: a Russian station counts each DXCC country once *per
+        # band*.  Only distinct countries were counted, so a country worked
+        # on two bands was one multiplier instead of two.
         query = (
-            "select count(DISTINCT(CASE WHEN CountryPrefix in ('UA', 'UA9') "
-            "THEN 'R' ELSE CountryPrefix END)) as mult_count "
+            "select count(DISTINCT(CountryPrefix || ':' || Band)) as mult_count "
             "from dxlog where ContestNR = ? and Call not like '%/MM%';"
         )
         result = self.database.exec_sql(query, (self.database.current_contest,))
@@ -598,14 +599,16 @@ def recalculate_mults(self):
             contact.get("Call", "")
         ):
             mult_prefix = country_mult_prefix(countryprefix)
+            # The country multiplier is counted per band (rule 10.1).
             query = (
-                "select CountryPrefix from dxlog where TS < ? and "
+                "select CountryPrefix from dxlog where TS < ? and Band = ? and "
                 "Call not like '%/MM%' and ContestNR = ?;"
             )
             rows = self.database.exec_sql_mult(
                 query,
                 (
                     contact.get("TS", ""),
+                    contact.get("Band", ""),
                     self.pref.get("contest", "1"),
                 ),
             )

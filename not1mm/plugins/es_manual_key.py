@@ -1,4 +1,6 @@
-""" """
+"""
+Find rules at: https://erau.ee/images/LL/ES-Open_rules.pdf
+"""
 
 import logging
 import platform
@@ -9,7 +11,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, contest_time
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -70,23 +72,21 @@ def specific_contest_check_dupe(self, call):
     time_period_2 = time_periods[1] if len(time_periods) > 1 else None
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
 
-    # get current time in UTC
-    iso_current_time = datetime.datetime.now(datetime.timezone.utc)
-    current_time = iso_current_time.replace(tzinfo=None)
-
-    result = {}
-    result["isdupe"] = False
+    # The time the rule counts from is the contact's own, so a re-scored or
+    # imported log is checked against the clock it was logged on; only a
+    # contact being typed in has no timestamp yet.
+    current_time = contest_time(self)
 
     if (
         time_period_1 is not None
         and current_time < time_period_1
         and current_time >= start_date_init_date
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init_date,
+            start_date_init_date.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
@@ -96,7 +96,7 @@ def specific_contest_check_dupe(self, call):
         and current_time < time_period_2
         and current_time >= time_period_1
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -110,7 +110,7 @@ def specific_contest_check_dupe(self, call):
         and current_time < time_period_3
         and current_time >= time_period_2
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -119,12 +119,9 @@ def specific_contest_check_dupe(self, call):
         )
 
     # just for band and mode if outside of time period
-    else:
-        result = self.database.check_dupe_on_band_mode(
-            call, self.contact.get("Band", ""), mode
-        )
-
-    return result
+    return self.database.check_dupe_on_band_mode(
+        call, self.contact.get("Band", ""), mode
+    )
 
 
 def init_contest(self):
@@ -229,9 +226,11 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
+    _mode = self.contact.get("Mode", "").upper()
 
-    if _mode in "CW":
+    # The mode test used `in` on a string, so any single letter it contains
+    # matched, and a CW variant such as "CW-U" did not.
+    if _mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
         call_result = str(self.contact.get("NR", "")).strip()
 
         # get call seniority
@@ -309,12 +308,23 @@ def calc_score(self):
         contest_points = contest_points + station_seniority_multiplier
 
         mults = show_mults(self)
-        return contest_points * (mults + 1)
+        return contest_points * mults
     return 0
 
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    # The multiplier is read from CountryPrefix (and the call areas from
+    # WPXPrefix), and an imported log carries neither for sure; fill both
+    # from cty so a re-scored log counts the same as one just typed in.
+    for contact in self.database.fetch_all_contacts_asc():
+        result = self.cty_lookup(contact.get("Call", ""))
+        if result is None:
+            continue
+        item = result.get(next(iter(result)))
+        contact["CountryPrefix"] = item.get("primary_pfx", "")
+        contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+        self.database.change_contact(contact)
 
 
 def adif(self):

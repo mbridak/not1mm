@@ -123,12 +123,17 @@ def validate_exchange(text: str) -> bool:
     return normalize_grid(text) != ""
 
 
-def points_for_band(band: str) -> int:
-    """Return QSO points for a band. 6m = 1 point, 2m = 2 points."""
+def points_for_band(band) -> int:
+    """Return QSO points for a band. 6m = 1 point, 2m = 2 points.
 
-    if band in ("50.0", "6"):
+    ``band`` may be the stored MHz float, its string form, or the legacy plain
+    band number, because the live logging path and the database disagree on the
+    representation.
+    """
+
+    if band in ("50.0", "6", 50.0):
         return 1
-    if band in ("144.0", "2"):
+    if band in ("144.0", "2", 144.0):
         return 2
     return 0
 

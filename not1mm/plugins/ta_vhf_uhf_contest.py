@@ -1,10 +1,13 @@
-"""TA VHF UHF Contest"""
+"""TA VHF UHF Contest
+
+Find rules at: https://trac.org.tr/tr/ta-vhf-uhf-contest-2025-english
+"""
 
 import logging
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.ham_utility import distance
+from not1mm.lib.ham_utility import band_mhz_of, distance
 from not1mm.lib.plugin_common import gen_adif, gen_edi, get_points, imp_adif
 from not1mm.lib.version import __version__
 
@@ -132,21 +135,34 @@ def prefill(self):
 
 
 def points(self):
+    """The distance in kilometres times the band and mode multipliers.
+
+    Points are one per kilometre on 6m, two on 2m and three on 70cm, and the
+    mode multiplies that again: FM x1, SSB x2, CW x3.  The score is the sum of
+    the contacts.
+    """
     if self.contact_is_dupe > 0:
         return 0
 
-    band = self.contact.get("Band", "")
     their_grid = self.contact.get("Exchange1", "")
 
     km = distance(self.station.get("GridSquare", ""), their_grid)
 
-    mult = {
-        "50": 1,
-        "144": 2,
-        "432": 3,
-    }.get(str(band), 1)
+    # The band column holds a float (144.0), so comparing it to "144" as a
+    # string never matched and every contact scored as 6m - the band factor
+    # was never applied at all.
+    band_mult = {
+        50.0: 1,
+        144.0: 2,
+        432.0: 3,
+    }.get(band_mhz_of(self.contact.get("Band", 0)), 1)
 
-    return max(1, int(km * mult))
+    # And the mode multiplier is FM x1, SSB x2, CW x3 (rule 6).
+    mode_mult = {"FM": 1, "SSB": 2, "CW": 3}.get(
+        str(self.contact.get("Mode", "")).upper(), 1
+    )
+
+    return max(1, int(km * band_mult * mode_mult))
 
 
 def show_mults(self, rtc=None):

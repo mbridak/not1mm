@@ -249,7 +249,7 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * (mults + 1)
+        return contest_points * mults
     return 0
 
 

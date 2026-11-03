@@ -1,4 +1,7 @@
-"""Winter Field Day plugin"""
+"""Winter Field Day plugin
+
+Find rules at: https://winterfieldday.org/downloads/2026-rules-v3.pdf
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
@@ -113,16 +116,31 @@ def prefill(self):
     """Fill SentNR"""
 
 
+_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
+# "Digital includes PSK, RTTY, Olivia, Packet, SSTV, ATV, JS8Call, and other
+# soundcard modes except for FT4 & FT8." Winter Field Day does not allow them.
+_NO_POINT_MODES = ("FT4", "FT8")
+
+
+def _points_for_mode(mode: str) -> int:
+    """Phone 1 point; CW and digital 2; FT4/FT8 score nothing.
+
+    The old ``mode in "CW, RTTY"`` test was a substring check against that
+    literal, so every other digital mode counted zero.
+    """
+    upper = str(mode).upper()
+    if not upper or upper in _NO_POINT_MODES:
+        return 0
+    if upper in _PHONE_MODES:
+        return 1
+    return 2
+
+
 def points(self):
     """Calc point"""
     if self.contact_is_dupe > 0:
         return 0
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
-        return 1
-    if _mode in "CW, RTTY":
-        return 2
-    return 0
+    return _points_for_mode(self.contact.get("Mode", ""))
 
 
 def show_mults(self):

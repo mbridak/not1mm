@@ -444,10 +444,17 @@ def cabrillo(self, file_encoding):
 
 
 def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
+    """Recalculates dupes, points and multipliers after change in logged qso."""
     all_contacts = self.database.fetch_all_contacts_asc()
+    worked = set()
     for contact in all_contacts:
         self.contact = contact
+        # Work the duplicate out here: leaving contact_is_dupe as the last
+        # contact left it zeroes the points of the whole log as soon as one
+        # duplicate has been logged.
+        key = (contact.get("Call", ""), contact.get("Band", ""))
+        self.contact_is_dupe = 1 if key in worked else 0
+        worked.add(key)
         contact["Points"] = points(self)
         time_stamp = contact.get("TS", "")
         dxcc = contact.get("CountryPrefix", "")

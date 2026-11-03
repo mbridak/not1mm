@@ -138,16 +138,59 @@ def is_russian_prefix(prefix: str) -> bool:
     return prefix.upper() in RUSSIA_PREFIXES
 
 
-def country_mult_prefix(prefix: str) -> str:
-    """Return a single grouping key for Russian stations.
+# Rule 7.3: Kaliningrad (UA2F), Franz Josef Land (RI1FJ) and the Russian
+# Antarctic stations (RI1AN) each count as a separate DXCC entity *and* a
+# separate oblast. cty.dat gives Franz Josef Land the prefix R1FJ and files the
+# Antarctic calls under the generic Antarctica entity, so they are recognised
+# by callsign rather than by CountryPrefix.
+SPECIAL_RUSSIAN_PREFIXES = ("R1FJ", "RI1FJ", "RI1AN")
 
-    European and Asiatic Russia are one DXCC country so they share one
-    country multiplier per band.  Kaliningrad is a separate DXCC entity.
+
+def is_russian_station(countryprefix: str, call: str) -> bool:
+    """Return True for a Russian station, including the rule 7.3 specials."""
+    if is_russian_prefix(countryprefix):
+        return True
+    return str(call).upper().startswith(SPECIAL_RUSSIAN_PREFIXES)
+
+
+def country_mult_prefix(prefix: str) -> str:
+    """Return the country multiplier key for a country prefix.
+
+    Rule 9 uses the DXCC entity list, where European Russia (UA) and Asiatic
+    Russia (UA9) are separate countries, as is Kaliningrad (UA2).
     """
-    prefix = prefix.upper()
-    if prefix in ("UA", "UA9"):
-        return "R"
-    return prefix
+    return prefix.upper()
+
+
+def oblast_multipliers(self) -> int:
+    """Count distinct (oblast, band) pairs worked from Russian stations."""
+    oblasts = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        if "/MM" in str(contact.get("Call", "")).upper():
+            continue  # rule 7.4: maritime mobile is no multiplier
+        if not is_russian_station(
+            contact.get("CountryPrefix", ""), contact.get("Call", "")
+        ):
+            continue
+        oblast = str(contact.get("NR", "") or "")
+        if oblast:
+            oblasts.add((oblast, contact.get("Band")))
+    return len(oblasts)
+
+
+def country_multipliers(self) -> int:
+    """Count distinct (country, band) pairs worked."""
+    countries = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        if "/MM" in str(contact.get("Call", "")).upper():
+            continue  # rule 7.4: maritime mobile is no multiplier
+        countries.add(
+            (
+                country_mult_prefix(contact.get("CountryPrefix", "")),
+                contact.get("Band"),
+            )
+        )
+    return len(countries)
 
 
 def set_contact_vars(self):
@@ -172,7 +215,7 @@ def set_contact_vars(self):
     band = float(self.contact.get("Band", 0))
     oblast = self.contact.get("NR", "")
 
-    if is_russian_prefix(countryprefix) and oblast:
+    if is_russian_station(countryprefix, self.contact.get("Call", "")) and oblast:
         query = (
             "select count(*) as mult_count from dxlog where "
             "ContestNR = ? and NR = ? and Band = ? and "
@@ -263,25 +306,8 @@ def points(self):
 
 def show_mults(self, rtc=None):
     """Return display string for mults"""
-    mult1 = 0  # oblasts
-    mult2 = 0  # countries
-
-    query = (
-        "select count(DISTINCT(NR || ':' || Band)) as mult_count from dxlog "
-        "where ContestNR = ? and CountryPrefix in ('UA', 'UA9', 'UA2') and NR != '';"
-    )
-    result = self.database.exec_sql(query, (self.database.current_contest,))
-    if result:
-        mult1 = int(result.get("mult_count", 0))
-
-    query = (
-        "select count(DISTINCT(CASE WHEN CountryPrefix in ('UA', 'UA9') "
-        "THEN 'R' ELSE CountryPrefix END || ':' || Band)) as mult_count "
-        "from dxlog where ContestNR = ? and Call not like '%/MM%';"
-    )
-    result = self.database.exec_sql(query, (self.database.current_contest,))
-    if result:
-        mult2 = int(result.get("mult_count", 0))
+    mult1 = oblast_multipliers(self)  # oblasts
+    mult2 = country_multipliers(self)  # countries
 
     if rtc is not None:
         return (mult2, mult1)
@@ -540,7 +566,7 @@ def recalculate_mults(self):
         contact["IsMultiplier1"] = 0
         contact["IsMultiplier2"] = 0
 
-        if is_russian_prefix(countryprefix) and oblast:
+        if is_russian_station(countryprefix, contact.get("Call", "")) and oblast:
             query = (
                 "select count(*) as mult_count from dxlog where TS < ? and "
                 "NR = ? and Band = ? and CountryPrefix in ('UA', 'UA9', 'UA2') "

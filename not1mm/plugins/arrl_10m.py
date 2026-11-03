@@ -173,18 +173,33 @@ def prefill(self):
         self.other_1.setText(exchange)
 
 
+_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
+_CW_MODES = ("CW", "CW-U", "CW-L", "CWR", "CW-R")
+
+
+def _points_for_mode(mode: str) -> int:
+    """Phone 2 points, CW 4 points, anything else nothing.
+
+    Rule 5.1: "Each phone contact counts for two (2) QSO points.  Each CW
+    contact counts for four (4) QSO points."  Only those two mode groups are
+    allowed on 10 m.  The old ``mode in "SSB, USB, LSB, FM, AM"`` test was a
+    substring check against that literal rather than membership in a set.
+    """
+    upper = str(mode).upper()
+    if upper in _PHONE_MODES:
+        return 2
+    if upper in _CW_MODES:
+        return 4
+    return 0
+
+
 def points(self):
     """Calc point"""
 
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
-        return 2
-    if _mode in "CW":
-        return 4
-    return 0
+    return _points_for_mode(self.contact.get("Mode", ""))
 
 
 def show_mults(self, rtc=None):

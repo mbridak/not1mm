@@ -115,6 +115,8 @@ Even short logs are welcome! Final results will be published later.
 
 Checklogs are welcome, also comments of the participants.
 Publication of the claimed scores will be announced promptly after the deadline.
+
+Find rules at: https://www.agcw.de/contest/qrp/qrp-c-engl/
 """
 
 import datetime
@@ -293,31 +295,31 @@ def points(self):
             VLP <–> VLP: 3 Punkte1 point per QSO
 
     """
-    # The Dialog offers QRP, Low, High for the powercategory
-    # so we code it
-    #    VLP and QRP will be coded as QRP,
-    #    MP will be coded Low
-    #    QRO will be coded as High
+    # The contest dialog offers HIGH, LOW and QRP for the power category, so
+    # our class is QRO, MP (or QRP).  The old test compared it to "High" with
+    # a lower-case h and a "s", so it never matched the stored "HIGH".
 
-    mypowerclass = self.contest_settings.get("PowerCategory")
+    mypowerclass = str(self.contest_settings.get("PowerCategory", "")).upper()
 
     if self.contact_is_dupe > 0:
         return 0
-    pts = 2  # for qrp stns
-    if len(self.contact["NR"]) > 0:
-        r_number, pwr_class, member = received_fields(self, self.contact["NR"])
-        pt_2 = {"QRO", "MP"}
-        pt_3 = {"QRP", "VLP"}
 
-        if pwr_class in pt_2:
-            pts = 2
-        if pwr_class in pt_3:
-            pts = 3
-
+    # Two points is the default: QRO or MP against QRP or VLP, or MP against
+    # anything.  Only two combinations are different - QRO against QRO scores
+    # nothing, and QRP against QRP or VLP scores three.  The old test gave
+    # three whenever the *other* station sent QRP or VLP, so a QRO or MP
+    # entrant scored three where the rules say two.
+    pts = 2
+    pwr_class = "QRO"
+    nr = self.contact.get("NR", "")
+    if len(nr) > 0:
+        r_number, pwr_class, member = received_fields(self, nr)
         self.contact["NR"] = r_number + "/" + pwr_class + "/" + member
-    # if both station QRO than pts=0
-    if mypowerclass == "High" and pwr_class == "QRO":
+
+    if mypowerclass == "HIGH" and pwr_class == "QRO":
         pts = 0
+    elif mypowerclass == "QRP" and pwr_class in ("QRP", "VLP"):
+        pts = 3
     return pts
 
 

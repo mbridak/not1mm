@@ -750,15 +750,21 @@ def cabrillo(self, file_encoding):
 
 
 def recalculate_mults(self):
-    """Recalculates multipliers and bonuses after change in logged qso."""
+    """Recalculates dupes, points and bonuses after change in logged qso."""
     all_contacts = self.database.fetch_all_contacts_asc()
     bonus_counts = {}
-    self.contact_is_dupe = 0
+    worked = set()
     for contact in all_contacts:
         self.contact = contact
+        key = (contact.get("Call", ""), contact.get("Band", ""))
+        is_dupe = key in worked
+        worked.add(key)
+        self.contact_is_dupe = 1 if is_dupe else 0
         info = scoring_info(self)
         earns_bonus = 0
-        if info is not None and info["eligible"]:
+        # A duplicate is not a valid contact, so it neither scores nor takes
+        # one of the three bonus places on the band.
+        if not is_dupe and info is not None and info["eligible"]:
             band = float(contact.get("Band", 0))
             count = bonus_counts.get(band, 0)
             if count < 3:

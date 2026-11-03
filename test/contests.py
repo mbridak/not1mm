@@ -588,7 +588,7 @@ def app(qtbot):
 
     # Enter initial setings as default
     settings_dialog = not1mm_app.settings_dialog
-    settings_dialog.Call.setText("K5TUX")
+    settings_dialog.Call.setText("K6GTE")
     settings_dialog.ITUZone.setText("7")
     settings_dialog.CQZone.setText("4")
     settings_dialog.Country.setText("United States")

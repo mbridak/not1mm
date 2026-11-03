@@ -1,4 +1,7 @@
-"""VHF SPRINT"""
+"""VHF SPRINT
+
+Find rules at: https://sites.google.com/site/springvhfupsprints/home/2026-information
+"""
 
 # Single band VHF Sprint. Exchange is 4-digit grid square.
 # 1 point per each valid QSO multiplied by number of grid squares worked.
@@ -12,7 +15,7 @@ import logging
 from pathlib import Path
 from PyQt6 import QtWidgets
 
-from not1mm.lib.ham_utility import get_logged_band
+from not1mm.lib.ham_utility import band_mhz_of, distance, get_logged_band
 from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -123,22 +126,22 @@ def prefill(self):
 
 
 def points(self):
-    """Calc point"""
+    """Calc point
 
-    # QSO Points:	1 point per QSO
+    50, 144, 222 and 432 MHz score one point a QSO; the Microwave Sprint,
+    902 MHz and above, scores the distance in kilometres, at least one.  A
+    band outside the sprint's set scores nothing.
+    """
 
     if self.contact_is_dupe > 0:
         return 0
 
-    _band = self.contact.get("Band", "")
-    if _band in ["50", "144"]:
+    _band = band_mhz_of(self.contact.get("Band"))
+    if _band in (50.0, 144.0, 222.0, 432.0):
         return 1
-    if _band in ["222", "432"]:
-        return 1
-    if _band in ["902", "1296"]:
-        return 1
-    if _band in ["2300+"]:
-        return 1
+    if _band in (902.0, 1296.0) or _band >= 2300.0:
+        their_grid = str(self.contact.get("NR", "") or "").upper()
+        return max(1, distance(self.station.get("GridSquare", ""), their_grid))
     return 0
 
 
