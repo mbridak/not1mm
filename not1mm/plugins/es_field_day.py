@@ -1,10 +1,11 @@
-""" """
+"""
+Find rules at: https://erau.ee/images/LL/ES-Open_rules.pdf
+"""
 
 import logging
 import platform
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 from pathlib import Path
 
@@ -14,8 +15,10 @@ from not1mm.lib.plugin_common import (
     gen_adif,
     imp_adif,
     get_points,
+    contest_time,
 )
 
+from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -29,7 +32,7 @@ assert platform
 EXCHANGE_HINT = "#"
 
 name = "ES FIELD DAY"
-cabrillo_name = "ES-OPEN-HF"
+cabrillo_name = "ES-FIELD-DAY"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -97,23 +100,21 @@ def specific_contest_check_dupe(self, call):
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
     time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
-    # get current time in UTC
-    iso_current_time = datetime.now(timezone.utc)
-    current_time = iso_current_time.replace(tzinfo=None)
-
-    result = {}
-    result["isdupe"] = False
+    # The time the rule counts from is the contact's own, so a re-scored or
+    # imported log is checked against the clock it was logged on; only a
+    # contact being typed in has no timestamp yet.
+    current_time = contest_time(self)
 
     if (
         time_period_1 is not None
         and current_time < time_period_1
         and current_time >= start_date_init_date
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init_date,
+            start_date_init_date.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
@@ -123,7 +124,7 @@ def specific_contest_check_dupe(self, call):
         and current_time < time_period_2
         and current_time >= time_period_1
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -137,7 +138,7 @@ def specific_contest_check_dupe(self, call):
         and current_time < time_period_3
         and current_time >= time_period_2
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -151,7 +152,7 @@ def specific_contest_check_dupe(self, call):
         and current_time < time_period_4
         and current_time >= time_period_3
     ):
-        result = self.database.check_dupe_on_period_mode(
+        return self.database.check_dupe_on_period_mode(
             call,
             self.contact.get("Band", ""),
             mode,
@@ -160,12 +161,9 @@ def specific_contest_check_dupe(self, call):
         )
 
     # just for band and mode if outside of time period
-    else:
-        result = self.database.check_dupe_on_band_mode(
-            call, self.contact.get("Band", ""), mode
-        )
-
-    return result
+    return self.database.check_dupe_on_band_mode(
+        call, self.contact.get("Band", ""), mode
+    )
 
 
 def init_contest(self):
@@ -298,7 +296,11 @@ def show_qso(self):
 
 
 def calc_score(self):
-    """Return calculated score"""
+    """Return calculated score.
+
+    The rules multiply the QSO points by the multiplier total; there is no
+    extra one, so the old `mults + 1` is gone.
+    """
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
@@ -306,12 +308,23 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * (mults + 1)
+        return contest_points * mults
     return 0
 
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    # The multiplier is read from CountryPrefix (and the call areas from
+    # WPXPrefix), and an imported log carries neither for sure; fill both
+    # from cty so a re-scored log counts the same as one just typed in.
+    for contact in self.database.fetch_all_contacts_asc():
+        result = self.cty_lookup(contact.get("Call", ""))
+        if result is None:
+            continue
+        item = result.get(next(iter(result)))
+        contact["CountryPrefix"] = item.get("primary_pfx", "")
+        contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+        self.database.change_contact(contact)
 
 
 def adif(self):
