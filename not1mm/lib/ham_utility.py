@@ -210,6 +210,20 @@ def get_not1mm_band(band: str) -> float:
     return b.band_mhz if b else 0.0
 
 
+def band_mhz_of(band) -> float:
+    """Coerce a stored Band value into MHz.
+
+    The DXLOG.Band column holds a MHz float, but on the live logging path
+    :func:`get_logged_band` yields its string form ("7.0"). Plugins that compare
+    a contact's band must normalise first, or the comparison silently fails.
+    Returns 0.0 when the value cannot be interpreted.
+    """
+    try:
+        return float(band)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def fakefreq(band_name: str, mode: str) -> str:
     """Return a sensible kHz-as-string frequency for cabrillo/ADIF when the rig is offline.
 
