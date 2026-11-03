@@ -12,6 +12,8 @@ QSO Points:     1 point per QSO with same zone or with HQ stations
 
 Multipliers:    Each ITU zone once per band
                 Each IARU HQ and each IARU official once per band
+
+Find rules at: https://contests.arrl.org/ContestRules/IARU-HF-Rules.pdf
 """
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
@@ -132,37 +134,62 @@ def points(self):
         return 0
 
     result = self.cty_lookup(self.station.get("Call", ""))
+    mycontinent = ""
     if result is not None:
         item = result.get(next(iter(result)))
         mycontinent = item.get("continent", "")
-    our_itu = int(self.station.get("IARUZone", 0))
 
     try:
-        their_itu = int(self.contact.get("ZN", 0))
+        our_itu = int(str(self.station.get("IARUZone", 0) or 0).strip())
     except ValueError:
+        our_itu = 0
+
+    try:
+        their_itu = int(str(self.contact.get("ZN", "")).strip())
+    except ValueError:
+        # An IARU member-society HQ station or official sends a society
+        # abbreviation instead of a zone: one point (rule 5.1.2).
         return 1
+
     if our_itu == their_itu:
         return 1
-    if self.contact["Continent"] == mycontinent:
+
+    # The continent is normally in the contact, but an imported log need not
+    # carry a CONTINENT field - fall back to the country file.
+    hiscontinent = self.contact.get("Continent", "")
+    if not hiscontinent:
+        result = self.cty_lookup(self.contact.get("Call", ""))
+        if result is not None:
+            item = result.get(next(iter(result)))
+            hiscontinent = item.get("continent", "")
+
+    if hiscontinent == mycontinent:
         return 3
     return 5
 
 
 def show_mults(self, rtc=None):
-    """Return display string for mults"""
-    # select count(DISTINCT(ZN || ':' || Band || ':' || Mode)) as zbm_count from dxlog where ContestNR = 14 and typeof(ZN)!="integer";
-    total_mults = 0
-    result1 = self.database.fetch_zn_band_mode_count()
-    if result1:
-        total_mults = int(result1.get("zbm_count", 0))
+    """Return display string for mults
+
+    Rule 5.2.1: the ITU zones worked on each band plus the IARU member-society
+    HQ stations (and officials) worked on each band, each once per band - and
+    *not* once per mode, so the same zone worked on CW and on SSB on one band
+    is one multiplier.
+    """
+    query = (
+        f"select count(DISTINCT(ZN || ':' || Band)) as zb_count "
+        f"from dxlog where ContestNR = {self.pref.get('contest', '1')};"
+    )
+    result = self.database.exec_sql(query)
+    total_mults = int(result.get("zb_count", 0)) if result else 0
 
     query = (
-        f"select count(DISTINCT(ZN || ':' || Band || ':' || Mode)) "
-        f"as zbm_count from dxlog where ContestNR = {self.pref.get('contest', '1')} "
+        f"select count(DISTINCT(ZN || ':' || Band)) as hq_count "
+        f"from dxlog where ContestNR = {self.pref.get('contest', '1')} "
         f"and typeof(ZN)!='integer';"
     )
     result = self.database.exec_sql(query)
-    hq_count = int(result.get("zbm_count", 0))
+    hq_count = int(result.get("hq_count", 0)) if result else 0
 
     zones = total_mults - hq_count
 
