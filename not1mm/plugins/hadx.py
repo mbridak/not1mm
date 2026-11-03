@@ -200,6 +200,11 @@ def points(self):
     if self.contact["NR"] in HA_COUNTY:
         return 10
 
+    # Either lookup can fail; my_continent used to be left unbound and
+    # points() raised when the entrant's call was not in cty.dat.
+    my_continent = ""
+    their_continent = ""
+
     result = self.cty_lookup(self.station.get("Call", ""))
     if result is not None:
         item = result.get(next(iter(result)))
@@ -212,8 +217,7 @@ def points(self):
 
     if my_continent == their_continent:
         return 2
-    else:
-        return 5
+    return 5
 
 
 def show_mults(self):
@@ -252,7 +256,11 @@ def show_qso(self):
 
 
 def calc_score(self):
-    """Return calculated score"""
+    """Return calculated score.
+
+    Rule 10: the sum of points multiplied by the sum of multipliers.  The
+    old `1 + mults` added a multiplier that does not exist.
+    """
     mults = show_mults(self)
     result = self.database.fetch_points()
     if result is not None:
@@ -260,10 +268,8 @@ def calc_score(self):
         if score is None:
             score = "0"
         if int(mults) > 0:
-            contest_points = int(score) * (1 + int(mults))
-            return contest_points
-        contest_points = int(score)
-        return contest_points
+            return int(score) * int(mults)
+        return int(score)
     return 0
 
 

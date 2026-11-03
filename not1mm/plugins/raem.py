@@ -44,6 +44,7 @@
 
 import datetime
 import logging
+import re
 
 from pathlib import Path
 
@@ -156,109 +157,79 @@ def prefill(self):
         field.setText(serial_nr)
 
 
+_RAEM_COORDS = re.compile(r"(\d+)([NS])(\d+)([WO])")
+
+
+def _latlon(exchange) -> tuple | None:
+    """Return the (latitude, longitude) of a RAEM exchange, or None.
+
+    The exchange is the latitude with S or N and then the longitude with W or
+    O (east), e.g. "57N85O"; the letter gives the sign - N and O positive, S
+    and W negative.  A leading serial number is ignored.
+    """
+    match = _RAEM_COORDS.search(str(exchange).upper())
+    if match is None:
+        return None
+    latitude = int(match.group(1)) * (1 if match.group(2) == "N" else -1)
+    longitude = int(match.group(3)) * (1 if match.group(4) == "O" else -1)
+    return latitude, longitude
+
+
 def latlondif(self, exchange1: str):
-    """"""
-    ourexchange = self.contest_settings.get("SentExchange", None)
-    if ourexchange is None:
-        return 0, False
-    ourexchange = ourexchange.upper()
-    if len(exchange1) < 4:
-        return 0, False
-    exchange1 = exchange1.upper()
+    """Return the (coordinate points, the other station is polar) for a QSO.
 
-    latindex = None
-    ourlat = None
-    ourlon = None
-    if "N" in ourexchange:
-        latindex = ourexchange.index("N")
-        lat = ourexchange[:latindex]
-        if lat.isnumeric():
-            ourlat = int(lat)
-    if "S" in ourexchange:
-        latindex = ourexchange.index("S")
-        lat = ourexchange[:latindex]
-        if lat.isnumeric():
-            ourlat = int(lat)
-    if "W" in ourexchange:
-        lon = ourexchange[latindex + 1 : ourexchange.index("W")]
-        if lon.isnumeric():
-            ourlon = int(lon)
-    if "O" in ourexchange:
-        lon = ourexchange[latindex + 1 : ourexchange.index("O")]
-        if lon.isnumeric():
-            ourlon = int(lon)
-    if ourlat is None or ourlon is None:
+    Rule 5: one point for every degree of latitude difference and again for
+    longitude, and 100 more when the other station is inside the polar
+    circles.  The hemisphere letters set the sign, so a station at 117 west
+    and one at 37 east are 154 degrees apart, not 80.
+    """
+    ours = _latlon(self.contest_settings.get("SentExchange", ""))
+    theirs = _latlon(exchange1)
+    if ours is None or theirs is None:
         return 0, False
-
-    hislat = None
-    hislon = None
-    if "N" in exchange1:
-        latindex = exchange1.index("N")
-        lat = exchange1[:latindex]
-        if lat.isnumeric():
-            hislat = int(lat)
-    if "S" in exchange1:
-        latindex = exchange1.index("S")
-        lat = exchange1[:latindex]
-        if lat.isnumeric():
-            hislat = int(lat)
-    if "W" in exchange1:
-        lon = exchange1[latindex + 1 : exchange1.index("W")]
-        if lon.isnumeric():
-            hislon = int(lon)
-    if "O" in exchange1:
-        lon = exchange1[latindex + 1 : exchange1.index("O")]
-        if lon.isnumeric():
-            hislon = int(lon)
-    if hislat is None or hislon is None:
-        return 0, False
-
-    return abs(ourlat - hislat) + abs(ourlon - hislon), hislat >= 66
+    ourlat, ourlon = ours
+    hislat, hislon = theirs
+    dlat = abs(ourlat - hislat)
+    dlon = abs(ourlon - hislon)
+    if dlon > 180:
+        # The other way round is shorter: 117 west to 85 east is 158 degrees.
+        dlon = 360 - dlon
+    return dlat + dlon, abs(hislat) >= 66
 
 
 def points(self):
-    """Calc point"""
-    # 50 points + 1 point for every degree difference in geo location, both latitude and longitude
-    # QSO with Polar station: 100 points additional
-    # QSO with RAEM Memorial Station: 300 points additional
+    """Calc point
 
+    50 points for the QSO, one for every degree of latitude difference and
+    again for longitude, 100 more for a polar station and 300 more for the
+    RAEM memorial station itself.  The received coordinates used to be read
+    out of the entry field, which an imported or re-scored log leaves empty,
+    and the RAEM bonus was tested against the entrant's own callsign instead
+    of the one worked.
+    """
     if self.contact_is_dupe > 0:
         return 0
+
     points = 50
-    morepoints, ispolar = latlondif(self, self.other_2.text())
+    morepoints, ispolar = latlondif(self, self.contact.get("Exchange1", ""))
     points += morepoints
     if ispolar is not False:
         points += 100
-    if self.callsign.text() == "RAEM":
+    if str(self.contact.get("Call", "")).upper() == "RAEM":
         points += 300
 
     return points
 
 
 def show_mults(self):
-    """Return display string for mults"""
-    ourexchange = self.contest_settings.get("SentExchange", None)
-    if ourexchange is None:
-        return 0, False
-    ourexchange = ourexchange.upper()
+    """Return display string for mults
 
-    latindex = None
-    ourlat = None
-    if "N" in ourexchange:
-        latindex = ourexchange.index("N")
-        lat = ourexchange[:latindex]
-        if lat.isnumeric():
-            ourlat = int(lat)
-    if "S" in ourexchange:
-        latindex = ourexchange.index("S")
-        lat = ourexchange[:latindex]
-        if lat.isnumeric():
-            ourlat = int(lat)
-
-    if ourlat is not None:
-        if ourlat >= 66:
-            return 1.1
-
+    Rule 6: a participant inside the polar circles multiplies its score by
+    1.1.
+    """
+    ours = _latlon(self.contest_settings.get("SentExchange", ""))
+    if ours is not None and abs(ours[0]) >= 66:
+        return 1.1
     return 1
 
 
@@ -279,7 +250,9 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * mults
+        # A polar entrant's 1.1 makes a fractional score; a claimed score is
+        # a whole number.
+        return round(contest_points * mults)
     return 0
 
 

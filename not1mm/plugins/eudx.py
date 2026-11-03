@@ -194,54 +194,43 @@ def points(self):
         their_country = item.get("entity", "")
         their_continent = item.get("continent", "")
 
-    my_exchange = self.contest_settings.get("SentExchange", "").strip()
-    their_exchange = self.other_2.text().upper().strip()
+    def is_eu(exchange):
+        """True for a 4-character European Union region code."""
+        exchange = str(exchange).strip()
+        return (
+            len(exchange) == 4
+            and exchange[:2].isalpha()
+            and exchange[2:].isdigit()
+        )
 
-    if (
-        len(my_exchange) == 4
-        and my_exchange[:2].isalpha()
-        and my_exchange[2:].isdigit()
-    ):
-        if my_country == their_country:
-            return 2
-        if my_continent == their_continent:
-            return 3
-        if (
-            len(their_exchange) == 4
-            and their_exchange[:2].isalpha()
-            and their_exchange[2:].isdigit()
-        ):
-            return 10
-        return 5
-    else:
-        if (
-            len(their_exchange) == 4
-            and their_exchange[:2].isalpha()
-            and their_exchange[2:].isdigit()
-        ):
-            return 10
-        if my_country == their_country:
-            return 2
-        if my_continent == their_continent and my_country != their_country:
-            return 3
-        if my_continent != their_continent:
-            return 5
-    return 0
+    # The received exchange used to be read out of the entry field, which an
+    # imported or re-scored log leaves empty: the region never matched, so an
+    # EU contact was scored by continent instead of the ten points it is
+    # worth.  Both tables in the rules come out the same once the tests are
+    # ordered own country, EU, continent.
+    theyre_eu = is_eu(self.contact.get("NR", ""))
+
+    if my_country == their_country:
+        return 2
+    if theyre_eu:
+        return 10
+    if my_continent == their_continent:
+        return 3
+    return 5
 
 
 def show_mults(self, rtc=None):
-    """Return display string for mults"""
+    """Return display string for mults
 
-    """
-    • European Union Region: A multiplier of one (1) for each different European Union Region contacted on each band;
-    • Country: A multiplier of one (1) for each different country contacted on each band.
+    Each EU region and each DXCC country counts once per band - the queries
+    keyed on Mode, which is the same thing only if you never change band.
     """
 
     eud = 0
     country_prefix = 0
 
     sql = (
-        "select count(DISTINCT(NR || ':' || Mode)) as mult_count "
+        "select count(DISTINCT(NR || ':' || Band)) as mult_count "
         f"from dxlog where ContestNR = {self.database.current_contest} "
         "and NR GLOB '[A-Za-z][A-Za-z][0-9][0-9]';"
     )
@@ -250,7 +239,7 @@ def show_mults(self, rtc=None):
         eud = result.get("mult_count", 0)
 
     sql = (
-        "select count(DISTINCT(CountryPrefix || ':' || Mode)) as mult_count "
+        "select count(DISTINCT(CountryPrefix || ':' || Band)) as mult_count "
         f"from dxlog where ContestNR = {self.database.current_contest};"
     )
     result = self.database.exec_sql(sql)

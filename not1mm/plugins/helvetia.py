@@ -1,5 +1,5 @@
 """
-Helvetica
+Helvetia
 -------------------------------------------------
 Status:	Active
 Geographic Focus:	Switzerland
@@ -28,7 +28,7 @@ Multipliers: Canton and DXCC country (including Switzerland) per band: 1 point
 Score Calculation:	Total score = total QSO points x total mults
 E-mail logs to:	contest[at]uska[dot]ch
 Mail logs to:	(none)
-Find rules at:	https://www.uska.ch/events/uska-helvetia-contest-concours-helvetia-hf/
+Find rules at:	https://www.uska.ch/contests/concours-helvetia/
 Cabrillo name:	HELVETIA
 """
 
@@ -211,38 +211,39 @@ def prefill(self):
         self.other_1.setText(sent_sxchange_setting)
 
 
+def _entity(self, call):
+    """Return ``(entity, continent)`` for a callsign, or ``("", "")``."""
+    result = self.cty_lookup(call)
+    if not result:
+        return "", ""
+    item = result.get(next(iter(result)), {})
+    return item.get("entity", ""), item.get("continent", "")
+
+
 def points(self):
     """
     Scoring:
-    Contact with a station within the same continent: 1 point
-    Contact with a station outside the operator’s continent: 3 points
     Contact with a station in Switzerland: 10 points
-    self.contact["CountryPrefix"]
-    self.contact["Continent"]
+    Contact with a station within the same continent: 1 point
+    Contact with a station outside the operator's continent: 3 points
     """
 
     if self.contact_is_dupe > 0:
         return 0
 
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        my_continent = item.get("continent", "")
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        their_country = item.get("entity", "")
-        their_continent = item.get("continent", "")
+    their_country, their_continent = _entity(self, self.contact.get("Call", ""))
+    if not their_country:
+        return 0
 
-        if their_country == "Switzerland":
-            return 10
+    # The entrant's own lookup can fail too; _entity guards that now, where
+    # before my_continent was left unbound and points() raised.
+    _, my_continent = _entity(self, self.station.get("Call", ""))
 
-        if my_continent != their_continent:
-            return 3
-
-        return 1
-    # Something wrong
-    return 0
+    if their_country == "Switzerland":
+        return 10
+    if my_continent != their_continent:
+        return 3
+    return 1
 
 
 def show_mults(self, rtc=None):
