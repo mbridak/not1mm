@@ -802,8 +802,13 @@ def imp_adif(self):
         elif q.get("PFX"):
             this_contact["CountryPrefix"] = q.get("PFX")
 
+        # "StationPrefix" holds the station's own callsign (an N1MM-ism; there
+        # is no STATIONPREFIX field in ADIF). Fall back to the standard
+        # STATION_CALLSIGN so not1mm's own ADIF export round-trips.
         if q.get("STATIONPREFIX"):
             this_contact["StationPrefix"] = q.get("STATIONPREFIX")
+        elif q.get("STATION_CALLSIGN"):
+            this_contact["StationPrefix"] = q.get("STATION_CALLSIGN")
 
         if q.get("QTH"):
             this_contact["QTH"] = q.get("QTH")
