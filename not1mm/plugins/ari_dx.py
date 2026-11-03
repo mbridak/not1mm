@@ -146,6 +146,21 @@ def prefill(self):
         self.other_1.setText(exchange)
 
 
+_ITALIAN_PREFIXES = ("I", "IS", "IT9")
+
+
+def _entity(self, call):
+    """Return ``(primary prefix, continent)`` for a callsign.
+
+    Either can be empty when the call is not in cty.dat.
+    """
+    result = self.cty_lookup(call)
+    if not result:
+        return "", ""
+    item = result.get(next(iter(result)), {})
+    return item.get("primary_pfx", ""), item.get("continent", "")
+
+
 def points(self) -> int:
     """Calc point"""
 
@@ -153,37 +168,26 @@ def points(self) -> int:
     #                       1 point per QSO with different country same continent
     #                       3 points per QSO with different continent
     #                       10 points per QSO with I/IS0/IT9 stations
+    # and no contact between two Italian stations is permitted.
 
     if self.contact_is_dupe > 0:
         return 0
 
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        mycountry = item.get("primary_pfx", "")
-        # myentity = item.get("entity", "")
-        mycontinent = item.get("continent", "")
+    mycountry, mycontinent = _entity(self, self.station.get("Call", ""))
+    hiscountry, hiscontinent = _entity(self, self.contact.get("Call", ""))
 
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    print(f"{result=}")
-    if result is not None:
-        item = result.get(next(iter(result)))
-        hiscountry = item.get("primary_pfx", "")
-        # hisentity = item.get("entity", "")
-        hiscontinent = item.get("continent", "")
-
-    _points = 0
-
+    # Two Italian stations may not work each other.  The old test also missed
+    # Sardinia, whose primary prefix is IS rather than IS0, so a Sardinian
+    # contact scored 1 point where an Italian one scores 10.
+    if mycountry in _ITALIAN_PREFIXES and hiscountry in _ITALIAN_PREFIXES:
+        return 0
     if mycountry == hiscountry:
-        _points = 0
-    if mycountry != hiscountry and mycontinent == hiscontinent:
-        _points = 1
+        return 0
+    if hiscountry in _ITALIAN_PREFIXES:
+        return 10
     if mycontinent != hiscontinent:
-        _points = 3
-    if hiscountry in ("I", "IS0", "IT9"):
-        _points = 10
-
-    return _points
+        return 3
+    return 1
 
 
 def show_mults(self):
@@ -197,15 +201,17 @@ def show_mults(self):
 
     sql = (
         "select count(DISTINCT(NR || ':' || Band)) as mult_count from dxlog "
-        f"where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+        f"where ContestNR = {self.database.current_contest} and typeof(NR) = 'text' and NR != '';"
     )
     result = self.database.exec_sql(sql)
     if result:
         _province = result.get("mult_count", 0)
 
+    # The multiplier list is the DXCC entities except I, IS and IT9; Sicily is
+    # the primary prefix IT9, so excluding only I and IS left it in the count.
     sql = (
         "select count(DISTINCT(CountryPrefix || ':' || Band)) as cb_count from dxlog "
-        f"where ContestNR = {self.database.current_contest} and CountryPrefix NOT in ('I', 'IS');"
+        f"where ContestNR = {self.database.current_contest} and CountryPrefix NOT in ('I', 'IS', 'IT9');"
     )
     result2 = self.database.exec_sql(sql)
     if result2:
