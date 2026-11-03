@@ -909,9 +909,14 @@ class DataBase:
         )
 
     def check_dupe_on_period_mode(self, call, band, mode, period_1, period_2) -> dict:
-        """Checks if a call is dupe on band/mode"""
+        """Checks if a call is dupe on band/mode within a time period.
+
+        The window is half-open - [period_1, period_2) - so that a contact
+        logged exactly on a boundary belongs to the later period only, which
+        is how the caller picks the period.
+        """
         return self.exec_sql(
-            "select count(*) as isdupe from dxlog where Call = ? and Mode = ? and Band = ? and ContestNR = ? AND TS >= ? AND TS <= ?;",
+            "select count(*) as isdupe from dxlog where Call = ? and Mode = ? and Band = ? and ContestNR = ? AND TS >= ? AND TS < ?;",
             (call, mode, band, self.current_contest, period_1, period_2),
         )
 
