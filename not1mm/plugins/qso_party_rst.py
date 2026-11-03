@@ -141,31 +141,23 @@ def predupe(self):
 
 
 def prefill(self):
-    """Fill Sent"""
-    qso_mode = self.contact.get("Mode", "")
-    match qso_mode:
-        case "LSB" | "USB" | "SSB" | "FM" | "AM":
-            self.sent.setText("599")
-            self.rcv.setText("599")
-        case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
-            self.sent.setText("59")
-            self.rcv.setText("59")
-        case (
-            "FT8"
-            | "FT4"
-            | "RTTY"
-            | "PSK31"
-            | "FSK441"
-            | "MSK144"
-            | "JT65"
-            | "JT9"
-            | "Q65"
-            | "PKTUSB"
-            | "PKTLSB"
-        ):
-            self.sent.setText("599")
-            self.rcv.setText("599")
-    # end match
+    """Fill the sent and received RST
+
+    Phone is RS (59), CW and the digital modes are RST (599).  The reports
+    were the other way round, they went to ``self.rcv`` which is not a widget
+    (the receive field is ``self.receive``), and the mode was read out of the
+    contact being built, which is still empty at this point, so nothing was
+    ever filled in.
+    """
+    qso_mode = str(self.radio_state.get("mode", "") or "").upper()
+    if qso_mode in ("LSB", "USB", "SSB", "FM", "AM"):
+        report = "59"
+    elif qso_mode:
+        report = "599"
+    else:
+        return
+    self.sent.setText(report)
+    self.receive.setText(report)
 
 
 def points(self):

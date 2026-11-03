@@ -149,8 +149,18 @@ def points(self):
 
 
 def show_mults(self):
-    """Return display string for mults"""
-    result = self.database.fetch_section_band_count_nodx()
+    """Return display string for mults
+
+    Rule 5: each US state (KH6 and KL7 included), each VE province/territory
+    and each North American country other than W/VE, once per band.  A
+    station outside North America sends only a name, so it has no section -
+    the empty section used to count as one multiplier that they all shared.
+    """
+    result = self.database.exec_sql(
+        "select count(DISTINCT(Sect || ':' || Band)) as sb_count from dxlog "
+        "where ContestNR = ? and Sect not in ('', 'DX');",
+        (self.database.current_contest,),
+    )
     if result:
         return int(result.get("sb_count", 0))
     return 0
@@ -406,7 +416,7 @@ def recalculate_mults(self):
         )
         result = self.database.exec_sql(query)
         count = result.get("sect_count", 1)
-        if count == 0 and contact.get("Points", 0) == 1 and sect != "DX":
+        if count == 0 and contact.get("Points", 0) == 1 and sect not in ("", "DX"):
             contact["IsMultiplier1"] = 1
         else:
             contact["IsMultiplier1"] = 0
