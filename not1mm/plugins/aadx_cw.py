@@ -158,6 +158,9 @@ def set_contact_vars(self):
     global my_continent
     global my_country
 
+    # Either lookup can come back empty; a missing worked call used to leave
+    # their_country unbound and set_contact_vars raised.
+    their_country = their_continent = ""
     result = self.cty_lookup(self.contact.get("Call", ""))
     band = int(int(float(self.contact.get("Freq", 0))) / 1000)
 
@@ -516,13 +519,22 @@ def recalculate_mults(self):
     global my_country
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    # points() scores from contact_is_dupe, so it has to be worked out here:
+    # otherwise every contact is scored with whatever the last one left it at,
+    # and a duplicate logged last would zero the whole log.
+    worked = set()
 
     if my_continent == "AS":
         for contact in all_contacts:
             self.contact = contact
+            key = (contact.get("Call", ""), contact.get("Band", ""))
+            self.contact_is_dupe = 1 if key in worked else 0
+            worked.add(key)
             contact["Points"] = points(self)
             time_stamp = contact.get("TS", "")
-            # dxcc = contact.get("CountryPrefix", "")
+
+            their_country = ""
+            primary_pfx = ""
             result = self.cty_lookup(contact.get("Call", ""))
             if result is not None:
                 item = result.get(next(iter(result)))
@@ -533,7 +545,11 @@ def recalculate_mults(self):
             band = contact.get("Band", "")
             result = fetch_dxcc_exists_before_me(self, primary_pfx, time_stamp, band)
             dxcc_count = result.get("dxcc_count", 1)
-            if dxcc_count == 0 and my_country.upper() != their_country.upper():
+            if (
+                contact["Points"] > 0
+                and dxcc_count == 0
+                and my_country.upper() != their_country.upper()
+            ):
                 contact["IsMultiplier1"] = 1
             else:
                 contact["IsMultiplier1"] = 0
@@ -541,16 +557,17 @@ def recalculate_mults(self):
     else:
         for contact in all_contacts:
             self.contact = contact
+            key = (contact.get("Call", ""), contact.get("Band", ""))
+            self.contact_is_dupe = 1 if key in worked else 0
+            worked.add(key)
             contact["Points"] = points(self)
             time_stamp = contact.get("TS", "")
-            # wpx = contact.get("WPXPrefix", "")
             wpx = calculate_wpx_prefix(contact.get("Call", ""))
             contact["WPXPrefix"] = wpx
 
             result = fetch_wpx_exists_before_me(
                 self, wpx, time_stamp, self.contact.get("Band", "")
             )
-            # wpx_count = result.get("wpx_count", 1)
             if contact["Points"] > 0 and result.get("wpx_count", 1) == 0:
                 contact["IsMultiplier1"] = 1
             else:
