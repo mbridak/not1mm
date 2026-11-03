@@ -82,6 +82,24 @@ def get_points(self):
         return int(result.get("Points", 0))
     return 0
 
+
+def contest_time(self):
+    """The time a windowed dupe rule should count from.
+
+    A contact already in the log carries the time the rule is about, which is
+    what a re-scored or imported log needs.  One being typed in has no
+    timestamp yet, and then the wall clock is the time of the operation.
+    Returns a naive UTC datetime, which is how the rules compare.
+    """
+    stamp = str(self.contact.get("TS", "") or "")
+    if stamp:
+        try:
+            return datetime.datetime.strptime(stamp, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            logger.warning("contest_time: cannot parse a timestamp %r", stamp)
+    return datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
+
+
 def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
