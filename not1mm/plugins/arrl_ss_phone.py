@@ -1,4 +1,7 @@
-"""ARRL plugin"""
+"""ARRL plugin
+
+Find rules at: https://contests.arrl.org/ContestRules/SS-Rules.pdf
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
@@ -25,6 +28,24 @@ See the Contest Specific Notes section of the manual for more info.
 name = "ARRL Sweepstakes Phone"
 cabrillo_name = "ARRL-SS-SSB"
 mode = "SSB"  # CW SSB BOTH RTTY
+
+# The ARRL/RAC sections, which are both the multipliers and the only valid
+# received exchange. Anything else means the station worked is not in W/VE and
+# so does not score for a W/VE entrant (rule 2.1).
+ARRL_SECTIONS = frozenset((
+    "CO", "IA", "KS", "MN", "MO", "ND", "NE", "SD",
+    "CT", "EMA", "ME", "NH", "RI", "VT", "WMA",
+    "ENY", "NLI", "NNJ", "NNY", "SNJ", "WNY",
+    "DE", "EPA", "MDC", "WPA",
+    "AL", "GA", "KY", "NC", "NFL", "PR", "SC", "SFL", "TN", "VA", "VI", "WCF",
+    "AR", "LA", "MS", "NM", "NTX", "OK", "STX", "WTX",
+    "EB", "LAX", "ORG", "PAC", "SB", "SCV", "SDG", "SF", "SJV", "SV",
+    "AK", "AZ", "EWA", "ID", "MT", "NV", "OR", "UT", "WWA", "WY",
+    "MI", "OH", "WV", "IL", "IN", "WI",
+    "AB", "BC", "GH", "MB", "NB", "NL", "NS", "ONE", "ONN", "ONS", "PE",
+    "QC", "SK", "TER",
+))
+
 columns = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
@@ -138,14 +159,23 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
+    # Rule 2.1: W/VE stations may only contact other W/VE stations for contest
+    # credit, and a station outside W/VE cannot send a section.
+    if str(self.contact.get("Sect", "")).upper() not in ARRL_SECTIONS:
+        return 0
+
     return 2
 
 
 def show_mults(self):
     """Return display string for mults"""
+    # Rule 5.2: only the ARRL/RAC sections are multipliers. A "DX" or empty
+    # Sect in the log is not a section and must not inflate the claim.
+    sections = ",".join(f"'{sect}'" for sect in sorted(ARRL_SECTIONS))
     sql = (
         "select count(DISTINCT(Sect)) as mults from dxlog "
-        f"where ContestNR = {self.database.current_contest};"
+        f"where ContestNR = {self.database.current_contest} "
+        f"and upper(Sect) in ({sections});"
     )
     result = self.database.exec_sql(sql)
     return int(result.get("mults", 0))
