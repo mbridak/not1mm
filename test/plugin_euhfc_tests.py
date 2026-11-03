@@ -28,7 +28,7 @@ def _make_ctx(contact=None, is_dupe=0, sql_result=None, fetch_points=None):
 
 def test_module_metadata():
     assert euhfc.name == "EUHFC"
-    assert euhfc.cabrillo_name == "EU-HFC"
+    assert euhfc.cabrillo_name == "EUHFC"
     assert euhfc.mode == "BOTH"
     # rule 7: dupe once per band+mode
     assert euhfc.dupe_type == 3

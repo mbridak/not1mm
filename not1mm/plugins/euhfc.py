@@ -1,5 +1,5 @@
 """
-European HF Championship  EU-HFC
+European HF Championship  EUHFC
 
 https://euhf.s5cc.eu/
 
