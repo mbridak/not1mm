@@ -162,18 +162,47 @@ def prefill(self):
         self.other_1.setText(exch.replace("#", serial_nr))
 
 
+_DIGITAL_MODES = {
+    "FT8",
+    "FT4",
+    "RTTY",
+    "PSK31",
+    "FSK441",
+    "MSK144",
+    "JT65",
+    "JT9",
+    "Q65",
+    "PKTUSB",
+    "PKTLSB",
+}
+
+
+def _dupe_mode(mode: str) -> str:
+    """Group a mode the way the band/mode duplicate check does."""
+
+    mode = str(mode).upper()
+    if mode in ("LSB", "USB", "SSB", "FM", "AM"):
+        return "PH"
+    if mode.startswith("CW"):
+        return "CW"
+    if mode in _DIGITAL_MODES:
+        return "DI"
+    return "OTHER"
+
+
 def points(self):
-    """Calc point"""
+    """Calc point
+
+    One point per kilometre between the two stations, and a station may be
+    worked once per band and mode.
+    """
 
     if self.contact_is_dupe > 0:
         return 0
 
-    _points = 1
-    _kilometers = 0
-    _their_grid = self.contact["Exchange1"].upper()
-    _kilometers = distance(self.station.get("GridSquare", ""), _their_grid)
-    _points = max(1, _kilometers)
-    return _points
+    their_grid = str(self.contact.get("Exchange1", "") or "").upper()
+    kilometers = distance(self.station.get("GridSquare", ""), their_grid)
+    return max(1, kilometers)
 
 
 def show_mults(self, rtc=None):
@@ -441,12 +470,20 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    worked = set()
     for contact in all_contacts:
-        # recalculate points
-        _their_grid = contact.get("Exchange1").upper()
-        _kilometers = distance(self.station.get("GridSquare", ""), _their_grid)
-        _points = max(1, _kilometers)
-        contact["Points"] = _points
+        # The distance depends on the operator's own grid, so the points are
+        # worked out again - and so is the duplicate, which is per band and
+        # mode: this used to score every contact, duplicates included.
+        self.contact = contact
+        key = (
+            str(contact.get("Call", "")).upper(),
+            contact.get("Band", ""),
+            _dupe_mode(contact.get("Mode", "")),
+        )
+        self.contact_is_dupe = 1 if key in worked else 0
+        worked.add(key)
+        contact["Points"] = points(self)
 
         self.database.change_contact(contact)
 

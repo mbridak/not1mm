@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "DL1ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Beispielweg",
+    "City": "Musterstadt",
+    "State": "",
+    "Zip": "00000",
+    "Country": "Germany",
+    "Email": "dl1abc@example.com",
+    "GridSquare": "JN58",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "2M",
+    "ModeCategory": "SSB+CW",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-09-05 14:00:00",
+    "SentExchange": "JN58"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 5,
+    "mults": null,
+    "score": 1434,
+    "dupes": 1
+  }
+}
