@@ -1,4 +1,4 @@
-"""CQ World Wide DX CW plugin"""
+"""CQ World Wide DX RTTY plugin"""
 
 # CQ Worldwide DX Contest, RTTY
 # Status:	        Active
@@ -32,7 +32,7 @@
 # E-mail logs to:	(none)
 # Upload log at:	https://www.cqwwrtty.com/logcheck/
 # Mail logs to:	    (see rules)
-# Find rules at:	https://www.cqwwrtty.com/
+# Find rules at:	https://cqwwrtty.com/
 # Cabrillo name:	CQ-WW-RTTY
 
 
@@ -189,6 +189,40 @@ def points(self):
     return 0
 
 
+def country_multipliers(self) -> int:
+    """Count distinct (country, band) pairs worked.
+
+    CQ WW RTTY rule IV.C.2: the country is the DXCC/WAE entity, with IG9
+    (African Italy) and IH9 (Pantelleria) counted separately from Italy.
+    Maritime mobiles count only for a zone, so they are left out here.
+    """
+    countries = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        call = str(contact.get("Call", "")).upper()
+        if call.endswith("/MM") or call.startswith("MM/"):
+            continue
+        prefix = contact.get("CountryPrefix", "")
+        if prefix == "I" and call[:3] in ("IG9", "IH9"):
+            prefix = call[:3]
+        countries.add((prefix, contact.get("Band")))
+    return len(countries)
+
+
+def qth_multipliers(self) -> int:
+    """Count distinct (W/VE QTH, band) pairs worked.
+
+    Rule IV.C.3: each continental US state, DC and each Canadian call area.
+    Alaska and Hawaii count as country multipliers only, never as QTH ones.
+    """
+    qths = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        qth = str(contact.get("Exchange1", "")).upper().strip()
+        if not qth or qth == "DX" or qth in ("AK", "HI"):
+            continue
+        qths.add((qth, contact.get("Band")))
+    return len(qths)
+
+
 def show_mults(self, rtc=None):
     """Return display string for mults"""
 
@@ -198,16 +232,12 @@ def show_mults(self, rtc=None):
 
     _zone, _country, _spc_count = 0, 0, 0
     result1 = self.database.fetch_zn_band_count()
-    result2 = self.database.fetch_country_band_count()
-    res3_query = f"select count(DISTINCT(Exchange1 || ':' || Band)) as spc_count from dxlog where ContestNR = {self.database.current_contest} and Exchange1 != 'DX';"
-    result3 = self.database.exec_sql(res3_query)
+
+    _country = country_multipliers(self)
+    _spc_count = qth_multipliers(self)
 
     if result1:
         _zone = int(result1.get("zb_count", 0))
-    if result2:
-        _country = int(result2.get("cb_count", 0))
-    if result3:
-        _spc_count = int(result3.get("spc_count", 0))
 
     if rtc is not None:
         return (_country + _spc_count, _zone)

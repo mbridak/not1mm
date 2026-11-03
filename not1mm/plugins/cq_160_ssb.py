@@ -1,4 +1,7 @@
-"""CQ 160 CW plugin"""
+"""CQ 160 SSB plugin
+
+Find rules at: https://www.cq160.com/rules/
+"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long, too-many-lines, no-name-in-module
 

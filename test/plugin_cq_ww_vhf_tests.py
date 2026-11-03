@@ -7,9 +7,12 @@ from not1mm.plugins import cq_ww_vhf
     [
         ("50.0", 1),
         ("6", 1),
+        (50.0, 1),  # the DXLOG column stores a MHz float
         ("144.0", 2),
         ("2", 2),
+        (144.0, 2),
         ("432.0", 0),
+        (432.0, 0),
         ("20.0", 0),
         ("", 0),
     ],

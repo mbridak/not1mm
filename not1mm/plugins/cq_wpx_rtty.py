@@ -34,7 +34,7 @@
 #  	E-mail logs to:	(none)
 #  	Upload log at:	https://www.cqwpxrtty.com/logcheck/
 #  	Mail logs to:	(none)
-#  	Find rules at:	https://www.cqwpxrtty.com/rules.htm
+#  	Find rules at:	https://cqwpxrtty.com/rules.htm
 #  	Cabrillo name:	CQ-WPX-RTTY
 
 import datetime
@@ -184,9 +184,12 @@ def points(self):
                 return 3
             return 6
 
-        # Both in same country
+        # Both in same country: rule V.B.3 pays one point on 28/21/14 MHz and
+        # two points on 7 and 3.5 MHz.
         if my_country.upper() == their_country.upper():
-            return 1
+            if band in [28, 21, 14]:
+                return 1
+            return 2
 
         # Below Same Continent Different Country
 
