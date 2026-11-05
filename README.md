@@ -67,23 +67,56 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-10-28] @mbridak Fix: Enable socket draining and improve logging format in rigctld_command and...
-- [2026-10-27] @mbridak Fix: Add drain_socket method to toss stale data.
-- [2026-10-26] @mbridak Fix: Add support for {VOICE0} macro to trigger voice memory 0
-- [2026-10-26] @mbridak Fix: Add is_floatable method to validate float conversion for frequency checks.
-- [2026-10-23] @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
-- [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
-- [2026-10-17] @mbridak Fix: Cabrillo output formatting for multiple county lines.
-- [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.
-- [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
-  - @mbridak Fix: ADIF contest name to preferred enumerated value.
-  - @mbridak Adjust CW place holder text to make it clear that it's not an actual value in the field.
-- [2026-10-02] @mbridak fix: EditContact dialog had no theme applied.
-  - @mbridak made contact edit and edit keys dialogs modal so they would appear above floating windows.
-- [2026-10-01] @mbridak fix: exclude DX from spc count. Fixes #694
-  - @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
-  - @mbridak correct exchange for CQP.
-  - @mbridak Update main.py to supress 59/9 insertions for CQP.
+- [2026-11-04] Merge branch 'master' of http://github.com/mbridak/not1mm
+  - Merge pull request #725 from DJLax5/issue-719-cq-freq
+  - Merge pull request #728 from DJLax5/issue-717-band-memory
+  - Merge pull request #727 from DJLax5/issue-722-utc-clock
+- [2026-11-01] Band buttons: remember last frequency per band, mode and VFO (#717)
+  - Store CQ frequency on F1 Key and Click, adds  switch to S&P on QSY option
+- [2026-11-04] Adds a UTC clock to the top right of the main window
+- [2026-11-03] Merge pull request #726 from DJLax5/issue-718-spot-dx
+  - Merge pull request #731 from df7cb/new-spots-clear-freq
+  - Make "new spots clear frequency" configurable
+  - Merge pull request #730 from df7cb/contest
+  - tci: the CW test expects the wrong command for sending text
+  - Cabrillo name of EUHFC is EUHFC
+  - tests: add the contest log corpus, its generator and its runner
+  - US contests: in-area scoring and the empty section
+  - VHF and distance contests: the band and mode multipliers
+  - Award, DX and activity contests: the DXCC models and the prefixes
+  - European HF contests: the stored exchange, the geographic points and the prefill
+  - SAC: match the entities cty.dat actually stores
+  - AADX contests: work out the duplicate before re-scoring, and guard the lookups
+  - 10-10 contests: read the logged exchange, not the entry field
+  - REF contests: the multiplier model and the stragglers
+  - ARI contests: scoring, prefixes and the 40-80 Cabrillo name
+  - JIDX contests: score only JA-DX contacts, and the Cabrillo category
+  - NAQP and the CW activity tests
+  - URE (Spain) contests: the exchange, EF0F and the multipliers
+  - SSA Manadstest: the multiplier key and a locator crash
+  - DARC contests: the DOK and prefix multipliers, and re-scoring duplicates
+  - ERAU (Estonia) contests: the ES-only rule and the dupe windows
+  - RSGB and UK contests: credit, modes and the multiplier model
+  - WIA and VK contests: the dupe windows, the prefixes and the Oceania points
+  - IARU contests: multipliers once per band, and the entrant's own zone
+  - ARRL contests: contest credit, multipliers and the mode/band tables
+  - CQ contests: fix the country, QTH and band multipliers
+  - plugin_common: round-trip the station callsign through ADIF
+  - ham_utility: add band_mhz_of() to normalise a stored band
+  - database: make the period duplicate window half-open
+  - plugin_common: read a contact's own time for a windowed dupe rule
+  - plugin_common: share the ADIF import and the Cabrillo/EDI export
+- [2026-11-01] Merge pull request #724 from DJLax5/issue-715-cabrillo-crash
+  - Removed my call to a generic one
+  - Merge pull request #711 from rxcomm/na-sprint
+  - Fix Cabrillo export crash on QSO without exchange (#715)
+  - Make SPOT_DX key action use MainWindow.spot_dx (#718)
+- [2026-09-25] This commit adds support for a new contest, the NA Sprint. Rules for the contest are a...
+- [2026-10-30] Merge pull request #709 from microphonon/statistics
+  - add CTY ZN breakdown
+- [2026-10-29] Merge pull request #708 from microphonon/qso_party
+- [2026-10-28] fix qso parties
+  - @mbridak Fix: Enable socket draining and improve logging format in rigctld_command and...
 
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
