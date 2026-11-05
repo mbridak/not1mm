@@ -1,5 +1,7 @@
 """
 WIA-REMEMBRANCE
+
+Find rules at: https://www.wia.org.au/members/contests/rdcontest/
 """
 
 import datetime
@@ -8,7 +10,8 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif
+from not1mm.lib.ham_utility import band_mhz_of
+from not1mm.lib.plugin_common import contest_time, gen_adif, get_points, imp_adif
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -23,7 +26,7 @@ a. For a single operator, the number of years you have been a licenced Ham. For 
 
 b. For a multi-op or club station, the number of licenced years of the longest licenced Amateur present at the start of the contest.
 
-Dupes are not tracked. You should make use of the bottom half of the log window as you type in the call.
+A station may be worked once per band every three hours.  FM counts as SSB and RTTY counts as CW, so the call does stay lit as a dupe across those pairs.
 """
 
 name = "WIA REMEMBRANCE"
@@ -390,9 +393,12 @@ def points(self):
 
     score = 1
 
-    if self.contact.get("Band", 0) == "1.8":
+    # The band was compared to the string "1.8" while the column holds the
+    # float 1.8, so a 160m contact never got its extra point.
+    band = band_mhz_of(self.contact.get("Band", 0))
+    if band == 1.8:
         score += 1
-    if float(self.contact.get("Band", 0)) >= 1240.0:
+    if band >= 1240.0:
         score += 1
     if self.contact.get("Mode", "") in (
         "CW",
@@ -415,8 +421,12 @@ def points(self):
         "PKT",
     ):
         score *= 2
-    # CW and RTTY * 2
-    if 100 >= int(datetime.datetime.now().astimezone().strftime("%H%M")) <= 600:
+    # Rule 5: a contact between 0100 and 0600 local time scores triple.  The
+    # comparison was the wrong way round - `100 >= X <= 600` is "X <= 100" -
+    # and it read the wall clock instead of the contact's own time, so a
+    # re-scored log used the time of the re-score.
+    local = contest_time(self).replace(tzinfo=datetime.timezone.utc).astimezone()
+    if 100 <= int(local.strftime("%H%M")) <= 600:
         score *= 3
 
     return score
@@ -574,8 +584,10 @@ def date_string_difference(date_str1, date_str2):
 
     date_format = "%Y-%m-%d %H:%M:%S"
 
-    dt1 = datetime.datetime.strptime(date_str1, date_format).astimezone(datetime.UTC)
-    dt2 = datetime.datetime.strptime(date_str2, date_format).astimezone(datetime.UTC)
+    # Both stamps are UTC as logged; astimezone() on a naive datetime would
+    # read them as local time and shift the difference by the local offset.
+    dt1 = datetime.datetime.strptime(date_str1, date_format)
+    dt2 = datetime.datetime.strptime(date_str2, date_format)
     diff = abs(dt1 - dt2)
 
     # Extract total seconds to calculate hours and minutes
@@ -585,19 +597,52 @@ def date_string_difference(date_str1, date_str2):
     return f"{hours:02d}{minutes:02d}"
 
 
+def _dupe_mode(mode: str) -> str:
+    """Group a mode the way rule 9.3a groups them for the three-hour window.
+
+    FM and SSB count as one mode, and CW and RTTY count as another.
+    """
+    mode = str(mode).upper()
+    if mode in ("LSB", "USB", "SSB", "FM", "AM"):
+        return "PH"
+    if mode.startswith("CW") or mode.startswith("RTTY"):
+        return "CW"
+    return mode
+
+
 def specific_contest_check_dupe(self, call):
     """
     Calculates if call has been worked in current band/mode within 3hrs.
-    """
 
-    # get latest QSO w/ same band and mode.
-    query = f"select TS from DXLOG where Band={self.contact.get('Band', '')} and Mode='{self.radio_state.get('mode', '')}' and Call='{call}' and ContestNR = '{self.pref.get('contest', '0')}' order by TS DESC;"
-    result = self.database.exec_sql(query)
+    Rule 9.3a: FM and SSB count as one mode and CW and RTTY as another, so a
+    station worked on FM is a duplicate if it is then worked on SSB inside the
+    window.  Matching the mode exactly let those pairs score again.
+    """
+    mode_group = _dupe_mode(self.radio_state.get("mode", ""))
+
+    # get latest QSO w/ same band and mode group.
+    query = (
+        "select TS from DXLOG where Band = ? and Call = ? and ContestNR = ? and "
+        "CASE WHEN Mode IN ('LSB','USB','SSB','FM','AM') THEN 'PH' "
+        "WHEN Mode like 'CW%' or Mode like 'RTTY%' THEN 'CW' ELSE Mode END = ? "
+        "order by TS DESC;"
+    )
+    result = self.database.exec_sql(
+        query,
+        (
+            self.contact.get("Band", ""),
+            call,
+            self.pref.get("contest", "0"),
+            mode_group,
+        ),
+    )
     if result:
         log_dt = result.get("TS", False)
         if log_dt is not False:
-            now = datetime.datetime.now(datetime.UTC)
-            date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            # The window is measured back from the contact's own time, not
+            # the wall clock, so a re-scored or imported log is checked
+            # against the clock it was logged on.
+            date_time = contest_time(self).strftime("%Y-%m-%d %H:%M:%S")
             delta = date_string_difference(log_dt, date_time)
             if int(delta) < 300:
                 return {"isdupe": True}

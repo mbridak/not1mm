@@ -1,4 +1,7 @@
-"""CQ WPX CW plugin"""
+"""JIDX PH plugin
+
+Find rules at: https://www.jidx.org/jidxrule-e.html
+"""
 
 # pylint: disable=invalid-name, unused-variable, c-extension-no-member
 
@@ -122,10 +125,26 @@ def prefill(self):
         field.setText(SentExchange)
 
 
+def _is_ja(self, call) -> bool:
+    """True when the callsign belongs to a Japanese station."""
+    result = self.cty_lookup(call)
+    if not result:
+        return False
+    item = result.get(next(iter(result)), {})
+    return item.get("entity", "") == "Japan"
+
+
 def points(self):
     """Calc point"""
 
     if self.contact_is_dupe > 0:
+        return 0
+
+    # Rule 5: only contacts between a JA station and a DX station score.
+    # JA-JA and DX-DX contacts are worth no points and no multiplier.
+    if _is_ja(self, self.station.get("Call", "")) == _is_ja(
+        self, self.contact.get("Call", "")
+    ):
         return 0
 
     pts = {
@@ -141,8 +160,17 @@ def points(self):
 
 
 def show_mults(self):
-    """Return display string for mults"""
-    result = self.database.fetch_nr_count()
+    """Return display string for mults.
+
+    Rule 6: a multiplier is each Japanese prefecture once per band, so the
+    same number on a second band counts again.  Only scoring contacts count,
+    which keeps the CQ zones of DX-DX contacts out of the total.
+    """
+    query = (
+        "select count(DISTINCT NR || ':' || Band) as nr_count from dxlog "
+        f"where ContestNR = {self.pref.get('contest', '1')} and Points > 0;"
+    )
+    result = self.database.exec_sql(query)
     if result:
         return int(result.get("nr_count", 0))
     return 0
@@ -164,8 +192,7 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        result = self.database.fetch_nr_count()
-        mults = int(result.get("nr_count", 0))
+        mults = show_mults(self)
         return contest_points * mults
     return 0
 
@@ -214,13 +241,13 @@ def cabrillo(self, file_encoding):
             category = "21"
         if band == "20M":
             category = "14"
-        if band == "40m":
+        if band == "40M":
             category = "7"
         if band == "80M":
             category = "3.5"
         if band == "160M":
             category = "1.8"
-        if self.contest_settings.get("PowerCategory", "") in "LOW QRP":
+        if self.contest_settings.get("PowerCategory", "") in ("LOW", "QRP"):
             category += "L"
     else:
         if self.contest_settings.get("TransmitterCategory", "") == "ONE":
@@ -379,13 +406,13 @@ def cabrillo(self, file_encoding):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
-        time_stamp = contact.get("TS", "")
-        nr = contact.get("NR", "")
-        result = self.database.fetch_nr_exists_before_me(nr, time_stamp)
-        nr_count = result.get("nr_count", 1)
-        if nr_count == 0:
+    seen = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        # One multiplier per prefecture per band (rule 6).  A contact that
+        # scores nothing - a duplicate, or a DX-DX contact - carries none.
+        key = (str(contact.get("NR", "")), str(contact.get("Band", "")))
+        if contact.get("Points", 0) > 0 and key not in seen:
+            seen.add(key)
             contact["IsMultiplier1"] = 1
         else:
             contact["IsMultiplier1"] = 0

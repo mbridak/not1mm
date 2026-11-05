@@ -2,7 +2,12 @@
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
-# RSGB Affiliated Clubs Championship Contests
+# RSGB 3.5MHz Club Championship Contests
+#
+# The RSGB 3.5MHz Autumn Series (Cabrillo RSGB-80M-AUT) is a similar series
+# sharing this Cabrillo format and these per-QSO rules, but it adds a
+# licence-class multiplier for club scores and a "Le Mans" start penalty, and
+# it is not covered by this plugin.
 #  	Status:	Active
 #  	Geographic Focus:	UK and Crown dependencies
 #  	Participation:	Worldwide
@@ -10,22 +15,23 @@
 #  	Modes:	CW, SSB, RTTY/PSK
 #  	Bands:	80m
 #  	Classes:	Single Op (Low - 10W/High - 100W )  (Assisted/Non-assisted)
-#   Single Op Single Band (QRP/Low/High)
-#  	Max operating hours:	Single Op: 36 hours with offtimes of at least 60 minutes
+#   100W/10W Assisted and 100W/10W Unassisted Sections
+#  	Max operating hours:	Single Op and Multi-Op: 90 minutes per session
 #  	Max power:	LP: 10 watts; HP: 100 watts
 #  	Exchange:	RST + Serial No.
-#  	Work stations:	Once per contest
-#  	QSO Points:	1 per QSO
+#  	Work stations:	Once per mode (PSK63 and RTTY are separate modes)
+#  	QSO Points:	1 per QSO, 5 for a QSO with the RSGB station (G6XX or a regional variant)
 #  	Multipliers:	None
 #  	Score Calculation:	Total score = total QSO points
 #  	E-mail logs to:	(none)
 #  	Upload log at:	http://www.rsgbcc.org/cgi-bin/hfenter.pl
 #  	Mail logs to:	(none)
-#  	Find rules at:	https://www.rsgbcc.org
-#  	Cabrillo name:	RSGB-CC-CW
+#  	Find rules at:	https://www.rsgbcc.org/hf/rules/2026/r80mcc.shtml
+#  	Cabrillo name:	RSGB-80M-CC
 
 import datetime
 import logging
+import re
 
 from pathlib import Path
 
@@ -55,7 +61,91 @@ columns = [
 advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 1
+# 5 custom: the sessions are single-band, and the DATA ones count PSK63 and
+# RTTY as different modes, so "once per session" is once per mode with those
+# two kept apart.
+dupe_type = 5
+
+# Rule 6: a UK&CD station is required at one or both ends of a contact for it
+# to count for points.  CD is the Crown Dependencies; the Republic of Ireland
+# is a separate country and is not part of UK&CD.
+UKCD_ENTITIES = (
+    "England",
+    "Scotland",
+    "Wales",
+    "Northern Ireland",
+    "Guernsey",
+    "Jersey",
+    "Isle of Man",
+)
+
+
+def _is_ukcd(self, call) -> bool:
+    """Return True if `call` is in the UK, the Crown Dependencies or NI."""
+    result = self.cty_lookup(call)
+    if result is not None:
+        item = result.get(next(iter(result)))
+        return item.get("entity", "") in UKCD_ENTITIES
+    return False
+
+
+# The Society's station is G6XX and its regional variants.  The regional
+# secondary locator follows either G or M - Wales is GW6XX or MW6XX, Scotland
+# is GM6XX or MM6XX - so both spellings have to be recognised.  A bare M6XX is
+# deliberately not matched: that is an ordinary English full-licence call.
+RSGB_STATION_RE = re.compile(r"^(?:G|G[DEIJMUW]|M[DEIJMUW])6XX$")
+
+
+def is_rsgb_station(call: str) -> bool:
+    """Rule 6: the Society's station, G6XX or a regional variant, scores 5."""
+    return bool(RSGB_STATION_RE.match(str(call).upper().split("/")[0]))
+
+
+def _dupe_mode(mode: str) -> str:
+    """Group a mode for dupe checking.
+
+    Phone modes are one group and the CW variants another, so a station worked
+    on LSB and again on USB is still a dupe.  RTTY and the PSK family stay
+    apart from each other, because rule 6 lets a station be worked "once on
+    PSK63 and once on RTTY".
+    """
+    upper = str(mode).upper()
+    if upper.startswith("PSK") or upper.startswith("BPSK"):
+        return "PSK"
+    if upper.startswith("RTTY") or upper in ("FSK", "RY"):
+        return "RTTY"
+    if upper in ("LSB", "USB", "SSB", "FM", "AM", "PH"):
+        return "PH"
+    if upper.startswith("CW"):
+        return "CW"
+    return upper
+
+
+# Rule 7: "check that you have used the correct Cabrillo Mode Codes: RTTY =
+# RY, PSK63 = PS, PK or PM, SSB = PH, CW = CW".  A rig reports PSK31 rather
+# than PSK63, so the PSK family has to be matched as a group.
+CABRILLO_MODE = {"CW": "CW", "PH": "PH", "RTTY": "RY", "PSK": "PS"}
+
+
+def _cabrillo_mode(mode: str) -> str:
+    """Return the Cabrillo mode code for `mode`."""
+    return CABRILLO_MODE.get(_dupe_mode(mode), mode)
+
+
+def specific_contest_check_dupe(self, call):
+    """Rule 6: a station may be worked once per mode in this session.
+
+    The sessions are single-band, so "once per session" is once per mode.  A
+    duplicate still has to be logged - it just scores nothing.
+    """
+    state = getattr(self, "radio_state", None) or {}
+    want = _dupe_mode(state.get("mode") or self.contact.get("Mode", ""))
+    for contact in self.database.fetch_all_contacts_asc():
+        if str(contact.get("Call", "")).upper() != str(call).upper():
+            continue
+        if _dupe_mode(contact.get("Mode", "")) == want:
+            return {"isdupe": True}
+    return {"isdupe": False}
 
 
 def init_contest(self):
@@ -136,8 +226,19 @@ def points(self):
 
     if self.contact_is_dupe > 0:
         return 0
-    else:
-        return 1
+
+    # Rule 6: a UK&CD station must be at one or both ends of the contact.
+    if not (
+        _is_ukcd(self, self.station.get("Call", ""))
+        or _is_ukcd(self, self.contact.get("Call", ""))
+    ):
+        return 0
+
+    # Rule 6: QSOs with the Society's station are worth five points.
+    if is_rsgb_station(self.contact.get("Call", "")):
+        return 5
+
+    return 1
 
 
 def show_mults(self):
@@ -332,15 +433,7 @@ def cabrillo(self, file_encoding):
             )
             for contact in log:
                 the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode == "LSB" or themode == "USB":
-                    themode = "PH"
-                if themode == "RTTY":
-                    themode = "RY"
-                if themode == "PSK":
-                    themode = "PS"
+                themode = _cabrillo_mode(contact.get("Mode", ""))
                 frequency = str(round(contact.get("Freq", "0"))).rjust(5)
 
                 loggeddate = the_date_and_time[:10]

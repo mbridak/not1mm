@@ -83,6 +83,23 @@ def get_points(self):
     return 0
 
 
+def contest_time(self):
+    """The time a windowed dupe rule should count from.
+
+    A contact already in the log carries the time the rule is about, which is
+    what a re-scored or imported log needs.  One being typed in has no
+    timestamp yet, and then the wall clock is the time of the operation.
+    Returns a naive UTC datetime, which is how the rules compare.
+    """
+    stamp = str(self.contact.get("TS", "") or "")
+    if stamp:
+        try:
+            return datetime.datetime.strptime(stamp, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            logger.warning("contest_time: cannot parse a timestamp %r", stamp)
+    return datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
+
+
 def gen_adif(self, cabrillo_name: str, contest_id=""):
     """
     Creates an ADIF file of the contacts made.
@@ -785,8 +802,13 @@ def imp_adif(self):
         elif q.get("PFX"):
             this_contact["CountryPrefix"] = q.get("PFX")
 
+        # "StationPrefix" holds the station's own callsign (an N1MM-ism; there
+        # is no STATIONPREFIX field in ADIF). Fall back to the standard
+        # STATION_CALLSIGN so not1mm's own ADIF export round-trips.
         if q.get("STATIONPREFIX"):
             this_contact["StationPrefix"] = q.get("STATIONPREFIX")
+        elif q.get("STATION_CALLSIGN"):
+            this_contact["StationPrefix"] = q.get("STATION_CALLSIGN")
 
         if q.get("QTH"):
             this_contact["QTH"] = q.get("QTH")
@@ -991,3 +1013,31 @@ def imp_adif(self):
     logger.debug(f"Saved {saves} ADIF records to contest {self.contest.name}")
     self.show_message_box(f"Saved {saves} ADIF records to this contest.")
     return
+
+
+def import_adif(mainwindow) -> None:
+    """Import an ADIF file into the current contest.
+
+    ``imp_adif`` is shared rather than per-plugin, so call it directly. A few
+    plugins never re-exported it, which made their ADIF import raise
+    AttributeError.
+    """
+    imp_adif(mainwindow)
+
+
+def generate_edi(mainwindow) -> None:
+    """Export the current contest as an EDI file, when the plugin supports it."""
+    if hasattr(mainwindow.contest, "edi"):
+        mainwindow.contest.edi(mainwindow)
+
+
+def generate_cabrillo(mainwindow, file_encoding: str) -> None:
+    """Export the current contest as a Cabrillo file."""
+    if mainwindow.contest is None:
+        mainwindow.show_message_box("You have no contest defined.")
+        return
+    try:
+        mainwindow.contest.cabrillo(mainwindow, file_encoding)
+    except Exception as exception:  # noqa: BLE001
+        logger.exception("cabrillo: export failed")
+        mainwindow.show_message_box(f"Error saving Cabrillo: {exception}")

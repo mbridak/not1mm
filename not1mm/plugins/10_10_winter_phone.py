@@ -1,4 +1,7 @@
-"""10 10 winter phone plugin"""
+"""10 10 winter phone plugin
+
+Find rules at: https://www.ten-ten.org/qso-party-rules
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -17,7 +20,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Name + 10-10# + SPC"
 
 name = "10 10 WINTER PHONE"
-cabrillo_name = "10-10"
+cabrillo_name = "10-10-WINTER-PHONE"
 mode = "SSB"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [
@@ -122,7 +125,12 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    exchange = self.other_2.text().upper().split()
+    # Two points with a 10-10 number, one without.  Read the exchange that was
+    # logged: an imported or re-scored log leaves the entry field empty and
+    # every contact would score zero.
+    exchange = str(self.contact.get("NR", "")).upper().split()
+    if len(exchange) != 3:
+        exchange = self.other_2.text().upper().split()
     if len(exchange) == 3:
         try:
             tentennumber = exchange[1]

@@ -329,14 +329,24 @@ class BandMapScene(QtWidgets.QGraphicsScene):
         super().__init__(parent)
         self.parent = parent
 
+    def new_spots_clear_frequency_menu(self, action):
+        self.parent.settings["bandmap_spots_clear_freq"] = action.isChecked()
+        Preferences.save()
+
     def contextMenuEvent(self, event):
+        menu = QtWidgets.QMenu()
+
         item = self.itemAt(event.scenePos(), QtGui.QTransform())
-        if item:
+        # Only the spot labels carry a callsign.  The frequency marks are
+        # QGraphicsPolygonItem, which is not a QObject and has no property()
+        # at all, so the menu belongs to the labels alone.
+        callsign = None
+        if isinstance(item, QtWidgets.QGraphicsTextItem):
             callsign = item.property("callsign")
+        if callsign:
             freq = item.property("freq")
             comment = item.toolTip()
 
-            menu = QtWidgets.QMenu()
             menu.addAction(
                 "Confirm",
                 lambda: self.parent.spots.addspot(
@@ -375,9 +385,17 @@ class BandMapScene(QtWidgets.QGraphicsScene):
             menu.addAction(
                 "Delete", lambda: self.parent.spots.delete_spot(callsign, freq)
             )
-            menu.exec(event.screenPos())
-        else:
-            super().contextMenuEvent(event)
+            menu.addSeparator()
+
+        action = menu.addAction(
+            "New spots clear frequency",
+            lambda: self.new_spots_clear_frequency_menu(action),
+        )
+        action.setCheckable(True)
+        if self.parent.settings.get("bandmap_spots_clear_freq", False):
+            action.setChecked(True)
+
+        menu.exec(event.screenPos())
 
 
 class BandMapWindow(QDockWidget):
@@ -508,7 +526,9 @@ class BandMapWindow(QDockWidget):
         if packet.get("cmd", "") == "DX":
             spot = packet
             spot["callsign"] = packet.get("dx", "")  # rename field
-            self.spots.addspot(spot, clear_freq=True)
+            self.spots.addspot(
+                spot, clear_freq=self.settings.get("bandmap_spots_clear_freq", False)
+            )
             self.update_stations()
             return
         if packet.get("cmd", "") == "MARKDX":
@@ -584,15 +604,18 @@ class BandMapWindow(QDockWidget):
             self.update()
 
     def spot_clicked(self):
-        """dunno"""
-        items = self.bandmap_scene.selectedItems()
-        for item in items:
-            if item:
-                cmd = {}
-                cmd["cmd"] = "TUNE"
-                cmd["freq"] = items[0].property("freq")
-                cmd["spot"] = items[0].toPlainText().split()[0]
-                self.message.emit(cmd)
+        """Tune to the spot that was selected on the bandmap."""
+        for item in self.bandmap_scene.selectedItems():
+            # Only the spot labels carry a freq.  The frequency marks are
+            # QGraphicsPolygonItem, which is not a QObject and has no
+            # property() at all, and the axis labels carry no freq either.
+            if not isinstance(item, QtWidgets.QGraphicsTextItem):
+                continue
+            cmd = {}
+            cmd["cmd"] = "TUNE"
+            cmd["freq"] = item.property("freq")
+            cmd["spot"] = item.toPlainText().split()[0]
+            self.message.emit(cmd)
 
     def request_workedlist(self):
         """Request worked call list from logger"""

@@ -1,4 +1,7 @@
-"""10 10 fall cw plugin"""
+"""UKEI-DX plugin
+
+Find rules at: https://www.ukeicc.com/dx-contest-rules.php
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -8,6 +11,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import band_mhz_of
 from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -179,42 +183,43 @@ def points(self):
     zt = datetime.datetime.now(datetime.UTC).isoformat(" ")[11:16]
     ct = int(zt[0:2]) * 100 + int(zt[3:5])
     double_window = st <= ct <= et
+    band = band_mhz_of(self.contact.get("Band"))
 
     # UK/EI stations:
     if myprimary_pfx in ukei_pfx:
         if hiscontinent == "EU":
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
+            if band in (3.5, 7.0):
                 return 4 + (4 * double_window)
             return 2 + (2 * double_window)
-        if self.contact.get("Band", 0) in ["3.5", "7"]:
+        if band in (3.5, 7.0):
             return 8 + (8 * double_window)
         return 4 + (4 * double_window)
 
     # European stations:
     if mycontinent == "EU":
         if hisprimary_pfx in ukei_pfx:
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
+            if band in (3.5, 7.0):
                 return 4
             return 2
         elif hiscontinent == "EU":
-            if self.contact.get("Band", 0) in ["3.5", "7"]:
+            if band in (3.5, 7.0):
                 return 2
             return 1
-        if self.contact.get("Band", 0) in ["3.5", "7"]:
+        if band in (3.5, 7.0):
             return 4
         return 2
 
     # DX (Outside Europe)
     if mycontinent != "EU":
         if hisprimary_pfx in ukei_pfx:
-            if self.contact.get("Band", "") in ["3.5", "7"]:
+            if band in (3.5, 7.0):
                 return 8
             return 4
         elif hiscontinent == "EU":
-            if self.contact.get("Band", "") in ["3.5", "7"]:
+            if band in (3.5, 7.0):
                 return 4
             return 2
-        if self.contact.get("Band", "") in ["3.5", "7"]:
+        if band in (3.5, 7.0):
             return 2
         return 1
 
@@ -224,11 +229,14 @@ def points(self):
 def show_mults(self):
     """Return display string for mults"""
 
-    query = f"SELECT COUNT(DISTINCT CountryPrefix) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
+    # Rule 7.2: the multiplier total is the different DXCC countries worked
+    # *on each band* - excluding the UK/EI countries - plus the UK/EI District
+    # Codes worked *on each band*.
+    query = f"SELECT COUNT(DISTINCT CountryPrefix || ':' || Band) as dxcc_count FROM DXLOG WHERE CountryPrefix NOT IN ('EI', 'G', 'GD', 'GI', 'GJ', 'GM', 'GU', 'GW') and ContestNR = {self.pref.get('contest', '1')};"
     result = self.database.exec_sql(query)
     dxcc_count = result.get("dxcc_count", 0)
 
-    query = f"SELECT COUNT(DISTINCT SUBSTR(NR, LENGTH(NR) - 1)) as code_count FROM DXLOG WHERE ContestNR = {self.pref.get('contest', '1')}  and typeof(NR) = 'text';"
+    query = f"SELECT COUNT(DISTINCT SUBSTR(NR, LENGTH(NR) - 1) || ':' || Band) as code_count FROM DXLOG WHERE ContestNR = {self.pref.get('contest', '1')}  and typeof(NR) = 'text';"
     result = self.database.exec_sql(query)
     code_count = result.get("code_count", 0)
 
@@ -451,13 +459,17 @@ def cabrillo(self, file_encoding):
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 sentnr = str(contact.get("SentNr", "")).upper().split()
-                if len(sentnr) == 2:
+                if not sentnr:
+                    sentnr = "000 --"
+                elif len(sentnr) == 2:
                     sentnr = sentnr[0].zfill(3) + " " + sentnr[1]
                 else:
                     sentnr = sentnr[0].zfill(3) + " --"
 
                 nr = str(contact.get("NR", "")).upper().split()
-                if len(nr) == 2:
+                if not nr:
+                    nr = "000 --"
+                elif len(nr) == 2:
                     nr = nr[0].zfill(3) + " " + nr[1]
                 else:
                     if nr[0][-2:].isalpha():

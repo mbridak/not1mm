@@ -96,15 +96,7 @@ def FIND_DX(self) -> None:
 
 def SPOT_DX(self) -> None:
     """Spot the callsign to the cluster"""
-    freq = self.radio_state.get("vfoa")
-    dx = self.callsign.text()
-    if freq and dx:
-        cmd = {}
-        cmd["cmd"] = "SPOTDX"
-        cmd["dx"] = dx
-        cmd["freq"] = float(int(freq) / 1000)
-        if self.cluster_window:
-            self.cluster_window.msg_from_main(cmd)
+    self.spot_dx()
 
 
 def MARK_SPOT(self) -> None:

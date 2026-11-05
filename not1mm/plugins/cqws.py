@@ -1,4 +1,7 @@
-"""CQ World Scout"""
+"""CQ World Scout
+
+Find rules at: https://www.escoteiros.org.br/wp-content/uploads/2026/02/Boletim_CQWS_2026_ingles.pdf
+"""
 
 # Scoring
 # • All confirmed QSOs are valid; each station may be worked once per band.
@@ -187,7 +190,13 @@ def show_mults(self, rtc=None):
     result = self.database.exec_sql(query)
     if result.get("count", 0) > 0:
         _BFU = int(result.get("count", 0))
-    result2 = self.database.fetch_country_band_count()
+    # The country multiplier deliberately has no Band in its key: "One
+    # multiplier for each distinct country, counted only once across all
+    # bands".
+    result2 = self.database.exec_sql(
+        "select count(DISTINCT CountryPrefix) as cb_count from dxlog "
+        f"where ContestNR = '{self.pref.get('contest', '0')}'"
+    )
     if result2:
         _country = int(result2.get("cb_count", 0))
     if rtc is not None:

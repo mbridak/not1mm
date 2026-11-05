@@ -1,4 +1,7 @@
-"""OK1WC Memorial Contest (MWC) plugin"""
+"""OK1WC Memorial Contest (MWC) plugin
+
+Find rules at: https://memorial-ok1wc.cz/index.php?page=deniky
+"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
@@ -6,7 +9,7 @@
 # serial exchange
 # one point per QSO
 # multiplier is last character of call, once per band
-# Cabrillo name: OK1WC
+# Cabrillo name: MWC
 
 import datetime
 import logging
@@ -23,7 +26,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "#"
 
 name = "OK1WC Memorial Contest (MWC)"
-cabrillo_name = "OK1WC"
+cabrillo_name = "MWC"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 9, 11, 15]
 columns = [
@@ -165,7 +168,7 @@ def calc_score(self):
 
 def adif(self):
     """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "OK1WC")
+    gen_adif(self, cabrillo_name, "MWC")
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
@@ -378,9 +381,15 @@ def cabrillo(self, file_encoding):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
+    worked = set()
+    for contact in self.database.fetch_all_contacts_asc():
         self.contact = contact
+        # points() scores from contact_is_dupe, so it has to be worked out
+        # here: otherwise every contact is re-scored with whatever the last
+        # one left it at, and a duplicate logged last would zero the log.
+        key = (contact.get("Call", ""), contact.get("Band", ""))
+        self.contact_is_dupe = 1 if key in worked else 0
+        worked.add(key)
         contact["Points"] = points(self)
         time_stamp = contact.get("TS", "")
         result = self.database.fetch_band_lastletter_exists_before_me(

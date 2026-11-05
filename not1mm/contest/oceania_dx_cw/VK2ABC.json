@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "VK2ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "",
+    "Zip": "00000",
+    "Country": "Australia",
+    "Email": "vk2abc@example.com",
+    "GridSquare": "QF56",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "CW",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-01-03 12:00:00",
+    "SentExchange": "1"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 5,
+    "mults": 4,
+    "score": 72,
+    "dupes": 1
+  }
+}

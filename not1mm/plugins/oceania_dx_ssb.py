@@ -72,6 +72,15 @@ dupe_type = 2
 my_continent = ""
 my_country = ""
 
+def _band_key(band) -> str:
+    """Return the band as the string the point table is keyed on.
+
+    Band arrives from the radio as "14.0" but comes back from the database as
+    the float 14.0, and a float is not a key here.
+    """
+    return str(band)
+
+
 _BAND_POINTS = {
     "1.8": 20,
     "3.5": 10,
@@ -154,7 +163,7 @@ def set_contact_vars(self):
     if my_continent != "OC" and self.contact.get("Continent", "") != "OC":
         self.contact["IsMultiplier1"] = 0
         return
-    if not wpx or band not in _BAND_POINTS:
+    if not wpx or _band_key(band) not in _BAND_POINTS:
         self.contact["IsMultiplier1"] = 0
         return
 
@@ -186,7 +195,7 @@ def points(self):
     if my_continent != "OC" and self.contact.get("Continent", "") != "OC":
         return 0
 
-    return _BAND_POINTS.get(self.contact.get("Band", "0.0"), 0)
+    return _BAND_POINTS.get(_band_key(self.contact.get("Band", "0.0")), 0)
 
 
 def show_mults(self):
@@ -428,8 +437,16 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    worked = set()
     for contact in all_contacts:
         self.contact = contact
+
+        # Work the duplicate out here: leaving contact_is_dupe as the last
+        # contact left it zeroes the points of the whole log as soon as one
+        # duplicate has been logged.
+        key = (contact.get("Call", ""), _band_key(contact.get("Band", "")))
+        self.contact_is_dupe = 1 if key in worked else 0
+        worked.add(key)
 
         contact["Points"] = points(self)
         time_stamp = contact.get("TS", "")

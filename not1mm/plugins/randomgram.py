@@ -1,4 +1,7 @@
-"""RandomGram plugin"""
+"""RandomGram plugin
+
+Find rules at: https://n1mmwp.hamdocs.com/mmfiles/randomgram-udc/
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -108,18 +111,27 @@ def prefill(self):
     if len(rgGroups) <= qso_count:
         return
 
-    nextRG = rgGroups[qso_count]
-    if len(nextRG) > 0:
+    # The line keeps its newline from readlines(), so strip it before it goes
+    # into the exchange field.
+    nextRG = str(rgGroups[qso_count]).strip()
+    if nextRG:
         self.other_1.setText(nextRG)
 
 
 def points(self):
-    """Calc point"""
+    """Calc point
+
+    The contest's UDC scores "PointsPerContact = IsComment, 1, SameContinent,
+    2, OtherContinent, 2": two points a contact, or one when what was logged
+    is a comment rather than a code group.  The logger has no comment flag, so
+    every contact is two.
+    """
     return 2
 
 
 def show_mults(self):
-    """Return display string for mults"""
+    """Return display string for mults - the event has none (NumMults = 0)."""
+    return 0
 
 
 def show_qso(self):
@@ -133,6 +145,9 @@ def show_qso(self):
 def calc_score(self):
     """Return calculated score"""
     result = self.database.fetch_points()
+    if result is None or result.get("Points") is None:
+        return 0
+    return int(result["Points"])
 
 
 def adif(self):

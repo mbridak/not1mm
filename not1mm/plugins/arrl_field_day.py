@@ -1,4 +1,7 @@
-"""ARRL Field Day plugin"""
+"""ARRL Field Day plugin
+
+Find rules at: https://contests.arrl.org/ContestRules/Field-Day-Rules.pdf
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
@@ -105,18 +108,32 @@ def prefill(self):
     """Fill SentNR"""
 
 
+_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
+
+
+def _points_for_mode(mode: str) -> int:
+    """Rule 7.1: phone contacts 1 point, CW and digital 2 points each.
+
+    Field Day allows exactly three event modes, so anything that is not phone
+    is either CW or digital. The old ``mode in "CW, RTTY, FT8"`` test was a
+    substring check against that literal, which gave every other digital mode
+    (PSK31, FT4, OLIVIA, ...) zero points.
+    """
+    upper = str(mode).upper()
+    if not upper:
+        return 0
+    if upper in _PHONE_MODES:
+        return 1
+    return 2
+
+
 def points(self):
     """Calc point"""
 
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
-        return 1
-    if _mode in "CW, RTTY, FT8":
-        return 2
-    return 0
+    return _points_for_mode(self.contact.get("Mode", ""))
 
 
 def show_mults(self):

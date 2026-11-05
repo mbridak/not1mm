@@ -1,4 +1,7 @@
-"""ARRL 160 CW plugin"""
+"""ARRL 160 CW plugin
+
+Find rules at: https://contests.arrl.org/ContestRules/160M-Rules.pdf
+"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
 
@@ -15,7 +18,7 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "ST/Prov or DX CQ Zone"
+EXCHANGE_HINT = "ST/Prov or DX report only"
 
 name = "ARRL 160-Meter"
 cabrillo_name = "ARRL-160"
@@ -36,6 +39,30 @@ advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 1
+
+# Rule 2.1.1: Alaska (KL7 - AK), Hawaii (KH6 - PAC), the Caribbean US
+# possessions (KP1-KP5) and the Pacific Ocean territories (KH0-KH9)
+# participate as W/VE stations and count as ARRL sections.
+WVE_PREFIXES = (
+    "K",
+    "KL",
+    "KH0",
+    "KH1",
+    "KH2",
+    "KH3",
+    "KH4",
+    "KH5",
+    "KH6",
+    "KH7",
+    "KH8",
+    "KH9",
+    "KP1",
+    "KP2",
+    "KP3",
+    "KP4",
+    "KP5",
+    "VE",
+)
 
 
 def init_contest(self):
@@ -132,48 +159,13 @@ def points(self):
     # 2.1.1 Alaska (KL7 – AK) and Hawaii (KH6 – PAC), the Caribbean US possessions (KP1-KP5 -
     # PR or VI), and all of the Pacific Ocean territories (KHØ-KH9 – PAC) participate as W/VE stations
     # and count as ARRL sections.
-    if mypfx in [
-        "K",
-        "KL",
-        "KH0",
-        "KH1",
-        "KH2",
-        "KH3",
-        "KH4",
-        "KH5",
-        "KH6",
-        "KH7",
-        "KH8",
-        "KH9",
-        "KP1",
-        "KP2",
-        "KP3",
-        "KP4",
-        "KP5",
-        "VE",
-    ] and pfx in [
-        "K",
-        "KL",
-        "KH0",
-        "KH1",
-        "KH2",
-        "KH3",
-        "KH4",
-        "KH5",
-        "KH6",
-        "KH7",
-        "KH8",
-        "KH9",
-        "KP1",
-        "KP2",
-        "KP3",
-        "KP4",
-        "KP5",
-        "VE",
-    ]:
+    if mypfx in WVE_PREFIXES and pfx in WVE_PREFIXES:
         return 2
 
-    if mypfx.upper() != pfx.upper():
+    # Rule 5.1.2: each contact with a DX station counts five points.  Rule 2.2
+    # only lets DX stations contact W/VE stations, so a DX-to-DX contact is
+    # worth neither points nor multipliers.
+    if mypfx in WVE_PREFIXES or pfx in WVE_PREFIXES:
         return 5
 
     return 0
@@ -227,26 +219,7 @@ def can_claim_dxcc(self):
         mypfx = ""
         item = result.get(next(iter(result)))
         mypfx = item.get("primary_pfx", "")
-        if mypfx in [
-            "K",
-            "KL",
-            "KH0",
-            "KH1",
-            "KH2",
-            "KH3",
-            "KH4",
-            "KH5",
-            "KH6",
-            "KH7",
-            "KH8",
-            "KH9",
-            "KP1",
-            "KP2",
-            "KP3",
-            "KP4",
-            "KP5",
-            "VE",
-        ]:
+        if mypfx in WVE_PREFIXES:
             return True
         return False
 

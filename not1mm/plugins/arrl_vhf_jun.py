@@ -1,4 +1,7 @@
-"""ARRL Jun VHF"""
+"""ARRL Jun VHF
+
+Find rules at: https://contests.arrl.org/ContestRules/JanJunSep-VHF-Rules.pdf
+"""
 
 # Cabrillo name:	ARRL-VHF-JUN
 # Cabrillo name aliases:	ARRL-VHF
@@ -11,7 +14,7 @@ import logging
 from pathlib import Path
 from PyQt6 import QtWidgets
 
-from not1mm.lib.ham_utility import get_logged_band
+from not1mm.lib.ham_utility import band_mhz_of, get_logged_band
 from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -38,6 +41,41 @@ advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
+
+# Rule 1: stations outside the US and Canada (and their possessions) may only
+# work stations in the US, Canada and their possessions.  The contest page
+# adds that stations in KH0-KH9, KL7, KP1-KP5, CY9 and CY0 count as W/VE.
+WVE_PREFIXES = (
+    "K",
+    "KL",
+    "KH0",
+    "KH1",
+    "KH2",
+    "KH3",
+    "KH4",
+    "KH5",
+    "KH6",
+    "KH7",
+    "KH8",
+    "KH9",
+    "KP1",
+    "KP2",
+    "KP3",
+    "KP4",
+    "KP5",
+    "VE",
+    "CY0",
+    "CY9",
+)
+
+
+def _is_wve_station(self, call) -> bool:
+    """Return True if `call` is in the US, Canada or their possessions."""
+    result = self.cty_lookup(call)
+    if result is not None:
+        item = result.get(next(iter(result)))
+        return item.get("primary_pfx", "") in WVE_PREFIXES
+    return False
 
 
 def init_contest(self):
@@ -124,22 +162,28 @@ def prefill(self):
 def points(self):
     """Calc point"""
 
-    # QSO Points:	1 point per 50 or 144 MHz QSO
-    # 2 points per 222 or 432 MHz QSO
-    # 4 points per 902 or 1296 MHz QSO
-    # 8 points per 2.3 GHz or higher QSO
+    # Rule 5.2, June and September contests: 1 point per 50 or 144 MHz QSO,
+    # 2 points per 222 or 432 MHz QSO, 3 points per 902 or 1296 MHz QSO and
+    # 4 points per 2.3 GHz or higher QSO.  (January uses 4 and 8 instead --
+    # rule 5.1.)
 
     if self.contact_is_dupe > 0:
         return 0
 
-    _band = self.contact.get("Band", "")
-    if _band in ["50", "144"]:
+    # Rule 1: only W/VE stations are worth points to a station outside W/VE.
+    if not _is_wve_station(
+        self, self.station.get("Call", "")
+    ) and not _is_wve_station(self, self.contact.get("Call", "")):
+        return 0
+
+    _band = band_mhz_of(self.contact.get("Band"))
+    if _band in (50.0, 144.0):
         return 1
-    if _band in ["222", "432"]:
+    if _band in (222.0, 432.0):
         return 2
-    if _band in ["902", "1296"]:
+    if _band in (902.0, 1296.0):
         return 3
-    if _band in ["2300+"]:
+    if _band >= 2300.0:
         return 4
     return 0
 
@@ -147,6 +191,16 @@ def points(self):
 def show_mults(self):
     """Return display string for mults"""
     # Multipliers:	Grid squares once per band
+
+    # Rule 5.3.1: each different grid square counts once per band.  Rule 1
+    # again: a station outside W/VE only gets credit for W/VE contacts, so
+    # only their grid squares count.
+    if not _is_wve_station(self, self.station.get("Call", "")):
+        mults = set()
+        for contact in self.database.fetch_all_contacts_asc():
+            if _is_wve_station(self, contact.get("Call", "")):
+                mults.add((contact.get("NR", ""), contact.get("Band")))
+        return len(mults)
 
     dx = 0
 

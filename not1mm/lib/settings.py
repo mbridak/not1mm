@@ -66,6 +66,9 @@ class Settings(QtWidgets.QDialog):
         )
 
         self.qsy_on_change.setChecked(bool(self.preference.get("sandpqsy", False)))
+        self.sp_on_freq_change.setChecked(
+            bool(self.preference.get("run_to_sp_on_qsy", False))
+        )
 
         self.edit_rst.setChecked(bool(self.preference.get("edit_rst", False)))
 
@@ -288,6 +291,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["use_call_history"] = self.use_call_history.isChecked()
 
         self.preference["sandpqsy"] = self.qsy_on_change.isChecked()
+        self.preference["run_to_sp_on_qsy"] = self.sp_on_freq_change.isChecked()
 
         self.preference["edit_rst"] = self.edit_rst.isChecked()
 

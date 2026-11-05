@@ -34,7 +34,7 @@ Multipliers:	French/Corsica departments once per band
 Score Calculation:	Total score = total QSO points x total mults
 
 Upload log at:	https://concours.r-e-f.org/contest/logs/upload-form/
-Find rules at:	https://concours.r-e-f.org/reglements/actuels/reg_cdfhfdx.pdf
+Find rules at:	https://concours.r-e-f.org/contest/a-propos/
 Cabrillo name:	REF-CW
 Cabrillo name aliases:	REF
 """
@@ -53,7 +53,7 @@ from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "Canton or #"
+EXCHANGE_HINT = "Department or #"
 
 name = "French REF DX contest - CW"
 cabrillo_name = "REF-CW"
@@ -131,8 +131,7 @@ def set_contact_vars(self):
     """
     Contest Specific
     Multipliers:
-    French/Corsica departments once per band
-    French overseas prefixes once per band
+    French/Corsica departments and the DOM/TOM prefixes once per band
     non-French DXCC countries once per band (available only to French stations)
     """
     self.contact["SNT"] = self.sent.text()
@@ -143,35 +142,28 @@ def set_contact_vars(self):
     self.contact["IsMultiplier1"] = 0
     self.contact["IsMultiplier2"] = 0
 
-    if (
-        self.contact.get("CountryPrefix", "") == "F"
-        and self.contact.get("NR", "").isalpha()
-    ):
-        canton = self.contact.get("NR", "").upper()
-        band = self.contact.get("Band", "")
-        query = (
-            f"select count(*) as canton_count from dxlog where "
-            f"NR = '{canton}' "
-            f"and Band = '{band}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
-        result = self.database.exec_sql(query)
-        count = int(result.get("canton_count", 0))
-        if count == 0:
-            self.contact["IsMultiplier1"] = 1
-
-    if self.contact.get("CountryPrefix", ""):
-        dxcc = self.contact.get("CountryPrefix", "")
-        band = self.contact.get("Band", "")
-        query = (
-            f"select count(*) as dxcc_count from dxlog where "
-            f"CountryPrefix = '{dxcc}' "
-            f"and Band = '{band}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
-        result = self.database.exec_sql(query)
-        if not result.get("dxcc_count", ""):
-            self.contact["IsMultiplier2"] = 1
+    band = self.contact.get("Band", "")
+    contest = self.pref.get("contest", "1")
+    worked = self.contact.get("CountryPrefix", "")
+    if _is_french(worked):
+        nr = str(self.contact.get("NR", "")).upper()
+        if nr:
+            result = self.database.exec_sql(
+                "select count(*) as n from dxlog where NR = ? and Band = ?"
+                " and ContestNR = ?;",
+                (nr, band, contest),
+            )
+            if not result.get("n", 0):
+                self.contact["IsMultiplier1"] = 1
+    elif _is_french(_primary_pfx(self, self.station.get("Call", ""))):
+        if worked:
+            result = self.database.exec_sql(
+                "select count(*) as n from dxlog where CountryPrefix = ?"
+                " and Band = ? and ContestNR = ?;",
+                (worked, band, contest),
+            )
+            if not result.get("n", 0):
+                self.contact["IsMultiplier2"] = 1
 
 
 def predupe(self):
@@ -193,6 +185,32 @@ def prefill(self):
         self.other_1.setText(sent_sxchange_setting)
 
 
+def _primary_pfx(self, call) -> str:
+    """The primary prefix of a callsign, or "" when it is not in cty.dat."""
+    result = self.cty_lookup(call)
+    if not result:
+        return ""
+    item = result.get(next(iter(result)), {})
+    return item.get("primary_pfx", "")
+
+
+def _continent(self, call) -> str:
+    """The continent of a callsign, or "" when it is not in cty.dat."""
+    result = self.cty_lookup(call)
+    if not result:
+        return ""
+    item = result.get(next(iter(result)), {})
+    return item.get("continent", "")
+
+
+def _is_french(prefix) -> bool:
+    """True for a French station: F itself or a DOM/TOM prefix (FG, FM, ...).
+
+    Every primary prefix in cty.dat that starts with F is a French territory.
+    """
+    return bool(prefix) and str(prefix).upper().startswith("F")
+
+
 def points(self):
     """
     Scoring:
@@ -202,49 +220,22 @@ def points(self):
     French: 2 points per QSO with non-French station on different continent
     non-French: 1 point per QSO with French station same continent
     non-French: 3 points per QSO with French station on different continent
-
-    self.contact["CountryPrefix"]
-    self.contact["Continent"]
     """
 
     if self.contact_is_dupe > 0:
         return 0
 
-    # Just incase the cty lookup fails
-    my_country = None
-    my_continent = None
-    their_continent = None
-    their_country = None
+    my_continent = _continent(self, self.station.get("Call", ""))
+    their_continent = _continent(self, self.contact.get("Call", ""))
+    im_french = _is_french(_primary_pfx(self, self.station.get("Call", "")))
+    they_french = _is_french(_primary_pfx(self, self.contact.get("Call", "")))
 
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        my_country = item.get("entity", "")
-        my_continent = item.get("continent", "")
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        their_country = item.get("entity", "")
-        their_continent = item.get("continent", "")
-
-    if my_country == "France":
-        if their_country == "France":
-            if my_continent == their_continent:
-                return 6
-            else:
-                return 15
-        else:
-            if my_continent == their_continent:
-                return 1
-            else:
-                return 2
-    else:
-        if their_country == "France":
-            if their_continent == my_continent:
-                return 1
-            else:
-                return 3
-
+    if im_french:
+        if they_french:
+            return 6 if my_continent == their_continent else 15
+        return 1 if my_continent == their_continent else 2
+    if they_french:
+        return 1 if my_continent == their_continent else 3
     return 0
 
 
@@ -282,38 +273,30 @@ def calc_score(self):
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
+    # The French multiplier is the exchange a French station sends - one of
+    # the departments for the mainland or its DOM/TOM prefix - so it is a new
+    # NR per band from any French station.  The DXCC countries are the other
+    # multiplier and only a French entrant may claim them.
+    im_french = _is_french(_primary_pfx(self, self.station.get("Call", "")))
+    seen_french = set()
+    seen_country = set()
+    for contact in self.database.fetch_all_contacts_asc():
         contact["IsMultiplier1"] = 0
         contact["IsMultiplier2"] = 0
 
-        time_stamp = contact.get("TS", "")
-        canton = contact.get("NR", "")
-        dxcc = contact.get("CountryPrefix", "")
-        band = contact.get("Band", "")
-        if dxcc == "HB" and canton.isalpha():
-            query = (
-                f"select count(*) as canton_count from dxlog where  TS < '{time_stamp}' "
-                f"and NR = '{canton.upper()}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            count = int(result.get("canton_count", 0))
-            if count == 0:
+        band = str(contact.get("Band", ""))
+        worked = contact.get("CountryPrefix", "")
+        if _is_french(worked):
+            nr = str(contact.get("NR", "")).upper()
+            key = (nr, band)
+            if nr and key not in seen_french:
+                seen_french.add(key)
                 contact["IsMultiplier1"] = 1
-
-        if dxcc:
-            query = (
-                f"select count(*) as dxcc_count from dxlog where TS < '{time_stamp}' "
-                f"and CountryPrefix = '{dxcc}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            if not result.get("dxcc_count", ""):
+        elif im_french:
+            key = (worked, band)
+            if worked and key not in seen_country:
+                seen_country.add(key)
                 contact["IsMultiplier2"] = 1
-
         self.database.change_contact(contact)
     cmd = {}
     cmd["cmd"] = "UPDATELOG"

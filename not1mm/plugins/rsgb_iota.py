@@ -249,7 +249,7 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * (mults + 1)
+        return contest_points * mults
     return 0
 
 
@@ -458,13 +458,17 @@ def cabrillo(self, file_encoding):
                 loggeddate = the_date_and_time[:10]
                 loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
                 sentnr = str(contact.get("SentNr", "")).upper().split()
-                if len(sentnr) == 2:
+                if not sentnr:
+                    sentnr = "0000 ------"
+                elif len(sentnr) == 2:
                     sentnr = sentnr[0].zfill(4) + " " + convert_iota_number(sentnr[1])
                 else:
                     sentnr = sentnr[0].zfill(4) + " ------"
 
                 nr = str(contact.get("NR", "")).upper().split()
-                if len(nr) == 2:
+                if not nr:
+                    nr = "0000 ------"
+                elif len(nr) == 2:
                     nr = nr[0].zfill(4) + " " + convert_iota_number(nr[1])
                 else:
                     if nr[0][-2:].isalpha():

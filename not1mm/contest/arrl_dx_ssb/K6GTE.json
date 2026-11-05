@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "K6GTE",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "CA",
+    "Zip": "00000",
+    "Country": "United States",
+    "Email": "sample@example.com",
+    "GridSquare": "DM13",
+    "ARRLSection": "ORG",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "SSB",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-01-03 12:00:00",
+    "SentExchange": "TX"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 10,
+    "mults": 6,
+    "score": 108,
+    "dupes": 2
+  }
+}

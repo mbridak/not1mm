@@ -129,6 +129,7 @@ def set_contact_vars(self):
             f"select count(*) as dok_count from dxlog where 1=1 "
             f"and NR = '{dok.upper()}' "
             f"and Band = '{band}' "
+            f"and Mode = '{self.contact.get('Mode', '')}' "
             f"and ContestNR = {self.pref.get('contest', '1')};"
         )
         result = self.database.exec_sql(query)
@@ -138,9 +139,14 @@ def set_contact_vars(self):
         else:
             self.contact["IsMultiplier2"] = 0
 
-    if self.contact.get("WPXPrefix", ""):
-        result = self.database.fetch_wpx_exists(self.contact.get("WPXPrefix", ""))
-        if result.get("wpx_count", ""):
+    wpx = self.contact.get("WPXPrefix", "")
+    if wpx:
+        result = self.database.exec_sql(
+            "select count(*) as wpx_count from dxlog where WPXPrefix = ? "
+            "and Band = ? and Mode = ? and ContestNR = ?;",
+            (wpx, band, self.contact.get("Mode", ""), self.pref.get("contest", "1")),
+        )
+        if result.get("wpx_count", 0):
             self.contact["IsMultiplier1"] = 0
         else:
             self.contact["IsMultiplier1"] = 1
@@ -433,35 +439,30 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    seen_doks = set()
+    seen_prefixes = set()
     for contact in all_contacts:
         contact["IsMultiplier1"] = 0
         contact["IsMultiplier2"] = 0
 
-        time_stamp = contact.get("TS", "")
         dok = contact.get("NR", "")
         dxcc = contact.get("CountryPrefix", "")
         band = contact.get("Band", "")
+        mode = contact.get("Mode", "")
         wpx = contact.get("WPXPrefix", "")
-        result = self.database.fetch_wpx_exists_before_me(wpx, time_stamp)
-        wpx_count = result.get("wpx_count", 1)
-        if wpx_count == 0:
+
+        # Rule 5: one multiplier point per DOK and per prefix, per band - and
+        # in the Mixed class per band and mode, which comes to the same thing
+        # for an entry that only uses one mode.  An empty prefix is not one.
+        if wpx and (wpx, band, mode) not in seen_prefixes:
             contact["IsMultiplier1"] = 1
-        else:
-            contact["IsMultiplier1"] = 0
+            seen_prefixes.add((wpx, band, mode))
 
         if dxcc == "DL" and not isinstance(dok, int) and dok.upper() != "NM":
-            query = (
-                f"select count(*) as dok_count from dxlog where  TS < '{time_stamp}' "
-                f"and NR = '{dok.upper()}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            count = int(result.get("dok_count", 0))
-            if count == 0:
+            if (dok.upper(), band, mode) not in seen_doks:
                 contact["IsMultiplier2"] = 1
-            else:
-                contact["IsMultiplier2"] = 0
+                seen_doks.add((dok.upper(), band, mode))
+
         self.database.change_contact(contact)
 
 

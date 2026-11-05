@@ -1,4 +1,7 @@
-"""NAQP SSB plugin"""
+"""NAQP SSB plugin
+
+Find rules at: https://ncjweb.com/NAQP-Rules.pdf
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -12,6 +15,13 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
+
+# NAQP and the Sprint share one multiplier taxonomy: US states plus DC, the 13
+# VE provinces/territories, and other North American countries keyed
+# "C-<prefix>" so that a country prefix cannot collide with a state
+# abbreviation (the Dominican Republic's HI against Hawaii's HI).  Reuse the
+# Sprint's tables rather than keeping a second copy.
+from not1mm.plugins.na_sprint_cw import _entity, mult_key
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +45,22 @@ advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
+
+# A North American station is "defined by the ARRL DXCC List, with the addition
+# of Hawaii".  cty.dat files Hawaii (KH6) under Oceania, so the exception has
+# to be made explicitly - na_sprint_cw.py does the same.
+NA_FORCED_PREFIXES = ("KH6",)
+
+
+def _is_na(self, call) -> bool:
+    """Return True if `call` counts as a North American station."""
+    result = self.cty_lookup(call)
+    if result is not None:
+        item = result.get(next(iter(result)))
+        if item.get("continent", "") == "NA":
+            return True
+        return item.get("primary_pfx", "") in NA_FORCED_PREFIXES
+    return False
 
 
 def init_contest(self):
@@ -89,13 +115,23 @@ def set_contact_vars(self):
     self.contact["Sect"] = self.other_2.text().upper()
     self.contact["SentNr"] = self.contest_settings.get("SentExchange", 0)
 
-    if self.contact.get("Sect", ""):
-        result = self.database.fetch_sect_band_exists(
-            self.contact.get("Sect", ""), self.contact.get("Band", "")
+    # Exchange1 carries the normalised multiplier key; Sect keeps the raw
+    # location for the Cabrillo output.  A location outside North America
+    # (logged as "DX") keys to "" and is never a multiplier.
+    continent, pfx = _entity(self, self.contact.get("Call", ""))
+    if not pfx:
+        continent = self.contact.get("Continent", "")
+        pfx = self.contact.get("CountryPrefix", "")
+    key = mult_key(self.contact.get("Sect", ""), continent, pfx)
+    self.contact["Exchange1"] = key
+    self.contact["IsMultiplier1"] = 0
+    if key:
+        result = self.database.exec_sql(
+            "select count(*) as mult_count from dxlog "
+            "where Exchange1 = ? and Band = ? and ContestNR = ?;",
+            (key, self.contact.get("Band", ""), self.database.current_contest),
         )
-        if result.get("sect_count", ""):
-            self.contact["IsMultiplier1"] = 0
-        else:
+        if not result.get("mult_count", 0):
             self.contact["IsMultiplier1"] = 1
 
 
@@ -113,26 +149,22 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    mycontinent = ""
-    hiscontinent = ""
-    result = self.cty_lookup(self.station.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        mycontinent = item.get("continent", "")
-    result = self.cty_lookup(self.contact.get("Call", ""))
-    if result is not None:
-        item = result.get(next(iter(result)))
-        hiscontinent = item.get("continent", "")
-    if mycontinent == "NA" or hiscontinent == "NA":
+    if _is_na(self, self.station.get("Call", "")) or _is_na(
+        self, self.contact.get("Call", "")
+    ):
         return 1
     return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
-    result = self.database.fetch_section_band_count_nodx()
+    result = self.database.exec_sql(
+        "select count(DISTINCT(Exchange1 || ':' || Band)) as mult_count "
+        "from dxlog where ContestNR = ? and Exchange1 != '';",
+        (self.database.current_contest,),
+    )
     if result:
-        return int(result.get("sb_count", 0))
+        return int(result.get("mult_count", 0) or 0)
     return 0
 
 
@@ -374,27 +406,25 @@ def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
 
     all_contacts = self.database.fetch_all_contacts_asc()
+    seen = set()
     for contact in all_contacts:
-        time_stamp = contact.get("TS", "")
-        sect = contact.get("Sect", "")
+        continent, pfx = _entity(self, contact.get("Call", ""))
+        if not pfx:
+            continent = contact.get("Continent", "")
+            pfx = contact.get("CountryPrefix", "")
+        key = mult_key(contact.get("Sect", ""), continent, pfx)
         band = contact.get("Band", "")
-        query = (
-            f"select count(*) as sect_count from dxlog where  TS < '{time_stamp}' "
-            f"and Sect = '{sect}' "
-            f"and Band = '{band}' "
-            f"and ContestNR = {self.pref.get('contest', '1')};"
-        )
-        result = self.database.exec_sql(query)
-        count = result.get("sect_count", 1)
-        if count == 0 and contact.get("Points", 0) == 1 and sect != "DX":
+        contact["Exchange1"] = key
+        if key and contact.get("Points", 0) == 1 and (key, band) not in seen:
             contact["IsMultiplier1"] = 1
         else:
             contact["IsMultiplier1"] = 0
+        seen.add((key, band))
         self.database.change_contact(contact)
-        cmd = {}
-        cmd["cmd"] = "UPDATELOG"
-        if self.log_window:
-            self.log_window.msg_from_main(cmd)
+    cmd = {}
+    cmd["cmd"] = "UPDATELOG"
+    if self.log_window:
+        self.log_window.msg_from_main(cmd)
 
 
 def process_esm(self, new_focused_widget=None, with_enter=False):

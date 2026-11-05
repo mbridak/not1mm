@@ -1,4 +1,7 @@
-"""SAC SSB plugin"""
+"""SAC SSB plugin
+
+Find rules at: https://www.sactest.net/blog/scandinavian-activity-contest-2026-rules/
+"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import
 
@@ -11,6 +14,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib.ham_utility import band_mhz_of
 from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
 from not1mm.lib.version import __version__
 
@@ -38,50 +42,37 @@ advance_on_space = [True, True, True, True, True]
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
 
+# cty.dat's primary_pfx for each Scandinavian DXCC entity, which is what the
+# log stores in CountryPrefix. The rules list the call areas in their own
+# notation (OFØ, OGØ, OHØ, OJØ, 5P, 7S, SA-SL ...), but none of those are ever
+# the primary_pfx of a Scandinavian log entry, so matching on them missed
+# Aland (OH0) and Market Reef (OJ0) altogether.
 scandinavian_prefixes = [
-    "JW",
-    "JX",
-    "LA",
-    "LB",
-    "LC",
-    "LG",
-    "LI",
-    "LJ",
-    "LN",
-    "OF",
-    "OG",
-    "OH",
-    "OI",
-    "OFØ",
-    "OGØ",
-    "OHØ",
-    "OJØ",
-    "OX",
-    "XP",
-    "OW",
-    "OY",
-    "5P",
-    "5Q",
-    "OU",
-    "OV",
-    "OZ",
-    "7S",
-    "8S",
-    "SA",
-    "SB",
-    "SC",
-    "SD",
-    "SE",
-    "SF",
-    "SG",
-    "SH",
-    "SI",
-    "SJ",
-    "SK",
-    "SL",
-    "SM",
-    "TF",
+    "JW",  # Svalbard
+    "JX",  # Jan Mayen
+    "LA",  # Norway
+    "OH",  # Finland
+    "OH0",  # Aland Islands
+    "OJ0",  # Market Reef
+    "OX",  # Greenland
+    "OY",  # Faroe Islands
+    "OZ",  # Denmark
+    "SM",  # Sweden
+    "TF",  # Iceland
 ]
+
+
+def scandinavian_entity(contact) -> str:
+    """The Scandinavian DXCC entity a contact belongs to, or "".
+
+    cty.dat gives Bear Island, which is not a DXCC entity, its own record keyed
+    "JW/b"; SAC section 2 counts it as part of Svalbard.
+    """
+    prefix = str(contact.get("CountryPrefix", ""))
+    if prefix == "JW/b":
+        return "JW"
+    return prefix if prefix in scandinavian_prefixes else ""
+
 
 
 def init_contest(self):
@@ -200,9 +191,9 @@ def points(self):
     ):
         if mycontinent == "EU":
             return 1
-        if self.contact.get("Band", 0) in ["3.5", "7"]:
+        if band_mhz_of(self.contact.get("Band")) in (3.5, 7.0):
             return 3
-        if self.contact.get("Band", 0) in ["14", "21", "28"]:
+        if band_mhz_of(self.contact.get("Band")) in (14.0, 21.0, 28.0):
             return 1
 
     # Something wrong
@@ -220,12 +211,22 @@ def show_mults(self):
         myprimary_pfx = item.get("primary_pfx", "")
 
     if myprimary_pfx in scandinavian_prefixes:
+        # 8.1: each worked DXCC entity, once per band.
         result = self.database.fetch_country_band_count()
         mult_count = result.get("cb_count", 0)
     else:
-        query = f"SELECT count(DISTINCT(CountryPrefix || ':' || substr(WPXPrefix,3,1) || ':' || Band)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix IN ('JW', 'JX', 'LA', 'LB', 'LC', 'LG', 'LI', 'LJ' , 'LN', 'OF', 'OG', 'OH', 'OI', 'OFØ', 'OGØ', 'OHØ', 'OJØ', 'OX', 'XP', 'OW', 'OY', '5P', '5Q', 'OU', 'OV', 'OZ', '7S', '8S', 'SA', 'SB', 'SC', 'SD', 'SE', 'SF', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'TF');"
-        result = self.database.exec_sql(query)
-        mult_count = result.get("mults", 0)
+        # 8.2: each worked prefix-number (0-9) inside each Scandinavian DXCC
+        # entity, once per band. SI3, SK3, SL3, SM3, 7S3 and 8S3 are all the
+        # same multiplier, and a station with no prefix number counts for the
+        # 0th area.
+        mults = set()
+        for contact in self.database.fetch_all_contacts_asc():
+            entity = scandinavian_entity(contact)
+            if not entity:
+                continue
+            area = str(contact.get("WPXPrefix", ""))[2:3]
+            mults.add((entity, area, contact.get("Band")))
+        mult_count = len(mults)
     return mult_count
 
 

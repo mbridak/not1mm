@@ -2873,6 +2873,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="sp_on_freq_change">
+            <property name="text">
+             <string>Switch to S&amp;&amp;P on Freq Change</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="edit_rst">
             <property name="text">
              <string>Select the S in RST when field entered</string>

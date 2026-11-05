@@ -24,7 +24,7 @@
 # 50335 NW Hayward Rd
 # Manning, OR 97125
 # USA
-# Find rules at:	http://www.kkn.net/stew/
+# Find rules at:	https://www.kkn.net/stew/
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
 
@@ -120,20 +120,21 @@ def prefill(self):
 
 
 def points(self):
-    """Calc point"""
+    """Calc point
+
+    Rule 5: a minimum of one point per QSO and one more for every 500 km
+    between the two grid squares (1750 km is four points).  The 2x for a
+    low-power and 4x for a QRP station *worked* is worked out by the contest's
+    log checker from the other station's log, and the entrant's own power
+    multiplies the final score (rule 7), so neither belongs on the contact.
+    The distance used to be read from the entry field, which an imported or
+    re-scored log leaves empty.
+    """
     if self.contact_is_dupe > 0:
         return 0
-    _points = 1
-    _kilometers = 0
-    _their_grid = self.other_1.text().upper()
-    _kilometers = distance(self.station.get("GridSquare", ""), _their_grid)
-    if _kilometers > 500:
-        _points = _points + int(_kilometers / 500)
-    if self.contest_settings.get("PowerCategory", "") == "QRP":
-        _points = _points * 4
-    if self.contest_settings.get("PowerCategory", "") == "LOW":
-        _points = _points * 2
-    return _points
+    their_grid = str(self.contact.get("Exchange1", "")).upper()
+    kilometers = distance(self.station.get("GridSquare", ""), their_grid)
+    return 1 + int(kilometers / 500)
 
 
 def show_mults(self):
@@ -150,9 +151,20 @@ def show_qso(self):
 
 
 def calc_score(self):
-    """Return calculated score"""
-    _points = get_points(self)
-    return _points
+    """Return calculated score
+
+    Rule 7: a station running more than five watts but no more than 100 watts
+    multiplies its score by 1.5, and one running five watts or less by three.
+    The old code multiplied *each contact* by 2 or 4 instead, and by the
+    entrant's power rather than the power of the station worked.
+    """
+    points = get_points(self)
+    power = str(self.contest_settings.get("PowerCategory", "")).upper()
+    if power == "QRP":
+        return round(points * 3)
+    if power == "LOW":
+        return round(points * 1.5)
+    return points
 
 
 def adif(self):

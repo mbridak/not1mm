@@ -1,4 +1,7 @@
-"""CQ 160 CW plugin"""
+"""ARI 40 80 plugin
+
+Find rules at: https://www.ari.it/en/contest-hf/contest-4080.html
+"""
 
 # pylint: disable=invalid-name, c-extension-no-member, unused-import, line-too-long
 
@@ -18,7 +21,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Automobile Code"
 
 name = "ARI 40 80"
-cabrillo_name = "ARI-40-80"
+cabrillo_name = "40-80"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
@@ -113,19 +116,21 @@ def points(self) -> int:
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    # The mode test used `in`, a substring test on a string: an empty mode
+    # matched, and so did any single letter it contains.  Test the values.
+    _mode = self.contact.get("Mode", "").upper()
+    if _mode in ("SSB", "USB", "LSB", "FM", "AM", "PH"):
         return 1
-    if _mode in "RTTY":
+    if _mode in ("RTTY", "RY"):
         return 2
-    if _mode in "CW":
+    if _mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
         return 3
     return 0
 
 
 def show_mults(self):
     """Return display string for mults"""
-    query = f"select count(DISTINCT(Exchange1 || ':' || Mode || ':' || Band)) as mult_count from dxlog where ContestNR = {self.pref.get('contest', '1')};"
+    query = f"select count(DISTINCT(Exchange1 || ':' || Mode || ':' || Band)) as mult_count from dxlog where ContestNR = {self.pref.get('contest', '1')} and Exchange1 != '';"
 
     result = self.database.exec_sql(query)
     if result:

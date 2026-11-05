@@ -1,4 +1,7 @@
-"""DARC Schwaben Contest plugin"""
+"""DARC Schwaben Contest plugin
+
+Find rules at: https://www.darc.de/der-club/referate/conteste/allgemeine-contestregeln-darc-referat-conteste/
+"""
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
@@ -449,10 +452,18 @@ def recalculate_mults(self):
     all_contacts = self.database.fetch_all_contacts_asc()
     if not all_contacts:
         return
+    worked = set()
     for contact in all_contacts:
         call = contact.get("Call", "")
         dok = contact.get("NR", "")
-        contact["Points"] = get_points_for_contact(call, dok)
+        # The score is the sum of the Points column, so a duplicate has to be
+        # left at zero here or it adds points it never earned.
+        key = (call, contact.get("Band", ""), contact.get("Mode", ""))
+        if key in worked:
+            contact["Points"] = 0
+        else:
+            contact["Points"] = get_points_for_contact(call, dok)
+        worked.add(key)
         self.database.change_contact(contact)
 
 

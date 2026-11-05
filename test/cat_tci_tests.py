@@ -143,7 +143,9 @@ def test_set_cw_speed_sends_macros_speed(cat):
 def test_sendcw_sends_text(cat):
     go_online(cat)
     cat.sendcw("CQ TEST")
-    assert cat.client.sent == ["cw_msg:0,,,CQ TEST;"]
+    # cw_macros:arg1,arg2 sends a text message (TCI Protocol 3.2.1); cw_msg
+    # 3.2.2 is the prefix/callsign/suffix form and is not for free text.
+    assert cat.client.sent == ["cw_macros:0,CQ TEST;"]
 
 
 def test_close_delegates_to_client(cat):

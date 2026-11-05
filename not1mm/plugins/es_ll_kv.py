@@ -1,17 +1,18 @@
-""" """
+"""
+Find rules at: https://erau.ee/images/LL/ES-Open_rules.pdf
+"""
 
 import logging
 import platform
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, contest_time
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -71,9 +72,10 @@ def specific_contest_check_dupe(self, call):
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
     time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
-    # get current time in UTC
-    iso_current_time = datetime.now(timezone.utc)
-    current_time = iso_current_time.replace(tzinfo=None)
+    # The time the rule counts from is the contact's own, so a re-scored or
+    # imported log is checked against the clock it was logged on; only a
+    # contact being typed in has no timestamp yet.
+    current_time = contest_time(self)
 
     if (
         time_period_1 is not None
@@ -84,7 +86,7 @@ def specific_contest_check_dupe(self, call):
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init_date,
+            start_date_init_date.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
@@ -216,10 +218,10 @@ def points(self):
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    _mode = self.contact.get("Mode", "").upper()
+    if _mode in ("SSB", "USB", "LSB", "FM", "AM", "PH"):
         return 1
-    if _mode in "CW":
+    if _mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
         return 2
 
     return 0
@@ -252,14 +254,26 @@ def calc_score(self):
         if score is None:
             score = "0"
         contest_points = int(score)
-        # mults = show_mults(self)
-        mults = 0
-        return contest_points * (mults + 1)
+        # This contest scores its QSO points: show_mults() computes the ES
+        # call areas but they are deliberately not applied, and the old
+        # `mults + 1` was doing nothing but hiding that.
+        return contest_points
     return 0
 
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    # The multiplier is read from CountryPrefix (and the call areas from
+    # WPXPrefix), and an imported log carries neither for sure; fill both
+    # from cty so a re-scored log counts the same as one just typed in.
+    for contact in self.database.fetch_all_contacts_asc():
+        result = self.cty_lookup(contact.get("Call", ""))
+        if result is None:
+            continue
+        item = result.get(next(iter(result)))
+        contact["CountryPrefix"] = item.get("primary_pfx", "")
+        contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+        self.database.change_contact(contact)
 
 
 def adif(self):

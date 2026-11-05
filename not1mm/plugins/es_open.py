@@ -1,17 +1,18 @@
-""" """
+"""
+Find rules at: https://erau.ee/images/LL/ES-Open_rules.pdf
+"""
 
 import logging
 import platform
 from datetime import datetime
 from datetime import timedelta
-from datetime import timezone
 
 
 from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points
+from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, contest_time
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 from not1mm.lib.version import __version__
@@ -71,9 +72,10 @@ def specific_contest_check_dupe(self, call):
     time_period_3 = time_periods[2] if len(time_periods) > 2 else None
     time_period_4 = time_periods[3] if len(time_periods) > 3 else None
 
-    # get current time in UTC
-    iso_current_time = datetime.now(timezone.utc)
-    current_time = iso_current_time.replace(tzinfo=None)
+    # The time the rule counts from is the contact's own, so a re-scored or
+    # imported log is checked against the clock it was logged on; only a
+    # contact being typed in has no timestamp yet.
+    current_time = contest_time(self)
 
     if (
         time_period_1 is not None
@@ -84,7 +86,7 @@ def specific_contest_check_dupe(self, call):
             call,
             self.contact.get("Band", ""),
             mode,
-            start_date_init_date,
+            start_date_init_date.strftime("%Y-%m-%d %H:%M:%S"),
             time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
@@ -211,15 +213,35 @@ def prefill(self):
         self.other_1.setText(sent_sxchange_setting)
 
 
+def _is_es(self, call) -> bool:
+    """True when the callsign belongs to an Estonian station."""
+    result = self.cty_lookup(call)
+    if not result:
+        return False
+    item = result.get(next(iter(result)), {})
+    return item.get("entity", "") == "Estonia"
+
+
 def points(self):
-    """ """
+    """Calc point
+
+    An Estonian station can work everyone; a foreign station only scores for
+    Estonian stations.  CW is worth 2 points and SSB 1, and there is no other
+    contest mode.  The mode test used `in` on a string, so an empty mode, or
+    any single letter that list contains, counted as phone.
+    """
     if self.contact_is_dupe > 0:
         return 0
 
-    _mode = self.contact.get("Mode", "")
-    if _mode in "SSB, USB, LSB, FM, AM":
+    if not _is_es(self, self.station.get("Call", "")) and not _is_es(
+        self, self.contact.get("Call", "")
+    ):
+        return 0
+
+    _mode = self.contact.get("Mode", "").upper()
+    if _mode in ("SSB", "USB", "LSB", "FM", "AM", "PH"):
         return 1
-    if _mode in "CW":
+    if _mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
         return 2
 
     return 0
@@ -245,7 +267,11 @@ def show_qso(self):
 
 
 def calc_score(self):
-    """Return calculated score"""
+    """Return calculated score.
+
+    The rules multiply the QSO points by the multiplier total; there is no
+    extra one, so the old `mults + 1` is gone.
+    """
     result = self.database.fetch_points()
     if result is not None:
         score = result.get("Points", "0")
@@ -253,12 +279,23 @@ def calc_score(self):
             score = "0"
         contest_points = int(score)
         mults = show_mults(self)
-        return contest_points * (mults + 1)
+        return contest_points * mults
     return 0
 
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
+    # The region multiplier is read from WPXPrefix and the ES filter from
+    # CountryPrefix, and an imported log carries neither for sure; fill both
+    # from cty so a re-scored log counts the same as one just typed in.
+    for contact in self.database.fetch_all_contacts_asc():
+        result = self.cty_lookup(contact.get("Call", ""))
+        if result is None:
+            continue
+        item = result.get(next(iter(result)))
+        contact["CountryPrefix"] = item.get("primary_pfx", "")
+        contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+        self.database.change_contact(contact)
 
 
 def adif(self):

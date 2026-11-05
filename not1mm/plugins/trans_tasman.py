@@ -28,7 +28,13 @@ from pathlib import Path
 from PyQt6 import QtWidgets
 
 from not1mm.lib.ham_utility import calculate_wpx_prefix, get_logged_band
-from not1mm.lib.plugin_common import gen_adif, get_points, imp_adif, online_score_xml
+from not1mm.lib.plugin_common import (
+    contest_time,
+    gen_adif,
+    get_points,
+    imp_adif,
+    online_score_xml,
+)
 from not1mm.lib.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -309,15 +315,16 @@ def calc_score(self):
     """Return calculated score.
 
     For each of the three 2-hour blocks: contacts in that block multiplied by
-    the number of different prefixes worked on each band in that block. The
-    final score is the sum of the three block scores.
+    the number of different prefixes worked on each band in that block, summed
+    over the blocks.  Only a contact that scored is one of those contacts - a
+    duplicate is not, so it is counted out here.
     """
     contacts = self.database.fetch_all_contacts_asc()
     qso_count = {}
     mult_count = {}
     for contact in contacts:
         wpx = contact.get("WPXPrefix", "")
-        if not _is_vk_zl_prefix(wpx):
+        if not _is_vk_zl_prefix(wpx) or not contact.get("Points", 0):
             continue
         block = _block_from_ts(contact.get("TS", ""))
         qso_count[block] = qso_count.get(block, 0) + 1
@@ -549,15 +556,34 @@ def cabrillo(self, file_encoding):
 
 def recalculate_mults(self):
     """Recalculates multipliers after change in logged qso."""
-    self.contact_is_dupe = 0
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
+    # The points and the multiplier are both read from WPXPrefix, which an
+    # imported ADIF does not have to carry, so it is filled from cty.  The
+    # duplicate has to be worked out here too: it forces every contact to
+    # score otherwise, and a duplicate is not one.
+    worked = set()
+    for contact in self.database.fetch_all_contacts_asc():
         self.contact = contact
-        contact["Points"] = points(self)
+        result = self.cty_lookup(contact.get("Call", ""))
+        if result is not None:
+            item = result.get(next(iter(result)))
+            contact["CountryPrefix"] = item.get("primary_pfx", "")
+            contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+
+        time_stamp = contact.get("TS", "")
         wpx = contact.get("WPXPrefix", "")
         band = str(contact.get("Band", ""))
-        time_stamp = contact.get("TS", "")
         contact["MiscText"] = str(_block_from_ts(time_stamp))
+
+        key = (
+            contact.get("Call", ""),
+            band,
+            _mode_group(contact.get("Mode", "")),
+            _block_from_ts(time_stamp),
+        )
+        self.contact_is_dupe = 1 if key in worked else 0
+        worked.add(key)
+
+        contact["Points"] = points(self)
 
         result = fetch_wpx_exists_before_me(self, wpx, band, time_stamp)
         if wpx and _is_vk_zl_prefix(wpx) and result.get("wpx_count", 1) == 0:
@@ -597,8 +623,9 @@ def specific_contest_check_dupe(self, call):
     mode_group = _mode_group(mode)
 
     band = self.contact.get("Band", "")
-    now = datetime.datetime.now(datetime.UTC)
-    block_start, block_end = _block_boundaries(now)
+    # The block is the one the contact was logged in, so a re-scored or
+    # imported log is checked against its own clock and not the wall clock.
+    block_start, block_end = _block_boundaries(contest_time(self))
 
     query = """
         select count(*) as isdupe from dxlog where

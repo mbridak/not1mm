@@ -60,7 +60,7 @@ EXCHANGE_HINT = "Province or #"
 
 name = "EA RTTY"
 mode = "RTTY"  # CW SSB BOTH RTTY
-cabrillo_name = "EA-RTTY"
+cabrillo_name = "EARTTY"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",
@@ -77,6 +77,52 @@ advance_on_space = [True, True, True, True, True]
 
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 dupe_type = 2
+
+# The Spanish provinces the rules count, grouped by call area (see the header).
+# 'HQ' is not a province: it is EA4URE, a multiplier of its own.
+EA_PROVINCES = frozenset(
+    (
+        "AV", "BU", "C", "LE", "LO", "LU", "O", "OU", "P", "PO", "S", "SA",
+        "SG", "SO", "VA", "ZA",
+        "BI", "HU", "NA", "SS", "TE", "VI", "Z",
+        "B", "GI", "L", "T",
+        "BA", "CC", "CR", "CU", "GU", "M", "TO",
+        "A", "AB", "CS", "MU", "V",
+        "IB",
+        "AL", "CA", "CO", "GR", "H", "J", "MA", "SE",
+        "GC", "TF",
+        "CE", "ML",
+    )
+)
+
+# "The call areas of USA, Canada, Japan, and Australia": cty.dat's primary
+# prefixes for those countries, including the US areas it reports as entities
+# of their own - Alaska (KL), Hawaii (KH0-KH9) and the Caribbean and Pacific
+# possessions (KP1-KP5).
+CALL_AREA_PREFIXES = frozenset(
+    (
+        "K",
+        "KL",
+        "KH0",
+        "KH1",
+        "KH2",
+        "KH3",
+        "KH4",
+        "KH5",
+        "KH6",
+        "KH7",
+        "KH8",
+        "KH9",
+        "KP1",
+        "KP2",
+        "KP3",
+        "KP4",
+        "KP5",
+        "VE",
+        "VK",
+        "JA",
+    )
+)
 
 
 def init_contest(self) -> None:
@@ -215,6 +261,21 @@ def points(self) -> int:
     return 1
 
 
+def _call_area(contact) -> str:
+    """Return the call area digit for a contact.
+
+    The WPX prefix carries it when the log has one, otherwise the first digit
+    of the callsign is the area for the four countries in question - which
+    matters for logs imported without a prefix, where the empty string would
+    otherwise pass for an area.
+    """
+    for source in (contact.get("WPXPrefix", ""), contact.get("Call", "")):
+        for char in str(source).upper():
+            if char.isdigit():
+                return char
+    return ""
+
+
 def show_mults(self, rtc=None) -> int:
     """Return display string for mults"""
 
@@ -233,22 +294,28 @@ def show_mults(self, rtc=None) -> int:
         eadx100 = result.get("mult_count", 0)
 
     # Each EA province once per band
+    provinces = ",".join(f"'{province}'" for province in sorted(EA_PROVINCES))
     sql = (
         "select count(DISTINCT(NR || ':' || Band)) as mult_count "
-        f"from dxlog where ContestNR = {self.database.current_contest} and typeof(NR) = 'text';"
+        f"from dxlog where ContestNR = {self.database.current_contest} "
+        f"and upper(NR) in ({provinces});"
     )
     result = self.database.exec_sql(sql)
     if result:
         ea_provinces = result.get("mult_count", 0)
 
-    # Each USA, VE, JA or VK call area once per band
-    sql = (
-        "select count(DISTINCT(CountryPrefix || ':' || substr(WPXPrefix, -1) || ':' || Band)) as mult_count "
-        f"from dxlog where CountryPrefix in ('K', 'VE', 'VK', 'JA') and ContestNR = {self.database.current_contest};"
-    )
-    result = self.database.exec_sql(sql)
-    if result:
-        dx = result.get("mult_count", 0)
+    # Each USA, VE, JA or VK call area once per band.  The US areas include
+    # Alaska, Hawaii and the other areas cty.dat reports as entities of their
+    # own.
+    areas = set()
+    for contact in self.database.fetch_all_contacts_asc():
+        pfx = contact.get("CountryPrefix", "")
+        if pfx not in CALL_AREA_PREFIXES:
+            continue
+        area = _call_area(contact)
+        if area:
+            areas.add((pfx, area, contact.get("Band", "")))
+    dx = len(areas)
 
     # Each QSO with EA4URE once per band
     sql = (
@@ -260,7 +327,9 @@ def show_mults(self, rtc=None) -> int:
         ea4ure = result.get("mult_count", 0)
 
     if rtc is not None:
-        return 0, 0
+        # The online score feed splits the total into a country and a state
+        # side; the entities, the call areas and EA4URE are all country-side.
+        return eadx100 + dx + ea4ure, ea_provinces
 
     return ea_provinces + dx + ea4ure + eadx100
 
