@@ -5,6 +5,7 @@
 - 10 10 Spring CW
 - 10 10 Summer Phone
 - 10 10 Winter Phone
+- AADX
 - AGCW QRP
 - ARI 40 80
 - ARI DX
@@ -16,11 +17,13 @@
 - ARRL Sweepstakes CW, SSB
 - ARRL VHF January, June, September
 - CAQP
+- Canada Day
 - CQ 160 CW, SSB
 - CQ WPX CW, RTTY, SSB
 - CQ World Scout
 - CQ World Wide CW, RTTY, SSB, VHF
 - CWOps CWT, CWO
+- DARC Schwaben
 - DARC Xmas
 - DARC VHF
 - Dutch PACC
@@ -28,6 +31,7 @@
 - EA RTTY
 - ES OPEN HF
 - ES FIELD DAY HF
+- ES Manual Key
 - ES OPEN HF
 - Estonian LL Cup
 - EUDX
@@ -50,6 +54,7 @@
 - RAEM
 - RandomGram
 - RAC Canada Day
+- RandomGram
 - REF CW, SSB
 - RSGB 80M CC
 - RSBG Commonwealth BERU
