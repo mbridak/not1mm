@@ -67,6 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
+  - Removed Preference.save in the update band memory
 - [2026-11-04] Merge branch 'master' of http://github.com/mbridak/not1mm
   - Merge pull request #725 from DJLax5/issue-719-cq-freq
   - Merge pull request #728 from DJLax5/issue-717-band-memory

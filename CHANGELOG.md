@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
+  - Removed Preference.save in the update band memory
 - [2026-11-04] Merge branch 'master' of http://github.com/mbridak/not1mm
   - Merge pull request #725 from DJLax5/issue-719-cq-freq
   - Merge pull request #728 from DJLax5/issue-717-band-memory
@@ -2989,3 +2991,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
