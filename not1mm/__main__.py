@@ -1744,8 +1744,6 @@ class MainWindow(QtWidgets.QMainWindow):
         band_memory[vfo_name] = {**memory, key: int(vfo)}
         self.pref["band_memory"] = band_memory
         self.band_memory_key[vfo_name] = key
-        if key != last_key:
-            Preferences.save()
 
     def _shutdown(self) -> None:
         """Common cleanup for quit_app and closeEvent."""
