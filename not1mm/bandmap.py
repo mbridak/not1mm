@@ -481,6 +481,10 @@ class BandMapWindow(QDockWidget):
         self.active = bool(mode)
         self.request_workedlist()
 
+    def is_dupe(self, call: str) -> bool:
+        """Return True if the call is worked on the current band."""
+        return self.currentBand.band_mhz in self.worked_list.get(call, [])
+
     def msg_from_main(self, packet):
         """Process messages from the main screen."""
         if self.active is False or not self.isVisible():
@@ -814,10 +818,8 @@ class BandMapWindow(QDockWidget):
                         pen_color = self.dark_marked_color
                     else:
                         pen_color = self.light_marked_color
-                if items.get("callsign") in self.worked_list:
-                    call_bandlist = self.worked_list.get(items.get("callsign"))
-                    if self.currentBand.band_mhz in call_bandlist:
-                        pen_color = self.worked_color
+                if self.is_dupe(items.get("callsign")):
+                    pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
