@@ -23,10 +23,19 @@ def _bandmap(spots, rx_freq, worked):
         spots=spots,
         rx_freq=rx_freq,
         worked_list=worked,
+        bandwidth=0,
+        spot_near=("", False),
         currentBand=SimpleNamespace(band_mhz=7.0, start=7000.0, end=7300.0),
         tuned=[],
     )
-    for name in ("msg_from_main", "is_dupe", "spots_after", "tune_to_spot"):
+    for name in (
+        "msg_from_main",
+        "is_dupe",
+        "spots_after",
+        "tune_to_spot",
+        "set_spot_near",
+        "send_spot_near",
+    ):
         setattr(bandmap, name, MethodType(getattr(BandMapWindow, name), bandmap))
     bandmap.message = SimpleNamespace(emit=bandmap.tuned.append)
     return bandmap
@@ -97,3 +106,54 @@ def test_tune_to_spot_tunes_to_a_dupe():
     bandmap = _bandmap(Database(), 7019.0, {"AA1A": [7.0]})
     bandmap.tune_to_spot(_spot("AA1A", 7020.0))
     assert bandmap.tuned == [{"cmd": "TUNE", "freq": 7020.0, "spot": "AA1A"}]
+
+
+def _near(bandmap, mode="CW"):
+    """Send the spot near the RX frequency and return the messages."""
+    bandmap.tuned.clear()
+    bandmap.send_spot_near(mode)
+    return [(msg["call"], msg["dupe"]) for msg in bandmap.tuned]
+
+
+def test_spot_near_nearest_wins():
+    spots = Database()
+    spots.addspot(_spot("AA1A", 7020.0))
+    spots.addspot(_spot("BB1B", 7020.2))
+    bandmap = _bandmap(spots, 7020.15, {})
+    assert _near(bandmap) == [("BB1B", False)]
+    bandmap.rx_freq = 7020.05
+    assert _near(bandmap) == [("AA1A", False)]
+    bandmap.rx_freq = 7021.0
+    assert _near(bandmap) == [("", False)]
+
+
+def test_spot_near_prefers_non_dupe_on_one_freq():
+    spots = Database()
+    for call in ("AA1A", "BB1B", "CC1C"):
+        spots.addspot(_spot(call, 7020.0))
+    bandmap = _bandmap(spots, 7020.0, {"AA1A": [7.0]})
+    assert _near(bandmap) == [("BB1B", False)]
+    bandmap.worked_list = {"AA1A": [7.0], "BB1B": [7.0], "CC1C": [7.0]}
+    assert _near(bandmap) == [("AA1A", True)]
+
+
+def test_spot_near_sent_on_change_only():
+    spots = Database()
+    spots.addspot(_spot("AA1A", 7020.0))
+    bandmap = _bandmap(spots, 7020.0, {})
+    assert _near(bandmap) == [("AA1A", False)]
+    assert _near(bandmap) == []
+    bandmap.worked_list = {"AA1A": [7.0]}
+    assert _near(bandmap) == [("AA1A", True)]
+
+
+def test_spot_near_tolerance():
+    spots = Database()
+    spots.addspot(_spot("AA1A", 7020.0))
+    bandmap = _bandmap(spots, 7020.4, {})
+    assert _near(bandmap, "USB") == [("AA1A", False)]  # phone: 0.5 kHz
+    assert _near(bandmap, "CW") == [("", False)]  # no bandwidth: 0.25 kHz
+    bandmap.rx_freq = 7020.6
+    assert _near(bandmap, "USB") == []  # still none in 0.5 kHz
+    bandmap.bandwidth = 1500
+    assert _near(bandmap, "CW") == [("AA1A", False)]  # half the bandwidth

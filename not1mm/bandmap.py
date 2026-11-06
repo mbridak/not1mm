@@ -31,6 +31,7 @@ PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
 CLEAR_FREQ = 0.1  # 100 Hz
 SAME_FREQ = 0.005  # 5 Hz; spots within this distance of the RX frequency are considered to be on it.
+SPOT_NEAR_PHONE = 0.5  # 500 Hz; phone spots this close to the RX freq are near it.
 
 
 class Database:
@@ -382,6 +383,7 @@ class BandMapWindow(QDockWidget):
     test_for_data = None
     bandwidth = 0
     bandwidth_mark = []  # noqa: RUF012
+    spot_near = ("", False)
     worked_list = {}  # noqa: RUF012
     multicast_interface = None
     text_color = QColor(45, 45, 45)
@@ -462,6 +464,42 @@ class BandMapWindow(QDockWidget):
         start = on_freq.index(call) + 1 if call in on_freq else len(on_freq)
         return spots[start:]
 
+    def set_spot_near(self, call: str, dupe: bool) -> None:
+        """Send the spot near the VFO to the main window, if it changed."""
+        if (call, dupe) != self.spot_near:
+            self.spot_near = (call, dupe)
+            self.message.emit({"cmd": "SPOTNEAR", "call": call, "dupe": dupe})
+
+    def send_spot_near(self, mode: str) -> None:
+        """
+        Send the spot nearest to the RX frequency to the main window.
+
+        On one frequency, the spots that are not dupes come first.
+        """
+        # A spot is on the dial frequency. The SSB passband is on one side of
+        # it, thus the radio bandwidth is too wide. Use a fixed value for phone.
+        # For other modes, use the radio bandwidth. If there is none, use 0.25.
+        if mode in ("LSB", "USB", "AM", "FM", "SSB"):
+            tolerance = SPOT_NEAR_PHONE
+        elif self.bandwidth:
+            tolerance = self.bandwidth / 2 / 1000
+        else:
+            tolerance = 0.25
+        spots = self.spots.getspotsinband(
+            self.rx_freq - tolerance, self.rx_freq + tolerance
+        )
+        spot = min(
+            spots,
+            key=lambda spot: (
+                abs(spot.get("freq") - self.rx_freq),
+                self.is_dupe(spot.get("callsign")),
+                spot.get("callsign"),
+            ),
+            default={},
+        )
+        call = spot.get("callsign", "")
+        self.set_spot_near(call, self.is_dupe(call))
+
     def tune_to_spot(self, spot: dict) -> None:
         """Tune to the spot."""
         cmd = {}
@@ -490,6 +528,7 @@ class BandMapWindow(QDockWidget):
             self.bandwidth = int(bw_returned)
             step, _ = self.determine_step_digits()
             self.drawTXRXMarks(step)
+            self.send_spot_near(packet.get("mode", ""))
             return
         if packet.get("cmd", "") in ("NEXTSPOT", "PREVSPOT") and self.rx_freq:
             if packet.get("cmd", "") == "NEXTSPOT":
@@ -890,6 +929,11 @@ class BandMapWindow(QDockWidget):
 
     def showContextMenu(self) -> None:
         """doc string for the linter"""
+
+    def hideEvent(self, event: QtGui.QHideEvent) -> None:
+        """Clear the spot near the VFO. A hidden bandmap gets no radio state."""
+        self.set_spot_near("", False)
+        super().hideEvent(event)
 
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes."""
