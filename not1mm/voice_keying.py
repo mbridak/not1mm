@@ -16,6 +16,7 @@ except OSError as exception:
     print(exception)
     print("portaudio is not installed")
     sd = None
+import numpy as np
 import soundfile as sf
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
 
@@ -33,6 +34,20 @@ def has_output_device(sounddevice_name="default") -> bool:
     except (sd.PortAudioError, ValueError, TypeError):
         return False
     return True
+
+
+def resample(data, from_rate: float, to_rate: float):
+    """Linearly resample mono (1-D) or multichannel (2-D) audio to to_rate."""
+    if from_rate == to_rate or len(data) == 0:
+        return data
+    n_out = max(1, round(len(data) * to_rate / from_rate))
+    src = np.arange(len(data))
+    dst = np.linspace(0, len(data) - 1, n_out)
+    if data.ndim == 1:
+        return np.interp(dst, src, data).astype(np.float32)
+    return np.column_stack(
+        [np.interp(dst, src, data[:, ch]) for ch in range(data.shape[1])]
+    ).astype(np.float32)
 
 
 class Voice(QObject):
@@ -65,11 +80,16 @@ class Voice(QObject):
                 self.nonblocking = len(self.voicings)
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
-                    data, _fs = sf.read(filename, dtype="float32")
+                    data, file_rate = sf.read(filename, dtype="float32")
                     try:
                         sd.default.device = self.sounddevice
-                        sd.default.samplerate = 44100.0
-                        sd.play(data, blocking=False)
+                        # Play at the device's native rate: some host APIs
+                        # (e.g. JACK/PipeWire) reject any other rate.
+                        out_rate = sd.query_devices(self.sounddevice, "output")[
+                            "default_samplerate"
+                        ]
+                        data = resample(data, file_rate, out_rate)
+                        sd.play(data, out_rate, blocking=False)
                         if self.nonblocking > 0:
                             sd.wait()
                         # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
