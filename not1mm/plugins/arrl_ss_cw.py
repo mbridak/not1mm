@@ -11,6 +11,7 @@ import logging
 from pathlib import Path
 
 from PyQt6 import QtWidgets
+from PyQt6.QtCore import QTimer
 
 from not1mm.lib.plugin_common import gen_adif, imp_adif, online_score_xml
 from not1mm.lib.version import __version__
@@ -170,6 +171,12 @@ def check_call_history(self):
         self.history_info.setText(f"{result.get('UserText', '')}")
         if self.other_2.text() == "":
             self.other_2.setText(f" {result.get('CK', '')}{result.get('Sect', '')}")
+            QTimer.singleShot(0, lambda: _cursor_to_start(self.other_2))
+            
+def _cursor_to_start(line_edit):
+    """Clear any selection and move the cursor to position 0."""
+    line_edit.deselect()
+    line_edit.setCursorPosition(0)
 
 
 def points(self):
