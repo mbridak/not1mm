@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
 CLEAR_FREQ = 0.1  # 100 Hz
+SAME_FREQ = 0.005  # 5 Hz; spots within this distance of the RX frequency are considered to be on it.
+SPOT_NEAR_PHONE = 0.5  # 500 Hz; phone spots this close to the RX freq are near it.
 
 
 class Database:
@@ -202,7 +204,7 @@ class Database:
     def getspotsinband(self, start: float, end: float) -> list:
         """
         Returns spots in a list of dicts where the spotted frequency
-        is in the range defined, in ascending order.
+        is in the range defined, in ascending order of frequency and callsign.
 
         Parameters
         ----------
@@ -216,32 +218,11 @@ class Database:
         A list of dicts.
         """
         self.cursor.execute(
-            "select * from spots where freq >= ? and freq <= ? order by freq ASC;",
+            "select * from spots where freq >= ? and freq <= ? "
+            "order by freq ASC, callsign ASC;",
             (start, end),
         )
         return self.cursor.fetchall()
-
-    def get_next_spot(self, current: float, limit: float) -> dict:
-        """
-        Return a list of dict where freq range is defined by current and limit.
-        The list is sorted by the ascending frequency of the spot.
-
-        Parameters
-        ----------
-        current : float
-        The current frequency.
-        limit : float
-        The limit frequency.
-
-        Returns
-        -------
-        A dict of the spot.
-        """
-        self.cursor.execute(
-            "select * from spots where freq > ? and freq <= ? order by freq ASC;",
-            (current, limit),
-        )
-        return self.cursor.fetchone()
 
     def get_matching_spot(self, dx: str, start: float, end: float) -> dict:
         """
@@ -264,27 +245,6 @@ class Database:
         self.cursor.execute(
             "select * from spots where freq >= ? and freq <= ? and callsign like ?;",
             (start, end, f"%{dx}%"),
-        )
-        return self.cursor.fetchone()
-
-    def get_prev_spot(self, current: float, limit: float) -> dict:
-        """
-        Return a list of dict where freq range is defined in descending order.
-
-        Parameters
-        ----------
-        current : float
-        The current frequency.
-        limit : float
-        The limit frequency.
-
-        Returns
-        -------
-        A list of dicts.
-        """
-        self.cursor.execute(
-            "select * from spots where freq < ? and freq >= ? order by freq DESC;",
-            (current, limit),
         )
         return self.cursor.fetchone()
 
@@ -423,6 +383,7 @@ class BandMapWindow(QDockWidget):
     test_for_data = None
     bandwidth = 0
     bandwidth_mark = []  # noqa: RUF012
+    spot_near = ("", False)
     worked_list = {}  # noqa: RUF012
     multicast_interface = None
     text_color = QColor(45, 45, 45)
@@ -481,6 +442,72 @@ class BandMapWindow(QDockWidget):
         self.active = bool(mode)
         self.request_workedlist()
 
+    def is_dupe(self, call: str) -> bool:
+        """Return True if the call is worked on the current band."""
+        return self.currentBand.band_mhz in self.worked_list.get(call, [])
+
+    def spots_after(self, spots: list, call: str) -> list:
+        """
+        Return the spots after call.
+
+        The spots begin with the spots on the RX frequency, then follow the
+        spots in the jump direction. If call is on the RX frequency, return
+        the spots after it, else the spots after all spots on the RX
+        frequency. Thus the jumps also go through several spots on one
+        frequency.
+        """
+        on_freq = [
+            spot.get("callsign")
+            for spot in spots
+            if abs(spot.get("freq") - self.rx_freq) < SAME_FREQ
+        ]
+        start = on_freq.index(call) + 1 if call in on_freq else len(on_freq)
+        return spots[start:]
+
+    def set_spot_near(self, call: str, dupe: bool) -> None:
+        """Send the spot near the VFO to the main window, if it changed."""
+        if (call, dupe) != self.spot_near:
+            self.spot_near = (call, dupe)
+            self.message.emit({"cmd": "SPOTNEAR", "call": call, "dupe": dupe})
+
+    def send_spot_near(self, mode: str) -> None:
+        """
+        Send the spot nearest to the RX frequency to the main window.
+
+        On one frequency, the spots that are not dupes come first.
+        """
+        # A spot is on the dial frequency. The SSB passband is on one side of
+        # it, thus the radio bandwidth is too wide. Use a fixed value for phone.
+        # For other modes, use the radio bandwidth. If there is none, use 0.25.
+        if mode in ("LSB", "USB", "AM", "FM", "SSB"):
+            tolerance = SPOT_NEAR_PHONE
+        elif self.bandwidth:
+            tolerance = self.bandwidth / 2 / 1000
+        else:
+            tolerance = 0.25
+        spots = self.spots.getspotsinband(
+            self.rx_freq - tolerance, self.rx_freq + tolerance
+        )
+        spot = min(
+            spots,
+            key=lambda spot: (
+                abs(spot.get("freq") - self.rx_freq),
+                self.is_dupe(spot.get("callsign")),
+                spot.get("callsign"),
+            ),
+            default={},
+        )
+        call = spot.get("callsign", "")
+        self.set_spot_near(call, self.is_dupe(call))
+
+    def tune_to_spot(self, spot: dict) -> None:
+        """Tune to the spot."""
+        cmd = {}
+        cmd["cmd"] = "TUNE"
+        cmd["freq"] = spot.get("freq", self.rx_freq)
+        cmd["spot"] = spot.get("callsign", "")
+        self.message.emit(cmd)
+
     def msg_from_main(self, packet):
         """Process messages from the main screen."""
         if self.active is False or not self.isVisible():
@@ -501,26 +528,22 @@ class BandMapWindow(QDockWidget):
             self.bandwidth = int(bw_returned)
             step, _ = self.determine_step_digits()
             self.drawTXRXMarks(step)
+            self.send_spot_near(packet.get("mode", ""))
             return
-        if packet.get("cmd", "") == "NEXTSPOT" and self.rx_freq:
-            spot = self.spots.get_next_spot(self.rx_freq + 0.001, self.currentBand.end)
-            if spot:
-                cmd = {}
-                cmd["cmd"] = "TUNE"
-                cmd["freq"] = spot.get("freq", self.rx_freq)
-                cmd["spot"] = spot.get("callsign", "")
-                self.message.emit(cmd)
-            return
-        if packet.get("cmd", "") == "PREVSPOT" and self.rx_freq:
-            spot = self.spots.get_prev_spot(
-                self.rx_freq - 0.001, self.currentBand.start
-            )
-            if spot:
-                cmd = {}
-                cmd["cmd"] = "TUNE"
-                cmd["freq"] = spot.get("freq", self.rx_freq)
-                cmd["spot"] = spot.get("callsign", "")
-                self.message.emit(cmd)
+        if packet.get("cmd", "") in ("NEXTSPOT", "PREVSPOT") and self.rx_freq:
+            if packet.get("cmd", "") == "NEXTSPOT":
+                spots = self.spots.getspotsinband(
+                    self.rx_freq - SAME_FREQ, self.currentBand.end
+                )
+            else:
+                spots = self.spots.getspotsinband(
+                    self.currentBand.start, self.rx_freq + SAME_FREQ
+                )[::-1]
+            # Skip the dupes.
+            for spot in self.spots_after(spots, packet.get("call", "")):
+                if not self.is_dupe(spot.get("callsign")):
+                    self.tune_to_spot(spot)
+                    break
             return
 
         if packet.get("cmd", "") == "DX":
@@ -814,10 +837,8 @@ class BandMapWindow(QDockWidget):
                         pen_color = self.dark_marked_color
                     else:
                         pen_color = self.light_marked_color
-                if items.get("callsign") in self.worked_list:
-                    call_bandlist = self.worked_list.get(items.get("callsign"))
-                    if self.currentBand.band_mhz in call_bandlist:
-                        pen_color = self.worked_color
+                if self.is_dupe(items.get("callsign")):
+                    pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step
                 ) * PIXELSPERSTEP
@@ -908,6 +929,11 @@ class BandMapWindow(QDockWidget):
 
     def showContextMenu(self) -> None:
         """doc string for the linter"""
+
+    def hideEvent(self, event: QtGui.QHideEvent) -> None:
+        """Clear the spot near the VFO. A hidden bandmap gets no radio state."""
+        self.set_spot_near("", False)
+        super().hideEvent(event)
 
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes."""
