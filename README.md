@@ -67,6 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
+  - Add audio resampling and play-back at the native sampling rate of the desired output sound devices
 - [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
   - Removed Preference.save in the update band memory
 - [2026-11-04] Merge branch 'master' of http://github.com/mbridak/not1mm
