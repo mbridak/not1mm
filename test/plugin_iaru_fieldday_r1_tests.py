@@ -97,11 +97,8 @@ def test_cabrillo_formats_received_serials(kind, received_serial, expected, tmp_
         ),
         show_message_box=lambda _message: None,
     )
-    with (
-        patch.object(plugin.Path, "home", return_value=tmp_path),
-        patch.object(plugin, "calc_score", return_value=0),
-    ):
-        plugin.cabrillo(app, "ascii")
+    with patch.object(plugin, "calc_score", return_value=0):
+        plugin.cabrillo(app, str(tmp_path / "test.log"), "ascii")
 
     log_files = list(tmp_path.glob("*.log"))
     assert len(log_files) == 1

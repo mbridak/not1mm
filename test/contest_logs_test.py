@@ -41,6 +41,9 @@ def headless(monkeypatch, tmp_path):
         plugin_common.QCoreApplication, "processEvents", staticmethod(lambda: None)
     )
     monkeypatch.setattr(Path, "home", staticmethod(lambda: tmp_path))
+    monkeypatch.setattr(
+        plugin_common, "get_export_filename", lambda _, name, __: str(tmp_path / name)
+    )
     return tmp_path
 
 

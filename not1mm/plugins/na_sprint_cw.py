@@ -48,11 +48,9 @@
 #   While in RUN within 1 kHz of the frequency of your last run QSO, ESM will
 #   not send CQ and the exchange label shows a QSY warning.
 
-import datetime
 import logging
 import re
 
-from pathlib import Path
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QTimer
@@ -565,19 +563,12 @@ def cabrillo_mode(themode: str) -> str:
     return themode
 
 
-def cabrillo(self, file_encoding):
+def cabrillo(self, filename, file_encoding):
     """Generates Cabrillo file."""
     contest_name = self.contest.cabrillo_name
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
-    date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = (
-        str(Path.home())
-        + "/"
-        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{contest_name}_{date_time}.log"
-    )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     my_name, my_loc = _my_name_loc(self)
