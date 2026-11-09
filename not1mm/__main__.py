@@ -7,7 +7,6 @@ Purpose: Provides main logging window and a crap ton more.
 """
 
 import datetime
-import importlib
 import locale
 import logging
 import os
@@ -78,6 +77,7 @@ from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib import catppuccin, plugin_common
 from not1mm.lib.about import About
+from not1mm.lib.contest import load_contest
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
@@ -1284,8 +1284,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_focus_changed(self, focused_widget: QtWidgets.QWidget):
         """Called when text entry focus has changed."""
-        if self.use_esm and hasattr(self.contest, "process_esm"):
-            self.contest.process_esm(self, new_focused_widget=focused_widget)
+        # There is no contest object at all until one is loaded; the flag is
+        # read defensively for the same reason hasattr() was.
+        if self.use_esm and getattr(self.contest, "UsesESM", False):
+            self.contest.process_esm(new_focused_widget=focused_widget)
 
     def make_button_blue(self, the_button: QtWidgets.QPushButton) -> None:
         """Takes supplied QPushButton object and turns it blue."""
@@ -1308,8 +1310,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
         if self.use_esm:
-            if hasattr(self.contest, "process_esm"):
-                self.contest.process_esm(self, with_enter=True)
+            if getattr(self.contest, "UsesESM", False):
+                self.contest.process_esm(with_enter=True)
             else:
                 self.save_contact()
         else:
@@ -1318,8 +1320,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_esm(self) -> None:
         """Check for ESM, otherwise save contact."""
         if self.use_esm:
-            if hasattr(self.contest, "process_esm"):
-                self.contest.process_esm(self)
+            if getattr(self.contest, "UsesESM", False):
+                self.contest.process_esm()
             else:
                 ...
                 # self.save_contact()
@@ -1543,8 +1545,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 logger.debug(f"Parse error: {result=} {data=} {tag=}")
             logger.debug(f"{datadict=}")
             print(f"{datadict=}")
-            if hasattr(self.contest, "ft8_handler"):
-                self.contest.set_self(self)
+            if getattr(self.contest, "SupportsFT8", False):
+                self.contest.set_self()
                 self.contest.ft8_handler(datadict)
 
     def setDarkMode(self, setdarkmode=False) -> None:
@@ -2270,10 +2272,12 @@ class MainWindow(QtWidgets.QMainWindow):
                             "contest"
                         )
 
-                        self.contest = doimp(self.contest_settings.get("ContestName"))
+                        self.contest = load_contest(
+                            self.contest_settings.get("ContestName"), self
+                        )
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
-                        self.contest.init_contest(self)
+                        self.contest.init_contest()
                         self.hide_band_mode(
                             self.contest_settings.get("ModeCategory", "")
                         )
@@ -2317,8 +2321,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     else:
                         self.cw_speed.hide()
 
-                if hasattr(self.contest, "ft8_handler"):
-                    self.contest.set_self(self)
+                if self.contest.SupportsFT8:
+                    self.contest.set_self()
                     self.ft8.set_callback(self.contest.ft8_handler)
                 else:
                     self.ft8.set_callback(None)
@@ -2506,7 +2510,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def recalculate_mults(self) -> None:
         """Recalculate Multipliers"""
-        self.contest.recalculate_mults(self)
+        self.contest.recalculate_mults()
         self.clearinputs()
 
     def mark_all_dirty(self) -> None:
@@ -3109,11 +3113,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dx_entity.setText("")
 
         if self.contest:
-            mults = self.contest.show_mults(self)
-            qsos = self.contest.show_qso(self)
+            mults = self.contest.show_mults()
+            qsos = self.contest.show_qso()
             multstring = f"{qsos}/{mults}"
             self.mults.setText(multstring)
-            score = self.contest.calc_score(self)
+            score = self.contest.calc_score()
             self.score.setText(str(score))
             if self.n1mm and self.n1mm.send_score_packets:
                 self.n1mm.score_report["score"] = score
@@ -3132,7 +3136,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 }
                 self.update_n1mm_score()
 
-            self.contest.reset_label(self)
+            self.contest.reset_label()
             if not self.contest.name in (
                 "ICWC Medium Speed Test",
                 "RAEM",
@@ -3257,8 +3261,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["NetBiosName"] = socket.gethostname()
         self.contact["IsOriginal"] = 1
         self.contact["ID"] = uuid.uuid4().hex
-        self.contest.set_contact_vars(self)
-        self.contact["Points"] = self.contest.points(self)
+        self.contest.set_contact_vars()
+        self.contact["Points"] = self.contest.points()
         debug_output = f"{self.contact}"
         logger.debug(debug_output)
 
@@ -3366,11 +3370,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.pref.get("send_rtc_scores", False):
             if self.contest is None:
                 return
-            if (
-                hasattr(self.contest, "online_score_xml")
-                and self.rtc_service is not None
-            ):
-                self.rtc_service.xml = self.contest.online_score_xml(self)
+            if self.contest.SendsRTCScore and self.rtc_service is not None:
+                self.rtc_service.xml = self.contest.online_score_xml()
 
     def new_contest_dialog(self) -> None:
         """
@@ -4366,13 +4367,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if self.contest:
             if "ARRL Sweepstakes" in self.contest.name:
-                self.contest.parse_exchange(self)
+                self.contest.parse_exchange()
                 return
             if (
                 hasattr(self.contest, "call_parse_exchange_on_edit")
                 and self.contest.advance_on_space
             ):
-                self.contest.parse_exchange(self)
+                self.contest.parse_exchange()
             if (
                 hasattr(self.contest, "advance_on_space")
                 and self.contest.advance_on_space[4]
@@ -4446,9 +4447,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 if self.use_call_history and hasattr(
                     self.contest, "check_call_history"
                 ):
-                    self.contest.check_call_history(self)
+                    self.contest.check_call_history()
                 if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
-                    self.contest.prefill(self)
+                    self.contest.prefill()
             return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
@@ -4469,7 +4470,7 @@ class MainWindow(QtWidgets.QMainWindow):
             and self.use_call_history
             and hasattr(self.contest, "populate_history_info_line")
         ):
-            self.contest.populate_history_info_line(self)
+            self.contest.populate_history_info_line()
 
     def change_freq(self, stripped_text: str) -> None:
         """
@@ -4663,7 +4664,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 and "CQ WW" not in self.contest.name
                 and "IARU HF" not in self.contest.name
             ):
-                self.contest.prefill(self)
+                self.contest.prefill()
 
     def check_dupe(self, call: str) -> bool:
         # TODO multi multi
@@ -4672,7 +4673,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.contest is None:
             self.show_message_box("You have no contest loaded.")
             return False
-        self.contest.predupe(self)
+        self.contest.predupe()
         band = float(get_logged_band(str(self.radio_state.get("vfoa", 0.0))))
         mode = self.radio_state.get("mode", "")
         debugline = (
@@ -4709,7 +4710,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.contest.dupe_type == 5:
                 result = {"isdupe": False}  # in case contest has no function.
                 if not hasattr(self.contest, "check_dupe"):
-                    result = self.contest.specific_contest_check_dupe(self, call)
+                    result = self.contest.specific_contest_check_dupe(call)
 
             debugline = f"{result}"
             logger.debug("%s", debugline)
@@ -4732,7 +4733,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.receive.setText("599")
                     self.read_macros()
                     if self.contest.name == "ICWC Medium Speed Test":
-                        self.contest.prefill(self)
+                        self.contest.prefill()
                 self.show_CW_macros()
             return
 
@@ -5149,7 +5150,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if contest is None or not hasattr(contest, "interface"):
             return
         try:
-            contest.interface(self)
+            contest.interface()
         except AttributeError as exc:
             logger.warning("Could not re-apply plugin interface: %s", exc)
 
@@ -5168,7 +5169,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # https://www.adif.org/315/ADIF_315.htm
         logger.debug("******ADIF*****")
-        self.contest.adif(self)
+        self.contest.adif()
 
     def generate_edi(self) -> None:
         """
@@ -5265,25 +5266,6 @@ def install_icons() -> None:
             f"xdg-desktop-menu install {fsutils.APP_DATA_PATH}/k6gte-not1mm.desktop"
         )
         QtGui.QGuiApplication.setDesktopFileName("k6gte-not1mm")
-
-
-def doimp(modname: str) -> object:
-    """
-    Imports a module.
-
-    Parameters
-    ----------
-    modname : str
-    The name of the module to import.
-
-    Returns
-    -------
-    object
-    The module object.
-    """
-
-    logger.debug("doimp: %s", modname)
-    return importlib.import_module(f"not1mm.plugins.{modname}")
 
 
 def run() -> None:

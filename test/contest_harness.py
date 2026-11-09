@@ -1,12 +1,15 @@
 """Shared harness for running contest plugins headlessly against a test log.
 
-A contest plugin is a *module*, and its functions take the not1mm main window
-as their ``self``.  ``ContestHarness`` stands in for that main window: it owns a
-real on-disk :class:`~not1mm.lib.database.DataBase`, a real cty.dat lookup, and
-stubs for the handful of widgets ``imp_adif`` / ``cabrillo`` / ``edi`` touch.
-With ``plugin_common.QProgressDialog`` stubbed no ``QApplication`` is needed.
+A contest plugin is a module, either a class (as they are converted) or the
+module of functions it used to be, and it reaches the not1mm main window through
+``self.parent`` (new) or as its ``self`` argument (old).  ``ContestHarness``
+stands in for that main window: it owns a real on-disk
+:class:`~not1mm.lib.database.DataBase`, a real cty.dat lookup, and stubs for the
+handful of widgets ``imp_adif`` / ``cabrillo`` / ``edi`` touch.  With
+``plugin_common.QProgressDialog`` stubbed no ``QApplication`` is needed.
 
-Fixtures live beside the future contest classes::
+The plugin lives in ``not1mm/plugins/<plugin>.py`` and its fixtures in
+``not1mm/contest/<plugin>/``::
 
     not1mm/contest/<plugin>/<case>.adif   # input QSOs
     not1mm/contest/<plugin>/<case>.json   # station + contest settings
@@ -27,6 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import not1mm
+from not1mm.lib.contest import load_contest
 from not1mm.lib.database import DataBase
 
 # Some contests score from the *local* clock - the Remembrance Day Contest
@@ -227,10 +231,9 @@ def discover_cases(root: Path = CONTEST_DIR) -> list[Case]:
 class ContestHarness:
     """Just enough of the main window to drive a plugin's import and export."""
 
-    def __init__(self, module, case: Case, tmp_path: Path):
+    def __init__(self, contest_name: str, case: Case, tmp_path: Path):
         config = json.loads(case.config.read_text(encoding="utf-8"))
         self.case = case
-        self.contest = self.plugin = module
         self.pref = {"contest": 1, "run_state": False, **config.get("pref", {})}
         self.database = DataBase(
             str(tmp_path / "contest.db"),
@@ -263,11 +266,13 @@ class ContestHarness:
         self.progress_dialog = None
         self._ready = True
 
+        # A converted plugin is a class and an unconverted one is still a
+        # module; load_contest() hides the difference.
+        self.contest = load_contest(contest_name, self)
+
         # The app runs init_contest() when a contest is loaded, and some plugins
         # park scoring state there (wag's is_german, for one).
-        init = getattr(module, "init_contest", None)
-        if init is not None:
-            init(self)
+        self.contest.init_contest()
 
     def __getattr__(self, name):
         """Permissive stand-in for the widgets init_contest()/interface() touch."""
@@ -279,7 +284,7 @@ class ContestHarness:
 
     def _is_dupe(self, contact) -> bool:
         """Mirror MainWindow.check_dupe for the contact's band/mode."""
-        dupe_type = getattr(self.plugin, "dupe_type", 4)
+        dupe_type = self.contest.dupe_type
         call = contact.get("Call", "")
         band = contact.get("Band")
         mode = contact.get("Mode", "")
@@ -291,9 +296,9 @@ class ContestHarness:
             result = self.database.check_dupe_on_band_mode(call, band, mode)
         elif dupe_type == 5:
             result = {"isdupe": False}
-            checker = getattr(self.plugin, "specific_contest_check_dupe", None)
+            checker = getattr(self.contest, "specific_contest_check_dupe", None)
             if checker is not None:
-                result = checker(self, call)
+                result = checker(call)
         else:  # 4 (no dupe checking) and anything unknown
             result = {"isdupe": False}
         return bool(result.get("isdupe", False))
@@ -322,16 +327,16 @@ class ContestHarness:
             self.contact_is_dupe = 1 if self._is_dupe(contact) else 0
             if self.contact_is_dupe:
                 self.dupes += 1
-            contact["Points"] = self.plugin.points(self)
+            contact["Points"] = self.contest.points()
             self.database.log_contact(contact)
-        self.plugin.recalculate_mults(self)
+        self.contest.recalculate_mults()
 
     def export(self, home: Path) -> Path | None:
         """Score the log, run the plugin's export, return the file written."""
         from not1mm.lib import plugin_common
 
         self.score_log()
-        if hasattr(self.plugin, "edi"):
+        if self.contest.WritesEDI:
             plugin_common.generate_edi(self)
             produced = sorted(home.glob("*.edi"))
         else:

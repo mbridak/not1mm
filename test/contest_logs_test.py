@@ -11,7 +11,6 @@ plugin's ``points()`` for every contest.
 
 from __future__ import annotations
 
-import importlib
 import json
 from pathlib import Path
 
@@ -61,7 +60,6 @@ def test_every_plugin_has_a_fixture_directory():
 
 @pytest.mark.parametrize("case", CASES, ids=[case.id for case in CASES])
 def test_contest_log(case, headless, monkeypatch):
-    module = importlib.import_module(f"not1mm.plugins.{case.contest}")
     pin_versions(monkeypatch)
 
     validate_adif_lengths(case.adif)
@@ -69,10 +67,10 @@ def test_contest_log(case, headless, monkeypatch):
     if not case.exports:
         pytest.skip(f"{case.id}: the plugin writes no Cabrillo/EDI log")
 
-    expected = case.golden("edi" if hasattr(module, "edi") else "log")
+    harness = ContestHarness(case.contest, case, headless)
+    expected = case.golden("edi" if harness.contest.WritesEDI else "log")
     assert expected.exists(), f"{case.id}: missing golden {expected.name}"
 
-    harness = ContestHarness(module, case, headless)
     plugin_common.import_adif(harness)
 
     produced = harness.export(headless)
@@ -86,17 +84,16 @@ def test_contest_log(case, headless, monkeypatch):
 def test_contest_score(case, headless, monkeypatch):
     """The scored log must match the hand-checked numbers in contest.json."""
     expected = json.loads(case.config.read_text(encoding="utf-8"))["expected"]
-    module = importlib.import_module(f"not1mm.plugins.{case.contest}")
     pin_versions(monkeypatch)
 
-    harness = ContestHarness(module, case, headless)
+    harness = ContestHarness(case.contest, case, headless)
     plugin_common.import_adif(harness)
     harness.score_log()
 
-    assert module.show_qso(harness) == expected["qsos"], f"{case.id}: qso count"
+    assert harness.contest.show_qso() == expected["qsos"], f"{case.id}: qso count"
     if expected["mults"] is not None:
-        assert module.show_mults(harness) == expected["mults"], f"{case.id}: mults"
-    assert module.calc_score(harness) == expected["score"], f"{case.id}: score"
+        assert harness.contest.show_mults() == expected["mults"], f"{case.id}: mults"
+    assert harness.contest.calc_score() == expected["score"], f"{case.id}: score"
 
 
 @pytest.mark.parametrize("case", CASES, ids=[case.id for case in CASES])
@@ -108,7 +105,6 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
     has to reproduce that contact by contact - the total in ``expected`` can
     hide two contacts trading points.
     """
-    module = importlib.import_module(f"not1mm.plugins.{case.contest}")
     pin_versions(monkeypatch)
 
     text = case.adif.read_text(encoding="ascii", errors="replace")
@@ -116,7 +112,7 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
         f"{case.id}: every contact must carry APP_N1MM_POINTS"
     )
 
-    harness = ContestHarness(module, case, headless)
+    harness = ContestHarness(case.contest, case, headless)
     plugin_common.import_adif(harness)
     recorded = {
         (contact.get("Call", ""), str(contact.get("TS", ""))): int(
@@ -139,23 +135,23 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
 def test_dupes_are_exported(case, headless, monkeypatch):
     """Every logged contact reaches the output, duplicate contacts included."""
     expected = json.loads(case.config.read_text(encoding="utf-8"))["expected"]
-    module = importlib.import_module(f"not1mm.plugins.{case.contest}")
     pin_versions(monkeypatch)
+
+    harness = ContestHarness(case.contest, case, headless)
 
     # dupe_type 4 contests never de-dupe, and the dupe_type 5 checks compare
     # against the wall clock (a 2/3 hour window), which a historical timestamp
     # cannot exercise deterministically. Everywhere else a dupe must be logged.
-    if getattr(module, "dupe_type", 4) in (1, 2, 3):
+    if harness.contest.dupe_type in (1, 2, 3):
         assert expected.get("dupes", 0) >= 1, f"{case.id}: the log must exercise a dupe"
 
     if not case.exports:
         pytest.skip(f"{case.id}: the plugin writes no Cabrillo/EDI log")
 
-    harness = ContestHarness(module, case, headless)
     plugin_common.import_adif(harness)
     logged = len(harness.database.fetch_all_contacts_asc())
 
-    golden = case.golden("edi" if hasattr(module, "edi") else "log")
+    golden = case.golden("edi" if harness.contest.WritesEDI else "log")
     written = export_record_count(golden)
     assert written == logged, (
         f"{case.id}: {golden.name} holds {written} QSO records but the log has "

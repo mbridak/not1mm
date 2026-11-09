@@ -19,7 +19,6 @@ the corpus.  ``<case>`` is conventionally the station callsign.
 Contests whose scoring depends on where *your* station is get extra logs from
 another part of the world (see the ``variants``/``_B2_VARIANTS`` tables).
 """
-import importlib
 import json
 import re
 import shutil
@@ -3334,8 +3333,8 @@ _relocate("rsgb_80m_cc", "K6GTE", "G3XYZ",
 
 def main():
     for plugin, cases in FIXTURES.items():
-        module = importlib.import_module(f"not1mm.plugins.{plugin}")
-        # pin after the import so this module's copy is included
+        # The version pin is read at export time from not1mm.lib.version, so
+        # there is no per-plugin copy to include any more.
         pin_versions(MP())
         plugin_dir = CONTEST_DIR / plugin
         plugin_dir.mkdir(parents=True, exist_ok=True)
@@ -3367,7 +3366,12 @@ def main():
             shutil.rmtree(home, ignore_errors=True)
             home.mkdir(parents=True, exist_ok=True)
             Path.home = staticmethod(lambda h=home: h)
-            harness = ContestHarness(module, case, home)
+            # The export asks where to write the log with a save dialog; here
+            # the fixture decides, so answer with the fixture's directory.
+            plugin_common.get_export_filename = (
+                lambda _, name, __, home=home: str(home / name)
+            )
+            harness = ContestHarness(plugin, case, home)
             plugin_common.import_adif(harness)
             produced = harness.export(home)
 
@@ -3389,13 +3393,13 @@ def main():
 
             shutil.rmtree(home, ignore_errors=True)
             home.mkdir(parents=True, exist_ok=True)
-            harness = ContestHarness(module, case, home)
+            harness = ContestHarness(plugin, case, home)
             plugin_common.import_adif(harness)
             produced = harness.export(home)
 
-            qsos = module.show_qso(harness)
-            mults = module.show_mults(harness)
-            score = module.calc_score(harness)
+            qsos = harness.contest.show_qso()
+            mults = harness.contest.show_mults()
+            score = harness.contest.calc_score()
             config = json.loads(case.config.read_text(encoding="utf-8"))
             config["expected"] = {
                 "qsos": qsos,
