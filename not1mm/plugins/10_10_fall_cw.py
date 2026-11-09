@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Name + 10-10# + SPC"
 
 name = "10 10 FALL CW"
-cabrillo_name = "10-10"
+cabrillo_name = "10-10-SPRINT"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 15]
 columns = [

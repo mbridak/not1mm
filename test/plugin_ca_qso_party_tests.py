@@ -103,7 +103,7 @@ def test_points_for_qso(mode, is_dupe, expected):
 
 
 def test_cabrillo_name():
-    assert ca_qso_party.cabrillo_name == "CQP"
+    assert ca_qso_party.cabrillo_name == "CA-QSO-PARTY"
 
 
 def test_dupe_type():

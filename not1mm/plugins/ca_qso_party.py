@@ -56,7 +56,7 @@ input each county separated by a '/'.
 
 name = "California QSO Party"
 mode = "BOTH"  # CW SSB BOTH RTTY
-cabrillo_name = "CQP"
+cabrillo_name = "CA-QSO-PARTY"
 
 # California 4-letter county abbreviations (58 total)
 # Used to validate CA station exchanges and for mult checking

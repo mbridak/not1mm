@@ -275,7 +275,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 # STX Context Dependent
                 try:
-                    if cabrillo_name in ("CQP") and len(sentnr) >= 1:
+                    if cabrillo_name in ("CA-QSO-PARTY") and len(sentnr) >= 1:
                         print(
                             f"<STX:{len(sentnr)}>{sentnr}",
                             end="\r\n",
@@ -286,7 +286,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 # SRX, Context Dependent
                 try:
-                    if cabrillo_name in ("CQP") and len(rcvnr) >= 1:
+                    if cabrillo_name in ("CA-QSO-PARTY") and len(rcvnr) >= 1:
                         print(
                             f"<SRX:{len(rcvnr)}>{rcvnr}",
                             end="\r\n",
@@ -296,7 +296,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY", "CQP"):
+                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY", "CA-QSO-PARTY"):
                         sent = self.contest_settings.get("SentExchange", "").strip("# ")
                         if sent:
                             print(
@@ -350,7 +350,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                         "CQ-160-CW",
                         "CQ-160-SSB",
                         "WEEKLY-RTTY",
-                        "CQP",
+                        "CA-QSO-PARTY",
                     ):
                         rcv = f"{contact.get('Exchange1', '')}"
                         if len(rcv) > 1:

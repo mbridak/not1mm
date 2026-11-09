@@ -21,7 +21,7 @@ EXCHANGE_HINT = "1D ORG"
 
 name = "ARRL Field Day"
 mode = "BOTH"  # CW SSB BOTH RTTY
-cabrillo_name = "ARRL-FIELD-DAY"
+cabrillo_name = "ARRL-FD"
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",

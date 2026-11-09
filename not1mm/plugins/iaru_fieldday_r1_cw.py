@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "#"
 
 name = "IARU FIELDDAY R1 DARC CW"
-cabrillo_name = "FIELDDAY-REGION-1"
+cabrillo_name = "FD CW"
 mode = "CW"  # CW SSB BOTH RTTY
 # columns = [0, 1, 2, 3, 4, 5, 6, 9, 11, 15]
 columns = [

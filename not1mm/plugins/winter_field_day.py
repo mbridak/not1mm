@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 ALTEREGO = None
 EXCHANGE_HINT = "1O ORG"
 
-cabrillo_name = "WFDA-CONTEST"
+cabrillo_name = "WFD"
 name = "Winter Field Day"
 # 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
 mode = "BOTH"  # CW SSB BOTH RTTY

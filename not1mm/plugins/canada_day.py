@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 EXCHANGE_HINT = "Province/Territory"
 
 name = "CANADA DAY"
-cabrillo_name = "RAC"
+cabrillo_name = "CANADA-DAY"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
