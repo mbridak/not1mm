@@ -5,11 +5,9 @@ Find rules at: https://ncjweb.com/NAQP-Rules.pdf
 
 # pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
 
-import datetime
 import logging
 import platform
 
-from pathlib import Path
 
 from PyQt6 import QtWidgets
 
@@ -203,19 +201,12 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
     )
 
 
-def cabrillo(self, file_encoding):
+def cabrillo(self, filename, file_encoding):
     """Generates Cabrillo file. Maybe."""
     # https://www.cqwpx.com/cabrillo.htm
     logger.debug("******Cabrillo*****")
     logger.debug("Station: %s", f"{self.station}")
     logger.debug("Contest: %s", f"{self.contest_settings}")
-    now = datetime.datetime.now()
-    date_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = (
-        str(Path.home())
-        + "/"
-        + f"{self.station.get('Call', '').upper().replace('/', '-')}_{cabrillo_name}_{date_time}.log"
-    )
     logger.debug("%s", filename)
     log = self.database.fetch_all_contacts_asc()
     try:

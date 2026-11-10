@@ -255,15 +255,14 @@ def test_qsy_rule(h):
     assert not na_sprint_cw.qsy_needed(h)
 
 
-def test_cabrillo(h, tmp_path, monkeypatch):
-    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+def test_cabrillo(h, tmp_path):
     h.log("N6TR", "154 RICK NC", freq=14041.7)
     h.log("DL1AA", "33 HANS DX", band="7.0", freq=7031.2)
     h.database.get_ops = lambda: []
     messages = []
     h.show_message_box = messages.append
-    na_sprint_cw.cabrillo(h, "ascii")
-    log = next(tmp_path.glob("K0RX_NA-SPRINT-CW_*.log")).read_bytes().decode()
+    na_sprint_cw.cabrillo(h, str(tmp_path / "test.log"), "ascii")
+    log = (tmp_path / "test.log").read_bytes().decode()
     assert "CONTEST: NA-SPRINT-CW\r\n" in log
     assert "LOCATION: MN\r\n" in log
     assert "CATEGORY-MODE: CW\r\n" in log
