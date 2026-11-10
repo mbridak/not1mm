@@ -424,6 +424,7 @@ class BandMapWindow(QDockWidget):
     bandwidth = 0
     bandwidth_mark = []  # noqa: RUF012
     worked_list = {}  # noqa: RUF012
+    dupe_type = 2  # default: work each band
     multicast_interface = None
     text_color = QColor(45, 45, 45)
     worked_color = QColor(128, 128, 128)
@@ -563,6 +564,7 @@ class BandMapWindow(QDockWidget):
             return
         if packet.get("cmd", "") == "WORKED":
             self.worked_list = packet.get("worked", {})
+            self.dupe_type = packet.get("dupe_type", 2)
             logger.debug("%s", f"{self.worked_list}")
             self.update_stations()
             return
@@ -816,7 +818,10 @@ class BandMapWindow(QDockWidget):
                         pen_color = self.light_marked_color
                 if items.get("callsign") in self.worked_list:
                     call_bandlist = self.worked_list.get(items.get("callsign"))
-                    if self.currentBand.band_mhz in call_bandlist:
+                    if (
+                        self.dupe_type == 1
+                        or self.currentBand.band_mhz in call_bandlist
+                    ):
                         pen_color = self.worked_color
                 freq_y = (
                     (items.get("freq") - self.currentBand.start) / step

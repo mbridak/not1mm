@@ -307,7 +307,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.server_message_watch_timer.timeout.connect(self.check_udp_queue)
         self.server_message_watch_timer.start(1000)
         self.utc_clock = QtWidgets.QLabel()
-        self.utc_clock.setFont(QFont(self.fontfamily, 11))
+        self.utc_clock.setStyleSheet(
+            """
+            QLabel {
+                font-family: "DejaVu Sans";
+                font-size: 16pt;
+                font-weight: bold;
+                padding: 6px 6px;
+            }
+            """
+        )
         self.utc_clock.setContentsMargins(0, 0, 6, 0)
         # macOS shows the menu bar outside the window. Put the clock in the
         # entry row there. Other systems show it in the menu bar corner.
@@ -1420,6 +1429,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd = {}
                 cmd["cmd"] = "WORKED"
                 cmd["worked"] = result
+                cmd["dupe_type"] = getattr(self.contest, "dupe_type", 2)
                 if self.bandmap_window:
                     self.bandmap_window.msg_from_main(cmd)
                 return
@@ -3082,6 +3092,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd = {}
         cmd["cmd"] = "WORKED"
         cmd["worked"] = self.worked_list
+        cmd["dupe_type"] = getattr(self.contest, "dupe_type", 2)
         logger.debug("%s", f"{cmd}")
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
