@@ -1420,6 +1420,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 cmd = {}
                 cmd["cmd"] = "WORKED"
                 cmd["worked"] = result
+                cmd["dupe_type"] = getattr(self.contest, "dupe_type", 2)
                 if self.bandmap_window:
                     self.bandmap_window.msg_from_main(cmd)
                 return
@@ -3082,6 +3083,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd = {}
         cmd["cmd"] = "WORKED"
         cmd["worked"] = self.worked_list
+        cmd["dupe_type"] = getattr(self.contest, "dupe_type", 2)
         logger.debug("%s", f"{cmd}")
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
