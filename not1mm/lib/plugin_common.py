@@ -164,6 +164,9 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                 sentnr = str(contact.get("SentNr", "0"))
                 rcvnr = str(contact.get("NR", "0"))
                 grid = contact.get("GridSquare", "")
+                if cabrillo_name in ("DARC VHF"):
+                    grid = contact.get("Exchange1", "")
+
                 pfx = contact.get("CountryPrefix", "")
                 comment = contact.get("Comment", "")
                 loggeddate = the_date_and_time[:10]
@@ -374,6 +377,17 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                                 end="\r\n",
                                 file=file_descriptor,
                             )
+
+                    # ------------DARC-VHF---------
+                    elif cabrillo_name == "DARC VHF":
+                        rcv = f"{str(contact.get('NR', '')).zfill(2)} {contact.get('Exchange1', '')}"
+                        if len(rcv) > 1:
+                            print(
+                                f"<SRX_STRING:{len(rcv)}>{rcv.upper()}",
+                                end="\r\n",
+                                file=file_descriptor,
+                            )
+
                     elif rcvnr != "0":
                         print(
                             f"<SRX_STRING:{len(rcvnr)}>{rcvnr}",

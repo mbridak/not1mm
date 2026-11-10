@@ -96,7 +96,7 @@ class RigctldCAT(CAT):
             if not self.online:
                 return ""
             try:
-                self.drain_socket()
+                # self.drain_socket()
                 logger.debug(f">{prefix}{command}")
                 self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
                 report = ""
