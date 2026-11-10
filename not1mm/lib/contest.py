@@ -43,6 +43,8 @@ from __future__ import annotations
 import functools
 import importlib
 import logging
+import re
+from dataclasses import dataclass
 from pathlib import Path
 
 from PyQt6 import QtWidgets
@@ -52,6 +54,10 @@ from not1mm.lib import version
 from not1mm.lib.plugin_common import gen_adif, get_points
 
 logger = logging.getLogger(__name__)
+
+# Where contests are defined.
+PACKAGE_PATH = Path(__file__).resolve().parent.parent
+PLUGIN_PATH = PACKAGE_PATH / "plugins"
 
 # The five entry-window widgets a TAB cycle can visit.
 ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
@@ -86,6 +92,36 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
     )
 
 
+def contest_id(contest) -> str | None:
+    """The identifier of *contest*: its Cabrillo name unless it overrides it.
+
+    The Cabrillo name is what the sponsor's log checker recognises, so it is
+    what identifies the contest everywhere technical: the database column, the
+    log filenames, the directory under ``~/.local/share/not1mm``.  A contest
+    that shares its Cabrillo name with another but is not interchangeable --
+    or that has no meaningful one -- sets ``ContestName`` and is identified by
+    that instead.  (N1MM's UDC files call this field ``Name``.)
+
+    Works on anything carrying the metadata: an instance, a class or a module.
+    """
+    for attribute in ("ContestName", "CabrilloName", "cabrillo_name"):
+        value = getattr(contest, attribute, None)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def path_name(identifier: str) -> str:
+    """*identifier* as a file or directory name.
+
+    A Cabrillo name can contain a space ("FD CW") or not be upper case at all
+    ("Schwaben Contest"); a log file or directory called that is asking for
+    trouble, so the spaces become underscores.  The log itself keeps the name
+    as it is.
+    """
+    return identifier.replace(" ", "_")
+
+
 class ContestBase:
     """Common behaviour of a contest plugin.
 
@@ -98,6 +134,10 @@ class ContestBase:
     # -- identity (UDC [Contest] names) -------------------------------------
     DisplayName = None  # "CQ WPX CW"; shown, and used as a directory name
     CabrilloName = None  # "CQ-WPX-CW"; the Cabrillo CONTEST: value
+    # The identifier, where it is not simply the Cabrillo name.  Only the few
+    # contests that share a Cabrillo name but are not interchangeable set this
+    # -- see contest_id().  N1MM's UDC files call the field Name.
+    ContestName = None
     EXCHANGE_HINT = ""  # placeholder in the New Contest dialog
     SOAPBOX_HINT = ""
     Mode = "BOTH"  # CW SSB BOTH RTTY
@@ -617,39 +657,160 @@ def _import_optional(dotted_name: str):
         return None
 
 
-def _find_module(name: str):
-    """The module for contest *name*.
+def _import_source(source: str):
+    """The module a contest is defined in, by the name of its file.
 
-    A contest is ``not1mm/plugins/<name>.py``, whether it is a class already or
-    still a module of functions.  The test fixtures live in
-    ``not1mm/contest/<name>/``, which is not importable, so there is nothing
-    here to tell apart.
+    A contest is ``not1mm/plugins/<source>.py``, whether it is still a module
+    of functions or already a class; ``<source>`` is what the identifiers in
+    the database used to be.
     """
-    return _import_optional(f"not1mm.plugins.{name}")
+    return _import_optional(f"not1mm.plugins.{source}")
 
 
-def load_contest(name: str, parent):
-    """Import contest *name* and bind it to the main window.
+# An identifier that could be a file or directory name; anything with a dot or
+# a space in it (most Cabrillo names) is not worth trying to import.
+_SOURCE_NAME = re.compile(r"[A-Za-z0-9_-]+")
+
+
+@dataclass(frozen=True)
+class ContestInfo:
+    """One contest this installation can open."""
+
+    source: str  # where it is defined, e.g. "cq_wpx_cw"
+    identifier: str  # what the database stores, e.g. "CQ-WPX-CW"
+    display_name: str  # what to show, e.g. "CQ WPX CW"
+
+
+_AVAILABLE: list[ContestInfo] | None = None
+
+
+def available_contests() -> list[ContestInfo]:
+    """Every contest that ships with not1mm.
+
+    Built on demand, because it has to import each definition to read what it
+    declares -- cheap once, and only needed when a contest has to be found by
+    something other than the name of the file it lives in.
+    """
+    global _AVAILABLE
+    if _AVAILABLE is not None:
+        return _AVAILABLE
+    found = []
+    for source in _contest_sources():
+        module = _import_source(source)
+        if module is None:
+            continue
+        metadata = getattr(module, "Contest", None) or module
+        identifier = contest_id(metadata)
+        if identifier is None:
+            logger.warning("Contest %s declares no Cabrillo name", source)
+            continue
+        found.append(
+            ContestInfo(
+                source=source,
+                identifier=identifier,
+                display_name=getattr(metadata, "DisplayName", None)
+                or getattr(metadata, "name", "")
+                or "",
+            )
+        )
+    _AVAILABLE = found
+    return found
+
+
+def _contest_sources() -> list[str]:
+    """The name of every contest definition that ships with not1mm."""
+    return sorted(
+        path.stem for path in PLUGIN_PATH.glob("*.py") if path.stem != "__init__"
+    )
+
+
+def _find_module(identifier: str):
+    """The module for *identifier*.
+
+    Whatever the database recorded over the years has to keep loading: the id
+    (the Cabrillo name), the name of the file the contest lives in, or its
+    display name.  A source name is tried first because that is a plain import;
+    the Cabrillo name needs the whole tree scanned to see which file declares
+    it.
+    """
+    if not isinstance(identifier, str) or not identifier:
+        return None
+    if _SOURCE_NAME.fullmatch(identifier):
+        module = _import_source(identifier)
+        if module is not None:
+            return module
+
+    wanted = identifier.casefold()
+    matches = [
+        info
+        for info in available_contests()
+        if wanted
+        in (
+            info.identifier.casefold(),
+            info.source.casefold(),
+            info.display_name.casefold(),
+        )
+    ]
+    if len(matches) > 1:
+        # Two definitions share an identifier and it does not say which one is
+        # meant -- the fall and spring Ten-Ten QSO parties, for one.  Say so
+        # rather than pick silently.
+        logger.warning(
+            "Contest %r is ambiguous, using %s: %s",
+            identifier,
+            matches[0].source,
+            ", ".join(info.source for info in matches),
+        )
+    return _import_source(matches[0].source) if matches else None
+
+
+def load_contest(identifier: str, parent):
+    """Import the contest called *identifier* and bind it to the main window.
 
     A converted contest is a ``class Contest(ContestBase)``; an unconverted one
-    is still a module of functions.  Both live in ``not1mm/plugins/<name>.py``.
+    is still a module of functions.  Both live in ``not1mm.plugins.<source>``,
+    and the test fixtures for either are in ``not1mm/contest/<source>/``.
     """
-    module = _find_module(name)
+    module = _find_module(identifier)
     if module is None:
-        raise ModuleNotFoundError(f"no contest plugin named {name!r}")
+        raise ModuleNotFoundError(f"no contest plugin named {identifier!r}")
     contest_class = getattr(module, "Contest", None)
     if contest_class is None:
         return _LegacyContest(module, parent)
     return contest_class(parent)
 
 
-def contest_metadata(name: str):
-    """Whatever carries the metadata for *name*.
+def contest_metadata(identifier: str):
+    """Whatever carries the metadata for *identifier*.
 
     The ``Contest`` class for a converted contest, the module for an
     unconverted one, None when there is no such contest.
     """
-    module = _find_module(name)
+    module = _find_module(identifier)
     if module is None:
         return None
     return getattr(module, "Contest", None) or module
+
+
+def contest_identifier_for_display(display_name: str) -> str | None:
+    """The identifier of the contest the picker shows as *display_name*.
+
+    The picker's entries are not the contests' own display names -- they are
+    their own short labels ("OK1WC", "LZ-DX", "10 10 FALL CW"), and what links
+    them to a contest is the fold the application has always applied: lower
+    case, spaces to underscores, which lands on the name of the file the
+    contest lives in.  That fold also happens to be what older databases
+    stored, so it has to keep resolving.  A contest's own display name is
+    accepted too, for callers that have one.
+    """
+    folded = display_name.casefold().replace(" ", "_")
+    wanted = display_name.casefold()
+    available = available_contests()
+    for info in available:
+        if info.source.casefold() == folded:
+            return info.identifier
+    for info in available:
+        if info.display_name.casefold() == wanted:
+            return info.identifier
+    return None
+

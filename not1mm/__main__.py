@@ -77,7 +77,12 @@ from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib import catppuccin, plugin_common
 from not1mm.lib.about import About
-from not1mm.lib.contest import load_contest
+from not1mm.lib.contest import (
+    contest_id,
+    contest_identifier_for_display,
+    load_contest,
+    path_name,
+)
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
@@ -2167,11 +2172,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.setWindowTitle("Edit Contest")
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
-        value = self.contest_settings.get("ContestName").upper().replace("_", " ")
-
-        if value == "GENERAL LOGGING":
-            value = "General Logging"
-        self.refill_dropdown(self.contest_dialog.contest, value)
+        # Select the entry that stands for the loaded contest.
+        self.select_picker_entry(contest_id(self.contest))
         value = self.contest_settings.get("OperatorCategory")
         self.refill_dropdown(self.contest_dialog.operator_class, value)
         value = self.contest_settings.get("BandCategory")
@@ -2202,6 +2204,35 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contest_dialog.exec()
 
+    def contest_identifier_from_dialog(self) -> str:
+        """The identifier of the contest picked in the dialog.
+
+        The picker's entries are its own short labels; what gets stored is the
+        identifier they stand for -- the contest's Cabrillo name, unless the
+        contest overrides it.
+        """
+        chosen = self.contest_dialog.contest.currentText()
+        identifier = contest_identifier_for_display(chosen)
+        if identifier is None:
+            # Not a contest we know about.  Store something that can be looked
+            # up again rather than nothing, but say so.
+            logger.warning("Unknown contest selected: %r", chosen)
+            return chosen.lower().replace(" ", "_")
+        return identifier
+
+    def select_picker_entry(self, identifier: str) -> None:
+        """Select the contest picker entry that stands for *identifier*.
+
+        The entry's label is not the contest's display name ("OK1WC" for the
+        contest that calls itself "OK1WC Memorial Contest (MWC)"), so ask each
+        entry what it stands for rather than matching text.
+        """
+        picker = self.contest_dialog.contest
+        for index in range(picker.count()):
+            if contest_identifier_for_display(picker.itemText(index)) == identifier:
+                picker.setCurrentIndex(index)
+                return
+
     def save_edited_contest(self) -> None:
         """
         Save the edited contest.
@@ -2216,9 +2247,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         contest = {}
-        contest["ContestName"] = (
-            self.contest_dialog.contest.currentText().lower().replace(" ", "_")
-        )
+        contest["ContestName"] = self.contest_identifier_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -3417,9 +3446,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         next_number = self.database.get_next_contest_nr()
         contest = {}
-        contest["ContestName"] = (
-            self.contest_dialog.contest.currentText().lower().replace(" ", "_")
-        )
+        contest["ContestName"] = self.contest_identifier_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -4992,11 +5019,15 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
 
-        try:
-            if not (fsutils.USER_DATA_PATH / self.contest.name).exists():
-                os.mkdir(fsutils.USER_DATA_PATH / self.contest.name)
-        except AttributeError:
+        identifier = contest_id(self.contest)
+        if identifier is None:
             return ""
+        # The contest's identifier, mangled into something that can be a
+        # directory name ("FD CW" -> "FD_CW").
+        contest_dir = fsutils.USER_DATA_PATH / path_name(identifier)
+
+        if not contest_dir.exists():
+            os.mkdir(contest_dir)
 
         if not (fsutils.USER_DATA_PATH / macro_file).exists():
             try:
@@ -5010,11 +5041,11 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"Error {err} copying macro file.", blocking=False
                 )
 
-        if not (fsutils.USER_DATA_PATH / self.contest.name / macro_file).exists():
+        if not (contest_dir / macro_file).exists():
             try:
                 copyfile(
                     fsutils.USER_DATA_PATH / macro_file,
-                    fsutils.USER_DATA_PATH / self.contest.name / macro_file,
+                    contest_dir / macro_file,
                 )
             except OSError as err:
                 logger.critical(f"Error {err} copying macro file.")
@@ -5022,7 +5053,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"Error {err} copying macro file.", blocking=False
                 )
 
-        return fsutils.USER_DATA_PATH / self.contest.name / macro_file
+        return contest_dir / macro_file
 
     def edit_macros(self) -> None:
         """

@@ -43,6 +43,9 @@ EXCHANGE_HINT = "County"
 
 name = "QSO PARTY RST"
 cabrillo_name = "QSO_PARTY"
+# qso_party_sn carries the same Cabrillo name but a different exchange, so the
+# identifier is what tells the two apart (not1mm.lib.contest.contest_id).
+ContestName = "qso_party_rst"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [

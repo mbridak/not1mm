@@ -191,7 +191,7 @@ def prefill(self):
 
     if self.other_2.text() == "":
         call = self.callsign.text().upper()
-        query = f"select NR from dxlog where Call = '{call}' and ContestName = '{name}' order by ts desc;"
+        query = f"select NR from dxlog where Call = '{call}' and ContestName = '{cabrillo_name}' order by ts desc;"
         logger.debug(query)
         result = self.database.exec_sql(query)
         if result and isinstance(result.get("NR", ""), str):

@@ -52,6 +52,9 @@ input each county separated by a '/'.
 
 name = "QSO PARTY SN"
 cabrillo_name = "QSO_PARTY"
+# qso_party_rst carries the same Cabrillo name but a different exchange, so the
+# identifier is what tells the two apart (not1mm.lib.contest.contest_id).
+ContestName = "qso_party_sn"
 mode = "BOTH"  # CW SSB BOTH RTTY
 
 columns = [
