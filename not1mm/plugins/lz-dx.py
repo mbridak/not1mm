@@ -51,6 +51,7 @@ EXCHANGE_HINT = "District or ITU-Zone"
 name = "LZ DX"
 cabrillo_name = "LZ-DX"
 mode = "BOTH"  # CW SSB BOTH RTTY
+ZoneType = "IARU"  # the zone multiplier is the ITU zone
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",

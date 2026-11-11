@@ -75,7 +75,7 @@ from not1mm.chat import ChatWindow
 from not1mm.checkwindow import CheckWindow
 from not1mm.clusterwindow import ClusterWindow
 from not1mm.dxcc_tracker import DXCCWindow
-from not1mm.lib import catppuccin, plugin_common
+from not1mm.lib import catppuccin, contact_info, plugin_common
 from not1mm.lib.about import About
 from not1mm.lib.contest import (
     contest_id,
@@ -92,10 +92,8 @@ from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.ham_utility import (
     bearing,
-    bearing_with_latlon,
     calculate_wpx_prefix,
     distance,
-    distance_with_latlon,
     fakefreq,
     get_logged_band,
     getband,
@@ -4629,8 +4627,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def check_callsign(self, callsign: str) -> None:
         """
         Check callsign as it's being entered in the big_cty index.
-        Get DX entity, CQ, ITU and continent.
-        Geographic information. Distance and Heading.
+
+        Everything about the call comes from the contest's contact_info():
+        where it is (the country, the zones, a bearing), whether it is a dupe,
+        and whether it is a new multiplier.  With no contest loaded there is
+        still the country and the bearing.
 
         Parameters
         ----------
@@ -4642,56 +4643,46 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
 
-        result = self.cty_lookup(callsign)
-        if result is not None:
-            try:
-                a = result.get(next(iter(result)))
-            except (StopIteration, AttributeError):
-                return
-            entity = a.get("entity", "")
-            cq = a.get("cq", "")
-            itu = a.get("itu", "")
-            continent = a.get("continent")
-            lat = float(a.get("lat", "0.0"))
-            lon = float(a.get("long", "0.0"))
-            lon = lon * -1  # cty.dat file inverts longitudes
-            primary_pfx = a.get("primary_pfx", "")
-            heading = bearing_with_latlon(self.station.get("GridSquare"), lat, lon)
-            kilometers = distance_with_latlon(self.station.get("GridSquare"), lat, lon)
+        info = contact_info.build(self, self.contest, callsign)
+        if not info.prefix:
+            return
+
+        if info.beam is not None and info.distance is not None:
             self.heading_distance.setText(
-                f"Regional Hdg {heading}° LP {reciprocal(heading)}° / "
-                f"distance {int(kilometers * 0.621371)}mi {kilometers}km"
+                f"Regional Hdg {info.beam}° LP {reciprocal(info.beam)}° / "
+                f"distance {int(info.distance * 0.621371)}mi {info.distance}km"
             )
             if self.rotator_window is not None:
-                self.rotator_window.set_requested_azimuth(float(heading))
-            self.contact["CountryPrefix"] = primary_pfx
-            self.contact["ZN"] = int(cq)
-            if self.contest and self.contest.name in ("IARU HF", "LZ DX"):
-                self.contact["ZN"] = int(itu)
-            self.contact["Continent"] = continent
-            self.dx_entity.setText(
-                f"{primary_pfx}: {continent}/{entity} cq:{cq} itu:{itu}"
-            )
-            if self.dxcc_window:
-                cmd = {}
-                cmd["cmd"] = "SCROLLTODXCC"
-                cmd["dxcc"] = primary_pfx
-                self.dxcc_window.msg_from_main(cmd)
+                self.rotator_window.set_requested_azimuth(float(info.beam))
 
-            if self.zone_window:
-                cmd = {}
-                cmd["cmd"] = "SCROLLTOZone"
-                cmd["cq"] = cq
-                cmd["itu"] = itu
-                self.zone_window.msg_from_main(cmd)
+        self.contact["CountryPrefix"] = info.prefix
+        self.contact["ZN"] = info.zone
+        self.contact["Continent"] = info.continent
+        self.dx_entity.setText(
+            f"{info.prefix}: {info.continent}/{info.entity} "
+            f"cq:{info.cq_zone} itu:{info.itu_zone}"
+        )
 
-            if (
-                len(callsign) > 2
-                and self.contest
-                and "CQ WW" not in self.contest.name
-                and "IARU HF" not in self.contest.name
-            ):
-                self.contest.prefill()
+        if self.dxcc_window:
+            cmd = {}
+            cmd["cmd"] = "SCROLLTODXCC"
+            cmd["dxcc"] = info.prefix
+            self.dxcc_window.msg_from_main(cmd)
+
+        if self.zone_window:
+            cmd = {}
+            cmd["cmd"] = "SCROLLTOZone"
+            cmd["cq"] = info.cq_zone
+            cmd["itu"] = info.itu_zone
+            self.zone_window.msg_from_main(cmd)
+
+        if (
+            len(callsign) > 2
+            and self.contest
+            and "CQ WW" not in self.contest.name
+            and "IARU HF" not in self.contest.name
+        ):
+            self.contest.prefill()
 
     def check_dupe(self, call: str) -> bool:
         # TODO multi multi

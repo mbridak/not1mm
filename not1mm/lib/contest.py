@@ -49,6 +49,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
+from not1mm.lib import contact_info
 from not1mm.lib import plugin_common
 from not1mm.lib import version
 from not1mm.lib.plugin_common import gen_adif, get_points
@@ -269,6 +270,8 @@ class ContestBase:
     # is a plain name; it documents the contest and lets a test reject a log
     # that strays off-band.
     Bands = ()
+    # Which zone scheme the contest exchanges: "CQ" (most) or "IARU".  (UDC.)
+    ZoneType = "CQ"
     # Points for a valid contact.  A contest whose points depend on where the
     # operator is (WPX's North-America asymmetry, WAG's DL side) overrides
     # points() instead -- UDC's PointsPerContact cannot express those.
@@ -435,6 +438,37 @@ class ContestBase:
     def specific_contest_check_dupe(self, call: str) -> dict:
         """The DupeType-5 hook: a contest that dupe-checks its own way."""
         return {"isdupe": False}
+
+    # -- what is known about a call -----------------------------------------
+    def prefill_contact(self, call, band=None, mode=None) -> dict:
+        """The best-known contact fields for *call*, to prefill or to score.
+
+        Recalled from a previous QSO in this contest, the call history file and
+        cty.dat; the caller decides what to write into the entry fields.
+        """
+        return contact_info.recall(self.parent, call, self.ZoneType, band, mode)
+
+    def contact_mults(self, contact) -> tuple:
+        """What each declared multiplier is worth for *contact*."""
+        return tuple(
+            contact_info.MultInfo(
+                name=name or key,
+                type=self.mult_type_name(slot),
+                value=self.mult_value(slot, contact),
+                is_new=bool(self.is_new_mult(slot, contact)),
+            )
+            for slot, name, key, _ in self._mult_slots()
+        )
+
+    def contact_info(self, call, band=None, mode=None, contact=None):
+        """Everything known about *call*: where it is, and what it is worth.
+
+        The call field, the rotator and (later) the bandmap all ask this.  A
+        bandmap spot passes only ``Call``/``Band``/``Mode``; a call-derived
+        multiplier still answers, an exchange-derived one cannot until the
+        exchange has been typed.
+        """
+        return contact_info.build(self.parent, self, call, band, mode, contact)
 
     def points(self):
         """Points for the contact being logged.
@@ -892,6 +926,23 @@ class _LegacyContest:
             mode,
             specific,
         )
+
+    @property
+    def ZoneType(self):
+        """The zone scheme the module exchanges (UDC); CQ unless it says so."""
+        return getattr(self._module, "ZoneType", "CQ")
+
+    def prefill_contact(self, call, band=None, mode=None) -> dict:
+        """Recall the fields for *call* (see :meth:`ContestBase.prefill_contact`)."""
+        return contact_info.recall(self.parent, call, self.ZoneType, band, mode)
+
+    def contact_mults(self, contact) -> tuple:
+        """An unconverted plugin declares no multipliers to ask about."""
+        return ()
+
+    def contact_info(self, call, band=None, mode=None, contact=None):
+        """What is known about *call* (see :meth:`ContestBase.contact_info`)."""
+        return contact_info.build(self.parent, self, call, band, mode, contact)
 
     def __getattr__(self, name):
         if name.startswith("_"):

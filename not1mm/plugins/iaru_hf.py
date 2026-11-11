@@ -32,6 +32,7 @@ EXCHANGE_HINT = "ITU Zone"
 name = "IARU HF"
 cabrillo_name = "IARU-HF"
 mode = "BOTH"  # CW SSB BOTH RTTY
+ZoneType = "IARU"  # the exchange is the ITU zone
 
 columns = [
     "YYYY-MM-DD HH:MM:SS",

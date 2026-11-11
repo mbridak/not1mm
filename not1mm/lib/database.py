@@ -449,6 +449,18 @@ class DataBase:
         """Returns call history values for matching a call."""
         return self.exec_sql("select * from CALLHISTORY where call = ?;", (call,))
 
+    def fetch_previous_qso(self, call: str):
+        """The most recent contact with *call* in this contest, if any.
+
+        What a station was worked as the last time: its grid, its section, the
+        exchange it sent.  Used to prefill, and to predict a multiplier from.
+        """
+        return self.exec_sql(
+            "select * from dxlog where Call = ? and ContestNR = ? "
+            "order by TS desc limit 1;",
+            (call, self.current_contest),
+        )
+
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""
         return self.exec_sql_mult(
