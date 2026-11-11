@@ -26,7 +26,6 @@ class Contest(ContestBase):
     Mode = "BOTH"
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "DOK/NM or #"
-    ADIFContestID = "WAG"
     SendsRTCScore = True
     Bands = (3.5, 7, 14, 21, 28)
     LogInfo = [

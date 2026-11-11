@@ -29,7 +29,6 @@ class Contest(ContestBase):
     Mode = "CW"
     EXCHANGE_HINT = "#"
     DefaultContestExchange = "#"  # a serial number
-    ADIFContestID = "CQ-WPX-CW"
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     LogInfo = [

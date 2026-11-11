@@ -42,7 +42,6 @@ Power classes are {VLP, QRP, MP, QRO}
 MemberNr is AGCW-MemberNr or NM for Non Member.
 
 For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
-    ADIFContestID = "AGCW-QRP"
     SendsRTCScore = True
     # other_2 holds "serial power member" with spaces; they are turned into
     # slashes as the contact is stored, so they must survive being typed.

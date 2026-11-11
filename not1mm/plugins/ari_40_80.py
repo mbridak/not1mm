@@ -19,7 +19,6 @@ class Contest(ContestBase):
     Mode = "BOTH"
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "Automobile Code"
-    ADIFContestID = "40-80"
     Bands = (3.5, 7)
     # The whole exchange is the automobile code, so other_1 is not used.
     EntryFields = ("field1", "field2", "field4")

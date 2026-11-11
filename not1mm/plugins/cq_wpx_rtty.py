@@ -36,7 +36,6 @@ class Contest(ContestBase):
     Mode = "RTTY"
     EXCHANGE_HINT = "#"
     DefaultContestExchange = "#"  # a serial number
-    ADIFContestID = "CQ-WPX-RTTY"
     SendsRTCScore = True
     SupportsFT8 = True
     Bands = (3.5, 7, 14, 21, 28)

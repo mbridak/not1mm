@@ -239,7 +239,12 @@ class ContestBase:
     SOAPBOX_HINT = ""
     Mode = "BOTH"  # CW SSB BOTH RTTY
     DupeType = 2  # 1 contest, 2 band, 3 band+mode, 4 none, 5 plugin decides
-    ADIFContestID = ""  # CONTEST_ID written into exported ADIF
+    # ADIF's CONTEST_ID, where it is not the Cabrillo name.  ADIF wants the
+    # sponsor's contest id, which is the Cabrillo name for every contest we
+    # have, so no converted plugin sets this; the differing literals the
+    # unconverted modules still pass are wrong and are retired as each is
+    # converted.
+    ADIFContestID = None
 
     # -- entry window -------------------------------------------------------
     # These defaults describe the exchange by far the most common in contests:
@@ -707,8 +712,16 @@ class ContestBase:
 
     # -- export -------------------------------------------------------------
     def adif(self):
-        """Export the log as ADIF."""
-        gen_adif(self.parent, self.CabrilloName, self.ADIFContestID)
+        """Export the log as ADIF.
+
+        ADIF's ``CONTEST_ID`` is the Cabrillo name, unless the contest overrides
+        :attr:`ADIFContestID`.
+        """
+        gen_adif(
+            self.parent,
+            self.CabrilloName,
+            self.ADIFContestID or self.CabrilloName,
+        )
 
     def cabrillo(self, filename, file_encoding):
         """Write the Cabrillo file, one :meth:`cabrillo_qso_line` per QSO.

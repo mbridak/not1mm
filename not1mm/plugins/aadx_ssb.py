@@ -21,7 +21,6 @@ class Contest(ContestBase):
     CabrilloName = "AADX-SSB"
     Mode = "SSB"
     EXCHANGE_HINT = "age (or 01)"
-    ADIFContestID = "AADX-SSB"
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     LogInfo = [

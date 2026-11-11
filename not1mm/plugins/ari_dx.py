@@ -42,7 +42,6 @@ class Contest(ContestBase):
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "Prov or '#'"
     DefaultContestExchange = "#"
-    ADIFContestID = "ARI-DX"
     SupportsFT8 = True
     Bands = (3.5, 7, 14, 21, 28)
     LogInfo = [

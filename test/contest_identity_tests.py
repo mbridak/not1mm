@@ -99,6 +99,31 @@ def test_every_contest_can_be_loaded_by_its_identifier():
         assert contest.contest_id(loaded) == info.identifier
 
 
+def test_the_adif_contest_id_is_the_cabrillo_name(monkeypatch):
+    """ADIF's CONTEST_ID is the Cabrillo name unless a contest overrides it.
+
+    ADIF wants the sponsor's contest id, which is the Cabrillo name for every
+    contest we have; ADIFContestID stays as an override, but none sets it.
+    """
+    seen = []
+    monkeypatch.setattr(
+        contest,
+        "gen_adif",
+        lambda parent, cabrillo_name, contest_id: seen.append(contest_id),
+    )
+    for identifier in ("CQ-WPX-CW", "MWC", "ARI-DX", "10_10_fall_cw"):
+        seen.clear()
+        loaded = contest.load_contest(identifier, None)
+        loaded.adif()
+        assert seen == [loaded.CabrilloName]
+
+    loaded = contest.load_contest("CQ-WPX-CW", None)
+    loaded.ADIFContestID = "SOMETHING-ELSE"
+    seen.clear()
+    loaded.adif()
+    assert seen == ["SOMETHING-ELSE"]
+
+
 def test_a_picker_entry_maps_to_an_identifier():
     # The picker's labels are not the contests' display names: "OK1WC" is the
     # label for the contest that calls itself "OK1WC Memorial Contest (MWC)".
