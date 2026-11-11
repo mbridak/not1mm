@@ -36,7 +36,6 @@ from contest_harness import (  # noqa: E402
     Case,
     ContestHarness,
     DummyProgress,
-    pin_versions,
     validate_adif_lengths,
 )
 
@@ -3333,9 +3332,6 @@ _relocate("rsgb_80m_cc", "K6GTE", "G3XYZ",
 
 def main():
     for plugin, cases in FIXTURES.items():
-        # The version pin is read at export time from not1mm.lib.version, so
-        # there is no per-plugin copy to include any more.
-        pin_versions(MP())
         plugin_dir = CONTEST_DIR / plugin
         plugin_dir.mkdir(parents=True, exist_ok=True)
         for case_name, fixture in cases.items():
@@ -3371,7 +3367,7 @@ def main():
             plugin_common.get_export_filename = (
                 lambda _, name, __, home=home: str(home / name)
             )
-            harness = ContestHarness(plugin, case, home)
+            harness = ContestHarness(plugin, case, home, MP())
             plugin_common.import_adif(harness)
             produced = harness.export(home)
 
@@ -3393,7 +3389,7 @@ def main():
 
             shutil.rmtree(home, ignore_errors=True)
             home.mkdir(parents=True, exist_ok=True)
-            harness = ContestHarness(plugin, case, home)
+            harness = ContestHarness(plugin, case, home, MP())
             plugin_common.import_adif(harness)
             produced = harness.export(home)
 

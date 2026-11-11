@@ -25,7 +25,6 @@ from contest_harness import (
     DummyProgress,
     discover_cases,
     export_record_count,
-    pin_versions,
     validate_adif_lengths,
 )
 
@@ -60,14 +59,13 @@ def test_every_plugin_has_a_fixture_directory():
 
 @pytest.mark.parametrize("case", CASES, ids=[case.id for case in CASES])
 def test_contest_log(case, headless, monkeypatch):
-    pin_versions(monkeypatch)
 
     validate_adif_lengths(case.adif)
 
     if not case.exports:
         pytest.skip(f"{case.id}: the plugin writes no Cabrillo/EDI log")
 
-    harness = ContestHarness(case.contest, case, headless)
+    harness = ContestHarness(case.contest, case, headless, monkeypatch)
     expected = case.golden("edi" if harness.contest.WritesEDI else "log")
     assert expected.exists(), f"{case.id}: missing golden {expected.name}"
 
@@ -84,9 +82,8 @@ def test_contest_log(case, headless, monkeypatch):
 def test_contest_score(case, headless, monkeypatch):
     """The scored log must match the hand-checked numbers in contest.json."""
     expected = json.loads(case.config.read_text(encoding="utf-8"))["expected"]
-    pin_versions(monkeypatch)
 
-    harness = ContestHarness(case.contest, case, headless)
+    harness = ContestHarness(case.contest, case, headless, monkeypatch)
     plugin_common.import_adif(harness)
     harness.score_log()
 
@@ -105,14 +102,13 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
     has to reproduce that contact by contact - the total in ``expected`` can
     hide two contacts trading points.
     """
-    pin_versions(monkeypatch)
 
     text = case.adif.read_text(encoding="ascii", errors="replace")
     assert text.count("APP_N1MM_POINTS") == text.count("<EOR>") > 0, (
         f"{case.id}: every contact must carry APP_N1MM_POINTS"
     )
 
-    harness = ContestHarness(case.contest, case, headless)
+    harness = ContestHarness(case.contest, case, headless, monkeypatch)
     plugin_common.import_adif(harness)
     recorded = {
         (contact.get("Call", ""), str(contact.get("TS", ""))): int(
@@ -135,9 +131,8 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
 def test_dupes_are_exported(case, headless, monkeypatch):
     """Every logged contact reaches the output, duplicate contacts included."""
     expected = json.loads(case.config.read_text(encoding="utf-8"))["expected"]
-    pin_versions(monkeypatch)
 
-    harness = ContestHarness(case.contest, case, headless)
+    harness = ContestHarness(case.contest, case, headless, monkeypatch)
 
     # dupe_type 4 contests never de-dupe, and the dupe_type 5 checks compare
     # against the wall clock (a 2/3 hour window), which a historical timestamp

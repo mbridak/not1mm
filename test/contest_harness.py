@@ -231,7 +231,7 @@ def discover_cases(root: Path = CONTEST_DIR) -> list[Case]:
 class ContestHarness:
     """Just enough of the main window to drive a plugin's import and export."""
 
-    def __init__(self, contest_name: str, case: Case, tmp_path: Path):
+    def __init__(self, contest_name: str, case: Case, tmp_path: Path, monkeypatch=None):
         config = json.loads(case.config.read_text(encoding="utf-8"))
         self.case = case
         self.pref = {"contest": 1, "run_state": False, **config.get("pref", {})}
@@ -269,6 +269,14 @@ class ContestHarness:
         # A converted plugin is a class and an unconverted one is still a
         # module; load_contest() hides the difference.
         self.contest = load_contest(contest_name, self)
+
+        # The plugin's module exists from here on, so pin the versions an
+        # exported log would otherwise carry.  It has to happen after the
+        # import: a plugin with a version global of its own (wag has one) can
+        # only be pinned once its module does, and pinning only
+        # not1mm.lib.version is not enough.
+        if monkeypatch is not None:
+            pin_versions(monkeypatch)
 
         # The app runs init_contest() when a contest is loaded, and some plugins
         # park scoring state there (wag's is_german, for one).
