@@ -3,8 +3,9 @@
 A contest is identified by its Cabrillo name -- that is what the sponsor's log
 checker recognises, so it is what the database, the log filenames and the
 per-contest directory under ``~/.local/share/not1mm`` use.  A contest that
-shares its Cabrillo name with another (the two generic QSO party templates)
-declares ``ContestName`` instead.
+shares its Cabrillo name with another but is not interchangeable (the two
+generic QSO party templates, the fall and spring Ten-Ten sprints) declares
+``ContestName`` instead.
 
 The identifiers the database has accumulated over the years are not all
 Cabrillo names -- they used to be the name of the file the contest lived in --
@@ -102,7 +103,12 @@ def test_a_picker_entry_maps_to_an_identifier():
     # The picker's labels are not the contests' display names: "OK1WC" is the
     # label for the contest that calls itself "OK1WC Memorial Contest (MWC)".
     assert contest.contest_identifier_for_display("OK1WC") == "MWC"
-    assert contest.contest_identifier_for_display("10 10 FALL CW") == "10-10-SPRINT"
+    # The fall and spring Ten-Ten sprints share the Cabrillo name 10-10-SPRINT
+    # and name themselves, so the label resolves to that name.
+    assert contest.contest_identifier_for_display("10 10 FALL CW") == "10_10_fall_cw"
+    assert (
+        contest.contest_identifier_for_display("10 10 SPRING CW") == "10_10_spring_cw"
+    )
     # A display name works too, for callers that have one.
     assert contest.contest_identifier_for_display("CQ WPX CW") == "CQ-WPX-CW"
     assert contest.contest_identifier_for_display("nonsense") is None
