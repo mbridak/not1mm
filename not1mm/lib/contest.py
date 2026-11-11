@@ -228,6 +228,14 @@ class ContestBase:
     # -- see contest_id().  N1MM's UDC files call the field Name.
     ContestName = None
     EXCHANGE_HINT = ""  # placeholder in the New Contest dialog
+    # The sent exchange, as a template.  A contest that always sends one thing
+    # (a serial, a zone) declares it; the operator's value in the contest setup
+    # wins and this is only the fallback.  It is expanded by process_macro(), so
+    # "#" is the next serial number and "{MYGRID}"/"{MYCALL}" are the operator's
+    # -- but it must not use "{HISCALL}"/"{OTHER1}"/"{OTHER2}", which mean
+    # nothing before a contact is under way.  (UDC spells the serial marker
+    # "001"; both are accepted, "#" is the one we write.)
+    DefaultContestExchange = ""
     SOAPBOX_HINT = ""
     Mode = "BOTH"  # CW SSB BOTH RTTY
     DupeType = 2  # 1 contest, 2 band, 3 band+mode, 4 none, 5 plugin decides
@@ -407,17 +415,24 @@ class ContestBase:
         """Called once the callsign has been entered.  Most contests don't."""
 
     def prefill(self):
-        """Fill in the sent serial number, unless the operator typed one.
+        """Fill the sent exchange, unless the operator has typed one.
 
-        This is the serial-number default; a contest whose sent exchange is a
-        name, a grid or a province overrides it.
+        The operator's value in the contest setup wins; a contest that always
+        sends one thing declares :attr:`DefaultContestExchange` as the
+        fallback.  Either goes through :meth:`process_macro`, so "#" is the
+        next serial number and the macros work -- but with ``cut=False``, since
+        the CW cut numbers belong on the air, not in the log.
         """
         parent = self.parent
-        serial_nr = str(parent.current_sn).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if parent.other_1.text():
+            return
+        exchange = parent.process_macro(
+            str(parent.contest_settings.get("SentExchange", "") or "")
+            or self.DefaultContestExchange,
+            cut=False,
+        )
+        if exchange:
+            parent.other_1.setText(exchange)
 
     def is_dupe(self, call: str, band, mode: str) -> bool:
         """Is this call on this band+mode a dupe?  (UDC DupeType)
@@ -795,8 +810,12 @@ class ContestBase:
     def process_esm(self, new_focused_widget=None, with_enter=False):
         """Drive the Enter-Sends-Message state machine for this contact.
 
-        Which widget counts as "the exchange" differs between contests; so
-        does the way the macros get sent.  Both are handled by overriding
+        The exchange counts as copied once the exchange field has something in
+        it; an empty field asks for a repeat.  That is deliberately not a
+        validity check: an exchange our rules do not recognise is not fixed by
+        a repeat, so judging it (and letting the operator log anyway) is a
+        separate concern.  A contest whose exchange is a different widget, or
+        whose macros go somewhere other than the function keys, overrides
         this, as the RTTY contests do.
         """
         parent = self.parent
@@ -836,7 +855,7 @@ class ContestBase:
                 if parent.other_2.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_2.text().isnumeric():
+                else:
                     # If the operator corrected a busted callsign after the
                     # exchange was already sent, resend the corrected call
                     # ahead of the QRZ/TU macro so the other station logs the
@@ -845,9 +864,6 @@ class ContestBase:
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
                     buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
 
             if with_enter is True and bool(len(buttons_to_send)):
                 for button in buttons_to_send:
@@ -869,13 +885,10 @@ class ContestBase:
                 if parent.other_2.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_2.text().isnumeric():
+                else:
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
 
             if with_enter is True and bool(len(buttons_to_send)):
                 for button in buttons_to_send:

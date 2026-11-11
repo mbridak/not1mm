@@ -35,6 +35,7 @@ class Contest(ContestBase):
     CabrilloName = "CQ-WPX-RTTY"
     Mode = "RTTY"
     EXCHANGE_HINT = "#"
+    DefaultContestExchange = "#"  # a serial number
     ADIFContestID = "CQ-WPX-RTTY"
     SendsRTCScore = True
     SupportsFT8 = True

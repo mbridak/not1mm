@@ -132,6 +132,41 @@ def test_calc_score_is_points_times_mults(headless, monkeypatch):
     assert contest.calc_score() == points * contest.show_mults()
 
 
+def test_prefill_sent_exchange(headless, monkeypatch):
+    """The operator's sent exchange wins; the declared default is the fallback.
+
+    ``process_macro`` is stubbed: the real one lives on the main window and
+    expands the serial and the macros, which the base's ``prefill`` just hands
+    its template to.  The stub also records the ``cut`` flag, since the logged
+    form must not carry CW cut numbers.
+    """
+    harness = loaded("ok1wc/K6GTE", headless, monkeypatch)
+    contest = harness.contest
+    contest.DefaultContestExchange = "#"
+    seen = {}
+
+    def fake_macro(text, cut=True):
+        seen["cut"] = cut
+        return text.replace("#", "007")
+
+    harness.process_macro = fake_macro
+
+    harness.other_1.setText("")
+    harness.contest_settings["SentExchange"] = "MIKE CA"
+    contest.prefill()
+    assert harness.other_1.text() == "MIKE CA"
+
+    harness.other_1.setText("")
+    harness.contest_settings["SentExchange"] = ""
+    contest.prefill()
+    assert harness.other_1.text() == "007"
+    assert seen["cut"] is False, "the prefill asks for the logged form"
+
+    harness.other_1.setText("TYPED")
+    contest.prefill()
+    assert harness.other_1.text() == "TYPED", "an operator entry is left alone"
+
+
 def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):
     """A contest that declares its bands must not be handed a log off them."""
     checked = 0

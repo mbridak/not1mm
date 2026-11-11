@@ -28,6 +28,7 @@ class Contest(ContestBase):
     CabrilloName = "CQ-WPX-CW"
     Mode = "CW"
     EXCHANGE_HINT = "#"
+    DefaultContestExchange = "#"  # a serial number
     ADIFContestID = "CQ-WPX-CW"
     SendsRTCScore = True
     advance_on_space = [True, True, True, True, True]

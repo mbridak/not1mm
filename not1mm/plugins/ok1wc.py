@@ -18,6 +18,7 @@ class Contest(ContestBase):
     CabrilloName = "MWC"
     Mode = "CW"
     EXCHANGE_HINT = "#"
+    DefaultContestExchange = "#"  # a serial number
     ADIFContestID = "MWC"
     SendsRTCScore = True
     advance_on_space = [True, True, True, True, True]

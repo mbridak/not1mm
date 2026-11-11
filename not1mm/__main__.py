@@ -3644,13 +3644,17 @@ class MainWindow(QtWidgets.QMainWindow):
         except OSError as e:
             logger.error(f"Failed to update macro file: {macro_file}. Error: {e}")
 
-    def format_serial(self, serial: str) -> str:
+    def format_serial(self, serial: str, cut: bool = True) -> str:
         """
         Pad serial number to desired length (all modes) and do CW cut numbers replacements.
+
+        ``cut=False`` is the logged form: the plain padded serial, which is
+        what belongs in the log, the database and the Cabrillo.  The cut
+        numbers are only what goes over the air.
         """
 
         serial = serial.lstrip("0")
-        if self.radio_state.get("mode") == "CW":
+        if cut and self.radio_state.get("mode") == "CW":
             serial = (
                 serial.replace("1", self.pref.get("cwserial_1", "1"))
                 .replace("9", self.pref.get("cwserial_9", "9"))
@@ -3662,12 +3666,14 @@ class MainWindow(QtWidgets.QMainWindow):
         serial = serial.rjust(self.pref.get("cwpaddinglength", 3), padding)
         return serial
 
-    def format_rst(self, rst: str) -> str:
+    def format_rst(self, rst: str, cut: bool = True) -> str:
         """
         Apply CW cut numbers to RST sent.
+
+        ``cut=False`` is the logged form: the report as the operator set it.
         """
 
-        if self.radio_state.get("mode") == "CW":
+        if cut and self.radio_state.get("mode") == "CW":
             # Only send "E" if the full report is 599, we shouldn't end up with
             # something mixed like "E8N"
             if self.pref.get("cwsentrst", "5NN") == "ENN" and rst == "599":
@@ -3676,7 +3682,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 return rst.replace("9", "N")
         return rst
 
-    def process_macro(self, macro: str) -> str:
+    def process_macro(self, macro: str, cut: bool = True) -> str:
         """
         Process CW macro substitutions for contest.
 
@@ -3684,6 +3690,10 @@ class MainWindow(QtWidgets.QMainWindow):
         ----------
         macro : str
         Macro to process.
+        cut : bool
+        Whether the serial and the RST get CW cut numbers, which is only what
+        goes over the air.  ``cut=False`` is the logged form, for the contest
+        prefill: the serial stays digits.
 
         Returns
         -------
@@ -3702,14 +3712,18 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace(  # handle EXCH first so it can contain more macros
             "{EXCH}", self.contest_settings.get("SentExchange", "xxx")
         )
-        macro = macro.replace("#", self.format_serial(next_serial))
+        # UDC spells the serial marker "001"; accept it as "#".
+        if macro.split(" ", 1)[0] == "001":
+            macro = macro.replace("001", "#", 1)
+        macro = macro.replace("#", self.format_serial(next_serial, cut))
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
+        macro = macro.replace("{MYGRID}", self.station.get("GridSquare", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
         macro = macro.replace("{OTHER1}", self.other_1.text())
         macro = macro.replace("{OTHER2}", self.other_2.text())
-        macro = macro.replace("{SNT}", self.format_rst(self.sent.text()))
-        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text()))
-        macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial)))
+        macro = macro.replace("{SNT}", self.format_rst(self.sent.text(), cut))
+        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text(), cut))
+        macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial), cut))
         macro = macro.replace("{PREVCALL}", self.previous_contact.get("Call", ""))
 
         if "{TX}" in macro:
