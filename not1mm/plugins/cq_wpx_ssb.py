@@ -35,7 +35,6 @@ class Contest(ContestBase):
     DefaultContestExchange = "#"  # a serial number
     ADIFContestID = "CQ-WPX-SSB"
     SendsRTCScore = True
-    advance_on_space = [True, True, True, True, True]
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",

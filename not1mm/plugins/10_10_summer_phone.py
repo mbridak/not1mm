@@ -22,11 +22,11 @@ class Contest(ContestBase):
     SendsRTCScore = True
     Bands = (28,)
     # The entry window hides other_1; the whole exchange goes in other_2, whose
-    # spaces are significant, so advance_on_space is deliberately not set.
+    # spaces are significant.
     EntryFields = ("field1", "field2", "field4")
+    advance_on_space = [True, True, True, False, False]
     FrameText = ("SNT", "", "Name 1010# SPC")
     AccessibleNames = ("RST Sent", "", "", "Name 10 10 # SPC")
-    TabOrder = ("callsign", "sent", "receive", "other_2")
 
     def validate(self):
         """The exchange is a name, a 10-10 number and an SPC."""

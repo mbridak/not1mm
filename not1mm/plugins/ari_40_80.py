@@ -20,13 +20,11 @@ class Contest(ContestBase):
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "Automobile Code"
     ADIFContestID = "40-80"
-    advance_on_space = [True, True, True, True, True]
     Bands = (3.5, 7)
     # The whole exchange is the automobile code, so other_1 is not used.
     EntryFields = ("field1", "field2", "field4")
     FrameText = ("SNT", "", "Automobile Code")
     AccessibleNames = ("RST Sent", "", "", "Received Exchange")
-    TabOrder = ("callsign", "sent", "receive", "other_2")
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

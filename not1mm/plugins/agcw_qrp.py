@@ -71,10 +71,6 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
     MultSqlString = "Misc"
     IsMult1Per = 1
 
-    # The exchange is in other_1/other_2; the RST fields are not in the cycle,
-    # so TAB goes from them to the next field the order visits (other_1).
-    TabOrder = ("callsign", "other_1", "other_2")
-
     def set_contact_vars(self):
         """The exchange, and the member the contact is worth."""
         parent = self.parent

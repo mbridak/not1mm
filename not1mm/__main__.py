@@ -4358,6 +4358,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 next_tab.deselect()
                 next_tab.end(False)
 
+    # SPACE advances along tab_next -- the same cycle TAB walks -- but only for
+    # a field whose advance_on_space slot is set; otherwise the space is kept,
+    # so a field whose text may contain spaces (a name, a grid) can be typed.
+    # (ContestBase's entry-window note has the intended TAB-vs-SPACE rule.)
     def other_1_changed(self) -> None:
         """
         The text in the other_1 field has changed.

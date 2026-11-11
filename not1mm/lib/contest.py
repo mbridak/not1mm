@@ -246,6 +246,21 @@ class ContestBase:
     # RST sent, a serial number, RST received.  A contest that sends a name, a
     # grid, a section or a province sets them (or overrides interface()).
     #
+    # Focus leaves a field on either of two keys, and they are meant to walk
+    # different fields:
+    #
+    #   TAB    every field the contest shows, in the window's own order
+    #          (callsign, then EntryFields) -- see visible_fields().
+    #   SPACE  only the "interesting" fields the operator types: RST is almost
+    #          always 599, so space steps over sent and receive.  A field whose
+    #          text may contain spaces (a name, a grid) keeps the space and the
+    #          focus instead of advancing.
+    #
+    # There is one cycle today: TabOrder builds tab_next, the *_changed()
+    # handlers in __main__.py send SPACE along the same map, and
+    # advance_on_space only decides whether a space advances at all -- so a
+    # field TabOrder leaves out is left out of both keys.
+    #
     # Which of the four entry fields this contest uses ...
     EntryFields = ENTRY_WIDGETS
     # ... and what they are called.  FrameText is (sent, other, exchange);
@@ -253,16 +268,22 @@ class ContestBase:
     FrameText = ("SNT", "SentNR", "RcvNR")
     # Screen-reader names, one per entry field; an empty string is skipped.
     AccessibleNames = ("RST Sent", "", "Sent Number", "Received Number")
-    # The order TAB walks the entry fields in.  Shift-TAB walks the same
-    # order backwards unless a contest overrides TabOrderPrev.
-    TabOrder = ENTRY_FIELDS
+    # The order TAB walks the entry fields in, or None for "the fields this
+    # contest shows, in the window's own order" -- which is what almost every
+    # contest wants, so EntryFields is the one list to keep in step.  A contest
+    # that shows a field but keeps it out of the cycle (AGCW's RST fields)
+    # names the order itself.  Shift-TAB walks the same order backwards unless
+    # a contest overrides TabOrderPrev.
+    TabOrder = None
     TabOrderPrev = None
 
-    # not1mm-specific: whether other_1/other_2 have their spaces stripped as
-    # they are typed.  Deliberately *not* given a default here -- the absence
-    # of this attribute means "do not touch the spaces", which the ten-metre
-    # contests rely on ("Name 1010# SPC" and friends have significant spaces).
-    # Contests that had it declare it.
+    # not1mm-specific: whether a space typed in other_1/other_2 is a separator
+    # -- strip it and advance to the next field -- or part of the exchange.
+    # The default is the usual one, a space separates, so only a contest whose
+    # exchange *contains* spaces (a name, a grid, "Name 1010# SPC") declares
+    # it, with the slot set to False.  The slots are [callsign, sent, receive,
+    # other_1, other_2]; only 3 and 4 are read.
+    advance_on_space = [True, True, True, True, True]
 
     # -- log window ---------------------------------------------------------
     LogInfo = list(LOG_INFO)
@@ -361,6 +382,17 @@ class ContestBase:
             if accessible:
                 getattr(parent, field).setAccessibleName(accessible)
 
+    def visible_fields(self) -> tuple:
+        """The entry fields this contest shows, callsign first, in window order.
+
+        The callsign is always shown; the other four follow :attr:`EntryFields`.
+        """
+        return ("callsign",) + tuple(
+            name
+            for widget, name in zip(ENTRY_WIDGETS, ENTRY_FIELDS[1:])
+            if widget in self.EntryFields
+        )
+
     def set_tab_next(self):
         """TAB walks the entry fields in :attr:`TabOrder`, then wraps.
 
@@ -370,11 +402,12 @@ class ContestBase:
         first field unless there is nothing after it.
         """
         parent = self.parent
-        fields = [getattr(parent, name) for name in self.TabOrder]
+        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
+        fields = [getattr(parent, name) for name in order]
         following = {}
         for index, field in enumerate(fields):
             following[field] = fields[(index + 1) % len(fields)]
-        visited = set(self.TabOrder)
+        visited = set(order)
         for index, name in enumerate(ENTRY_FIELDS):
             widget = getattr(parent, name)
             if widget in following:
@@ -393,7 +426,9 @@ class ContestBase:
         previous field the order visits, in the window's own order.
         """
         parent = self.parent
-        order = self.TabOrder if self.TabOrderPrev is None else self.TabOrderPrev
+        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
+        if self.TabOrderPrev is not None:
+            order = self.TabOrderPrev
         fields = [getattr(parent, name) for name in order]
         previous = {}
         for index, field in enumerate(fields):

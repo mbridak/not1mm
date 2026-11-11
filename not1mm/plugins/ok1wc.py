@@ -21,7 +21,6 @@ class Contest(ContestBase):
     DefaultContestExchange = "#"  # a serial number
     ADIFContestID = "MWC"
     SendsRTCScore = True
-    advance_on_space = [True, True, True, True, True]
     Bands = (3.5, 7)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",

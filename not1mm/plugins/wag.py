@@ -28,7 +28,6 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "DOK/NM or #"
     ADIFContestID = "WAG"
     SendsRTCScore = True
-    advance_on_space = [True, True, True, True, True]
     Bands = (3.5, 7, 14, 21, 28)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",

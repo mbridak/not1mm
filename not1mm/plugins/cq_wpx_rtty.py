@@ -39,7 +39,6 @@ class Contest(ContestBase):
     ADIFContestID = "CQ-WPX-RTTY"
     SendsRTCScore = True
     SupportsFT8 = True
-    advance_on_space = [True, True, True, True, True]
     Bands = (3.5, 7, 14, 21, 28)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
