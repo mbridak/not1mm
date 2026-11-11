@@ -4726,18 +4726,8 @@ class MainWindow(QtWidgets.QMainWindow):
             except OSError as err:
                 logger.warning("%s", err)
         else:
-            if self.contest.dupe_type == 1:
-                result = self.database.check_dupe(call)
-            if self.contest.dupe_type == 2:
-                result = self.database.check_dupe_on_band(call, band)
-            if self.contest.dupe_type == 3:
-                result = self.database.check_dupe_on_band_mode(call, band, mode)
-            if self.contest.dupe_type == 4:
-                result = {"isdupe": False}
-            if self.contest.dupe_type == 5:
-                result = {"isdupe": False}  # in case contest has no function.
-                if not hasattr(self.contest, "check_dupe"):
-                    result = self.contest.specific_contest_check_dupe(call)
+            # The contest answers it: it knows its own dupe rule (UDC DupeType).
+            result = {"isdupe": self.contest.is_dupe(call, band, mode)}
 
             debugline = f"{result}"
             logger.debug("%s", debugline)

@@ -31,6 +31,7 @@ class Contest(ContestBase):
     ADIFContestID = "CQ-WPX-CW"
     SendsRTCScore = True
     advance_on_space = [True, True, True, True, True]
+    Bands = (1.8, 3.5, 7, 14, 21, 28)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -43,27 +44,17 @@ class Contest(ContestBase):
         "M1",
         "PTS",
     ]
-
-    def set_contact_vars(self):
-        """RST and serial number, sent and received, plus the prefix flag."""
-        parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
-        if parent.contact.get("WPXPrefix", ""):
-            result = parent.database.fetch_wpx_exists(
-                parent.contact.get("WPXPrefix", "")
-            )
-            if result.get("wpx_count", ""):
-                parent.contact["IsMultiplier1"] = 0
-            else:
-                parent.contact["IsMultiplier1"] = 1
+    NumMults = 1
+    Multiplier1Name = "WPXPrefix"
+    MultSqlString = "WPXPrefix"
+    IsMult1Per = 4  # a prefix counts once for the whole contest
 
     def points(self):
         """Points for the contact being logged.
 
         Depends on the two continents and, within a continent, on the band.
+        UDC's PointsPerContact has no way to say "if I am in North America",
+        so this stays a method.
         """
         parent = self.parent
         if parent.contact_is_dupe > 0:
@@ -99,41 +90,3 @@ class Contest(ContestBase):
             return 2
         # Something wrong
         return 0
-
-    def show_mults(self):
-        """Return display string for mults"""
-        result = self.parent.database.fetch_wpx_count()
-        if result:
-            return int(result.get("wpx_count", 0))
-        return 0
-
-    def calc_score(self):
-        """Total score is total QSO points times total mults."""
-        parent = self.parent
-        result = parent.database.fetch_points()
-        if result is not None:
-            score = result.get("Points", "0")
-            if score is None:
-                score = "0"
-            result = parent.database.fetch_wpx_count()
-            return int(score) * int(result.get("wpx_count", 0))
-        return 0
-
-    def recalculate_mults(self):
-        """Recalculates multipliers after change in logged qso."""
-        parent = self.parent
-        for contact in parent.database.fetch_all_contacts_asc():
-            parent.contact = contact
-            contact["Points"] = self.points()
-            result = parent.database.fetch_wpx_exists_before_me(
-                contact.get("WPXPrefix", ""), contact.get("TS", "")
-            )
-            if result.get("wpx_count", 1) == 0:
-                contact["IsMultiplier1"] = 1
-            else:
-                contact["IsMultiplier1"] = 0
-            parent.database.change_contact(contact)
-
-    def get_mults(self):
-        """Get mults for RTC XML"""
-        return {"wpxprefix": self.show_mults()}

@@ -272,8 +272,8 @@ class ContestHarness:
 
         # The plugin's module exists from here on, so pin the versions an
         # exported log would otherwise carry.  It has to happen after the
-        # import: a plugin with a version global of its own (wag has one) can
-        # only be pinned once its module does, and pinning only
+        # import: a plugin binds `__version__` into its own namespace with
+        # `from not1mm.lib.version import __version__`, so pinning only
         # not1mm.lib.version is not enough.
         if monkeypatch is not None:
             pin_versions(monkeypatch)
@@ -291,25 +291,12 @@ class ContestHarness:
         return stub
 
     def _is_dupe(self, contact) -> bool:
-        """Mirror MainWindow.check_dupe for the contact's band/mode."""
-        dupe_type = self.contest.dupe_type
-        call = contact.get("Call", "")
-        band = contact.get("Band")
-        mode = contact.get("Mode", "")
-        if dupe_type == 1:
-            result = self.database.check_dupe(call)
-        elif dupe_type == 2:
-            result = self.database.check_dupe_on_band(call, band)
-        elif dupe_type == 3:
-            result = self.database.check_dupe_on_band_mode(call, band, mode)
-        elif dupe_type == 5:
-            result = {"isdupe": False}
-            checker = getattr(self.contest, "specific_contest_check_dupe", None)
-            if checker is not None:
-                result = checker(call)
-        else:  # 4 (no dupe checking) and anything unknown
-            result = {"isdupe": False}
-        return bool(result.get("isdupe", False))
+        """Mirror MainWindow.check_dupe: the contest answers the dupe question."""
+        return self.contest.is_dupe(
+            contact.get("Call", ""),
+            contact.get("Band"),
+            contact.get("Mode", ""),
+        )
 
     def score_log(self) -> None:
         """Compute Points for every logged contact, the way live logging would.

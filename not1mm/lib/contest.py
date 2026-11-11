@@ -78,6 +78,94 @@ LOG_INFO = [
 ]
 
 
+# -- the multiplier vocabulary ---------------------------------------------
+# UDC's ``MultSqlString`` names a kind of multiplier; each is a key computed
+# from a logged contact.  A name maps to the SQL expression that computes it
+# and to the Python equivalent, so counting the log and marking a contact as it
+# is typed cannot drift apart.
+def _last_letter(contact) -> str:
+    """The last character of the worked callsign (OK1WC's multiplier)."""
+    call = str(contact.get("Call", ""))
+    return call[-1:] if call else ""
+
+
+def _column(name: str):
+    return lambda contact: contact.get(name, "")
+
+
+def _first(name: str, length: int):
+    return lambda contact: str(contact.get(name, ""))[:length]
+
+
+MULT_KEYS = {
+    "CountryPrefix": ("CountryPrefix", _column("CountryPrefix")),
+    "WPXPrefix": ("WPXPrefix", _column("WPXPrefix")),
+    "Section": ("Sect", _column("Sect")),
+    "Sect": ("Sect", _column("Sect")),  # UDC spells the *name* this way
+    "Grid": ("substr(GridSquare,1,4)", _first("GridSquare", 4)),
+    "GridSquare": ("GridSquare", _column("GridSquare")),
+    "SGrid": ("GridSquare", _column("GridSquare")),
+    "FIELD": ("substr(GridSquare,1,2)", _first("GridSquare", 2)),
+    "CallSign": ("Call", _column("Call")),
+    "LASTLETTER": ("substr(Call,-1)", _last_letter),
+    "Misc": ("MiscText", _column("MiscText")),
+    "Exchange": ("Exchange1", _column("Exchange1")),
+    # The received exchange, which UDC has no name for.  Many domestic
+    # contests key a multiplier on it, and it is the province or county codes
+    # rather than the serial numbers that count -- see the ARI contests.
+    "NR": ("NR", _column("NR")),
+    "CQZONE": ("ZN", _column("ZN")),
+    "IARUZONE": ("MiscText", _column("MiscText")),
+    "2LPREFIX": ("substr(MiscText,1,2)", _first("MiscText", 2)),
+}
+
+# UDC IsMultPer: what a key is counted per.  (0 is "no multipliers".)
+MULT_PER_COLUMNS = {0: (), 1: ("Band",), 2: ("Mode",), 3: ("Band", "Mode"), 4: ()}
+
+# The multiplier ids the real-time score page (Contest Online ScoreBoard)
+# understands, from the declared type.  It knows exactly seven: zone, country,
+# state, gridsquare, wpxprefix, prefix and hq.
+RTC_MULT_TYPES = {
+    "CountryPrefix": "country",
+    "WPXPrefix": "wpxprefix",
+    "Section": "state",
+    "Sect": "state",
+    "Grid": "gridsquare",
+    "GridSquare": "gridsquare",
+    "SGrid": "gridsquare",
+    "FIELD": "gridsquare",
+    "CQZONE": "zone",
+    "IARUZONE": "hq",
+    "2LPREFIX": "prefix",
+    "CallSign": "state",  # COS files "unique calls" under state
+    "LASTLETTER": "wpxprefix",  # ... and OK1WC's suffix letter under wpxprefix
+    "Misc": "state",
+    "Exchange": "state",
+    "NR": "state",  # ... and the received province/serial under state
+}
+
+
+def dupe_result(
+    database, dupe_type: int, call: str, band, mode: str, specific=None
+) -> bool:
+    """Is *call* a dupe on *band*/*mode*, per UDC's ``DupeType``.
+
+    ``1`` all bands, ``2`` each band, ``3`` each band and mode, ``4`` never,
+    ``5`` the contest decides (*specific* is its ``specific_contest_check_dupe``).
+    """
+    if dupe_type == 1:
+        result = database.check_dupe(call)
+    elif dupe_type == 2:
+        result = database.check_dupe_on_band(call, band)
+    elif dupe_type == 3:
+        result = database.check_dupe_on_band_mode(call, band, mode)
+    elif dupe_type == 5 and specific is not None:
+        result = specific(call)
+    else:  # 4, and anything unknown
+        return False
+    return bool(result.get("isdupe", False))
+
+
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
     """Write one Cabrillo line, re-encoded through *file_encoding*.
 
@@ -175,6 +263,32 @@ class ContestBase:
     SupportsFT8 = False  # ft8_handler() accepts WSJT-X/FlDigi packets
     WritesEDI = False  # edi() writes a VHF/UHF EDI file
     SendsRTCScore = False  # online_score_xml() feeds the real-time score page
+
+    # -- scoring (UDC [Contest] names) --------------------------------------
+    # The bands the contest is run on, in MHz.  UDC has no band list, so this
+    # is a plain name; it documents the contest and lets a test reject a log
+    # that strays off-band.
+    Bands = ()
+    # Points for a valid contact.  A contest whose points depend on where the
+    # operator is (WPX's North-America asymmetry, WAG's DL side) overrides
+    # points() instead -- UDC's PointsPerContact cannot express those.
+    PointsPerContact = 0
+    # The multipliers, up to three, named and counted the way UDC does it:
+    # MultiplierNName is the display name, MultSqlStringN the kind of key,
+    # IsMultNPer how the key is counted (see MULT_PER_COLUMNS), NumMults how
+    # many slots are in use.
+    NumMults = 0
+    Multiplier1Name = None
+    MultSqlString = None
+    IsMult1Per = None
+    Multiplier2Name = None
+    MultSqlString2 = None
+    IsMult2Per = None
+    Multiplier3Name = None
+    MultSqlString3 = None
+    IsMult3Per = None
+    # The default "per" for a slot that does not name its own.
+    IsMultPer = 4  # once per contest
 
     def __init__(self, parent):
         self.parent = parent  # the main window (or the contest harness)
@@ -302,12 +416,120 @@ class ContestBase:
         if len(parent.other_1.text()) == 0:
             parent.other_1.setText(serial_nr)
 
+    def is_dupe(self, call: str, band, mode: str) -> bool:
+        """Is this call on this band+mode a dupe?  (UDC DupeType)
+
+        The question the log, the bandmap and the call field all ask.  A
+        contest whose dupe rule UDC cannot express sets ``DupeType = 5`` and
+        overrides :meth:`specific_contest_check_dupe`.
+        """
+        return dupe_result(
+            self.parent.database,
+            self.DupeType,
+            call,
+            band,
+            mode,
+            self.specific_contest_check_dupe,
+        )
+
+    def specific_contest_check_dupe(self, call: str) -> dict:
+        """The DupeType-5 hook: a contest that dupe-checks its own way."""
+        return {"isdupe": False}
+
     def points(self):
-        """Points for the contact being logged.  Every real contest scores."""
-        return 0
+        """Points for the contact being logged.
+
+        Zero for a dupe, else :attr:`PointsPerContact`.  A contest whose points
+        depend on where the operator is (WPX, WAG) overrides this.
+        """
+        if self.parent.contact_is_dupe:
+            return 0
+        return self.PointsPerContact
 
     def set_contact_vars(self):
-        """Copy the entry fields into ``self.parent.contact``."""
+        """Copy the entry fields into ``self.parent.contact``.
+
+        The exchange most contests use -- RST and a serial number, sent and
+        received -- and then the multipliers the contact is worth.  A contest
+        whose fields differ overrides this.
+        """
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["NR"] = parent.other_2.text()
+        self.mark_multipliers()
+
+    # -- multipliers --------------------------------------------------------
+    def _mult_slots(self):
+        """``(slot, name, key, per)`` for each declared multiplier."""
+        declared = (
+            (1, self.Multiplier1Name, self.MultSqlString, self.IsMult1Per),
+            (2, self.Multiplier2Name, self.MultSqlString2, self.IsMult2Per),
+            (3, self.Multiplier3Name, self.MultSqlString3, self.IsMult3Per),
+        )
+        for slot, name, key, per in declared:
+            if slot > self.NumMults or key is None:
+                continue
+            if per is None:
+                per = self.IsMultPer
+            yield slot, name, key, MULT_PER_COLUMNS.get(per, ())
+
+    def _mult_key(self, slot: int):
+        """The declared ``MultSqlString`` for a slot."""
+        return {
+            1: self.MultSqlString,
+            2: self.MultSqlString2,
+            3: self.MultSqlString3,
+        }.get(slot)
+
+    def _mult_columns(self, slot: int) -> tuple:
+        """The columns a slot's key is counted per."""
+        for candidate, _, _, per in self._mult_slots():
+            if candidate == slot:
+                return per
+        return ()
+
+    def mult_type_name(self, slot: int) -> str:
+        """The score-page id for a slot's multiplier (see RTC_MULT_TYPES)."""
+        key = self._mult_key(slot) or ""
+        return RTC_MULT_TYPES.get(key, key.lower())
+
+    def mult_sql(self, slot: int):
+        """The SQL expression for a slot's key, or None if it has no name."""
+        entry = MULT_KEYS.get(self._mult_key(slot) or "")
+        return entry[0] if entry else None
+
+    def mult_value(self, slot: int, contact):
+        """The multiplier a contact contributes to a slot, or None.
+
+        Works on a logged contact, on the one being typed, and on a bandmap
+        spot (which carries only Call/Band/Mode); a key that needs the received
+        exchange returns None until it has been entered.
+        """
+        entry = MULT_KEYS.get(self._mult_key(slot) or "")
+        return entry[1](contact) if entry else None
+
+    def is_new_mult(self, slot: int, contact) -> int:
+        """1 when the contact's key for this slot is not in the log yet."""
+        value = self.mult_value(slot, contact)
+        expression = self.mult_sql(slot)
+        if not value or expression is None:
+            return 0
+        result = self.parent.database.mult_key_exists(
+            expression,
+            value,
+            self._mult_columns(slot),
+            band=contact.get("Band"),
+            mode=contact.get("Mode"),
+        )
+        return 0 if result.get("count", 0) else 1
+
+    def mark_multipliers(self):
+        """Set ``IsMultiplierN`` on the contact being logged."""
+        contact = self.parent.contact
+        for slot, _, _, _ in self._mult_slots():
+            contact[f"IsMultiplier{slot}"] = self.is_new_mult(slot, contact)
 
     # -- the score display --------------------------------------------------
     def show_qso(self):
@@ -317,30 +539,70 @@ class ContestBase:
             return int(result.get("qsos", 0))
         return 0
 
+    def _mult_count(self, slot: int) -> int:
+        """How many distinct values of a slot's key the log holds."""
+        expression = self.mult_sql(slot)
+        if expression is None:
+            return 0
+        result = self.parent.database.fetch_mult_key_count(
+            expression, self._mult_columns(slot)
+        )
+        return int(result.get("count", 0)) if result else 0
+
     def show_mults(self):
         """Multiplier count for the score display; 0 when there are none."""
-        return 0
+        return sum(self._mult_count(slot) for slot, _, _, _ in self._mult_slots())
 
     def calc_score(self):
-        """Claimed score before multipliers, which most contests apply."""
+        """Claimed score: the points, times the multipliers if there are any."""
         result = self.parent.database.fetch_points()
+        points = 0
         if result is not None:
-            score = result.get("Points", "0")
-            if score is None:
-                score = "0"
-            return int(score)
-        return 0
+            points = int(result.get("Points") or 0)
+        if self.NumMults:
+            return points * self.show_mults()
+        return points
 
     def recalculate_mults(self):
-        """Recompute per-contact multipliers after the log changed.
+        """Mark the first contact of each multiplier in the log.
 
-        Only contests that mark multipliers on the contact need this.
+        Replayed in time order: a key already seen on the same band and/or mode
+        (per the declaration) is not a multiplier again.  A contest whose key
+        cannot be expressed in SQL (WAG's district) still works, because the
+        marking goes through :meth:`mult_value`.
         """
+        slots = list(self._mult_slots())
+        if not slots:
+            return
+        seen = {slot: set() for slot, _, _, _ in slots}
+        for contact in self.parent.database.fetch_all_contacts_asc():
+            self.parent.contact = contact
+            for slot, _, _, per in slots:
+                value = self.mult_value(slot, contact)
+                key = (value,) + tuple(contact.get(column, "") for column in per)
+                if value in (None, "") or key in seen[slot]:
+                    contact[f"IsMultiplier{slot}"] = 0
+                    continue
+                seen[slot].add(key)
+                contact[f"IsMultiplier{slot}"] = 1
+            self.parent.database.change_contact(contact)
+        self.after_recalculate_mults()
+
+    def after_recalculate_mults(self):
+        """Hook for a contest that has to poke the UI after a rescore."""
 
     # -- the score page / cluster -------------------------------------------
     def get_mults(self):
-        """Multipliers for the real-time score XML."""
-        return {}
+        """Multiplier counts for the real-time score XML, keyed by type id."""
+        slots = list(self._mult_slots())
+        if not slots:
+            return {}
+        if len(slots) == 1:
+            return {self.mult_type_name(slots[0][0]): self.show_mults()}
+        return {
+            self.mult_type_name(slot): self._mult_count(slot)
+            for slot, _, _, _ in slots
+        }
 
     def just_points(self):
         """Raw points before multipliers, for the real-time score XML."""
@@ -616,6 +878,20 @@ class _LegacyContest:
     def __init__(self, module, parent):
         self._module = module
         self.parent = parent
+
+    def is_dupe(self, call: str, band, mode: str) -> bool:
+        """Dupe question for an unconverted module (see :meth:`ContestBase.is_dupe`)."""
+        specific = getattr(self._module, "specific_contest_check_dupe", None)
+        if specific is not None:
+            specific = functools.partial(specific, self.parent)
+        return dupe_result(
+            self.parent.database,
+            getattr(self._module, "dupe_type", 0),
+            call,
+            band,
+            mode,
+            specific,
+        )
 
     def __getattr__(self, name):
         if name.startswith("_"):

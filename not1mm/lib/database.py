@@ -803,6 +803,47 @@ class DataBase:
             (self.current_contest,),
         )
 
+    def fetch_mult_key_count(self, expression: str, per: tuple = ()) -> dict:
+        """Count the distinct values of a multiplier key in this contest.
+
+        *expression* is a SQL expression over a DXLOG row and *per* the columns
+        the key is counted per (``Band``, ``Mode``): the translation of a UDC
+        ``MultSqlString`` / ``IsMultPer`` pair into one query.  So
+        ``("WPXPrefix", ())`` counts prefixes once for the contest and
+        ``("substr(Call,-1)", ("Band",))`` counts last letters per band.
+        """
+        key = expression
+        for column in per:
+            key += f" || ':' || {column}"
+        return self.exec_sql(
+            f"select count(DISTINCT {key}) as count from dxlog where ContestNR = ?;",
+            (self.current_contest,),
+        )
+
+    def mult_key_exists(
+        self, expression: str, value, per: tuple = (), band=None, mode=None
+    ) -> dict:
+        """Count the logged contacts already carrying a multiplier key.
+
+        The live counterpart of :meth:`fetch_mult_key_count`: is the key of the
+        contact being logged already in the log, on this band/mode?
+        """
+        where = [f"{expression} = ?"]
+        params = [value]
+        if "Band" in per:
+            where.append("Band = ?")
+            params.append(band)
+        if "Mode" in per:
+            where.append("Mode = ?")
+            params.append(mode)
+        params.append(self.current_contest)
+        return self.exec_sql(
+            "select count(*) as count from dxlog where "
+            + " and ".join(where)
+            + " and ContestNR = ?;",
+            tuple(params),
+        )
+
     def fetch_qso_count(self) -> dict:
         """return QSO count"""
         return self.exec_sql(
