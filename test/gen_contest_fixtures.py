@@ -1238,7 +1238,7 @@ def _ari_40_80_fixture():
             SNT="59" if mode == "SSB" else "599",
             RCV="59" if mode == "SSB" else "599",
             SENTNR="MI",
-            EXCHANGE1=prov,
+            NR=prov,
             STATION_CALLSIGN="I2ABC",
         )
 

@@ -15,17 +15,18 @@ from types import SimpleNamespace
 import pytest
 
 from contest_harness import cty_lookup
-from not1mm.plugins import ari_dx
+from not1mm.lib.contest import load_contest
 
 
-def _ctx(mycall, hiscall, is_dupe=0):
-    """Minimal fake `self` for ari_dx.points()."""
-    return SimpleNamespace(
+def _contest(mycall, hiscall, is_dupe=0):
+    """The contest bound to a stand-in main window."""
+    parent = SimpleNamespace(
         contact_is_dupe=is_dupe,
         station={"Call": mycall},
         contact={"Call": hiscall},
         cty_lookup=cty_lookup,
     )
+    return load_contest("ari_dx", parent)
 
 
 @pytest.mark.parametrize(
@@ -50,8 +51,8 @@ def _ctx(mycall, hiscall, is_dupe=0):
     ],
 )
 def test_points(mycall, hiscall, expected):
-    assert ari_dx.points(_ctx(mycall, hiscall)) == expected
+    assert _contest(mycall, hiscall).points() == expected
 
 
 def test_dupe_scores_nothing():
-    assert ari_dx.points(_ctx("K6GTE", "I2ABC", is_dupe=1)) == 0
+    assert _contest("K6GTE", "I2ABC", is_dupe=1).points() == 0

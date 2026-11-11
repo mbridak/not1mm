@@ -12,7 +12,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins import ari_40_80
+from not1mm.lib.contest import contest_metadata, load_contest
+
+
+def _contest(mode, is_dupe=0):
+    """The contest bound to a stand-in main window."""
+    parent = SimpleNamespace(contact_is_dupe=is_dupe, contact={"Mode": mode})
+    return load_contest("ari_40_80", parent)
 
 
 @pytest.mark.parametrize(
@@ -36,14 +42,12 @@ from not1mm.plugins import ari_40_80
     ],
 )
 def test_points(mode, expected):
-    context = SimpleNamespace(contact_is_dupe=0, contact={"Mode": mode})
-    assert ari_40_80.points(context) == expected
+    assert _contest(mode).points() == expected
 
 
 def test_dupe_scores_nothing():
-    context = SimpleNamespace(contact_is_dupe=1, contact={"Mode": "CW"})
-    assert ari_40_80.points(context) == 0
+    assert _contest("CW", is_dupe=1).points() == 0
 
 
 def test_cabrillo_name():
-    assert ari_40_80.cabrillo_name == "40-80"
+    assert contest_metadata("ari_40_80").CabrilloName == "40-80"
