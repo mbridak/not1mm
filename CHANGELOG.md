@@ -1,7 +1,15 @@
 # Changelog
 
-- [2026-11-09] @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
+- [2026-11-09] Merge pull request #740 from microphonon/ss_bandmap
+  - Merge pull request #723 from DJLax5/issue-445-export-dialog
+  - fix main
+  - Merge branch 'master' into issue-445-export-dialog
+  - bandmap for SS
+  - Delete .github/workflows/python-package.yml
+  - @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
   - @mbridak disable socket draining in rigctld_command Fixes #738
+- [2026-11-08] Fixed contests: Now accepts the filename in export
+  - Add: Ask for the log export file name with a save dialog (#445)
 - [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
   - Add audio resampling and play-back at the native sampling rate of the desired output sound devices
 - [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
@@ -2995,9 +3003,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit

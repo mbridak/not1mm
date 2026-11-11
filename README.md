@@ -67,7 +67,10 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-11-09] @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
+- [2026-11-09] Merge pull request #740 from microphonon/ss_bandmap
+  - Merge pull request #723 from DJLax5/issue-445-export-dialog
+  - Merge branch 'master' into issue-445-export-dialog
+  - @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
   - @mbridak disable socket draining in rigctld_command Fixes #738
 - [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
   - Add audio resampling and play-back at the native sampling rate of the desired output sound devices
