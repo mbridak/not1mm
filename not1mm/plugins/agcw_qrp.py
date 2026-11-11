@@ -1,750 +1,194 @@
-# coded and tested by Michael Hartje, DK5HH
-# Version 20260318
-
-"""
-AGCW qrp, CW
-Status:	Active
-Member Focus:
-Participation:	Worldwide
-Awards:	Worldwide
-Mode:	CW
-Bands:
-        80 m (3.510 – 3.560 kHz)
-        40 m (7.010 – 7.040 kHz)
-        20 m (14.000 – 14.060 kHz)
-        15 m (21.000 – 21.070 kHz)
-        10 m (28.000 – 28.070 kHz)
-Classes:	VLP: Very Low Power = bis 1 W Output
-            QRP: klassisch QRP = bis 5 W Output
-            MP: moderate Power = bis 25 W Output
-            QRO: über 25 W Output
-
-Exchange:   RST+ fortlaufende 3-stellige QSO-Nummer (ab 001) Klasse AGCW-Nummer.
-            Beispiel: 579 001 QRP 1537
-            Nichtmitglieder geben statt der AGCW-Mitgliedsnummer “NM” für “No Member”.
-            Beispiel: 599 027 MP NMember: RST + Serial No + / Mitgliedsnummer
-            non-Member: RST + Serial No.
-
-Work stations:	Once per band
-
-QSO Points:	QRO <–> QRO: 0 Points
-            QRO <–> QRP, MP, VLP: 2 Points
-            MP <–> MP, QRP, VLP: 2 Points
-            QRP <–> QRP, VLP: 3 Points
-            VLP <–> VLP: 3 Points
-
-Multipliers:	QSO with Member  once per band
-
-Score Calculation:	Total score = total QSO points x total mults
-
-Cabrillo name:	AGCW-QRP
-Cabrillo name aliases:	AGCW-QRP
-
-1. Objective	The AGCW-DL invites all radio amateurs to participate in the annual QRP CONTEST. The QRP CONTEST is to arouse and to promote the interest in all aspects of low power amateur radio communication. QRO stations who want to learn about these activities by contacting QRP stations are therefore also invited. They will be counted in a separate category.
-2. Dates	Annually on the second Saturday in March from 1400 to 2000 UTC.
-3. Bands	80m (3.510-3.560 kHz), 40m, 20m (14.000-14.060 kHz), 15m, 10m. The IARU Region 1 band plan must be adhered to!
-4. Categories	VLP: Very Low Power = up to 1 W output
-QRP: classic QRP = up to 5 W output
-MP: moderate Power = up to 25 W output
-QRO: more than 25 W output
-
-In the contest-dialog set PowerCategory to High, Low or QRP but set exchange string for the
-exchange text to the  (VLP, QRP, MD, QRO)
-
-
-5. Operation
-
-Only CW (A1A). Only single OP. Only one TX and RX or TRX is allowed to be operated simultaneously.  Each station may be worked once per band. The use of decoders or reader software is not allowed.
-
-    CALL: CQ QRP TEST
-    EXCHANGE:
-    RST report plus a sequential 3-digit serial number (starting at 001) followed by category and AGCW-Membership-Number.  Example:599 003 qrp 1234
-    Non-members have to send “NM” instead of the membership number. Example: 599 027 MP NM
-
-6. Scoring
-
-    QSO POINTS:
-    QRO <–> QRO: 0 points
-    QRO <–> QRP, MP, VLP: 2 points
-    MP  <–> MP, QRP, VLP: 2 points
-    QRP <–> QRP, VLP: 3 points
-    VLP <–> VLP: 3 points
-    MULTIPLIERS: Each contact with a member of AGCW is worth one multiplier per band.
-    TOTAL SCORE: Sum of the QSO points of all bands multiplied with the sum of all multiplier points of all bands.
-    Dupes do not count.
-
-
-7. Awards	Participants can get their own certificate from our website a few weeks after the contest has finished.
-At once the results are calculated participants get noticed thereof.
-
-8. Log-Submission
-
-
-
-Even short logs are welcome! Final results will be published later.
-
-    LOGS: Please use only Logs in Cabrillo v2 or v3  format. The log should be *uploaded* (URL below) with the following file names: CALL.CBR (e.g. ON3ABC.CBR)
-    Participants are requested to make themselves familiar with the Cabrillo specifications beforehand.
-
-
-
-    Loglines (QSO-data) within the files must contain sets of fields strictly in this order:
-
-    1. Frequency
-    2. Mode (always CW)
-    3. Date
-    4. Time
-    5. Own Call
-    6. RST sent
-    7. Exchange sent
-    8. Other station’s call sign
-    9. RST received
-    10. Exchange received.
-
-    RST and Exchange , e.g. 599 001 QRP 1234 or
-    599 003 VLP NM
-
-    A logging program was provided by ArComm and can be downloaded as freeware here:
-    http://www.qslonline.de/hk/eigen/kontest.htm#hamagcwqrp
-    Log Submission
-    New from 2023: Submission exclusively via web upload on the page
-    https://contest.agcw.de/qrpc/
-
-
-    DEADLINE: Upload no later than March, 31.
-
-Checklogs are welcome, also comments of the participants.
-Publication of the claimed scores will be announced promptly after the deadline.
+"""AGCW QRP contest plugin
 
 Find rules at: https://www.agcw.de/contest/qrp/qrp-c-engl/
+
+80/40/20/15/10m, once per band.  The exchange is RST, a three-digit serial, a
+power class (VLP, QRP, MP or QRO) and an AGCW member number, with "NM" for a
+non-member.  The points depend on the two power classes and a member worked is
+a multiplier once per band.
+
+Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
-import logging
-import platform
 import re
 
+from not1mm.lib.contest import ContestBase, output_cabrillo_line
 
-from PyQt6 import QtWidgets
 
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
+def received_fields(r_nr: str) -> tuple:
+    """Split a received exchange into ``(serial, power class, member)``.
 
-from not1mm.lib.version import __version__
+    The operator types it with spaces, ``set_contact_vars`` stores it with
+    slashes, and the power class is the only thing that carries letters -- so
+    it is found rather than assumed to be in a fixed position.
+    """
+    text = r_nr.upper().replace("/", "")
+    if len(text) > 3:
+        power_class = re.findall("[A-Z]+[OP]", text)[0]
+        head, member = text.split(power_class)
+        return head, power_class, member
+    return "001", "QRO", "NM"
 
-logger = logging.getLogger(__name__)
 
-EXCHANGE_HINT = "# pwr_class MemberNr"
-SOAPBOX_HINT = """
+class Contest(ContestBase):
+    """AGCW QRP."""
+
+    DisplayName = "AGCW QRP"
+    CabrilloName = "AGCW-QRP"
+    Mode = "CW"
+    EXCHANGE_HINT = "# pwr_class MemberNr"
+    SOAPBOX_HINT = """
 Power classes are {VLP, QRP, MP, QRO}
 MemberNr is AGCW-MemberNr or NM for Non Member.
 
 For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
-
-
-name = "AGCW QRP"
-cabrillo_name = "AGCW-QRP"
-mode = "CW"  # CW SSB BOTH RTTY
-
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq",
-    "Mode",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
-    "M1",
-    "PTS",
-]
-
-advance_on_space = [True, True, True, True, False]
-
-# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 2
-
-
-def init_contest(self):
-    """setup plugin"""
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_2
-
-
-def interface(self):
-    """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
-    self.field3.show()
-    self.field4.show()
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
-    self.other_1.setAccessibleName("Sent")
-    self.exch_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "SN Pwr MbrNr")
-    )
-    self.other_2.setAccessibleName("Serial Number Power Class Member Number")
-
-
-def reset_label(self):
-    """reset label after field cleared"""
-
-
-def set_tab_next(self):
-    """Set TAB Advances"""
-    self.tab_next = {
-        self.callsign: self.other_1,
-        self.sent: self.other_1,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        #        self.other_2: self.other_3,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    """Set TAB Advances"""
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.callsign,
-        self.other_1: self.callsign,
-        self.other_2: self.other_1,
-        #        self.other_3: self_other_2
-    }
-
-
-def set_contact_vars(self):
-    """
-    prepare both multipliers even when only 0ne is used
-    """
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text().upper() + self.contest_settings.get(
-        "SentExchange", "xxx xxx"
-    ).strip("#")
-    self.contact["NR"] = self.other_2.text().upper().replace(" ", "/")
-
-    self.contact["IsMultiplier1"] = 0
-    self.contact["IsMultiplier2"] = 0
-
-    band = self.contact.get("Band", "")
-
-    if len(self.contact["NR"]) > 0:
-        r_number, pwr_class, member = received_fields(self, self.contact["NR"])
-        if member.isdigit():
-            query = (
-                f"select count(*) as member_count from dxlog where Nr like '%/%/{member}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            count = int(result.get("member_count", 0))
-            if count == 0:
-                self.contact["IsMultiplier1"] = 1
-
-
-def predupe(self):
-    """called after callsign entered"""
-
-
-def prefill(self):
-    """Fill SentNR"""
-    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
-    if (len(sent_sxchange_setting) > 0) and (sent_sxchange_setting.find("#") >= 0):
-        if self.current_sn is not None:
-            serial_nr = str(self.current_sn).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(serial_nr)
-    else:
-        self.other_1.setText(sent_sxchange_setting)
-
-
-def received_fields(self, r_nr) -> [str, str, str]:
-    """
-    split the "received field" 003/VLP/1234
-    """
-    hs = r_nr.upper().replace("/", "")
-    if len(hs) > 3:  # there could be a valid message inside
-        pwr_class = re.findall("[A-Z]+[OP]", hs)[0]
-        hr = hs.split(pwr_class)
-        member = hr[1]
-        r_number = hr[0]
-    else:
-        member = "NM"
-        pwr_class = "QRO"
-        r_number = "001"
-    return r_number, pwr_class, member
-
-
-def points(self):
-    """
-    from contest rules:
-    QSO Points:
-            QRO <–> QRO: 0 Points
-
-            QRO <–> QRP, MP, VLP: 2 Points
-
-            MP <–> MP, QRP, VLP: 2 Points
-
-            QRP <–> QRP, VLP: 3 Points
-
-            VLP <–> VLP: 3 Punkte1 point per QSO
-
-    """
-    # The contest dialog offers HIGH, LOW and QRP for the power category, so
-    # our class is QRO, MP (or QRP).  The old test compared it to "High" with
-    # a lower-case h and a "s", so it never matched the stored "HIGH".
-
-    mypowerclass = str(self.contest_settings.get("PowerCategory", "")).upper()
-
-    if self.contact_is_dupe > 0:
-        return 0
-
-    # Two points is the default: QRO or MP against QRP or VLP, or MP against
-    # anything.  Only two combinations are different - QRO against QRO scores
-    # nothing, and QRP against QRP or VLP scores three.  The old test gave
-    # three whenever the *other* station sent QRP or VLP, so a QRO or MP
-    # entrant scored three where the rules say two.
-    pts = 2
-    pwr_class = "QRO"
-    nr = self.contact.get("NR", "")
-    if len(nr) > 0:
-        r_number, pwr_class, member = received_fields(self, nr)
-        self.contact["NR"] = r_number + "/" + pwr_class + "/" + member
-
-    if mypowerclass == "HIGH" and pwr_class == "QRO":
-        pts = 0
-    elif mypowerclass == "QRP" and pwr_class in ("QRP", "VLP"):
-        pts = 3
-    return pts
-
-
-def show_mults(self, rtc=None):
-    """Return display string for mults"""
-    one = int(self.database.fetch_mult_count(1).get("count", 0))
-    two = int(self.database.fetch_mult_count(2).get("count", 0))
-    if rtc is not None:
-        return (two, one)
-
-    return one + two
-
-
-def show_qso(self):
-    """Return qso count"""
-    result = self.database.fetch_qso_count()
-    if result:
-        return int(result.get("qsos", 0))
-    return 0
-
-
-def calc_score(self):
-    """Return calculated score"""
-    result = self.database.fetch_points()
-    if result is not None:
-        score = result.get("Points", "0")
-        if score is None:
-            score = "0"
-        contest_points = int(score)
-        mults = show_mults(self)
-        return contest_points * mults
-    return 0
-
-
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
-
-    all_contacts = self.database.fetch_all_contacts_asc()
-    for contact in all_contacts:
-        contact["IsMultiplier1"] = 0
-        contact["IsMultiplier2"] = 0
-
-        time_stamp = contact.get("TS", "")
-        R_NR = contact.get("NR", "")
-        # dxcc = contact.get("CountryPrefix", "")
-        band = contact.get("Band", "")
-        _, _, member = received_fields(self, R_NR)
-        if (member != "NM") and member.isdigit():
-            query = (
-                f"select count(*) as member_count from dxlog where  TS < '{time_stamp}' "
-                f"and NR like '%/%/{member}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            count = int(result.get("member_count", 0))
-            if count == 0:
-                contact["IsMultiplier1"] = 1
-
-        # use the following code for other agcw-contests e.g happy new year contest
-        """if dxcc:
-            query = (
-                f"select count(*) as dxcc_count from dxlog where TS < '{time_stamp}' "
-                f"and CountryPrefix = '{dxcc}' "
-                f"and Band = '{band}' "
-                f"and ContestNR = {self.pref.get('contest', '1')};"
-            )
-            result = self.database.exec_sql(query)
-            if not result.get("dxcc_count", ""):
-                contact["IsMultiplier2"] = 1
-        """
-        self.database.change_contact(contact)
-    cmd = {}
-    cmd["cmd"] = "UPDATELOG"
-    if self.log_window:
-        self.log_window.msg_from_main(cmd)
-
-
-def adif(self):
-    """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "AGCW-QRP")
-
-
-def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
-    print(
-        line_to_output.encode(file_encoding, errors="ignore").decode(),
-        end=ending,
-        file=file_descriptor,
-    )
-
-
-def cabrillo(self, filename, file_encoding):
-    """Generates Cabrillo file. Maybe."""
-    # https://www.cqwpx.com/cabrillo.htm
-    logger.debug("******Cabrillo*****")
-    logger.debug("Station: %s", f"{self.station}")
-    logger.debug("Contest: %s", f"{self.contest_settings}")
-    logger.debug("%s", filename)
-    log = self.database.fetch_all_contacts_asc()
-
-    try:
-        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
-            output_cabrillo_line(
-                "START-OF-LOG: 3.0",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CONTEST: {cabrillo_name}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.station.get("Club", ""):
-                output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"LOCATION: {self.station.get('ARRLSection', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            mode = self.contest_settings.get("ModeCategory", "")
-            if mode in ["SSB+CW", "SSB+CW+DIGITAL"]:
-                mode = "MIXED"
-            output_cabrillo_line(
-                f"CATEGORY-MODE: {mode}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            output_cabrillo_line(
-                f"CLAIMED-SCORE: {calc_score(self)}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            ops = ""
-            list_of_ops = self.database.get_ops()
-            for op in list_of_ops:
-                ops += f"{op.get('Operator', '')}, "
-            if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call', '')}"
-            else:
-                ops = ops.rstrip(", ")
-            output_cabrillo_line(
-                f"OPERATORS: {ops}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"NAME: {self.station.get('Name', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Street1', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-CITY: {self.station.get('City', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"EMAIL: {self.station.get('Email', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.contest_settings.get("Soapbox") != SOAPBOX_HINT:
-                for l in self.contest_settings.get("Soapbox", "").splitlines():
-                    output_cabrillo_line(
-                        f"SOAPBOX: {l}",
-                        "\r\n",
-                        file_descriptor,
-                        file_encoding,
-                    )
-
-            for contact in log:
-                the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode == "LSB" or themode == "USB":
-                    themode = "PH"
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
-
-                loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6).replace('/', ' ')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
-        self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
-        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
-        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
-        return
-
-
-def process_esm(self, new_focused_widget=None, with_enter=False):
-    """ESM State Machine"""
-
-    # self.pref["run_state"]
-
-    # -----===== Assigned F-Keys =====-----
-    # self.esm_dict["CQ"]
-    # self.esm_dict["EXCH"]
-    # self.esm_dict["QRZ"]
-    # self.esm_dict["AGN"]
-    # self.esm_dict["HISCALL"]
-    # self.esm_dict["MYCALL"]
-    # self.esm_dict["QSOB4"]
-
-    # ----==== text fields ====----
-    # self.callsign
-    # self.sent
-    # self.receive
-    # self.other_1
-    # self.other_2
-
-    if new_focused_widget is not None:
-        self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
-    for a_button in [
-        self.esm_dict["CQ"],
-        self.esm_dict["EXCH"],
-        self.esm_dict["QRZ"],
-        self.esm_dict["AGN"],
-        self.esm_dict["HISCALL"],
-        self.esm_dict["MYCALL"],
-        self.esm_dict["QSOB4"],
-    ]:
-        if a_button is not None:
-            self.restore_button_color(a_button)
-
-    buttons_to_send = []
-
-    if self.pref.get("run_state"):
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) < 3:
-                self.make_button_green(self.esm_dict["CQ"])
-                buttons_to_send.append(self.esm_dict["CQ"])
-                self.esm_call_sent = ""
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                # If the operator corrected a busted callsign after the
-                # exchange was already sent, resend the corrected call
-                # ahead of the QRZ/TU macro so the other station logs the
-                # right callsign before the QSO is wiped.
-                if (
-                    self.pref.get("esm_send_corrected_call")
-                    and self.esm_call_sent
-                    and self.callsign.text() != self.esm_call_sent
-                ):
-                    self.make_button_green(self.esm_dict["HISCALL"])
-                    buttons_to_send.append(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        self.esm_call_sent = ""
-                        continue
-                    if button == self.esm_dict.get("HISCALL"):
-                        self.esm_call_sent = self.callsign.text()
-                    self.process_function_key(button)
-    else:
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["MYCALL"])
-                buttons_to_send.append(self.esm_dict["MYCALL"])
-
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        continue
-                    self.process_function_key(button)
-
-
-def get_mults(self):
-    """Get mults for RTC XML"""
-    mults = {}
-    mults["country"], mults["state"] = show_mults(self, rtc=True)
-    return mults
-
-
-def just_points(self):
-    """Get points for RTC XML"""
-    return get_points(self)
-
-
-def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText', '...')}"
+    ADIFContestID = "AGCW-QRP"
+    SendsRTCScore = True
+    # other_2 holds "serial power member" with spaces; they are turned into
+    # slashes as the contact is stored, so they must survive being typed.
+    advance_on_space = [True, True, True, True, False]
+    Bands = (3.5, 7, 14, 21, 28)
+    LogInfo = [
+        "YYYY-MM-DD HH:MM:SS",
+        "Call",
+        "Freq",
+        "Mode",
+        "Snt",
+        "Rcv",
+        "SentNr",
+        "RcvNr",
+        "M1",
+        "PTS",
+    ]
+    # Only the labels and names the module set; snt_label is left alone.
+    FrameText = ("", "Sent", "SN Pwr MbrNr")
+    AccessibleNames = ("", "", "Sent", "Serial Number Power Class Member Number")
+    # A member worked is the multiplier; the second one (a DXCC entity per
+    # band) was declared for other AGCW contests and is never marked, so it is
+    # reported to the score page as zero.
+    NumMults = 1
+    Multiplier1Name = "MiscText"
+    MultSqlString = "Misc"
+    IsMult1Per = 1
+
+    # The exchange is in other_1/other_2; the RST fields are not in the cycle,
+    # so TAB goes from them to the next field the order visits (other_1).
+    TabOrder = ("callsign", "other_1", "other_2")
+
+    def set_contact_vars(self):
+        """The exchange, and the member the contact is worth."""
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SentNr"] = parent.other_1.text().upper() + (
+            parent.contest_settings.get("SentExchange", "xxx xxx").strip("#")
         )
-    else:
-        self.history_info.setText("")
+        parent.contact["NR"] = parent.other_2.text().upper().replace(" ", "/")
+        self.mark_multipliers()
 
+    def mult_value(self, slot, contact):
+        """The multiplier key: the AGCW member number, per band.
 
-def check_call_history(self):
-    """"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText', '')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+        A non-member ("NM") is not a multiplier, and neither is a number that
+        is not a member number.
+        """
+        member = received_fields(contact.get("NR", ""))[2]
+        return member if member != "NM" and member.isdigit() else None
+
+    def mark_multipliers(self):
+        """Set ``IsMultiplier1`` on the contact being logged.
+
+        The member number lives inside ``NR`` (as ``serial/class/member``), so
+        the check is not a column the base can build a query from.
+        """
+        parent = self.parent
+        contact = parent.contact
+        member = received_fields(contact.get("NR", ""))[2]
+        if member == "NM" or not member.isdigit():
+            contact["IsMultiplier1"] = 0
+            return
+        result = parent.database.exec_sql(
+            "select count(*) as count from dxlog where NR like ? and Band = ? "
+            "and ContestNR = ?;",
+            (f"%/%/{member}", contact.get("Band"), parent.pref.get("contest", "1")),
+        )
+        contact["IsMultiplier1"] = 0 if result.get("count", 0) else 1
+
+    def show_mults(self):
+        """The number of multipliers is the number of marked contacts."""
+        result = self.parent.database.fetch_mult_count(1)
+        return int(result.get("count", 0)) if result else 0
+
+    def get_mults(self):
+        """The score page is told about both multipliers, as it always was."""
+        return {"country": 0, "state": self.show_mults()}
+
+    def after_recalculate_mults(self):
+        """Refresh the log window after a rescore."""
+        cmd = {"cmd": "UPDATELOG"}
+        if self.parent.log_window:
+            self.parent.log_window.msg_from_main(cmd)
+
+    def points(self):
+        """Points for the contact being logged: the two power classes.
+
+        Two points is the default (QRO or MP against QRP or VLP, or MP against
+        anything); QRO against QRO scores nothing and QRP against QRP or VLP
+        scores three.  The contest setup offers HIGH/LOW/QRP for the power
+        category, so the entrant's class is QRO, MP or QRP.
+        """
+        parent = self.parent
+        if parent.contact_is_dupe > 0:
+            return 0
+        my_power = str(parent.contest_settings.get("PowerCategory", "")).upper()
+        power_class = "QRO"
+        nr = parent.contact.get("NR", "")
+        if len(nr) > 0:
+            serial, power_class, member = received_fields(nr)
+            parent.contact["NR"] = f"{serial}/{power_class}/{member}"
+        if my_power == "HIGH" and power_class == "QRO":
+            return 0
+        if my_power == "QRP" and power_class in ("QRP", "VLP"):
+            return 3
+        return 2
+
+    def _cabrillo_header(self, file_descriptor, file_encoding):
+        """The standard header, then the operator's soapbox."""
+        super()._cabrillo_header(file_descriptor, file_encoding)
+        soapbox = self.parent.contest_settings.get("Soapbox", "")
+        if soapbox != self.SOAPBOX_HINT:
+            for line in soapbox.splitlines():
+                output_cabrillo_line(
+                    f"SOAPBOX: {line}", "\r\n", file_descriptor, file_encoding
+                )
+
+    def cabrillo_qso_line(self, contact):
+        """The standard line, with the stored slashes shown as spaces.
+
+        Only the received exchange field is touched: a call like ``DL1ABC/P``
+        keeps its slash.
+        """
+        number = str(contact.get("NR", "")).ljust(6)
+        line = super().cabrillo_qso_line(contact)
+        return f"{line[: -len(number)]}{number.replace('/', ' ')}"
+
+    def populate_history_info_line(self):
+        """Show history info if available."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(
+                f"{result.get('Call', '')}, {result.get('Exch1', '')}, "
+                f"{result.get('UserText', '...')}"
+            )
+        else:
+            parent.history_info.setText("")
+
+    def check_call_history(self):
+        """Prefill the received exchange from the call history file."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(f"{result.get('UserText', '')}")
+            if parent.other_2.text() == "":
+                parent.other_2.setText(f"{result.get('Exch1', '')}")
