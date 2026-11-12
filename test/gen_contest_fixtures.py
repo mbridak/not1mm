@@ -3216,8 +3216,8 @@ BATCH4 = {
                          x=[{"NR": "TX"}, {"NR": "DL"}, {"NR": "JA"}, {"NR": "UA"}],
                          mode="RTTY"),
     "cqws": dict(sent={"SENTNR": "1"},
-                 x=[{"EXCHANGE1": "SP"}, {"EXCHANGE1": "RE"},
-                    {"EXCHANGE1": "DX"}, {"EXCHANGE1": "GE"}]),
+                 x=[{"NR": "SP"}, {"NR": "RE"},
+                    {"NR": "DX"}, {"NR": "GE"}]),
     # dxpedition, general_logging and randomgram have no cabrillo()/edi()
     # output at all -- their export functions are empty -- so they cannot have
     # a golden log and stay placeholder directories.
