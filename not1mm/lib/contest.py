@@ -40,6 +40,7 @@ and reaches the window through ``self.parent``.
 
 from __future__ import annotations
 
+import datetime
 import functools
 import importlib
 import logging
@@ -165,6 +166,41 @@ def dupe_result(
     else:  # 4, and anything unknown
         return False
     return bool(result.get("isdupe", False))
+
+
+def period_dupe_check(
+    parent, call: str, contest_minutes: int, period_minutes: int
+) -> dict:
+    """Dupe check for a contest split into fixed-length periods.
+
+    The Estonian contests work a call again in each period of the contest, so a
+    contact is a dupe only against the same call, band and mode logged inside
+    the *same* period; outside the periods the plain band+mode rule applies.
+
+    The time is the contact's own when it has one (see
+    :func:`plugin_common.contest_time`), so a re-scored or imported log is
+    judged against the clock it was logged on rather than the wall clock.
+    """
+    mode = parent.radio_state.get("mode", "")
+    start = datetime.datetime.strptime(
+        parent.contest_settings.get("StartDate", ""), "%Y-%m-%d %H:%M:%S"
+    )
+    current_time = plugin_common.contest_time(parent)
+    lower = start
+    for index in range(contest_minutes // period_minutes):
+        upper = start + datetime.timedelta(minutes=period_minutes * (index + 1))
+        if lower <= current_time < upper:
+            return parent.database.check_dupe_on_period_mode(
+                call,
+                parent.contact.get("Band", ""),
+                mode,
+                lower.strftime("%Y-%m-%d %H:%M:%S"),
+                upper.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+        lower = upper
+    return parent.database.check_dupe_on_band_mode(
+        call, parent.contact.get("Band", ""), mode
+    )
 
 
 def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):

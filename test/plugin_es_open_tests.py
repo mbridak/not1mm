@@ -12,17 +12,22 @@ from types import SimpleNamespace
 import pytest
 
 from contest_harness import cty_lookup
-from not1mm.plugins import es_open
+from not1mm.lib.contest import load_contest
 
 
 def _ctx(mycall, hiscall, mode="CW", is_dupe=0):
-    """Minimal fake `self` for es_open.points()."""
+    """Minimal fake main window for es_open's points()."""
     return SimpleNamespace(
         contact_is_dupe=is_dupe,
         station={"Call": mycall},
         contact={"Call": hiscall, "Mode": mode},
         cty_lookup=cty_lookup,
     )
+
+
+def _points(mycall, hiscall, mode="CW", is_dupe=0):
+    ctx = _ctx(mycall, hiscall, mode, is_dupe)
+    return load_contest("es_open", ctx).points()
 
 
 @pytest.mark.parametrize(
@@ -47,18 +52,18 @@ def _ctx(mycall, hiscall, mode="CW", is_dupe=0):
     ],
 )
 def test_points_by_mode(mode, expected):
-    assert es_open.points(_ctx("ES1ABC", "ES2DEF", mode)) == expected
+    assert _points("ES1ABC", "ES2DEF", mode) == expected
 
 
 def test_foreign_entrant_only_scores_estonians():
-    assert es_open.points(_ctx("K6GTE", "ES2DEF")) == 2
-    assert es_open.points(_ctx("K6GTE", "DL1ABC")) == 0
+    assert _points("K6GTE", "ES2DEF") == 2
+    assert _points("K6GTE", "DL1ABC") == 0
 
 
 def test_estonian_entrant_scores_everyone():
-    assert es_open.points(_ctx("ES1ABC", "DL1ABC")) == 2
-    assert es_open.points(_ctx("ES1ABC", "K6GTE")) == 2
+    assert _points("ES1ABC", "DL1ABC") == 2
+    assert _points("ES1ABC", "K6GTE") == 2
 
 
 def test_dupe_scores_nothing():
-    assert es_open.points(_ctx("ES1ABC", "ES2DEF", is_dupe=1)) == 0
+    assert _points("ES1ABC", "ES2DEF", is_dupe=1) == 0
