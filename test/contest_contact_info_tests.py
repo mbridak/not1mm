@@ -99,7 +99,7 @@ def test_zone_follows_the_zone_type(headless, monkeypatch):
 
 def test_legacy_contest_has_no_declared_mults(headless, monkeypatch):
     """An unconverted plugin answers the country and the dupe, but no mults."""
-    contest = loaded("pacc/K6GTE", headless, monkeypatch).contest
+    contest = loaded("raem/K6GTE", headless, monkeypatch).contest
     info = contest.contact_info("K5ABC", band=14.0, mode="CW")
     assert info.prefix == "K"
     assert info.mults == ()
