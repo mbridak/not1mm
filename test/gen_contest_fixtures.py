@@ -3117,13 +3117,11 @@ BATCH2 = {
         mode="RTTY"),
     "cq_160_cw": dict(
         sent={"SENTNR": "TX"},
-        x=[{"EXCHANGE1": "DL"}, {"EXCHANGE1": "JA"}, {"EXCHANGE1": "TX"},
-           {"EXCHANGE1": "UA"}],
+        x=[{"NR": "DL"}, {"NR": "JA"}, {"NR": "TX"}, {"NR": "UA"}],
         mode="CW", bands="160"),
     "cq_160_ssb": dict(
         sent={"SENTNR": "TX"},
-        x=[{"EXCHANGE1": "DL"}, {"EXCHANGE1": "JA"}, {"EXCHANGE1": "TX"},
-           {"EXCHANGE1": "UA"}],
+        x=[{"NR": "DL"}, {"NR": "JA"}, {"NR": "TX"}, {"NR": "UA"}],
         mode="SSB", bands="160"),
     "arrl_dx_cw": dict(sent={"SENTNR": "TX"}, x=ser("100", "500", "1000", "050"),
                        mode="CW"),
