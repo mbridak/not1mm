@@ -310,6 +310,9 @@ class ContestBase:
     SupportsFT8 = False  # ft8_handler() accepts WSJT-X/FlDigi packets
     WritesEDI = False  # edi() writes a VHF/UHF EDI file
     WritesGridLocator = True  # the Cabrillo header has a GRID-LOCATOR line
+    # What the Cabrillo LOCATION line says when the station has no ARRL
+    # section; most contests leave it empty, CQ WW VHF writes "DX".
+    LocationFallback = ""
     SendsRTCScore = False  # online_score_xml() feeds the real-time score page
 
     # -- scoring (UDC [Contest] names) --------------------------------------
@@ -789,18 +792,17 @@ class ContestBase:
 
         line("START-OF-LOG: 3.0")
         line(f"CREATED-BY: Not1MM v{version.__version__}")
-        line(f"CONTEST: {self.CabrilloName}")
+        line(f"CONTEST: {self.cabrillo_contest_name()}")
         if station.get("Club", ""):
             line(f"CLUB: {station.get('Club', '').upper()}")
         line(f"CALLSIGN: {station.get('Call', '')}")
-        line(f"LOCATION: {station.get('ARRLSection', '')}")
+        line(
+            f"LOCATION: {station.get('ARRLSection', '') or self.LocationFallback}"
+        )
         line(f"CATEGORY-OPERATOR: {settings.get('OperatorCategory', '')}")
         line(f"CATEGORY-ASSISTED: {settings.get('AssistedCategory', '')}")
         line(f"CATEGORY-BAND: {settings.get('BandCategory', '')}")
-        mode = settings.get("ModeCategory", "")
-        if mode in ("SSB+CW", "SSB+CW+DIGITAL"):
-            mode = "MIXED"
-        line(f"CATEGORY-MODE: {mode}")
+        line(f"CATEGORY-MODE: {self.cabrillo_category_mode()}")
         line(f"CATEGORY-TRANSMITTER: {settings.get('TransmitterCategory', '')}")
         if settings.get("OverlayCategory", "") != "N/A":
             line(f"CATEGORY-OVERLAY: {settings.get('OverlayCategory', '')}")
@@ -823,6 +825,27 @@ class ContestBase:
         line(f"ADDRESS-POSTALCODE: {station.get('Zip', '')}")
         line(f"ADDRESS-COUNTRY: {station.get('Country', '')}")
         line(f"EMAIL: {station.get('Email', '')}")
+
+    def cabrillo_contest_name(self) -> str:
+        """The ``CONTEST:`` value: the Cabrillo name, unless this contest differs.
+
+        CQ WW VHF is the one contest whose Cabrillo name follows the setup's
+        mode category (``CQ-VHF-DIGI`` for the digital weekend), so it is a
+        method rather than the constant :attr:`CabrilloName` -- which stays the
+        contest's identity either way.
+        """
+        return self.CabrilloName
+
+    def cabrillo_category_mode(self) -> str:
+        """The ``CATEGORY-MODE`` value, from the contest setup.
+
+        Cabrillo wants ``MIXED`` where the setup records a combination; a
+        contest whose sponsor spells digital or RTTY another way overrides.
+        """
+        mode = self.parent.contest_settings.get("ModeCategory", "")
+        if mode in ("SSB+CW", "SSB+CW+DIGITAL"):
+            return "MIXED"
+        return mode
 
     def cabrillo_mode(self, mode: str) -> str:
         """The Cabrillo mode code for an ADIF mode.

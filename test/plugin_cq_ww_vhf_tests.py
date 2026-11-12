@@ -65,7 +65,7 @@ def test_validate_exchange(text, valid):
 )
 def test_cabrillo_contest_name(mode_category, expected_name):
     settings = {"ModeCategory": mode_category}
-    assert cq_ww_vhf.cabrillo_contest_name(settings) == expected_name
+    assert cq_ww_vhf.contest_name_for(settings) == expected_name
 
 
 @pytest.mark.parametrize(
@@ -81,4 +81,4 @@ def test_cabrillo_contest_name(mode_category, expected_name):
     ],
 )
 def test_cabrillo_mode(mode_category, expected_mode):
-    assert cq_ww_vhf.cabrillo_mode(mode_category) == expected_mode
+    assert cq_ww_vhf.category_mode(mode_category) == expected_mode
