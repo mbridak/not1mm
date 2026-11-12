@@ -281,6 +281,9 @@ class ContestBase:
     # a contest overrides TabOrderPrev.
     TabOrder = None
     TabOrderPrev = None
+    # Where the focus goes once a lookup has run on the callsign, by field
+    # name; almost every contest leaves it on the last exchange field.
+    NextField = "other_2"
 
     # not1mm-specific: whether a space typed in other_1/other_2 is a separator
     # -- strip it and advance to the next field -- or part of the exchange.
@@ -362,7 +365,7 @@ class ContestBase:
         self.set_tab_next()
         self.set_tab_prev()
         self.interface()
-        self.parent.next_field = self.parent.other_2
+        self.parent.next_field = getattr(self.parent, self.NextField)
 
     def interface(self):
         """Show the entry fields this contest uses and label them."""

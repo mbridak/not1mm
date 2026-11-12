@@ -15,30 +15,36 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins import arrl_field_day, winter_field_day
+from not1mm.lib.contest import load_contest
+from not1mm.plugins import winter_field_day
 
 
 def _ctx(mode="CW", is_dupe=0):
-    """Minimal fake `self` for points()."""
+    """Minimal fake `self`."""
     return SimpleNamespace(contact_is_dupe=is_dupe, contact={"Mode": mode})
+
+
+def _arrl_fd(mode="CW", is_dupe=0):
+    """ARRL Field Day is a class now."""
+    return load_contest("arrl_field_day", _ctx(mode, is_dupe))
 
 
 @pytest.mark.parametrize("mode", ["SSB", "USB", "LSB", "FM", "AM", "PH", "ssb"])
 def test_arrl_field_day_phone_is_one_point(mode):
-    assert arrl_field_day.points(_ctx(mode)) == 1
+    assert _arrl_fd(mode).points() == 1
 
 
 @pytest.mark.parametrize("mode", ["CW", "RTTY", "FT8", "FT4", "PSK31", "OLIVIA", "JS8"])
 def test_arrl_field_day_cw_and_digital_are_two_points(mode):
-    assert arrl_field_day.points(_ctx(mode)) == 2
+    assert _arrl_fd(mode).points() == 2
 
 
 def test_arrl_field_day_empty_mode_scores_nothing():
-    assert arrl_field_day.points(_ctx("")) == 0
+    assert _arrl_fd("").points() == 0
 
 
 def test_arrl_field_day_dupe_scores_nothing():
-    assert arrl_field_day.points(_ctx("CW", is_dupe=1)) == 0
+    assert _arrl_fd("CW", is_dupe=1).points() == 0
 
 
 @pytest.mark.parametrize("mode", ["SSB", "USB", "LSB", "FM", "AM", "PH"])
