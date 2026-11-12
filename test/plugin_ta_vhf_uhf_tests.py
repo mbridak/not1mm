@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins.ta_vhf_uhf_contest import points
+from not1mm.lib.contest import load_contest
 
 
 def _ctx(band, mode, grid="KN50", my_grid="KN41"):
@@ -39,10 +39,10 @@ def _ctx(band, mode, grid="KN50", my_grid="KN41"):
     ],
 )
 def test_band_and_mode_multipliers(band, mode, expected):
-    assert points(_ctx(band, mode)) == expected
+    assert load_contest("ta_vhf_uhf_contest", _ctx(band, mode)).points() == expected
 
 
 def test_a_duplicate_scores_nothing():
     ctx = _ctx(144.0, "CW")
     ctx.contact_is_dupe = 1
-    assert points(ctx) == 0
+    assert load_contest("ta_vhf_uhf_contest", ctx).points() == 0

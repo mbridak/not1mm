@@ -1,363 +1,132 @@
 """TA VHF UHF Contest
 
 Find rules at: https://trac.org.tr/tr/ta-vhf-uhf-contest-2025-english
+
+50, 144 and 432 MHz, once per band and mode.  The exchange is a serial number
+and a locator, and a contact scores one point per kilometre between the two
+stations, multiplied by the band (50 MHz x1, 144 MHz x2, 432 MHz x3) and by the
+mode (FM x1, SSB x2, CW x3).  There are no multipliers: the score is the sum of
+the contacts.  The log is EDI.
+
+Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
-import logging
-
-from PyQt6 import QtWidgets
-
+from not1mm.lib.contest import ContestBase
 from not1mm.lib.ham_utility import band_mhz_of, distance
-from not1mm.lib.plugin_common import gen_adif, gen_edi, get_points, imp_adif
-from not1mm.lib.version import __version__
-
-assert get_points
-assert __version__
-
-logger = logging.getLogger(__name__)
-
-assert imp_adif
-
-EXCHANGE_HINT = "# + 6char grid"
-
-name = "TA VHF UHF"
-mode = "BOTH"
-cabrillo_name = "TA-VHF-UHF"
-
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
-    "Exchange1",
-    "PTS",
-]
-
-advance_on_space = [True, True, True, True, False]
-dupe_type = 3
-
-
-def init_contest(self):
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_2
-
-
-def reset_label(self):
-    pass
-
-
-def predupe(self):
-    pass
-
-
-def interface(self):
-    self.field1.show()  # callsign
-    self.field2.show()  # sent RST
-    self.field3.show()  # receive RST
-    self.field4.show()  # exchange field
-
-    self.snt_label.setText("SNT")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SNTNR"))
-    self.exch_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "RCV NR + GRID")
-    )
-
-    self.sent.setText("59")
-    self.receive.setText("59")
-
-    self.sent.setReadOnly(True)
-    self.receive.setReadOnly(True)
-
-
-def set_tab_next(self):
-    self.tab_next = {
-        self.callsign: self.sent,
-        self.sent: self.receive,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.sent,
-        self.other_1: self.receive,
-        self.other_2: self.other_1,
-    }
-
-
-def parse_exchange(self):
-    exchange = self.other_2.text().upper().split()
-
-    sn = ""
-    grid = ""
-
-    for t in exchange:
-        if t.isdigit() and sn == "":
-            sn = t
-        elif len(t) == 6 and t.isalnum():
-            grid = t
-
-    return sn, grid
-
-
-def set_contact_vars(self):
-    sn, grid = parse_exchange(self)
-
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-
-    self.contact["NR"] = sn
-    self.contact["Exchange1"] = grid
-
-    self.contact["SentNr"] = self.other_1.text()
-
-    try:
-        next_sn = int(self.current_sn) + 1
-        self.other_1.setText(str(next_sn).zfill(3))
-    except ValueError:
-        ...
-
-
-def prefill(self):
-    serial_nr = str(self.current_sn).zfill(3)
-
-    if self.other_1.text() == "":
-        self.other_1.setText(serial_nr)
-
-
-def points(self):
-    """The distance in kilometres times the band and mode multipliers.
-
-    Points are one per kilometre on 6m, two on 2m and three on 70cm, and the
-    mode multiplies that again: FM x1, SSB x2, CW x3.  The score is the sum of
-    the contacts.
-    """
-    if self.contact_is_dupe > 0:
-        return 0
-
-    their_grid = self.contact.get("Exchange1", "")
-
-    km = distance(self.station.get("GridSquare", ""), their_grid)
-
-    # The band column holds a float (144.0), so comparing it to "144" as a
-    # string never matched and every contact scored as 6m - the band factor
-    # was never applied at all.
-    band_mult = {
-        50.0: 1,
-        144.0: 2,
-        432.0: 3,
-    }.get(band_mhz_of(self.contact.get("Band", 0)), 1)
-
-    # And the mode multiplier is FM x1, SSB x2, CW x3 (rule 6).
-    mode_mult = {"FM": 1, "SSB": 2, "CW": 3}.get(
-        str(self.contact.get("Mode", "")).upper(), 1
-    )
-
-    return max(1, int(km * band_mult * mode_mult))
-
-
-def show_mults(self, rtc=None):
-    return 0
-
-
-def show_qso(self):
-    result = self.database.fetch_qso_count()
-    return int(result.get("qsos", 0)) if result else 0
-
-
-def calc_score(self):
-    result = self.database.fetch_points()
-    if result:
-        return int(result.get("Points", 0) or 0)
-    return 0
-
-
-def adif(self):
-    gen_adif(self, cabrillo_name)
-
-
-def edi(self):
-    value = self.contest_settings.get("StartDate", "")
-    start_date = f"{value[0:4]}{value[5:7]}{value[8:10]}"
-    gen_edi(
-        self,
-        cabrillo_name,
-        "TA 50_144_430 Contest",
-        start_date,
-        start_date,
-    )
-
-
-# def edi(self, parent=None):
-#     import datetime
-#     from pathlib import Path
-
-#     from not1mm.lib.ham_utility import distance
-
-#     logger = logging.getLogger(__name__)
-
-#     def get_station_field(*keys, default=""):
-#         for key in keys:
-#             val = self.station.get(key)
-#             if val:
-#                 return val
-#         return default
-
-#     log = self.database.fetch_all_contacts_asc()
-#     if not log:
-#         logger.info("No QSOs to export")
-#         return
-
-#     my_call = get_station_field("Call", "Callsign", "MyCall", default="MYCALL")
-#     my_grid = get_station_field("GridSquare", "Grid", default="AA00AA")
-#     operator_name = get_station_field(
-#         "OperatorName", "Operator", "Name", default="Operator"
-#     )
-#     address = get_station_field("Address", "Adr1", default="")
-#     city = get_station_field("City", "Locality", default="")
-#     country = get_station_field("Country", "CountryName", default="Turkey")
-#     email = get_station_field("Email", "eMail", default="")
-#     contest_name = "TA 50_144_430 Contest"
-
-#     timestamps = []
-#     for q in log:
-#         ts = q.get("TS", "")
-#         if ts:
-#             try:
-#                 dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone()
-#                 timestamps.append(dt)
-#             except ValueError:
-#                 pass
-#     if timestamps:
-#         start_date = min(timestamps).strftime("%Y%m%d")
-#         end_date = max(timestamps).strftime("%Y%m%d")
-#     else:
-#         start_date = datetime.datetime.now().astimezone().strftime("%Y%m%d")
-#         end_date = start_date
-
-#     date_time = datetime.datetime.now().astimezone().strftime("%Y-%m-%d_%H-%M-%S")
-#     filename = Path.home() / f"{my_call}_{cabrillo_name}_{date_time}.edi"
-
-#     bands = {}
-#     for q in log:
-#         band = q.get("Band", "")
-#         bands.setdefault(band, []).append(q)
-
-#     output_lines = []
-
-#     for band, band_qsos in bands.items():
-#         band_qsos.sort(key=lambda x: x.get("TS", ""))
-#         band_display = f"{int(float(band))} MHz"
-#         band_code = "6"
-
-#         header = [
-#             "[REG1TEST;1]",
-#             f"TName={contest_name}",
-#             f"TDate={start_date};{end_date}",
-#             f"PCall={my_call}",
-#             f"PWWLo={my_grid}",
-#             "PExch=001",
-#             f"PAdr1={address}",
-#             "PAdr2=",
-#             "PSect=SINGLE-OP",
-#             f"PBand={band_display}",
-#             "PClub=",
-#             f"RName={operator_name}",
-#             f"RCall={my_call}",
-#             f"RAdr1={address}",
-#             "RAdr2=",
-#             "RPoCo=",
-#             f"RCity={city}",
-#             f"RCoun={country}",
-#             "RPhon=",
-#             f"RHBBS={email}",
-#             "MOpe1=",
-#             "MOpe2=",
-#             "STXEq=",
-#             "SPowe=",
-#             "SRXEq=",
-#             "SAnte=",
-#             "SAntH=;",
-#         ]
-
-#         total_qsos = len(band_qsos)
-#         total_points = 0
-#         dx_list = []
-
-#         for q in band_qsos:
-#             grid = q.get("Exchange1", "")
-#             if grid and len(grid) >= 4:
-#                 dist = distance(my_grid, grid)
-#             else:
-#                 dist = 0
-#             mult = {"50": 1, "144": 2, "432": 3}.get(str(band), 1)
-#             pts = max(1, int(dist * mult))
-#             total_points += pts
-#             if dist > 500:
-#                 dx_list.append(f"{q.get('Call', '')};{grid};{int(dist)}")
-
-#         summary = [
-#             f"CQSOs={total_qsos};1",
-#             f"CQSOP={total_points}",
-#             "CWWLs=0;0;1",
-#             "CWWLB=0",
-#             "CExcs=0;0;1",
-#             "CExcB=0",
-#             f"CDXCs={len(dx_list)};0;1",
-#             "CDXCB=0",
-#             f"CToSc={total_points}",
-#             f"CODXC={';;'.join(dx_list)}",
-#             "[Remarks]",
-#             "",
-#             f"[QSORecords;{total_qsos}]",
-#         ]
-
-#         qso_lines = []
-#         for q in band_qsos:
-#             ts = q.get("TS", "")
-#             try:
-#                 dt = datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone()
-#                 date_str = dt.strftime("%y%m%d")
-#                 time_str = dt.strftime("%H%M")
-#             except ValueError:
-#                 date_str = start_date[-6:]
-#                 time_str = "0000"
-
-#             call = q.get("Call", "")
-#             sent_rst = q.get("Sent", "59")
-#             sent_nr = str(int(q.get("SentNr", "001"))).zfill(3)
-#             rcv_rst = q.get("Rcv", "59")
-#             rcv_nr = str(int(q.get("RcvNr", "001"))).zfill(3)
-#             grid = q.get("Exchange1", "")
-#             if grid and len(grid) >= 4:
-#                 dist = int(distance(my_grid, grid))
-#             else:
-#                 dist = 0
-
-#             line = f"{date_str};{time_str};{call};{band_code};{sent_rst};{sent_nr};{rcv_rst};{rcv_nr};;{grid};{dist};;;;"
-#             qso_lines.append(line)
-
-#         output_lines.extend(header)
-#         output_lines.extend(summary)
-#         output_lines.extend(qso_lines)
-
-#     with open(filename, "w", encoding="utf-8") as f:
-#         f.write("\n".join(output_lines))
-
-#     logger.info(f"EDI saved to {filename}")
-
-
-def recalculate_mults(self):
-    pass
-
-
-def cabrillo(self, filename, file_encoding): ...
+from not1mm.lib.plugin_common import gen_edi
+
+
+class Contest(ContestBase):
+    """TA VHF UHF Contest."""
+
+    DisplayName = "TA VHF UHF"
+    CabrilloName = "TA-VHF-UHF"
+    Mode = "BOTH"
+    EXCHANGE_HINT = "# + 6char grid"
+    DupeType = 3  # work each band/mode once
+    UsesESM = False  # the module never drove the ESM state machine
+    WritesEDI = True
+    Bands = (50, 144, 432)
+    DefaultContestExchange = "#"
+    # The received exchange is "# grid", so a space is part of it.
+    advance_on_space = [True, True, True, True, False]
+    LogInfo = [
+        "YYYY-MM-DD HH:MM:SS",
+        "Call",
+        "Freq",
+        "Snt",
+        "Rcv",
+        "SentNr",
+        "RcvNr",
+        "Exchange1",
+        "PTS",
+    ]
+    FrameText = ("SNT", "SNTNR", "RCV NR + GRID")
+    AccessibleNames = ("", "", "", "")
+
+    def interface(self):
+        """The reports are fixed at 59 and cannot be typed."""
+        super().interface()
+        parent = self.parent
+        parent.sent.setText("59")
+        parent.receive.setText("59")
+        parent.sent.setReadOnly(True)
+        parent.receive.setReadOnly(True)
+
+    def parse_exchange(self):
+        """Split the typed exchange into the serial and the 6-character grid."""
+        exchange = self.parent.other_2.text().upper().split()
+        sn = ""
+        grid = ""
+        for token in exchange:
+            if token.isdigit() and sn == "":
+                sn = token
+            elif len(token) == 6 and token.isalnum():
+                grid = token
+        return sn, grid
+
+    def set_contact_vars(self):
+        """The typed "# grid" is split, and the sent serial advances."""
+        parent = self.parent
+        sn, grid = self.parse_exchange()
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["NR"] = sn
+        parent.contact["Exchange1"] = grid
+        parent.contact["SentNr"] = parent.other_1.text()
+        try:
+            next_sn = int(parent.current_sn) + 1
+            parent.other_1.setText(str(next_sn).zfill(3))
+        except (TypeError, ValueError):
+            ...
+
+    def prefill(self):
+        """The sent exchange is the running serial, not the setup's text."""
+        parent = self.parent
+        serial_nr = str(parent.current_sn).zfill(3)
+        if serial_nr == "None":
+            serial_nr = "001"
+        if parent.other_1.text() == "":
+            parent.other_1.setText(serial_nr)
+
+    def points(self):
+        """The distance in kilometres times the band and mode multipliers.
+
+        Points are one per kilometre on 6m, two on 2m and three on 70cm, and
+        the mode multiplies that again: FM x1, SSB x2, CW x3.  The score is the
+        sum of the contacts.
+        """
+        parent = self.parent
+        if parent.contact_is_dupe > 0:
+            return 0
+
+        their_grid = parent.contact.get("Exchange1", "")
+        kilometers = distance(parent.station.get("GridSquare", ""), their_grid)
+
+        # The band column holds a float (144.0), so the lookup is on the
+        # number: comparing it to "144" as a string never matched.
+        band_mult = {
+            50.0: 1,
+            144.0: 2,
+            432.0: 3,
+        }.get(band_mhz_of(parent.contact.get("Band", 0)), 1)
+
+        # And the mode multiplier is FM x1, SSB x2, CW x3 (rule 6).
+        mode_mult = {"FM": 1, "SSB": 2, "CW": 3}.get(
+            str(parent.contact.get("Mode", "")).upper(), 1
+        )
+
+        return max(1, int(kilometers * band_mult * mode_mult))
+
+    def edi(self):
+        """Write the EDI log the sponsor wants."""
+        parent = self.parent
+        value = parent.contest_settings.get("StartDate", "")
+        start_date = f"{value[0:4]}{value[5:7]}{value[8:10]}"
+        gen_edi(
+            parent,
+            self.CabrilloName,
+            "TA 50_144_430 Contest",
+            start_date,
+            start_date,
+        )
