@@ -31,7 +31,7 @@
   },
   "expected": {
     "qsos": 5,
-    "mults": null,
+    "mults": 0,
     "score": 1434,
     "dupes": 1
   }
