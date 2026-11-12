@@ -10,14 +10,8 @@ Find rules at: https://hfcontest.ssa.se/ssa-mt/regler.html
 #   Score:      total QSO points * total multipliers
 #   QSO points: 2 per valid QSO
 
-import logging
-
-from PyQt6 import QtWidgets
-
-from not1mm.lib.plugin_common import gen_adif, get_points
+from not1mm.lib.contest import ContestBase, output_cabrillo_line
 from not1mm.lib.version import __version__
-
-logger = logging.getLogger(__name__)
 
 VALID_LOCATORS = {
     "JO57",
@@ -86,361 +80,6 @@ VALID_LOCATORS = {
     "KP26",
 }
 
-EXCHANGE_HINT = "# LocXXXX"
-
-name = "SSA MT CW"
-cabrillo_name = "SSA-MT-CW"
-mode = "CW"
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq (KHz)",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
-    "Exchange1",
-    "PTS",
-]
-
-advance_on_space = [True, True, True, True, True]
-
-# 1 once per contest, 2 once per band, 3 once per band/mode, 4 no dupe checking
-dupe_type = 2
-
-
-def init_contest(self):
-    """Setup plugin"""
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_2
-    self._exch_sent = False
-
-
-def interface(self):
-    """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
-    self.field3.show()
-    self.field4.show()
-    self.sent.setReadOnly(False)
-    self.snt_label.setText("Sent")
-    self.rcv_label.setText("Received")
-    self.field1.setAccessibleName("Signal Report Sent")
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Nr"))
-    self.field3.setAccessibleName("Received Serial Number")
-    self.exch_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "Locator")
-    )
-    self.field4.setAccessibleName("Received Locator")
-
-
-def reset_label(self):
-    """Reset label after field cleared"""
-
-
-def set_tab_next(self):
-    """Set TAB advance order"""
-    self.tab_next = {
-        self.callsign: self.sent,
-        self.sent: self.receive,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    """Set reverse TAB order"""
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.sent,
-        self.other_1: self.receive,
-        self.other_2: self.other_1,
-    }
-
-
-def set_contact_vars(self):
-    """Map UI fields to contact record"""
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.current_sn
-    self.contact["GridSquare"] = self.contest_settings.get("SentExchange", "")
-    self.contact["NR"] = self.other_1.text()
-    self.contact["Exchange1"] = self.other_2.text().upper()
-
-
-def predupe(self):
-    """Pre-fill locator from call history on each callsign keystroke"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        name = result.get("Name", "") or ""
-        loc = result.get("Loc1", "") or ""
-        info = ", ".join(x for x in [result.get("Call", ""), name, loc] if x)
-        self.history_info.setText(info)
-        self.other_2.setText(loc)
-    else:
-        self.other_2.setText("")
-        self.history_info.setText("")
-
-
-def prefill(self):
-    """Pre-fill sent RST"""
-    if len(self.sent.text()) == 0:
-        self.sent.setText("599")
-
-
-def points(self):
-    """Return QSO point value"""
-    if self.contact_is_dupe > 0:
-        return 0
-    return 2
-
-
-def show_mults(self):
-    """Return multiplier count: distinct 4-char locator prefixes per band"""
-    sql = (
-        "select count(DISTINCT(SUBSTR(Exchange1, 1, 4) || ':' || Band)) as mult_count "
-        f"from dxlog where ContestNR = {self.database.current_contest} "
-        "and typeof(Exchange1) = 'text' "
-        "and LENGTH(Exchange1) >= 4;"
-    )
-    result = self.database.exec_sql(sql)
-    if result:
-        return int(result.get("mult_count", 0))
-    return 0
-
-
-def show_qso(self):
-    """Return QSO count"""
-    result = self.database.fetch_qso_count()
-    if result:
-        return int(result.get("qsos", 0))
-    return 0
-
-
-def calc_score(self):
-    """Return calculated score"""
-    _points = get_points(self)
-    _mults = show_mults(self)
-    return _points * _mults
-
-
-def adif(self):
-    """Generate ADIF export"""
-    gen_adif(self, cabrillo_name)
-
-
-def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """Write one encoded line to the Cabrillo file"""
-    print(
-        line_to_output.encode(file_encoding, errors="ignore").decode(),
-        end=ending,
-        file=file_descriptor,
-    )
-
-
-def cabrillo(self, filename, file_encoding):
-    """Generate Cabrillo log file"""
-    logger.debug("******Cabrillo*****")
-    logger.debug("Station: %s", f"{self.station}")
-    logger.debug("Contest: %s", f"{self.contest_settings}")
-    logger.debug("%s", filename)
-    log = self.database.fetch_all_contacts_asc()
-    try:
-        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
-            output_cabrillo_line(
-                "START-OF-LOG: 3.0", "\r\n", file_descriptor, file_encoding
-            )
-            output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CONTEST: {cabrillo_name}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.station.get("Club", ""):
-                output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-MODE: {self.contest_settings.get('ModeCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CLAIMED-SCORE: {calc_score(self)}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            ops = ""
-            list_of_ops = self.database.get_ops()
-            for op in list_of_ops:
-                ops += f"{op.get('Operator', '')}, "
-            if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call', '')}"
-            else:
-                ops = ops.rstrip(", ")
-            output_cabrillo_line(
-                f"OPERATORS: {ops}", "\r\n", file_descriptor, file_encoding
-            )
-            output_cabrillo_line(
-                f"NAME: {self.station.get('Name', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Street1', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('City', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Zip', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Country', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Email', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            for contact in log:
-                the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode in ("LSB", "USB", "AM"):
-                    themode = "PH"
-                if themode in (
-                    "FT8",
-                    "FT4",
-                    "RTTY",
-                    "PSK31",
-                    "FSK441",
-                    "MSK144",
-                    "JT65",
-                    "JT9",
-                    "Q65",
-                ):
-                    themode = "DG"
-                frequency = str(round(contact.get("Freq", 0))).rjust(5)
-                loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                sent_nr = str(contact.get("SentNr", "0")).zfill(3)
-                rcv_nr = str(contact.get("NR", "0")).zfill(3)
-                sent_loc = contact.get("GridSquare", "")
-                rcv_loc = contact.get("Exchange1", "")
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{sent_nr} "
-                    f"{sent_loc.ljust(6)} "
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{rcv_nr} "
-                    f"{rcv_loc}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
-        self.show_message_box(f"Cabrillo saved to: {filename}")
-    except OSError as exception:
-        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
-        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
-        return
-
-
-def recalculate_mults(self):
-    """Walk all contacts and flag the first occurrence of each locator-prefix+Band as a mult"""
-    all_contacts = self.database.fetch_all_contacts_asc()
-    seen = set()
-    for contact in all_contacts:
-        exch = contact.get("Exchange1", "")
-        band = contact.get("Band", "")
-        if len(exch) >= 4:
-            key = f"{exch[:4].upper()}:{band}"
-            if key not in seen:
-                seen.add(key)
-                contact["IsMultiplier1"] = 1
-            else:
-                contact["IsMultiplier1"] = 0
-        else:
-            contact["IsMultiplier1"] = 0
-        self.database.change_contact(contact)
-
 
 def _validate_field(widget, valid):
     """Color widget red if invalid, reset otherwise"""
@@ -477,205 +116,360 @@ def _check_locator(value):
     return prefix in VALID_LOCATORS and suffix.isalpha()
 
 
-def process_esm(self, new_focused_widget=None, with_enter=False):
-    """ESM State Machine"""
+class Contest(ContestBase):
+    """SSA Manadstest, CW."""
 
-    # self.pref["run_state"]
+    DisplayName = "SSA MT CW"
+    CabrilloName = "SSA-MT-CW"
+    Mode = "CW"
+    EXCHANGE_HINT = "# LocXXXX"
+    DupeType = 2  # once per band
+    PointsPerContact = 2
+    LogInfo = [
+        "YYYY-MM-DD HH:MM:SS",
+        "Call",
+        "Freq (KHz)",
+        "Snt",
+        "Rcv",
+        "SentNr",
+        "RcvNr",
+        "Exchange1",
+        "PTS",
+    ]
+    FrameText = ("Sent", "Nr", "Locator")
+    RcvLabel = "Received"
+    AccessibleNames = (
+        "Signal Report Sent",
+        "",
+        "Received Serial Number",
+        "Received Locator",
+    )
+    # Each contacted locator square -- the first four characters of the
+    # exchange -- once per band.
+    NumMults = 1
+    Multiplier1Name = "Exchange"
+    MultSqlString = "Exchange"
+    IsMult1Per = 1
 
-    # -----===== Assigned F-Keys =====-----
-    # self.esm_dict["CQ"]
-    # self.esm_dict["EXCH"]
-    # self.esm_dict["QRZ"]
-    # self.esm_dict["AGN"]
-    # self.esm_dict["HISCALL"]
-    # self.esm_dict["MYCALL"]
-    # self.esm_dict["QSOB4"]
+    # Whether the running exchange has already been sent in this contact; the
+    # search-and-pounce half of the ESM machine needs it.
+    _exch_sent = False
 
-    # ----==== text fields ====----
-    # self.callsign
-    # self.sent
-    # self.receive
-    # self.other_1
-    # self.other_2
-
-    if new_focused_widget is not None:
-        self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    if self.current_widget == "callsign":
+    def init_contest(self):
+        """Setup plugin"""
         self._exch_sent = False
+        super().init_contest()
 
-    _validate_field(self.sent, not self.sent.text() or _check_rst(self.sent.text()))
-    _validate_field(
-        self.receive, not self.receive.text() or _check_rst(self.receive.text())
-    )
-    _validate_field(
-        self.other_1, not self.other_1.text() or _check_nr(self.other_1.text())
-    )
-    _validate_field(
-        self.other_2, not self.other_2.text() or _check_locator(self.other_2.text())
-    )
+    def interface(self):
+        """Setup user interface"""
+        super().interface()
+        self.parent.sent.setReadOnly(False)
 
-    for a_button in [
-        self.F1,
-        self.F2,
-        self.F3,
-        self.F4,
-        self.F5,
-        self.F6,
-        self.F7,
-        self.F8,
-        self.F9,
-        self.F10,
-        self.F11,
-        self.F12,
-    ]:
-        self.restore_button_color(a_button)
+    def set_contact_vars(self):
+        """Map UI fields to contact record"""
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SentNr"] = parent.current_sn
+        parent.contact["GridSquare"] = parent.contest_settings.get("SentExchange", "")
+        parent.contact["NR"] = parent.other_1.text()
+        parent.contact["Exchange1"] = parent.other_2.text().upper()
 
-    buttons_to_send = []
+    def predupe(self):
+        """Pre-fill locator from call history on each callsign keystroke"""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            name = result.get("Name", "") or ""
+            loc = result.get("Loc1", "") or ""
+            info = ", ".join(x for x in [result.get("Call", ""), name, loc] if x)
+            parent.history_info.setText(info)
+            parent.other_2.setText(loc)
+        else:
+            parent.other_2.setText("")
+            parent.history_info.setText("")
 
-    if self.pref.get("run_state"):
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) < 3:
-                self.make_button_green(self.esm_dict["CQ"])
-                buttons_to_send.append(self.esm_dict["CQ"])
-                self.esm_call_sent = ""
-            elif self.contact_is_dupe:
-                self.make_button_green(self.esm_dict["QSOB4"])
-                buttons_to_send.append(self.esm_dict["QSOB4"])
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
+    def prefill(self):
+        """Pre-fill sent RST"""
+        if len(self.parent.sent.text()) == 0:
+            self.parent.sent.setText("599")
 
-        elif self.current_widget == "other_1":
-            if self.other_1.text() == "":
-                self.make_button_green(self.F11)
-                buttons_to_send.append(self.F11)
-            else:
-                if with_enter is True:
-                    self.other_2.setFocus()
+    def mult_sql(self, slot):
+        """The locator square is the first four characters of the exchange."""
+        if slot == 1:
+            return (
+                "CASE WHEN typeof(Exchange1) = 'text' "
+                "AND LENGTH(Exchange1) >= 4 "
+                "THEN SUBSTR(Exchange1, 1, 4) END"
+            )
+        return super().mult_sql(slot)
+
+    def mult_value(self, slot, contact):
+        """The same key in Python, for the log and the replay."""
+        if slot != 1:
+            return super().mult_value(slot, contact)
+        exchange = str(contact.get("Exchange1", "") or "")
+        return exchange[:4].upper() if len(exchange) >= 4 else None
+
+    def get_mults(self):
+        """Return mult dict for RTC XML"""
+        return {"locator": self.show_mults()}
+
+    def cabrillo_mode(self, mode):
+        """The sponsor's mode codes: every digital mode is DG, AM is phone."""
+        if mode in ("LSB", "USB", "AM"):
+            return "PH"
+        if mode in (
+            "FT8",
+            "FT4",
+            "RTTY",
+            "PSK31",
+            "FSK441",
+            "MSK144",
+            "JT65",
+            "JT9",
+            "Q65",
+        ):
+            return "DG"
+        return super().cabrillo_mode(mode)
+
+    def cabrillo_qso_line(self, contact):
+        """The SSA line: report, a three-digit serial and two locators."""
+        the_date_and_time = contact.get("TS", "")
+        loggeddate = the_date_and_time[:10]
+        loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+        frequency = str(round(contact.get("Freq", 0))).rjust(5)
+        return (
+            f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
+            f"{loggeddate} {loggedtime} "
+            f"{contact.get('StationPrefix', '').ljust(13)} "
+            f"{str(contact.get('SNT', '')).ljust(3)} "
+            f"{str(contact.get('SentNr', '0')).zfill(3)} "
+            f"{contact.get('GridSquare', '').ljust(6)} "
+            f"{contact.get('Call', '').ljust(13)} "
+            f"{str(contact.get('RCV', '')).ljust(3)} "
+            f"{str(contact.get('NR', '0')).zfill(3)} "
+            f"{contact.get('Exchange1', '')}"
+        )
+
+    def _cabrillo_header(self, file_descriptor, file_encoding):
+        """The SSA header: no LOCATION, and one ADDRESS line per address line."""
+        parent = self.parent
+        station = parent.station
+        settings = parent.contest_settings
+
+        def line(text):
+            output_cabrillo_line(text, "\r\n", file_descriptor, file_encoding)
+
+        line("START-OF-LOG: 3.0")
+        line(f"CREATED-BY: Not1MM v{__version__}")
+        line(f"CONTEST: {self.CabrilloName}")
+        if station.get("Club", ""):
+            line(f"CLUB: {station.get('Club', '').upper()}")
+        line(f"CALLSIGN: {station.get('Call', '')}")
+        line(f"CATEGORY-OPERATOR: {settings.get('OperatorCategory', '')}")
+        line(f"CATEGORY-ASSISTED: {settings.get('AssistedCategory', '')}")
+        line(f"CATEGORY-BAND: {settings.get('BandCategory', '')}")
+        line(f"CATEGORY-MODE: {settings.get('ModeCategory', '')}")
+        if settings.get("OverlayCategory", "") != "N/A":
+            line(f"CATEGORY-OVERLAY: {settings.get('OverlayCategory', '')}")
+        line(f"GRID-LOCATOR: {station.get('GridSquare', '')}")
+        line(f"CATEGORY-POWER: {settings.get('PowerCategory', '')}")
+        line(f"CLAIMED-SCORE: {self.calc_score()}")
+        ops = ""
+        for op in parent.database.get_ops():
+            ops += f"{op.get('Operator', '')}, "
+        if station.get("Call", "") not in ops:
+            ops += f"@{station.get('Call', '')}"
+        else:
+            ops = ops.rstrip(", ")
+        line(f"OPERATORS: {ops}")
+        line(f"NAME: {station.get('Name', '')}")
+        line(f"ADDRESS: {station.get('Street1', '')}")
+        line(f"ADDRESS: {station.get('City', '')}")
+        line(f"ADDRESS: {station.get('Zip', '')}")
+        line(f"ADDRESS: {station.get('Country', '')}")
+        line(f"ADDRESS: {station.get('Email', '')}")
+
+    def process_esm(self, new_focused_widget=None, with_enter=False):
+        """ESM State Machine"""
+        parent = self.parent
+        if new_focused_widget is not None:
+            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+
+        if parent.current_widget == "callsign":
+            self._exch_sent = False
+
+        _validate_field(
+            parent.sent, not parent.sent.text() or _check_rst(parent.sent.text())
+        )
+        _validate_field(
+            parent.receive,
+            not parent.receive.text() or _check_rst(parent.receive.text()),
+        )
+        _validate_field(
+            parent.other_1,
+            not parent.other_1.text() or _check_nr(parent.other_1.text()),
+        )
+        _validate_field(
+            parent.other_2,
+            not parent.other_2.text() or _check_locator(parent.other_2.text()),
+        )
+
+        for a_button in [
+            parent.F1,
+            parent.F2,
+            parent.F3,
+            parent.F4,
+            parent.F5,
+            parent.F6,
+            parent.F7,
+            parent.F8,
+            parent.F9,
+            parent.F10,
+            parent.F11,
+            parent.F12,
+        ]:
+            parent.restore_button_color(a_button)
+
+        buttons_to_send = []
+
+        if parent.pref.get("run_state"):
+            if parent.current_widget == "callsign":
+                if len(parent.callsign.text()) < 3:
+                    parent.make_button_green(parent.esm_dict["CQ"])
+                    buttons_to_send.append(parent.esm_dict["CQ"])
+                    parent.esm_call_sent = ""
+                elif parent.contact_is_dupe:
+                    parent.make_button_green(parent.esm_dict["QSOB4"])
+                    buttons_to_send.append(parent.esm_dict["QSOB4"])
+                elif len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["HISCALL"])
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["HISCALL"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+
+            elif parent.current_widget == "other_1":
+                if parent.other_1.text() == "":
+                    parent.make_button_green(parent.F11)
+                    buttons_to_send.append(parent.F11)
+                else:
+                    if with_enter is True:
+                        parent.other_2.setFocus()
+                        return
+
+            elif parent.current_widget == "other_2":
+                if parent.other_2.text() == "":
+                    parent.make_button_green(parent.F12)
+                    buttons_to_send.append(parent.F12)
+                else:
+                    # If the operator corrected a busted callsign after the
+                    # exchange was already sent, resend the corrected call
+                    # ahead of the QRZ/TU macro so the other station logs the
+                    # right callsign before the QSO is wiped.
+                    if (
+                        parent.pref.get("esm_send_corrected_call")
+                        and parent.esm_call_sent
+                        and parent.callsign.text() != parent.esm_call_sent
+                    ):
+                        parent.make_button_green(parent.esm_dict["HISCALL"])
+                        buttons_to_send.append(parent.esm_dict["HISCALL"])
+                    parent.make_button_green(parent.esm_dict["QRZ"])
+                    buttons_to_send.append(parent.esm_dict["QRZ"])
+                    buttons_to_send.append("LOGIT")
+
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            if (
+                                not _check_rst(parent.sent.text())
+                                or not _check_rst(parent.receive.text())
+                                or not _check_nr(parent.other_1.text())
+                                or not _check_locator(parent.other_2.text())
+                            ):
+                                return
+                            parent.save_contact()
+                            parent.esm_call_sent = ""
+                            continue
+                        if button == parent.esm_dict.get("HISCALL"):
+                            parent.esm_call_sent = parent.callsign.text()
+                        parent.process_function_key(button)
+                if parent.contact_is_dupe:
                     return
-
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.F12)
-                buttons_to_send.append(self.F12)
-            else:
-                # If the operator corrected a busted callsign after the
-                # exchange was already sent, resend the corrected call
-                # ahead of the QRZ/TU macro so the other station logs the
-                # right callsign before the QSO is wiped.
                 if (
-                    self.pref.get("esm_send_corrected_call")
-                    and self.esm_call_sent
-                    and self.callsign.text() != self.esm_call_sent
+                    parent.current_widget == "callsign"
+                    and len(parent.callsign.text()) > 2
                 ):
-                    self.make_button_green(self.esm_dict["HISCALL"])
-                    buttons_to_send.append(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
+                    parent.other_1.setFocus()
+        else:
+            if parent.current_widget == "callsign":
+                if parent.contact_is_dupe:
+                    parent.make_button_green(parent.esm_dict["QSOB4"])
+                    buttons_to_send.append(parent.esm_dict["QSOB4"])
+                elif len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["MYCALL"])
+                    buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        if (
-                            not _check_rst(self.sent.text())
-                            or not _check_rst(self.receive.text())
-                            or not _check_nr(self.other_1.text())
-                            or not _check_locator(self.other_2.text())
-                        ):
-                            return
-                        self.save_contact()
-                        self.esm_call_sent = ""
-                        continue
-                    if button == self.esm_dict.get("HISCALL"):
-                        self.esm_call_sent = self.callsign.text()
-                    self.process_function_key(button)
-            if self.contact_is_dupe:
-                return
-            if self.current_widget == "callsign" and len(self.callsign.text()) > 2:
-                self.other_1.setFocus()
-    else:
-        if self.current_widget == "callsign":
-            if self.contact_is_dupe:
-                self.make_button_green(self.esm_dict["QSOB4"])
-                buttons_to_send.append(self.esm_dict["QSOB4"])
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["MYCALL"])
-                buttons_to_send.append(self.esm_dict["MYCALL"])
+            elif parent.current_widget == "other_1":
+                if parent.other_1.text() == "":
+                    parent.make_button_green(parent.F11)
+                    buttons_to_send.append(parent.F11)
+                else:
+                    if with_enter is True:
+                        parent.other_2.setFocus()
+                        return
 
-        elif self.current_widget == "other_1":
-            if self.other_1.text() == "":
-                self.make_button_green(self.F11)
-                buttons_to_send.append(self.F11)
-            else:
-                if with_enter is True:
-                    self.other_2.setFocus()
-                    return
+            elif parent.current_widget == "other_2":
+                if parent.other_2.text() == "":
+                    parent.make_button_green(parent.F12)
+                    buttons_to_send.append(parent.F12)
+                elif not self._exch_sent:
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+                    if with_enter is True:
+                        self._exch_sent = True
+                else:
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append("LOGIT")
 
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.F12)
-                buttons_to_send.append(self.F12)
-            elif not self._exch_sent:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-                if with_enter is True:
-                    self._exch_sent = True
-            else:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append("LOGIT")
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            if (
+                                not _check_rst(parent.sent.text())
+                                or not _check_rst(parent.receive.text())
+                                or not _check_nr(parent.other_1.text())
+                                or not _check_locator(parent.other_2.text())
+                            ):
+                                return
+                            parent.save_contact()
+                            continue
+                        parent.process_function_key(button)
+                if parent.current_widget == "callsign":
+                    parent.other_1.setFocus()
 
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        if (
-                            not _check_rst(self.sent.text())
-                            or not _check_rst(self.receive.text())
-                            or not _check_nr(self.other_1.text())
-                            or not _check_locator(self.other_2.text())
-                        ):
-                            return
-                        self.save_contact()
-                        continue
-                    self.process_function_key(button)
-            if self.current_widget == "callsign":
-                self.other_1.setFocus()
+    def populate_history_info_line(self):
+        """Fill history info label from call history"""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            name = result.get("Name", "") or ""
+            loc = result.get("Loc1", "") or ""
+            usertext = result.get("UserText", "") or ""
+            info = ", ".join(
+                x for x in [result.get("Call", ""), name, loc, usertext] if x
+            )
+            parent.history_info.setText(info)
+        else:
+            parent.history_info.setText("")
 
-
-def populate_history_info_line(self):
-    """Fill history info label from call history"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        name = result.get("Name", "") or ""
-        loc = result.get("Loc1", "") or ""
-        usertext = result.get("UserText", "") or ""
-        info = ", ".join(x for x in [result.get("Call", ""), name, loc, usertext] if x)
-        self.history_info.setText(info)
-    else:
-        self.history_info.setText("")
-
-
-def check_call_history(self):
-    """Pre-fill locator from call history if available"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText', '')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Loc1', '')}")
-
-
-def get_mults(self):
-    """Return mult dict for RTC XML"""
-    mults = {}
-    mults["locator"] = show_mults(self)
-    return mults
-
-
-def just_points(self):
-    """Return raw points for RTC XML"""
-    return get_points(self)
+    def check_call_history(self):
+        """Pre-fill locator from call history if available"""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(f"{result.get('UserText', '')}")
+            if parent.other_2.text() == "":
+                parent.other_2.setText(f"{result.get('Loc1', '')}")
