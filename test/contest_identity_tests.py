@@ -33,7 +33,7 @@ def test_a_contest_can_override_its_id():
     # interchangeable, so they name themselves.
     rst = contest.contest_metadata("qso_party_rst")
     sn = contest.contest_metadata("qso_party_sn")
-    assert rst.cabrillo_name == sn.cabrillo_name == "QSO_PARTY"
+    assert rst.CabrilloName == sn.CabrilloName == "QSO_PARTY"
     assert contest.contest_id(rst) == "qso_party_rst"
     assert contest.contest_id(sn) == "qso_party_sn"
 

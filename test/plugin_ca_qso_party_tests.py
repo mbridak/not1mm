@@ -1,5 +1,7 @@
 import pytest
+from not1mm.lib.contest import load_contest
 from not1mm.plugins import ca_qso_party
+from not1mm.plugins.ca_qso_party import Contest
 from types import SimpleNamespace
 
 
@@ -103,11 +105,11 @@ def test_points_for_qso(mode, is_dupe, expected):
 
 
 def test_cabrillo_name():
-    assert ca_qso_party.cabrillo_name == "CA-QSO-PARTY"
+    assert Contest.CabrilloName == "CA-QSO-PARTY"
 
 
 def test_dupe_type():
-    assert ca_qso_party.dupe_type == 3
+    assert Contest.DupeType == 3
 
 
 # Rule: a California station works everyone and counts the states and
@@ -138,7 +140,8 @@ def _ctx(state, exchange, dupe=0):
     ],
 )
 def test_multiplier_key(state, exchange, expected):
-    assert ca_qso_party.multiplier_key(_ctx(state, exchange), exchange) == expected
+    contest = load_contest("ca_qso_party", _ctx(state, exchange))
+    assert contest.multiplier_key(exchange) == expected
 
 
 @pytest.mark.parametrize(
@@ -153,8 +156,8 @@ def test_multiplier_key(state, exchange, expected):
     ],
 )
 def test_points(state, exchange, expected):
-    assert ca_qso_party.points(_ctx(state, exchange)) == expected
+    assert load_contest("ca_qso_party", _ctx(state, exchange)).points() == expected
 
 
 def test_a_duplicate_scores_nothing():
-    assert ca_qso_party.points(_ctx("CA", "SCLA", dupe=1)) == 0
+    assert load_contest("ca_qso_party", _ctx("CA", "SCLA", dupe=1)).points() == 0

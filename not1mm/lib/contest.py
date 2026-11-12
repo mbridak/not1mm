@@ -269,8 +269,10 @@ class ContestBase:
     # Which of the four entry fields this contest uses ...
     EntryFields = ENTRY_WIDGETS
     # ... and what they are called.  FrameText is (sent, other, exchange);
-    # an empty string leaves that label alone.
+    # an empty string leaves that label alone.  The received-RST label is the
+    # odd one out -- most contests leave it "RCV" -- so it has its own knob.
     FrameText = ("SNT", "SentNR", "RcvNR")
+    RcvLabel = ""
     # Screen-reader names, one per entry field; an empty string is skipped.
     AccessibleNames = ("RST Sent", "", "Sent Number", "Received Number")
     # The order TAB walks the entry fields in, or None for "the fields this
@@ -296,10 +298,18 @@ class ContestBase:
     # -- log window ---------------------------------------------------------
     LogInfo = list(LOG_INFO)
 
+    # -- ESM ----------------------------------------------------------------
+    # Which entry field carries the received exchange, and so which field
+    # finishes the contact.  The base expects the second extra field; a
+    # contest whose exchange is the first one (and leaves other_2 hidden)
+    # sets "other_1".
+    ESMExchangeField = "other_2"
+
     # -- capabilities (the old hasattr() probes) ---------------------------
     UsesESM = True  # process_esm() drives the ESM state machine
     SupportsFT8 = False  # ft8_handler() accepts WSJT-X/FlDigi packets
     WritesEDI = False  # edi() writes a VHF/UHF EDI file
+    WritesGridLocator = True  # the Cabrillo header has a GRID-LOCATOR line
     SendsRTCScore = False  # online_score_xml() feeds the real-time score page
 
     # -- scoring (UDC [Contest] names) --------------------------------------
@@ -383,6 +393,10 @@ class ContestBase:
                 getattr(parent, label).setText(
                     QtWidgets.QApplication.translate("ContestPlugin", text)
                 )
+        if self.RcvLabel:
+            parent.rcv_label.setText(
+                QtWidgets.QApplication.translate("ContestPlugin", self.RcvLabel)
+            )
         # The accessible name goes on the line edit, not on the frame: the
         # frame is only the show/hide container, and the line edit is the
         # widget that takes focus, so it is the one a screen reader names.
@@ -743,12 +757,13 @@ class ContestBase:
             with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
                 self._cabrillo_header(file_descriptor, file_encoding)
                 for contact in log:
-                    output_cabrillo_line(
-                        self.cabrillo_qso_line(contact),
-                        "\r\n",
-                        file_descriptor,
-                        file_encoding,
-                    )
+                    for qso_line in self.cabrillo_qso_lines(contact):
+                        output_cabrillo_line(
+                            qso_line,
+                            "\r\n",
+                            file_descriptor,
+                            file_encoding,
+                        )
                 output_cabrillo_line(
                     "END-OF-LOG:", "\r\n", file_descriptor, file_encoding
                 )
@@ -789,7 +804,8 @@ class ContestBase:
         line(f"CATEGORY-TRANSMITTER: {settings.get('TransmitterCategory', '')}")
         if settings.get("OverlayCategory", "") != "N/A":
             line(f"CATEGORY-OVERLAY: {settings.get('OverlayCategory', '')}")
-        line(f"GRID-LOCATOR: {station.get('GridSquare', '')}")
+        if self.WritesGridLocator:
+            line(f"GRID-LOCATOR: {station.get('GridSquare', '')}")
         line(f"CATEGORY-POWER: {settings.get('PowerCategory', '')}")
         line(f"CLAIMED-SCORE: {self.calc_score()}")
         ops = ""
@@ -834,6 +850,15 @@ class ContestBase:
         if mode in ("PSK125", "BPSK125"):
             return "PO"
         return mode
+
+    def cabrillo_qso_lines(self, contact):
+        """The ``QSO:`` lines for one contact.
+
+        Almost every contest writes one line per contact.  A contest that
+        expands a county line -- "ORAN/SBER" -- into one line per county pair
+        returns several, so the writer asks for the lines rather than the line.
+        """
+        return [self.cabrillo_qso_line(contact)]
 
     def cabrillo_qso_line(self, contact):
         """One ``QSO:`` line of the Cabrillo file.
@@ -889,6 +914,7 @@ class ContestBase:
         ):
             parent.restore_button_color(a_button)
 
+        exchange = getattr(parent, self.ESMExchangeField)
         buttons_to_send = []
         if parent.pref.get("run_state"):
             if parent.current_widget == "callsign":
@@ -902,8 +928,8 @@ class ContestBase:
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif parent.current_widget == self.ESMExchangeField:
+                if exchange.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -932,8 +958,8 @@ class ContestBase:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif parent.current_widget == self.ESMExchangeField:
+                if exchange.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
