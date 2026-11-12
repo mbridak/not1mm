@@ -129,9 +129,7 @@ def pin_versions(monkeypatch, pin: str = VERSION_PIN) -> None:
 
     ``__version__`` is bound into each plugin module at import time by
     ``from not1mm.lib.version import __version__``, so patching the source
-    module is not enough.  Some plugins re-export another plugin's functions
-    with ``import *`` (``na_sprint_rtty``), and those functions read their
-    *defining* module's global, so patch every plugin module.
+    module is not enough: every plugin module gets its own copy.
     """
     for name, module in list(sys.modules.items()):
         if not (name == "not1mm.lib.version" or name.startswith("not1mm.plugins.")):

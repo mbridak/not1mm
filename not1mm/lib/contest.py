@@ -832,9 +832,7 @@ class ContestBase:
         if station.get("Club", ""):
             line(f"CLUB: {station.get('Club', '').upper()}")
         line(f"CALLSIGN: {station.get('Call', '')}")
-        line(
-            f"LOCATION: {station.get('ARRLSection', '') or self.LocationFallback}"
-        )
+        line(f"LOCATION: {self.cabrillo_location()}")
         line(f"CATEGORY-OPERATOR: {settings.get('OperatorCategory', '')}")
         line(f"CATEGORY-ASSISTED: {settings.get('AssistedCategory', '')}")
         line(f"CATEGORY-BAND: {settings.get('BandCategory', '')}")
@@ -871,6 +869,15 @@ class ContestBase:
         contest's identity either way.
         """
         return self.CabrilloName
+
+    def cabrillo_location(self) -> str:
+        """The ``LOCATION:`` value: the station's ARRL section, or the fallback.
+
+        A contest that derives it from something else overrides: the NA Sprint
+        sends its location as part of the exchange, so the location it sent is
+        what the header carries.
+        """
+        return self.parent.station.get("ARRLSection", "") or self.LocationFallback
 
     def cabrillo_category_mode(self) -> str:
         """The ``CATEGORY-MODE`` value, from the contest setup.
