@@ -67,9 +67,63 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
-- [2026-11-09] Merge pull request #740 from microphonon/ss_bandmap
+- [2026-11-13] Merge pull request #743 from df7cb/contest-refactor
+  - Run black on all files touched
+  - Drop the adapter for unconverted contest modules
+  - Convert the general-logging modes to the contest base class
+  - Convert the UKEI, WIA Remembrance and Winter Field Day contests to the contest base class
+  - Convert the Trans-Tasman contest to the contest base class
+  - Convert the grid-exchange contests to the contest base class
+  - Convert the RSGB contests to the contest base class
+- [2026-11-12] Convert the weekly tests to the contest base class
+  - Convert the John Moyle Field Day contest to the contest base class
+  - Convert the VHF/UHF contests to the contest base class
+  - Convert the REF pair to the contest base class
+  - SSA MT: convert the Manadstest pair to classes
+  - SAC: convert the Scandinavian Activity Contest pair to classes
+  - JIDX: convert the CW and phone contests to classes
+  - IARU: convert the Region 1 Field Day pair and IARU HF to classes
+  - RDXC: convert the Russian DX Contest to a class
+  - RDA: convert the Russian District Award contest to a class
+  - RAEM: convert the Ernst Krenkel Memorial contest to a class
+  - PACC: convert the Dutch PACC contest to a class
+  - NA Sprint: convert the Sprint pair to classes
+  - NAQP: convert the three North American QSO Party contests to classes
+  - Oceania: convert the two Oceania DX contests to classes
+  - EU: convert six assorted European contests to classes
+  - ES: convert the four Estonian contests to classes
+  - EA: convert the three URE contests to classes
+  - DARC: convert the three plugins to classes
+  - CWops sprints: convert the five plugins to classes
+  - CQ WW VHF: convert the plugin to a class
+  - CQ WW: convert the CW, SSB and RTTY plugins to classes
+  - CQ 160: convert the two plugins to classes
+  - RAC Canada Day: convert the plugin to a class
+  - QSO parties: convert the three plugins to classes
+  - ARRL Field Day: convert the plugin to a class
+  - ARRL single-band: convert the three plugins to classes
+  - ARRL VHF: convert the three plugins to classes
+  - ARRL SS: convert the two plugins to classes
+  - ARRL DX: convert the two plugins to classes
+  - contest: write the Cabrillo name as the ADIF CONTEST_ID
+- [2026-11-11] contest: make the entry window's TAB order and space handling declarative
+  - ARI: convert the 40/80 and DX plugins to classes
+  - AGCW QRP: convert the plugin to a class
+  - AADX: convert the two All Asia DX plugins to classes
+  - 10-10: convert the four sprints to classes
+  - contest: declare the sent exchange and expand it through process_macro
+  - contest: answer questions about a call (contact_info)
+  - contest: declare the multipliers and answer the dupe/mult questions
+  - tests: pin versions after the plugin module is imported
+- [2026-11-10] contest: identify a contest by its Cabrillo name
+  - contest: use the Cabrillo names the sponsors actually expect
+- [2026-11-09] contest plugins: share a ContestBase class and convert CQ WPX
+  - Merge pull request #740 from microphonon/ss_bandmap
   - Merge pull request #723 from DJLax5/issue-445-export-dialog
+  - fix main
   - Merge branch 'master' into issue-445-export-dialog
+  - bandmap for SS
+  - Delete .github/workflows/python-package.yml
   - @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
   - @mbridak disable socket draining in rigctld_command Fixes #738
 - [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
