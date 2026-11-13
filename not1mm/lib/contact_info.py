@@ -186,10 +186,8 @@ def current_band_mode(parent, band=None, mode=None):
 def build(parent, contest, call, band=None, mode=None, contact=None) -> ContactInfo:
     """Assemble a :class:`ContactInfo` for *call*.
 
-    *contest* supplies the recall, the dupe answer and the multipliers, so this
-    serves both a converted contest and the ``_LegacyContest`` adapter (which
-    has no declared multipliers).  With no contest at all there is still the
-    country and the bearing.
+    *contest* supplies the recall, the dupe answer and the multipliers.  With
+    no contest at all there is still the country and the bearing.
     """
     if contest is None:
         fields = contact if contact is not None else recall(parent, call)

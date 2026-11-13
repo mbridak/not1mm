@@ -1,8 +1,7 @@
 """Shared harness for running contest plugins headlessly against a test log.
 
-A contest plugin is a module, either a class (as they are converted) or the
-module of functions it used to be, and it reaches the not1mm main window through
-``self.parent`` (new) or as its ``self`` argument (old).  ``ContestHarness``
+A contest plugin is a class, and it reaches the not1mm main window through
+``self.parent``.  ``ContestHarness``
 stands in for that main window: it owns a real on-disk
 :class:`~not1mm.lib.database.DataBase`, a real cty.dat lookup, and stubs for the
 handful of widgets ``imp_adif`` / ``cabrillo`` / ``edi`` touch.  With
@@ -264,8 +263,6 @@ class ContestHarness:
         self.progress_dialog = None
         self._ready = True
 
-        # A converted plugin is a class and an unconverted one is still a
-        # module; load_contest() hides the difference.
         self.contest = load_contest(contest_name, self)
 
         # The plugin's module exists from here on, so pin the versions an

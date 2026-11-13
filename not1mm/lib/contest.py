@@ -41,7 +41,6 @@ and reaches the window through ``self.parent``.
 from __future__ import annotations
 
 import datetime
-import functools
 import importlib
 import logging
 import re
@@ -227,7 +226,7 @@ def contest_id(contest) -> str | None:
     or that has no meaningful one -- sets ``ContestName`` and is identified by
     that instead.  (N1MM's UDC files call this field ``Name``.)
 
-    Works on anything carrying the metadata: an instance, a class or a module.
+    Works on anything carrying the metadata: an instance or a class.
     """
     for attribute in ("ContestName", "CabrilloName", "cabrillo_name"):
         value = getattr(contest, attribute, None)
@@ -277,9 +276,7 @@ class ContestBase:
     DupeType = 2  # 1 contest, 2 band, 3 band+mode, 4 none, 5 plugin decides
     # ADIF's CONTEST_ID, where it is not the Cabrillo name.  ADIF wants the
     # sponsor's contest id, which is the Cabrillo name for every contest we
-    # have, so no converted plugin sets this; the differing literals the
-    # unconverted modules still pass are wrong and are retired as each is
-    # converted.
+    # have, so no plugin sets this.
     ADIFContestID = None
 
     # -- entry window -------------------------------------------------------
@@ -1053,79 +1050,6 @@ class ContestBase:
             buttons_to_send.append(parent.esm_dict["HISCALL"])
 
 
-class _LegacyContest:
-    """Adapts an unconverted plugin *module* to the class-style API.
-
-    The plugins that have not been converted yet are still modules of
-    functions whose first argument is the main window.  Everything here exists
-    so the application can treat every contest the same way while the plugins
-    are converted one family at a time; it goes away with the last module.
-
-    The capability flags are computed from the module, so the application
-    never has to know which kind of contest it is holding.
-    """
-
-    def __init__(self, module, parent):
-        self._module = module
-        self.parent = parent
-
-    def is_dupe(self, call: str, band, mode: str) -> bool:
-        """Dupe question for an unconverted module (see :meth:`ContestBase.is_dupe`)."""
-        specific = getattr(self._module, "specific_contest_check_dupe", None)
-        if specific is not None:
-            specific = functools.partial(specific, self.parent)
-        return dupe_result(
-            self.parent.database,
-            getattr(self._module, "dupe_type", 0),
-            call,
-            band,
-            mode,
-            specific,
-        )
-
-    @property
-    def ZoneType(self):
-        """The zone scheme the module exchanges (UDC); CQ unless it says so."""
-        return getattr(self._module, "ZoneType", "CQ")
-
-    def prefill_contact(self, call, band=None, mode=None) -> dict:
-        """Recall the fields for *call* (see :meth:`ContestBase.prefill_contact`)."""
-        return contact_info.recall(self.parent, call, self.ZoneType, band, mode)
-
-    def contact_mults(self, contact) -> tuple:
-        """An unconverted plugin declares no multipliers to ask about."""
-        return ()
-
-    def contact_info(self, call, band=None, mode=None, contact=None):
-        """What is known about *call* (see :meth:`ContestBase.contact_info`)."""
-        return contact_info.build(self.parent, self, call, band, mode, contact)
-
-    def __getattr__(self, name):
-        if name.startswith("_"):
-            raise AttributeError(name)
-        value = getattr(self._module, name)
-        if callable(value):
-            # The old functions want the main window as their `self`.
-            return functools.partial(value, self.parent)
-        return value
-
-    @property
-    def UsesESM(self):
-        return hasattr(self._module, "process_esm")
-
-    @property
-    def SupportsFT8(self):
-        return hasattr(self._module, "ft8_handler")
-
-    @property
-    def WritesEDI(self):
-        return hasattr(self._module, "edi")
-
-    @property
-    def SendsRTCScore(self):
-        return hasattr(self._module, "online_score_xml")
-
-
 def _import_optional(dotted_name: str):
     """Import *dotted_name*, or None if there is no such module.
 
@@ -1143,9 +1067,8 @@ def _import_optional(dotted_name: str):
 def _import_source(source: str):
     """The module a contest is defined in, by the name of its file.
 
-    A contest is ``not1mm/plugins/<source>.py``, whether it is still a module
-    of functions or already a class; ``<source>`` is what the identifiers in
-    the database used to be.
+    A contest is ``not1mm/plugins/<source>.py``; ``<source>`` is what the
+    identifiers in the database used to be.
     """
     return _import_optional(f"not1mm.plugins.{source}")
 
@@ -1182,7 +1105,10 @@ def available_contests() -> list[ContestInfo]:
         module = _import_source(source)
         if module is None:
             continue
-        metadata = getattr(module, "Contest", None) or module
+        metadata = getattr(module, "Contest", None)
+        if metadata is None:
+            logger.warning("Contest %s defines no Contest class", source)
+            continue
         identifier = contest_id(metadata)
         if identifier is None:
             logger.warning("Contest %s declares no Cabrillo name", source)
@@ -1191,9 +1117,7 @@ def available_contests() -> list[ContestInfo]:
             ContestInfo(
                 source=source,
                 identifier=identifier,
-                display_name=getattr(metadata, "DisplayName", None)
-                or getattr(metadata, "name", "")
-                or "",
+                display_name=getattr(metadata, "DisplayName", None) or "",
             )
         )
     _AVAILABLE = found
@@ -1250,29 +1174,25 @@ def _find_module(identifier: str):
 def load_contest(identifier: str, parent):
     """Import the contest called *identifier* and bind it to the main window.
 
-    A converted contest is a ``class Contest(ContestBase)``; an unconverted one
-    is still a module of functions.  Both live in ``not1mm.plugins.<source>``,
-    and the test fixtures for either are in ``not1mm/contest/<source>/``.
+    A contest is a ``class Contest(ContestBase)`` in
+    ``not1mm.plugins.<source>``, and its test fixtures are in
+    ``not1mm/contest/<source>/``.
     """
-    module = _find_module(identifier)
-    if module is None:
-        raise ModuleNotFoundError(f"no contest plugin named {identifier!r}")
-    contest_class = getattr(module, "Contest", None)
+    contest_class = contest_metadata(identifier)
     if contest_class is None:
-        return _LegacyContest(module, parent)
+        raise ModuleNotFoundError(f"no contest plugin named {identifier!r}")
     return contest_class(parent)
 
 
 def contest_metadata(identifier: str):
-    """Whatever carries the metadata for *identifier*.
-
-    The ``Contest`` class for a converted contest, the module for an
-    unconverted one, None when there is no such contest.
-    """
+    """The ``Contest`` class for *identifier*, or None if there is no such contest."""
     module = _find_module(identifier)
     if module is None:
         return None
-    return getattr(module, "Contest", None) or module
+    contest_class = getattr(module, "Contest", None)
+    if contest_class is None:
+        logger.warning("Contest %s defines no Contest class", identifier)
+    return contest_class
 
 
 def contest_identifier_for_display(display_name: str) -> str | None:

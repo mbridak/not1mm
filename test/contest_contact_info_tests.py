@@ -9,13 +9,11 @@ multipliers.
 from __future__ import annotations
 
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
 from not1mm.lib import contact_info, plugin_common
 from not1mm.lib.contact_info import ContactInfo, MultInfo, bearing_to
-from not1mm.lib.contest import _LegacyContest
 
 from contest_harness import ContestHarness, DummyProgress, discover_cases
 
@@ -56,7 +54,7 @@ def test_bearing_prefers_a_real_grid():
     assert bearing_to("FN31", "", None, None) == (None, None)
 
 
-def test_contact_info_for_a_converted_contest(headless, monkeypatch):
+def test_contact_info_for_declared_mults(headless, monkeypatch):
     """A declared multiplier is answered from the call alone."""
     contest = loaded("cq_wpx_cw/K6GTE", headless, monkeypatch).contest
     info = contest.contact_info("K5ABC", band=14.0, mode="CW")
@@ -99,23 +97,10 @@ def test_zone_follows_the_zone_type(headless, monkeypatch):
     assert info.zone == info.cq_zone
 
 
-def test_legacy_contest_has_no_declared_mults(headless, monkeypatch):
-    """An unconverted plugin answers the country and the dupe, but no mults.
-
-    Every built-in is a class now, so the adapter gets a module-shaped object
-    of its own; it goes away with the adapter itself.
-    """
-    harness = loaded("randomgram/K6GTE", headless, monkeypatch)
-    module = SimpleNamespace(
-        name="Legacy",
-        cabrillo_name="LEGACY",
-        mode="BOTH",
-        dupe_type=4,
-        columns=[],
-        EXCHANGE_HINT="",
-    )
-    harness.contest = _LegacyContest(module, harness)
-    info = harness.contest.contact_info("K5ABC", band=14.0, mode="CW")
+def test_contest_without_mults_declares_none(headless, monkeypatch):
+    """A contest that declares no multipliers answers the country and no mults."""
+    contest = loaded("randomgram/K6GTE", headless, monkeypatch).contest
+    info = contest.contact_info("K5ABC", band=14.0, mode="CW")
     assert info.prefix == "K"
     assert info.mults == ()
 

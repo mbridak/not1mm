@@ -18,14 +18,13 @@ import pytest
 
 from not1mm.lib import contest
 
-# The CQ WPX CW plugin is a class; everything else is still a module.
-CONVERTED = "cq_wpx_cw"
-LEGACY = "spdx"
+FIRST = "cq_wpx_cw"
+SECOND = "spdx"
 
 
 def test_id_is_the_cabrillo_name():
-    assert contest.contest_id(contest.contest_metadata(CONVERTED)) == "CQ-WPX-CW"
-    assert contest.contest_id(contest.contest_metadata(LEGACY)) == "SPDX"
+    assert contest.contest_id(contest.contest_metadata(FIRST)) == "CQ-WPX-CW"
+    assert contest.contest_id(contest.contest_metadata(SECOND)) == "SPDX"
 
 
 def test_a_contest_can_override_its_id():

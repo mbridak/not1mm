@@ -23,8 +23,6 @@ class NewContest(QtWidgets.QDialog):
         self.soapbox.setPlaceholderText("")
         self.exchange.setPlaceholderText("")
         contest_name = self.contest.currentText().lower().replace(" ", "_")
-        # The metadata lives on the Contest class once a plugin has been
-        # converted, and on the module while it has not.
         metadata = contest_metadata(contest_name)
         self.exchange.setPlaceholderText(getattr(metadata, "EXCHANGE_HINT", "") or "")
         self.soapbox.setPlaceholderText(getattr(metadata, "SOAPBOX_HINT", "") or "")

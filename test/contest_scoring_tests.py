@@ -173,7 +173,7 @@ def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):
     for case in CASES.values():
         bands = getattr(contest_metadata(case.contest), "Bands", ())
         if not bands:
-            continue  # an unconverted plugin does not declare any
+            continue  # the contest does not declare its bands
         home = headless / f"bands-{case.contest}-{case.name}"
         home.mkdir(parents=True, exist_ok=True)
         harness = ContestHarness(case.contest, case, home, monkeypatch)
@@ -183,4 +183,4 @@ def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):
             f"{case.id}: bands {sorted(used - set(bands))} are not declared"
         )
         checked += 1
-    assert checked >= 5, "the converted contests should have been checked"
+    assert checked >= 5, "the contests that declare bands should have been checked"
