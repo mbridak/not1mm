@@ -4,16 +4,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from not1mm.plugins import rsgb_iota, ukeidx
+from not1mm.lib.contest import load_contest
+from not1mm.plugins import ukeidx
 
 
 @pytest.mark.parametrize(
-    "plugin,empty_exchange",
-    [(ukeidx, "000 --"), (rsgb_iota, "0000 ------")],
+    "contest,empty_exchange",
+    [(None, "000 --"), ("rsgb_iota", "0000 ------")],
 )
-def test_cabrillo_empty_exchange_logs_zero(
-    plugin, empty_exchange, tmp_path, monkeypatch
-):
+def test_cabrillo_empty_exchange_logs_zero(contest, empty_exchange, tmp_path):
     ctx = MagicMock()
     ctx.station = {"Call": "DL1ABC"}
     ctx.contest_settings = {}
@@ -31,7 +30,10 @@ def test_cabrillo_empty_exchange_logs_zero(
             "NR": "",
         }
     ]
-    plugin.cabrillo(ctx, str(tmp_path / "test.log"), "ascii")
+    if contest is None:
+        ukeidx.cabrillo(ctx, str(tmp_path / "test.log"), "ascii")
+    else:
+        load_contest(contest, ctx).cabrillo(str(tmp_path / "test.log"), "ascii")
     assert "Cabrillo saved" in ctx.show_message_box.call_args[0][0]
     [logfile] = tmp_path.glob("*.log")
     qso = [x for x in logfile.read_text().splitlines() if x.startswith("QSO:")]
