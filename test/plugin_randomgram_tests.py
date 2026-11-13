@@ -11,30 +11,22 @@ References:
 
 from types import SimpleNamespace
 
+from not1mm.lib.contest import load_contest
 from not1mm.plugins import randomgram
 
 
-def test_points_are_two_a_contact():
-    assert randomgram.points(SimpleNamespace()) == 2
+class _Database:
+    """Just the two queries the contest asks the log."""
 
+    def __init__(self, points=None, qsos=0):
+        self.points = points
+        self.qsos = qsos
 
-def test_there_are_no_multipliers():
-    assert randomgram.show_mults(SimpleNamespace()) == 0
+    def fetch_points(self):
+        return {"Points": self.points}
 
-
-def test_calc_score_returns_the_points():
-    # calc_score used to compute the sum and then drop it, returning None.
-    ctx = SimpleNamespace(
-        database=SimpleNamespace(fetch_points=lambda: {"Points": 6})
-    )
-    assert randomgram.calc_score(ctx) == 6
-
-
-def test_calc_score_of_an_empty_log_is_zero():
-    ctx = SimpleNamespace(
-        database=SimpleNamespace(fetch_points=lambda: {"Points": None})
-    )
-    assert randomgram.calc_score(ctx) == 0
+    def fetch_qso_count(self):
+        return {"qsos": self.qsos}
 
 
 class _Field:
@@ -48,25 +40,48 @@ class _Field:
         self._text = text
 
 
+def _contest(**parent):
+    return load_contest("randomgram", SimpleNamespace(**parent))
+
+
+def test_points_are_two_a_contact():
+    assert _contest(contact_is_dupe=0).points() == 2
+
+
+def test_a_dupe_scores_nothing():
+    # DupeType = 4 means the application never sets the flag, but the base's
+    # points() still answers 0 when it is set.
+    assert _contest(contact_is_dupe=1).points() == 0
+
+
+def test_there_are_no_multipliers():
+    assert _contest().show_mults() == 0
+
+
+def test_calc_score_returns_the_points():
+    contest = _contest(database=_Database(points=6), contact_is_dupe=0)
+    assert contest.calc_score() == 6
+
+
+def test_calc_score_of_an_empty_log_is_zero():
+    contest = _contest(database=_Database(points=None), contact_is_dupe=0)
+    assert contest.calc_score() == 0
+
+
+def _prefilled(monkeypatch, groups, qsos):
+    monkeypatch.setattr(randomgram, "rgGroups", groups)
+    parent = SimpleNamespace(other_1=_Field(), database=_Database(qsos=qsos))
+    load_contest("randomgram", parent).prefill()
+    return parent.other_1.text()
+
+
 def test_prefill_strips_the_newline(monkeypatch):
-    monkeypatch.setattr(randomgram, "rgGroups", ["A7N67\n", "9RIB6\n"])
-    monkeypatch.setattr(randomgram, "show_qso", lambda self: 0)
-    ctx = SimpleNamespace(other_1=_Field())
-    randomgram.prefill(ctx)
-    assert ctx.other_1.text() == "A7N67"
+    assert _prefilled(monkeypatch, ["A7N67\n", "9RIB6\n"], 0) == "A7N67"
 
 
 def test_prefill_takes_the_next_group(monkeypatch):
-    monkeypatch.setattr(randomgram, "rgGroups", ["A7N67\n", "9RIB6\n"])
-    monkeypatch.setattr(randomgram, "show_qso", lambda self: 1)
-    ctx = SimpleNamespace(other_1=_Field())
-    randomgram.prefill(ctx)
-    assert ctx.other_1.text() == "9RIB6"
+    assert _prefilled(monkeypatch, ["A7N67\n", "9RIB6\n"], 1) == "9RIB6"
 
 
 def test_prefill_stops_when_the_list_runs_out(monkeypatch):
-    monkeypatch.setattr(randomgram, "rgGroups", ["A7N67\n"])
-    monkeypatch.setattr(randomgram, "show_qso", lambda self: 5)
-    ctx = SimpleNamespace(other_1=_Field())
-    randomgram.prefill(ctx)
-    assert ctx.other_1.text() == ""
+    assert _prefilled(monkeypatch, ["A7N67\n"], 5) == ""

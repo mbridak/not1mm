@@ -9,11 +9,13 @@ multipliers.
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from not1mm.lib import contact_info, plugin_common
 from not1mm.lib.contact_info import ContactInfo, MultInfo, bearing_to
+from not1mm.lib.contest import _LegacyContest
 
 from contest_harness import ContestHarness, DummyProgress, discover_cases
 
@@ -98,9 +100,22 @@ def test_zone_follows_the_zone_type(headless, monkeypatch):
 
 
 def test_legacy_contest_has_no_declared_mults(headless, monkeypatch):
-    """An unconverted plugin answers the country and the dupe, but no mults."""
-    contest = loaded("randomgram/K6GTE", headless, monkeypatch).contest
-    info = contest.contact_info("K5ABC", band=14.0, mode="CW")
+    """An unconverted plugin answers the country and the dupe, but no mults.
+
+    Every built-in is a class now, so the adapter gets a module-shaped object
+    of its own; it goes away with the adapter itself.
+    """
+    harness = loaded("randomgram/K6GTE", headless, monkeypatch)
+    module = SimpleNamespace(
+        name="Legacy",
+        cabrillo_name="LEGACY",
+        mode="BOTH",
+        dupe_type=4,
+        columns=[],
+        EXCHANGE_HINT="",
+    )
+    harness.contest = _LegacyContest(module, harness)
+    info = harness.contest.contact_info("K5ABC", band=14.0, mode="CW")
     assert info.prefix == "K"
     assert info.mults == ()
 
