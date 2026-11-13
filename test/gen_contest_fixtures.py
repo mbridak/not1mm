@@ -2529,7 +2529,7 @@ def _stew_contact(station, call, time_on, grid):
         MODE="CW",
         SNT="599",
         RCV="599",
-        EXCHANGE1=grid,
+        NR=grid,
         STATION_CALLSIGN=station,
     )
 
