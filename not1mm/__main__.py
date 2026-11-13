@@ -80,6 +80,7 @@ from not1mm.lib.about import About
 from not1mm.lib.contest import (
     contest_id,
     contest_identifier_for_display,
+    contest_label_for_identifier,
     load_contest,
     path_name,
 )
@@ -2086,7 +2087,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 number_of_rows = self.contest_dialog.contest_list.rowCount()
                 self.contest_dialog.contest_list.insertRow(number_of_rows)
                 contest_id = str(contest.get("ContestID", 1))
-                contest_name = contest.get("ContestName", 1)
+                # Show the contest the way the New Contest picker does --
+                # "OK1WC Memorial Contest (MWC)", not the stored "MWC".  An
+                # unknown or missing name is shown as it is; opening it may
+                # still fail, but this list must not.
+                contest_name = contest_label_for_identifier(
+                    contest.get("ContestName") or ""
+                )
                 start_date = contest.get("StartDate", 1)
                 self.contest_dialog.contest_list.setItem(
                     number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_id)
@@ -2205,31 +2212,41 @@ class MainWindow(QtWidgets.QMainWindow):
     def contest_identifier_from_dialog(self) -> str:
         """The identifier of the contest picked in the dialog.
 
-        The picker's entries are its own short labels; what gets stored is the
-        identifier they stand for -- the contest's Cabrillo name, unless the
-        contest overrides it.
+        The picker's labels are derived from the plugins, so the identifier
+        they stand for travels as each entry's item data; the fold over the
+        label remains only for an entry that somehow carries none.
         """
-        chosen = self.contest_dialog.contest.currentText()
-        identifier = contest_identifier_for_display(chosen)
+        picker = self.contest_dialog.contest
+        chosen = picker.currentData()
+        if chosen:
+            return chosen
+        label = picker.currentText()
+        identifier = contest_identifier_for_display(label)
         if identifier is None:
             # Not a contest we know about.  Store something that can be looked
             # up again rather than nothing, but say so.
-            logger.warning("Unknown contest selected: %r", chosen)
-            return chosen.lower().replace(" ", "_")
+            logger.warning("Unknown contest selected: %r", label)
+            return label.lower().replace(" ", "_")
         return identifier
 
     def select_picker_entry(self, identifier: str) -> None:
         """Select the contest picker entry that stands for *identifier*.
 
-        The entry's label is not the contest's display name ("OK1WC" for the
-        contest that calls itself "OK1WC Memorial Contest (MWC)"), so ask each
-        entry what it stands for rather than matching text.
+        The entry carries the identifier as item data, so this is a lookup
+        rather than a guess from its label.  An identifier no longer installed
+        leaves the picker on its current entry.
         """
         picker = self.contest_dialog.contest
-        for index in range(picker.count()):
-            if contest_identifier_for_display(picker.itemText(index)) == identifier:
-                picker.setCurrentIndex(index)
-                return
+        if not identifier:
+            return
+        index = picker.findData(identifier)
+        if index < 0:
+            # A value stored by an older version may be a picker label.
+            legacy = contest_identifier_for_display(identifier)
+            if legacy:
+                index = picker.findData(legacy)
+        if index >= 0:
+            picker.setCurrentIndex(index)
 
     def save_edited_contest(self) -> None:
         """
@@ -2340,6 +2357,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 except ModuleNotFoundError:
                     self.pref["contest"] = 1
                     self.show_message_box("Contest plugin not found")
+                    # Nothing was loaded, so there is no contest to wire up.
+                    # Without this the method goes on to use self.contest --
+                    # None at startup -- and the window fails to open.
+                    return
 
                 if hasattr(self.contest, "mode"):
                     logger.debug("%s", f"  ****  {self.contest}")
