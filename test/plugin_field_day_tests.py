@@ -16,7 +16,6 @@ from types import SimpleNamespace
 import pytest
 
 from not1mm.lib.contest import load_contest
-from not1mm.plugins import winter_field_day
 
 
 def _ctx(mode="CW", is_dupe=0):
@@ -27,6 +26,11 @@ def _ctx(mode="CW", is_dupe=0):
 def _arrl_fd(mode="CW", is_dupe=0):
     """ARRL Field Day is a class now."""
     return load_contest("arrl_field_day", _ctx(mode, is_dupe))
+
+
+def _wfd(mode="CW", is_dupe=0):
+    """Winter Field Day is a class too."""
+    return load_contest("winter_field_day", _ctx(mode, is_dupe))
 
 
 @pytest.mark.parametrize("mode", ["SSB", "USB", "LSB", "FM", "AM", "PH", "ssb"])
@@ -49,22 +53,22 @@ def test_arrl_field_day_dupe_scores_nothing():
 
 @pytest.mark.parametrize("mode", ["SSB", "USB", "LSB", "FM", "AM", "PH"])
 def test_winter_field_day_phone_is_one_point(mode):
-    assert winter_field_day.points(_ctx(mode)) == 1
+    assert _wfd(mode).points() == 1
 
 
 @pytest.mark.parametrize("mode", ["CW", "RTTY", "PSK31", "OLIVIA", "JS8"])
 def test_winter_field_day_cw_and_digital_are_two_points(mode):
-    assert winter_field_day.points(_ctx(mode)) == 2
+    assert _wfd(mode).points() == 2
 
 
 @pytest.mark.parametrize("mode", ["FT4", "FT8"])
 def test_winter_field_day_ft4_ft8_score_nothing(mode):
-    assert winter_field_day.points(_ctx(mode)) == 0
+    assert _wfd(mode).points() == 0
 
 
 def test_winter_field_day_empty_mode_scores_nothing():
-    assert winter_field_day.points(_ctx("")) == 0
+    assert _wfd("").points() == 0
 
 
 def test_winter_field_day_dupe_scores_nothing():
-    assert winter_field_day.points(_ctx("CW", is_dupe=1)) == 0
+    assert _wfd("CW", is_dupe=1).points() == 0

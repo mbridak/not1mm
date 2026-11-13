@@ -1,131 +1,53 @@
 """Winter Field Day plugin
 
 Find rules at: https://winterfieldday.org/downloads/2026-rules-v3.pdf
+
+160-10m, once per band and mode.  The exchange is the class (``1O``, ``2A``,
+...) and the ARRL/RAC section; phone is 1 point and CW or digital 2 (FT4 and
+FT8 do not count), and the score is the points times the number of band/mode
+combinations worked, doubled for a QRP entrant (rule 7).
+
+Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member
-
-# Label and field names
-# callsign_label, callsign
-# snt_label, sent
-# rcv_label, receive
-# other_label, other_1
-# exch_label, other_2
-
-# command button names
-# esc_stop
-# log_it
-# mark
-# spot_it
-# wipe
-
-import logging
-
-from PyQt6 import QtWidgets
+from not1mm.lib.contest import ContestBase
 from not1mm.lib.ham_utility import get_logged_band
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, online_score_xml
-from not1mm.lib.version import __version__
-
-logger = logging.getLogger(__name__)
-ALTEREGO = None
-EXCHANGE_HINT = "1O ORG"
-
-cabrillo_name = "WFD"
-name = "Winter Field Day"
-# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-mode = "BOTH"  # CW SSB BOTH RTTY
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq",
-    "Mode",
-    "Exchange1",
-    "Sect",
-    "PTS",
-]
-
-advance_on_space = [True, True, True, True, True]
-
-# 1 once per contest, 2 work each band, 3 each band/mode, 4 no dupe checking
-dupe_type = 3
-
-
-def init_contest(self):
-    """setup plugin"""
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_1
-
-
-def interface(self):
-    """Setup user interface"""
-    self.field1.hide()
-    self.field2.hide()
-    self.field3.show()
-    self.field4.show()
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Class"))
-    self.other_1.setAccessibleName("Class")
-    self.exch_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "Section")
-    )
-    self.other_2.setAccessibleName("Section")
-
-
-def reset_label(self):
-    """reset label after field cleared"""
-
-
-def set_tab_next(self):
-    """Set TAB Advances"""
-    self.tab_next = {
-        self.callsign: self.other_1,
-        self.sent: self.other_1,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    """Set TAB Advances"""
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.callsign,
-        self.other_1: self.callsign,
-        self.other_2: self.other_1,
-    }
-
-
-def set_contact_vars(self):
-    """Contest Specific"""
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-    self.contact["Exchange1"] = self.other_1.text().upper()
-    self.contact["Sect"] = self.other_2.text().upper()
-
-
-def predupe(self):
-    """called after callsign entered"""
-
-
-def prefill(self):
-    """Fill SentNR"""
-
 
 _PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
 # "Digital includes PSK, RTTY, Olivia, Packet, SSTV, ATV, JS8Call, and other
 # soundcard modes except for FT4 & FT8." Winter Field Day does not allow them.
 _NO_POINT_MODES = ("FT4", "FT8")
 
+# The sponsor's Cabrillo spelling for the digital modes.
+_DIGITAL_MODES = (
+    "BPSK31",
+    "CONTESTI",
+    "DOMINO",
+    "FSQ",
+    "FT8",
+    "FT4",
+    "HELL",
+    "IFKP",
+    "RTTY",
+    "PSK",
+    "PSK31",
+    "FSK441",
+    "MFSK",
+    "MSK144",
+    "MT63",
+    "OLIVIA",
+    "JS8",
+    "JT65",
+    "JT9",
+    "Q65",
+    "SCAMP",
+    "THOR",
+    "THRB",
+)
+
 
 def _points_for_mode(mode: str) -> int:
-    """Phone 1 point; CW and digital 2; FT4/FT8 score nothing.
-
-    The old ``mode in "CW, RTTY"`` test was a substring check against that
-    literal, so every other digital mode counted zero.
-    """
+    """Phone 1 point; CW and digital 2; FT4/FT8 score nothing."""
     upper = str(mode).upper()
     if not upper or upper in _NO_POINT_MODES:
         return 0
@@ -134,486 +56,219 @@ def _points_for_mode(mode: str) -> int:
     return 2
 
 
-def points(self):
-    """Calc point"""
-    if self.contact_is_dupe > 0:
-        return 0
-    return _points_for_mode(self.contact.get("Mode", ""))
+class Contest(ContestBase):
+    """Winter Field Day."""
 
+    DisplayName = "Winter Field Day"
+    CabrilloName = "WFD"
+    Mode = "BOTH"
+    DupeType = 3  # once per band and mode
+    EXCHANGE_HINT = "1O ORG"
+    SupportsFT8 = True
+    SendsRTCScore = True
+    Bands = (1.8, 3.5, 7, 14, 21, 28)
+    # Only the class and section fields are used; the RSTs are hidden.
+    EntryFields = ("field3", "field4")
+    FrameText = ("", "Class", "Section")
+    AccessibleNames = ("", "", "Class", "Section")
+    # The module focused the class field after a lookup, not the section.
+    NextField = "other_1"
+    LogInfo = [
+        "YYYY-MM-DD HH:MM:SS",
+        "Call",
+        "Freq",
+        "Mode",
+        "Exchange1",
+        "Sect",
+        "PTS",
+    ]
+    # The score is the points times the number of band/mode combinations worked,
+    # not a keyed multiplier, so show_mults() is that count and the declared
+    # slot only names the score-page row the module reported.
+    NumMults = 1
+    Multiplier1Name = "Prefix"
+    MultSqlString = "WPXPrefix"
+    IsMult1Per = 4
 
-def show_mults(self):
-    """Return display string for mults"""
-    result = self.database.get_unique_band_and_mode()
-    if result:
-        return int(result.get("mult", 0))
-    return 0
+    def points(self):
+        """1 point phone, 2 CW or digital, nothing for FT4/FT8."""
+        if self.parent.contact_is_dupe > 0:
+            return 0
+        return _points_for_mode(self.parent.contact.get("Mode", ""))
 
+    def show_mults(self):
+        """The number of band/mode combinations worked."""
+        result = self.parent.database.get_unique_band_and_mode()
+        return int(result.get("mult", 0)) if result else 0
 
-def show_qso(self):
-    """Return qso count"""
-    result = self.database.fetch_qso_count()
-    if result:
-        return int(result.get("qsos", 0))
-    return 0
+    def calc_score(self):
+        """The points times the combinations, doubled for a QRP entrant."""
+        power = self.parent.contest_settings.get("PowerCategory", "")
+        return super().calc_score() * (2 if power == "QRP" else 1)
 
+    def recalculate_mults(self):
+        """No marks: this contest never set ``IsMultiplier1``."""
 
-def calc_score(self):
-    """Return calculated score"""
-    _points = get_points(self)
-    _mults = show_mults(self)
-    _power_mult = 1
-    if self.contest_settings.get("PowerCategory", "") == "QRP":
-        _power_mult = 2
-    return _points * _power_mult * _mults
+    def set_contact_vars(self):
+        """The exchange; the class and section are the received ones."""
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["Exchange1"] = parent.other_1.text().upper()
+        parent.contact["Sect"] = parent.other_2.text().upper()
 
+    def prefill(self):
+        """Nothing to prefill: other_1 is the class, not the sent exchange."""
 
-def adif(self):
-    """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "WFD")
+    def cabrillo_mode(self, mode: str) -> str:
+        """CW, PH or DG, as the sponsor spells them."""
+        if mode in ("CW-U", "CW-L", "CW-R", "CWR"):
+            return "CW"
+        if mode in ("LSB", "USB", "FM", "AM"):
+            return "PH"
+        if str(mode).upper() in _DIGITAL_MODES:
+            return "DG"
+        return mode
 
-
-def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
-    print(
-        line_to_output.encode(file_encoding, errors="ignore").decode(),
-        end=ending,
-        file=file_descriptor,
-    )
-
-
-def cabrillo(self, filename, file_encoding):
-    """Generates Cabrillo file. Maybe."""
-    # https://www.cqwpx.com/cabrillo.htm
-    logger.debug("******Cabrillo*****")
-    logger.debug("Station: %s", f"{self.station}")
-    logger.debug("Contest: %s", f"{self.contest_settings}")
-    logger.debug("%s", filename)
-    log = self.database.fetch_all_contacts_asc()
-    try:
-        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
-            output_cabrillo_line(
-                "START-OF-LOG: 3.0",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CONTEST: {cabrillo_name}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.station.get("Club", ""):
-                output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"LOCATION: {self.station.get('ARRLSection', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            mode = self.contest_settings.get("ModeCategory", "")
-            if mode in ["SSB+CW", "SSB+CW+DIGITAL"]:
-                mode = "MIXED"
-            output_cabrillo_line(
-                f"CATEGORY-MODE: {mode}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            output_cabrillo_line(
-                f"CLAIMED-SCORE: {calc_score(self)}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            ops = ""
-            list_of_ops = self.database.get_ops()
-            for op in list_of_ops:
-                ops += f"{op.get('Operator', '')}, "
-            if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call', '')}"
-            else:
-                ops = ops.rstrip(", ")
-            output_cabrillo_line(
-                f"OPERATORS: {ops}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"NAME: {self.station.get('Name', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Street1', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-CITY: {self.station.get('City', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"EMAIL: {self.station.get('Email', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            for contact in log:
-                the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode in ("LSB", "USB", "FM", "AM"):
-                    themode = "PH"
-                if themode.upper() in (
-                    "BPSK31",
-                    "CONTESTI",
-                    "DOMINO",
-                    "FSQ",
-                    "FT8",
-                    "FT4",
-                    "HELL",
-                    "IFKP",
-                    "RTTY",
-                    "PSK",
-                    "PSK31",
-                    "FSK441",
-                    "MFSK",
-                    "MSK144",
-                    "MT63",
-                    "OLIVIA",
-                    "JS8",
-                    "JT65",
-                    "JT9",
-                    "Q65",
-                    "SCAMP",
-                    "THOR",
-                    "THRB",
-                ):
-                    themode = "DG"
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
-
-                loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{self.contest_settings.get('SentExchange', '').ljust(9).upper()}"
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('Exchange1', '')).ljust(3)} "
-                    f"{str(contact.get('Sect', '')).ljust(6)}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
-        self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
-        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
-        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
-        return
-
-
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
-
-
-def set_self(the_outie):
-    """..."""
-    globals()["ALTEREGO"] = the_outie
-
-
-def ft8_handler(the_packet: dict):
-    """Process FT8 QSO packets
-    FT8
-    {
-        'CALL': 'KE0OG',
-        'GRIDSQUARE': 'DM10AT',
-        'MODE': 'FT8',
-        'RST_SENT': '',
-        'RST_RCVD': '',
-        'QSO_DATE': '20210329',
-        'TIME_ON': '183213',
-        'QSO_DATE_OFF': '20210329',
-        'TIME_OFF': '183213',
-        'BAND': '20M',
-        'FREQ': '14.074754',
-        'STATION_CALLSIGN': 'K6GTE',
-        'MY_GRIDSQUARE': 'DM13AT',
-        'CONTEST_ID': 'ARRL-FIELD-DAY',
-        'SRX_STRING': '1D UT',
-        'CLASS': '1D',
-        'ARRL_SECT': 'UT'
-    }
-    FlDigi
-    {
-            'FREQ': '7.029500',
-            'CALL': 'DL2DSL',
-            'MODE': 'RTTY',
-            'NAME': 'BOB',
-            'QSO_DATE': '20240904',
-            'QSO_DATE_OFF': '20240904',
-            'TIME_OFF': '212825',
-            'TIME_ON': '212800',
-            'RST_RCVD': '599',
-            'RST_SENT': '599',
-            'BAND': '40M',
-            'COUNTRY': 'FED. REP. OF GERMANY',
-            'CQZ': '14',
-            'STX': '000',
-            'STX_STRING': '1D ORG',
-            'CLASS': '1D',
-            'ARRL_SECT': 'DX',
-            'TX_PWR': '0',
-            'OPERATOR': 'K6GTE',
-            'STATION_CALLSIGN': 'K6GTE',
-            'MY_GRIDSQUARE': 'DM13AT',
-            'MY_CITY': 'ANAHEIM, CA',
-            'MY_STATE': 'CA'
-        }
-
-    """
-    logger.debug(f"{the_packet=}")
-    if ALTEREGO is not None:
-        ALTEREGO.callsign.setText(the_packet.get("CALL"))
-        ALTEREGO.contact["Call"] = the_packet.get("CALL", "")
-        ALTEREGO.contact["SNT"] = ALTEREGO.sent.text()
-        ALTEREGO.contact["RCV"] = ALTEREGO.receive.text()
-        ALTEREGO.contact["Exchange1"] = the_packet.get("CLASS", "ERR")
-        ALTEREGO.contact["Sect"] = the_packet.get("ARRL_SECT", "ERR")
-        ALTEREGO.contact["Mode"] = the_packet.get("MODE", "ERR")
-        ALTEREGO.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
-        ALTEREGO.contact["QSXFreq"] = round(
-            float(the_packet.get("FREQ", "0.0")) * 1000, 2
+    def cabrillo_qso_line(self, contact):
+        """The Field Day line: the operator's own exchange, then class/section."""
+        parent = self.parent
+        the_date_and_time = contact.get("TS", "")
+        loggeddate = the_date_and_time[:10]
+        loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+        frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+        sent = parent.contest_settings.get("SentExchange", "").ljust(9).upper()
+        return (
+            f"QSO: {frequency} "
+            f"{self.cabrillo_mode(contact.get('Mode', ''))} "
+            f"{loggeddate} {loggedtime} "
+            f"{contact.get('StationPrefix', '').ljust(13)} "
+            f"{sent}"
+            f"{contact.get('Call', '').ljust(13)} "
+            f"{str(contact.get('Exchange1', '')).ljust(3)} "
+            f"{str(contact.get('Sect', '')).ljust(6)}"
         )
-        ALTEREGO.contact["Band"] = get_logged_band(
-            str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
+
+    def process_esm(self, new_focused_widget=None, with_enter=False):
+        """ESM state machine.
+
+        The exchange is the class *and* the section, so both fields have to be
+        filled before the contact is finished.
+        """
+        parent = self.parent
+        if new_focused_widget is not None:
+            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+
+        for a_button in (
+            parent.F1,
+            parent.F2,
+            parent.F3,
+            parent.F4,
+            parent.F5,
+            parent.F6,
+            parent.F7,
+            parent.F8,
+            parent.F9,
+            parent.F10,
+            parent.F11,
+            parent.F12,
+        ):
+            parent.restore_button_color(a_button)
+
+        buttons_to_send = []
+        if parent.pref.get("run_state"):
+            if parent.current_widget == "callsign":
+                if len(parent.callsign.text()) < 3:
+                    parent.make_button_green(parent.esm_dict["CQ"])
+                    buttons_to_send.append(parent.esm_dict["CQ"])
+                    parent.esm_call_sent = ""
+                elif len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["HISCALL"])
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["HISCALL"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+
+            elif parent.current_widget in ("other_1", "other_2"):
+                if parent.other_1.text() == "" or parent.other_2.text() == "":
+                    parent.make_button_green(parent.esm_dict["AGN"])
+                    buttons_to_send.append(parent.esm_dict["AGN"])
+                else:
+                    self._resend_corrected_call(buttons_to_send)
+                    parent.make_button_green(parent.esm_dict["QRZ"])
+                    buttons_to_send.append(parent.esm_dict["QRZ"])
+                    buttons_to_send.append("LOGIT")
+
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            parent.save_contact()
+                            parent.esm_call_sent = ""
+                            continue
+                        if button == parent.esm_dict.get("HISCALL"):
+                            parent.esm_call_sent = parent.callsign.text()
+                        parent.process_function_key(button)
+        else:
+            if parent.current_widget == "callsign":
+                if len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["MYCALL"])
+                    buttons_to_send.append(parent.esm_dict["MYCALL"])
+
+            elif parent.current_widget in ("other_1", "other_2"):
+                if parent.other_1.text() == "" or parent.other_2.text() == "":
+                    parent.make_button_green(parent.esm_dict["AGN"])
+                    buttons_to_send.append(parent.esm_dict["AGN"])
+                else:
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+                    buttons_to_send.append("LOGIT")
+
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            parent.save_contact()
+                            continue
+                        parent.process_function_key(button)
+
+    def ft8_handler(self, packet):
+        """Log a QSO reported by WSJT-X or fldigi over UDP."""
+        parent = self.parent
+        parent.callsign.setText(packet.get("CALL"))
+        parent.contact["Call"] = packet.get("CALL", "")
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["Exchange1"] = packet.get("CLASS", "ERR")
+        parent.contact["Sect"] = packet.get("ARRL_SECT", "ERR")
+        parent.contact["Mode"] = packet.get("MODE", "ERR")
+        parent.contact["Freq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
+        parent.contact["QSXFreq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
+        parent.contact["Band"] = get_logged_band(
+            str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )
-        logger.debug(f"{ALTEREGO.contact=}")
-        ALTEREGO.other_1.setText(the_packet.get("CLASS", "ERR"))
-        ALTEREGO.other_2.setText(the_packet.get("ARRL_SECT", "ERR"))
-        ALTEREGO.save_contact()
+        parent.other_1.setText(packet.get("CLASS", "ERR"))
+        parent.other_2.setText(packet.get("ARRL_SECT", "ERR"))
+        parent.save_contact()
 
+    def populate_history_info_line(self):
+        """Show the class, section and user text for the typed call."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(
+                f"{result.get('Call', '')}, {result.get('Exch1', '')}, "
+                f"{result.get('Sect', '')}, {result.get('UserText', '...')}"
+            )
+        else:
+            parent.history_info.setText("")
 
-def process_esm(self, new_focused_widget=None, with_enter=False):
-    """ESM State Machine"""
-
-    # self.pref["run_state"]
-
-    # -----===== Assigned F-Keys =====-----
-    # self.esm_dict["CQ"]
-    # self.esm_dict["EXCH"]
-    # self.esm_dict["QRZ"]
-    # self.esm_dict["AGN"]
-    # self.esm_dict["HISCALL"]
-    # self.esm_dict["MYCALL"]
-    # self.esm_dict["QSOB4"]
-
-    # ----==== text fields ====----
-    # self.callsign
-    # self.sent
-    # self.receive
-    # self.other_1
-    # self.other_2
-
-    if new_focused_widget is not None:
-        self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
-    for a_button in [
-        self.esm_dict["CQ"],
-        self.esm_dict["EXCH"],
-        self.esm_dict["QRZ"],
-        self.esm_dict["AGN"],
-        self.esm_dict["HISCALL"],
-        self.esm_dict["MYCALL"],
-        self.esm_dict["QSOB4"],
-    ]:
-        if a_button is not None:
-            self.restore_button_color(a_button)
-
-    buttons_to_send = []
-
-    if self.pref.get("run_state"):
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) < 3:
-                self.make_button_green(self.esm_dict["CQ"])
-                buttons_to_send.append(self.esm_dict["CQ"])
-                self.esm_call_sent = ""
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_1.text() == "" or self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                # If the operator corrected a busted callsign after the
-                # exchange was already sent, resend the corrected call
-                # ahead of the QRZ/TU macro so the other station logs the
-                # right callsign before the QSO is wiped.
-                if (
-                    self.pref.get("esm_send_corrected_call")
-                    and self.esm_call_sent
-                    and self.callsign.text() != self.esm_call_sent
-                ):
-                    self.make_button_green(self.esm_dict["HISCALL"])
-                    buttons_to_send.append(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        self.esm_call_sent = ""
-                        continue
-                    if button == self.esm_dict.get("HISCALL"):
-                        self.esm_call_sent = self.callsign.text()
-                    self.process_function_key(button)
-    else:
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["MYCALL"])
-                buttons_to_send.append(self.esm_dict["MYCALL"])
-
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_1.text() == "" or self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        continue
-                    self.process_function_key(button)
-
-
-def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('Sect', '')}, {result.get('UserText', '...')}"
-        )
-    else:
-        self.history_info.setText("")
-
-
-def check_call_history(self):
-    """"""
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText', '')}")
-        if self.other_1.text() == "":
-            self.other_1.setText(f"{result.get('Exch1', '')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Sect', '')}")
-
-
-def get_mults(self):
-    """"""
-    mults = {}
-    mults["wpxprefix"] = show_mults(self)
-    return mults
-
-
-def just_points(self):
-    """"""
-    return get_points(self)
+    def check_call_history(self):
+        """Prefill the class and section from the call history file."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(f"{result.get('UserText', '')}")
+            if parent.other_1.text() == "":
+                parent.other_1.setText(f"{result.get('Exch1', '')}")
+            if parent.other_2.text() == "":
+                parent.other_2.setText(f"{result.get('Sect', '')}")
