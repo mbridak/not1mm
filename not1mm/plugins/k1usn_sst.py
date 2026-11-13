@@ -116,7 +116,9 @@ class Contest(ContestBase):
                 if parent.other_1.text() == "" or parent.other_2.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isalpha() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
@@ -145,7 +147,9 @@ class Contest(ContestBase):
                 if parent.other_1.text() == "" or parent.other_2.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isalpha() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")

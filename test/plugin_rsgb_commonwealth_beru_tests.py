@@ -145,9 +145,10 @@ def test_is_hq_station(exchange, expected):
 )
 def test_get_commonwealth_area_multi_area_countries(call, expected):
     parent = make_parent("K6GTE", call)
-    assert load_contest("rsgb_commonwealth_beru", parent).get_commonwealth_area(
-        call
-    ) == expected
+    assert (
+        load_contest("rsgb_commonwealth_beru", parent).get_commonwealth_area(call)
+        == expected
+    )
 
 
 def test_points_same_continent_commonwealth():

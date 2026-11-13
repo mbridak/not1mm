@@ -742,8 +742,7 @@ class ContestBase:
         if len(slots) == 1:
             return {self.mult_type_name(slots[0][0]): self.show_mults()}
         return {
-            self.mult_type_name(slot): self._mult_count(slot)
-            for slot, _, _, _ in slots
+            self.mult_type_name(slot): self._mult_count(slot) for slot, _, _, _ in slots
         }
 
     def just_points(self):
@@ -790,7 +789,9 @@ class ContestBase:
         logger.debug("%s", filename)
         log = parent.database.fetch_all_contacts_asc()
         try:
-            with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
+            with open(
+                filename, "w", encoding=file_encoding, newline=""
+            ) as file_descriptor:
                 self._cabrillo_header(file_descriptor, file_encoding)
                 for contact in log:
                     for qso_line in self.cabrillo_qso_lines(contact):
@@ -805,7 +806,9 @@ class ContestBase:
                 )
             parent.show_message_box(f"Cabrillo saved to: {filename}")
         except IOError as exception:
-            logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
+            logger.critical(
+                "cabrillo: IO error: %s, writing to %s", exception, filename
+            )
             parent.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
             return
 
@@ -1216,4 +1219,3 @@ def contest_identifier_for_display(display_name: str) -> str | None:
         if info.display_name.casefold() == wanted:
             return info.identifier
     return None
-

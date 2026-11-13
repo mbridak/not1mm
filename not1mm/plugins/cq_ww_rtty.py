@@ -283,7 +283,9 @@ Please make sure you set the Mode to RTTY Above."""
                             continue
                         if button == parent.esm_dict.get("HISCALL"):
                             parent.esm_call_sent = parent.callsign.text()
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
         else:
             if parent.current_widget == "callsign":
@@ -295,7 +297,10 @@ Please make sure you set the Mode to RTTY Above."""
                 if parent.other_2.text() == "" or parent.other_1.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isnumeric() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isnumeric()
+                    and parent.other_2.text().isalpha()
+                ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")
@@ -310,7 +315,9 @@ Please make sure you set the Mode to RTTY Above."""
                         if button == "LOGIT":
                             parent.save_contact()
                             continue
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
 
     def populate_history_info_line(self):

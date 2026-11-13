@@ -29,16 +29,58 @@ EA_PREFIXES = ("EA", "EA1", "EA2", "EA3", "EA4", "EA5", "EA6", "EA7", "EA8", "EA
 # 'HQ' is not a province: it is EA4URE, a multiplier of its own.
 EA_PROVINCES = frozenset(
     (
-        "AV", "BU", "C", "LE", "LO", "LU", "O", "OU", "P", "PO", "S", "SA",
-        "SG", "SO", "VA", "ZA",
-        "BI", "HU", "NA", "SS", "TE", "VI", "Z",
-        "B", "GI", "L", "T",
-        "BA", "CC", "CR", "CU", "GU", "M", "TO",
-        "A", "AB", "CS", "MU", "V",
+        "AV",
+        "BU",
+        "C",
+        "LE",
+        "LO",
+        "LU",
+        "O",
+        "OU",
+        "P",
+        "PO",
+        "S",
+        "SA",
+        "SG",
+        "SO",
+        "VA",
+        "ZA",
+        "BI",
+        "HU",
+        "NA",
+        "SS",
+        "TE",
+        "VI",
+        "Z",
+        "B",
+        "GI",
+        "L",
+        "T",
+        "BA",
+        "CC",
+        "CR",
+        "CU",
+        "GU",
+        "M",
+        "TO",
+        "A",
+        "AB",
+        "CS",
+        "MU",
+        "V",
         "IB",
-        "AL", "CA", "CO", "GR", "H", "J", "MA", "SE",
-        "GC", "TF",
-        "CE", "ML",
+        "AL",
+        "CA",
+        "CO",
+        "GR",
+        "H",
+        "J",
+        "MA",
+        "SE",
+        "GC",
+        "TF",
+        "CE",
+        "ML",
     )
 )
 
@@ -314,9 +356,7 @@ class Contest(ContestBase):
 
         parent.contact["Mode"] = packet.get("MODE", "ERR")
         parent.contact["Freq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
-        parent.contact["QSXFreq"] = round(
-            float(packet.get("FREQ", "0.0")) * 1000, 2
-        )
+        parent.contact["QSXFreq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
         parent.contact["Band"] = get_logged_band(
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )

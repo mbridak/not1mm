@@ -235,7 +235,9 @@ class Contest(ContestBase):
                             continue
                         if button == parent.esm_dict.get("HISCALL"):
                             parent.esm_call_sent = parent.callsign.text()
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
         else:
             if parent.current_widget == "callsign":
@@ -273,7 +275,9 @@ class Contest(ContestBase):
                         if button == "LOGIT":
                             parent.save_contact()
                             continue
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
 
     def cabrillo_mode(self, mode):

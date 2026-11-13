@@ -157,11 +157,7 @@ A station may be worked once per band every three hours.  FM counts as SSB and R
         # Rule 5: a contact between 0100 and 0600 local time scores triple.
         # The contact's own time is used so that a re-scored log is judged
         # against the clock it was logged on.
-        local = (
-            contest_time(parent)
-            .replace(tzinfo=datetime.timezone.utc)
-            .astimezone()
-        )
+        local = contest_time(parent).replace(tzinfo=datetime.timezone.utc).astimezone()
         if 100 <= int(local.strftime("%H%M")) <= 600:
             score *= 3
         return score

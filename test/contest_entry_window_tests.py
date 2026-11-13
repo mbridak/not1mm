@@ -41,10 +41,14 @@ class Parent:
     """Just enough of the main window for init_contest()."""
 
     def __init__(self):
-        for name in ENTRY_FIELDS + WIDGETS + (
-            "snt_label",
-            "other_label",
-            "exch_label",
+        for name in (
+            ENTRY_FIELDS
+            + WIDGETS
+            + (
+                "snt_label",
+                "other_label",
+                "exch_label",
+            )
         ):
             setattr(self, name, Widget(name))
         self.tab_next = {}

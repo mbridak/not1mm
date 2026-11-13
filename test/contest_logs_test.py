@@ -73,9 +73,9 @@ def test_contest_log(case, headless, monkeypatch):
 
     produced = harness.export(headless)
     assert produced is not None, f"{case.id}: plugin produced no export"
-    assert produced.read_bytes() == expected.read_bytes(), (
-        f"{case.id}: export differs from {expected.name}"
-    )
+    assert (
+        produced.read_bytes() == expected.read_bytes()
+    ), f"{case.id}: export differs from {expected.name}"
 
 
 @pytest.mark.parametrize("case", CASES, ids=[case.id for case in CASES])
@@ -104,9 +104,9 @@ def test_log_points_match_the_scoring(case, headless, monkeypatch):
     """
 
     text = case.adif.read_text(encoding="ascii", errors="replace")
-    assert text.count("APP_N1MM_POINTS") == text.count("<EOR>") > 0, (
-        f"{case.id}: every contact must carry APP_N1MM_POINTS"
-    )
+    assert (
+        text.count("APP_N1MM_POINTS") == text.count("<EOR>") > 0
+    ), f"{case.id}: every contact must carry APP_N1MM_POINTS"
 
     harness = ContestHarness(case.contest, case, headless, monkeypatch)
     plugin_common.import_adif(harness)

@@ -121,9 +121,7 @@ And in the exchange macro put '# {EXCH}'.
             return 0
 
         points = 50
-        morepoints, ispolar = latlondif(
-            parent, parent.contact.get("Exchange1", "")
-        )
+        morepoints, ispolar = latlondif(parent, parent.contact.get("Exchange1", ""))
         points += morepoints
         if ispolar:
             points += 100

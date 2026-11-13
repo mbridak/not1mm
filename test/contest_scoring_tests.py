@@ -178,9 +178,11 @@ def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):
         home.mkdir(parents=True, exist_ok=True)
         harness = ContestHarness(case.contest, case, home, monkeypatch)
         plugin_common.import_adif(harness)
-        used = {contact.get("Band") for contact in harness.database.fetch_all_contacts_asc()}
-        assert used <= set(bands), (
-            f"{case.id}: bands {sorted(used - set(bands))} are not declared"
-        )
+        used = {
+            contact.get("Band") for contact in harness.database.fetch_all_contacts_asc()
+        }
+        assert used <= set(
+            bands
+        ), f"{case.id}: bands {sorted(used - set(bands))} are not declared"
         checked += 1
     assert checked >= 5, "the contests that declare bands should have been checked"

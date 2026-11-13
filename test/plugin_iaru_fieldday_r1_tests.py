@@ -237,9 +237,7 @@ def test_recalculation_recomputes_the_points():
             contact_is_dupe=0,
         )
         load_contest("iaru_fieldday_r1_cw", app).recalculate_mults()
-        assert [
-            item["Points"] for item in database.fetch_all_contacts_asc()
-        ] == [0, 0]
+        assert [item["Points"] for item in database.fetch_all_contacts_asc()] == [0, 0]
     finally:
         database.conn.close()
 

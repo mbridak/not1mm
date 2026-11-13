@@ -169,7 +169,10 @@ class Contest(ContestBase):
                 if parent.other_2.text() == "" or parent.other_1.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isnumeric() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isnumeric()
+                    and parent.other_2.text().isalpha()
+                ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
@@ -179,9 +182,7 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["AGN"])
 
             if with_enter is True and bool(len(buttons_to_send)):
-                self._send_macros_through_fldigi(
-                    buttons_to_send, clear_call_sent=True
-                )
+                self._send_macros_through_fldigi(buttons_to_send, clear_call_sent=True)
         else:
             if parent.current_widget == "callsign":
                 if len(parent.callsign.text()) > 2:
@@ -192,7 +193,10 @@ class Contest(ContestBase):
                 if parent.other_2.text() == "" or parent.other_1.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isnumeric() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isnumeric()
+                    and parent.other_2.text().isalpha()
+                ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")

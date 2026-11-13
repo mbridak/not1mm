@@ -105,9 +105,7 @@ class Contest(ContestBase):
         my_continent = self._continent(parent.station.get("Call", ""))
         their_continent = self._continent(parent.contact.get("Call", ""))
         im_french = self._i_am_french()
-        they_french = _is_french(
-            self._primary_pfx(parent.contact.get("Call", ""))
-        )
+        they_french = _is_french(self._primary_pfx(parent.contact.get("Call", "")))
 
         if im_french:
             if they_french:

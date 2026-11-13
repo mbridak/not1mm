@@ -240,7 +240,9 @@ def _qso_points(parent, call: str, band: str, is_dupe: bool) -> int:
         return 0
     if str(band) not in SPRINT_BANDS:
         return 0
-    my_cont, my_pfx = _entity(parent, (getattr(parent, "station", {}) or {}).get("Call", ""))
+    my_cont, my_pfx = _entity(
+        parent, (getattr(parent, "station", {}) or {}).get("Call", "")
+    )
     if not my_cont or _is_na(my_cont, my_pfx):
         return 1
     his_cont, his_pfx = _entity(parent, call)
@@ -338,7 +340,9 @@ S&P  F5:      {MYCALL}
     # -- the QSY rule --------------------------------------------------------
     def _vfo_khz(self) -> float:
         try:
-            return float(getattr(self.parent, "radio_state", {}).get("vfoa", 0.0)) / 1000
+            return (
+                float(getattr(self.parent, "radio_state", {}).get("vfoa", 0.0)) / 1000
+            )
         except (TypeError, ValueError):
             return 0.0
 
@@ -557,9 +561,7 @@ S&P  F5:      {MYCALL}
                     parent.esm_call_sent = ""
                     if self.qsy_needed():
                         # Sprint rule: you solicited and worked one station here.
-                        parent.exch_label.setText(
-                            f"QSY {QSY_KHZ:g} kHz before CQ!"
-                        )
+                        parent.exch_label.setText(f"QSY {QSY_KHZ:g} kHz before CQ!")
                     else:
                         if parent.exch_label.text().startswith("QSY"):
                             self.reset_label()

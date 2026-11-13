@@ -111,7 +111,9 @@ class Contest(ContestBase):
                 if parent.other_2.text() == "" or parent.other_1.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isalpha() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
@@ -130,7 +132,9 @@ class Contest(ContestBase):
                             continue
                         if button == parent.esm_dict.get("HISCALL"):
                             parent.esm_call_sent = parent.callsign.text()
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
         else:
             if parent.current_widget == "callsign":
@@ -142,7 +146,9 @@ class Contest(ContestBase):
                 if parent.other_2.text() == "" or parent.other_1.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isalpha() and parent.other_2.text().isalpha():
+                elif (
+                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")
@@ -157,7 +163,9 @@ class Contest(ContestBase):
                         if button == "LOGIT":
                             parent.save_contact()
                             continue
-                        sendstring = f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        sendstring = (
+                            f"{sendstring}{parent.process_macro(button.toolTip())} "
+                        )
                 parent.fldigi_util.send_string(sendstring)
 
     def ft8_handler(self, the_packet: dict):

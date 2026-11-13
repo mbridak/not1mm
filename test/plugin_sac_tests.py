@@ -26,7 +26,9 @@ class FakeDatabase:
         self.contacts = contacts
         self.current_contest = 1
         self.db = sqlite3.connect(":memory:")
-        self.db.execute("create table dxlog (ContestNR, CountryPrefix, WPXPrefix, Band)")
+        self.db.execute(
+            "create table dxlog (ContestNR, CountryPrefix, WPXPrefix, Band)"
+        )
         for contact in contacts:
             self.db.execute(
                 "insert into dxlog values (?, ?, ?, ?)",
@@ -70,8 +72,18 @@ def test_aland_and_market_reef_are_scandinavian(plugin):
     """Rule 2 lists them, and cty.dat keys them OH0 and OJ0."""
     ctx = _ctx(
         [
-            {"Call": "OH0ABC", "Band": 14.0, "CountryPrefix": "OH0", "WPXPrefix": "OH0"},
-            {"Call": "OJ0ABC", "Band": 14.0, "CountryPrefix": "OJ0", "WPXPrefix": "OJ0"},
+            {
+                "Call": "OH0ABC",
+                "Band": 14.0,
+                "CountryPrefix": "OH0",
+                "WPXPrefix": "OH0",
+            },
+            {
+                "Call": "OJ0ABC",
+                "Band": 14.0,
+                "CountryPrefix": "OJ0",
+                "WPXPrefix": "OJ0",
+            },
         ]
     )
     assert load_contest(plugin, ctx).show_mults() == 2
@@ -95,8 +107,18 @@ def test_two_or_more_numbers_use_the_first_and_default_is_zero(plugin):
     """Rule 8.2: OZ150A counts for OZ1, LA/G3XYZ counts for LA0."""
     ctx = _ctx(
         [
-            {"Call": "OZ150A", "Band": 14.0, "CountryPrefix": "OZ", "WPXPrefix": "OZ150"},
-            {"Call": "LA/G3XYZ", "Band": 14.0, "CountryPrefix": "LA", "WPXPrefix": "LA0"},
+            {
+                "Call": "OZ150A",
+                "Band": 14.0,
+                "CountryPrefix": "OZ",
+                "WPXPrefix": "OZ150",
+            },
+            {
+                "Call": "LA/G3XYZ",
+                "Band": 14.0,
+                "CountryPrefix": "LA",
+                "WPXPrefix": "LA0",
+            },
         ]
     )
     assert load_contest(plugin, ctx).show_mults() == 2
@@ -107,9 +129,19 @@ def test_once_per_band_and_bear_island_is_svalbard(plugin):
     """Rule 8.2 is per band; cty.dat's separate "JW/b" row is still JW."""
     ctx = _ctx(
         [
-            {"Call": "OH0ABC", "Band": 14.0, "CountryPrefix": "OH0", "WPXPrefix": "OH0"},
+            {
+                "Call": "OH0ABC",
+                "Band": 14.0,
+                "CountryPrefix": "OH0",
+                "WPXPrefix": "OH0",
+            },
             {"Call": "OH0ABC", "Band": 7.0, "CountryPrefix": "OH0", "WPXPrefix": "OH0"},
-            {"Call": "JW0ABC", "Band": 14.0, "CountryPrefix": "JW/b", "WPXPrefix": "JW0"},
+            {
+                "Call": "JW0ABC",
+                "Band": 14.0,
+                "CountryPrefix": "JW/b",
+                "WPXPrefix": "JW0",
+            },
             {"Call": "JW0ABC", "Band": 14.0, "CountryPrefix": "JW", "WPXPrefix": "JW0"},
         ]
     )
@@ -167,7 +199,9 @@ def test_the_multiplier_key(plugin, mycall, contact, expected):
 @pytest.mark.parametrize("plugin", PLUGINS)
 def test_the_side_decides_the_sql_key(plugin):
     """A Scandinavian entrant's key is the column; everyone else's is a CASE."""
-    assert load_contest(plugin, _ctx([], mycall="SM5XYZ")).mult_sql(1) == "CountryPrefix"
+    assert (
+        load_contest(plugin, _ctx([], mycall="SM5XYZ")).mult_sql(1) == "CountryPrefix"
+    )
     sql = load_contest(plugin, _ctx([], mycall="K6GTE")).mult_sql(1)
     assert sql.startswith("CASE WHEN CountryPrefix = 'JW/b'")
     assert "'OH0'" in sql

@@ -112,9 +112,29 @@ class Contest(ContestBase):
     DupeType = 5
     SendsRTCScore = True
     Bands = (
-        1.8, 3.5, 7, 14, 21, 28,
-        50, 70, 144, 222, 432, 902, 1296, 2300, 3300, 5650,
-        10000, 24000, 47000, 75500, 119980, 134000, 241000,
+        1.8,
+        3.5,
+        7,
+        14,
+        21,
+        28,
+        50,
+        70,
+        144,
+        222,
+        432,
+        902,
+        1296,
+        2300,
+        3300,
+        5650,
+        10000,
+        24000,
+        47000,
+        75500,
+        119980,
+        134000,
+        241000,
     )
     DefaultContestExchange = "#"
     LogInfo = [
@@ -223,9 +243,10 @@ class Contest(ContestBase):
         mode_group = _mode_group(parent.contact.get("Mode", ""))
         if mode_group == "OTHER":
             return 0
-        if (
-            parent.contact.get("CountryPrefix", "") not in _OCEANIA_COUNTRY_PREFIXES
-            and not self._is_oceania_entity(parent.station.get("Call", ""))
+        if parent.contact.get(
+            "CountryPrefix", ""
+        ) not in _OCEANIA_COUNTRY_PREFIXES and not self._is_oceania_entity(
+            parent.station.get("Call", "")
         ):
             return 0
         return 2 if mode_group == "CW" else 1

@@ -67,9 +67,7 @@ def test_only_a_ja_dx_contact_scores(plugin, mycall, hiscall, expected):
 
 @pytest.mark.parametrize("plugin", PLUGINS)
 def test_a_duplicate_scores_nothing(plugin):
-    assert (
-        load_contest(plugin, _ctx("K6GTE", "JA1ABC", is_dupe=1)).points() == 0
-    )
+    assert load_contest(plugin, _ctx("K6GTE", "JA1ABC", is_dupe=1)).points() == 0
 
 
 @pytest.mark.parametrize("plugin", PLUGINS)

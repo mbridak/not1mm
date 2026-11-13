@@ -19,6 +19,7 @@ the corpus.  ``<case>`` is conventionally the station callsign.
 Contests whose scoring depends on where *your* station is get extra logs from
 another part of the world (see the ``variants``/``_B2_VARIANTS`` tables).
 """
+
 import json
 import re
 import shutil
@@ -144,8 +145,18 @@ STATION = {
 
 def cw(call, freq, t, sl, sr, **extra):
     """A CW QSO with the licence-year exchange used by euhfc."""
-    return qso(CALL=call, QSO_DATE=DATE, TIME_ON=t, FREQ=freq, MODE="CW",
-               SNT="599", RCV="599", STX_STRING=sl, SRX_STRING=sr, **extra)
+    return qso(
+        CALL=call,
+        QSO_DATE=DATE,
+        TIME_ON=t,
+        FREQ=freq,
+        MODE="CW",
+        SNT="599",
+        RCV="599",
+        STX_STRING=sl,
+        SRX_STRING=sr,
+        **extra,
+    )
 
 
 FIXTURES = {}
@@ -158,60 +169,221 @@ FIXTURES["euhfc"] = {
         "station": STATION,
         "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "82"},
         "qsos": [
-            cw("OK2ABC", "14.025", "120000", "82", "17", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="OK", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            qso(CALL="DL1ABC", QSO_DATE=DATE, TIME_ON="120500", FREQ="14.050",
-                MODE="SSB", SNT="59", RCV="59", STX_STRING="82", SRX_STRING="21",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", CONTINENT="EU",
-                APP_N1MM_POINTS="1"),
-            qso(CALL="OK2ABC", QSO_DATE=DATE, TIME_ON="121000", FREQ="14.055",
-                MODE="SSB", SNT="59", RCV="59", STX_STRING="82", SRX_STRING="17",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="OK", CONTINENT="EU",
-                APP_N1MM_POINTS="1"),
-            cw("OK2ABC", "14.025", "121500", "82", "17", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="OK", CONTINENT="EU", APP_N1MM_POINTS="0"),
-            cw("DL1ABC", "7.030", "130000", "82", "21", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="DL", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            cw("N0AX", "14.030", "130500", "82", "17", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="K", CONTINENT="NA", APP_N1MM_POINTS="0"),
-            cw("S51ZZ", "21.040", "131000", "82", "17", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="S5", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            cw("W1AW", "7.040", "131500", "82", "66", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="W", CONTINENT="NA", APP_N1MM_POINTS="0"),
-            cw("I2ABC", "14.035", "132000", "82", "21", STATION_CALLSIGN="K6GTE",
-               COUNTRYPREFIX="I", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            qso(CALL="F5ABC", QSO_DATE=DATE, TIME_ON="132500", FREQ="28.050",
-                MODE="SSB", SNT="59", RCV="59", STX_STRING="82", SRX_STRING="17",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="F", CONTINENT="EU",
-                APP_N1MM_POINTS="1"),
+            cw(
+                "OK2ABC",
+                "14.025",
+                "120000",
+                "82",
+                "17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="OK",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="120500",
+                FREQ="14.050",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                STX_STRING="82",
+                SRX_STRING="21",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            qso(
+                CALL="OK2ABC",
+                QSO_DATE=DATE,
+                TIME_ON="121000",
+                FREQ="14.055",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                STX_STRING="82",
+                SRX_STRING="17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="OK",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            cw(
+                "OK2ABC",
+                "14.025",
+                "121500",
+                "82",
+                "17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="OK",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="0",
+            ),
+            cw(
+                "DL1ABC",
+                "7.030",
+                "130000",
+                "82",
+                "21",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            cw(
+                "N0AX",
+                "14.030",
+                "130500",
+                "82",
+                "17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="K",
+                CONTINENT="NA",
+                APP_N1MM_POINTS="0",
+            ),
+            cw(
+                "S51ZZ",
+                "21.040",
+                "131000",
+                "82",
+                "17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="S5",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            cw(
+                "W1AW",
+                "7.040",
+                "131500",
+                "82",
+                "66",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="W",
+                CONTINENT="NA",
+                APP_N1MM_POINTS="0",
+            ),
+            cw(
+                "I2ABC",
+                "14.035",
+                "132000",
+                "82",
+                "21",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="I",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            qso(
+                CALL="F5ABC",
+                QSO_DATE=DATE,
+                TIME_ON="132500",
+                FREQ="28.050",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                STX_STRING="82",
+                SRX_STRING="17",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="F",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
         ],
     },
     "DL1ABC": {
         "station": {
             **STATION,
-            "Call": "DL1ABC", "Name": "Sample Operator", "Street1": "1 Beispielweg",
-            "City": "Musterstadt", "State": "", "Zip": "00000", "Country": "Germany",
-            "Email": "dl1abc@example.com", "GridSquare": "JO31",
-            "ARRLSection": "DX", "Club": "Example Contest Club",
+            "Call": "DL1ABC",
+            "Name": "Sample Operator",
+            "Street1": "1 Beispielweg",
+            "City": "Musterstadt",
+            "State": "",
+            "Zip": "00000",
+            "Country": "Germany",
+            "Email": "dl1abc@example.com",
+            "GridSquare": "JO31",
+            "ARRLSection": "DX",
+            "Club": "Example Contest Club",
         },
         "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "17"},
         "qsos": [
-            cw("S51ZZ", "14.020", "100000", "17", "82", STATION_CALLSIGN="DL1ABC",
-               COUNTRYPREFIX="S5", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            cw("OK2ABC", "14.045", "100500", "17", "17", STATION_CALLSIGN="DL1ABC",
-               COUNTRYPREFIX="OK", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            cw("S51ZZ", "3.530", "101000", "17", "82", STATION_CALLSIGN="DL1ABC",
-               COUNTRYPREFIX="S5", CONTINENT="EU", APP_N1MM_POINTS="1"),
-            qso(CALL="W1AW", QSO_DATE=DATE, TIME_ON="101500", FREQ="14.030",
-                MODE="SSB", SNT="59", RCV="59", STX_STRING="17", SRX_STRING="66",
-                STATION_CALLSIGN="DL1ABC", COUNTRYPREFIX="W", CONTINENT="NA",
-                APP_N1MM_POINTS="0"),
-            cw("S51ZZ", "14.020", "102000", "17", "82", STATION_CALLSIGN="DL1ABC",
-               COUNTRYPREFIX="S5", CONTINENT="EU", APP_N1MM_POINTS="0"),
-            qso(CALL="I2ABC", QSO_DATE=DATE, TIME_ON="102500", FREQ="21.030",
-                MODE="SSB", SNT="59", RCV="59", STX_STRING="17", SRX_STRING="17",
-                STATION_CALLSIGN="DL1ABC", COUNTRYPREFIX="I", CONTINENT="EU",
-                APP_N1MM_POINTS="1"),
+            cw(
+                "S51ZZ",
+                "14.020",
+                "100000",
+                "17",
+                "82",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="S5",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            cw(
+                "OK2ABC",
+                "14.045",
+                "100500",
+                "17",
+                "17",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="OK",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            cw(
+                "S51ZZ",
+                "3.530",
+                "101000",
+                "17",
+                "82",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="S5",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE=DATE,
+                TIME_ON="101500",
+                FREQ="14.030",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                STX_STRING="17",
+                SRX_STRING="66",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="W",
+                CONTINENT="NA",
+                APP_N1MM_POINTS="0",
+            ),
+            cw(
+                "S51ZZ",
+                "14.020",
+                "102000",
+                "17",
+                "82",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="S5",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="0",
+            ),
+            qso(
+                CALL="I2ABC",
+                QSO_DATE=DATE,
+                TIME_ON="102500",
+                FREQ="21.030",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                STX_STRING="17",
+                SRX_STRING="17",
+                STATION_CALLSIGN="DL1ABC",
+                COUNTRYPREFIX="I",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="1",
+            ),
         ],
     },
 }
@@ -219,41 +391,157 @@ FIXTURES["euhfc"] = {
 # ------------------------------------------------------------ na_sprint_cw
 FIXTURES["na_sprint_cw"] = {
     "K0RX": {
-        "station": {**STATION, "Call": "K0RX", "Name": "Sample Operator",
-                    "State": "MN", "ARRLSection": "MN", "GridSquare": "EN34",
-                    "Club": "Example Contest Club"},
+        "station": {
+            **STATION,
+            "Call": "K0RX",
+            "Name": "Sample Operator",
+            "State": "MN",
+            "ARRLSection": "MN",
+            "GridSquare": "EN34",
+            "Club": "Example Contest Club",
+        },
         "contest_settings": {**CATS, "SentExchange": "DAVE MN"},
         "qsos": [
-            qso(CALL="N6TR", QSO_DATE="20260913", TIME_ON="000100", FREQ="14.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1", NR="154",
-                NAME="RICK", SECT="NC", STATION_CALLSIGN="K0RX"),
-            qso(CALL="K7GM", QSO_DATE="20260913", TIME_ON="000300", FREQ="14.060",
-                MODE="CW", SNT="599", RCV="599", SENTNR="2", NR="13",
-                NAME="TREE", SECT="OR", STATION_CALLSIGN="K0RX"),
-            qso(CALL="N6TR", QSO_DATE="20260913", TIME_ON="000500", FREQ="14.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="3", NR="155",
-                NAME="RICK", SECT="NC", STATION_CALLSIGN="K0RX"),
-            qso(CALL="N6TR", QSO_DATE="20260913", TIME_ON="000700", FREQ="7.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="4", NR="156",
-                NAME="RICK", SECT="NC", STATION_CALLSIGN="K0RX"),
-            qso(CALL="W4AA", QSO_DATE="20260913", TIME_ON="000900", FREQ="7.060",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="22",
-                NAME="BOB", SECT="VA", STATION_CALLSIGN="K0RX"),
-            qso(CALL="KH6AA", QSO_DATE="20260913", TIME_ON="001100", FREQ="14.045",
-                MODE="CW", SNT="599", RCV="599", SENTNR="6", NR="7",
-                NAME="AKI", SECT="HI", STATION_CALLSIGN="K0RX"),
-            qso(CALL="XE1AA", QSO_DATE="20260913", TIME_ON="001300", FREQ="21.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="7", NR="9",
-                NAME="JUAN", SECT="XE", STATION_CALLSIGN="K0RX"),
-            qso(CALL="VE3AA", QSO_DATE="20260913", TIME_ON="001500", FREQ="7.045",
-                MODE="CW", SNT="599", RCV="599", SENTNR="8", NR="31",
-                NAME="ANN", SECT="ON", STATION_CALLSIGN="K0RX"),
-            qso(CALL="N6TR", QSO_DATE="20260913", TIME_ON="001700", FREQ="21.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="9", NR="157",
-                NAME="RICK", SECT="NC", STATION_CALLSIGN="K0RX"),
-            qso(CALL="DL1AA", QSO_DATE="20260913", TIME_ON="001900", FREQ="14.050",
-                MODE="CW", SNT="599", RCV="599", SENTNR="10", NR="33",
-                NAME="HANS", SECT="DX", STATION_CALLSIGN="K0RX"),
+            qso(
+                CALL="N6TR",
+                QSO_DATE="20260913",
+                TIME_ON="000100",
+                FREQ="14.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1",
+                NR="154",
+                NAME="RICK",
+                SECT="NC",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="K7GM",
+                QSO_DATE="20260913",
+                TIME_ON="000300",
+                FREQ="14.060",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="2",
+                NR="13",
+                NAME="TREE",
+                SECT="OR",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="N6TR",
+                QSO_DATE="20260913",
+                TIME_ON="000500",
+                FREQ="14.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="3",
+                NR="155",
+                NAME="RICK",
+                SECT="NC",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="N6TR",
+                QSO_DATE="20260913",
+                TIME_ON="000700",
+                FREQ="7.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="4",
+                NR="156",
+                NAME="RICK",
+                SECT="NC",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="W4AA",
+                QSO_DATE="20260913",
+                TIME_ON="000900",
+                FREQ="7.060",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="22",
+                NAME="BOB",
+                SECT="VA",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="KH6AA",
+                QSO_DATE="20260913",
+                TIME_ON="001100",
+                FREQ="14.045",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="6",
+                NR="7",
+                NAME="AKI",
+                SECT="HI",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="XE1AA",
+                QSO_DATE="20260913",
+                TIME_ON="001300",
+                FREQ="21.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="7",
+                NR="9",
+                NAME="JUAN",
+                SECT="XE",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="VE3AA",
+                QSO_DATE="20260913",
+                TIME_ON="001500",
+                FREQ="7.045",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="8",
+                NR="31",
+                NAME="ANN",
+                SECT="ON",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="N6TR",
+                QSO_DATE="20260913",
+                TIME_ON="001700",
+                FREQ="21.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="9",
+                NR="157",
+                NAME="RICK",
+                SECT="NC",
+                STATION_CALLSIGN="K0RX",
+            ),
+            qso(
+                CALL="DL1AA",
+                QSO_DATE="20260913",
+                TIME_ON="001900",
+                FREQ="14.050",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="10",
+                NR="33",
+                NAME="HANS",
+                SECT="DX",
+                STATION_CALLSIGN="K0RX",
+            ),
         ],
     },
 }
@@ -264,46 +552,156 @@ FIXTURES["cq_wpx_rtty"] = {
         "station": STATION,
         "contest_settings": {**CATS, "ModeCategory": "RTTY", "SentExchange": "001"},
         "qsos": [
-            qso(CALL="DL1ABC", QSO_DATE=DATE, TIME_ON="120000", FREQ="14.085",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="001", NR="123",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", WPXPREFIX="DL1",
-                CONTINENT="EU"),
-            qso(CALL="JA1ABC", QSO_DATE=DATE, TIME_ON="120300", FREQ="14.090",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="002", NR="456",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="JA", WPXPREFIX="JA1",
-                CONTINENT="AS"),
-            qso(CALL="DL1ABC", QSO_DATE=DATE, TIME_ON="120600", FREQ="21.085",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="003", NR="789",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", WPXPREFIX="DL1",
-                CONTINENT="EU"),
-            qso(CALL="DL1ABC", QSO_DATE=DATE, TIME_ON="120900", FREQ="14.085",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="004", NR="999",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", WPXPREFIX="DL1",
-                CONTINENT="EU"),
-            qso(CALL="W1AW", QSO_DATE=DATE, TIME_ON="121200", FREQ="7.085",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="005", NR="111",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="W", WPXPREFIX="W1",
-                CONTINENT="NA"),
-            qso(CALL="VK2ABC", QSO_DATE=DATE, TIME_ON="121500", FREQ="14.095",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="006", NR="222",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="VK", WPXPREFIX="VK2",
-                CONTINENT="OC"),
-            qso(CALL="PY1ABC", QSO_DATE=DATE, TIME_ON="121800", FREQ="21.090",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="007", NR="333",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="PY", WPXPREFIX="PY1",
-                CONTINENT="SA"),
-            qso(CALL="DL1ABC", QSO_DATE=DATE, TIME_ON="122100", FREQ="7.085",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="008", NR="444",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", WPXPREFIX="DL1",
-                CONTINENT="EU"),
-            qso(CALL="UA3ABC", QSO_DATE=DATE, TIME_ON="122400", FREQ="14.100",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="009", NR="555",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", WPXPREFIX="UA3",
-                CONTINENT="EU"),
-            qso(CALL="JA1ABC", QSO_DATE=DATE, TIME_ON="122700", FREQ="21.090",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="010", NR="666",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="JA", WPXPREFIX="JA1",
-                CONTINENT="AS"),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="120000",
+                FREQ="14.085",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="001",
+                NR="123",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                WPXPREFIX="DL1",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="120300",
+                FREQ="14.090",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="002",
+                NR="456",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="JA",
+                WPXPREFIX="JA1",
+                CONTINENT="AS",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="120600",
+                FREQ="21.085",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="003",
+                NR="789",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                WPXPREFIX="DL1",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="120900",
+                FREQ="14.085",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="004",
+                NR="999",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                WPXPREFIX="DL1",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE=DATE,
+                TIME_ON="121200",
+                FREQ="7.085",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="005",
+                NR="111",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="W",
+                WPXPREFIX="W1",
+                CONTINENT="NA",
+            ),
+            qso(
+                CALL="VK2ABC",
+                QSO_DATE=DATE,
+                TIME_ON="121500",
+                FREQ="14.095",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="006",
+                NR="222",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="VK",
+                WPXPREFIX="VK2",
+                CONTINENT="OC",
+            ),
+            qso(
+                CALL="PY1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="121800",
+                FREQ="21.090",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="007",
+                NR="333",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="PY",
+                WPXPREFIX="PY1",
+                CONTINENT="SA",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="122100",
+                FREQ="7.085",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="008",
+                NR="444",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                WPXPREFIX="DL1",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="UA3ABC",
+                QSO_DATE=DATE,
+                TIME_ON="122400",
+                FREQ="14.100",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="009",
+                NR="555",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                WPXPREFIX="UA3",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE=DATE,
+                TIME_ON="122700",
+                FREQ="21.090",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="010",
+                NR="666",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="JA",
+                WPXPREFIX="JA1",
+                CONTINENT="AS",
+            ),
         ],
     },
 }
@@ -314,36 +712,126 @@ FIXTURES["ca_qso_party"] = {
         "station": {**STATION, "Call": "K6GTE", "ARRLSection": "ORG"},
         "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "ORG"},
         "qsos": [
-            qso(CALL="W6ABC", QSO_DATE="20261003", TIME_ON="160000", FREQ="7.200",
-                MODE="SSB", SENTNR="1", NR="5", EXCHANGE1="SCLA",
-                STATION_CALLSIGN="K6GTE", SECT="SCLA"),
-            qso(CALL="N6XYZ", QSO_DATE="20261003", TIME_ON="160300", FREQ="14.040",
-                MODE="CW", SENTNR="2", NR="12", EXCHANGE1="SDIE",
-                STATION_CALLSIGN="K6GTE", SECT="SDIE"),
-            qso(CALL="W6ABC", QSO_DATE="20261003", TIME_ON="160600", FREQ="14.040",
-                MODE="CW", SENTNR="3", NR="5", EXCHANGE1="SCLA",
-                STATION_CALLSIGN="K6GTE", SECT="SCLA"),
-            qso(CALL="W6ABC", QSO_DATE="20261003", TIME_ON="160900", FREQ="7.200",
-                MODE="SSB", SENTNR="4", NR="5", EXCHANGE1="SCLA",
-                STATION_CALLSIGN="K6GTE", SECT="SCLA"),
-            qso(CALL="K7ABC", QSO_DATE="20261003", TIME_ON="161200", FREQ="7.210",
-                MODE="SSB", SENTNR="5", NR="8", EXCHANGE1="WA",
-                STATION_CALLSIGN="K6GTE", SECT="WA"),
-            qso(CALL="KH6ABC", QSO_DATE="20261003", TIME_ON="161500", FREQ="14.045",
-                MODE="CW", SENTNR="6", NR="3", EXCHANGE1="HI",
-                STATION_CALLSIGN="K6GTE", SECT="HI"),
-            qso(CALL="VE7ABC", QSO_DATE="20261003", TIME_ON="161800", FREQ="21.040",
-                MODE="CW", SENTNR="7", NR="2", EXCHANGE1="BC",
-                STATION_CALLSIGN="K6GTE", SECT="BC"),
-            qso(CALL="JA1ABC", QSO_DATE="20261003", TIME_ON="162100", FREQ="14.050",
-                MODE="CW", SENTNR="8", NR="1", EXCHANGE1="DX",
-                STATION_CALLSIGN="K6GTE", SECT="DX"),
-            qso(CALL="W6ABC", QSO_DATE="20261003", TIME_ON="162400", FREQ="21.040",
-                MODE="CW", SENTNR="9", NR="5", EXCHANGE1="SCLA",
-                STATION_CALLSIGN="K6GTE", SECT="SCLA"),
-            qso(CALL="N0ABC", QSO_DATE="20261003", TIME_ON="162700", FREQ="7.220",
-                MODE="SSB", SENTNR="10", NR="7", EXCHANGE1="CO",
-                STATION_CALLSIGN="K6GTE", SECT="CO"),
+            qso(
+                CALL="W6ABC",
+                QSO_DATE="20261003",
+                TIME_ON="160000",
+                FREQ="7.200",
+                MODE="SSB",
+                SENTNR="1",
+                NR="5",
+                EXCHANGE1="SCLA",
+                STATION_CALLSIGN="K6GTE",
+                SECT="SCLA",
+            ),
+            qso(
+                CALL="N6XYZ",
+                QSO_DATE="20261003",
+                TIME_ON="160300",
+                FREQ="14.040",
+                MODE="CW",
+                SENTNR="2",
+                NR="12",
+                EXCHANGE1="SDIE",
+                STATION_CALLSIGN="K6GTE",
+                SECT="SDIE",
+            ),
+            qso(
+                CALL="W6ABC",
+                QSO_DATE="20261003",
+                TIME_ON="160600",
+                FREQ="14.040",
+                MODE="CW",
+                SENTNR="3",
+                NR="5",
+                EXCHANGE1="SCLA",
+                STATION_CALLSIGN="K6GTE",
+                SECT="SCLA",
+            ),
+            qso(
+                CALL="W6ABC",
+                QSO_DATE="20261003",
+                TIME_ON="160900",
+                FREQ="7.200",
+                MODE="SSB",
+                SENTNR="4",
+                NR="5",
+                EXCHANGE1="SCLA",
+                STATION_CALLSIGN="K6GTE",
+                SECT="SCLA",
+            ),
+            qso(
+                CALL="K7ABC",
+                QSO_DATE="20261003",
+                TIME_ON="161200",
+                FREQ="7.210",
+                MODE="SSB",
+                SENTNR="5",
+                NR="8",
+                EXCHANGE1="WA",
+                STATION_CALLSIGN="K6GTE",
+                SECT="WA",
+            ),
+            qso(
+                CALL="KH6ABC",
+                QSO_DATE="20261003",
+                TIME_ON="161500",
+                FREQ="14.045",
+                MODE="CW",
+                SENTNR="6",
+                NR="3",
+                EXCHANGE1="HI",
+                STATION_CALLSIGN="K6GTE",
+                SECT="HI",
+            ),
+            qso(
+                CALL="VE7ABC",
+                QSO_DATE="20261003",
+                TIME_ON="161800",
+                FREQ="21.040",
+                MODE="CW",
+                SENTNR="7",
+                NR="2",
+                EXCHANGE1="BC",
+                STATION_CALLSIGN="K6GTE",
+                SECT="BC",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20261003",
+                TIME_ON="162100",
+                FREQ="14.050",
+                MODE="CW",
+                SENTNR="8",
+                NR="1",
+                EXCHANGE1="DX",
+                STATION_CALLSIGN="K6GTE",
+                SECT="DX",
+            ),
+            qso(
+                CALL="W6ABC",
+                QSO_DATE="20261003",
+                TIME_ON="162400",
+                FREQ="21.040",
+                MODE="CW",
+                SENTNR="9",
+                NR="5",
+                EXCHANGE1="SCLA",
+                STATION_CALLSIGN="K6GTE",
+                SECT="SCLA",
+            ),
+            qso(
+                CALL="N0ABC",
+                QSO_DATE="20261003",
+                TIME_ON="162700",
+                FREQ="7.220",
+                MODE="SSB",
+                SENTNR="10",
+                NR="7",
+                EXCHANGE1="CO",
+                STATION_CALLSIGN="K6GTE",
+                SECT="CO",
+            ),
         ],
     },
 }
@@ -354,50 +842,159 @@ FIXTURES["arrl_vhf_jun"] = {
         "station": {**STATION, "BandCategory": "2M"},
         "contest_settings": {**CATS, "BandCategory": "2M", "ModeCategory": "SSB+CW"},
         "qsos": [
-            qso(CALL="W1AW", QSO_DATE="20260613", TIME_ON="180000", FREQ="144.200",
-                MODE="SSB", SENTNR="DM13", NR="FN31", GRIDSQUARE="FN31",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="1500"),
-            qso(CALL="K6ABA", QSO_DATE="20260613", TIME_ON="180300", FREQ="144.250",
-                MODE="CW", SENTNR="DM13", NR="DM04", GRIDSQUARE="DM04",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="300"),
-            qso(CALL="W1AW", QSO_DATE="20260613", TIME_ON="180600", FREQ="50.200",
-                MODE="SSB", SENTNR="DM13", NR="FN31", GRIDSQUARE="FN31",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="2200"),
-            qso(CALL="W1AW", QSO_DATE="20260613", TIME_ON="180900", FREQ="144.200",
-                MODE="SSB", SENTNR="DM13", NR="FN31", GRIDSQUARE="FN31",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="0"),
-            qso(CALL="N6XYZ", QSO_DATE="20260613", TIME_ON="181200", FREQ="432.100",
-                MODE="CW", SENTNR="DM13", NR="CM87", GRIDSQUARE="CM87",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="500"),
-            qso(CALL="K7ABC", QSO_DATE="20260613", TIME_ON="181500", FREQ="144.300",
-                MODE="SSB", SENTNR="DM13", NR="CN85", GRIDSQUARE="CN85",
-                STATION_CALLSIGN="K6GTE", APP_N1MM_POINTS="1200"),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260613",
+                TIME_ON="180000",
+                FREQ="144.200",
+                MODE="SSB",
+                SENTNR="DM13",
+                NR="FN31",
+                GRIDSQUARE="FN31",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="1500",
+            ),
+            qso(
+                CALL="K6ABA",
+                QSO_DATE="20260613",
+                TIME_ON="180300",
+                FREQ="144.250",
+                MODE="CW",
+                SENTNR="DM13",
+                NR="DM04",
+                GRIDSQUARE="DM04",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="300",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260613",
+                TIME_ON="180600",
+                FREQ="50.200",
+                MODE="SSB",
+                SENTNR="DM13",
+                NR="FN31",
+                GRIDSQUARE="FN31",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="2200",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260613",
+                TIME_ON="180900",
+                FREQ="144.200",
+                MODE="SSB",
+                SENTNR="DM13",
+                NR="FN31",
+                GRIDSQUARE="FN31",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="0",
+            ),
+            qso(
+                CALL="N6XYZ",
+                QSO_DATE="20260613",
+                TIME_ON="181200",
+                FREQ="432.100",
+                MODE="CW",
+                SENTNR="DM13",
+                NR="CM87",
+                GRIDSQUARE="CM87",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="500",
+            ),
+            qso(
+                CALL="K7ABC",
+                QSO_DATE="20260613",
+                TIME_ON="181500",
+                FREQ="144.300",
+                MODE="SSB",
+                SENTNR="DM13",
+                NR="CN85",
+                GRIDSQUARE="CN85",
+                STATION_CALLSIGN="K6GTE",
+                APP_N1MM_POINTS="1200",
+            ),
         ],
     },
     # A station outside W/VE only gets credit for W/VE contacts (rule 1), so
     # the OK2ABC and JA1ABC QSOs earn neither points nor a multiplier here.
     "DL1ABC": {
-        "station": {**STATION, "Call": "DL1ABC", "Country": "Germany",
-                    "State": "", "GridSquare": "JN58", "ARRLSection": "DX",
-                    "Email": "dl1abc@example.com"},
-        "contest_settings": {**CATS, "BandCategory": "ALL",
-                             "ModeCategory": "SSB+CW", "SentExchange": "JN58"},
+        "station": {
+            **STATION,
+            "Call": "DL1ABC",
+            "Country": "Germany",
+            "State": "",
+            "GridSquare": "JN58",
+            "ARRLSection": "DX",
+            "Email": "dl1abc@example.com",
+        },
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "ALL",
+            "ModeCategory": "SSB+CW",
+            "SentExchange": "JN58",
+        },
         "qsos": [
-            qso(CALL="W1AW", QSO_DATE="20260613", TIME_ON="180000", FREQ="144.200",
-                MODE="SSB", SENTNR="JN58", NR="FN31", GRIDSQUARE="FN31",
-                STATION_CALLSIGN="DL1ABC", APP_N1MM_POINTS="1500"),
-            qso(CALL="OK2ABC", QSO_DATE="20260613", TIME_ON="180300", FREQ="144.250",
-                MODE="CW", SENTNR="JN58", NR="JO70", GRIDSQUARE="JO70",
-                STATION_CALLSIGN="DL1ABC", APP_N1MM_POINTS="300"),
-            qso(CALL="N6XYZ", QSO_DATE="20260613", TIME_ON="180600", FREQ="50.200",
-                MODE="SSB", SENTNR="JN58", NR="CM87", GRIDSQUARE="CM87",
-                STATION_CALLSIGN="DL1ABC", APP_N1MM_POINTS="2200"),
-            qso(CALL="JA1ABC", QSO_DATE="20260613", TIME_ON="180900", FREQ="432.100",
-                MODE="CW", SENTNR="JN58", NR="PM95", GRIDSQUARE="PM95",
-                STATION_CALLSIGN="DL1ABC", APP_N1MM_POINTS="500"),
-            qso(CALL="W1AW", QSO_DATE="20260613", TIME_ON="181200", FREQ="144.200",
-                MODE="SSB", SENTNR="JN58", NR="FN31", GRIDSQUARE="FN31",
-                STATION_CALLSIGN="DL1ABC", APP_N1MM_POINTS="0"),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260613",
+                TIME_ON="180000",
+                FREQ="144.200",
+                MODE="SSB",
+                SENTNR="JN58",
+                NR="FN31",
+                GRIDSQUARE="FN31",
+                STATION_CALLSIGN="DL1ABC",
+                APP_N1MM_POINTS="1500",
+            ),
+            qso(
+                CALL="OK2ABC",
+                QSO_DATE="20260613",
+                TIME_ON="180300",
+                FREQ="144.250",
+                MODE="CW",
+                SENTNR="JN58",
+                NR="JO70",
+                GRIDSQUARE="JO70",
+                STATION_CALLSIGN="DL1ABC",
+                APP_N1MM_POINTS="300",
+            ),
+            qso(
+                CALL="N6XYZ",
+                QSO_DATE="20260613",
+                TIME_ON="180600",
+                FREQ="50.200",
+                MODE="SSB",
+                SENTNR="JN58",
+                NR="CM87",
+                GRIDSQUARE="CM87",
+                STATION_CALLSIGN="DL1ABC",
+                APP_N1MM_POINTS="2200",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20260613",
+                TIME_ON="180900",
+                FREQ="432.100",
+                MODE="CW",
+                SENTNR="JN58",
+                NR="PM95",
+                GRIDSQUARE="PM95",
+                STATION_CALLSIGN="DL1ABC",
+                APP_N1MM_POINTS="500",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260613",
+                TIME_ON="181200",
+                FREQ="144.200",
+                MODE="SSB",
+                SENTNR="JN58",
+                NR="FN31",
+                GRIDSQUARE="FN31",
+                STATION_CALLSIGN="DL1ABC",
+                APP_N1MM_POINTS="0",
+            ),
         ],
     },
 }
@@ -443,24 +1040,48 @@ def _ea_majestad_fixtures(mode):
             "station": _EA1ABC,
             "contest_settings": {**CATS, "ModeCategory": mode, "SentExchange": "M"},
             "qsos": [
-                _mk_qso(mode, "EA4XYZ", "120000", "14.020", "M", "M", "EA1ABC", "EA", "EU"),
-                _mk_qso(mode, "EF0F", "120200", "14.025", "M", "SMR", "EA1ABC", "EA", "EU"),
-                _mk_qso(mode, "DL1ABC", "120400", "14.030", "M", "101", "EA1ABC", "DL", "EU"),
-                _mk_qso(mode, "EA4XYZ", "120600", "14.020", "M", "102", "EA1ABC", "EA", "EU"),
-                _mk_qso(mode, "EA5XYZ", "121000", "7.020", "M", "A", "EA1ABC", "EA", "EU"),
-                _mk_qso(mode, "K6GTE", "121200", "7.025", "M", "103", "EA1ABC", "K", "NA"),
+                _mk_qso(
+                    mode, "EA4XYZ", "120000", "14.020", "M", "M", "EA1ABC", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "EF0F", "120200", "14.025", "M", "SMR", "EA1ABC", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "DL1ABC", "120400", "14.030", "M", "101", "EA1ABC", "DL", "EU"
+                ),
+                _mk_qso(
+                    mode, "EA4XYZ", "120600", "14.020", "M", "102", "EA1ABC", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "EA5XYZ", "121000", "7.020", "M", "A", "EA1ABC", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "K6GTE", "121200", "7.025", "M", "103", "EA1ABC", "K", "NA"
+                ),
             ],
         },
         "K6GTE": {
             "station": STATION,
             "contest_settings": {**CATS, "ModeCategory": mode, "SentExchange": "001"},
             "qsos": [
-                _mk_qso(mode, "EA4ABC", "120000", "14.020", "1", "M", "K6GTE", "EA", "EU"),
-                _mk_qso(mode, "EF0F", "120200", "14.025", "2", "SMR", "K6GTE", "EA", "EU"),
-                _mk_qso(mode, "DL1ABC", "120400", "14.030", "3", "001", "K6GTE", "DL", "EU"),
-                _mk_qso(mode, "EA4ABC", "120600", "14.020", "4", "002", "K6GTE", "EA", "EU"),
-                _mk_qso(mode, "VE3ABC", "121000", "7.020", "5", "003", "K6GTE", "VE", "NA"),
-                _mk_qso(mode, "EA5XYZ", "121200", "7.025", "6", "A", "K6GTE", "EA", "EU"),
+                _mk_qso(
+                    mode, "EA4ABC", "120000", "14.020", "1", "M", "K6GTE", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "EF0F", "120200", "14.025", "2", "SMR", "K6GTE", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "DL1ABC", "120400", "14.030", "3", "001", "K6GTE", "DL", "EU"
+                ),
+                _mk_qso(
+                    mode, "EA4ABC", "120600", "14.020", "4", "002", "K6GTE", "EA", "EU"
+                ),
+                _mk_qso(
+                    mode, "VE3ABC", "121000", "7.020", "5", "003", "K6GTE", "VE", "NA"
+                ),
+                _mk_qso(
+                    mode, "EA5XYZ", "121200", "7.025", "6", "A", "K6GTE", "EA", "EU"
+                ),
             ],
         },
     }
@@ -477,28 +1098,53 @@ FIXTURES["ea_rtty"] = {
         "station": _EA1ABC,
         "contest_settings": {**CATS, "ModeCategory": "RTTY", "SentExchange": "M"},
         "qsos": [
-            _mk_qso("RTTY", "EA4XYZ", "120000", "14.070", "M", "M", "EA1ABC", "EA", "EU"),
-            _mk_qso("RTTY", "EA4URE", "120200", "14.075", "M", "HQ", "EA1ABC", "EA", "EU"),
-            _mk_qso("RTTY", "DL1ABC", "120400", "14.080", "M", "101", "EA1ABC", "DL", "EU"),
-            _mk_qso("RTTY", "EA4XYZ", "120600", "14.070", "M", "102", "EA1ABC", "EA", "EU"),
-            _mk_qso("RTTY", "VE3ABC", "121000", "7.040", "M", "103", "EA1ABC", "VE", "NA"),
-            _mk_qso("RTTY", "EA5XYZ", "121200", "7.045", "M", "A", "EA1ABC", "EA", "EU"),
+            _mk_qso(
+                "RTTY", "EA4XYZ", "120000", "14.070", "M", "M", "EA1ABC", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "EA4URE", "120200", "14.075", "M", "HQ", "EA1ABC", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "DL1ABC", "120400", "14.080", "M", "101", "EA1ABC", "DL", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "EA4XYZ", "120600", "14.070", "M", "102", "EA1ABC", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "VE3ABC", "121000", "7.040", "M", "103", "EA1ABC", "VE", "NA"
+            ),
+            _mk_qso(
+                "RTTY", "EA5XYZ", "121200", "7.045", "M", "A", "EA1ABC", "EA", "EU"
+            ),
         ],
     },
     "K6GTE": {
         "station": STATION,
         "contest_settings": {**CATS, "ModeCategory": "RTTY", "SentExchange": "001"},
         "qsos": [
-            _mk_qso("RTTY", "EA4ABC", "120000", "14.070", "1", "M", "K6GTE", "EA", "EU"),
-            _mk_qso("RTTY", "EA4URE", "120200", "14.075", "2", "HQ", "K6GTE", "EA", "EU"),
-            _mk_qso("RTTY", "KH6ABC", "120400", "14.080", "3", "001", "K6GTE", "KH6", "OC"),
-            _mk_qso("RTTY", "VK2ABC", "120600", "14.085", "4", "002", "K6GTE", "VK", "OC"),
-            _mk_qso("RTTY", "EA4ABC", "120800", "14.070", "5", "003", "K6GTE", "EA", "EU"),
-            _mk_qso("RTTY", "VE3ABC", "121000", "7.040", "6", "004", "K6GTE", "VE", "NA"),
+            _mk_qso(
+                "RTTY", "EA4ABC", "120000", "14.070", "1", "M", "K6GTE", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "EA4URE", "120200", "14.075", "2", "HQ", "K6GTE", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "KH6ABC", "120400", "14.080", "3", "001", "K6GTE", "KH6", "OC"
+            ),
+            _mk_qso(
+                "RTTY", "VK2ABC", "120600", "14.085", "4", "002", "K6GTE", "VK", "OC"
+            ),
+            _mk_qso(
+                "RTTY", "EA4ABC", "120800", "14.070", "5", "003", "K6GTE", "EA", "EU"
+            ),
+            _mk_qso(
+                "RTTY", "VE3ABC", "121000", "7.040", "6", "004", "K6GTE", "VE", "NA"
+            ),
             _mk_qso("RTTY", "EA5XYZ", "121200", "7.045", "7", "A", "K6GTE", "EA", "EU"),
         ],
     },
 }
+
 
 # ----------------------------------------------------- iaru_fieldday_r1_*
 # Fixed station to fixed station is nothing; a fixed entrant scores 2 from a
@@ -510,10 +1156,14 @@ def _iaru_fd_fixtures(mode):
     def qsos_for(station):
         return [
             _mk_qso(mode, "DL2ABC", "120000", "14.040", "1", "2", station, "DL", "EU"),
-            _mk_qso(mode, "DL3ABC/P", "120200", "14.045", "1", "3", station, "DL", "EU"),
+            _mk_qso(
+                mode, "DL3ABC/P", "120200", "14.045", "1", "3", station, "DL", "EU"
+            ),
             _mk_qso(mode, "K6GTE", "120400", "14.050", "1", "4", station, "K", "NA"),
             _mk_qso(mode, "W1AW/P", "120600", "14.055", "1", "5", station, "K", "NA"),
-            _mk_qso(mode, "DL3ABC/P", "120800", "14.045", "1", "6", station, "DL", "EU"),
+            _mk_qso(
+                mode, "DL3ABC/P", "120800", "14.045", "1", "6", station, "DL", "EU"
+            ),
         ]
 
     return {
@@ -550,6 +1200,7 @@ def _iaru_fd_fixtures(mode):
 
 FIXTURES["iaru_fieldday_r1_cw"] = _iaru_fd_fixtures("CW")
 FIXTURES["iaru_fieldday_r1_ssb"] = _iaru_fd_fixtures("SSB")
+
 
 # --------------------------------------------------- john_moyle_field_day
 # Phone is one point and CW two, and a contact scores when either end is in
@@ -613,6 +1264,7 @@ FIXTURES["john_moyle_field_day"] = {
         ],
     },
 }
+
 
 # ------------------------------------------------------------ trans_tasman
 # VK and ZL stations only, on 160, 80 and 40m, in three two-hour blocks from
@@ -736,71 +1388,102 @@ FIXTURES["agcw_qrp"] = {
     # works is two points.
     "K6GTE": {
         "station": STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "HIGH",
-                             "SentExchange": "001/QRO/1234"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "HIGH",
+            "SentExchange": "001/QRO/1234",
+        },
         "qsos": [
             # QRO against QRO: no points, but the member still multiplies
-            _agcw_contact("K6GTE", "DL1ABC", "140000", "21.010",
-                          "001/QRO/1234", "002/QRO/2345"),
+            _agcw_contact(
+                "K6GTE", "DL1ABC", "140000", "21.010", "001/QRO/1234", "002/QRO/2345"
+            ),
             # QRO against QRP: two points, 3456 is a new member on 15m
-            _agcw_contact("K6GTE", "DL2ABC", "140003", "21.015",
-                          "002/QRO/1234", "003/QRP/3456"),
+            _agcw_contact(
+                "K6GTE", "DL2ABC", "140003", "21.015", "002/QRO/1234", "003/QRP/3456"
+            ),
             # against MP: two points, and NM is no member
-            _agcw_contact("K6GTE", "DL3ABC", "140006", "21.020",
-                          "003/QRO/1234", "004/MP/NM"),
+            _agcw_contact(
+                "K6GTE", "DL3ABC", "140006", "21.020", "003/QRO/1234", "004/MP/NM"
+            ),
             # against VLP: two points, 4567 is a new member on 40m
-            _agcw_contact("K6GTE", "DL4ABC", "140009", "7.010",
-                          "004/QRO/1234", "005/VLP/4567"),
+            _agcw_contact(
+                "K6GTE", "DL4ABC", "140009", "7.010", "004/QRO/1234", "005/VLP/4567"
+            ),
             # a duplicate on 15m
-            _agcw_contact("K6GTE", "DL1ABC", "140012", "21.010",
-                          "005/QRO/1234", "006/QRO/2345"),
+            _agcw_contact(
+                "K6GTE", "DL1ABC", "140012", "21.010", "005/QRO/1234", "006/QRO/2345"
+            ),
             # 3456 already multiplied on 15m
-            _agcw_contact("K6GTE", "DL5ABC", "140015", "21.025",
-                          "006/QRO/1234", "007/QRP/3456"),
+            _agcw_contact(
+                "K6GTE", "DL5ABC", "140015", "21.025", "006/QRO/1234", "007/QRP/3456"
+            ),
         ],
     },
     # A QRP entrant: three points against QRP and VLP, two against everything
     # else.
     "DL1ABC": {
         "station": _AGCW_DL_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "QRP",
-                             "SentExchange": "001/QRP/1234"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "QRP",
+            "SentExchange": "001/QRP/1234",
+        },
         "qsos": [
-            _agcw_contact("DL1ABC", "OK2ABC", "140000", "3.505",
-                          "001/QRP/1234", "002/QRP/2345"),
-            _agcw_contact("DL1ABC", "OK3ABC", "140003", "3.510",
-                          "002/QRP/1234", "003/VLP/3456"),
-            _agcw_contact("DL1ABC", "OK4ABC", "140006", "3.515",
-                          "003/QRP/1234", "004/MP/4567"),
-            _agcw_contact("DL1ABC", "OK5ABC", "140009", "3.520",
-                          "004/QRP/1234", "005/QRO/5678"),
-            _agcw_contact("DL1ABC", "OK2ABC", "140012", "3.505",
-                          "005/QRP/1234", "006/QRP/2345"),
-            _agcw_contact("DL1ABC", "OK6ABC", "140015", "7.010",
-                          "006/QRP/1234", "007/QRP/2345"),
+            _agcw_contact(
+                "DL1ABC", "OK2ABC", "140000", "3.505", "001/QRP/1234", "002/QRP/2345"
+            ),
+            _agcw_contact(
+                "DL1ABC", "OK3ABC", "140003", "3.510", "002/QRP/1234", "003/VLP/3456"
+            ),
+            _agcw_contact(
+                "DL1ABC", "OK4ABC", "140006", "3.515", "003/QRP/1234", "004/MP/4567"
+            ),
+            _agcw_contact(
+                "DL1ABC", "OK5ABC", "140009", "3.520", "004/QRP/1234", "005/QRO/5678"
+            ),
+            _agcw_contact(
+                "DL1ABC", "OK2ABC", "140012", "3.505", "005/QRP/1234", "006/QRP/2345"
+            ),
+            _agcw_contact(
+                "DL1ABC", "OK6ABC", "140015", "7.010", "006/QRP/1234", "007/QRP/2345"
+            ),
         ],
     },
     # An MP entrant (the dialog calls it Low): two points against everything.
     "SM5XYZ": {
         "station": _AGCW_SM_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "LOW",
-                             "SentExchange": "001/MP/1111"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "LOW",
+            "SentExchange": "001/MP/1111",
+        },
         "qsos": [
-            _agcw_contact("SM5XYZ", "DL1ABC", "140000", "3.505",
-                          "001/MP/1111", "002/QRP/2345"),
-            _agcw_contact("SM5XYZ", "DL2ABC", "140003", "3.510",
-                          "002/MP/1111", "003/VLP/3456"),
-            _agcw_contact("SM5XYZ", "DL3ABC", "140006", "3.515",
-                          "003/MP/1111", "004/MP/4567"),
-            _agcw_contact("SM5XYZ", "DL4ABC", "140009", "3.520",
-                          "004/MP/1111", "005/QRO/5678"),
-            _agcw_contact("SM5XYZ", "DL1ABC", "140012", "3.505",
-                          "005/MP/1111", "006/QRP/2345"),
-            _agcw_contact("SM5XYZ", "DL5ABC", "140015", "7.010",
-                          "006/MP/1111", "007/QRP/2345"),
+            _agcw_contact(
+                "SM5XYZ", "DL1ABC", "140000", "3.505", "001/MP/1111", "002/QRP/2345"
+            ),
+            _agcw_contact(
+                "SM5XYZ", "DL2ABC", "140003", "3.510", "002/MP/1111", "003/VLP/3456"
+            ),
+            _agcw_contact(
+                "SM5XYZ", "DL3ABC", "140006", "3.515", "003/MP/1111", "004/MP/4567"
+            ),
+            _agcw_contact(
+                "SM5XYZ", "DL4ABC", "140009", "3.520", "004/MP/1111", "005/QRO/5678"
+            ),
+            _agcw_contact(
+                "SM5XYZ", "DL1ABC", "140012", "3.505", "005/MP/1111", "006/QRP/2345"
+            ),
+            _agcw_contact(
+                "SM5XYZ", "DL5ABC", "140015", "7.010", "006/MP/1111", "007/QRP/2345"
+            ),
         ],
     },
 }
+
 
 # ------------------------------------------------------- wia_remembrance
 # WIA Remembrance Day Contest.  A contact is one point, two on 160m and two on
@@ -850,6 +1533,7 @@ FIXTURES["wia_remembrance"] = {
     },
 }
 
+
 # ------------------------------------------------------------------- raem
 # Ernst Krenkel Memorial, CW on 80m to 10m.  50 points for the QSO, one more
 # for every degree of latitude difference and again for longitude - the
@@ -879,15 +1563,23 @@ FIXTURES["raem"] = {
         "contest_settings": {**CATS, "ModeCategory": "CW", "SentExchange": "33N117W"},
         "qsos": [
             # 50 + 22 latitude + 154 longitude
-            _raem_contact("K6GTE", "UA3ABC", "000000", "3.505", "55N037O", "001", "001"),
+            _raem_contact(
+                "K6GTE", "UA3ABC", "000000", "3.505", "55N037O", "001", "001"
+            ),
             # the memorial station itself adds 300
             _raem_contact("K6GTE", "RAEM", "000200", "7.025", "55N037O", "002", "002"),
             # 69 north is inside the polar circle, and adds 100
-            _raem_contact("K6GTE", "LA1ABC", "000400", "7.030", "69N018O", "003", "003"),
+            _raem_contact(
+                "K6GTE", "LA1ABC", "000400", "7.030", "69N018O", "003", "003"
+            ),
             # the southern hemisphere, and the shorter way round the globe
-            _raem_contact("K6GTE", "ZL1ABC", "000600", "14.025", "36S174O", "004", "004"),
+            _raem_contact(
+                "K6GTE", "ZL1ABC", "000600", "14.025", "36S174O", "004", "004"
+            ),
             # a duplicate, worked once per band
-            _raem_contact("K6GTE", "UA3ABC", "000800", "3.505", "55N037O", "005", "005"),
+            _raem_contact(
+                "K6GTE", "UA3ABC", "000800", "3.505", "55N037O", "005", "005"
+            ),
         ],
     },
     "LA1ABC": {
@@ -903,13 +1595,20 @@ FIXTURES["raem"] = {
         "contest_settings": {**CATS, "ModeCategory": "CW", "SentExchange": "69N018O"},
         "qsos": [
             # a polar entrant, so the whole score is multiplied by 1.1
-            _raem_contact("LA1ABC", "UA3ABC", "000000", "3.505", "55N037O", "001", "001"),
-            _raem_contact("LA1ABC", "K6GTE", "000200", "14.025", "33N117W", "002", "002"),
+            _raem_contact(
+                "LA1ABC", "UA3ABC", "000000", "3.505", "55N037O", "001", "001"
+            ),
+            _raem_contact(
+                "LA1ABC", "K6GTE", "000200", "14.025", "33N117W", "002", "002"
+            ),
             # a duplicate on the band it was already worked
-            _raem_contact("LA1ABC", "UA3ABC", "000400", "3.505", "55N037O", "003", "003"),
+            _raem_contact(
+                "LA1ABC", "UA3ABC", "000400", "3.505", "55N037O", "003", "003"
+            ),
         ],
     },
 }
+
 
 # -------------------------------------------------------------- canada_day
 # RAC Canada Day.  A RAC official station is 20 points, any other Canadian
@@ -967,6 +1666,7 @@ FIXTURES["canada_day"] = {
         ],
     },
 }
+
 
 # -------------------------------------------------------- ssa_mt_cw/_ssb
 # Two points per valid QSO, and a multiplier is each contacted locator square -
@@ -1028,6 +1728,7 @@ def _ssa_mt_fixtures(mode):
 
 FIXTURES["ssa_mt_cw"] = _ssa_mt_fixtures("CW")
 FIXTURES["ssa_mt_ssb"] = _ssa_mt_fixtures("SSB")
+
 
 # ------------------------------------------------------- oceania_dx_cw/_ssb
 # A contact scores the band's points only when one end is in Oceania - 20 for
@@ -1092,6 +1793,7 @@ def _oceania_fixtures(mode):
 FIXTURES["oceania_dx_cw"] = _oceania_fixtures("CW")
 FIXTURES["oceania_dx_ssb"] = _oceania_fixtures("SSB")
 
+
 # ------------------------------------------------------------- 10-10 parties
 # Two points for a contact that carries a 10-10 number, one for a contact
 # without one (record a zero in its place), and a station counts only once in
@@ -1144,6 +1846,7 @@ FIXTURES["10_10_fall_cw"] = _ten_ten_fixtures("CW", "20261017")
 FIXTURES["10_10_spring_cw"] = _ten_ten_fixtures("CW", "20260502")
 FIXTURES["10_10_summer_phone"] = _ten_ten_fixtures("SSB", "20260801")
 FIXTURES["10_10_winter_phone"] = _ten_ten_fixtures("SSB", "20260207")
+
 
 # ------------------------------------------------------------- jidx_cw/jidx_ph
 # Rule 5: only a contact between a JA station and a DX station scores, and the
@@ -1210,6 +1913,7 @@ def _jidx_fixtures(mode):
 FIXTURES["jidx_cw"] = _jidx_fixtures("CW")
 FIXTURES["jidx_ph"] = _jidx_fixtures("SSB")
 
+
 # ------------------------------------------------------------- ari_40_80
 # An Italian domestic contest on 80m and 40m.  CW is worth 3 points, digital
 # (RTTY) 2 and phone 1; a multiplier is each Italian province once per mode
@@ -1264,6 +1968,7 @@ def _ari_40_80_fixture():
 
 
 FIXTURES["ari_40_80"] = _ari_40_80_fixture()
+
 
 # ------------------------------------------------------------------ ari_dx
 # Scoring depends on where the entrant is.  Points: 0 with the entrant's own
@@ -1330,6 +2035,7 @@ def _ari_dx_fixtures():
 
 
 FIXTURES["ari_dx"] = _ari_dx_fixtures()
+
 
 # ------------------------------------------------------------ lz-dx/helvetia
 # Two contests with the same point table: 10 points for the home country,
@@ -1404,7 +2110,9 @@ def _lz_dx_fixtures():
                 contact("LZ1ABC", "JA1ABC", "120400", "7.025", "CW", "045", "45", "JA"),
                 contact("LZ1ABC", "LZ2XYZ", "120600", "3.505", "SSB", "PD", "28", "LZ"),
                 contact("LZ1ABC", "DL1ABC", "120800", "3.505", "CW", "002", "28", "DL"),
-                contact("LZ1ABC", "PY1ABC", "121000", "7.035", "SSB", "015", "15", "PY"),
+                contact(
+                    "LZ1ABC", "PY1ABC", "121000", "7.035", "SSB", "015", "15", "PY"
+                ),
             ],
         },
     }
@@ -1469,6 +2177,7 @@ def _helvetia_fixtures():
 
 
 FIXTURES["helvetia"] = _helvetia_fixtures()
+
 
 # -------------------------------------------------------------- aadx_cw/ssb
 # All Asian DX, where the entrant's side decides nearly everything.  An Asian
@@ -1536,6 +2245,7 @@ def _aadx_fixtures(mode):
 FIXTURES["aadx_cw"] = _aadx_fixtures("CW")
 FIXTURES["aadx_ssb"] = _aadx_fixtures("SSB")
 
+
 # ---------------------------------------------------------------- ref_cw/ssb
 # The REF contest (Coupe du REF).  A French station scores 6/15 against another
 # French station and 1/2 against a foreign one; a foreign entrant scores 1/3
@@ -1599,6 +2309,7 @@ def _ref_fixtures(mode):
 FIXTURES["ref_cw"] = _ref_fixtures("CW")
 FIXTURES["ref_ssb"] = _ref_fixtures("SSB")
 
+
 # -------------------------------------------------------------------- spdx
 # SP DX Contest.  A Polish station scores 3 points for a station outside
 # Europe, 1 for one inside it and nothing against another Polish station, and
@@ -1626,7 +2337,11 @@ def _spdx_fixtures():
         # multiplier is the province once per band whatever the mode.
         "K6GTE": {
             "station": STATION,
-            "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "001"},
+            "contest_settings": {
+                **CATS,
+                "ModeCategory": "SSB+CW",
+                "SentExchange": "001",
+            },
             "qsos": [
                 contact("K6GTE", "001", "SP1ABC", "150000", "3.505", "CW", "B", "SP"),
                 contact("K6GTE", "001", "SP2DEF", "150200", "3.515", "CW", "C", "SP"),
@@ -1658,6 +2373,7 @@ def _spdx_fixtures():
 
 FIXTURES["spdx"] = _spdx_fixtures()
 
+
 # -------------------------------------------------------------------- pacc
 # Dutch PACC.  A Dutch station scores 1 point for every contact and counts the
 # DXCC countries worked; a foreign station scores 1 point only for Dutch
@@ -1684,7 +2400,11 @@ def _pacc_fixtures():
         # is a new multiplier once per band and mode.
         "K6GTE": {
             "station": STATION,
-            "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "001"},
+            "contest_settings": {
+                **CATS,
+                "ModeCategory": "SSB+CW",
+                "SentExchange": "001",
+            },
             "qsos": [
                 contact("K6GTE", "001", "PA1ABC", "120000", "3.505", "CW", "NH", "PA"),
                 contact("K6GTE", "001", "PA2DEF", "120200", "3.515", "CW", "ZH", "PA"),
@@ -1700,11 +2420,17 @@ def _pacc_fixtures():
         # areas are multipliers of their own and are not modelled yet.
         "PA1ABC": {
             "station": _country_station("PA1ABC", "Netherlands", "JO21"),
-            "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "NH"},
+            "contest_settings": {
+                **CATS,
+                "ModeCategory": "SSB+CW",
+                "SentExchange": "NH",
+            },
             "qsos": [
                 contact("PA1ABC", "NH", "DL1ABC", "120000", "3.505", "CW", "001", "DL"),
                 contact("PA1ABC", "NH", "G4ABC", "120200", "3.515", "CW", "002", "G"),
-                contact("PA1ABC", "NH", "DL1ABC", "120400", "3.505", "SSB", "003", "DL"),
+                contact(
+                    "PA1ABC", "NH", "DL1ABC", "120400", "3.505", "SSB", "003", "DL"
+                ),
                 contact("PA1ABC", "NH", "ON4ABC", "120600", "7.025", "CW", "004", "ON"),
                 contact("PA1ABC", "NH", "DL1ABC", "120800", "3.505", "CW", "001", "DL"),
                 contact("PA1ABC", "NH", "F5ABC", "121000", "3.505", "SSB", "005", "F"),
@@ -1714,6 +2440,7 @@ def _pacc_fixtures():
 
 
 FIXTURES["pacc"] = _pacc_fixtures()
+
 
 # -------------------------------------------------------------------- hadx
 # Hungarian DX Contest.  A Hungarian station is 10 points, a station on the
@@ -1740,7 +2467,11 @@ def _hadx_fixtures():
     return {
         "K6GTE": {
             "station": STATION,
-            "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "001"},
+            "contest_settings": {
+                **CATS,
+                "ModeCategory": "SSB+CW",
+                "SentExchange": "001",
+            },
             "qsos": [
                 contact("001", "HA1ABC", "120000", "3.505", "CW", "BA", "HA"),
                 contact("001", "DL1ABC", "120200", "3.515", "CW", "001", "DL"),
@@ -1755,6 +2486,7 @@ def _hadx_fixtures():
 
 
 FIXTURES["hadx"] = _hadx_fixtures()
+
 
 # -------------------------------------------------------------------- eudx
 # European Union DX Contest.  An EU station identifies itself with a
@@ -1797,20 +2529,35 @@ def _eudx_fixtures():
         # 10, with a non-EU country on the continent between them.
         "DL1ABC": {
             "station": _country_station("DL1ABC", "Fed. Rep. of Germany", "JN58"),
-            "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "DE01"},
+            "contest_settings": {
+                **CATS,
+                "ModeCategory": "SSB+CW",
+                "SentExchange": "DE01",
+            },
             "qsos": [
-                contact("DL1ABC", "DE01", "I2ABC", "120000", "3.505", "CW", "IT01", "I"),
-                contact("DL1ABC", "DE01", "DL2XYZ", "120200", "3.515", "CW", "DE02", "DL"),
-                contact("DL1ABC", "DE01", "OE1ABC", "120400", "3.525", "CW", "AT01", "OE"),
+                contact(
+                    "DL1ABC", "DE01", "I2ABC", "120000", "3.505", "CW", "IT01", "I"
+                ),
+                contact(
+                    "DL1ABC", "DE01", "DL2XYZ", "120200", "3.515", "CW", "DE02", "DL"
+                ),
+                contact(
+                    "DL1ABC", "DE01", "OE1ABC", "120400", "3.525", "CW", "AT01", "OE"
+                ),
                 contact("DL1ABC", "DE01", "K6GTE", "120600", "7.025", "CW", "008", "K"),
-                contact("DL1ABC", "DE01", "HB9ABC", "120800", "7.035", "CW", "28", "HB"),
-                contact("DL1ABC", "DE01", "I2ABC", "121000", "3.505", "CW", "IT01", "I"),
+                contact(
+                    "DL1ABC", "DE01", "HB9ABC", "120800", "7.035", "CW", "28", "HB"
+                ),
+                contact(
+                    "DL1ABC", "DE01", "I2ABC", "121000", "3.505", "CW", "IT01", "I"
+                ),
             ],
         },
     }
 
 
 FIXTURES["eudx"] = _eudx_fixtures()
+
 
 # ------------------------------------------------------------------- ok1wc
 # OK1WC Memorial (MWC): one hour on Monday evening, CW only on 80m and 40m, a
@@ -1851,6 +2598,7 @@ def _ok1wc_fixture():
 
 
 FIXTURES["ok1wc"] = _ok1wc_fixture()
+
 
 # ------------------------------------------------------------------ es_open
 # ES Open HF Championship, an Estonian contest: four hours on 80m and 40m,
@@ -1925,6 +2673,7 @@ def _es_open_fixtures():
 
 FIXTURES["es_open"] = _es_open_fixtures()
 
+
 # The other three ES plugins are ES Open's siblings, and their published rules
 # could not be found, so the corpora pin what the plugins themselves describe:
 # the same ES call-area / Estonian-region multipliers and the same
@@ -1959,16 +2708,56 @@ def _es_field_day_fixture():
                 "StartDate": "2026-06-06 00:00:00",
             },
             "qsos": [
-                _es_contact("K6GTE", "20260606", "ES1ABC/P", "000000",
-                            "3.505", "CW", "001HM", "ES"),
-                _es_contact("K6GTE", "20260606", "DL1ABC/QRP", "000500",
-                            "3.515", "CW", "001", "DL"),
-                _es_contact("K6GTE", "20260606", "ES2DEF", "001000",
-                            "7.025", "SSB", "003TA", "ES"),
-                _es_contact("K6GTE", "20260606", "ES1ABC/P", "002000",
-                            "3.505", "CW", "004HM", "ES"),
-                _es_contact("K6GTE", "20260606", "ES1ABC/P", "010000",
-                            "3.505", "CW", "005HM", "ES"),
+                _es_contact(
+                    "K6GTE",
+                    "20260606",
+                    "ES1ABC/P",
+                    "000000",
+                    "3.505",
+                    "CW",
+                    "001HM",
+                    "ES",
+                ),
+                _es_contact(
+                    "K6GTE",
+                    "20260606",
+                    "DL1ABC/QRP",
+                    "000500",
+                    "3.515",
+                    "CW",
+                    "001",
+                    "DL",
+                ),
+                _es_contact(
+                    "K6GTE",
+                    "20260606",
+                    "ES2DEF",
+                    "001000",
+                    "7.025",
+                    "SSB",
+                    "003TA",
+                    "ES",
+                ),
+                _es_contact(
+                    "K6GTE",
+                    "20260606",
+                    "ES1ABC/P",
+                    "002000",
+                    "3.505",
+                    "CW",
+                    "004HM",
+                    "ES",
+                ),
+                _es_contact(
+                    "K6GTE",
+                    "20260606",
+                    "ES1ABC/P",
+                    "010000",
+                    "3.505",
+                    "CW",
+                    "005HM",
+                    "ES",
+                ),
             ],
         },
     }
@@ -1990,16 +2779,21 @@ def _es_ll_kv_fixture():
                 "StartDate": "2026-05-02 00:00:00",
             },
             "qsos": [
-                _es_contact("K6GTE", "20260502", "ES1ABC", "000000",
-                            "3.505", "CW", "001", "ES"),
-                _es_contact("K6GTE", "20260502", "ES2DEF", "000500",
-                            "3.515", "SSB", "002", "ES"),
-                _es_contact("K6GTE", "20260502", "ES1ABC", "001000",
-                            "3.505", "CW", "003", "ES"),
-                _es_contact("K6GTE", "20260502", "ES1ABC", "001600",
-                            "3.505", "CW", "004", "ES"),
-                _es_contact("K6GTE", "20260502", "DL1ABC", "001900",
-                            "7.025", "SSB", "005", "DL"),
+                _es_contact(
+                    "K6GTE", "20260502", "ES1ABC", "000000", "3.505", "CW", "001", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260502", "ES2DEF", "000500", "3.515", "SSB", "002", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260502", "ES1ABC", "001000", "3.505", "CW", "003", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260502", "ES1ABC", "001600", "3.505", "CW", "004", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260502", "DL1ABC", "001900", "7.025", "SSB", "005", "DL"
+                ),
             ],
         },
     }
@@ -2022,16 +2816,21 @@ def _es_manual_key_fixture():
                 "StartDate": "2026-05-16 00:00:00",
             },
             "qsos": [
-                _es_contact("K6GTE", "20260516", "ES1ABC", "000000",
-                            "3.505", "CW", "05", "ES"),
-                _es_contact("K6GTE", "20260516", "ES2DEF", "000500",
-                            "3.515", "CW", "15", "ES"),
-                _es_contact("K6GTE", "20260516", "ES3GHI", "001000",
-                            "3.525", "CW", "25", "ES"),
-                _es_contact("K6GTE", "20260516", "ES1ABC", "001200",
-                            "3.505", "CW", "30", "ES"),
-                _es_contact("K6GTE", "20260516", "ES1ABC", "001600",
-                            "3.505", "CW", "35", "ES"),
+                _es_contact(
+                    "K6GTE", "20260516", "ES1ABC", "000000", "3.505", "CW", "05", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260516", "ES2DEF", "000500", "3.515", "CW", "15", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260516", "ES3GHI", "001000", "3.525", "CW", "25", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260516", "ES1ABC", "001200", "3.505", "CW", "30", "ES"
+                ),
+                _es_contact(
+                    "K6GTE", "20260516", "ES1ABC", "001600", "3.505", "CW", "35", "ES"
+                ),
             ],
         },
     }
@@ -2047,86 +2846,285 @@ FIXTURES["es_manual_key"] = _es_manual_key_fixture()
 # each of the first three contacts with a Commonwealth Call Area on each band.
 FIXTURES["rsgb_commonwealth_beru"] = {
     "G3XYZ": {
-        "station": {**STATION, "Call": "G3XYZ", "Country": "England", "State": "",
-                    "GridSquare": "IO91", "ARRLSection": "DX",
-                    "Email": "g3xyz@example.com"},
+        "station": {
+            **STATION,
+            "Call": "G3XYZ",
+            "Country": "England",
+            "State": "",
+            "GridSquare": "IO91",
+            "ARRLSection": "DX",
+            "Email": "g3xyz@example.com",
+        },
         "contest_settings": {**CATS, "SentExchange": "001"},
         "qsos": [
             # rule 4(b): our own call area does not count
-            qso(CALL="G4ABC", QSO_DATE="20260314", TIME_ON="100000", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1", NR="11",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100000",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1",
+                NR="11",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # rule 4(d): the home nations do not count against each other
-            qso(CALL="GM0ABC", QSO_DATE="20260314", TIME_ON="100200", FREQ="3.525",
-                MODE="CW", SNT="599", RCV="599", SENTNR="2", NR="22",
-                COUNTRYPREFIX="GM", CONTINENT="EU", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="GM0ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100200",
+                FREQ="3.525",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="2",
+                NR="22",
+                COUNTRYPREFIX="GM",
+                CONTINENT="EU",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # everyone else does: 10 points across a continent, and 20 bonus
             # for each of the first three on a band
-            qso(CALL="VE3ABC", QSO_DATE="20260314", TIME_ON="100400", FREQ="3.530",
-                MODE="CW", SNT="599", RCV="599", SENTNR="3", NR="33",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="G3XYZ"),
-            qso(CALL="VK2ABC", QSO_DATE="20260314", TIME_ON="100600", FREQ="3.535",
-                MODE="CW", SNT="599", RCV="599", SENTNR="4", NR="44",
-                COUNTRYPREFIX="VK", CONTINENT="OC", STATION_CALLSIGN="G3XYZ"),
-            qso(CALL="ZL1ABC", QSO_DATE="20260314", TIME_ON="100800", FREQ="3.540",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="55",
-                COUNTRYPREFIX="ZL", CONTINENT="OC", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100400",
+                FREQ="3.530",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="3",
+                NR="33",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="G3XYZ",
+            ),
+            qso(
+                CALL="VK2ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100600",
+                FREQ="3.535",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="4",
+                NR="44",
+                COUNTRYPREFIX="VK",
+                CONTINENT="OC",
+                STATION_CALLSIGN="G3XYZ",
+            ),
+            qso(
+                CALL="ZL1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100800",
+                FREQ="3.540",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="55",
+                COUNTRYPREFIX="ZL",
+                CONTINENT="OC",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # the fourth on this band, so no bonus
-            qso(CALL="5B4ABC", QSO_DATE="20260314", TIME_ON="101000", FREQ="3.545",
-                MODE="CW", SNT="599", RCV="599", SENTNR="6", NR="66",
-                COUNTRYPREFIX="5B", CONTINENT="AS", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="5B4ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101000",
+                FREQ="3.545",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="6",
+                NR="66",
+                COUNTRYPREFIX="5B",
+                CONTINENT="AS",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # outside the Commonwealth: no points
-            qso(CALL="DL1ABC", QSO_DATE="20260314", TIME_ON="101200", FREQ="3.550",
-                MODE="CW", SNT="599", RCV="599", SENTNR="7", NR="77",
-                COUNTRYPREFIX="DL", CONTINENT="EU", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101200",
+                FREQ="3.550",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="7",
+                NR="77",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # a new band earns its own bonus
-            qso(CALL="VE3ABC", QSO_DATE="20260314", TIME_ON="101400", FREQ="7.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="8", NR="88",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101400",
+                FREQ="7.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="8",
+                NR="88",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # rules 4(c) and 4(e): an HQ station identifies by sending 'HQ'
             # after its serial, and is contactable even in our own call area
-            qso(CALL="G4HQ", QSO_DATE="20260314", TIME_ON="101600", FREQ="14.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="9", NR="003 HQ",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="G4HQ",
+                QSO_DATE="20260314",
+                TIME_ON="101600",
+                FREQ="14.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="9",
+                NR="003 HQ",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="G3XYZ",
+            ),
             # a duplicate, which still has to be logged
-            qso(CALL="VE3ABC", QSO_DATE="20260314", TIME_ON="101800", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="10", NR="010",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="G3XYZ"),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101800",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="10",
+                NR="010",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="G3XYZ",
+            ),
         ],
     },
     # A Canadian entrant: VE1 and VE3 are different Commonwealth Call Areas,
     # so the first counts and the second does not; Canada is in North America,
     # so a contact with England is across a continent.
     "VE3ABC": {
-        "station": {**STATION, "Call": "VE3ABC", "Country": "Canada", "State": "",
-                    "GridSquare": "FN03", "ARRLSection": "ONS",
-                    "Email": "ve3abc@example.com"},
+        "station": {
+            **STATION,
+            "Call": "VE3ABC",
+            "Country": "Canada",
+            "State": "",
+            "GridSquare": "FN03",
+            "ARRLSection": "ONS",
+            "Email": "ve3abc@example.com",
+        },
         "contest_settings": {**CATS, "SentExchange": "001"},
         "qsos": [
-            qso(CALL="VE1ABC", QSO_DATE="20260314", TIME_ON="100000", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1", NR="11",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="VE3ABC"),
+            qso(
+                CALL="VE1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100000",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1",
+                NR="11",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="VE3ABC",
+            ),
             # rule 4(b): our own call area does not count
-            qso(CALL="VE3XYZ", QSO_DATE="20260314", TIME_ON="100200", FREQ="3.525",
-                MODE="CW", SNT="599", RCV="599", SENTNR="2", NR="22",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="VE3ABC"),
-            qso(CALL="G4ABC", QSO_DATE="20260314", TIME_ON="100400", FREQ="3.530",
-                MODE="CW", SNT="599", RCV="599", SENTNR="3", NR="33",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="VE3ABC"),
+            qso(
+                CALL="VE3XYZ",
+                QSO_DATE="20260314",
+                TIME_ON="100200",
+                FREQ="3.525",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="2",
+                NR="22",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="VE3ABC",
+            ),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100400",
+                FREQ="3.530",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="3",
+                NR="33",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="VE3ABC",
+            ),
             # outside the Commonwealth: no points
-            qso(CALL="K6GTE", QSO_DATE="20260314", TIME_ON="100600", FREQ="3.535",
-                MODE="CW", SNT="599", RCV="599", SENTNR="4", NR="44",
-                COUNTRYPREFIX="K", CONTINENT="NA", STATION_CALLSIGN="VE3ABC"),
-            qso(CALL="VE1ABC", QSO_DATE="20260314", TIME_ON="100800", FREQ="7.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="55",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="VE3ABC"),
-            qso(CALL="ZS1ABC", QSO_DATE="20260314", TIME_ON="101000", FREQ="7.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="6", NR="66",
-                COUNTRYPREFIX="ZS", CONTINENT="AF", STATION_CALLSIGN="VE3ABC"),
+            qso(
+                CALL="K6GTE",
+                QSO_DATE="20260314",
+                TIME_ON="100600",
+                FREQ="3.535",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="4",
+                NR="44",
+                COUNTRYPREFIX="K",
+                CONTINENT="NA",
+                STATION_CALLSIGN="VE3ABC",
+            ),
+            qso(
+                CALL="VE1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="100800",
+                FREQ="7.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="55",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="VE3ABC",
+            ),
+            qso(
+                CALL="ZS1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101000",
+                FREQ="7.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="6",
+                NR="66",
+                COUNTRYPREFIX="ZS",
+                CONTINENT="AF",
+                STATION_CALLSIGN="VE3ABC",
+            ),
             # a duplicate, which still has to be logged
-            qso(CALL="VE1ABC", QSO_DATE="20260314", TIME_ON="101200", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="7", NR="77",
-                COUNTRYPREFIX="VE", CONTINENT="NA", STATION_CALLSIGN="VE3ABC"),
+            qso(
+                CALL="VE1ABC",
+                QSO_DATE="20260314",
+                TIME_ON="101200",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="7",
+                NR="77",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                STATION_CALLSIGN="VE3ABC",
+            ),
         ],
     },
 }
@@ -2142,47 +3140,152 @@ FIXTURES["rsgb_80m_cc"] = {
         "station": STATION,
         "contest_settings": {**CATS, "SentExchange": "001"},
         "qsos": [
-            qso(CALL="G4ABC", QSO_DATE="20260212", TIME_ON="200000", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1", NR="11",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="GM0ABC", QSO_DATE="20260212", TIME_ON="200200", FREQ="3.525",
-                MODE="CW", SNT="599", RCV="599", SENTNR="2", NR="22",
-                COUNTRYPREFIX="GM", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200000",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1",
+                NR="11",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="GM0ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200200",
+                FREQ="3.525",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="2",
+                NR="22",
+                COUNTRYPREFIX="GM",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
             # the Society's station: five points
-            qso(CALL="G6XX", QSO_DATE="20260212", TIME_ON="200400", FREQ="3.530",
-                MODE="CW", SNT="599", RCV="599", SENTNR="3", NR="33",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="G6XX",
+                QSO_DATE="20260212",
+                TIME_ON="200400",
+                FREQ="3.530",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="3",
+                NR="33",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
             # no UK&CD station at either end: no points
-            qso(CALL="DL1ABC", QSO_DATE="20260212", TIME_ON="200600", FREQ="3.540",
-                MODE="CW", SNT="599", RCV="599", SENTNR="4", NR="44",
-                COUNTRYPREFIX="DL", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="OK2ABC", QSO_DATE="20260212", TIME_ON="200800", FREQ="3.545",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="55",
-                COUNTRYPREFIX="OK", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200600",
+                FREQ="3.540",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="4",
+                NR="44",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="OK2ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200800",
+                FREQ="3.545",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="55",
+                COUNTRYPREFIX="OK",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
             # a duplicate, which still has to be logged
-            qso(CALL="G4ABC", QSO_DATE="20260212", TIME_ON="201000", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="6", NR="66",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260212",
+                TIME_ON="201000",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="6",
+                NR="66",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="K6GTE",
+            ),
         ],
     },
     # A datamodes session.  Rule 6 lets a station be worked once on PSK63 and
     # once on RTTY, so both count and the mode codes go out as PS and RY; the
     # third contact is the RTTY duplicate.
     "M0ABC": {
-        "station": {**STATION, "Call": "M0ABC", "Country": "England", "State": "",
-                    "GridSquare": "IO91", "ARRLSection": "DX",
-                    "Email": "m0abc@example.com"},
+        "station": {
+            **STATION,
+            "Call": "M0ABC",
+            "Country": "England",
+            "State": "",
+            "GridSquare": "IO91",
+            "ARRLSection": "DX",
+            "Email": "m0abc@example.com",
+        },
         "contest_settings": {**CATS, "ModeCategory": "RTTY", "SentExchange": "001"},
         "qsos": [
-            qso(CALL="G4ABC", QSO_DATE="20260212", TIME_ON="200000", FREQ="3.595",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="1", NR="11",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="M0ABC"),
-            qso(CALL="G4ABC", QSO_DATE="20260212", TIME_ON="200300", FREQ="3.585",
-                MODE="PSK31", SNT="599", RCV="599", SENTNR="2", NR="22",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="M0ABC"),
-            qso(CALL="G4ABC", QSO_DATE="20260212", TIME_ON="200600", FREQ="3.595",
-                MODE="RTTY", SNT="599", RCV="599", SENTNR="3", NR="33",
-                COUNTRYPREFIX="G", CONTINENT="EU", STATION_CALLSIGN="M0ABC"),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200000",
+                FREQ="3.595",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="1",
+                NR="11",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="M0ABC",
+            ),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200300",
+                FREQ="3.585",
+                MODE="PSK31",
+                SNT="599",
+                RCV="599",
+                SENTNR="2",
+                NR="22",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="M0ABC",
+            ),
+            qso(
+                CALL="G4ABC",
+                QSO_DATE="20260212",
+                TIME_ON="200600",
+                FREQ="3.595",
+                MODE="RTTY",
+                SNT="599",
+                RCV="599",
+                SENTNR="3",
+                NR="33",
+                COUNTRYPREFIX="G",
+                CONTINENT="EU",
+                STATION_CALLSIGN="M0ABC",
+            ),
         ],
     },
 }
@@ -2193,46 +3296,166 @@ FIXTURES["cq_ww_cw"] = {
         "station": STATION,
         "contest_settings": {**CATS, "SentExchange": "5"},
         "qsos": [
-            qso(CALL="DL1ABC", QSO_DATE="20261128", TIME_ON="000500", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="14", ZN="14",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", CONTINENT="EU",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="JA1ABC", QSO_DATE="20261128", TIME_ON="000800", FREQ="14.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="25", ZN="25",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="JA", CONTINENT="AS",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="DL1ABC", QSO_DATE="20261128", TIME_ON="001100", FREQ="14.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="14", ZN="14",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", CONTINENT="EU",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="DL1ABC", QSO_DATE="20261128", TIME_ON="001400", FREQ="3.520",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="14", ZN="14",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", CONTINENT="EU",
-                APP_N1MM_POINTS="0"),
-            qso(CALL="K1ABC", QSO_DATE="20261128", TIME_ON="001700", FREQ="14.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="5", ZN="5",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="K", CONTINENT="NA",
-                APP_N1MM_POINTS="2"),
-            qso(CALL="UA3ABC", QSO_DATE="20261128", TIME_ON="002000", FREQ="7.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="16", ZN="16",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", CONTINENT="EU",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="PY1ABC", QSO_DATE="20261128", TIME_ON="002300", FREQ="10.120",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="11", ZN="11",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="PY", CONTINENT="SA",
-                APP_N1MM_POINTS="2"),
-            qso(CALL="JA1ABC", QSO_DATE="20261128", TIME_ON="002600", FREQ="7.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="25", ZN="25",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="JA", CONTINENT="AS",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="ZS1ABC", QSO_DATE="20261128", TIME_ON="002900", FREQ="21.020",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="38", ZN="38",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="ZS", CONTINENT="AF",
-                APP_N1MM_POINTS="3"),
-            qso(CALL="VE3ABC", QSO_DATE="20261128", TIME_ON="003200", FREQ="14.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="5", NR="4", ZN="4",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="VE", CONTINENT="NA",
-                APP_N1MM_POINTS="2"),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="000500",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="14",
+                ZN="14",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="000800",
+                FREQ="14.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="25",
+                ZN="25",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="JA",
+                CONTINENT="AS",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="001100",
+                FREQ="14.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="14",
+                ZN="14",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="001400",
+                FREQ="3.520",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="14",
+                ZN="14",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="0",
+            ),
+            qso(
+                CALL="K1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="001700",
+                FREQ="14.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="5",
+                ZN="5",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="K",
+                CONTINENT="NA",
+                APP_N1MM_POINTS="2",
+            ),
+            qso(
+                CALL="UA3ABC",
+                QSO_DATE="20261128",
+                TIME_ON="002000",
+                FREQ="7.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="16",
+                ZN="16",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                CONTINENT="EU",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="PY1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="002300",
+                FREQ="10.120",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="11",
+                ZN="11",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="PY",
+                CONTINENT="SA",
+                APP_N1MM_POINTS="2",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="002600",
+                FREQ="7.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="25",
+                ZN="25",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="JA",
+                CONTINENT="AS",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="ZS1ABC",
+                QSO_DATE="20261128",
+                TIME_ON="002900",
+                FREQ="21.020",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="38",
+                ZN="38",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="ZS",
+                CONTINENT="AF",
+                APP_N1MM_POINTS="3",
+            ),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20261128",
+                TIME_ON="003200",
+                FREQ="14.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="5",
+                NR="4",
+                ZN="4",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="VE",
+                CONTINENT="NA",
+                APP_N1MM_POINTS="2",
+            ),
         ],
     },
 }
@@ -2243,40 +3466,150 @@ FIXTURES["arrl_ss_cw"] = {
         "station": STATION,
         "contest_settings": {**CATS, "SentExchange": "A 78 ORG"},
         "qsos": [
-            qso(CALL="W1AW", QSO_DATE="20261107", TIME_ON="210000", FREQ="14.040",
-                MODE="CW", SENTNR="1", NR="12", PREC="A", CK="78", SECT="CT",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="N0AX", QSO_DATE="20261107", TIME_ON="210300", FREQ="14.045",
-                MODE="CW", SENTNR="2", NR="33", PREC="B", CK="95", SECT="MO",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20261107", TIME_ON="210600", FREQ="7.040",
-                MODE="CW", SENTNR="3", NR="44", PREC="A", CK="78", SECT="CT",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20261107", TIME_ON="210900", FREQ="14.040",
-                MODE="CW", SENTNR="4", NR="55", PREC="A", CK="78", SECT="CT",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="K5ABC", QSO_DATE="20261107", TIME_ON="211200", FREQ="21.040",
-                MODE="CW", SENTNR="5", NR="66", PREC="Q", CK="99", SECT="NTX",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="VE3ABC", QSO_DATE="20261107", TIME_ON="211500", FREQ="14.050",
-                MODE="CW", SENTNR="6", NR="77", PREC="A", CK="88", SECT="ONS",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="KH6ABC", QSO_DATE="20261107", TIME_ON="211800", FREQ="7.045",
-                MODE="CW", SENTNR="7", NR="88", PREC="U", CK="77", SECT="PAC",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="KP4ABC", QSO_DATE="20261107", TIME_ON="212100", FREQ="21.045",
-                MODE="CW", SENTNR="8", NR="99", PREC="B", CK="66", SECT="PR",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="N0AX", QSO_DATE="20261107", TIME_ON="212400", FREQ="7.050",
-                MODE="CW", SENTNR="9", NR="11", PREC="B", CK="95", SECT="MO",
-                STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20261107", TIME_ON="212700", FREQ="21.050",
-                MODE="CW", SENTNR="10", NR="22", PREC="A", CK="78", SECT="CT",
-                STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20261107",
+                TIME_ON="210000",
+                FREQ="14.040",
+                MODE="CW",
+                SENTNR="1",
+                NR="12",
+                PREC="A",
+                CK="78",
+                SECT="CT",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="N0AX",
+                QSO_DATE="20261107",
+                TIME_ON="210300",
+                FREQ="14.045",
+                MODE="CW",
+                SENTNR="2",
+                NR="33",
+                PREC="B",
+                CK="95",
+                SECT="MO",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20261107",
+                TIME_ON="210600",
+                FREQ="7.040",
+                MODE="CW",
+                SENTNR="3",
+                NR="44",
+                PREC="A",
+                CK="78",
+                SECT="CT",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20261107",
+                TIME_ON="210900",
+                FREQ="14.040",
+                MODE="CW",
+                SENTNR="4",
+                NR="55",
+                PREC="A",
+                CK="78",
+                SECT="CT",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="K5ABC",
+                QSO_DATE="20261107",
+                TIME_ON="211200",
+                FREQ="21.040",
+                MODE="CW",
+                SENTNR="5",
+                NR="66",
+                PREC="Q",
+                CK="99",
+                SECT="NTX",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20261107",
+                TIME_ON="211500",
+                FREQ="14.050",
+                MODE="CW",
+                SENTNR="6",
+                NR="77",
+                PREC="A",
+                CK="88",
+                SECT="ONS",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="KH6ABC",
+                QSO_DATE="20261107",
+                TIME_ON="211800",
+                FREQ="7.045",
+                MODE="CW",
+                SENTNR="7",
+                NR="88",
+                PREC="U",
+                CK="77",
+                SECT="PAC",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="KP4ABC",
+                QSO_DATE="20261107",
+                TIME_ON="212100",
+                FREQ="21.045",
+                MODE="CW",
+                SENTNR="8",
+                NR="99",
+                PREC="B",
+                CK="66",
+                SECT="PR",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="N0AX",
+                QSO_DATE="20261107",
+                TIME_ON="212400",
+                FREQ="7.050",
+                MODE="CW",
+                SENTNR="9",
+                NR="11",
+                PREC="B",
+                CK="95",
+                SECT="MO",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20261107",
+                TIME_ON="212700",
+                FREQ="21.050",
+                MODE="CW",
+                SENTNR="10",
+                NR="22",
+                PREC="A",
+                CK="78",
+                SECT="CT",
+                STATION_CALLSIGN="K6GTE",
+            ),
             # a station outside W/VE sends "DX": no points, no multiplier
-            qso(CALL="DL1ABC", QSO_DATE="20261107", TIME_ON="213000", FREQ="14.060",
-                MODE="CW", SENTNR="11", NR="11", PREC="B", CK="95", SECT="DX",
-                STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20261107",
+                TIME_ON="213000",
+                FREQ="14.060",
+                MODE="CW",
+                SENTNR="11",
+                NR="11",
+                PREC="B",
+                CK="95",
+                SECT="DX",
+                STATION_CALLSIGN="K6GTE",
+            ),
         ],
     },
 }
@@ -2287,36 +3620,136 @@ FIXTURES["cwt"] = {
         "station": STATION,
         "contest_settings": {**CATS, "SentExchange": "MIKE 1234"},
         "qsos": [
-            qso(CALL="W1AW", QSO_DATE="20260107", TIME_ON="190000", FREQ="7.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="5678",
-                NAME="BOB", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="DL1ABC", QSO_DATE="20260107", TIME_ON="190300", FREQ="14.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="CWA",
-                NAME="HANS", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20260107", TIME_ON="190600", FREQ="14.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="1111",
-                NAME="BOB", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20260107", TIME_ON="190900", FREQ="7.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="2222",
-                NAME="BOB", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="K1ABC", QSO_DATE="20260107", TIME_ON="191200", FREQ="14.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="3333",
-                NAME="ANN", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="JA1ABC", QSO_DATE="20260107", TIME_ON="191500", FREQ="21.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="4444",
-                NAME="KEN", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="UA3ABC", QSO_DATE="20260107", TIME_ON="191800", FREQ="7.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="5555",
-                NAME="IVAN", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="DL1ABC", QSO_DATE="20260107", TIME_ON="192100", FREQ="7.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="6666",
-                NAME="HANS", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="VE3ABC", QSO_DATE="20260107", TIME_ON="192400", FREQ="14.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="7777",
-                NAME="BOB", STATION_CALLSIGN="K6GTE"),
-            qso(CALL="W1AW", QSO_DATE="20260107", TIME_ON="192700", FREQ="21.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="1234", NR="8888",
-                NAME="BOB", STATION_CALLSIGN="K6GTE"),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260107",
+                TIME_ON="190000",
+                FREQ="7.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="5678",
+                NAME="BOB",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20260107",
+                TIME_ON="190300",
+                FREQ="14.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="CWA",
+                NAME="HANS",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260107",
+                TIME_ON="190600",
+                FREQ="14.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="1111",
+                NAME="BOB",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260107",
+                TIME_ON="190900",
+                FREQ="7.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="2222",
+                NAME="BOB",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="K1ABC",
+                QSO_DATE="20260107",
+                TIME_ON="191200",
+                FREQ="14.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="3333",
+                NAME="ANN",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20260107",
+                TIME_ON="191500",
+                FREQ="21.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="4444",
+                NAME="KEN",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="UA3ABC",
+                QSO_DATE="20260107",
+                TIME_ON="191800",
+                FREQ="7.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="5555",
+                NAME="IVAN",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20260107",
+                TIME_ON="192100",
+                FREQ="7.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="6666",
+                NAME="HANS",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="VE3ABC",
+                QSO_DATE="20260107",
+                TIME_ON="192400",
+                FREQ="14.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="7777",
+                NAME="BOB",
+                STATION_CALLSIGN="K6GTE",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260107",
+                TIME_ON="192700",
+                FREQ="21.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="1234",
+                NR="8888",
+                NAME="BOB",
+                STATION_CALLSIGN="K6GTE",
+            ),
         ],
     },
 }
@@ -2327,36 +3760,146 @@ FIXTURES["rdxc"] = {
         "station": STATION,
         "contest_settings": {**CATS, "ModeCategory": "SSB+CW", "SentExchange": "TX"},
         "qsos": [
-            qso(CALL="RA3AAA", QSO_DATE="20260321", TIME_ON="080000", FREQ="14.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="MO",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", CONTINENT="EU"),
-            qso(CALL="UA9ABC", QSO_DATE="20260321", TIME_ON="080300", FREQ="21.025",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="TX", NR="SV",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA9", CONTINENT="AS"),
-            qso(CALL="RA3AAA", QSO_DATE="20260321", TIME_ON="080600", FREQ="7.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="MO",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", CONTINENT="EU"),
-            qso(CALL="RA3AAA", QSO_DATE="20260321", TIME_ON="080900", FREQ="14.025",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="MO",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", CONTINENT="EU"),
-            qso(CALL="DL1ABC", QSO_DATE="20260321", TIME_ON="081200", FREQ="14.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="DL",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="DL", CONTINENT="EU"),
-            qso(CALL="JA1ABC", QSO_DATE="20260321", TIME_ON="081500", FREQ="21.030",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="TX", NR="JA",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="JA", CONTINENT="AS"),
-            qso(CALL="UA3ABC", QSO_DATE="20260321", TIME_ON="081800", FREQ="14.035",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="MA",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA", CONTINENT="EU"),
-            qso(CALL="UA9ABC", QSO_DATE="20260321", TIME_ON="082100", FREQ="14.040",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="SV",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="UA9", CONTINENT="AS"),
-            qso(CALL="W1AW", QSO_DATE="20260321", TIME_ON="082400", FREQ="7.030",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="CT",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="K", CONTINENT="NA"),
-            qso(CALL="PY1ABC", QSO_DATE="20260321", TIME_ON="082700", FREQ="10.120",
-                MODE="CW", SNT="599", RCV="599", SENTNR="TX", NR="PY",
-                STATION_CALLSIGN="K6GTE", COUNTRYPREFIX="PY", CONTINENT="SA"),
+            qso(
+                CALL="RA3AAA",
+                QSO_DATE="20260321",
+                TIME_ON="080000",
+                FREQ="14.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="MO",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="UA9ABC",
+                QSO_DATE="20260321",
+                TIME_ON="080300",
+                FREQ="21.025",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="TX",
+                NR="SV",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA9",
+                CONTINENT="AS",
+            ),
+            qso(
+                CALL="RA3AAA",
+                QSO_DATE="20260321",
+                TIME_ON="080600",
+                FREQ="7.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="MO",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="RA3AAA",
+                QSO_DATE="20260321",
+                TIME_ON="080900",
+                FREQ="14.025",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="MO",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="DL1ABC",
+                QSO_DATE="20260321",
+                TIME_ON="081200",
+                FREQ="14.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="DL",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="DL",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="JA1ABC",
+                QSO_DATE="20260321",
+                TIME_ON="081500",
+                FREQ="21.030",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="TX",
+                NR="JA",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="JA",
+                CONTINENT="AS",
+            ),
+            qso(
+                CALL="UA3ABC",
+                QSO_DATE="20260321",
+                TIME_ON="081800",
+                FREQ="14.035",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="MA",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA",
+                CONTINENT="EU",
+            ),
+            qso(
+                CALL="UA9ABC",
+                QSO_DATE="20260321",
+                TIME_ON="082100",
+                FREQ="14.040",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="SV",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="UA9",
+                CONTINENT="AS",
+            ),
+            qso(
+                CALL="W1AW",
+                QSO_DATE="20260321",
+                TIME_ON="082400",
+                FREQ="7.030",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="CT",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="K",
+                CONTINENT="NA",
+            ),
+            qso(
+                CALL="PY1ABC",
+                QSO_DATE="20260321",
+                TIME_ON="082700",
+                FREQ="10.120",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="TX",
+                NR="PY",
+                STATION_CALLSIGN="K6GTE",
+                COUNTRYPREFIX="PY",
+                CONTINENT="SA",
+            ),
         ],
     },
 }
@@ -2378,28 +3921,98 @@ VHF_STATION = {
 FIXTURES["nac_vhf"] = {
     "DL1ABC": {
         "station": {**VHF_STATION, "Call": "DL1ABC"},
-        "contest_settings": {**CATS, "BandCategory": "2M", "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-06-06 12:00:00",
-                             "SentExchange": "JN58"},
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "2M",
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-06-06 12:00:00",
+            "SentExchange": "JN58",
+        },
         "qsos": [
-            qso(CALL="OK1ABC", QSO_DATE="20260606", TIME_ON="140000", FREQ="144.300",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO70",
-                EXCHANGE1="JO70", GRIDSQUARE="JO70", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="DL2XYZ", QSO_DATE="20260606", TIME_ON="140300", FREQ="144.320",
-                MODE="CW", SNT="599", RCV="599", SENTNR="JN58", NR="JN49",
-                EXCHANGE1="JN49", GRIDSQUARE="JN49", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="OK1ABC", QSO_DATE="20260606", TIME_ON="140600", FREQ="144.300",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO70",
-                EXCHANGE1="JO70", GRIDSQUARE="JO70", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="OK1ABC", QSO_DATE="20260606", TIME_ON="140900", FREQ="432.200",
-                MODE="CW", SNT="599", RCV="599", SENTNR="JN58", NR="JO70",
-                EXCHANGE1="JO70", GRIDSQUARE="JO70", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="OE1ABC", QSO_DATE="20260606", TIME_ON="141200", FREQ="144.340",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JN78",
-                EXCHANGE1="JN78", GRIDSQUARE="JN78", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="SP1ABC", QSO_DATE="20260606", TIME_ON="141500", FREQ="50.200",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO91",
-                EXCHANGE1="JO91", GRIDSQUARE="JO91", STATION_CALLSIGN="DL1ABC"),
+            qso(
+                CALL="OK1ABC",
+                QSO_DATE="20260606",
+                TIME_ON="140000",
+                FREQ="144.300",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO70",
+                EXCHANGE1="JO70",
+                GRIDSQUARE="JO70",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="DL2XYZ",
+                QSO_DATE="20260606",
+                TIME_ON="140300",
+                FREQ="144.320",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="JN58",
+                NR="JN49",
+                EXCHANGE1="JN49",
+                GRIDSQUARE="JN49",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="OK1ABC",
+                QSO_DATE="20260606",
+                TIME_ON="140600",
+                FREQ="144.300",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO70",
+                EXCHANGE1="JO70",
+                GRIDSQUARE="JO70",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="OK1ABC",
+                QSO_DATE="20260606",
+                TIME_ON="140900",
+                FREQ="432.200",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="JN58",
+                NR="JO70",
+                EXCHANGE1="JO70",
+                GRIDSQUARE="JO70",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="OE1ABC",
+                QSO_DATE="20260606",
+                TIME_ON="141200",
+                FREQ="144.340",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JN78",
+                EXCHANGE1="JN78",
+                GRIDSQUARE="JN78",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="SP1ABC",
+                QSO_DATE="20260606",
+                TIME_ON="141500",
+                FREQ="50.200",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO91",
+                EXCHANGE1="JO91",
+                GRIDSQUARE="JO91",
+                STATION_CALLSIGN="DL1ABC",
+            ),
         ],
     },
 }
@@ -2441,8 +4054,12 @@ def _sprint_contact(station, call, time_on, freq, mode, grid):
 FIXTURES["vhf_sprint"] = {
     "K6GTE": {
         "station": STATION,  # DM13
-        "contest_settings": {**CATS, "BandCategory": "ALL", "ModeCategory": "SSB+CW",
-                             "SentExchange": "DM13"},
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "ALL",
+            "ModeCategory": "SSB+CW",
+            "SentExchange": "DM13",
+        },
         "qsos": [
             # 50, 144 and 432 MHz are a point each
             _sprint_contact("K6GTE", "W1AW", "180000", "50.200", "SSB", "FN31"),
@@ -2458,8 +4075,12 @@ FIXTURES["vhf_sprint"] = {
     },
     "DL1ABC": {
         "station": _VHF_SPRINT_DL_STATION,
-        "contest_settings": {**CATS, "BandCategory": "ALL", "ModeCategory": "SSB+CW",
-                             "SentExchange": "JN58"},
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "ALL",
+            "ModeCategory": "SSB+CW",
+            "SentExchange": "JN58",
+        },
         "qsos": [
             # microwave only: 367 and 441 km
             _sprint_contact("DL1ABC", "OK1ABC", "180000", "1296.100", "CW", "JO70"),
@@ -2473,25 +4094,84 @@ FIXTURES["vhf_sprint"] = {
 FIXTURES["darc_vhf"] = {
     "DL1ABC": {
         "station": {**VHF_STATION, "Call": "DL1ABC"},
-        "contest_settings": {**CATS, "BandCategory": "2M", "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-09-05 14:00:00",
-                             "SentExchange": "JN58"},
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "2M",
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-09-05 14:00:00",
+            "SentExchange": "JN58",
+        },
         "qsos": [
-            qso(CALL="DK0ABC", QSO_DATE="20260905", TIME_ON="140000", FREQ="144.310",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO31",
-                EXCHANGE1="JO31", GRIDSQUARE="JO31", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="DL2XYZ", QSO_DATE="20260905", TIME_ON="140300", FREQ="144.330",
-                MODE="CW", SNT="599", RCV="599", SENTNR="JN58", NR="JN49",
-                EXCHANGE1="JN49", GRIDSQUARE="JN49", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="DK0ABC", QSO_DATE="20260905", TIME_ON="140600", FREQ="432.210",
-                MODE="CW", SNT="599", RCV="599", SENTNR="JN58", NR="JO31",
-                EXCHANGE1="JO31", GRIDSQUARE="JO31", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="OK1ABC", QSO_DATE="20260905", TIME_ON="140900", FREQ="144.350",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO70",
-                EXCHANGE1="JO70", GRIDSQUARE="JO70", STATION_CALLSIGN="DL1ABC"),
-            qso(CALL="DK0ABC", QSO_DATE="20260905", TIME_ON="141200", FREQ="144.310",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="JN58", NR="JO31",
-                EXCHANGE1="JO31", GRIDSQUARE="JO31", STATION_CALLSIGN="DL1ABC"),
+            qso(
+                CALL="DK0ABC",
+                QSO_DATE="20260905",
+                TIME_ON="140000",
+                FREQ="144.310",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO31",
+                EXCHANGE1="JO31",
+                GRIDSQUARE="JO31",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="DL2XYZ",
+                QSO_DATE="20260905",
+                TIME_ON="140300",
+                FREQ="144.330",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="JN58",
+                NR="JN49",
+                EXCHANGE1="JN49",
+                GRIDSQUARE="JN49",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="DK0ABC",
+                QSO_DATE="20260905",
+                TIME_ON="140600",
+                FREQ="432.210",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="JN58",
+                NR="JO31",
+                EXCHANGE1="JO31",
+                GRIDSQUARE="JO31",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="OK1ABC",
+                QSO_DATE="20260905",
+                TIME_ON="140900",
+                FREQ="144.350",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO70",
+                EXCHANGE1="JO70",
+                GRIDSQUARE="JO70",
+                STATION_CALLSIGN="DL1ABC",
+            ),
+            qso(
+                CALL="DK0ABC",
+                QSO_DATE="20260905",
+                TIME_ON="141200",
+                FREQ="144.310",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="JN58",
+                NR="JO31",
+                EXCHANGE1="JO31",
+                GRIDSQUARE="JO31",
+                STATION_CALLSIGN="DL1ABC",
+            ),
         ],
     },
 }
@@ -2538,8 +4218,12 @@ FIXTURES["stew_perry_topband"] = {
     # High power: the score is just the QSO points.
     "K6GTE": {
         "station": STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "HIGH",
-                             "SentExchange": "DM13"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "HIGH",
+            "SentExchange": "DM13",
+        },
         "qsos": [
             # DM13 to FN31 is 3965 km: 1 + 7
             _stew_contact("K6GTE", "W1AW", "150000", "FN31"),
@@ -2554,8 +4238,12 @@ FIXTURES["stew_perry_topband"] = {
     # Low power: 33 points is not it - 20 + 1 + 3 = 24, times 1.5.
     "DL1ABC": {
         "station": _STEW_DL_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "LOW",
-                             "SentExchange": "JN58"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "LOW",
+            "SentExchange": "JN58",
+        },
         "qsos": [
             _stew_contact("DL1ABC", "K6GTE", "150000", "DM13"),
             _stew_contact("DL1ABC", "OK2ABC", "150200", "JO70"),
@@ -2566,8 +4254,12 @@ FIXTURES["stew_perry_topband"] = {
     # QRP: 18 + 3 + 3 = 24, times three.
     "SM5XYZ": {
         "station": _STEW_SM_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "CW", "PowerCategory": "QRP",
-                             "SentExchange": "JO89"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "CW",
+            "PowerCategory": "QRP",
+            "SentExchange": "JO89",
+        },
         "qsos": [
             _stew_contact("SM5XYZ", "K6GTE", "150000", "DM13"),
             _stew_contact("SM5XYZ", "DL1ABC", "150200", "JN58"),
@@ -2618,14 +4310,19 @@ def _iaru_contact(station, call, time_on, freq, mode, sent, zn, continent=None):
 FIXTURES["iaru_hf"] = {
     "K6GTE": {
         "station": _IARU_US_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-07-11 12:00:00",
-                             "SentExchange": "8"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-07-11 12:00:00",
+            "SentExchange": "8",
+        },
         "qsos": [
             # our own zone: one point
             _iaru_contact("K6GTE", "N0AX", "120000", "14.025", "CW", "8", "8", "NA"),
             # another continent: five points
-            _iaru_contact("K6GTE", "DL1ABC", "120300", "14.025", "SSB", "8", "28", "EU"),
+            _iaru_contact(
+                "K6GTE", "DL1ABC", "120300", "14.025", "SSB", "8", "28", "EU"
+            ),
             # an HQ station sends ARRL, not a zone: one point, a multiplier
             _iaru_contact("K6GTE", "W1AW", "120600", "14.025", "CW", "8", "ARRL", "NA"),
             # another zone on our continent: three points
@@ -2639,16 +4336,31 @@ FIXTURES["iaru_hf"] = {
     },
     "DL1ABC": {
         "station": _IARU_DL_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-07-11 12:00:00",
-                             "SentExchange": "28"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-07-11 12:00:00",
+            "SentExchange": "28",
+        },
         "qsos": [
-            _iaru_contact("DL1ABC", "DL2ABC", "120000", "7.030", "CW", "28", "28", "EU"),
-            _iaru_contact("DL1ABC", "K6GTE", "120300", "14.025", "SSB", "28", "8", "NA"),
-            _iaru_contact("DL1ABC", "SM5XYZ", "120600", "14.025", "CW", "28", "18", "EU"),
-            _iaru_contact("DL1ABC", "W1AW", "120900", "14.025", "CW", "28", "ARRL", "NA"),
-            _iaru_contact("DL1ABC", "K6GTE", "121200", "14.025", "SSB", "28", "8", "NA"),
-            _iaru_contact("DL1ABC", "SM5XYZ", "121500", "14.025", "SSB", "28", "18", "EU"),
+            _iaru_contact(
+                "DL1ABC", "DL2ABC", "120000", "7.030", "CW", "28", "28", "EU"
+            ),
+            _iaru_contact(
+                "DL1ABC", "K6GTE", "120300", "14.025", "SSB", "28", "8", "NA"
+            ),
+            _iaru_contact(
+                "DL1ABC", "SM5XYZ", "120600", "14.025", "CW", "28", "18", "EU"
+            ),
+            _iaru_contact(
+                "DL1ABC", "W1AW", "120900", "14.025", "CW", "28", "ARRL", "NA"
+            ),
+            _iaru_contact(
+                "DL1ABC", "K6GTE", "121200", "14.025", "SSB", "28", "8", "NA"
+            ),
+            _iaru_contact(
+                "DL1ABC", "SM5XYZ", "121500", "14.025", "SSB", "28", "18", "EU"
+            ),
         ],
     },
 }
@@ -2707,10 +4419,14 @@ FIXTURES["phone_weekly_test"] = {
         "qsos": [
             _pwt_contact("DL1ABC", "N0AX", "010000", "3.580", "HANS DX", "RICK", "NC"),
             _pwt_contact("DL1ABC", "K6GTE", "010100", "3.585", "HANS DX", "SAM", "CA"),
-            _pwt_contact("DL1ABC", "DL2ABC", "010200", "7.080", "HANS DX", "JOCHEN", ""),
+            _pwt_contact(
+                "DL1ABC", "DL2ABC", "010200", "7.080", "HANS DX", "JOCHEN", ""
+            ),
             _pwt_contact("DL1ABC", "N0AX", "010300", "3.580", "HANS DX", "RICK", "NC"),
             _pwt_contact("DL1ABC", "W1AW", "010400", "14.080", "HANS DX", "ANN", "CT"),
-            _pwt_contact("DL1ABC", "DL2ABC", "010500", "7.080", "HANS DX", "JOCHEN", ""),
+            _pwt_contact(
+                "DL1ABC", "DL2ABC", "010500", "7.080", "HANS DX", "JOCHEN", ""
+            ),
         ],
     },
 }
@@ -2773,6 +4489,7 @@ FIXTURES["labre_rs_digi"] = {
     },
 }
 
+
 # ---------------------------------------------------------- qso_party_rst
 # The generic State QSO Party, its RST exchange flavour.  Phone is one point,
 # CW and digital two, and the multiplier is each county, state or country
@@ -2813,6 +4530,7 @@ FIXTURES["qso_party_rst"] = {
     },
 }
 
+
 # ----------------------------------------------------------- qso_party_sn
 # The same, with a serial number in place of the RST.
 def _party_sn_contact(station, call, time_on, freq, mode, nr, exch):
@@ -2844,6 +4562,7 @@ FIXTURES["qso_party_sn"] = {
         ],
     },
 }
+
 
 # ------------------------------------------------------------- randomgram
 # RandomGram, CW.  RST plus one random five-character group, two points a
@@ -2922,41 +4641,71 @@ FIXTURES["rda_contest"] = {
     # Outside Russia: 10 points a Russian contact, and RDA districts only.
     "K6GTE": {
         "station": STATION,
-        "contest_settings": {**CATS, "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-08-15 08:00:00",
-                             "SentExchange": "001"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-08-15 08:00:00",
+            "SentExchange": "001",
+        },
         "qsos": [
-            _rda_contact("K6GTE", "UA3ABC", "000000", "14.025", "CW", "001", "MO-01", "UA"),
-            _rda_contact("K6GTE", "UA9ABC", "000300", "7.030", "CW", "002", "SV-01", "UA9"),
+            _rda_contact(
+                "K6GTE", "UA3ABC", "000000", "14.025", "CW", "001", "MO-01", "UA"
+            ),
+            _rda_contact(
+                "K6GTE", "UA9ABC", "000300", "7.030", "CW", "002", "SV-01", "UA9"
+            ),
             # a duplicate on the band, same exchange
-            _rda_contact("K6GTE", "UA3ABC", "000600", "14.025", "CW", "003", "MO-01", "UA"),
+            _rda_contact(
+                "K6GTE", "UA3ABC", "000600", "14.025", "CW", "003", "MO-01", "UA"
+            ),
             # a non-Russian station is worth no points to a non-Russian one
-            _rda_contact("K6GTE", "DL1ABC", "000900", "14.050", "SSB", "004", "001", "DL"),
+            _rda_contact(
+                "K6GTE", "DL1ABC", "000900", "14.050", "SSB", "004", "001", "DL"
+            ),
             # MO-01 is already counted, whatever the band
-            _rda_contact("K6GTE", "RA3ABC", "001200", "7.030", "CW", "005", "MO-01", "UA"),
+            _rda_contact(
+                "K6GTE", "RA3ABC", "001200", "7.030", "CW", "005", "MO-01", "UA"
+            ),
             # Kaliningrad is its own award district
-            _rda_contact("K6GTE", "UA2ABC", "001500", "14.025", "CW", "006", "KA-01", "UA2"),
+            _rda_contact(
+                "K6GTE", "UA2ABC", "001500", "14.025", "CW", "006", "KA-01", "UA2"
+            ),
         ],
     },
     # Inside European Russia: the whole points table and both multiplier kinds.
     "UA3ABC": {
         "station": _RDA_UA3_STATION,
-        "contest_settings": {**CATS, "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-08-15 08:00:00",
-                             "SentExchange": "MO-01"},
+        "contest_settings": {
+            **CATS,
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-08-15 08:00:00",
+            "SentExchange": "MO-01",
+        },
         "qsos": [
             # Asiatic Russia is Russian on another continent: 2 points
-            _rda_contact("UA3ABC", "UA9ABC", "000000", "14.025", "CW", "MO-01", "SV-01", "UA9"),
+            _rda_contact(
+                "UA3ABC", "UA9ABC", "000000", "14.025", "CW", "MO-01", "SV-01", "UA9"
+            ),
             # another European Russian: 1 point
-            _rda_contact("UA3ABC", "R3ABC", "000300", "14.030", "CW", "MO-01", "MO-05", "UA"),
+            _rda_contact(
+                "UA3ABC", "R3ABC", "000300", "14.030", "CW", "MO-01", "MO-05", "UA"
+            ),
             # a different country on the same continent: 3 points
-            _rda_contact("UA3ABC", "DL1ABC", "000600", "7.030", "SSB", "MO-01", "001", "DL"),
+            _rda_contact(
+                "UA3ABC", "DL1ABC", "000600", "7.030", "SSB", "MO-01", "001", "DL"
+            ),
             # a different continent: 5 points
-            _rda_contact("UA3ABC", "N0AX", "000900", "7.035", "CW", "MO-01", "002", "K"),
-            _rda_contact("UA3ABC", "UA9ABC", "001200", "14.025", "CW", "MO-01", "SV-01", "UA9"),
+            _rda_contact(
+                "UA3ABC", "N0AX", "000900", "7.035", "CW", "MO-01", "002", "K"
+            ),
+            _rda_contact(
+                "UA3ABC", "UA9ABC", "001200", "14.025", "CW", "MO-01", "SV-01", "UA9"
+            ),
             # Kaliningrad scores as European Russia: 1 point, but it is a
             # separate country multiplier and district
-            _rda_contact("UA3ABC", "UA2ABC", "001500", "7.040", "CW", "MO-01", "KA-01", "UA2"),
+            _rda_contact(
+                "UA3ABC", "UA2ABC", "001500", "7.040", "CW", "MO-01", "KA-01", "UA2"
+            ),
         ],
     },
 }
@@ -2968,34 +4717,101 @@ FIXTURES["rda_contest"] = {
 # column is a float, so it has to be compared as one.
 FIXTURES["ta_vhf_uhf_contest"] = {
     "TA1ABC": {
-        "station": {**VHF_STATION, "Call": "TA1ABC", "GridSquare": "KN41",
-                    "Name": "Sample Operator", "Street1": "1 Ornek Sokak",
-                    "City": "Orneksehir", "Zip": "00000", "Country": "Turkey",
-                    "Email": "ta1abc@example.com", "Club": "Example Contest Club"},
-        "contest_settings": {**CATS, "BandCategory": "ALL", "ModeCategory": "SSB+CW",
-                             "StartDate": "2026-07-04 12:00:00",
-                             "SentExchange": "KN41"},
+        "station": {
+            **VHF_STATION,
+            "Call": "TA1ABC",
+            "GridSquare": "KN41",
+            "Name": "Sample Operator",
+            "Street1": "1 Ornek Sokak",
+            "City": "Orneksehir",
+            "Zip": "00000",
+            "Country": "Turkey",
+            "Email": "ta1abc@example.com",
+            "Club": "Example Contest Club",
+        },
+        "contest_settings": {
+            **CATS,
+            "BandCategory": "ALL",
+            "ModeCategory": "SSB+CW",
+            "StartDate": "2026-07-04 12:00:00",
+            "SentExchange": "KN41",
+        },
         "qsos": [
             # 2m CW: 202 km x 2 x 3
-            qso(CALL="TA2XYZ", QSO_DATE="20260704", TIME_ON="120000", FREQ="144.300",
-                MODE="CW", SNT="599", RCV="599", SENTNR="KN41", NR="KN50",
-                EXCHANGE1="KN50", GRIDSQUARE="KN50", STATION_CALLSIGN="TA1ABC"),
+            qso(
+                CALL="TA2XYZ",
+                QSO_DATE="20260704",
+                TIME_ON="120000",
+                FREQ="144.300",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="KN41",
+                NR="KN50",
+                EXCHANGE1="KN50",
+                GRIDSQUARE="KN50",
+                STATION_CALLSIGN="TA1ABC",
+            ),
             # 2m SSB: 280 km x 2 x 2
-            qso(CALL="TA3ABC", QSO_DATE="20260704", TIME_ON="120300", FREQ="144.320",
-                MODE="SSB", SNT="59", RCV="59", SENTNR="KN41", NR="KM59",
-                EXCHANGE1="KM59", GRIDSQUARE="KM59", STATION_CALLSIGN="TA1ABC"),
+            qso(
+                CALL="TA3ABC",
+                QSO_DATE="20260704",
+                TIME_ON="120300",
+                FREQ="144.320",
+                MODE="SSB",
+                SNT="59",
+                RCV="59",
+                SENTNR="KN41",
+                NR="KM59",
+                EXCHANGE1="KM59",
+                GRIDSQUARE="KM59",
+                STATION_CALLSIGN="TA1ABC",
+            ),
             # 6m FM: 356 km x 1 x 1
-            qso(CALL="TA4ABC", QSO_DATE="20260704", TIME_ON="120450", FREQ="50.200",
-                MODE="FM", SNT="59", RCV="59", SENTNR="KN41", NR="KN60",
-                EXCHANGE1="KN60", GRIDSQUARE="KN60", STATION_CALLSIGN="TA1ABC"),
+            qso(
+                CALL="TA4ABC",
+                QSO_DATE="20260704",
+                TIME_ON="120450",
+                FREQ="50.200",
+                MODE="FM",
+                SNT="59",
+                RCV="59",
+                SENTNR="KN41",
+                NR="KN60",
+                EXCHANGE1="KN60",
+                GRIDSQUARE="KN60",
+                STATION_CALLSIGN="TA1ABC",
+            ),
             # 70cm CW: 202 km x 3 x 3
-            qso(CALL="TA2XYZ", QSO_DATE="20260704", TIME_ON="120600", FREQ="432.200",
-                MODE="CW", SNT="599", RCV="599", SENTNR="KN41", NR="KN50",
-                EXCHANGE1="KN50", GRIDSQUARE="KN50", STATION_CALLSIGN="TA1ABC"),
+            qso(
+                CALL="TA2XYZ",
+                QSO_DATE="20260704",
+                TIME_ON="120600",
+                FREQ="432.200",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="KN41",
+                NR="KN50",
+                EXCHANGE1="KN50",
+                GRIDSQUARE="KN50",
+                STATION_CALLSIGN="TA1ABC",
+            ),
             # a duplicate on 2m
-            qso(CALL="TA2XYZ", QSO_DATE="20260704", TIME_ON="120900", FREQ="144.300",
-                MODE="CW", SNT="599", RCV="599", SENTNR="KN41", NR="KN50",
-                EXCHANGE1="KN50", GRIDSQUARE="KN50", STATION_CALLSIGN="TA1ABC"),
+            qso(
+                CALL="TA2XYZ",
+                QSO_DATE="20260704",
+                TIME_ON="120900",
+                FREQ="144.300",
+                MODE="CW",
+                SNT="599",
+                RCV="599",
+                SENTNR="KN41",
+                NR="KN50",
+                EXCHANGE1="KN50",
+                GRIDSQUARE="KN50",
+                STATION_CALLSIGN="TA1ABC",
+            ),
         ],
     },
 }
@@ -3101,143 +4917,241 @@ def ser(*numbers):
 
 
 BATCH2 = {
-    "cq_wpx_cw": dict(sent={"SENTNR": "001"}, x=ser("123", "456", "789", "321"),
-                      mode="CW", wpx=True),
-    "cq_wpx_ssb": dict(sent={"SENTNR": "001"}, x=ser("123", "456", "789", "321"),
-                       mode="SSB", wpx=True),
+    "cq_wpx_cw": dict(
+        sent={"SENTNR": "001"}, x=ser("123", "456", "789", "321"), mode="CW", wpx=True
+    ),
+    "cq_wpx_ssb": dict(
+        sent={"SENTNR": "001"}, x=ser("123", "456", "789", "321"), mode="SSB", wpx=True
+    ),
     "cq_ww_ssb": dict(
         sent={"SENTNR": "5"},
-        x=[{"ZN": "14", "NR": "14"}, {"ZN": "25", "NR": "25"},
-           {"ZN": "38", "NR": "38"}, {"ZN": "11", "NR": "11"}],
-        mode="SSB"),
+        x=[
+            {"ZN": "14", "NR": "14"},
+            {"ZN": "25", "NR": "25"},
+            {"ZN": "38", "NR": "38"},
+            {"ZN": "11", "NR": "11"},
+        ],
+        mode="SSB",
+    ),
     "cq_ww_rtty": dict(
         sent={"SENTNR": "5"},
-        x=[{"ZN": "14", "EXCHANGE1": "DL"}, {"ZN": "25", "EXCHANGE1": "JA"},
-           {"ZN": "5", "EXCHANGE1": "TX"}, {"ZN": "16", "EXCHANGE1": "UA"}],
-        mode="RTTY"),
+        x=[
+            {"ZN": "14", "EXCHANGE1": "DL"},
+            {"ZN": "25", "EXCHANGE1": "JA"},
+            {"ZN": "5", "EXCHANGE1": "TX"},
+            {"ZN": "16", "EXCHANGE1": "UA"},
+        ],
+        mode="RTTY",
+    ),
     "cq_160_cw": dict(
         sent={"SENTNR": "TX"},
         x=[{"NR": "DL"}, {"NR": "JA"}, {"NR": "TX"}, {"NR": "UA"}],
-        mode="CW", bands="160"),
+        mode="CW",
+        bands="160",
+    ),
     "cq_160_ssb": dict(
         sent={"SENTNR": "TX"},
         x=[{"NR": "DL"}, {"NR": "JA"}, {"NR": "TX"}, {"NR": "UA"}],
-        mode="SSB", bands="160"),
-    "arrl_dx_cw": dict(sent={"SENTNR": "TX"}, x=ser("100", "500", "1000", "050"),
-                       mode="CW"),
-    "arrl_dx_ssb": dict(sent={"SENTNR": "TX"}, x=ser("100", "500", "1000", "050"),
-                        mode="SSB"),
-    "arrl_10m": dict(sent={"SENTNR": "TX"}, x=ser("001", "002", "003", "004"),
-                     bands="10"),
+        mode="SSB",
+        bands="160",
+    ),
+    "arrl_dx_cw": dict(
+        sent={"SENTNR": "TX"}, x=ser("100", "500", "1000", "050"), mode="CW"
+    ),
+    "arrl_dx_ssb": dict(
+        sent={"SENTNR": "TX"}, x=ser("100", "500", "1000", "050"), mode="SSB"
+    ),
+    "arrl_10m": dict(
+        sent={"SENTNR": "TX"}, x=ser("001", "002", "003", "004"), bands="10"
+    ),
     "arrl_160m": dict(
         sent={"SENTNR": "TX"},
-        x=[{"EXCHANGE1": "DL"}, {"EXCHANGE1": "JA"}, {"EXCHANGE1": "TX"},
-           {"EXCHANGE1": "UA"}],
-        mode="CW", bands="160"),
+        x=[
+            {"EXCHANGE1": "DL"},
+            {"EXCHANGE1": "JA"},
+            {"EXCHANGE1": "TX"},
+            {"EXCHANGE1": "UA"},
+        ],
+        mode="CW",
+        bands="160",
+    ),
     "arrl_ss_phone": dict(
         sent={"SENTNR": "1"},
-        x=[{"NR": "12", "PREC": "A", "CK": "78", "SECT": "CT"},
-           {"NR": "33", "PREC": "B", "CK": "95", "SECT": "MO"},
-           {"NR": "66", "PREC": "Q", "CK": "99", "SECT": "NTX"},
-           # a station outside W/VE sends "DX": no points, no multiplier
-           {"NR": "99", "PREC": "B", "CK": "66", "SECT": "DX"}],
-        mode="SSB"),
+        x=[
+            {"NR": "12", "PREC": "A", "CK": "78", "SECT": "CT"},
+            {"NR": "33", "PREC": "B", "CK": "95", "SECT": "MO"},
+            {"NR": "66", "PREC": "Q", "CK": "99", "SECT": "NTX"},
+            # a station outside W/VE sends "DX": no points, no multiplier
+            {"NR": "99", "PREC": "B", "CK": "66", "SECT": "DX"},
+        ],
+        mode="SSB",
+    ),
     "naqp_cw": dict(
         sent={"SENTNR": "MIKE CA"},
-        x=[{"NAME": "RICK", "SECT": "NC"}, {"NAME": "BOB", "SECT": "TX"},
-           {"NAME": "ANN", "SECT": "OR"}, {"NAME": "KEN", "SECT": "HI"}],
-        mode="CW"),
+        x=[
+            {"NAME": "RICK", "SECT": "NC"},
+            {"NAME": "BOB", "SECT": "TX"},
+            {"NAME": "ANN", "SECT": "OR"},
+            {"NAME": "KEN", "SECT": "HI"},
+        ],
+        mode="CW",
+    ),
     "naqp_ssb": dict(
         sent={"SENTNR": "MIKE CA"},
-        x=[{"NAME": "RICK", "SECT": "NC"}, {"NAME": "BOB", "SECT": "TX"},
-           {"NAME": "ANN", "SECT": "OR"}, {"NAME": "KEN", "SECT": "HI"}],
-        mode="SSB"),
+        x=[
+            {"NAME": "RICK", "SECT": "NC"},
+            {"NAME": "BOB", "SECT": "TX"},
+            {"NAME": "ANN", "SECT": "OR"},
+            {"NAME": "KEN", "SECT": "HI"},
+        ],
+        mode="SSB",
+    ),
     "naqp_rtty": dict(
         sent={"SENTNR": "MIKE CA"},
-        x=[{"NAME": "RICK", "SECT": "NC"}, {"NAME": "BOB", "SECT": "TX"},
-           {"NAME": "ANN", "SECT": "OR"}, {"NAME": "KEN", "SECT": "HI"}],
-        mode="RTTY"),
+        x=[
+            {"NAME": "RICK", "SECT": "NC"},
+            {"NAME": "BOB", "SECT": "TX"},
+            {"NAME": "ANN", "SECT": "OR"},
+            {"NAME": "KEN", "SECT": "HI"},
+        ],
+        mode="RTTY",
+    ),
     "na_sprint_rtty": dict(
         sent={"SENTNR": "1"},
-        x=[{"NR": "154", "NAME": "RICK", "SECT": "NC"},
-           {"NR": "13", "NAME": "TREE", "SECT": "OR"},
-           {"NR": "7", "NAME": "AKI", "SECT": "HI"},
-           {"NR": "9", "NAME": "JUAN", "SECT": "XE"}],
-        mode="RTTY"),
+        x=[
+            {"NR": "154", "NAME": "RICK", "SECT": "NC"},
+            {"NR": "13", "NAME": "TREE", "SECT": "OR"},
+            {"NR": "7", "NAME": "AKI", "SECT": "HI"},
+            {"NR": "9", "NAME": "JUAN", "SECT": "XE"},
+        ],
+        mode="RTTY",
+    ),
     "cq_ww_vhf": dict(
         sent={"SENTNR": "DM13", "SNT": "", "RCV": ""},
-        x=[{"NR": "FN31", "GRIDSQUARE": "FN31"}, {"NR": "JO70", "GRIDSQUARE": "JO70"},
-           {"NR": "CM87", "GRIDSQUARE": "CM87"}, {"NR": "KN50", "GRIDSQUARE": "KN50"}],
-        bands="vhf"),
+        x=[
+            {"NR": "FN31", "GRIDSQUARE": "FN31"},
+            {"NR": "JO70", "GRIDSQUARE": "JO70"},
+            {"NR": "CM87", "GRIDSQUARE": "CM87"},
+            {"NR": "KN50", "GRIDSQUARE": "KN50"},
+        ],
+        bands="vhf",
+    ),
     "arrl_vhf_jan": dict(
         sent={"SENTNR": "DM13"},
-        x=[{"NR": "FN31", "GRIDSQUARE": "FN31"}, {"NR": "JO70", "GRIDSQUARE": "JO70"},
-           {"NR": "CM87", "GRIDSQUARE": "CM87"}, {"NR": "KN50", "GRIDSQUARE": "KN50"}],
-        bands="vhf"),
+        x=[
+            {"NR": "FN31", "GRIDSQUARE": "FN31"},
+            {"NR": "JO70", "GRIDSQUARE": "JO70"},
+            {"NR": "CM87", "GRIDSQUARE": "CM87"},
+            {"NR": "KN50", "GRIDSQUARE": "KN50"},
+        ],
+        bands="vhf",
+    ),
     "arrl_vhf_sep": dict(
         sent={"SENTNR": "DM13"},
-        x=[{"NR": "FN31", "GRIDSQUARE": "FN31"}, {"NR": "JO70", "GRIDSQUARE": "JO70"},
-           {"NR": "CM87", "GRIDSQUARE": "CM87"}, {"NR": "KN50", "GRIDSQUARE": "KN50"}],
-        bands="vhf"),
+        x=[
+            {"NR": "FN31", "GRIDSQUARE": "FN31"},
+            {"NR": "JO70", "GRIDSQUARE": "JO70"},
+            {"NR": "CM87", "GRIDSQUARE": "CM87"},
+            {"NR": "KN50", "GRIDSQUARE": "KN50"},
+        ],
+        bands="vhf",
+    ),
     "cwo": dict(
         sent={"SENTNR": "1"},
-        x=[{"NR": "1234", "NAME": "BOB"}, {"NR": "5678", "NAME": "HANS"},
-           {"NR": "1111", "NAME": "ANN"}, {"NR": "2222", "NAME": "KEN"}],
-        mode="CW"),
+        x=[
+            {"NR": "1234", "NAME": "BOB"},
+            {"NR": "5678", "NAME": "HANS"},
+            {"NR": "1111", "NAME": "ANN"},
+            {"NR": "2222", "NAME": "KEN"},
+        ],
+        mode="CW",
+    ),
     "icwc_mst": dict(
         sent={"SENTNR": "1"},
-        x=[{"NAME": "BOB", "NR": "1234"}, {"NAME": "HANS", "NR": "5678"},
-           {"NAME": "ANN", "NR": "1111"}, {"NAME": "KEN", "NR": "2222"}],
-        mode="CW"),
+        x=[
+            {"NAME": "BOB", "NR": "1234"},
+            {"NAME": "HANS", "NR": "5678"},
+            {"NAME": "ANN", "NR": "1111"},
+            {"NAME": "KEN", "NR": "2222"},
+        ],
+        mode="CW",
+    ),
     "k1usn_sst": dict(
         sent={"SENTNR": "MIKE CA"},
-        x=[{"NAME": "BOB", "SECT": "CA"}, {"NAME": "HANS", "SECT": "ON"},
-           {"NAME": "ANN", "SECT": "OR"}, {"NAME": "KEN", "SECT": "HI"}],
-        mode="CW"),
+        x=[
+            {"NAME": "BOB", "SECT": "CA"},
+            {"NAME": "HANS", "SECT": "ON"},
+            {"NAME": "ANN", "SECT": "OR"},
+            {"NAME": "KEN", "SECT": "HI"},
+        ],
+        mode="CW",
+    ),
 }
 
 BATCH3 = {}
 
-_NAQP = [{"NAME": "RICK", "SECT": "NC"}, {"NAME": "BOB", "SECT": "TX"},
-         {"NAME": "ANN", "SECT": "OR"}, {"NAME": "KEN", "SECT": "HI"}]
+_NAQP = [
+    {"NAME": "RICK", "SECT": "NC"},
+    {"NAME": "BOB", "SECT": "TX"},
+    {"NAME": "ANN", "SECT": "OR"},
+    {"NAME": "KEN", "SECT": "HI"},
+]
 _GRID = [{"NR": "FN31"}, {"NR": "JO70"}, {"NR": "CM87"}, {"NR": "KN50"}]
 _DOK = [{"NR": "P01"}, {"NR": "B02"}, {"NR": "NM"}, {"NR": "C03"}]
-_IOTA = [{"NR": "002 EU-005"}, {"NR": "003 NA-001"},
-         {"NR": "004 AS-007"}, {"NR": "005 OC-001"}]
+_IOTA = [
+    {"NR": "002 EU-005"},
+    {"NR": "003 NA-001"},
+    {"NR": "004 AS-007"},
+    {"NR": "005 OC-001"},
+]
 
 BATCH4 = {
     "arrl_field_day": dict(
         sent={"EXCHANGE1": "1D ORG"},
-        x=[{"EXCHANGE1": "1D ORG", "SECT": "ORG"},
-           {"EXCHANGE1": "2A CT", "SECT": "CT"},
-           {"EXCHANGE1": "1D DL", "SECT": "DX"},
-           {"EXCHANGE1": "3A MO", "SECT": "MO"}]),
-    "arrl_rtty_ru": dict(sent={"SENTNR": "TX"},
-                         x=[{"NR": "TX"}, {"NR": "DL"}, {"NR": "JA"}, {"NR": "UA"}],
-                         mode="RTTY"),
-    "cqws": dict(sent={"SENTNR": "1"},
-                 x=[{"NR": "SP"}, {"NR": "RE"},
-                    {"NR": "DX"}, {"NR": "GE"}]),
+        x=[
+            {"EXCHANGE1": "1D ORG", "SECT": "ORG"},
+            {"EXCHANGE1": "2A CT", "SECT": "CT"},
+            {"EXCHANGE1": "1D DL", "SECT": "DX"},
+            {"EXCHANGE1": "3A MO", "SECT": "MO"},
+        ],
+    ),
+    "arrl_rtty_ru": dict(
+        sent={"SENTNR": "TX"},
+        x=[{"NR": "TX"}, {"NR": "DL"}, {"NR": "JA"}, {"NR": "UA"}],
+        mode="RTTY",
+    ),
+    "cqws": dict(
+        sent={"SENTNR": "1"}, x=[{"NR": "SP"}, {"NR": "RE"}, {"NR": "DX"}, {"NR": "GE"}]
+    ),
     # dxpedition, general_logging and randomgram have no cabrillo()/edi()
     # output at all -- their export functions are empty -- so they cannot have
     # a golden log and stay placeholder directories.
     "darc_schwaben": dict(sent={"SENTNR": "A01"}, x=_DOK, wpx=True),
     "darc_xmas": dict(sent={"SENTNR": "A01"}, x=_DOK, wpx=True),
     "rsgb_iota": dict(sent={"SENTNR": "001"}, x=_IOTA),
-    "sac_cw": dict(sent={"SENTNR": "001"}, x=ser("002", "003", "004", "005"),
-                   mode="CW"),
-    "sac_ssb": dict(sent={"SENTNR": "001"}, x=ser("002", "003", "004", "005"),
-                    mode="SSB"),
-    "ukeidx": dict(sent={"SENTNR": "001"},
-                   x=[{"NR": "002 G"}, {"NR": "003 DL"}, {"NR": "004 G"},
-                      {"NR": "005 JA"}]),
+    "sac_cw": dict(
+        sent={"SENTNR": "001"}, x=ser("002", "003", "004", "005"), mode="CW"
+    ),
+    "sac_ssb": dict(
+        sent={"SENTNR": "001"}, x=ser("002", "003", "004", "005"), mode="SSB"
+    ),
+    "ukeidx": dict(
+        sent={"SENTNR": "001"},
+        x=[{"NR": "002 G"}, {"NR": "003 DL"}, {"NR": "004 G"}, {"NR": "005 JA"}],
+    ),
     "weekly_rtty": dict(sent={"SENTNR": "MIKE MA"}, x=_NAQP, mode="RTTY"),
-    "wag": dict(sent={"SENTNR": "1"},
-                x=[{"NR": "A01"}, {"NR": "P02"}, {"NR": "1"}, {"NR": "2"}]),
+    "wag": dict(
+        sent={"SENTNR": "1"}, x=[{"NR": "A01"}, {"NR": "P02"}, {"NR": "1"}, {"NR": "2"}]
+    ),
     "winter_field_day": dict(
         sent={"EXCHANGE1": "1O ORG"},
-        x=[{"EXCHANGE1": "1O CT"}, {"EXCHANGE1": "2A DL"},
-           {"EXCHANGE1": "1O MO"}, {"EXCHANGE1": "3A WA"}]),
+        x=[
+            {"EXCHANGE1": "1O CT"},
+            {"EXCHANGE1": "2A DL"},
+            {"EXCHANGE1": "1O MO"},
+            {"EXCHANGE1": "3A WA"},
+        ],
+    ),
 }
 
 _B2_CATEGORY = {"CW": "CW", "SSB": "SSB", "RTTY": "RTTY", None: "SSB+CW"}
@@ -3311,21 +5225,45 @@ def _relocate(contest, base_case, call, station, sent=None):
     }
 
 
-_relocate("cq_ww_cw", "K6GTE", "DL1ABC",
-          station_for("DL1ABC", "Germany", grid="JN58"), sent="14")
-_relocate("cq_wpx_rtty", "K6GTE", "DL1ABC",
-          station_for("DL1ABC", "Germany", grid="JN58"))
-_relocate("rdxc", "K6GTE", "UA3ABC",
-          station_for("UA3ABC", "European Russia", grid="KO85"), sent="MO")
-_relocate("ca_qso_party", "K6GTE", "W1AW",
-          station_for("W1AW", "United States", state="CT", section="CT", grid="FN31"),
-          sent="CT")
-_relocate("na_sprint_cw", "K0RX", "DL1ZZ",
-          station_for("DL1ZZ", "Germany", grid="JN58"), sent="DAVE DX")
+_relocate(
+    "cq_ww_cw",
+    "K6GTE",
+    "DL1ABC",
+    station_for("DL1ABC", "Germany", grid="JN58"),
+    sent="14",
+)
+_relocate(
+    "cq_wpx_rtty", "K6GTE", "DL1ABC", station_for("DL1ABC", "Germany", grid="JN58")
+)
+_relocate(
+    "rdxc",
+    "K6GTE",
+    "UA3ABC",
+    station_for("UA3ABC", "European Russia", grid="KO85"),
+    sent="MO",
+)
+_relocate(
+    "ca_qso_party",
+    "K6GTE",
+    "W1AW",
+    station_for("W1AW", "United States", state="CT", section="CT", grid="FN31"),
+    sent="CT",
+)
+_relocate(
+    "na_sprint_cw",
+    "K0RX",
+    "DL1ZZ",
+    station_for("DL1ZZ", "Germany", grid="JN58"),
+    sent="DAVE DX",
+)
 # A UK entrant: every contact in the log now has a UK&CD station at one end,
 # so the DL and OK contacts score here where they did not for K6GTE.
-_relocate("rsgb_80m_cc", "K6GTE", "G3XYZ",
-          station_for("G3XYZ", "England", section="DX", grid="IO91"))
+_relocate(
+    "rsgb_80m_cc",
+    "K6GTE",
+    "G3XYZ",
+    station_for("G3XYZ", "England", section="DX", grid="IO91"),
+)
 
 
 def main():
@@ -3362,8 +5300,8 @@ def main():
             Path.home = staticmethod(lambda h=home: h)
             # The export asks where to write the log with a save dialog; here
             # the fixture decides, so answer with the fixture's directory.
-            plugin_common.get_export_filename = (
-                lambda _, name, __, home=home: str(home / name)
+            plugin_common.get_export_filename = lambda _, name, __, home=home: str(
+                home / name
             )
             harness = ContestHarness(plugin, case, home, MP())
             plugin_common.import_adif(harness)
@@ -3416,7 +5354,9 @@ def main():
                 golden = case.golden("edi" if produced.suffix == ".edi" else "log")
                 golden.write_bytes(produced.read_bytes())
                 where = golden.name
-            case.config.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+            case.config.write_text(
+                json.dumps(config, indent=2) + "\n", encoding="utf-8"
+            )
 
             rows = harness.database.fetch_all_contacts_asc()
             points = [r.get("Points") for r in rows]

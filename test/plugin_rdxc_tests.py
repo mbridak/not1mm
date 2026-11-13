@@ -203,9 +203,7 @@ def test_set_contact_vars_dupe_does_not_mark_mult():
 
 
 def test_set_contact_vars_marks_new_oblast_mult():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "UA", "Band": 20, "Call": "UA3ABC"})
     load_contest("rdxc", ctx).set_contact_vars()
     assert ctx.contact["IsMultiplier1"] == 1
 
@@ -220,9 +218,7 @@ def test_set_contact_vars_skips_known_oblast():
 
 
 def test_set_contact_vars_marks_new_country_mult():
-    ctx = _make_entry_ctx(
-        contact={"CountryPrefix": "DL", "Band": 20, "Call": "DL1ABC"}
-    )
+    ctx = _make_entry_ctx(contact={"CountryPrefix": "DL", "Band": 20, "Call": "DL1ABC"})
     load_contest("rdxc", ctx).set_contact_vars()
     assert ctx.contact["IsMultiplier2"] == 1
 

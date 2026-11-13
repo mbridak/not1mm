@@ -20,15 +20,18 @@ def _ctx(band, nr="FN31", my_grid="DM13", dupe=0):
     )
 
 
-@pytest.mark.parametrize("band,expected", [
-    (50.0, 1),
-    (144.0, 1),
-    (222.0, 1),
-    (432.0, 1),
-    # a band outside the sprint's set scores nothing
-    (1.8, 0),
-    (28.0, 0),
-])
+@pytest.mark.parametrize(
+    "band,expected",
+    [
+        (50.0, 1),
+        (144.0, 1),
+        (222.0, 1),
+        (432.0, 1),
+        # a band outside the sprint's set scores nothing
+        (1.8, 0),
+        (28.0, 0),
+    ],
+)
 def test_low_bands_score_one_point(band, expected):
     assert load_contest("vhf_sprint", _ctx(band)).points() == expected
 

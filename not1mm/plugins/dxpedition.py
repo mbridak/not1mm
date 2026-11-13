@@ -147,9 +147,7 @@ class Contest(ContestBase):
         else:
             parent.contact["Mode"] = packet.get("MODE", "ERR")
         parent.contact["Freq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
-        parent.contact["QSXFreq"] = round(
-            float(packet.get("FREQ", "0.0")) * 1000, 2
-        )
+        parent.contact["QSXFreq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
         parent.contact["Band"] = get_logged_band(
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )

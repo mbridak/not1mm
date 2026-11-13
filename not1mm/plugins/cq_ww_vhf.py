@@ -180,9 +180,7 @@ class Contest(ContestBase):
         """
         parent = self.parent
         band = parent.contact.get("Band", "")
-        sentnr = parent.RoverLocation or parent.contest_settings.get(
-            "SentExchange", ""
-        )
+        sentnr = parent.RoverLocation or parent.contest_settings.get("SentExchange", "")
         result = parent.database.exec_sql(
             "select count(*) as dupe from dxlog where ContestNR = ? "
             "and Call = ? and Band = ? and SentNr = ?;",

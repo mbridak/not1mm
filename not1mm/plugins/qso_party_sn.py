@@ -170,9 +170,7 @@ input each county separated by a '/'.
             location = str(contact.get("RoverLocation", "")).upper().strip()
         elif parent.contest_settings.get("SentExchange", ""):
             location = (
-                str(parent.contest_settings.get("SentExchange", ""))
-                .upper()
-                .strip("# ")
+                str(parent.contest_settings.get("SentExchange", "")).upper().strip("# ")
             )
         received = str(contact.get("Exchange1", "")).upper().strip()
 

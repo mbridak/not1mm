@@ -56,9 +56,9 @@ def _ctx(zone, zn, continent=None, his_call="N0AX", my_call="K6GTE"):
     ],
 )
 def test_points(my_call, zone, zn, continent, expected):
-    assert load_contest("iaru_hf", _ctx(zone, zn, continent, my_call=my_call)).points() == (
-        expected
-    )
+    assert load_contest(
+        "iaru_hf", _ctx(zone, zn, continent, my_call=my_call)
+    ).points() == (expected)
 
 
 def test_continent_falls_back_to_the_country_file():

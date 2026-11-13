@@ -152,7 +152,16 @@ def _recall_previous_qso(parent, call, contact) -> None:
     result = parent.database.fetch_previous_qso(call)
     if not result:
         return
-    for key in ("GridSquare", "Sect", "State", "NR", "Exchange1", "MiscText", "Name", "ZN"):
+    for key in (
+        "GridSquare",
+        "Sect",
+        "State",
+        "NR",
+        "Exchange1",
+        "MiscText",
+        "Name",
+        "ZN",
+    ):
         _fill(contact, key, result.get(key))
 
 
@@ -193,7 +202,9 @@ def build(parent, contest, call, band=None, mode=None, contact=None) -> ContactI
         fields = contact if contact is not None else recall(parent, call)
     else:
         fields = (
-            contact if contact is not None else contest.prefill_contact(call, band, mode)
+            contact
+            if contact is not None
+            else contest.prefill_contact(call, band, mode)
         )
     fields.setdefault("Call", call)
     if band is None or mode is None:

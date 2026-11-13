@@ -116,7 +116,12 @@ class Contest(ContestBase):
         district = get_district(dok)
 
         # Multiplier: non-DL worked DL, by district.
-        if dxcc == "DL" and not isinstance(dok, int) and dok != "NM" and not self.is_german:
+        if (
+            dxcc == "DL"
+            and not isinstance(dok, int)
+            and dok != "NM"
+            and not self.is_german
+        ):
             query = (
                 f"select count(*) as dok_count from dxlog where 1=1 "
                 f"and NR like '{district}%' "

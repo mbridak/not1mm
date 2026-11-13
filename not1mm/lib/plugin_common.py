@@ -296,7 +296,12 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY", "CA-QSO-PARTY"):
+                    if cabrillo_name in (
+                        "WFD",
+                        "ARRL-FD",
+                        "ARRL-FIELD-DAY",
+                        "CA-QSO-PARTY",
+                    ):
                         sent = self.contest_settings.get("SentExchange", "").strip("# ")
                         if sent:
                             print(

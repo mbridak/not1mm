@@ -99,9 +99,7 @@ class Contest(ContestBase):
         dxcc = 0
         if self.can_claim_dxcc():
             dxcc = int(database.fetch_country_count().get("dxcc_count", 0))
-        sections = int(
-            database.fetch_exchange1_unique_count().get("exch1_count", 0)
-        )
+        sections = int(database.fetch_exchange1_unique_count().get("exch1_count", 0))
         return dxcc + sections
 
     def get_mults(self):
