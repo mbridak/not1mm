@@ -90,6 +90,8 @@ def test_every_contest_declares_an_identifier():
     for info in available:
         assert info.identifier, info.source
         assert info.display_name, info.source
+        assert info.cabrillo_name, info.source
+        assert isinstance(info.sort_order, int), info.source
 
 
 def test_every_contest_can_be_loaded_by_its_identifier():
@@ -124,8 +126,9 @@ def test_the_adif_contest_id_is_the_cabrillo_name(monkeypatch):
 
 
 def test_a_picker_entry_maps_to_an_identifier():
-    # The picker's labels are not the contests' display names: "OK1WC" is the
-    # label for the contest that calls itself "OK1WC Memorial Contest (MWC)".
+    # The old picker's labels were not the contests' display names: "OK1WC"
+    # was the label for the contest that now calls itself "OK1WC Memorial
+    # Contest".  The fold over those stored labels has to keep resolving.
     assert contest.contest_identifier_for_display("OK1WC") == "MWC"
     # The fall and spring Ten-Ten sprints share the Cabrillo name 10-10-SPRINT
     # and name themselves, so the label resolves to that name.

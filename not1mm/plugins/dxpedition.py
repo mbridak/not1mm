@@ -19,6 +19,7 @@ class Contest(ContestBase):
 
     DisplayName = "DX-Pedition"
     CabrilloName = "DX-Pedition"
+    SortOrder = 60  # a mode, not a contest: keep it at the top of the picker
     Mode = "BOTH"
     DupeType = 4  # no dupe checking
     SupportsFT8 = True
