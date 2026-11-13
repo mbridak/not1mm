@@ -449,6 +449,18 @@ class DataBase:
         """Returns call history values for matching a call."""
         return self.exec_sql("select * from CALLHISTORY where call = ?;", (call,))
 
+    def fetch_previous_qso(self, call: str):
+        """The most recent contact with *call* in this contest, if any.
+
+        What a station was worked as the last time: its grid, its section, the
+        exchange it sent.  Used to prefill, and to predict a multiplier from.
+        """
+        return self.exec_sql(
+            "select * from dxlog where Call = ? and ContestNR = ? "
+            "order by TS desc limit 1;",
+            (call, self.current_contest),
+        )
+
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""
         return self.exec_sql_mult(
@@ -801,6 +813,47 @@ class DataBase:
         return self.exec_sql(
             f"select count(*) as count from dxlog where IsMultiplier{mult} = 1 and ContestNR = ?;",
             (self.current_contest,),
+        )
+
+    def fetch_mult_key_count(self, expression: str, per: tuple = ()) -> dict:
+        """Count the distinct values of a multiplier key in this contest.
+
+        *expression* is a SQL expression over a DXLOG row and *per* the columns
+        the key is counted per (``Band``, ``Mode``): the translation of a UDC
+        ``MultSqlString`` / ``IsMultPer`` pair into one query.  So
+        ``("WPXPrefix", ())`` counts prefixes once for the contest and
+        ``("substr(Call,-1)", ("Band",))`` counts last letters per band.
+        """
+        key = expression
+        for column in per:
+            key += f" || ':' || {column}"
+        return self.exec_sql(
+            f"select count(DISTINCT {key}) as count from dxlog where ContestNR = ?;",
+            (self.current_contest,),
+        )
+
+    def mult_key_exists(
+        self, expression: str, value, per: tuple = (), band=None, mode=None
+    ) -> dict:
+        """Count the logged contacts already carrying a multiplier key.
+
+        The live counterpart of :meth:`fetch_mult_key_count`: is the key of the
+        contact being logged already in the log, on this band/mode?
+        """
+        where = [f"{expression} = ?"]
+        params = [value]
+        if "Band" in per:
+            where.append("Band = ?")
+            params.append(band)
+        if "Mode" in per:
+            where.append("Mode = ?")
+            params.append(mode)
+        params.append(self.current_contest)
+        return self.exec_sql(
+            "select count(*) as count from dxlog where "
+            + " and ".join(where)
+            + " and ContestNR = ?;",
+            tuple(params),
         )
 
     def fetch_qso_count(self) -> dict:

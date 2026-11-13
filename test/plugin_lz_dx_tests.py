@@ -8,25 +8,23 @@ References:
   https://lzdx.bfra.bg/rulesen.html  (QSO Points, Multipliers)
 """
 
-import importlib
 from types import SimpleNamespace
 
 import pytest
 
 from contest_harness import cty_lookup
-
-# The module name has a hyphen, so it cannot be imported by name.
-lz_dx = importlib.import_module("not1mm.plugins.lz-dx")
+from not1mm.lib.contest import load_contest
 
 
-def _ctx(mycall, hiscall, is_dupe=0):
-    """Minimal fake `self` for lz_dx.points()."""
-    return SimpleNamespace(
+def _contest(mycall, hiscall, is_dupe=0):
+    """The contest bound to a stand-in main window."""
+    parent = SimpleNamespace(
         contact_is_dupe=is_dupe,
         station={"Call": mycall},
         contact={"Call": hiscall},
         cty_lookup=cty_lookup,
     )
+    return load_contest("lz-dx", parent)
 
 
 @pytest.mark.parametrize(
@@ -44,12 +42,12 @@ def _ctx(mycall, hiscall, is_dupe=0):
     ],
 )
 def test_points(mycall, hiscall, expected):
-    assert lz_dx.points(_ctx(mycall, hiscall)) == expected
+    assert _contest(mycall, hiscall).points() == expected
 
 
 def test_dupe_scores_nothing():
-    assert lz_dx.points(_ctx("K6GTE", "LZ1ABC", is_dupe=1)) == 0
+    assert _contest("K6GTE", "LZ1ABC", is_dupe=1).points() == 0
 
 
 def test_unknown_station_scores_nothing():
-    assert lz_dx.points(_ctx("K6GTE", "QQ1QQQ")) == 0
+    assert _contest("K6GTE", "QQ1QQQ").points() == 0

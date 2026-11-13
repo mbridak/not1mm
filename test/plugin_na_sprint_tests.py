@@ -10,8 +10,9 @@ from pathlib import Path
 import pytest
 
 import not1mm
+from not1mm.lib.contest import load_contest
 from not1mm.lib.database import DataBase
-from not1mm.plugins import na_sprint_cw, na_sprint_rtty
+from not1mm.plugins import na_sprint_cw
 
 CTY = json.loads(
     (Path(not1mm.__file__).parent / "data" / "cty.json").read_text(encoding="utf-8")
@@ -51,8 +52,7 @@ class Harness:
     """Just enough of MainWindow for the plugin."""
 
     def __init__(self, plugin, tmp_path, mycall="K0RX"):
-        self.plugin = plugin
-        self.contest = plugin
+        self.plugin_name = plugin
         self.ctyfile = CTY
         self.cty_lookup = cty_lookup
         self.database = DataBase(
@@ -74,6 +74,7 @@ class Harness:
         self.pref = {"run_state": False}
         self.serial = 0
         self.ts = datetime.datetime(2026, 9, 13, 0, 0, 0)
+        self.plugin = self.contest = load_contest(plugin, self)
 
     def log(self, call, exch, band="14.0", freq=14040.0, run=False):
         """Mimic MainWindow.save_contact()."""
@@ -95,8 +96,8 @@ class Harness:
                 "Call": call,
                 "Band": band,
                 "Freq": freq,
-                "Mode": self.plugin.mode,
-                "ContestName": self.plugin.cabrillo_name,
+                "Mode": self.plugin.Mode,
+                "ContestName": self.plugin.CabrilloName,
                 "ContestNR": 1,
                 "StationPrefix": self.station["Call"],
                 "Continent": continent,
@@ -105,15 +106,15 @@ class Harness:
                 "ID": uuid.uuid4().hex,
             }
         )
-        self.plugin.set_contact_vars(self)
-        self.contact["Points"] = self.plugin.points(self)
+        self.plugin.set_contact_vars()
+        self.contact["Points"] = self.plugin.points()
         self.database.log_contact(self.contact)
         return dict(self.contact)
 
 
 @pytest.fixture
 def h(tmp_path):
-    return Harness(na_sprint_cw, tmp_path)
+    return Harness("na_sprint_cw", tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -203,13 +204,13 @@ def test_scoring_and_mults(h):
     q = h.log("K1BB", "8 SUE MA")
     assert q["IsMultiplier1"] == 1
 
-    assert na_sprint_cw.show_qso(h) == 8
-    assert na_sprint_cw.show_mults(h) == 3  # NC, C-XE, MA
-    assert na_sprint_cw.calc_score(h) == 6 * 3
+    assert h.plugin.show_qso() == 8
+    assert h.plugin.show_mults() == 3  # NC, C-XE, MA
+    assert h.plugin.calc_score() == 6 * 3
 
 
 def test_non_na_station_only_scores_na(tmp_path):
-    h = Harness(na_sprint_cw, tmp_path, mycall="DL1ZZ")
+    h = Harness("na_sprint_cw", tmp_path, mycall="DL1ZZ")
     assert h.log("N6TR", "1 RICK NC")["Points"] == 1
     assert h.log("G3AA", "2 JOHN DX")["Points"] == 0
     assert h.log("KH6AA", "3 AKI HI")["Points"] == 1  # KH6 counts as NA
@@ -234,25 +235,25 @@ def test_recalculate_matches_live(h):
         "update dxlog set Points = 0, IsMultiplier1 = 0, Exchange1 = '';"
     )
     h.log_window = None
-    na_sprint_cw.recalculate_mults(h)
+    h.plugin.recalculate_mults()
     recalc = [
         (c["Call"], c["Points"], c["IsMultiplier1"], c["Exchange1"])
         for c in h.database.fetch_all_contacts_asc()
     ]
     assert recalc == live
-    assert na_sprint_cw.show_mults(h) == 3
+    assert h.plugin.show_mults() == 3
 
 
 def test_qsy_rule(h):
-    na_sprint_cw._after_log(h, was_run=True, freq_khz=14040.0)
+    h.plugin._after_log(True, 14040.0)
     h.radio_state["vfoa"] = 14040500  # moved only 0.5 kHz
-    assert na_sprint_cw.qsy_needed(h)
+    assert h.plugin.qsy_needed()
     h.radio_state["vfoa"] = 14041000  # moved 1 kHz
-    assert not na_sprint_cw.qsy_needed(h)
+    assert not h.plugin.qsy_needed()
     # an S&P QSO means we now own that frequency
-    na_sprint_cw._after_log(h, was_run=False, freq_khz=14041.0)
+    h.plugin._after_log(False, 14041.0)
     h.radio_state["vfoa"] = 14041000
-    assert not na_sprint_cw.qsy_needed(h)
+    assert not h.plugin.qsy_needed()
 
 
 def test_cabrillo(h, tmp_path):
@@ -261,7 +262,7 @@ def test_cabrillo(h, tmp_path):
     h.database.get_ops = lambda: []
     messages = []
     h.show_message_box = messages.append
-    na_sprint_cw.cabrillo(h, str(tmp_path / "test.log"), "ascii")
+    h.plugin.cabrillo(str(tmp_path / "test.log"), "ascii")
     log = (tmp_path / "test.log").read_bytes().decode()
     assert "CONTEST: NA-SPRINT-CW\r\n" in log
     assert "LOCATION: MN\r\n" in log
@@ -277,25 +278,24 @@ def test_cabrillo(h, tmp_path):
 
 
 def test_rtty_identity(tmp_path):
-    h = Harness(na_sprint_rtty, tmp_path)
-    assert na_sprint_rtty.cabrillo_name == "NA-SPRINT-RTTY"
-    assert na_sprint_rtty.mode == "RTTY"
-    assert na_sprint_rtty.dupe_type == 2
+    h = Harness("na_sprint_rtty", tmp_path)
+    assert h.plugin.CabrilloName == "NA-SPRINT-RTTY"
+    assert h.plugin.Mode == "RTTY"
+    assert h.plugin.DupeType == 2
     q = h.log("N6TR", "1 RICK NC")
     assert (q["Points"], q["IsMultiplier1"]) == (1, 1)
 
 
 def test_rtty_udp_adif(tmp_path):
-    h = Harness(na_sprint_rtty, tmp_path)
+    h = Harness("na_sprint_rtty", tmp_path)
     saved = {}
 
     def save_contact():
-        na_sprint_rtty.set_contact_vars(h)
+        h.plugin.set_contact_vars()
         saved.update(h.contact)
 
     h.save_contact = save_contact
-    na_sprint_rtty.set_self(h)
-    na_sprint_rtty.ft8_handler(
+    h.plugin.ft8_handler(
         {
             "CALL": "N6TR",
             "MODE": "RTTY",

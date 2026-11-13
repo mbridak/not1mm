@@ -13,7 +13,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins.wia_remembrance import _dupe_mode, points
+from not1mm.lib.contest import load_contest
+from not1mm.plugins.wia_remembrance import _dupe_mode
 
 
 @pytest.fixture
@@ -71,6 +72,11 @@ def _ctx(band, mode, time_on, dupe=0):
     )
 
 
+def _points(band, mode, time_on, dupe=0):
+    """The Remembrance points() is a method on the contest class now."""
+    return load_contest("wia_remembrance", _ctx(band, mode, time_on, dupe)).points()
+
+
 @pytest.mark.parametrize(
     "band,mode,time_on,expected",
     [
@@ -91,8 +97,8 @@ def _ctx(band, mode, time_on, dupe=0):
     ],
 )
 def test_points(utc_tz, band, mode, time_on, expected):
-    assert points(_ctx(band, mode, time_on)) == expected
+    assert _points(band, mode, time_on) == expected
 
 
 def test_a_duplicate_scores_nothing(utc_tz):
-    assert points(_ctx(1.8, "CW", "02:00:00", dupe=1)) == 0
+    assert _points(1.8, "CW", "02:00:00", dupe=1) == 0

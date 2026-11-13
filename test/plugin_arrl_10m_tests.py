@@ -12,28 +12,29 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins import arrl_10m
+from not1mm.lib.contest import load_contest
 
 
-def _ctx(mode="CW", is_dupe=0):
-    """Minimal fake `self` for points()."""
-    return SimpleNamespace(contact_is_dupe=is_dupe, contact={"Mode": mode})
+def _contest(mode="CW", is_dupe=0):
+    """The contest bound to a stand-in main window."""
+    parent = SimpleNamespace(contact_is_dupe=is_dupe, contact={"Mode": mode})
+    return load_contest("arrl_10m", parent)
 
 
 @pytest.mark.parametrize("mode", ["SSB", "USB", "LSB", "FM", "AM", "PH", "ssb"])
 def test_phone_is_two_points(mode):
-    assert arrl_10m.points(_ctx(mode)) == 2
+    assert _contest(mode).points() == 2
 
 
 @pytest.mark.parametrize("mode", ["CW", "CW-U", "CW-L", "CWR", "CW-R", "cw"])
 def test_cw_is_four_points(mode):
-    assert arrl_10m.points(_ctx(mode)) == 4
+    assert _contest(mode).points() == 4
 
 
 @pytest.mark.parametrize("mode", ["RTTY", "DG", "FT8", "PSK31", "", "S", "P"])
 def test_other_modes_score_nothing(mode):
-    assert arrl_10m.points(_ctx(mode)) == 0
+    assert _contest(mode).points() == 0
 
 
 def test_dupe_scores_nothing():
-    assert arrl_10m.points(_ctx("CW", is_dupe=1)) == 0
+    assert _contest("CW", is_dupe=1).points() == 0

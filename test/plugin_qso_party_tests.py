@@ -11,12 +11,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins import qso_party_rst, qso_party_sn
+from not1mm.lib.contest import load_contest
 
-MODULES = [qso_party_rst, qso_party_sn]
+SOURCES = ["qso_party_rst", "qso_party_sn"]
 
 
-@pytest.mark.parametrize("module", MODULES)
+@pytest.mark.parametrize("source", SOURCES)
 @pytest.mark.parametrize(
     "mode,expected",
     [
@@ -37,15 +37,15 @@ MODULES = [qso_party_rst, qso_party_sn]
         ("", 0),
     ],
 )
-def test_points_follow_the_docstring(module, mode, expected):
+def test_points_follow_the_docstring(source, mode, expected):
     ctx = SimpleNamespace(contact_is_dupe=0, contact={"Mode": mode})
-    assert module.points(ctx) == expected
+    assert load_contest(source, ctx).points() == expected
 
 
-@pytest.mark.parametrize("module", MODULES)
-def test_a_duplicate_scores_nothing(module):
+@pytest.mark.parametrize("source", SOURCES)
+def test_a_duplicate_scores_nothing(source):
     ctx = SimpleNamespace(contact_is_dupe=1, contact={"Mode": "CW"})
-    assert module.points(ctx) == 0
+    assert load_contest(source, ctx).points() == 0
 
 
 class _Field:
@@ -74,22 +74,20 @@ class _Field:
     ],
 )
 def test_rst_prefill_uses_the_live_mode(mode, expected):
-    ctx = SimpleNamespace(
-        radio_state={"mode": mode}, sent=_Field(), receive=_Field()
-    )
-    qso_party_rst.prefill(ctx)
+    ctx = SimpleNamespace(radio_state={"mode": mode}, sent=_Field(), receive=_Field())
+    load_contest("qso_party_rst", ctx).prefill()
     assert ctx.sent.text() == expected
     assert ctx.receive.text() == expected
 
 
 def test_rst_prefill_needs_a_mode():
     ctx = SimpleNamespace(radio_state={"mode": ""}, sent=_Field(), receive=_Field())
-    qso_party_rst.prefill(ctx)
+    load_contest("qso_party_rst", ctx).prefill()
     assert ctx.sent.text() == ""
     assert ctx.receive.text() == ""
 
 
 def test_sn_prefill_fills_the_serial():
     ctx = SimpleNamespace(current_sn=7, sent=_Field())
-    qso_party_sn.prefill(ctx)
+    load_contest("qso_party_sn", ctx).prefill()
     assert ctx.sent.text() == "007"

@@ -1,5 +1,6 @@
 import pytest
 
+from not1mm.lib.contest import load_contest
 from not1mm.plugins import rsgb_commonwealth_beru as beru
 
 
@@ -50,7 +51,7 @@ CTY = {
 }
 
 
-def make_self(
+def make_parent(
     my_call,
     their_call,
     rcv_nr="001",
@@ -59,12 +60,12 @@ def make_self(
     band=14.0,
     ts="2025-03-08 12:00:00",
 ):
-    """Build a fake MainWindow sufficient for the functions under test."""
+    """Build a fake MainWindow sufficient for the contest under test."""
 
-    class FakeSelf:
+    class FakeWindow:
         pass
 
-    fake = FakeSelf()
+    fake = FakeWindow()
     fake.station = {"Call": my_call}
     fake.contact = {
         "Call": their_call,
@@ -143,98 +144,107 @@ def test_is_hq_station(exchange, expected):
     ],
 )
 def test_get_commonwealth_area_multi_area_countries(call, expected):
-    fake = make_self("K6GTE", call)
-    assert beru.get_commonwealth_area(fake, call) == expected
+    parent = make_parent("K6GTE", call)
+    assert (
+        load_contest("rsgb_commonwealth_beru", parent).get_commonwealth_area(call)
+        == expected
+    )
 
 
 def test_points_same_continent_commonwealth():
-    fake = make_self("K6GTE", "VE3ABC")
-    fake.contact["IsMultiplier2"] = 0
-    assert beru.points(fake) == 5
+    parent = make_parent("K6GTE", "VE3ABC")
+    parent.contact["IsMultiplier2"] = 0
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 5
 
 
 def test_points_different_continent_commonwealth():
-    fake = make_self("K6GTE", "ZL1KL")
-    fake.contact["IsMultiplier2"] = 0
-    assert beru.points(fake) == 10
+    parent = make_parent("K6GTE", "ZL1KL")
+    parent.contact["IsMultiplier2"] = 0
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 10
 
 
 def test_points_non_commonwealth_zero():
-    fake = make_self("K6GTE", "JAIABC")
-    assert beru.points(fake) == 0
-    fake = make_self("G4ABC", "FABCD")
-    assert beru.points(fake) == 0
+    parent = make_parent("K6GTE", "JAIABC")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
+    parent = make_parent("G4ABC", "FABCD")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
 
 
 def test_points_own_call_area_zero():
-    fake = make_self("VE3ABC", "VE3XYZ")
-    assert beru.points(fake) == 0
-    fake = make_self("VK3DEF", "VK3GHI")
-    assert beru.points(fake) == 0
+    parent = make_parent("VE3ABC", "VE3XYZ")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
+    parent = make_parent("VK3DEF", "VK3GHI")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
 
 
 def test_points_different_call_area_same_entity_ok():
-    fake = make_self("VE3ABC", "VE2XYZ")
-    assert beru.points(fake) == 5
-    fake = make_self("VK3DEF", "VK5GHI")
-    assert beru.points(fake) == 5  # both Australia, same continent
+    parent = make_parent("VE3ABC", "VE2XYZ")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 5
+    parent = make_parent("VK3DEF", "VK5GHI")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 5
 
 
 def test_points_home_nations_zero():
-    fake = make_self("G4ABC", "GM3XYZ")
-    assert beru.points(fake) == 0
+    parent = make_parent("G4ABC", "GM3XYZ")
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
 
 
 def test_points_hq_in_own_call_area():
-    fake = make_self("VE3ABC", "VE3HQ", rcv_nr="001 HQ")
-    beru.set_contact_vars(fake)
+    parent = make_parent("VE3ABC", "VE3HQ", rcv_nr="001 HQ")
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
     # Own area, but HQ stations are always worth points.
-    assert fake.contact["IsMultiplier2"] == 1
-    assert beru.points(fake) == 25
+    assert parent.contact["IsMultiplier2"] == 1
+    assert contest.points() == 25
 
 
 def test_points_dupe():
-    fake = make_self("K6GTE", "VE3ABC", dupe=True)
-    assert beru.points(fake) == 0
+    parent = make_parent("K6GTE", "VE3ABC", dupe=True)
+    assert load_contest("rsgb_commonwealth_beru", parent).points() == 0
 
 
 def test_bonus_flag_first_three_per_band():
-    fake = make_self("K6GTE", "VE3ABC", bonus_count=0)
-    beru.set_contact_vars(fake)
-    assert fake.contact["IsMultiplier2"] == 1
-    assert beru.points(fake) == 25
+    parent = make_parent("K6GTE", "VE3ABC", bonus_count=0)
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
+    assert parent.contact["IsMultiplier2"] == 1
+    assert contest.points() == 25
 
-    fake = make_self("K6GTE", "VE3ABC", bonus_count=2)
-    beru.set_contact_vars(fake)
-    assert fake.contact["IsMultiplier2"] == 1
-    assert beru.points(fake) == 25
+    parent = make_parent("K6GTE", "VE3ABC", bonus_count=2)
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
+    assert parent.contact["IsMultiplier2"] == 1
+    assert contest.points() == 25
 
-    fake = make_self("K6GTE", "VE3ABC", bonus_count=3)
-    beru.set_contact_vars(fake)
-    assert fake.contact["IsMultiplier2"] == 0
-    assert beru.points(fake) == 5
+    parent = make_parent("K6GTE", "VE3ABC", bonus_count=3)
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
+    assert parent.contact["IsMultiplier2"] == 0
+    assert contest.points() == 5
 
 
 def test_no_bonus_for_non_commonwealth():
-    fake = make_self("K6GTE", "JAIABC", bonus_count=0)
-    beru.set_contact_vars(fake)
-    assert fake.contact["IsMultiplier2"] == 0
-    assert beru.points(fake) == 0
+    parent = make_parent("K6GTE", "JAIABC", bonus_count=0)
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
+    assert parent.contact["IsMultiplier2"] == 0
+    assert contest.points() == 0
 
 
 def test_set_contact_vars_stores_exchange():
-    fake = make_self("K6GTE", "VU2XYZ", rcv_nr="047", bonus_count=0)
-    beru.set_contact_vars(fake)
-    assert fake.contact["SNT"] == "599"
-    assert fake.contact["RCV"] == "599"
-    assert fake.contact["SentNr"] == "023"
-    assert fake.contact["NR"] == "047"
-    assert fake.contact["IsMultiplier2"] == 1
-    assert fake.database.queries, "bonus count query was not issued"
+    parent = make_parent("K6GTE", "VU2XYZ", rcv_nr="047", bonus_count=0)
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    contest.set_contact_vars()
+    assert parent.contact["SNT"] == "599"
+    assert parent.contact["RCV"] == "599"
+    assert parent.contact["SentNr"] == "023"
+    assert parent.contact["NR"] == "047"
+    assert parent.contact["IsMultiplier2"] == 1
+    assert parent.database.queries, "bonus count query was not issued"
 
 
 def test_recalculate_mults_caps_three_bonuses_per_band():
-    fake = make_self("K6GTE", "VE3ABC")
+    parent = make_parent("K6GTE", "VE3ABC")
 
     def make_contact(idx, call, band):
         return {
@@ -247,7 +257,7 @@ def test_recalculate_mults_caps_three_bonuses_per_band():
             "Points": 999,
         }
 
-    fake.database.contacts = [
+    parent.database.contacts = [
         make_contact(1, "VE1AAA", 14.0),
         make_contact(2, "VE2BBB", 14.0),
         make_contact(3, "VE3CCC", 14.0),
@@ -255,8 +265,8 @@ def test_recalculate_mults_caps_three_bonuses_per_band():
         make_contact(5, "VK1EEE", 14.0),  # non-bonus? still Commonwealth, past cap
         make_contact(6, "ZL1FFF", 7.0),  # different band: bonus again
     ]
-    beru.recalculate_mults(fake)
-    saved = fake.database.saved
+    load_contest("rsgb_commonwealth_beru", parent).recalculate_mults()
+    saved = parent.database.saved
     flags = [contact["IsMultiplier2"] for contact in saved]
     assert flags == [1, 1, 1, 0, 0, 1]
     assert all(contact["IsMultiplier1"] == 0 for contact in saved)
@@ -266,7 +276,7 @@ def test_recalculate_mults_caps_three_bonuses_per_band():
 
 
 def test_show_mults_and_score():
-    fake = make_self("K6GTE", "VE3ABC")
+    parent = make_parent("K6GTE", "VE3ABC")
 
     class DB(FakeDatabase):
         def fetch_qso_count(self):
@@ -275,7 +285,8 @@ def test_show_mults_and_score():
         def fetch_points(self):
             return {"Points": 330}
 
-    fake.database = DB()
-    assert beru.show_mults(fake) == 0
-    assert beru.show_qso(fake) == 42
-    assert beru.calc_score(fake) == 330
+    parent.database = DB()
+    contest = load_contest("rsgb_commonwealth_beru", parent)
+    assert contest.show_mults() == 0
+    assert contest.show_qso() == 42
+    assert contest.calc_score() == 330

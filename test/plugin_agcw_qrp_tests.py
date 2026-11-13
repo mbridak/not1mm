@@ -11,15 +11,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins.agcw_qrp import points
+from not1mm.lib.contest import load_contest
 
 
-def _ctx(ours, nr):
-    return SimpleNamespace(
+def _contest(ours, nr):
+    """The AGCW contest bound to a stand-in main window."""
+    parent = SimpleNamespace(
         contest_settings={"PowerCategory": ours},
         contact={"NR": nr},
         contact_is_dupe=0,
     )
+    return load_contest("agcw_qrp", parent)
 
 
 @pytest.mark.parametrize(
@@ -44,18 +46,18 @@ def _ctx(ours, nr):
     ],
 )
 def test_power_class_points(ours, nr, expected):
-    assert points(_ctx(ours, nr)) == expected
+    assert _contest(ours, nr).points() == expected
 
 
 def test_an_empty_exchange_does_not_crash():
     # An unparsable exchange is assumed to be QRO.  This used to raise
     # NameError: pwr_class was only bound inside the "there is an exchange"
     # branch and then read outside it.
-    assert points(_ctx("HIGH", "")) == 0
-    assert points(_ctx("QRP", "")) == 2
+    assert _contest("HIGH", "").points() == 0
+    assert _contest("QRP", "").points() == 2
 
 
 def test_a_duplicate_scores_nothing():
-    ctx = _ctx("QRP", "002/QRP/2345")
-    ctx.contact_is_dupe = 1
-    assert points(ctx) == 0
+    contest = _contest("QRP", "002/QRP/2345")
+    contest.parent.contact_is_dupe = 1
+    assert contest.points() == 0

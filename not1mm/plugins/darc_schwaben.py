@@ -1,106 +1,17 @@
-"""DARC Schwaben Contest plugin
+"""DARC Schwaben Contest
 
 Find rules at: https://www.darc.de/der-club/referate/conteste/allgemeine-contestregeln-darc-referat-conteste/
+
+80m, 40m, 2m and 70cm, once per band and mode.  The exchange is RST and a DOK,
+or a serial number for a station without one, plus a locator on VHF.  A contact
+is worth 1 point, 5 for a station in district T or Z30, and 10 for the special
+and club stations.  There are no multipliers: the score is the sum of the
+points.
+
+Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import
-
-#   DARC Schwaben Contest
-#   Status: Active
-#   Geographic Focus: Germany (District Schwaben - T and Z30)
-#   Participation: Worldwide
-#   Mode: CW, SSB, FM
-#   Bands: 80m, 40m, 2m, 70cm
-#   Exchange:
-#       KW (HF): RST + DOK (or serial number if w/o DOK)
-#       VHF (UKW): RST + DOK + Locator (or serial number + Locator if w/o DOK)
-#   QSO Points:
-#       QSO with any station: 1 point
-#       QSO with T or Z30 station: 5 points
-#       QSO with club station from T or Z30: 10 points
-#       QSO with DL0YLT (special DOK YLT) or DK0SQ (special DOK SQ): 10 points
-#       QSO with training station from T or Z30: 10 points
-#   Final Score: Total score = sum of QSO points
-#   Cabrillo Name: Schwaben Contest
-
-import logging
-
-from PyQt6 import QtWidgets
-
-from not1mm.lib.plugin_common import gen_adif
-from not1mm.lib.version import __version__
-
-logger = logging.getLogger(__name__)
-
-EXCHANGE_HINT = "DOK/NM or # (+Locator for VHF)"
-
-name = "DARC SCHWABEN"
-cabrillo_name = "Schwaben Contest"
-mode = "BOTH"  # CW SSB BOTH RTTY
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
-    "PTS",
-]
-
-advance_on_space = [True, True, True, True, False]
-dupe_type = 3  # work each band/mode once
-
-
-def init_contest(self):
-    """setup plugin"""
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_2
-
-
-def interface(self):
-    """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
-    self.field3.show()
-    self.field4.show()
-    self.snt_label.setText("SNT")
-    self.other_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "DOK/# Sent")
-    )
-    self.field3.setAccessibleName("RST Sent")
-    self.exch_label.setText(
-        QtWidgets.QApplication.translate("ContestPlugin", "DOK/# RCVD")
-    )
-    self.field4.setAccessibleName("DOK/NM or Number")
-
-
-def reset_label(self):
-    """reset label after field cleared"""
-
-
-def set_tab_next(self):
-    """Set TAB Advances"""
-    self.tab_next = {
-        self.callsign: self.sent,
-        self.sent: self.receive,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    """Set TAB Advances"""
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.sent,
-        self.other_1: self.receive,
-        self.other_2: self.other_1,
-    }
+from not1mm.lib.contest import ContestBase
 
 
 def get_points_for_contact(callsign: str, dok: str) -> int:
@@ -149,438 +60,213 @@ def parse_exchange(exchange_text: str):
     return dok_or_nr, grid
 
 
-def set_contact_vars(self):
-    """Contest Specific setting of contact variables"""
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
+class Contest(ContestBase):
+    """DARC Schwaben Contest."""
 
-    sent_text = self.other_1.text().upper().strip()
-    rcvd_text = self.other_2.text().upper().strip()
+    DisplayName = "DARC SCHWABEN"
+    CabrilloName = "Schwaben Contest"
+    Mode = "BOTH"  # CW SSB BOTH RTTY
+    EXCHANGE_HINT = "DOK/NM or # (+Locator for VHF)"
+    DupeType = 3  # work each band/mode once
+    # The exchange may carry a locator beside the DOK ("T01 JN58ZZ"), so a
+    # space is part of it and does not advance the focus.
+    advance_on_space = [True, True, True, True, False]
+    # The DOK is the "sent" exchange and the received one, hence the labels.
+    FrameText = ("SNT", "DOK/# Sent", "DOK/# RCVD")
+    AccessibleNames = ("", "", "RST Sent", "DOK/NM or Number")
 
-    rcvd_dok, rcvd_grid = parse_exchange(rcvd_text)
-
-    self.contact["SentNr"] = sent_text
-    self.contact["NR"] = rcvd_dok if rcvd_dok else rcvd_text
-    if rcvd_grid:
-        self.contact["Exchange1"] = rcvd_grid
-
-    # Calculate QSO Points
-    call = self.contact.get("Call", "")
-    if self.contact_is_dupe > 0:
-        self.contact["Points"] = 0
-    else:
-        self.contact["Points"] = get_points_for_contact(call, self.contact["NR"])
-
-
-def predupe(self):
-    """prefill exchange"""
-
-
-def prefill(self):
-    """Fill SentNR and attempt to prefill rcvd exchange"""
-    sent_exchange_setting = self.contest_settings.get("SentExchange", "")
-    if sent_exchange_setting.strip() == "#":
-        serial_nr = str(self.current_sn).zfill(3)
-        if serial_nr == "None":
-            serial_nr = "001"
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(serial_nr)
-    elif sent_exchange_setting:
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(sent_exchange_setting)
-
-    if self.other_2.text() == "":
-        call = self.callsign.text().upper()
-        query = f"select NR from dxlog where Call = '{call}' and ContestName = '{name}' order by ts desc;"
-        logger.debug(query)
-        result = self.database.exec_sql(query)
-        if result and isinstance(result.get("NR", ""), str):
-            self.other_2.setText(str(result.get("NR", "")))
-
-
-def points(self):
-    """Calc points for current contact"""
-    if self.contact_is_dupe > 0:
-        return 0
-
-    call = self.contact.get("Call", "")
-    dok = self.contact.get("NR", "")
-    return get_points_for_contact(call, dok)
-
-
-def show_mults(self, rtc=None):
-    """Return mult count (0 for Schwaben contest)"""
-    if rtc is not None:
-        return (0, 0)
-    return 0
-
-
-def show_qso(self):
-    """Return qso count"""
-    result = self.database.fetch_qso_count()
-    if result:
-        return int(result.get("qsos", 0))
-    return 0
-
-
-def calc_score(self):
-    """Return calculated total score = sum of QSO points"""
-    result = self.database.fetch_points()
-    if result is not None:
-        score = result.get("Points", "0")
-        if score is None:
-            score = "0"
-        return int(score)
-    return 0
-
-
-def adif(self):
-    """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "SCHWABEN")
-
-
-def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """Output cabrillo line with correct newline and encoding"""
-    print(
-        line_to_output.encode(file_encoding, errors="ignore").decode(),
-        end=ending,
-        file=file_descriptor,
-    )
-
-
-def cabrillo(self, filename, file_encoding):
-    """Generates Cabrillo file."""
-    logger.debug("******Cabrillo*****")
-    logger.debug("Station: %s", f"{self.station}")
-    logger.debug("Contest: %s", f"{self.contest_settings}")
-    logger.debug("%s", filename)
-    log = self.database.fetch_all_contacts_asc()
-    try:
-        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
-            output_cabrillo_line(
-                "START-OF-LOG: 3.0", "\r\n", file_descriptor, file_encoding
-            )
-            output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CONTEST: {cabrillo_name}", "\r\n", file_descriptor, file_encoding
-            )
-            if self.station.get("Club", ""):
-                output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"LOCATION: {self.station.get('ARRLSection', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            mode_cat = self.contest_settings.get("ModeCategory", "")
-            if mode_cat in ["SSB+CW", "SSB+CW+DIGITAL"]:
-                mode_cat = "MIXED"
-            output_cabrillo_line(
-                f"CATEGORY-MODE: {mode_cat}", "\r\n", file_descriptor, file_encoding
-            )
-            output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-
-            output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CLAIMED-SCORE: {calc_score(self)}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            ops = ""
-            list_of_ops = self.database.get_ops()
-            for op in list_of_ops:
-                ops += f"{op.get('Operator', '')}, "
-            if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call', '')}"
-            else:
-                ops = ops.rstrip(", ")
-            output_cabrillo_line(
-                f"OPERATORS: {ops}", "\r\n", file_descriptor, file_encoding
-            )
-            output_cabrillo_line(
-                f"NAME: {self.station.get('Name', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Street1', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-CITY: {self.station.get('City', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"EMAIL: {self.station.get('Email', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            for contact in log:
-                the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode in ("LSB", "USB", "FM"):
-                    themode = "PH"
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
-                loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-
-                sent_ex = str(contact.get("SentNr", "")).strip()
-                rcvd_ex = str(contact.get("NR", "")).strip()
-                ex1 = str(contact.get("Exchange1", "")).strip()
-                if ex1:
-                    rcvd_ex = f"{rcvd_ex} {ex1}".strip()
-
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{sent_ex.ljust(12)} "
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{rcvd_ex.ljust(12)}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
-        self.show_message_box(f"Cabrillo saved to: {filename}")
-    except OSError as exception:
-        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
-        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
-        return
-
-
-def recalculate_mults(self):
-    """Recalculates points after change in logged qso."""
-    all_contacts = self.database.fetch_all_contacts_asc()
-    if not all_contacts:
-        return
-    worked = set()
-    for contact in all_contacts:
-        call = contact.get("Call", "")
-        dok = contact.get("NR", "")
-        # The score is the sum of the Points column, so a duplicate has to be
-        # left at zero here or it adds points it never earned.
-        key = (call, contact.get("Band", ""), contact.get("Mode", ""))
-        if key in worked:
-            contact["Points"] = 0
-        else:
-            contact["Points"] = get_points_for_contact(call, dok)
-        worked.add(key)
-        self.database.change_contact(contact)
-
-
-def process_esm(self, new_focused_widget=None, with_enter=False):
-    """ESM State Machine"""
-
-    # self.pref["run_state"]
-
-    # -----===== Assigned F-Keys =====-----
-    # self.esm_dict["CQ"]
-    # self.esm_dict["EXCH"]
-    # self.esm_dict["QRZ"]
-    # self.esm_dict["AGN"]
-    # self.esm_dict["HISCALL"]
-    # self.esm_dict["MYCALL"]
-    # self.esm_dict["QSOB4"]
-
-    # ----==== text fields ====----
-    # self.callsign
-    # self.sent
-    # self.receive
-    # self.other_1
-    # self.other_2
-
-    if new_focused_widget is not None:
-        self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
-    for a_button in [
-        self.F1,
-        self.F2,
-        self.F3,
-        self.F4,
-        self.F5,
-        self.F6,
-        self.F7,
-        self.F8,
-        self.F9,
-        self.F10,
-        self.F11,
-        self.F12,
-    ]:
-        self.restore_button_color(a_button)
-
-    buttons_to_send = []
-
-    if self.pref.get("run_state"):
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) < 3:
-                self.make_button_green(self.esm_dict["CQ"])
-                buttons_to_send.append(self.esm_dict["CQ"])
-                self.esm_call_sent = ""
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_2.text() == "" or self.other_1.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                # If the operator corrected a busted callsign after the
-                # exchange was already sent, resend the corrected call
-                # ahead of the QRZ/TU macro so the other station logs the
-                # right callsign before the QSO is wiped.
-                if (
-                    self.pref.get("esm_send_corrected_call")
-                    and self.esm_call_sent
-                    and self.callsign.text() != self.esm_call_sent
-                ):
-                    self.make_button_green(self.esm_dict["HISCALL"])
-                    buttons_to_send.append(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        self.esm_call_sent = ""
-                        continue
-                    if button == self.esm_dict.get("HISCALL"):
-                        self.esm_call_sent = self.callsign.text()
-                    self.process_function_key(button)
-    else:
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["MYCALL"])
-                buttons_to_send.append(self.esm_dict["MYCALL"])
-
-        elif self.current_widget in ["other_1", "other_2"]:
-            if self.other_2.text() == "" or self.other_1.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        continue
-                    self.process_function_key(button)
-
-
-def populate_history_info_line(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(
-            f"{result.get('Call', '')}, {result.get('Name', '')}, {result.get('Exch1', '')}, {result.get('UserText', '...')}"
+    def points(self):
+        """One point a contact, more for district T/Z30 and the clubs."""
+        parent = self.parent
+        if parent.contact_is_dupe > 0:
+            return 0
+        return get_points_for_contact(
+            parent.contact.get("Call", ""), parent.contact.get("NR", "")
         )
-    else:
-        self.history_info.setText("")
 
+    def set_contact_vars(self):
+        """The sent DOK/serial and the received DOK plus VHF locator."""
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
 
-def check_call_history(self):
-    result = self.database.fetch_call_history(self.callsign.text())
-    if result:
-        self.history_info.setText(f"{result.get('UserText', '')}")
-        if self.other_2.text() == "":
-            self.other_2.setText(f"{result.get('Exch1', '')}")
+        sent_text = parent.other_1.text().upper().strip()
+        rcvd_text = parent.other_2.text().upper().strip()
+
+        rcvd_dok, rcvd_grid = parse_exchange(rcvd_text)
+
+        parent.contact["SentNr"] = sent_text
+        parent.contact["NR"] = rcvd_dok if rcvd_dok else rcvd_text
+        if rcvd_grid:
+            parent.contact["Exchange1"] = rcvd_grid
+
+    def prefill(self):
+        """Fill the sent exchange, then recall the station's last DOK."""
+        parent = self.parent
+        super().prefill()
+        if parent.other_2.text():
+            return
+        call = parent.callsign.text().upper()
+        result = parent.database.exec_sql(
+            "select NR from dxlog where Call = ? and ContestName = ? "
+            "order by ts desc;",
+            (call, self.CabrilloName),
+        )
+        if result and isinstance(result.get("NR", ""), str):
+            parent.other_2.setText(str(result.get("NR", "")))
+
+    def cabrillo_mode(self, mode):
+        """FM is a phone mode in this contest's Cabrillo log."""
+        if mode == "FM":
+            return "PH"
+        return super().cabrillo_mode(mode)
+
+    def cabrillo_qso_line(self, contact):
+        """The exchange written with a locator beside the DOK, 12 wide."""
+        the_date_and_time = contact.get("TS", "")
+        loggeddate = the_date_and_time[:10]
+        loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+        frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+
+        sent_ex = str(contact.get("SentNr", "")).strip()
+        rcvd_ex = str(contact.get("NR", "")).strip()
+        ex1 = str(contact.get("Exchange1", "")).strip()
+        if ex1:
+            rcvd_ex = f"{rcvd_ex} {ex1}".strip()
+
+        return (
+            f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
+            f"{loggeddate} {loggedtime} "
+            f"{contact.get('StationPrefix', '').ljust(13)} "
+            f"{str(contact.get('SNT', '')).ljust(3)} "
+            f"{sent_ex.ljust(12)} "
+            f"{contact.get('Call', '').ljust(13)} "
+            f"{str(contact.get('RCV', '')).ljust(3)} "
+            f"{rcvd_ex.ljust(12)}"
+        )
+
+    def recalculate_mults(self):
+        """Rescore the log: the points are per contact, and a dupe is zero.
+
+        The score is the sum of the ``Points`` column, so the replay has to put
+        the values back after an import, and a duplicate has to stay at zero or
+        it adds points it never earned.
+        """
+        parent = self.parent
+        all_contacts = parent.database.fetch_all_contacts_asc()
+        if not all_contacts:
+            return
+        worked = set()
+        for contact in all_contacts:
+            call = contact.get("Call", "")
+            dok = contact.get("NR", "")
+            key = (call, contact.get("Band", ""), contact.get("Mode", ""))
+            if key in worked:
+                contact["Points"] = 0
+            else:
+                contact["Points"] = get_points_for_contact(call, dok)
+            worked.add(key)
+            parent.database.change_contact(contact)
+
+    def process_esm(self, new_focused_widget=None, with_enter=False):
+        """ESM state machine.
+
+        Both exchange fields -- the sent DOK/serial and the received one --
+        are needed before the contact can be logged.
+        """
+        parent = self.parent
+        if new_focused_widget is not None:
+            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+
+        for a_button in (
+            parent.F1,
+            parent.F2,
+            parent.F3,
+            parent.F4,
+            parent.F5,
+            parent.F6,
+            parent.F7,
+            parent.F8,
+            parent.F9,
+            parent.F10,
+            parent.F11,
+            parent.F12,
+        ):
+            parent.restore_button_color(a_button)
+
+        buttons_to_send = []
+        if parent.pref.get("run_state"):
+            if parent.current_widget == "callsign":
+                if len(parent.callsign.text()) < 3:
+                    parent.make_button_green(parent.esm_dict["CQ"])
+                    buttons_to_send.append(parent.esm_dict["CQ"])
+                    parent.esm_call_sent = ""
+                elif len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["HISCALL"])
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["HISCALL"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+
+            elif parent.current_widget in ("other_1", "other_2"):
+                if parent.other_1.text() == "" or parent.other_2.text() == "":
+                    parent.make_button_green(parent.esm_dict["AGN"])
+                    buttons_to_send.append(parent.esm_dict["AGN"])
+                else:
+                    self._resend_corrected_call(buttons_to_send)
+                    parent.make_button_green(parent.esm_dict["QRZ"])
+                    buttons_to_send.append(parent.esm_dict["QRZ"])
+                    buttons_to_send.append("LOGIT")
+
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            parent.save_contact()
+                            parent.esm_call_sent = ""
+                            continue
+                        if button == parent.esm_dict.get("HISCALL"):
+                            parent.esm_call_sent = parent.callsign.text()
+                        parent.process_function_key(button)
+        else:
+            if parent.current_widget == "callsign":
+                if len(parent.callsign.text()) > 2:
+                    parent.make_button_green(parent.esm_dict["MYCALL"])
+                    buttons_to_send.append(parent.esm_dict["MYCALL"])
+
+            elif parent.current_widget in ("other_1", "other_2"):
+                if parent.other_1.text() == "" or parent.other_2.text() == "":
+                    parent.make_button_green(parent.esm_dict["AGN"])
+                    buttons_to_send.append(parent.esm_dict["AGN"])
+                else:
+                    parent.make_button_green(parent.esm_dict["EXCH"])
+                    buttons_to_send.append(parent.esm_dict["EXCH"])
+                    buttons_to_send.append("LOGIT")
+
+            if with_enter is True and bool(len(buttons_to_send)):
+                for button in buttons_to_send:
+                    if button:
+                        if button == "LOGIT":
+                            parent.save_contact()
+                            continue
+                        parent.process_function_key(button)
+
+    def populate_history_info_line(self):
+        """Show the call history entry for the callsign being typed."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(
+                f"{result.get('Call', '')}, {result.get('Name', '')}, "
+                f"{result.get('Exch1', '')}, {result.get('UserText', '...')}"
+            )
+        else:
+            parent.history_info.setText("")
+
+    def check_call_history(self):
+        """Prefill the received DOK from the call history file."""
+        parent = self.parent
+        result = parent.database.fetch_call_history(parent.callsign.text())
+        if result:
+            parent.history_info.setText(f"{result.get('UserText', '')}")
+            if parent.other_2.text() == "":
+                parent.other_2.setText(f"{result.get('Exch1', '')}")

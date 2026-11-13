@@ -32,14 +32,14 @@ assert QPushButton
 def online_score_xml(self):
     """generate online xml"""
     # state, country, zone, prefix
-    mults = self.contest.get_mults(self)
+    mults = self.contest.get_mults()
     the_mults = ""
     for thing in mults:
         the_mults += (
             f'<mult band="total" mode="ALL" type="{thing}">{mults.get(thing, 0)}</mult>'
         )
 
-    the_points = self.contest.just_points(self)
+    the_points = self.contest.just_points()
 
     the_date_time = datetime.datetime.now(datetime.UTC).isoformat(" ")[:19]
     assisted = self.contest_settings.get("AssistedCategory", "")
@@ -71,11 +71,11 @@ def online_score_xml(self):
         f"<grid6>{self.station.get('GridSquare', '')}</grid6>"
         "</qth>"
         "<breakdown>"
-        f'<qso band="total" mode="ALL">{self.contest.show_qso(self)}</qso>'
+        f'<qso band="total" mode="ALL">{self.contest.show_qso()}</qso>'
         f"{the_mults}"
         f'<point band="total" mode="ALL">{the_points}</point>'
         "</breakdown>"
-        f"<score>{self.contest.calc_score(self)}</score>"
+        f"<score>{self.contest.calc_score()}</score>"
         f"<timestamp>{the_date_time}</timestamp>"
         "</dynamicresults>"
     )
@@ -275,7 +275,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 # STX Context Dependent
                 try:
-                    if cabrillo_name in ("CQP") and len(sentnr) >= 1:
+                    if cabrillo_name in ("CA-QSO-PARTY") and len(sentnr) >= 1:
                         print(
                             f"<STX:{len(sentnr)}>{sentnr}",
                             end="\r\n",
@@ -286,7 +286,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
 
                 # SRX, Context Dependent
                 try:
-                    if cabrillo_name in ("CQP") and len(rcvnr) >= 1:
+                    if cabrillo_name in ("CA-QSO-PARTY") and len(rcvnr) >= 1:
                         print(
                             f"<SRX:{len(rcvnr)}>{rcvnr}",
                             end="\r\n",
@@ -296,7 +296,12 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                     ...
 
                 try:
-                    if cabrillo_name in ("WFD", "ARRL-FD", "ARRL-FIELD-DAY", "CQP"):
+                    if cabrillo_name in (
+                        "WFD",
+                        "ARRL-FD",
+                        "ARRL-FIELD-DAY",
+                        "CA-QSO-PARTY",
+                    ):
                         sent = self.contest_settings.get("SentExchange", "").strip("# ")
                         if sent:
                             print(
@@ -350,7 +355,7 @@ def gen_adif(self, cabrillo_name: str, contest_id=""):
                         "CQ-160-CW",
                         "CQ-160-SSB",
                         "WEEKLY-RTTY",
-                        "CQP",
+                        "CA-QSO-PARTY",
                     ):
                         rcv = f"{contact.get('Exchange1', '')}"
                         if len(rcv) > 1:
@@ -830,7 +835,10 @@ def imp_adif(self):
             )
             return
 
-        this_contact["ContestName"] = self.contest.name
+        # The identifier the log carries -- the same one the main window writes
+        # when a contact is logged live (MainWindow.save_contact), so an
+        # imported log is not distinguishable from one logged on the air.
+        this_contact["ContestName"] = self.contest.cabrillo_name
 
         if q.get("SNT"):
             this_contact["SNT"] = q.get("SNT")
@@ -1041,17 +1049,17 @@ def imp_adif(self):
 
     self.progress_dialog.setValue(len(contacts))  # forces close
     # update everything
-    self.contest.recalculate_mults(self)  # compute Points + IsMultiplier1 first
+    self.contest.recalculate_mults()  # compute Points + IsMultiplier1 first
     self.log_window.get_log()  # then refresh log display with correct data
 
     if self.actionStatistics.isChecked():
         self.statistics_window.get_run_and_total_qs()
 
-    score = self.contest.calc_score(self)
+    score = self.contest.calc_score()
     self.score.setText(str(score))
 
-    mults = self.contest.show_mults(self)
-    qsos = self.contest.show_qso(self)
+    mults = self.contest.show_mults()
+    qsos = self.contest.show_qso()
     multstring = f"{qsos}/{mults}"
     self.mults.setText(multstring)
 
@@ -1073,7 +1081,7 @@ def import_adif(mainwindow) -> None:
 def generate_edi(mainwindow) -> None:
     """Export the current contest as an EDI file, when the plugin supports it."""
     if hasattr(mainwindow.contest, "edi"):
-        mainwindow.contest.edi(mainwindow)
+        mainwindow.contest.edi()
 
 
 def generate_cabrillo(mainwindow, file_encoding: str) -> None:
@@ -1091,7 +1099,7 @@ def generate_cabrillo(mainwindow, file_encoding: str) -> None:
     if not filename:
         return
     try:
-        mainwindow.contest.cabrillo(mainwindow, filename, file_encoding)
+        mainwindow.contest.cabrillo(filename, file_encoding)
     except Exception as exception:  # noqa: BLE001
         logger.exception("cabrillo: export failed")
         mainwindow.show_message_box(f"Error saving Cabrillo: {exception}")

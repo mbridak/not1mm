@@ -8,7 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from not1mm.plugins.rda_contest import country_mult_prefix, points
+from not1mm.lib.contest import load_contest
+from not1mm.plugins.rda_contest import country_mult_prefix
 
 # call -> (entity, continent), the fields the country file gives.
 _ENTITIES = {
@@ -54,11 +55,11 @@ def _ctx(my_call, his_call, dupe=0):
     ],
 )
 def test_points(my_call, his_call, expected):
-    assert points(_ctx(my_call, his_call)) == expected
+    assert load_contest("rda_contest", _ctx(my_call, his_call)).points() == expected
 
 
 def test_a_duplicate_scores_nothing():
-    assert points(_ctx("K6GTE", "UA3ABC", dupe=1)) == 0
+    assert load_contest("rda_contest", _ctx("K6GTE", "UA3ABC", dupe=1)).points() == 0
 
 
 @pytest.mark.parametrize(

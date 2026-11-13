@@ -12,17 +12,18 @@ from types import SimpleNamespace
 import pytest
 
 from contest_harness import cty_lookup
-from not1mm.plugins import helvetia
+from not1mm.lib.contest import load_contest
 
 
-def _ctx(mycall, hiscall, is_dupe=0):
-    """Minimal fake `self` for helvetia.points()."""
-    return SimpleNamespace(
+def _contest(mycall, hiscall, is_dupe=0):
+    """The contest bound to a stand-in main window."""
+    parent = SimpleNamespace(
         contact_is_dupe=is_dupe,
         station={"Call": mycall},
         contact={"Call": hiscall},
         cty_lookup=cty_lookup,
     )
+    return load_contest("helvetia", parent)
 
 
 @pytest.mark.parametrize(
@@ -37,8 +38,8 @@ def _ctx(mycall, hiscall, is_dupe=0):
     ],
 )
 def test_points(mycall, hiscall, expected):
-    assert helvetia.points(_ctx(mycall, hiscall)) == expected
+    assert _contest(mycall, hiscall).points() == expected
 
 
 def test_dupe_scores_nothing():
-    assert helvetia.points(_ctx("K6GTE", "HB9ABC", is_dupe=1)) == 0
+    assert _contest("K6GTE", "HB9ABC", is_dupe=1).points() == 0

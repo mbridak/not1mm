@@ -1,671 +1,150 @@
-"""
+"""ES MANUAL KEY
+
 Find rules at: https://erau.ee/images/LL/ES-Open_rules.pdf
+
+A 45-minute CW contest worked in three 15-minute periods: a station may be
+worked again in each new period.  A contact is worth the correspondent's
+seniority -- the first two digits of the received exchange -- plus a bonus for
+the less experienced: 20 points under 10 years, 10 between 11 and 20.  The
+operator's own seniority, from the licence class, is added three times to the
+total, and the multiplier is each Estonian call area (the third character of
+the WPX prefix) once per band and mode.
+
+Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
-import logging
-import platform
-import datetime
-
-
-
-from PyQt6 import QtWidgets
-
-from not1mm.lib.plugin_common import gen_adif, imp_adif, get_points, contest_time
-
+from not1mm.lib.contest import ContestBase, period_dupe_check
 from not1mm.lib.ham_utility import calculate_wpx_prefix
-from not1mm.lib.version import __version__
-
-logger = logging.getLogger(__name__)
-
-EXCHANGE_HINT = "#"
 
 
-name = "ES MANUAL KEY"
-cabrillo_name = "ES-MANUAL-KEY"
-mode = "CW"  # CW SSB BOTH RTTY
+class Contest(ContestBase):
+    """ES MANUAL KEY."""
 
-columns = [
-    "YYYY-MM-DD HH:MM:SS",
-    "Call",
-    "Freq",
-    "Mode",
-    "Snt",
-    "Rcv",
-    "SentNr",
-    "RcvNr",
-    "PTS",
-]
+    DisplayName = "ES MANUAL KEY"
+    CabrilloName = "ES-MANUAL-KEY"
+    Mode = "CW"  # CW SSB BOTH RTTY
+    EXCHANGE_HINT = "#"
+    DupeType = 5  # a call again in each 15-minute period
+    LogInfo = [
+        "YYYY-MM-DD HH:MM:SS",
+        "Call",
+        "Freq",
+        "Mode",
+        "Snt",
+        "Rcv",
+        "SentNr",
+        "RcvNr",
+        "PTS",
+    ]
+    # The reports, our licence class and serial and their seniority code.
+    FrameText = ("", "Sent", "SN")
+    AccessibleNames = ("", "", "Sent", "SN")
+    # Each Estonian call area once per band and mode.
+    NumMults = 1
+    Multiplier1Name = "WPXPrefix"
+    MultSqlString = "WPXPrefix"
+    IsMult1Per = 3
 
-advance_on_space = [True, True, True, True, True]
+    def specific_contest_check_dupe(self, call: str) -> dict:
+        """A call per band and mode in each 15-minute period of the 45 minutes."""
+        return period_dupe_check(self.parent, call, 45, 15)
 
-# 5 Contest specific dupe check.
-dupe_type = 5
-
-
-def specific_contest_check_dupe(self, call):
-    """"""
-    # get mode from radio state
-    mode = self.radio_state.get("mode", "")
-    """Dupe checking specific to just this contest."""
-    # constant to split the contest - correct ES Open Contest length is 4 hours
-    contest_length_in_minutes = 45
-    split_contest_by_minutes = 15
-
-    period_count = int(contest_length_in_minutes / split_contest_by_minutes)
-
-    # think about generic solution by splitting the contest to n different periods
-    start_date_init = self.contest_settings.get("StartDate", "")
-    start_date_init_date = datetime.datetime.strptime(
-        start_date_init, "%Y-%m-%d %H:%M:%S"
-    )
-
-    # Create time periods dynamically based on period count
-    time_periods = []
-    for i in range(period_count):
-        minutes_to_add = split_contest_by_minutes * (i + 1)
-        time_period = start_date_init_date + datetime.timedelta(minutes=minutes_to_add)
-        time_periods.append(time_period)
-
-    # Assign to variables for backwards compatibility
-    time_period_1 = time_periods[0] if len(time_periods) > 0 else None
-    time_period_2 = time_periods[1] if len(time_periods) > 1 else None
-    time_period_3 = time_periods[2] if len(time_periods) > 2 else None
-
-    # The time the rule counts from is the contact's own, so a re-scored or
-    # imported log is checked against the clock it was logged on; only a
-    # contact being typed in has no timestamp yet.
-    current_time = contest_time(self)
-
-    if (
-        time_period_1 is not None
-        and current_time < time_period_1
-        and current_time >= start_date_init_date
-    ):
-        return self.database.check_dupe_on_period_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            start_date_init_date.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-
-    if (
-        time_period_2 is not None
-        and time_period_1 is not None
-        and current_time < time_period_2
-        and current_time >= time_period_1
-    ):
-        return self.database.check_dupe_on_period_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            time_period_1.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-
-    if (
-        time_period_3 is not None
-        and time_period_2 is not None
-        and current_time < time_period_3
-        and current_time >= time_period_2
-    ):
-        return self.database.check_dupe_on_period_mode(
-            call,
-            self.contact.get("Band", ""),
-            mode,
-            time_period_2.strftime("%Y-%m-%d %H:%M:%S"),
-            time_period_3.strftime("%Y-%m-%d %H:%M:%S"),
-        )
-
-    # just for band and mode if outside of time period
-    return self.database.check_dupe_on_band_mode(
-        call, self.contact.get("Band", ""), mode
-    )
-
-
-def init_contest(self):
-    """setup plugin"""
-    set_tab_next(self)
-    set_tab_prev(self)
-    interface(self)
-    self.next_field = self.other_2
-
-
-def interface(self):
-    """Setup user interface"""
-    self.field1.show()
-    self.field2.show()
-    self.field3.show()
-    self.field4.show()
-    self.other_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "Sent"))
-    self.field3.setAccessibleName("Sent")
-    self.exch_label.setText(QtWidgets.QApplication.translate("ContestPlugin", "SN"))
-    self.field4.setAccessibleName("SN")
-
-
-def reset_label(self):
-    """reset label after field cleared"""
-
-
-def set_tab_next(self):
-    """Set TAB Advances"""
-    self.tab_next = {
-        self.callsign: self.other_1,
-        self.sent: self.other_1,
-        self.receive: self.other_1,
-        self.other_1: self.other_2,
-        self.other_2: self.callsign,
-    }
-
-
-def set_tab_prev(self):
-    """Set TAB Advances"""
-    self.tab_prev = {
-        self.callsign: self.other_2,
-        self.sent: self.callsign,
-        self.receive: self.callsign,
-        self.other_1: self.callsign,
-        self.other_2: self.other_1,
-    }
-
-
-def set_contact_vars(self):
-    """Contest Specific"""
-    self.contact["SNT"] = self.sent.text()
-    self.contact["RCV"] = self.receive.text()
-    self.contact["SentNr"] = self.other_1.text().upper()
-    self.contact["NR"] = self.other_2.text().upper()
-
-    self.contact["IsMultiplier1"] = 0
-    self.contact["IsMultiplier2"] = 0
-
-
-def predupe(self):
-    """called after callsign entered"""
-
-
-def prefill(self):
-    """Fill SentNR"""
-    sent_sxchange_setting = self.contest_settings.get("SentExchange", "")
-    if sent_sxchange_setting.strip() == "#":
-        # result = self.database.get_serial()
-        # serial_nr = str(result.get("serial_nr", "1"))
-        serial_nr = str(self.current_sn).zfill(3)
-        serial_nr_last3 = serial_nr[-3:].zfill(3)
-        if serial_nr_last3 == "None":
-            serial_nr_last3 = "001"
-        # get station license class from setup LicenseClass field - use it for seniority
-        # how many years from the first QSO using club station or individual station
-
-        # The LicenseClass should already be available in the self.station object
-        # serial_nr = get_station_license_class(self) + serial_nr_last3
-        serial_nr = self.station.get("LicenseClass", "") + serial_nr_last3
-
-        if len(self.other_1.text()) == 0:
-            self.other_1.setText(serial_nr)
-    else:
-        self.other_1.setText(sent_sxchange_setting)
-
-
-# Points are awarded for each communication/qso according to the correspondent's broadcasting
-# experience/seniority
-# (i.e. the first two numbers of the received report).
-# To obtain the total number of points, the experience/seniority points for all communications/qsos
-#  (including repeated communications) are added together,
-# to which the competitor's own experience/seniority points
-#  for each period worked are added, i.e. 3 times.
-# To motivate competitors with less experience, operators with up to 10 years of experience
-# (inclusive) are awarded an additional 20 points for each communication/qso,
-# and for operators with an experience range of 11-20 years, an additional 10 points.
-# The competitor must also add the same points 3 times to his/her total to obtain the final result.
-
-
-def points(self):
-    """ """
-    if self.contact_is_dupe > 0:
-        return 0
-
-    _mode = self.contact.get("Mode", "").upper()
-
-    # The mode test used `in` on a string, so any single letter it contains
-    # matched, and a CW variant such as "CW-U" did not.
-    if _mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
-        call_result = str(self.contact.get("NR", "")).strip()
-
-        # get call seniority
+    def points(self):
+        """The correspondent's seniority plus the low-experience bonus."""
+        parent = self.parent
+        if parent.contact_is_dupe:
+            return 0
+        if parent.contact.get("Mode", "").upper() not in (
+            "CW",
+            "CW-U",
+            "CW-L",
+            "CW-R",
+            "CWR",
+        ):
+            return 0
         try:
-            seniority = int(call_result[:2])
+            seniority = int(str(parent.contact.get("NR", "")).strip()[:2])
         except ValueError:
             seniority = 0
-
-        # get call age (this is not used, so commenting out)
-        # age = call_result[2:4]
-
-        # get call serial number (this is not used, so commenting out)
-        # call_serial_nr = call_result[4:6]
-
         if seniority < 10:
-            points = seniority + 20
-        elif seniority > 10 and seniority <= 20:
-            points = seniority + 10
+            return seniority + 20
+        if 10 < seniority <= 20:
+            return seniority + 10
+        return seniority
+
+    def mult_value(self, slot, contact):
+        """The Estonian call area, from the third character of the prefix."""
+        if slot == 1:
+            if contact.get("CountryPrefix", "") != "ES":
+                return None
+            prefix = str(contact.get("WPXPrefix", "") or "")
+            if not prefix:
+                return None
+            if prefix == calculate_wpx_prefix(self.parent.station.get("Call", "")):
+                return None
+            return prefix[2:3]
+        return super().mult_value(slot, contact)
+
+    def mult_sql(self, slot):
+        """The same key as SQL, for counting the log."""
+        if slot == 1:
+            own = calculate_wpx_prefix(self.parent.station.get("Call", ""))
+            return (
+                "CASE WHEN CountryPrefix = 'ES' AND WPXPrefix <> "
+                f"'{own}' THEN substr(WPXPrefix, 3, 1) END"
+            )
+        return super().mult_sql(slot)
+
+    def set_contact_vars(self):
+        """The reports and the exchange; this contest marks no multipliers."""
+        parent = self.parent
+        parent.contact["SNT"] = parent.sent.text()
+        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SentNr"] = parent.other_1.text().upper()
+        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["IsMultiplier1"] = 0
+        parent.contact["IsMultiplier2"] = 0
+
+    def prefill(self):
+        """The operator's licence class followed by the next serial."""
+        parent = self.parent
+        if parent.other_1.text():
+            return
+        setting = str(parent.contest_settings.get("SentExchange", "") or "").strip()
+        if not setting:
+            return
+        if setting in ("#", "001"):
+            exchange = (
+                f"{parent.station.get('LicenseClass', '')}"
+                f"{parent.process_macro('#', cut=False)}"
+            )
         else:
-            points = seniority
-        return points
+            exchange = parent.process_macro(setting, cut=False)
+        if exchange:
+            parent.other_1.setText(exchange)
 
-    return 0
-
-
-def show_mults(self, rtc=None):
-    """Return display string for mults"""
-    our_prefix = calculate_wpx_prefix(self.station.get("Call", ""))
-    query = f"SELECT count(DISTINCT(substr(WPXPrefix,3,1) || ':' || Band || ':' || Mode)) as mults from DXLOG where ContestNR = {self.pref.get('contest', '1')} AND CountryPrefix = 'ES' AND WPXPrefix != '{our_prefix}';"
-    result = self.database.exec_sql(query)
-    if result:
-        mult_count = result.get("mults", 0)
-        return mult_count
-    return 0
-
-
-def show_qso(self):
-    """Return qso count"""
-    result = self.database.fetch_qso_count()
-    if result:
-        return int(result.get("qsos", 0))
-    return 0
-
-
-# Points are awarded for each communication/qso according to the correspondent's broadcasting experience/seniority
-# (i.e. the first two numbers of the received report).
-# To obtain the total number of points, the experience/seniority points for all communications/qsos
-#  (including repeated communications) are added together,
-# to which the competitor's own experience/seniority points
-#  for each period worked are added, i.e. 3 times.
-# To motivate competitors with less experience, operators with up to 10 years of experience
-# (inclusive) are awarded an additional 20 points for each communication/qso,
-# and for operators with an experience range of 11-20 years, an additional 10 points.
-# The competitor must also add the same points 3 times to his/her total to obtain the final result.
-
-
-def calc_score(self):
-    """Return calculated score"""
-    result = self.database.fetch_points()
-    if result is not None:
-        score = result.get("Points", "0")
-        if score is None:
-            score = "0"
-        contest_points = int(score)
-
-        # egt station seniority number
-        station_seniority = self.station.get("LicenseClass", "")
-        # calc station seniority
+    def calc_score(self):
+        """The QSO points plus the operator's own seniority, times multipliers."""
+        parent = self.parent
         try:
-            station_seniority_multiplier = 3 * int(station_seniority.strip()[:2])
+            own = 3 * int(str(parent.station.get("LicenseClass", "")).strip()[:2])
         except ValueError:
-            station_seniority_multiplier = 3
+            own = 3
+        return (self.just_points() + own) * self.show_mults()
 
-        # always add 3 times your own seniority to the overall score
-        contest_points = contest_points + station_seniority_multiplier
+    def recalculate_mults(self):
+        """Fill the call prefixes the multiplier and the ES filter read.
 
-        mults = show_mults(self)
-        return contest_points * mults
-    return 0
-
-
-def recalculate_mults(self):
-    """Recalculates multipliers after change in logged qso."""
-    # The multiplier is read from CountryPrefix (and the call areas from
-    # WPXPrefix), and an imported log carries neither for sure; fill both
-    # from cty so a re-scored log counts the same as one just typed in.
-    for contact in self.database.fetch_all_contacts_asc():
-        result = self.cty_lookup(contact.get("Call", ""))
-        if result is None:
-            continue
-        item = result.get(next(iter(result)))
-        contact["CountryPrefix"] = item.get("primary_pfx", "")
-        contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
-        self.database.change_contact(contact)
-
-
-def adif(self):
-    """Call the generate ADIF function"""
-    gen_adif(self, cabrillo_name, "ES OPEN")
-
-
-def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding):
-    """"""
-    print(
-        line_to_output.encode(file_encoding, errors="ignore").decode(),
-        end=ending,
-        file=file_descriptor,
-    )
-
-
-def cabrillo(self, filename, file_encoding):
-    """Generates Cabrillo file. Maybe."""
-    # https://www.cqwpx.com/cabrillo.htm
-    logger.debug("******Cabrillo*****")
-    logger.debug("Station: %s", f"{self.station}")
-    logger.debug("Contest: %s", f"{self.contest_settings}")
-    logger.debug("%s", filename)
-    log = self.database.fetch_all_contacts_asc()
-    try:
-        with open(filename, "w", encoding=file_encoding, newline="") as file_descriptor:
-            output_cabrillo_line(
-                "START-OF-LOG: 3.0",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CREATED-BY: Not1MM v{__version__}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CONTEST: {cabrillo_name}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.station.get("Club", ""):
-                output_cabrillo_line(
-                    f"CLUB: {self.station.get('Club', '').upper()}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"CALLSIGN: {self.station.get('Call', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"LOCATION: {self.station.get('ARRLSection', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-OPERATOR: {self.contest_settings.get('OperatorCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-ASSISTED: {self.contest_settings.get('AssistedCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-BAND: {self.contest_settings.get('BandCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            mode = self.contest_settings.get("ModeCategory", "")
-            if mode in ["SSB+CW", "SSB+CW+DIGITAL"]:
-                mode = "MIXED"
-            output_cabrillo_line(
-                f"CATEGORY-MODE: {mode}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-TRANSMITTER: {self.contest_settings.get('TransmitterCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            if self.contest_settings.get("OverlayCategory", "") != "N/A":
-                output_cabrillo_line(
-                    f"CATEGORY-OVERLAY: {self.contest_settings.get('OverlayCategory', '')}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line(
-                f"GRID-LOCATOR: {self.station.get('GridSquare', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"CATEGORY-POWER: {self.contest_settings.get('PowerCategory', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-
-            output_cabrillo_line(
-                f"CLAIMED-SCORE: {calc_score(self)}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            ops = ""
-            list_of_ops = self.database.get_ops()
-            for op in list_of_ops:
-                ops += f"{op.get('Operator', '')}, "
-            if self.station.get("Call", "") not in ops:
-                ops += f"@{self.station.get('Call', '')}"
-            else:
-                ops = ops.rstrip(", ")
-            output_cabrillo_line(
-                f"OPERATORS: {ops}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"NAME: {self.station.get('Name', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS: {self.station.get('Street1', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-CITY: {self.station.get('City', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-STATE-PROVINCE: {self.station.get('State', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-POSTALCODE: {self.station.get('Zip', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"ADDRESS-COUNTRY: {self.station.get('Country', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            output_cabrillo_line(
-                f"EMAIL: {self.station.get('Email', '')}",
-                "\r\n",
-                file_descriptor,
-                file_encoding,
-            )
-            for contact in log:
-                the_date_and_time = contact.get("TS", "")
-                themode = contact.get("Mode", "")
-                if themode in ("CW-U", "CW-L", "CW-R", "CWR"):
-                    themode = "CW"
-                if themode == "LSB" or themode == "USB":
-                    themode = "PH"
-                frequency = str(round(contact.get("Freq", "0"))).rjust(5)
-
-                loggeddate = the_date_and_time[:10]
-                loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-                output_cabrillo_line(
-                    f"QSO: {frequency} {themode} {loggeddate} {loggedtime} "
-                    f"{contact.get('StationPrefix', '').ljust(13)} "
-                    f"{str(contact.get('SNT', '')).ljust(3)} "
-                    f"{str(contact.get('SentNr', '')).ljust(6)} "
-                    f"{contact.get('Call', '').ljust(13)} "
-                    f"{str(contact.get('RCV', '')).ljust(3)} "
-                    f"{str(contact.get('NR', '')).ljust(6)}",
-                    "\r\n",
-                    file_descriptor,
-                    file_encoding,
-                )
-            output_cabrillo_line("END-OF-LOG:", "\r\n", file_descriptor, file_encoding)
-        self.show_message_box(f"Cabrillo saved to: {filename}")
-    except IOError as exception:
-        logger.critical("cabrillo: IO error: %s, writing to %s", exception, filename)
-        self.show_message_box(f"Error saving Cabrillo: {exception} {filename}")
-        return
-
-
-# def populate_history_info_line(self):
-#     result = self.database.fetch_call_history(self.callsign.text())
-#     if result:
-#         self.history_info.setText(
-#             f"{result.get('Call', '')}, {result.get('Exch1', '')}, {result.get('UserText','...')}"
-#         )
-#     else:
-#         self.history_info.setText("")
-
-
-# def check_call_history(self):
-#     """"""
-#     result = self.database.fetch_call_history(self.callsign.text())
-#     print(f"{result=}")
-#     if result:
-#         self.history_info.setText(f"{result.get('UserText','')}")
-#         if self.other_2.text() == "":
-#             self.other_2.setText(f"{result.get('Exch1', '')}")
-
-
-def process_esm(self, new_focused_widget=None, with_enter=False):
-    """ESM State Machine"""
-
-    # self.pref["run_state"]
-
-    # -----===== Assigned F-Keys =====-----
-    # self.esm_dict["CQ"]
-    # self.esm_dict["EXCH"]
-    # self.esm_dict["QRZ"]
-    # self.esm_dict["AGN"]
-    # self.esm_dict["HISCALL"]
-    # self.esm_dict["MYCALL"]
-    # self.esm_dict["QSOB4"]
-
-    # ----==== text fields ====----
-    # self.callsign
-    # self.sent
-    # self.receive
-    # self.other_1
-    # self.other_2
-
-    if new_focused_widget is not None:
-        self.current_widget = self.inputs_dict.get(new_focused_widget)
-
-    # print(f"checking esm {self.current_widget=} {with_enter=} {self.pref.get("run_state")=}")
-
-    for a_button in [
-        self.esm_dict["CQ"],
-        self.esm_dict["EXCH"],
-        self.esm_dict["QRZ"],
-        self.esm_dict["AGN"],
-        self.esm_dict["HISCALL"],
-        self.esm_dict["MYCALL"],
-        self.esm_dict["QSOB4"],
-    ]:
-        if a_button is not None:
-            self.restore_button_color(a_button)
-
-    buttons_to_send = []
-
-    if self.pref.get("run_state"):
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) < 3:
-                self.make_button_green(self.esm_dict["CQ"])
-                buttons_to_send.append(self.esm_dict["CQ"])
-                self.esm_call_sent = ""
-            elif len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["HISCALL"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                # If the operator corrected a busted callsign after the
-                # exchange was already sent, resend the corrected call
-                # ahead of the QRZ/TU macro so the other station logs the
-                # right callsign before the QSO is wiped.
-                if (
-                    self.pref.get("esm_send_corrected_call")
-                    and self.esm_call_sent
-                    and self.callsign.text() != self.esm_call_sent
-                ):
-                    self.make_button_green(self.esm_dict["HISCALL"])
-                    buttons_to_send.append(self.esm_dict["HISCALL"])
-                self.make_button_green(self.esm_dict["QRZ"])
-                buttons_to_send.append(self.esm_dict["QRZ"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        self.esm_call_sent = ""
-                        continue
-                    if button == self.esm_dict.get("HISCALL"):
-                        self.esm_call_sent = self.callsign.text()
-                    self.process_function_key(button)
-    else:
-        if self.current_widget == "callsign":
-            if len(self.callsign.text()) > 2:
-                self.make_button_green(self.esm_dict["MYCALL"])
-                buttons_to_send.append(self.esm_dict["MYCALL"])
-
-        elif self.current_widget == "other_2":
-            if self.other_2.text() == "":
-                self.make_button_green(self.esm_dict["AGN"])
-                buttons_to_send.append(self.esm_dict["AGN"])
-            else:
-                self.make_button_green(self.esm_dict["EXCH"])
-                buttons_to_send.append(self.esm_dict["EXCH"])
-                buttons_to_send.append("LOGIT")
-
-        if with_enter is True and bool(len(buttons_to_send)):
-            for button in buttons_to_send:
-                if button:
-                    if button == "LOGIT":
-                        self.save_contact()
-                        continue
-                    self.process_function_key(button)
-
-
-# def get_mults(self):
-#     """Get mults for RTC XML"""
-#     mults = {}
-#     mults["country"], mults["state"] = show_mults(self, rtc=True)
-#     return mults
-
-
-# def just_points(self):
-#     """Get points for RTC XML"""
-#     return get_points(self)
+        An imported log carries neither for sure, so both are looked up from
+        cty -- the pass the module made.  It marks no ``IsMultiplierN``: the
+        column is not in this contest's log and the score counts from the log.
+        """
+        parent = self.parent
+        for contact in parent.database.fetch_all_contacts_asc():
+            result = parent.cty_lookup(contact.get("Call", ""))
+            if result is None:
+                continue
+            item = result.get(next(iter(result)))
+            contact["CountryPrefix"] = item.get("primary_pfx", "")
+            contact["WPXPrefix"] = calculate_wpx_prefix(contact.get("Call", ""))
+            parent.database.change_contact(contact)

@@ -15,11 +15,11 @@ from types import SimpleNamespace
 import pytest
 
 from contest_harness import cty_lookup
-from not1mm.plugins import pacc
+from not1mm.lib.contest import load_contest
 
 
 def _ctx(mycall, hiscall, is_dupe=0):
-    """Minimal fake `self` for pacc.points()."""
+    """Minimal fake main window for the plugin."""
     return SimpleNamespace(
         contact_is_dupe=is_dupe,
         station={"Call": mycall},
@@ -42,8 +42,8 @@ def _ctx(mycall, hiscall, is_dupe=0):
     ],
 )
 def test_points(mycall, hiscall, expected):
-    assert pacc.points(_ctx(mycall, hiscall)) == expected
+    assert load_contest("pacc", _ctx(mycall, hiscall)).points() == expected
 
 
 def test_dupe_scores_nothing():
-    assert pacc.points(_ctx("K6GTE", "PA1ABC", is_dupe=1)) == 0
+    assert load_contest("pacc", _ctx("K6GTE", "PA1ABC", is_dupe=1)).points() == 0

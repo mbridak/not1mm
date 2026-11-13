@@ -1,18 +1,21 @@
-"""North American Sprint, RTTY plugin"""
+"""North American Sprint, RTTY plugin
 
-# pylint: disable=invalid-name, unused-argument, unused-variable, c-extension-no-member, unused-import, wildcard-import, unused-wildcard-import
+Same rules, exchange, scoring and QSY rule as the CW Sprint -- see
+:mod:`not1mm.plugins.na_sprint_cw` for the full summary.  This file only
+changes the contest identity and mode.
 
-# North American Sprint, RTTY
-#   Same rules, exchange, scoring and QSY rule as the CW Sprint - see
-#   na_sprint_cw.py for the full summary. All logic lives in that module;
-#   this file only changes the contest identity and mode.
-#   Dates:              Mar & Sep, 0000-0359 UTC
-#   Suggested freqs:    above 3580, 7080, 14080 kHz
-#   Find rules at:      https://ncjweb.com/Sprint-Rules.pdf
-#   Cabrillo name:      NA-SPRINT-RTTY
+80, 40 and 20m only, 0000-0359 UTC in March and September.  Suggested
+frequencies: above 3580, 7080 and 14080 kHz.
 
-from not1mm.plugins.na_sprint_cw import *  # noqa: F401,F403
+Cabrillo name: NA-SPRINT-RTTY
+"""
 
-name = "NA SPRINT RTTY"
-cabrillo_name = "NA-SPRINT-RTTY"
-mode = "RTTY"  # CW SSB BOTH RTTY
+from not1mm.plugins.na_sprint_cw import Contest as SprintContest
+
+
+class Contest(SprintContest):
+    """North American Sprint, RTTY."""
+
+    DisplayName = "NA SPRINT RTTY"
+    CabrilloName = "NA-SPRINT-RTTY"
+    Mode = "RTTY"

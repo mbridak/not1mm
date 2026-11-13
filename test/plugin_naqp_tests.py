@@ -16,13 +16,13 @@ import pytest
 
 from contest_harness import cty_lookup
 
-from not1mm.plugins import naqp_cw, naqp_rtty, naqp_ssb
+from not1mm.lib.contest import load_contest
 
-PLUGINS = [naqp_cw, naqp_ssb, naqp_rtty]
+PLUGINS = ["naqp_cw", "naqp_ssb", "naqp_rtty"]
 
 
 def _ctx(my_call, his_call, is_dupe=0):
-    """Minimal fake `self` for points()."""
+    """Minimal fake main window for points()."""
     return SimpleNamespace(
         contact_is_dupe=is_dupe,
         contact={"Call": his_call},
@@ -31,7 +31,7 @@ def _ctx(my_call, his_call, is_dupe=0):
     )
 
 
-@pytest.mark.parametrize("module", PLUGINS)
+@pytest.mark.parametrize("plugin", PLUGINS)
 @pytest.mark.parametrize(
     "my_call,his_call,expected",
     [
@@ -46,13 +46,13 @@ def _ctx(my_call, his_call, is_dupe=0):
         ("JA1ABC", "PY1ABC", 0),
     ],
 )
-def test_naqp_points(module, my_call, his_call, expected):
-    assert module.points(_ctx(my_call, his_call)) == expected
+def test_naqp_points(plugin, my_call, his_call, expected):
+    assert load_contest(plugin, _ctx(my_call, his_call)).points() == expected
 
 
-@pytest.mark.parametrize("module", PLUGINS)
-def test_naqp_dupe_scores_nothing(module):
-    assert module.points(_ctx("K6GTE", "W1AW", is_dupe=1)) == 0
+@pytest.mark.parametrize("plugin", PLUGINS)
+def test_naqp_dupe_scores_nothing(plugin):
+    assert load_contest(plugin, _ctx("K6GTE", "W1AW", is_dupe=1)).points() == 0
 
 
 class FakeLineEdit:
@@ -72,13 +72,12 @@ class FakeDatabase:
         self.current_contest = current_contest
         self.seen = set(seen)
 
-    def exec_sql(self, query, params=None):
-        key, band, _contest = params
-        return {"mult_count": 1 if (key, band) in self.seen else 0}
+    def mult_key_exists(self, expression, value, per=(), band=None, mode=None):
+        return {"count": 1 if (value, band) in self.seen else 0}
 
 
 def _entry_ctx(his_call, sect, band="7.0", seen=()):
-    """Minimal fake `self` for set_contact_vars()."""
+    """Minimal fake main window for set_contact_vars()."""
     return SimpleNamespace(
         contact={"Call": his_call, "Band": band},
         sent=FakeLineEdit("599"),
@@ -92,7 +91,7 @@ def _entry_ctx(his_call, sect, band="7.0", seen=()):
     )
 
 
-@pytest.mark.parametrize("module", PLUGINS)
+@pytest.mark.parametrize("plugin", PLUGINS)
 @pytest.mark.parametrize(
     "his_call,sect,expected",
     [
@@ -111,28 +110,28 @@ def _entry_ctx(his_call, sect, band="7.0", seen=()):
         ("W1AW", "", ""),  # ... nor a missing one
     ],
 )
-def test_naqp_multiplier_key(module, his_call, sect, expected):
-    ctx = _entry_ctx(his_call, sect)
-    module.set_contact_vars(ctx)
-    assert ctx.contact["Exchange1"] == expected
+def test_naqp_multiplier_key(plugin, his_call, sect, expected):
+    parent = _entry_ctx(his_call, sect)
+    load_contest(plugin, parent).set_contact_vars()
+    assert parent.contact["Exchange1"] == expected
 
 
-@pytest.mark.parametrize("module", PLUGINS)
-def test_naqp_new_multiplier_is_marked(module):
-    ctx = _entry_ctx("W1AW", "TX")
-    module.set_contact_vars(ctx)
-    assert ctx.contact["IsMultiplier1"] == 1
+@pytest.mark.parametrize("plugin", PLUGINS)
+def test_naqp_new_multiplier_is_marked(plugin):
+    parent = _entry_ctx("W1AW", "TX")
+    load_contest(plugin, parent).set_contact_vars()
+    assert parent.contact["IsMultiplier1"] == 1
 
 
-@pytest.mark.parametrize("module", PLUGINS)
-def test_naqp_repeated_multiplier_is_not_marked(module):
-    ctx = _entry_ctx("W1AW", "TX", seen=[("TX", "7.0")])
-    module.set_contact_vars(ctx)
-    assert ctx.contact["IsMultiplier1"] == 0
+@pytest.mark.parametrize("plugin", PLUGINS)
+def test_naqp_repeated_multiplier_is_not_marked(plugin):
+    parent = _entry_ctx("W1AW", "TX", seen=[("TX", "7.0")])
+    load_contest(plugin, parent).set_contact_vars()
+    assert parent.contact["IsMultiplier1"] == 0
 
 
-@pytest.mark.parametrize("module", PLUGINS)
-def test_naqp_non_multiplier_is_not_marked(module):
-    ctx = _entry_ctx("DL1AA", "DX")
-    module.set_contact_vars(ctx)
-    assert ctx.contact["IsMultiplier1"] == 0
+@pytest.mark.parametrize("plugin", PLUGINS)
+def test_naqp_non_multiplier_is_not_marked(plugin):
+    parent = _entry_ctx("DL1AA", "DX")
+    load_contest(plugin, parent).set_contact_vars()
+    assert parent.contact["IsMultiplier1"] == 0

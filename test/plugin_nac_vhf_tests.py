@@ -1,5 +1,6 @@
 import pytest
 
+from not1mm.lib.contest import load_contest
 from not1mm.plugins import nac_vhf as nac
 
 
@@ -118,14 +119,14 @@ def test_ghz_multiplier(band, expected):
 
 def test_points_dupe_zero():
     fake = make_self(dupe=True)
-    assert nac.points(fake) == 0
+    assert load_contest("nac_vhf", fake).points() == 0
 
 
 def test_points_includes_new_large_square_bonus():
     # A new large square should include the +500 bonus on top of distance.
     fake = make_self(my_grid="JO59", their_grid="JO49")
     # Distance JO59 -> JO49 is known; just verify the 500 bonus is present.
-    pts = nac.points(fake)
+    pts = load_contest("nac_vhf", fake).points()
     assert pts >= 500
 
 
@@ -137,14 +138,18 @@ def test_points_no_new_large_square_bonus_when_already_worked():
         }
     ]
     fake = make_self(existing=existing)
-    pts = nac.points(fake)
+    pts = load_contest("nac_vhf", fake).points()
     assert pts < 500
 
 
 def test_points_band_multiplier_applied():
     # On 2.3 GHz+ the distance points are multiplied by the GHz multiplier.
-    low = nac.points(make_self(my_grid="JO59", their_grid="JO49", band="2M"))
-    high = nac.points(make_self(my_grid="JO59", their_grid="JO49", band="2.3G"))
+    low = load_contest(
+        "nac_vhf", make_self(my_grid="JO59", their_grid="JO49", band="2M")
+    ).points()
+    high = load_contest(
+        "nac_vhf", make_self(my_grid="JO59", their_grid="JO49", band="2.3G")
+    ).points()
     # Same distance: 2M gives (km*1 + bonus), 2.3G gives (km*2 + bonus)
     assert high > low
     # Difference is exactly the extra km (2x-1x)
@@ -161,7 +166,7 @@ def test_show_mults_counts_distinct_large_squares():
         {"Exchange1": ""},
         {},
     ]
-    assert nac.show_mults(fake) == 2
+    assert load_contest("nac_vhf", fake).show_mults() == 2
 
 
 def test_recalculate_mults_awards_bonus_only_once_per_square():
@@ -171,7 +176,7 @@ def test_recalculate_mults_awards_bonus_only_once_per_square():
         {"Exchange1": "JO49YY", "Points": 999},
         {"Exchange1": "JO59ZZ", "Points": 999},
     ]
-    nac.recalculate_mults(fake)
+    load_contest("nac_vhf", fake).recalculate_mults()
     saved = fake.database.saved
     # First JO49 contact gets the new-large-square bonus; the second does not.
     assert saved[0]["Points"] >= 500

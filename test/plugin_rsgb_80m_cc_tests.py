@@ -25,11 +25,12 @@ from not1mm.lib.database import DataBase
 
 from contest_harness import cty_lookup
 
+from not1mm.lib.contest import load_contest
 from not1mm.plugins import rsgb_80m_cc
 
 
 def _ctx(my_call, his_call, is_dupe=0):
-    """Minimal fake `self` for points()."""
+    """Minimal fake main window for points()."""
     return SimpleNamespace(
         contact_is_dupe=is_dupe,
         contact={"Call": his_call},
@@ -53,7 +54,8 @@ def _ctx(my_call, his_call, is_dupe=0):
     ],
 )
 def test_ukcd_at_one_end_is_required(my_call, his_call, expected):
-    assert rsgb_80m_cc.points(_ctx(my_call, his_call)) == expected
+    parent = _ctx(my_call, his_call)
+    assert load_contest("rsgb_80m_cc", parent).points() == expected
 
 
 @pytest.mark.parametrize(
@@ -61,12 +63,14 @@ def test_ukcd_at_one_end_is_required(my_call, his_call, expected):
     ["G6XX", "G6XX/P", "GW6XX", "MW6XX", "GM6XX", "MM6XX", "GD6XX", "MD6XX"],
 )
 def test_society_station_scores_five(call):
-    assert rsgb_80m_cc.points(_ctx("G3XYZ", call)) == 5
+    parent = _ctx("G3XYZ", call)
+    assert load_contest("rsgb_80m_cc", parent).points() == 5
 
 
 @pytest.mark.parametrize("call", ["M6XX", "G3XYZ", "GW3XYZ", "G6ZZ", "W6XX"])
 def test_other_stations_score_one(call):
-    assert rsgb_80m_cc.points(_ctx("G3XYZ", call)) == 1
+    parent = _ctx("G3XYZ", call)
+    assert load_contest("rsgb_80m_cc", parent).points() == 1
 
 
 @pytest.mark.parametrize(
@@ -82,14 +86,14 @@ def test_is_not_rsgb_station(call):
 
 
 def test_dupe_scores_nothing():
-    assert rsgb_80m_cc.points(_ctx("G3XYZ", "W1AW", is_dupe=1)) == 0
+    parent = _ctx("G3XYZ", "W1AW", is_dupe=1)
+    assert load_contest("rsgb_80m_cc", parent).points() == 0
 
 
 class Harness:
     """Just enough of MainWindow to log contacts and ask for a dupe verdict."""
 
     def __init__(self, tmp_path, mycall="G3XYZ"):
-        self.plugin = rsgb_80m_cc
         self.database = DataBase(
             str(tmp_path / "t.db"),
             Path(not1mm.__file__).parent / "data",
@@ -99,6 +103,7 @@ class Harness:
         self.contact = {}
         self.radio_state = {"mode": ""}
         self.contact_is_dupe = 0
+        self.contest = load_contest("rsgb_80m_cc", self)
 
     def log(self, call, mode, band="3.5"):
         self.contact = self.database.empty_contact.copy()
@@ -119,7 +124,7 @@ class Harness:
     def is_dupe(self, call, mode):
         self.radio_state = {"mode": mode}
         self.contact = {"Call": call, "Mode": mode}
-        return rsgb_80m_cc.specific_contest_check_dupe(self, call)["isdupe"]
+        return self.contest.specific_contest_check_dupe(call)["isdupe"]
 
 
 @pytest.fixture
