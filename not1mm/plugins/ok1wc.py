@@ -1,4 +1,4 @@
-"""OK1WC Memorial Contest (MWC) plugin.
+"""OK1WC Memorial Contest plugin.
 
 Find rules at: https://memorial-ok1wc.cz/index.php?page=deniky
 
@@ -12,9 +12,9 @@ from not1mm.lib.contest import ContestBase
 
 
 class Contest(ContestBase):
-    """OK1WC Memorial Contest (MWC)."""
+    """OK1WC Memorial Contest."""
 
-    DisplayName = "OK1WC Memorial Contest (MWC)"
+    DisplayName = "OK1WC Memorial Contest"
     CabrilloName = "MWC"
     Mode = "CW"
     EXCHANGE_HINT = "#"

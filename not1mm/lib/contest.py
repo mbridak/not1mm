@@ -25,6 +25,8 @@ Three names, three jobs:
   :func:`contest_id`.
 * ``ContestName`` overrides the identifier, for the few contests that share a
   Cabrillo name with another but are not interchangeable.
+* ``SortOrder`` is where the contest sits in the New Contest picker.  Lower
+  comes first; contests with the same order are listed by display name.
 
 The old spellings -- ``name``, ``cabrillo_name``, ``mode``, ``dupe_type``,
 ``columns`` -- are still readable through the aliases below, so nothing in the
@@ -235,6 +237,25 @@ def contest_id(contest) -> str | None:
     return None
 
 
+def contest_picker_label(display_name: str, cabrillo_name: str) -> str:
+    """How the New Contest picker names a contest.
+
+    ``DisplayName`` alone when it and the Cabrillo name are the same bar case,
+    spaces and dashes -- "CQ WPX CW" needs no "(CQ-WPX-CW)" after it.  Where
+    they really differ, the Cabrillo name goes in parentheses, because that is
+    what the sponsor's log checker will see: "ARI International DX (ARI-DX)".
+    """
+
+    def fold(name: str) -> str:
+        return name.casefold().replace(" ", "").replace("-", "")
+
+    if not display_name:
+        return cabrillo_name
+    if not cabrillo_name or fold(display_name) == fold(cabrillo_name):
+        return display_name
+    return f"{display_name} ({cabrillo_name})"
+
+
 def path_name(identifier: str) -> str:
     """*identifier* as a file or directory name.
 
@@ -258,6 +279,10 @@ class ContestBase:
     # -- identity (UDC [Contest] names) -------------------------------------
     DisplayName = None  # "CQ WPX CW"; shown, and used as a directory name
     CabrilloName = None  # "CQ-WPX-CW"; the Cabrillo CONTEST: value
+    # Where the contest goes in the New Contest picker: lower first, then by
+    # display name.  General Logging sets 50 to keep the non-contest mode at
+    # the top of the list.
+    SortOrder = 100
     # The identifier, where it is not simply the Cabrillo name.  Only the few
     # contests that share a Cabrillo name but are not interchangeable set this
     # -- see contest_id().  N1MM's UDC files call the field Name.
@@ -1088,9 +1113,60 @@ class ContestInfo:
     source: str  # where it is defined, e.g. "cq_wpx_cw"
     identifier: str  # what the database stores, e.g. "CQ-WPX-CW"
     display_name: str  # what to show, e.g. "CQ WPX CW"
+    cabrillo_name: str = ""  # the Cabrillo CONTEST: value, e.g. "CQ-WPX-CW"
+    sort_order: int = 100  # where it goes in the picker
+
+    @property
+    def picker_label(self) -> str:
+        """How the picker names the contest, Cabrillo name and all."""
+        return contest_picker_label(self.display_name, self.cabrillo_name)
 
 
 _AVAILABLE: list[ContestInfo] | None = None
+
+
+def _contest_info(source: str) -> ContestInfo | None:
+    """Read one plugin, or None if it declares no contest."""
+    module = _import_source(source)
+    if module is None:
+        return None
+    metadata = getattr(module, "Contest", None)
+    if metadata is None:
+        logger.warning("Contest %s defines no Contest class", source)
+        return None
+    identifier = contest_id(metadata)
+    if identifier is None:
+        logger.warning("Contest %s declares no Cabrillo name", source)
+        return None
+    return ContestInfo(
+        source=source,
+        identifier=identifier,
+        display_name=getattr(metadata, "DisplayName", None) or "",
+        cabrillo_name=getattr(metadata, "CabrilloName", None) or "",
+        sort_order=getattr(metadata, "SortOrder", 100),
+    )
+
+
+def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
+    """Every contest definition, in file-name order.
+
+    A plugin that does not load is a hard error unless *tolerant*, in which
+    case it is skipped with a warning and the rest are still offered.
+    """
+    found = []
+    for source in _contest_sources():
+        try:
+            info = _contest_info(source)
+        except Exception:  # noqa: BLE001 -- one broken plugin must not hide the rest
+            if not tolerant:
+                raise
+            logger.warning(
+                "Skipping contest %s: it does not load", source, exc_info=True
+            )
+            continue
+        if info is not None:
+            found.append(info)
+    return found
 
 
 def available_contests() -> list[ContestInfo]:
@@ -1103,28 +1179,8 @@ def available_contests() -> list[ContestInfo]:
     global _AVAILABLE
     if _AVAILABLE is not None:
         return _AVAILABLE
-    found = []
-    for source in _contest_sources():
-        module = _import_source(source)
-        if module is None:
-            continue
-        metadata = getattr(module, "Contest", None)
-        if metadata is None:
-            logger.warning("Contest %s defines no Contest class", source)
-            continue
-        identifier = contest_id(metadata)
-        if identifier is None:
-            logger.warning("Contest %s declares no Cabrillo name", source)
-            continue
-        found.append(
-            ContestInfo(
-                source=source,
-                identifier=identifier,
-                display_name=getattr(metadata, "DisplayName", None) or "",
-            )
-        )
-    _AVAILABLE = found
-    return found
+    _AVAILABLE = _scan_contests()
+    return _AVAILABLE
 
 
 def _contest_sources() -> list[str]:
@@ -1199,15 +1255,19 @@ def contest_metadata(identifier: str):
 
 
 def contest_identifier_for_display(display_name: str) -> str | None:
-    """The identifier of the contest the picker shows as *display_name*.
+    """The identifier of the contest once labelled *display_name* in the picker.
 
-    The picker's entries are not the contests' own display names -- they are
-    their own short labels ("OK1WC", "LZ-DX", "10 10 FALL CW"), and what links
-    them to a contest is the fold the application has always applied: lower
-    case, spaces to underscores, which lands on the name of the file the
-    contest lives in.  That fold also happens to be what older databases
-    stored, so it has to keep resolving.  A contest's own display name is
-    accepted too, for callers that have one.
+    The picker used to be a hand-maintained list of short labels ("OK1WC",
+    "LZ-DX", "10 10 FALL CW") kept in the .ui file, and what linked a label to
+    a contest was the fold the application has always applied: lower case,
+    spaces to underscores, which lands on the name of the file the contest
+    lives in.  That fold also happens to be what older databases stored, so it
+    has to keep resolving.  A contest's own display name is accepted too, for
+    callers that have one.
+
+    The picker no longer needs this -- it carries the identifier as item data
+    and labels itself with :func:`contest_picker_label` -- but stored values
+    from before the change still go through here.
     """
     folded = display_name.casefold().replace(" ", "_")
     wanted = display_name.casefold()
@@ -1219,3 +1279,45 @@ def contest_identifier_for_display(display_name: str) -> str | None:
         if info.display_name.casefold() == wanted:
             return info.identifier
     return None
+
+
+def contest_picker_entries() -> list[tuple[str, str]]:
+    """The New Contest picker, in the order it is shown.
+
+    Each entry is ``(label, identifier)``: the label is what the operator
+    reads, the identifier is what the database stores.  Contests come first,
+    lowest ``SortOrder`` first and then by display name; a plugin that does not
+    load is left out so the picker still opens on the rest.
+    """
+    infos = _scan_contests(tolerant=True)
+    infos.sort(key=lambda info: (info.sort_order, info.display_name.casefold()))
+    return [(info.picker_label, info.identifier) for info in infos]
+
+
+def contest_label_for_identifier(identifier) -> str:
+    """How to show a stored contest name: its picker label, else the name itself.
+
+    Used where a contest is shown but not picked -- the list of saved contests.
+    A name this installation no longer has a plugin for (or a value left over
+    from an older version) is shown as it was stored rather than hidden or
+    raised over; opening it may still fail later, but the list stays usable.
+    """
+    # The database column is nullable; a cell always wants a string.
+    if not isinstance(identifier, str) or not identifier:
+        return "" if identifier is None else str(identifier)
+    wanted = identifier.casefold()
+    try:
+        infos = available_contests()
+    except Exception:  # noqa: BLE001 -- naming one contest must not need them all
+        logger.warning(
+            "Naming contest %r without the full registry", identifier, exc_info=True
+        )
+        infos = _scan_contests(tolerant=True)
+    for info in infos:
+        if wanted in (
+            info.identifier.casefold(),
+            info.source.casefold(),
+            info.display_name.casefold(),
+        ):
+            return info.picker_label
+    return identifier

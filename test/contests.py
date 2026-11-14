@@ -39,7 +39,7 @@ CONTEST_DATA = {
             "other_2": "cool dude",
         },
     ],
-    "10 10 FALL CW": [
+    "10 10 FALL CW (10-10-SPRINT)": [
         {
             "callsign": "KF0NRV",
             "sent": "599",
@@ -59,7 +59,7 @@ CONTEST_DATA = {
             "other_2": "mike 1234 ca",
         },
     ],
-    "10 10 SPRING CW": [
+    "10 10 SPRING CW (10-10-SPRINT)": [
         {
             "callsign": "KF0NRV",
             "sent": "599",
@@ -89,7 +89,7 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "dan 1234 ia"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "mike 1234 ca"},
     ],
-    "ARRL 10M": [
+    "ARRL 10M (ARRL-10)": [
         {
             "callsign": "KF0NRV",
             "sent": "599",
@@ -122,12 +122,12 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "100W"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "100W"},
     ],
-    "ARRL FIELD DAY": [
+    "ARRL Field Day (ARRL-FD)": [
         {"callsign": "KF0NRV", "other_1": "1", "other_2": "a"},
         {"callsign": "KF0NRV", "other_1": "1", "other_2": "a"},
         {"callsign": "K6GTE", "other_1": "1", "other_2": "a"},
     ],
-    "ARRL SS CW": [
+    "ARRL Sweepstakes CW (ARRL-SS-CW)": [
         {
             "callsign": "KF0NRV",
             "sent": "599",
@@ -150,7 +150,7 @@ CONTEST_DATA = {
             "other_2": "100",
         },
     ],
-    "ARRL SS PHONE": [
+    "ARRL Sweepstakes Phone (ARRL-SS-SSB)": [
         {
             "callsign": "KF0NRV",
             "sent": "59",
@@ -336,7 +336,7 @@ CONTEST_DATA = {
         {"callsign": "KF0NRV", "sent": "59", "receive": "59", "other_2": "4"},
         {"callsign": "K6GTE", "sent": "59", "receive": "59", "other_2": "3"},
     ],
-    "CWT": [
+    "CWT (CW-OPS)": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
@@ -364,12 +364,12 @@ CONTEST_DATA = {
             "other_2": "1",
         },
     ],
-    "ICWC MST": [
+    "ICWC Medium Speed Test (ICWC-MST)": [
         {"callsign": "KF0NRV", "sent": "1", "other_1": "dan", "other_2": "1"},
         {"callsign": "KF0NRV", "sent": "2", "other_1": "dan", "other_2": "2"},
         {"callsign": "K6GTE", "sent": "3", "other_1": "mike", "other_2": "3"},
     ],
-    "IARU FIELDDAY R1 CW": [
+    "IARU FIELDDAY R1 DARC CW (FD CW)": [
         {
             "callsign": "KF0NRV",
             "sent": "599",
@@ -392,7 +392,7 @@ CONTEST_DATA = {
             "other_2": "3",
         },
     ],
-    "IARU FIELDDAY R1 SSB": [
+    "IARU FIELDDAY R1 DARC SSB (FD SSB)": [
         {
             "callsign": "KF0NRV",
             "sent": "59",
@@ -443,7 +443,7 @@ CONTEST_DATA = {
             "other_2": "3",
         },
     ],
-    "JIDX PH": [
+    "JIDX PH (JIDX-SSB)": [
         {
             "callsign": "KF0NRV",
             "sent": "59",
@@ -466,7 +466,7 @@ CONTEST_DATA = {
             "other_2": "3",
         },
     ],
-    "K1USN SST": [
+    "K1USN SLOW SPEED TEST (K1USNSST)": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
@@ -555,17 +555,17 @@ CONTEST_DATA = {
             "other_2": "JO86EQ",
         },
     ],
-    "STEW PERRY TOPBAND": [
+    "Stew Perry Topband (STEW-PERRY)": [
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
         {"callsign": "KF0NRV", "sent": "599", "receive": "599", "other_1": "BB22AA"},
         {"callsign": "K6GTE", "sent": "599", "receive": "599", "other_1": "AA11bb"},
     ],
-    "WEEKLY RTTY": [
+    "WEEKLY RTTY TEST (WRT)": [
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "KF0NRV", "other_1": "dan", "other_2": "ia"},
         {"callsign": "K6GTE", "other_1": "mike", "other_2": "ca"},
     ],
-    "WINTER FIELD DAY": [
+    "Winter Field Day (WFD)": [
         {"callsign": "KF0NRV", "other_1": "1", "other_2": "a"},
         {"callsign": "KF0NRV", "other_1": "1", "other_2": "a"},
         {"callsign": "K6GTE", "other_1": "1", "other_2": "a"},

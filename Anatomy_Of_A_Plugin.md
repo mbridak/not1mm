@@ -91,42 +91,21 @@ if result is not None:
 
 A straightforward way to create a new contest plugin is finding an existing plugin with the same or similar exchange and modifying it as necessary. [Here](./contest_exchanges.md) is a pretty good list of contests and their exchange types.
 
-## Inserting a new contest so it appears in the dropdown list
+## Adding a new contest to the dropdown list
 
-Each contest plugin is linked to a corresponding entry in the contest dropdown list. To add a new contest into the list of available contests, the `new_contest.ui` XML file located in the Data directory must be manually edited. This can be illustrated with the following example using a snippet of the XML code for two sequential dropdown selections `REF SSB` and `STEW PERRY TOPBAND`:
+There is nothing to add by hand. The New Contest dropdown is built from the
+`plugins` directory: every `not1mm/plugins/*.py` that defines a
+`class Contest(ContestBase)` shows up in the list, labelled with its
+`DisplayName` -- and with its `CabrilloName` in parentheses when the two names
+really differ, e.g. `ARI International DX (ARI-DX)`. A dropdown entry therefore
+always matches the plugin that will be loaded, and a new plugin needs no change
+to `new_contest.ui`.
 
-```xml
-     <item>
-      <property name="text">
-       <string>REF SSB</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>STEW PERRY TOPBAND</string>
-      </property>
-     </item>    
-```
+Contests are listed lowest `SortOrder` first and then by display name.
+`SortOrder` defaults to `100`; General Logging sets `50` to keep the non-contest
+mode at the top.
 
-We wish to place a new entry called `SOME CONTEST NAME` between them. The XML file is modified using the `item` attribute as follows:
-
-```xml
-     <item>
-      <property name="text">
-       <string>REF SSB</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>SOME CONTEST NAME</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>STEW PERRY TOPBAND</string>
-      </property>
-     </item>
-```
-
-An entry for `SOME CONTEST NAME` will now appear in the dropdown list. When the user selects a contest on the list, the program will search for the corresponding plugin in the `plugins` directory. The capitalized text is converted to lowercase, any spaces are replaced with underscores, and a `.py` suffix is appended. In this example the corresponding contest plugin must be named `some_contest_name.py`
+`CabrilloName` is also the identifier saved in the database (unless the plugin
+overrides it with `ContestName`), so the picker and the log agree on what the
+contest is called.
 
