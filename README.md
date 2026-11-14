@@ -67,6 +67,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-11-14] Merge pull request #745 from df7cb/contest-discovery
+  - Build the contest picker from discovered contests
 - [2026-11-13] Merge pull request #743 from df7cb/contest-refactor
   - Run black on all files touched
   - Drop the adapter for unconverted contest modules
