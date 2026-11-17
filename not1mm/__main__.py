@@ -418,15 +418,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.cursorPositionChanged.connect(self.check_esm)
         self.callsign.installEventFilter(self)
         self.sent.returnPressed.connect(self.check_esm_with_enter)
-        self.sent.textEdited.connect(self.sent_changed)
         self.sent.cursorPositionChanged.connect(self.check_esm)
         self.sent.installEventFilter(self)
         self.receive.returnPressed.connect(self.check_esm_with_enter)
-        self.receive.textEdited.connect(self.receive_changed)
         self.receive.cursorPositionChanged.connect(self.check_esm)
         self.receive.installEventFilter(self)
         self.other_1.returnPressed.connect(self.check_esm_with_enter)
-        self.other_1.textEdited.connect(self.other_1_changed)
         self.other_1.cursorPositionChanged.connect(self.check_esm)
         self.other_1.installEventFilter(self)
         self.other_2.returnPressed.connect(self.check_esm_with_enter)
@@ -1013,6 +1010,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.vfo_window.hide()
 
+        self.no_focus_dock_tabs()
         self.cwspeed_spinbox_changed()
 
         if not DEBUG_ENABLED and VersionTest(__version__).test():
@@ -1314,25 +1312,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
-        if self.use_esm:
-            if getattr(self.contest, "UsesESM", False):
-                self.contest.process_esm(with_enter=True)
-            else:
-                self.save_contact()
+        if self.use_esm and getattr(self.contest, "UsesESM", False):
+            self.contest.process_esm(with_enter=True)
         else:
             self.save_contact()
 
     def check_esm(self) -> None:
-        """Check for ESM, otherwise save contact."""
-        if self.use_esm:
-            if getattr(self.contest, "UsesESM", False):
-                self.contest.process_esm()
-            else:
-                ...
-                # self.save_contact()
-        else:
-            ...
-            # self.save_contact()
+        """Check for ESM."""
+        if self.use_esm and getattr(self.contest, "UsesESM", False):
+            self.contest.process_esm()
 
     def show_splash_msg(self, msg: str) -> None:
         """Show text message in the splash window."""
@@ -2922,6 +2910,9 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Common key intercept code for eventFilter and keyPressEvent.
         """
+        if event.key() == Qt.Key.Key_Space:
+            return self.space_in_entry(obj)
+
         key_bindings = self.pref.get(
             "key_bindings", not1mm.actions.default_key_bindings
         )
@@ -2951,6 +2942,42 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
         return False  # key not handled here
 
+    # SPACE walks to the next field the same way TAB does, but only where the
+    # contest's advance_on_space says a space separates; a field whose exchange
+    # may contain one (a name, a grid, "Name 1010# SPC") keeps the key and the
+    # text.  In the callsign it ends the call and runs what was typed -- a
+    # command or a frequency.  (ContestBase's entry-window note has the
+    # intended TAB-vs-SPACE rule.)
+    def space_in_entry(self, obj) -> bool:
+        """Handle a SPACE typed in an entry field.
+
+        True when the key was consumed: it stepped out of the field, or, in
+        the callsign, ended the call.  False leaves the space to the widget.
+        """
+        if obj is None:
+            obj = self.focusWidget()
+        if obj == self.callsign:
+            self.callsign_command()
+            return True
+        # The slot each field owns in advance_on_space: [callsign, sent,
+        # receive, other_1, other_2].
+        slot = {
+            self.sent: 1,
+            self.receive: 2,
+            self.other_1: 3,
+            self.other_2: 4,
+        }.get(obj)
+        if slot is None:
+            return False
+        advance = getattr(self.contest, "advance_on_space", None)
+        if not (self.contest and advance and advance[slot]):
+            return False
+        next_tab = self.tab_next.get(obj)
+        next_tab.setFocus()
+        next_tab.deselect()
+        next_tab.end(False)
+        return True
+
     def eventFilter(self, obj, event) -> bool:
         """
         This intercepts key events on the input widgets.
@@ -2959,6 +2986,12 @@ class MainWindow(QtWidgets.QMainWindow):
         then forwarded to MainWindow.keyPressEvent.
         """
 
+        if event.type() == QEvent.Type.FocusIn:
+            self.entry_focus_in(obj, event)
+            return False
+        if event.type() == QEvent.Type.FocusOut:
+            self.entry_focus_out(obj)
+            return False
         if event.type() != QEvent.Type.KeyPress:
             return False
         return self.process_key_bindings(event, obj=obj)
@@ -2971,87 +3004,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.process_key_bindings(event):
             return
 
-        modifier = event.modifiers()
-        if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
-            if self.sent.hasFocus():
-                logger.debug("From sent")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.sent)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                else:
-                    next_tab = self.tab_next.get(self.sent)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                    self.highlight_599(next_tab)
-                return
-            if self.receive.hasFocus():
-                logger.debug("From receive")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.receive)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.receive)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.other_1.hasFocus():
-                logger.debug("From other_1")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.other_1)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.other_1)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.other_2.hasFocus():
-                logger.debug("From other_2")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.other_2)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.other_2)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.callsign.hasFocus():
-                logger.debug("From callsign")
-                self.check_callsign(self.callsign.text())
-                self.check_dupe(self.callsign.text())
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.callsign)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                else:
-                    text = self.callsign.text()
-                    text = text.upper()
-                    cmd = {}
-                    cmd["cmd"] = "LOOKUP_CALL"
-                    cmd["call"] = text
-                    if self.lookup_service:
-                        self.lookup_service.msg_from_main(cmd)
-                    next_tab = self.tab_next.get(self.callsign)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                    self.highlight_599(next_tab)
-                return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 self.set_running(True)
@@ -3099,9 +3051,55 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
+    def entry_focus_in(self, obj, event) -> None:
+        """Settle an entry field the operator has just TABbed into.
+
+        QLineEdit selects the whole text when it takes focus with TAB, and it
+        does that after this filter has run, so the fix is deferred: the entry
+        window wants the cursor at the end instead -- or, for an RST field,
+        the middle digit of a "599" -- see settle_tab_focus().
+        """
+        if event.reason() in (
+            Qt.FocusReason.TabFocusReason,
+            Qt.FocusReason.BacktabFocusReason,
+        ):
+            QtCore.QTimer.singleShot(0, lambda: self.settle_tab_focus(obj))
+
+    def settle_tab_focus(self, obj) -> None:
+        """Put the cursor at the end of the field TAB has just moved into."""
+        obj.deselect()
+        obj.end(False)
+        if obj in (self.sent, self.receive):
+            self.highlight_599(obj)
+
     def highlight_599(self, field: QLineEdit) -> None:
         if field.text() == "599" and self.pref.get("edit_rst", False):
             field.setSelection(1, 1)
+
+    def entry_focus_out(self, obj) -> None:
+        """Commit the callsign once the operator leaves it."""
+        if obj == self.callsign:
+            self.callsign_commit()
+
+    def no_focus_dock_tabs(self) -> None:
+        """Keep the dock tab bar out of the TAB cycle.
+
+        We want the TAB key to exactly cycle the entry fields. QMainWindow
+        shows a QTabBar for tabified dock widgets, and a QTabBar is a TAB stop
+        by default. Disable that.
+        """
+        for tab_bar in self.findChildren(QtWidgets.QTabBar):
+            tab_bar.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def event(self, event) -> bool:
+        """Redo the dock tab bar's focus policy when the layout is redone.
+
+        Whenever the layout changes, set focus policy to catch any new QTabBar
+        that would be TAB-able.
+        """
+        if event.type() == QEvent.Type.LayoutRequest:
+            self.no_focus_dock_tabs()
+        return super().event(event)
 
     def set_window_title(self) -> None:
         """
@@ -4351,117 +4349,15 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def sent_changed(self) -> None:
-        """
-        The text in the sent field has changed.
-        """
-        if self.contest and "DX-Pedition" in self.contest.name:
-            text = self.sent.text()
-            text = text.upper()
-            position = self.sent.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.sent.setText(stripped_text)
-            self.sent.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.sent)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
-    def receive_changed(self) -> None:
-        """
-        The text in the receive field has changed.
-        """
-        if self.contest and self.contest.name in [
-            "DX-Pedition",
-            "California QSO Party",
-        ]:
-            text = self.receive.text()
-            text = text.upper()
-            position = self.receive.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.receive.setText(stripped_text)
-            self.receive.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.receive)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
-    # SPACE advances along tab_next -- the same cycle TAB walks -- but only for
-    # a field whose advance_on_space slot is set; otherwise the space is kept,
-    # so a field whose text may contain spaces (a name, a grid) can be typed.
-    # (ContestBase's entry-window note has the intended TAB-vs-SPACE rule.)
-    def other_1_changed(self) -> None:
-        """
-        The text in the other_1 field has changed.
-        Strip out any spaces and set the text.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if (
-            self.contest
-            and hasattr(self.contest, "advance_on_space")
-            and self.contest.advance_on_space[3]
-        ):
-            text = self.other_1.text()
-            text = text.upper()
-            position = self.other_1.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.other_1.setText(stripped_text)
-            self.other_1.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.other_1)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
     def other_2_changed(self) -> None:
+        """Parse the exchange as it is typed, when the contest asks for it.
+
+        A contest whose received exchange is several fields in one textbox --
+        Sweepstakes' "sn prec ck sec" -- sets call_parse_exchange_on_edit and
+        keeps its own label in step.
         """
-        Text in other_2 has changed.
-        Strip out any spaces and set the text.
-        Parse the exchange if the contest is ARRL Sweepstakes.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if self.contest:
-            if "ARRL Sweepstakes" in self.contest.name:
-                self.contest.parse_exchange()
-                return
-            if (
-                hasattr(self.contest, "call_parse_exchange_on_edit")
-                and self.contest.advance_on_space
-            ):
-                self.contest.parse_exchange()
-            if (
-                hasattr(self.contest, "advance_on_space")
-                and self.contest.advance_on_space[4]
-            ):
-                text = self.other_2.text()
-                text = text.upper()
-                position = self.other_2.cursorPosition()
-                stripped_text = text.strip().replace(" ", "")
-                self.other_2.setText(stripped_text)
-                self.other_2.setCursorPosition(position)
-                if " " in text:
-                    next_tab = self.tab_next.get(self.other_2)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
+        if self.contest and self.contest.call_parse_exchange_on_edit:
+            self.contest.parse_exchange()
 
     def callsign_changed(self) -> None:
         """
@@ -4490,40 +4386,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
 
-        if " " in text:
-            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "OPON":
-                not1mm.actions.OPON(self)
-                self.clearinputs()
-                return
-            if stripped_text == "ROVE":
-                self.get_rover()
-                self.clearinputs()
-                return
-            if stripped_text == "HELP":
-                self.show_help_dialog()
-                self.clearinputs()
-                return
-            if self.is_floatable(stripped_text):
-                self.change_freq(stripped_text)
-                self.clearinputs()
-                return
-            cmd = {}
-            cmd["cmd"] = "LOOKUP_CALL"
-            cmd["call"] = stripped_text
-            if self.lookup_service:
-                self.lookup_service.msg_from_main(cmd)
-            self.next_field.setFocus()
-            if self.contest:
-                if self.use_call_history and hasattr(
-                    self.contest, "check_call_history"
-                ):
-                    self.contest.check_call_history()
-                if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
-                    self.contest.prefill()
-            return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
         cmd["call"] = stripped_text
@@ -4544,6 +4406,61 @@ class MainWindow(QtWidgets.QMainWindow):
             and hasattr(self.contest, "populate_history_info_line")
         ):
             self.contest.populate_history_info_line()
+
+    def callsign_command(self) -> None:
+        """Run the callsign that was just typed, ended by a SPACE.
+
+        The callsign box doubles as a command line: a mode, a frequency, or
+        one of the "OPON"/"ROVE"/"HELP" commands.  Anything else is a call,
+        and that just steps into the first exchange field -- looking it up is
+        the focus handler's business, see callsign_commit().
+        """
+        stripped_text = self.callsign.text().upper().strip()
+        if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
+            self.change_mode(stripped_text)
+            return
+        if stripped_text == "OPON":
+            not1mm.actions.OPON(self)
+            self.clearinputs()
+            return
+        if stripped_text == "ROVE":
+            self.get_rover()
+            self.clearinputs()
+            return
+        if stripped_text == "HELP":
+            self.show_help_dialog()
+            self.clearinputs()
+            return
+        if self.is_floatable(stripped_text):
+            self.change_freq(stripped_text)
+            self.clearinputs()
+            return
+        # Not a command: step into the first exchange field.  The lookup runs
+        # when the callsign loses focus (see entry_focus_out).
+        self.next_field.setFocus()
+
+    def callsign_commit(self) -> None:
+        """Look up the call the operator has left behind in the callsign box.
+
+        Runs on the way out of the field, whether the operator left it with
+        SPACE, TAB or a mouse click, and pre-fills what the contest can from
+        the answer.
+        """
+        text = self.callsign.text().upper()
+        if not text:
+            return
+        self.check_callsign(text)
+        self.check_dupe(text)
+        cmd = {}
+        cmd["cmd"] = "LOOKUP_CALL"
+        cmd["call"] = text
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
+        if self.contest:
+            if self.use_call_history and hasattr(self.contest, "check_call_history"):
+                self.contest.check_call_history()
+            if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
+                self.contest.prefill()
 
     def change_freq(self, stripped_text: str) -> None:
         """

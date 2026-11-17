@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>886</width>
-    <height>589</height>
+    <height>621</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,7 +26,7 @@
    </font>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::NoFocus</enum>
+   <enum>Qt::FocusPolicy::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Not1MM</string>
@@ -49,7 +49,7 @@
     <bool>true</bool>
    </property>
    <property name="focusPolicy">
-    <enum>Qt::NoFocus</enum>
+    <enum>Qt::FocusPolicy::NoFocus</enum>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -95,7 +95,7 @@
               <string>CW</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -108,7 +108,7 @@
               <string>160</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -118,7 +118,7 @@
               <string>80</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -128,7 +128,7 @@
               <string>60</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -138,7 +138,7 @@
               <string>40</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -148,7 +148,7 @@
               <string>30</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -158,7 +158,7 @@
               <string>20</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -168,7 +168,7 @@
               <string>17</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -178,7 +178,7 @@
               <string>15</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -188,7 +188,7 @@
               <string>12</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -198,7 +198,7 @@
               <string>10</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -208,7 +208,7 @@
               <string>6</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -218,7 +218,7 @@
               <string>4</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -228,7 +228,7 @@
               <string>2</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -238,7 +238,7 @@
               <string>1.25</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -248,7 +248,7 @@
               <string>70cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -258,7 +258,7 @@
               <string>33cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -268,14 +268,14 @@
               <string>23cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -321,7 +321,7 @@
               <string>SSB</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -331,7 +331,7 @@
               <string>160</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -341,7 +341,7 @@
               <string>80</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -351,7 +351,7 @@
               <string>60</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -361,7 +361,7 @@
               <string>40</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -371,7 +371,7 @@
               <string>20</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -381,7 +381,7 @@
               <string>17</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -391,7 +391,7 @@
               <string>15</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -401,7 +401,7 @@
               <string>12</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -411,7 +411,7 @@
               <string>10</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -421,7 +421,7 @@
               <string>6</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -431,7 +431,7 @@
               <string>4</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -441,7 +441,7 @@
               <string>2</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -451,7 +451,7 @@
               <string>1.25</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -461,7 +461,7 @@
               <string>70cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -471,7 +471,7 @@
               <string>33cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -481,14 +481,14 @@
               <string>23cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -534,7 +534,7 @@
               <string>RTTY</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -544,7 +544,7 @@
               <string>160</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -554,7 +554,7 @@
               <string>80</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -564,7 +564,7 @@
               <string>60</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -574,7 +574,7 @@
               <string>40</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -584,7 +584,7 @@
               <string>30</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -594,7 +594,7 @@
               <string>20</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -604,7 +604,7 @@
               <string>17</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -614,7 +614,7 @@
               <string>15</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -624,7 +624,7 @@
               <string>12</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -634,7 +634,7 @@
               <string>10</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -644,7 +644,7 @@
               <string>6</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -654,7 +654,7 @@
               <string>4</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -664,7 +664,7 @@
               <string>2</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -674,7 +674,7 @@
               <string>1.25</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -684,7 +684,7 @@
               <string>70cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -694,7 +694,7 @@
               <string>33cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -707,14 +707,14 @@
               <string>23cm</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_3">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -740,7 +740,7 @@
                   <string>Callsign</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                  </property>
                 </widget>
                </item>
@@ -753,7 +753,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
+                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>callsign</string>
@@ -778,7 +778,7 @@
                   <string>SNT</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                  </property>
                 </widget>
                </item>
@@ -797,7 +797,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
+                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>RST Sent</string>
@@ -819,7 +819,7 @@
                   <string>RCV</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                  </property>
                 </widget>
                </item>
@@ -834,11 +834,11 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>20</pointsize>                   
+                   <pointsize>20</pointsize>
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
+                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                  </property>
                  <property name="accessibleName">
                   <string>RST Received</string>
@@ -860,7 +860,7 @@
                   <string>OTHER_1</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                  </property>
                 </widget>
                </item>
@@ -873,7 +873,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
+                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
@@ -898,7 +898,7 @@
                   <enum>Qt::TextFormat::AutoText</enum>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
                  </property>
                  <property name="buddy">
                   <cstring>field4</cstring>
@@ -914,7 +914,7 @@
                   </font>
                  </property>
                  <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
+                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">text-transform: uppercase;</string>
@@ -968,7 +968,7 @@
                <bool>false</bool>
               </property>
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="invertedAppearance">
                <bool>false</bool>
@@ -988,14 +988,14 @@
                <string/>
               </property>
               <property name="alignment">
-               <set>Qt::AlignCenter</set>
+               <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="radioButton_run">
               <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
+               <enum>Qt::FocusPolicy::NoFocus</enum>
               </property>
               <property name="accessibleName">
                <string>Run Mode</string>
@@ -1008,7 +1008,7 @@
             <item>
              <widget class="QRadioButton" name="radioButton_sp">
               <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
+               <enum>Qt::FocusPolicy::NoFocus</enum>
               </property>
               <property name="accessibleName">
                <string>Search and Pounce</string>
@@ -1027,7 +1027,7 @@
                </sizepolicy>
               </property>
               <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
+               <enum>Qt::FocusPolicy::NoFocus</enum>
               </property>
               <property name="toolTip">
                <string>CW Keyer Speed</string>
@@ -1039,7 +1039,7 @@
                <bool>true</bool>
               </property>
               <property name="alignment">
-               <set>Qt::AlignCenter</set>
+               <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
               <property name="buttonSymbols">
                <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
@@ -1097,7 +1097,7 @@
             <item>
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1130,7 +1130,7 @@
              <item>
               <widget class="QPushButton" name="F1">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F1</string>
@@ -1143,7 +1143,7 @@
              <item>
               <widget class="QPushButton" name="F2">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F2</string>
@@ -1156,7 +1156,7 @@
              <item>
               <widget class="QPushButton" name="F3">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F3</string>
@@ -1169,7 +1169,7 @@
              <item>
               <widget class="QPushButton" name="F4">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F4</string>
@@ -1182,7 +1182,7 @@
              <item>
               <widget class="QPushButton" name="F5">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F5</string>
@@ -1195,7 +1195,7 @@
              <item>
               <widget class="QPushButton" name="F6">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F6</string>
@@ -1229,7 +1229,7 @@
              <item>
               <widget class="QPushButton" name="F7">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F7</string>
@@ -1242,7 +1242,7 @@
              <item>
               <widget class="QPushButton" name="F8">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F8</string>
@@ -1255,7 +1255,7 @@
              <item>
               <widget class="QPushButton" name="F9">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F9</string>
@@ -1268,7 +1268,7 @@
              <item>
               <widget class="QPushButton" name="F10">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F10</string>
@@ -1281,7 +1281,7 @@
              <item>
               <widget class="QPushButton" name="F11">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F11</string>
@@ -1294,7 +1294,7 @@
              <item>
               <widget class="QPushButton" name="F12">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="accessibleName">
                 <string>F12</string>
@@ -1328,7 +1328,7 @@
              <item>
               <widget class="QPushButton" name="esc_stop">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Esc: STOP</string>
@@ -1338,7 +1338,7 @@
              <item>
               <widget class="QPushButton" name="wipe">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Wipe</string>
@@ -1348,7 +1348,7 @@
              <item>
               <widget class="QPushButton" name="log_it">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Log It</string>
@@ -1358,7 +1358,7 @@
              <item>
               <widget class="QPushButton" name="edit">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1368,7 +1368,7 @@
              <item>
               <widget class="QPushButton" name="mark">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Mark</string>
@@ -1378,7 +1378,7 @@
              <item>
               <widget class="QPushButton" name="store">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1388,7 +1388,7 @@
              <item>
               <widget class="QPushButton" name="spot_it">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>Spot It</string>
@@ -1398,7 +1398,7 @@
              <item>
               <widget class="QPushButton" name="qrz">
                <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
+                <enum>Qt::FocusPolicy::NoFocus</enum>
                </property>
                <property name="text">
                 <string>---</string>
@@ -1454,7 +1454,7 @@
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -1477,7 +1477,7 @@
         <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -1516,7 +1516,7 @@
      <x>0</x>
      <y>0</y>
      <width>886</width>
-     <height>30</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="nativeMenuBar">
@@ -1526,6 +1526,7 @@
     <property name="font">
      <font>
       <family>JetBrains Mono</family>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="title">

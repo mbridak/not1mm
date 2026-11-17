@@ -311,16 +311,16 @@ class ContestBase:
     # different fields:
     #
     #   TAB    every field the contest shows, in the window's own order
-    #          (callsign, then EntryFields) -- see visible_fields().
+    #          (callsign, then EntryFields).  Qt's own focus chain does this
+    #          now, and skips a hidden field by itself -- see visible_fields().
     #   SPACE  only the "interesting" fields the operator types: RST is almost
     #          always 599, so space steps over sent and receive.  A field whose
     #          text may contain spaces (a name, a grid) keeps the space and the
     #          focus instead of advancing.
     #
-    # There is one cycle today: TabOrder builds tab_next, the *_changed()
-    # handlers in __main__.py send SPACE along the same map, and
-    # advance_on_space only decides whether a space advances at all -- so a
-    # field TabOrder leaves out is left out of both keys.
+    # TabOrder builds tab_next, which the key intercept in __main__.py sends
+    # SPACE along, and advance_on_space only decides whether a space advances
+    # at all -- so a field TabOrder leaves out is left out of SPACE too.
     #
     # Which of the four entry fields this contest uses ...
     EntryFields = ENTRY_WIDGETS
@@ -331,13 +331,14 @@ class ContestBase:
     RcvLabel = ""
     # Screen-reader names, one per entry field; an empty string is skipped.
     AccessibleNames = ("RST Sent", "", "Sent Number", "Received Number")
-    # The order TAB walks the entry fields in, or None for "the fields this
+    # The order SPACE walks the entry fields in, or None for "the fields this
     # contest shows, in the window's own order" -- which is what almost every
     # contest wants, so EntryFields is the one list to keep in step.  A contest
     # that shows a field but keeps it out of the cycle (AGCW's RST fields)
-    # names the order itself.  Shift-TAB walks the same order backwards unless
-    # a contest overrides TabOrderPrev.
+    # names the order itself.  TAB is Qt's own chain, so this no longer shapes
+    # it.
     TabOrder = None
+    # The reverse of the same cycle; nothing walks it now that TAB is Qt's own.
     TabOrderPrev = None
     # Where the focus goes once a lookup has run on the callsign, by field
     # name; almost every contest leaves it on the last exchange field.
@@ -350,6 +351,10 @@ class ContestBase:
     # it, with the slot set to False.  The slots are [callsign, sent, receive,
     # other_1, other_2]; only 3 and 4 are read.
     advance_on_space = [True, True, True, True, True]
+    # not1mm-specific: parse other_2 into its parts as it is typed, and show
+    # them, for a contest whose received exchange is several fields in one
+    # textbox (Sweepstakes' "sn prec ck sec").
+    call_parse_exchange_on_edit = False
 
     # -- log window ---------------------------------------------------------
     LogInfo = list(LOG_INFO)
@@ -475,12 +480,12 @@ class ContestBase:
         )
 
     def set_tab_next(self):
-        """TAB walks the entry fields in :attr:`TabOrder`, then wraps.
+        """SPACE walks the entry fields in :attr:`TabOrder`, then wraps.
 
         A field the order leaves out -- a hidden one, or an RST field the
         contest skips -- advances to the next field the order does visit, in
-        the window's own order.  TAB moves forward, so it does not wrap to the
-        first field unless there is nothing after it.
+        the window's own order.  SPACE moves forward, so it does not wrap to
+        the first field unless there is nothing after it.
         """
         parent = self.parent
         order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
@@ -498,13 +503,10 @@ class ContestBase:
         parent.tab_next = following
 
     def set_tab_prev(self):
-        """Shift-TAB walks :attr:`TabOrderPrev` backwards.
+        """The reverse cycle of :meth:`set_tab_next`.
 
-        By default that is :attr:`TabOrder` itself, i.e. the reverse cycle of
-        :meth:`set_tab_next`.  A contest whose fields collapse onto each other
-        (several fields all advancing to the same one) can set TabOrderPrev to
-        get its own order back.  A field the order leaves out goes back to the
-        previous field the order visits, in the window's own order.
+        Nothing walks it since TAB became Qt's own focus chain; it is kept
+        while a contest's own reverse order is still worth stating.
         """
         parent = self.parent
         order = self.TabOrder if self.TabOrder is not None else self.visible_fields()

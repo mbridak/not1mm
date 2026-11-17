@@ -149,6 +149,8 @@ See the Contest Specific Notes section of the manual for more info.
     ]
     # The exchange is "sn prec ck sec", whose spaces are significant.
     advance_on_space = [True, True, True, False, False]
+    # ... and it is one textbox, split into its parts as it is typed.
+    call_parse_exchange_on_edit = True
     # Each ARRL/RAC section once for the whole contest; a "DX" is not a section
     # and is not a multiplier.
     NumMults = 1

@@ -35,6 +35,7 @@ class StatsWindow(QDockWidget):
         self.database: DataBase = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
         load_ui(self, fsutils.APP_DATA_PATH / "statistics.ui")
+        self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
     def msg_from_main(self, packet):
         """Process messages from the main window."""
@@ -89,7 +90,6 @@ class StatsWindow(QDockWidget):
         contest = self.database.current_contest
         self.tableWidget.clear()
         self.tableWidget.setAlternatingRowColors(True)
-        self.tableWidget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.tableWidget.setColumnCount(10)
         self.tableWidget.setHorizontalHeaderLabels(
             ["BAND", "QSO", "CALLS", "CW", "PH", "DI", "WPX", "CTY", "ZN", "PTS"]
