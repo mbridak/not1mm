@@ -50,7 +50,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from not1mm.lib import contact_info, plugin_common, version
-from not1mm.lib.fields import legacy_entry_boxes, parse_entry_window_info
+from not1mm.lib.fields import (
+    FIELD_SPECS,
+    legacy_entry_boxes,
+    parse_entry_window_info,
+)
 from not1mm.lib.plugin_common import gen_adif, get_points
 
 logger = logging.getLogger(__name__)
@@ -76,6 +80,74 @@ def entry_edit(parent, name):
     if fields is not None:
         return fields.edit(name)
     return getattr(parent, name, None)
+
+
+# -- UDC QsoErrorString -----------------------------------------------------
+# N1MM's QsoErrorString validates a box before a QSO is logged.  The syntax is
+# a comma-separated list of specs; a spec is "Box_Rule", or a bare rule for
+# the exchange box.  We use the part that answers "is the exchange there?"
+# to drive ESM: the boxes a spec names with a rule that rejects empty are the
+# exchange ESM waits for.  (UDC documents Any/Numeric only for
+# Exchange1Text/MiscText/CommentText/NameText, and RcvNrText for the two Any
+# variants; a rule on SntNrText is a not1mm extension, understood here but not
+# by N1MM.)
+_GRID_RE = re.compile(r"^[A-R]{2}[0-9]{2}([A-X]{2})?$", re.IGNORECASE)
+_QSO_RULES = {
+    "any": ("any", True),
+    "any_not_empty": ("any", False),
+    "numeric": ("numeric", True),
+    "numeric_not_empty": ("numeric", False),
+    "grid": ("grid", False),
+}
+_QSO_BOXES = tuple(sorted((*FIELD_SPECS, "CallSignText"), key=len, reverse=True))
+
+
+@dataclass(frozen=True)
+class QsoRule:
+    """One QsoErrorString check: a box, a shape, and whether empty is allowed."""
+
+    box: str
+    kind: str  # "any", "numeric" or "grid"
+    allow_empty: bool
+
+    def accepts(self, text: str) -> bool:
+        text = str(text)
+        if not text.strip():
+            return self.allow_empty
+        if self.kind == "numeric":
+            return text.strip().isdigit()
+        if self.kind == "grid":
+            return bool(_GRID_RE.match(text.strip()))
+        return True
+
+
+def parse_qso_error_string(value: str | None, default_box: str) -> tuple[QsoRule, ...]:
+    """Parse UDC's ``QsoErrorString`` into rules.
+
+    ``None`` means the contest did not declare one: the old single-exchange-box
+    check is kept.  ``""`` means "do not check" (UDC's wording) -- no rules, so
+    ESM has no completeness requirement.
+    """
+    if value is None:
+        return (QsoRule(default_box, "any", False),)
+    specs = [part.strip() for part in str(value).split(",") if part.strip()]
+    rules = []
+    for spec in specs:
+        box = default_box
+        rule_text = spec
+        for name in _QSO_BOXES:
+            if spec.startswith(f"{name}_"):
+                box = name
+                rule_text = spec[len(name) + 1 :]
+                break
+        try:
+            kind, allow_empty = _QSO_RULES[rule_text.strip().lower()]
+        except KeyError as exc:
+            raise ValueError(
+                f"QsoErrorString: unknown rule {rule_text!r} in {spec!r}"
+            ) from exc
+        rules.append(QsoRule(box, kind, allow_empty))
+    return tuple(rules)
 
 
 # The log window columns almost every contest starts from.
@@ -389,6 +461,13 @@ class ContestBase:
     # contest whose exchange is the first one (and leaves other_2 hidden)
     # sets "other_1".
     ESMExchangeField = "other_2"
+    # UDC's QsoErrorString: which boxes must hold something before the contact
+    # can be finished, e.g.
+    #     "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"
+    # None (not declared) keeps the single ESMExchangeField check; "" means no
+    # check at all (UDC's "do not check"), so ESM logs as soon as an exchange
+    # box has focus.
+    QsoErrorString = None
 
     # -- capabilities (the old hasattr() probes) ---------------------------
     UsesESM = True  # process_esm() drives the ESM state machine
@@ -1061,16 +1140,66 @@ class ContestBase:
         )
 
     # -- ESM ----------------------------------------------------------------
+    def qso_error_rules(self) -> tuple:
+        """The QsoErrorString rules that decide whether the exchange is here."""
+        return parse_qso_error_string(self.QsoErrorString, self.ESMExchangeField)
+
+    def esm_exchange_edits(self) -> tuple:
+        """The line edits ESM acts on when the operator is in the exchange.
+
+        The boxes named in ``QsoErrorString`` when it is declared; with ``""``
+        every non-report box, because there is nothing to check and any
+        exchange field may finish the contact; with ``None`` the old single
+        ``ESMExchangeField``.
+        """
+        if self.QsoErrorString is None:
+            edit = entry_edit(self.parent, self.ESMExchangeField)
+            return (edit,) if edit is not None else ()
+        rules = self.qso_error_rules()
+        if not rules:
+            return tuple(
+                field.edit
+                for field in getattr(self.parent, "fields", ())
+                if field.spec.column not in ("SNT", "RCV")
+            )
+        edits = []
+        for rule in rules:
+            edit = entry_edit(self.parent, rule.box)
+            if edit is None:
+                logger.warning(
+                    "%s: QsoErrorString names %r, which is not declared",
+                    self.DisplayName,
+                    rule.box,
+                )
+                continue
+            edits.append(edit)
+        return tuple(edits)
+
+    def esm_exchange_ready(self) -> bool:
+        """Do the QsoErrorString rules accept what is in the boxes?
+
+        A hook as much as a check: a contest whose completeness depends on the
+        station (NAQP's name + optional location, ARRL 160's DX/W-VE split) or
+        on the shape of the text overrides this, and keeps the base's response
+        -- AGN when it is not ready, the exchange/QRZ and LOGIT when it is.
+        """
+        for rule in self.qso_error_rules():
+            edit = entry_edit(self.parent, rule.box)
+            if edit is None:
+                continue
+            if not rule.accepts(edit.text()):
+                return False
+        return True
+
     def process_esm(self, new_focused_widget=None, with_enter=False):
         """Drive the Enter-Sends-Message state machine for this contact.
 
-        The exchange counts as copied once the exchange field has something in
-        it; an empty field asks for a repeat.  That is deliberately not a
-        validity check: an exchange our rules do not recognise is not fixed by
-        a repeat, so judging it (and letting the operator log anyway) is a
-        separate concern.  A contest whose exchange is a different widget, or
-        whose macros go somewhere other than the function keys, overrides
-        this, as the RTTY contests do.
+        The exchange counts as copied when the contest's QsoErrorString rules
+        accept it; otherwise ESM asks for a repeat.  That is deliberately not
+        a validity check: an exchange our rules do not recognise is not fixed
+        by a repeat, so judging it (and letting the operator log anyway) is a
+        separate concern.  A contest whose macros go somewhere other than the
+        function keys overrides this, as the RTTY contests do.
         """
         parent = self.parent
         if new_focused_widget is not None:
@@ -1097,7 +1226,7 @@ class ContestBase:
         ):
             parent.restore_button_color(a_button)
 
-        exchange = entry_edit(parent, self.ESMExchangeField)
+        exchange_edits = self.esm_exchange_edits()
         buttons_to_send = []
         if parent.pref.get("run_state"):
             if focused is parent.callsign:
@@ -1111,8 +1240,8 @@ class ContestBase:
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif exchange is not None and focused is exchange:
-                if exchange.text() == "":
+            elif any(focused is edit for edit in exchange_edits):
+                if not self.esm_exchange_ready():
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -1141,8 +1270,8 @@ class ContestBase:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif exchange is not None and focused is exchange:
-                if exchange.text() == "":
+            elif any(focused is edit for edit in exchange_edits):
+                if not self.esm_exchange_ready():
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:

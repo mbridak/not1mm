@@ -101,6 +101,7 @@ class Contest(ContestBase):
     # The reports, our exchange (a district code from Russia, else a serial)
     # and the received one.
     EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    QsoErrorString = "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"
     FrameText = ("SNT", "RCV", "SentNR", "Serial or RDA")
     AccessibleNames = (
         "RST Sent",
@@ -256,96 +257,6 @@ class Contest(ContestBase):
         if his_is_russian:
             return 10  # QSO with Russian station
         return 0
-
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        The exchange is our district code or serial *and* theirs, so both
-        entry fields have to be filled before the contact is finished.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-            parent.current_widget_object = new_focused_widget
-        focused = getattr(parent, "current_widget_object", None)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if focused is parent.callsign:
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
-                if (
-                    parent.fields.SntNrText.text() == ""
-                    or parent.fields.RcvNrText.text() == ""
-                ):
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if focused is parent.callsign:
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
-                if (
-                    parent.fields.SntNrText.text() == ""
-                    or parent.fields.RcvNrText.text() == ""
-                ):
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
 
     def populate_history_info_line(self):
         """Show what call history knows about the station."""
