@@ -23,6 +23,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import logging
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import get_logged_band
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ class Contest(ContestBase):
     SendsRTCScore = True
     SupportsFT8 = True
     Bands = (3.5, 7, 14, 21, 28)
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -110,8 +112,8 @@ class Contest(ContestBase):
         logger.debug("%s", f"{packet=}")
         parent.callsign.setText(packet.get("CALL"))
         parent.contact["Call"] = packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["Exchange1"] = f"{packet.get('STATE', '')}".strip()
         parent.contact["ZN"] = packet.get("CQZ", "")
         parent.contact["Mode"] = packet.get("MODE", "ERR")
@@ -121,8 +123,8 @@ class Contest(ContestBase):
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )
         logger.debug("%s", f"{parent.contact=}")
-        parent.other_1.setText(f"{packet.get('STX', '')}".strip())
-        parent.other_2.setText(f"{packet.get('SRX', '')}".strip())
+        parent.fields.SntNrText.setText(f"{packet.get('STX', '')}".strip())
+        parent.fields.RcvNrText.setText(f"{packet.get('SRX', '')}".strip())
         parent.save_contact()
 
     def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -135,6 +137,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -154,7 +158,7 @@ class Contest(ContestBase):
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -165,13 +169,16 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ["other_1", "other_2"]:
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.RcvNrText.text() == ""
+                    or parent.fields.SntNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isnumeric()
-                    and parent.other_2.text().isalpha()
+                    parent.fields.SntNrText.text().isnumeric()
+                    and parent.fields.RcvNrText.text().isalpha()
                 ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
@@ -184,18 +191,21 @@ class Contest(ContestBase):
             if with_enter is True and bool(len(buttons_to_send)):
                 self._send_macros_through_fldigi(buttons_to_send, clear_call_sent=True)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ["other_1", "other_2"]:
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.RcvNrText.text() == ""
+                    or parent.fields.SntNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isnumeric()
-                    and parent.other_2.text().isalpha()
+                    parent.fields.SntNrText.text().isnumeric()
+                    and parent.fields.RcvNrText.text().isalpha()
                 ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])

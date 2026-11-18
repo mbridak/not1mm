@@ -12,6 +12,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 def _is_eu_region(exchange) -> bool:
@@ -30,7 +31,8 @@ class Contest(ContestBase):
     DupeType = 3  # once per band and mode
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     # The reports, our region or ITU zone and theirs.
-    FrameText = ("SNT", "SentNR", "ITU/EU Union Region")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "ITU/EU Union Region")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -98,10 +100,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange; this contest marks no multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
 
     def recalculate_mults(self):
         """Nothing to mark: the count comes from the log, not the M column."""
@@ -124,5 +126,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('State', '')}")

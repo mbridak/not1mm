@@ -170,10 +170,12 @@ def test_new_multiplier_is_scoped_to_band(plugin):
     try:
         app = SimpleNamespace(
             contact={"CountryPrefix": "DL", "Band": 14.0},
-            sent=Field("59"),
-            receive=Field("59"),
-            other_1=Field("001"),
-            other_2=Field("001"),
+            fields=SimpleNamespace(
+                SNTText=Field("59"),
+                RCVText=Field("59"),
+                SntNrText=Field("001"),
+                RcvNrText=Field("001"),
+            ),
             database=database,
         )
         contest = load_contest(plugin, app)

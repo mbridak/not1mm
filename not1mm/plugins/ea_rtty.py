@@ -11,6 +11,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import get_logged_band
 
 # cty.dat's primary prefixes for Spain, in the spelling the rules use.
@@ -140,7 +141,8 @@ class Contest(ContestBase):
     SendsRTCScore = True
     SupportsFT8 = True
     Bands = (3.5, 7, 14, 21, 28)
-    FrameText = ("SNT", "SentNR", "Prov or SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "Prov or SN")
     AccessibleNames = ("RST Sent", "", "Sent Number", "Province or Serial Number")
 
     def points(self):
@@ -245,16 +247,18 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The sent province/serial and the received province/serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def process_esm(self, new_focused_widget=None, with_enter=False):
         """ESM state machine, with the RTTY HISCALL not re-sending the exchange."""
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -274,7 +278,7 @@ class Contest(ContestBase):
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -285,8 +289,8 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif focused is parent.fields.RcvNrText:
+                if parent.fields.RcvNrText.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -308,13 +312,13 @@ class Contest(ContestBase):
                             continue
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif focused is parent.fields.RcvNrText:
+                if parent.fields.RcvNrText.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -341,18 +345,18 @@ class Contest(ContestBase):
         sent_string = packet.get("STX_STRING", "")
         if sent_string != "":
             parent.contact["SentNr"] = sent_string
-            parent.other_1.setText(str(sent_string))
+            parent.fields.SntNrText.setText(str(sent_string))
         else:
             parent.contact["SentNr"] = packet.get("STX", "000")
-            parent.other_1.setText(str(packet.get("STX", "000")))
+            parent.fields.SntNrText.setText(str(packet.get("STX", "000")))
 
         rx_string = packet.get("SRX_STRING", "")
         if rx_string != "":
             parent.contact["NR"] = rx_string
-            parent.other_2.setText(str(rx_string))
+            parent.fields.RcvNrText.setText(str(rx_string))
         else:
             parent.contact["NR"] = packet.get("SRX", "000")
-            parent.other_2.setText(str(packet.get("SRX", "000")))
+            parent.fields.RcvNrText.setText(str(packet.get("SRX", "000")))
 
         parent.contact["Mode"] = packet.get("MODE", "ERR")
         parent.contact["Freq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
@@ -380,5 +384,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('State', '')}")

@@ -13,6 +13,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import re
 
 from not1mm.lib.contest import ContestBase, output_cabrillo_line
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 def received_fields(r_nr: str) -> tuple:
@@ -43,7 +44,7 @@ MemberNr is AGCW-MemberNr or NM for Non Member.
 
 For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
     SendsRTCScore = True
-    # other_2 holds "serial power member" with spaces; they are turned into
+    # RcvNrText holds "serial power member" with spaces; they are turned into
     # slashes as the contact is stored, so they must survive being typed.
     advance_on_space = [True, True, True, True, False]
     Bands = (3.5, 7, 14, 21, 28)
@@ -60,7 +61,8 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
         "PTS",
     ]
     # Only the labels and names the module set; snt_label is left alone.
-    FrameText = ("", "Sent", "SN Pwr MbrNr")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent", "SN Pwr MbrNr")
     AccessibleNames = ("", "", "Sent", "Serial Number Power Class Member Number")
     # A member worked is the multiplier; the second one (a DXCC entity per
     # band) was declared for other AGCW contests and is never marked, so it is
@@ -73,12 +75,12 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
     def set_contact_vars(self):
         """The exchange, and the member the contact is worth."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper() + (
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper() + (
             parent.contest_settings.get("SentExchange", "xxx xxx").strip("#")
         )
-        parent.contact["NR"] = parent.other_2.text().upper().replace(" ", "/")
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper().replace(" ", "/")
         self.mark_multipliers()
 
     def mult_value(self, slot, contact):
@@ -185,5 +187,5 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

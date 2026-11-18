@@ -12,6 +12,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 def convert_iota_number(iota: str) -> str:
@@ -32,7 +33,8 @@ class Contest(ContestBase):
     SOAPBOX_HINT = """For the Run exchange macro I’d put ’{SNT} {SENTNR}’"""
     DupeType = 3  # work each band and mode once
     Bands = (3.5, 7, 14, 21, 28)
-    FrameText = ("SNT", "Sent Nr", "# and Dist")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent Nr", "# and Dist")
     AccessibleNames = ("RST Sent", "", "Sent Number", "Number and District")
     # The sent and received exchanges both hold a serial and an IOTA reference
     # separated by a space, so the space in either field is part of the text.
@@ -62,9 +64,9 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Store the exchange with the IOTA number in its Cabrillo form."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        their_exchange = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        their_exchange = parent.fields.RcvNrText.text().upper()
         parent.contact["NR"] = convert_iota_number(their_exchange)
         their_exchange = their_exchange.split()
         if len(their_exchange) == 2:
@@ -72,7 +74,7 @@ class Contest(ContestBase):
                 f"{their_exchange[0]} "
                 f"{convert_iota_number(their_exchange[1]).replace('-', '')}"
             )
-        parent.contact["SentNr"] = parent.other_1.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
 
     def prefill(self):
         """Fill the sent exchange: the setup's value, with `#` as the serial."""
@@ -81,8 +83,8 @@ class Contest(ContestBase):
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(exch.replace("#", serial_nr))
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(exch.replace("#", serial_nr))
 
     def points(self):
         """Island-to-island 15, island-to-world 5, world-to-island 15, rest 2."""
@@ -101,7 +103,7 @@ class Contest(ContestBase):
             im_island = True
             my_ref = convert_iota_number(my_exchange[1])
 
-        their_exchange = parent.other_2.text().upper()
+        their_exchange = parent.fields.RcvNrText.text().upper()
         their_exchange = their_exchange.split()
         if len(their_exchange) == 2:
             theyre_island = True
@@ -175,5 +177,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Sect', '')}")

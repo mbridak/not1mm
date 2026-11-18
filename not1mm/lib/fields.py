@@ -256,8 +256,13 @@ class EntryField:
         self.label.setText(QtWidgets.QApplication.translate(self.spec.context, text))
 
     def set_accessible(self, name: str | None) -> None:
-        """Name the line edit for a screen reader; "" clears the name."""
-        if name is None:
+        """Name the line edit for a screen reader.
+
+        An empty name means "leave the box's default", which is what the old
+        window did: the report boxes got their names from main.ui, so a
+        contest that left those entries empty did not blank them.
+        """
+        if not name:
             name = self.spec.accessible
         self.edit.setAccessibleName(name)
 

@@ -12,6 +12,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import band_mhz_of
 from not1mm.lib.plugin_common import contest_time
 
@@ -64,7 +65,8 @@ class Contest(ContestBase):
     # The district is part of the received exchange and its space is
     # significant ("002 G"), so neither exchange field strips one.
     advance_on_space = [True, True, True, False, False]
-    FrameText = ("SNT", "Sent Nr", "# and Dist")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent Nr", "# and Dist")
     AccessibleNames = ("RST Sent", "Sent Number", "", "Number and District")
     # Each country outside the UK/EI entities, and each UK/EI district, on each
     # band.
@@ -192,10 +194,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange; the received serial and district are upper-cased."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def cabrillo_qso_line(self, contact):
         """The UKEI line: the serial and district, both zero-padded."""
@@ -233,5 +235,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

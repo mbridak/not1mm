@@ -11,6 +11,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 # The counties an HA station may send.
 HA_COUNTY = (
@@ -49,7 +50,8 @@ class Contest(ContestBase):
     DupeType = 3  # once per band and mode
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     # The reports, our serial and their county or serial.
-    FrameText = ("SNT", "SentNR", "HA County or SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "HA County or SN")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -117,10 +119,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange; this contest marks no multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def recalculate_mults(self):
         """Nothing to mark: the count comes from the log, not the M column."""
@@ -134,6 +136,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -153,7 +157,7 @@ class Contest(ContestBase):
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -164,8 +168,11 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.SntNrText.text() == ""
+                    or parent.fields.RcvNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -185,13 +192,16 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.SntNrText.text() == ""
+                    or parent.fields.RcvNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:

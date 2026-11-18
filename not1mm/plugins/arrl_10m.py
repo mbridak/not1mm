@@ -10,6 +10,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 _PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
 _CW_MODES = ("CW", "CW-U", "CW-L", "CWR", "CW-R")
@@ -29,7 +30,8 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
 """
     SendsRTCScore = True
     Bands = (28,)
-    FrameText = ("SNT", "SentNR", "State|Prov|SN|ITU")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "State|Prov|SN|ITU")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -92,10 +94,10 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
     def set_contact_vars(self):
         """The exchange; the received one is a state/province or a serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def populate_history_info_line(self):
         """Show history info if available."""
@@ -115,5 +117,5 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('State', '')}")

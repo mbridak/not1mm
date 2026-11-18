@@ -16,6 +16,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import re
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 # The seven UK home nations / crown dependencies listed in rule 4(d).
 # Contacts between any two of these areas score nothing unless the
@@ -243,6 +244,7 @@ class Contest(ContestBase):
     DefaultContestExchange = "#"
     DupeType = 2  # work each band once
     Bands = (3.5, 7, 14, 21, 28)
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -345,10 +347,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, and the per-band Commonwealth Call Area bonus."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
         parent.contact["IsMultiplier1"] = 0
         info = self.scoring_info()
         if info is not None and info["eligible"]:

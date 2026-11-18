@@ -704,10 +704,11 @@ class ContestBase:
         whose fields differ overrides this.
         """
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        fields = parent.fields
+        parent.contact["SNT"] = fields.SNTText.text()
+        parent.contact["RCV"] = fields.RCVText.text()
+        parent.contact["SentNr"] = fields.SntNrText.text()
+        parent.contact["NR"] = fields.RcvNrText.text()
         self.mark_multipliers()
 
     # -- multipliers --------------------------------------------------------

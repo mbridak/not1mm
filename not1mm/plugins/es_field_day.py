@@ -11,6 +11,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase, period_dupe_check
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 
 # The sixteen Estonian regions the received exchange may end with.
@@ -56,7 +57,8 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The reports, our serial and their serial with the region code after it.
-    FrameText = ("", "Sent", "SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent", "SN")
     AccessibleNames = ("", "", "Sent", "SN")
     # Each region once per band and mode.
     NumMults = 1
@@ -104,17 +106,17 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the serial-with-region exchange; nothing is marked."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0
 
     def prefill(self):
         """The next serial followed by the operator's region."""
         parent = self.parent
-        if parent.other_1.text():
+        if parent.fields.SntNrText.text():
             return
         setting = str(parent.contest_settings.get("SentExchange", "") or "").strip()
         if not setting:
@@ -123,7 +125,7 @@ class Contest(ContestBase):
         if setting in ("#", "001"):
             exchange = f"{exchange} {parent.station.get('State', '')}".strip()
         if exchange:
-            parent.other_1.setText(exchange)
+            parent.fields.SntNrText.setText(exchange)
 
     def recalculate_mults(self):
         """Fill the call prefixes the multiplier and the ES filter read.

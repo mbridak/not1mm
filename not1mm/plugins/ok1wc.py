@@ -9,6 +9,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 class Contest(ContestBase):
@@ -21,6 +22,7 @@ class Contest(ContestBase):
     DefaultContestExchange = "#"  # a serial number
     SendsRTCScore = True
     Bands = (3.5, 7)
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

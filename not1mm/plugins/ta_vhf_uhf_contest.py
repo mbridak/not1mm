@@ -12,6 +12,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import band_mhz_of, distance
 from not1mm.lib.plugin_common import gen_edi
 
@@ -41,21 +42,22 @@ class Contest(ContestBase):
         "Exchange1",
         "PTS",
     ]
-    FrameText = ("SNT", "SNTNR", "RCV NR + GRID")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SNTNR", "RCV NR + GRID")
     AccessibleNames = ("", "", "", "")
 
     def interface(self):
         """The reports are fixed at 59 and cannot be typed."""
         super().interface()
         parent = self.parent
-        parent.sent.setText("59")
-        parent.receive.setText("59")
-        parent.sent.setReadOnly(True)
-        parent.receive.setReadOnly(True)
+        parent.fields.SNTText.setText("59")
+        parent.fields.RCVText.setText("59")
+        parent.fields.SNTText.setReadOnly(True)
+        parent.fields.RCVText.setReadOnly(True)
 
     def parse_exchange(self):
         """Split the typed exchange into the serial and the 6-character grid."""
-        exchange = self.parent.other_2.text().upper().split()
+        exchange = self.parent.fields.RcvNrText.text().upper().split()
         sn = ""
         grid = ""
         for token in exchange:
@@ -69,14 +71,14 @@ class Contest(ContestBase):
         """The typed "# grid" is split, and the sent serial advances."""
         parent = self.parent
         sn, grid = self.parse_exchange()
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["NR"] = sn
         parent.contact["Exchange1"] = grid
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
         try:
             next_sn = int(parent.current_sn) + 1
-            parent.other_1.setText(str(next_sn).zfill(3))
+            parent.fields.SntNrText.setText(str(next_sn).zfill(3))
         except (TypeError, ValueError):
             ...
 
@@ -86,8 +88,8 @@ class Contest(ContestBase):
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if parent.other_1.text() == "":
-            parent.other_1.setText(serial_nr)
+        if parent.fields.SntNrText.text() == "":
+            parent.fields.SntNrText.setText(serial_nr)
 
     def points(self):
         """The distance in kilometres times the band and mode multipliers.

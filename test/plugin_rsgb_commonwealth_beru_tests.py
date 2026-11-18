@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 
 from not1mm.lib.contest import load_contest
@@ -81,10 +83,12 @@ def make_parent(
     fake.contact_is_dupe = 1 if dupe else 0
     fake.pref = {"contest": "1"}
     fake.callsign = FakeField(their_call)
-    fake.sent = FakeField("599")
-    fake.receive = FakeField("599")
-    fake.other_1 = FakeField("023")
-    fake.other_2 = FakeField(rcv_nr)
+    fake.fields = SimpleNamespace(
+        SNTText=FakeField("599"),
+        RCVText=FakeField("599"),
+        SntNrText=FakeField("023"),
+        RcvNrText=FakeField(rcv_nr),
+    )
     fake.database = FakeDatabase(bonus_count)
 
     def cty_lookup(call):

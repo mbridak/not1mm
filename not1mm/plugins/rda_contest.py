@@ -32,6 +32,7 @@ Cabrillo name:     RDAC
 import logging
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,8 @@ class Contest(ContestBase):
     SendsRTCScore = True
     # The reports, our exchange (a district code from Russia, else a serial)
     # and the received one.
-    FrameText = ("SNT", "SentNR", "Serial or RDA")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "Serial or RDA")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -161,16 +163,16 @@ class Contest(ContestBase):
 
     def prefill(self):
         """Fill our half of the exchange: a district code or the next serial."""
-        if len(self.parent.other_1.text()) == 0:
-            self.parent.other_1.setText(self.my_sent_exchange())
+        if len(self.parent.fields.SntNrText.text()) == 0:
+            self.parent.fields.SntNrText.setText(self.my_sent_exchange())
 
     def set_contact_vars(self):
         """The reports, our exchange, and the received district or serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = self.my_sent_exchange()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0
         if parent.contact_is_dupe == 0:
@@ -264,6 +266,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -283,7 +287,7 @@ class Contest(ContestBase):
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -294,8 +298,11 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.SntNrText.text() == ""
+                    or parent.fields.RcvNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -315,13 +322,16 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.SntNrText.text() == ""
+                    or parent.fields.RcvNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -355,5 +365,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

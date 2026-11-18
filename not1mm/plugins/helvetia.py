@@ -11,6 +11,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 # The cantons an HB station may send.
 CANTONS = (
@@ -67,7 +68,8 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The reports, our canton or serial and theirs.
-    FrameText = ("", "Sent", "Canton/SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent", "Canton/SN")
     AccessibleNames = ("", "", "Sent", "Canton or SN")
     # Each canton and each DXCC country once per band.
     NumMults = 2
@@ -132,10 +134,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange, then mark the two multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -161,5 +163,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

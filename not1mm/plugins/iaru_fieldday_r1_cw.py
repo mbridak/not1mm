@@ -27,6 +27,7 @@ Multipliers: ONE for each WAE country / DXCC entity worked on each band.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 # Rule: a station is portable when it signs one of these.
 PORTABLE_SUFFIXES = ("/P", "/M", "/MM", "/AM")
@@ -59,6 +60,7 @@ class Contest(ContestBase):
     Multiplier1Name = "CountryPrefix"
     MultSqlString = "CountryPrefix"
     IsMult1Per = 1
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -87,10 +89,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Contest Specific"""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
         if parent.contact.get("CountryPrefix", ""):
             self.mark_multipliers()
 
@@ -99,8 +101,8 @@ class Contest(ContestBase):
         serial_nr = str(self.parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(self.parent.other_1.text()) == 0:
-            self.parent.other_1.setText(serial_nr)
+        if len(self.parent.fields.SntNrText.text()) == 0:
+            self.parent.fields.SntNrText.setText(serial_nr)
 
     def points(self):
         """Calc point

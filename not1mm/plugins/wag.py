@@ -14,6 +14,7 @@ import logging
 import re
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +41,9 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The exchange labels and screen-reader names differ from the base default.
-    FrameText = ("SNT", "DOK/# Sent", "DOK/# RCVD")
-    AccessibleNames = ("", "", "RST Sent", "DOK/NM or Number")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "DOK/# Sent", "DOK/# RCVD")
+    AccessibleNames = ("RST Sent", "RST Received", "Sent DOK", "DOK/NM or Number")
     # Multiplier 1 is the DXCC entity from DL and the district from outside;
     # either way it counts once per band and mode.  The key is a method.
     NumMults = 1
@@ -105,10 +107,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Set the exchange, and mark the multiplier the contact is worth."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
         dok = parent.contact["NR"].upper()
         dxcc = parent.contact.get("CountryPrefix", "")
@@ -172,12 +174,12 @@ class Contest(ContestBase):
             serial_nr = str(result.get("serial_nr", "1")).zfill(3)
             if serial_nr == "None":
                 serial_nr = "001"
-            if len(parent.other_1.text()) == 0:
-                parent.other_1.setText(serial_nr)
+            if len(parent.fields.SntNrText.text()) == 0:
+                parent.fields.SntNrText.setText(serial_nr)
         else:
-            parent.other_1.setText(sent_exchange_setting)
+            parent.fields.SntNrText.setText(sent_exchange_setting)
 
-        if parent.other_2.text() == "":
+        if parent.fields.RcvNrText.text() == "":
             call = parent.callsign.text().upper()
             query = (
                 f"select NR from dxlog where Call = '{call}' "
@@ -187,7 +189,7 @@ class Contest(ContestBase):
             result = parent.database.exec_sql(query)
             logger.debug("%s", f"{result}")
             if result and isinstance(result.get("NR", ""), str):
-                parent.other_2.setText(str(result.get("NR", "")))
+                parent.fields.RcvNrText.setText(str(result.get("NR", "")))
 
     def reset_label(self):
         """Put the dupe indicator back after it was used for a warning."""
@@ -216,10 +218,10 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
+            if parent.fields.RcvNrText.text() == "":
                 # Strip leading whitespace for the case that historyfile is not
                 # well formatted, f.e. CA0LL, DOK instead of CA0LL,DOK
-                parent.other_2.setText(f"{result.get('Exch1', '').lstrip()}")
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '').lstrip()}")
 
     def process_esm(self, new_focused_widget=None, with_enter=False):
         """ESM state machine.
@@ -230,6 +232,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -250,7 +254,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -261,8 +265,11 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ["other_1", "other_2"]:
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.RcvNrText.text() == ""
+                    or parent.fields.SntNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -286,13 +293,16 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ["other_1", "other_2"]:
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
+                if (
+                    parent.fields.RcvNrText.text() == ""
+                    or parent.fields.SntNrText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:

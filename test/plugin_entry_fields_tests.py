@@ -12,12 +12,52 @@ running window.
 
 from __future__ import annotations
 
+import importlib
+import json
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from contest_harness import cty_lookup
 from not1mm.lib.contest import load_contest
+
+SNAPSHOT = json.loads(
+    (Path(__file__).parent / "data" / "contact_vars_snapshot.json").read_text(
+        encoding="utf-8"
+    )
+)["plugins"]
+
+# A direct copy: the box the old positional name held still feeds the same
+# contact column.
+STANDARD_SOURCES = {
+    "SNT": "sent",
+    "RCV": "receive",
+    "SentNr": "other_1",
+    "NR": "other_2",
+}
+SENTINELS = {"sent": "AA", "receive": "BB", "other_1": "CC", "other_2": "DD"}
+BOXFORT = {
+    "sent": "SNTText",
+    "receive": "RCVText",
+    "other_1": "SntNrText",
+    "other_2": "RcvNrText",
+}
+
+
+def standard_plugins():
+    """Migrated plugins whose mapping is still the old four direct copies."""
+    names = []
+    for name, data in SNAPSHOT.items():
+        module = importlib.import_module(f"not1mm.plugins.{name}")
+        if getattr(module.Contest, "EntryWindowInfo", None) is None:
+            continue
+        if all(
+            STANDARD_SOURCES.get(column) == spec.split(":", 1)[0]
+            for column, spec in data["columns"].items()
+        ):
+            names.append(name)
+    return sorted(names)
 
 
 class FakeLineEdit:
@@ -80,9 +120,11 @@ def _run(plugin, values, mode="CW", station=None):
         exch_label=FakeLineEdit(),
         station=station or {"Call": "K6GTE"},
         current_mode=mode,
+        current_sn="1",
         contest_settings={"SentExchange": "03"},
         database=FakeDatabase(),
         cty_lookup=cty_lookup,
+        show_message_box=lambda *_args, **_kwargs: None,
     )
     contest.parent = parent
     contest.set_contact_vars()
@@ -133,6 +175,18 @@ def test_ca_qso_party_serials_and_exchange():
     assert contact["Exchange1"] == "CA"
     # The reports were never part of this contest's exchange.
     assert "SNT" not in contact or not contact["SNT"]
+
+
+@pytest.mark.parametrize("plugin", standard_plugins())
+def test_a_standard_contest_keeps_its_old_box_to_column_mapping(plugin):
+    """Every direct copy in the pre-refactor snapshot is still a direct copy."""
+    values = {BOXFORT[source]: text for source, text in SENTINELS.items()}
+    contact = _run(plugin, values)
+    expected = SNAPSHOT[plugin]["columns"]
+    assert expected
+    for column, spec in expected.items():
+        source = spec.split(":", 1)[0]
+        assert SENTINELS[source] in str(contact[column]), (plugin, column)
 
 
 def test_arrl_ss_parses_the_received_exchange():
