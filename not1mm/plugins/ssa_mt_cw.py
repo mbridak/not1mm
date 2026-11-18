@@ -136,14 +136,24 @@ class Contest(ContestBase):
         "Exchange1",
         "PTS",
     ]
-    FrameText = ("Sent", "Nr", "Locator")
-    RcvLabel = "Received"
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "RcvNrText",
+        625,
+        "Exchange1Text",
+        615,
+    )
+    FrameText = ("Sent", "Received", "Nr", "Locator")
     AccessibleNames = (
         "Signal Report Sent",
-        "",
+        "RST Received",
         "Received Serial Number",
         "Received Locator",
     )
+    ESMExchangeField = "Exchange1Text"
     # Each contacted locator square -- the first four characters of the
     # exchange -- once per band.
     NumMults = 1
@@ -163,17 +173,17 @@ class Contest(ContestBase):
     def interface(self):
         """Setup user interface"""
         super().interface()
-        self.parent.sent.setReadOnly(False)
+        self.parent.fields.SNTText.setReadOnly(False)
 
     def set_contact_vars(self):
         """Map UI fields to contact record"""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.current_sn
         parent.contact["GridSquare"] = parent.contest_settings.get("SentExchange", "")
-        parent.contact["NR"] = parent.other_1.text()
-        parent.contact["Exchange1"] = parent.other_2.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text().upper()
 
     def predupe(self):
         """Pre-fill locator from call history on each callsign keystroke"""
@@ -184,15 +194,15 @@ class Contest(ContestBase):
             loc = result.get("Loc1", "") or ""
             info = ", ".join(x for x in [result.get("Call", ""), name, loc] if x)
             parent.history_info.setText(info)
-            parent.other_2.setText(loc)
+            parent.fields.Exchange1Text.setText(loc)
         else:
-            parent.other_2.setText("")
+            parent.fields.Exchange1Text.setText("")
             parent.history_info.setText("")
 
     def prefill(self):
         """Pre-fill sent RST"""
-        if len(self.parent.sent.text()) == 0:
-            self.parent.sent.setText("599")
+        if len(self.parent.fields.SNTText.text()) == 0:
+            self.parent.fields.SNTText.setText("599")
 
     def mult_sql(self, slot):
         """The locator square is the first four characters of the exchange."""
@@ -296,24 +306,31 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
-        if parent.current_widget == "callsign":
+        if focused is parent.callsign:
             self._exch_sent = False
 
         _validate_field(
-            parent.sent, not parent.sent.text() or _check_rst(parent.sent.text())
+            parent.fields.SNTText,
+            not parent.fields.SNTText.text()
+            or _check_rst(parent.fields.SNTText.text()),
         )
         _validate_field(
-            parent.receive,
-            not parent.receive.text() or _check_rst(parent.receive.text()),
+            parent.fields.RCVText,
+            not parent.fields.RCVText.text()
+            or _check_rst(parent.fields.RCVText.text()),
         )
         _validate_field(
-            parent.other_1,
-            not parent.other_1.text() or _check_nr(parent.other_1.text()),
+            parent.fields.RcvNrText,
+            not parent.fields.RcvNrText.text()
+            or _check_nr(parent.fields.RcvNrText.text()),
         )
         _validate_field(
-            parent.other_2,
-            not parent.other_2.text() or _check_locator(parent.other_2.text()),
+            parent.fields.Exchange1Text,
+            not parent.fields.Exchange1Text.text()
+            or _check_locator(parent.fields.Exchange1Text.text()),
         )
 
         for a_button in [
@@ -335,7 +352,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -349,17 +366,17 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget == "other_1":
-                if parent.other_1.text() == "":
+            elif focused is parent.fields.RcvNrText:
+                if parent.fields.RcvNrText.text() == "":
                     parent.make_button_green(parent.F11)
                     buttons_to_send.append(parent.F11)
                 else:
                     if with_enter is True:
-                        parent.other_2.setFocus()
+                        parent.fields.Exchange1Text.setFocus()
                         return
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif focused is parent.fields.Exchange1Text:
+                if parent.fields.Exchange1Text.text() == "":
                     parent.make_button_green(parent.F12)
                     buttons_to_send.append(parent.F12)
                 else:
@@ -383,10 +400,12 @@ class Contest(ContestBase):
                     if button:
                         if button == "LOGIT":
                             if (
-                                not _check_rst(parent.sent.text())
-                                or not _check_rst(parent.receive.text())
-                                or not _check_nr(parent.other_1.text())
-                                or not _check_locator(parent.other_2.text())
+                                not _check_rst(parent.fields.SNTText.text())
+                                or not _check_rst(parent.fields.RCVText.text())
+                                or not _check_nr(parent.fields.RcvNrText.text())
+                                or not _check_locator(
+                                    parent.fields.Exchange1Text.text()
+                                )
                             ):
                                 return
                             parent.save_contact()
@@ -397,13 +416,10 @@ class Contest(ContestBase):
                         parent.process_function_key(button)
                 if parent.contact_is_dupe:
                     return
-                if (
-                    parent.current_widget == "callsign"
-                    and len(parent.callsign.text()) > 2
-                ):
-                    parent.other_1.setFocus()
+                if focused is parent.callsign and len(parent.callsign.text()) > 2:
+                    parent.fields.RcvNrText.setFocus()
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if parent.contact_is_dupe:
                     parent.make_button_green(parent.esm_dict["QSOB4"])
                     buttons_to_send.append(parent.esm_dict["QSOB4"])
@@ -411,17 +427,17 @@ class Contest(ContestBase):
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget == "other_1":
-                if parent.other_1.text() == "":
+            elif focused is parent.fields.RcvNrText:
+                if parent.fields.RcvNrText.text() == "":
                     parent.make_button_green(parent.F11)
                     buttons_to_send.append(parent.F11)
                 else:
                     if with_enter is True:
-                        parent.other_2.setFocus()
+                        parent.fields.Exchange1Text.setFocus()
                         return
 
-            elif parent.current_widget == "other_2":
-                if parent.other_2.text() == "":
+            elif focused is parent.fields.Exchange1Text:
+                if parent.fields.Exchange1Text.text() == "":
                     parent.make_button_green(parent.F12)
                     buttons_to_send.append(parent.F12)
                 elif not self._exch_sent:
@@ -438,17 +454,19 @@ class Contest(ContestBase):
                     if button:
                         if button == "LOGIT":
                             if (
-                                not _check_rst(parent.sent.text())
-                                or not _check_rst(parent.receive.text())
-                                or not _check_nr(parent.other_1.text())
-                                or not _check_locator(parent.other_2.text())
+                                not _check_rst(parent.fields.SNTText.text())
+                                or not _check_rst(parent.fields.RCVText.text())
+                                or not _check_nr(parent.fields.RcvNrText.text())
+                                or not _check_locator(
+                                    parent.fields.Exchange1Text.text()
+                                )
                             ):
                                 return
                             parent.save_contact()
                             continue
                         parent.process_function_key(button)
-                if parent.current_widget == "callsign":
-                    parent.other_1.setFocus()
+                if focused is parent.callsign:
+                    parent.fields.RcvNrText.setFocus()
 
     def populate_history_info_line(self):
         """Fill history info label from call history"""
@@ -471,5 +489,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Loc1', '')}")

@@ -1458,12 +1458,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 nickname = msg.get("result", {}).get("nickname", "")
 
                 if self.contest and "General Logging" in self.contest.name:
+                    box = self.fields.by_column("Name")
+                    target = box.edit if box is not None else self.other_1
                     if nickname:
-                        self.other_1.setText(nickname)
+                        target.setText(nickname)
                     elif fname:
-                        self.other_1.setText(fname)
+                        target.setText(fname)
                     elif name:
-                        self.other_1.setText(name)
+                        target.setText(name)
 
                 if isinstance(grid, str) and len(grid) > 0:
                     self.contact["GridSquare"] = grid

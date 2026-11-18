@@ -16,6 +16,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import os
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 SOAPBOX_HINT = """This plugin was submitted by @alduhoo.
 It reads a rg.txt file if it exists in the user’s home directory to populate the next group in the sent exchange field.
@@ -38,8 +39,14 @@ class Contest(ContestBase):
     DupeType = 4  # no dupe checking
     PointsPerContact = 2
     SOAPBOX_HINT = SOAPBOX_HINT
-    FrameText = ("SNT", "SentRG", "RcvRG")
-    AccessibleNames = ("RST Sent", "", "Sent RandomGram", "Received RandomGram")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentRG", "RcvRG")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Sent RandomGram",
+        "Received RandomGram",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -53,11 +60,11 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Copy the reports and the two groups into the contact."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Comment"] = parent.other_2.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["Comment"] = parent.fields.RcvNrText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
 
     def prefill(self):
         """Offer the next group from ``~/rg.txt``, one per logged contact."""
@@ -69,7 +76,7 @@ class Contest(ContestBase):
         # goes into the exchange field.
         next_group = str(rgGroups[qso_count]).strip()
         if next_group:
-            self.parent.other_1.setText(next_group)
+            self.parent.fields.SntNrText.setText(next_group)
 
     def cabrillo(self, filename, file_encoding):
         """No Cabrillo export: the event wants a list of groups, not a log."""
@@ -83,6 +90,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -103,7 +112,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -113,7 +122,7 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
                 buttons_to_send.append("LOGIT")
 
             if with_enter is True and bool(len(buttons_to_send)):
@@ -124,12 +133,12 @@ class Contest(ContestBase):
                             continue
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.SntNrText, parent.fields.RcvNrText):
                 buttons_to_send.append("LOGIT")
 
             if with_enter is True and bool(len(buttons_to_send)):
@@ -158,5 +167,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Name', '')}")
+            if parent.fields.SntNrText.text() == "":
+                parent.fields.SntNrText.setText(f"{result.get('Name', '')}")

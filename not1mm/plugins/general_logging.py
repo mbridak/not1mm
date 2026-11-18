@@ -23,10 +23,22 @@ class Contest(ContestBase):
     Mode = "BOTH"
     DupeType = 4  # no dupe checking
     SupportsFT8 = True
-    FrameText = ("SNT", "Name", "Comment")
-    AccessibleNames = ("RST Sent", "", "Name", "Comment")
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "NameText",
+        855,
+        "CommentText",
+        1695,
+    )
+    FrameText = ("SNT", "RCV", "Name", "Comment")
+    AccessibleNames = ("RST Sent", "RST Received", "Name", "Comment")
     # A callsign lookup leaves the focus on the name field.
-    NextField = "other_1"
+    NextField = "NameText"
+    # The comment is the box that finishes the contact.
+    ESMExchangeField = "CommentText"
     # The name and the comment contain spaces, so a space is text and not a
     # separator in either extra field.
     advance_on_space = [True, True, True, False, False]
@@ -45,19 +57,19 @@ class Contest(ContestBase):
         """Label the fields, then keep the exchange free of forced upper case."""
         super().interface()
         # Disable the forced uppercase from main.ui.
-        self.parent.other_1.setStyleSheet("text-transform: none;")
-        self.parent.other_2.setStyleSheet("text-transform: none;")
+        self.parent.fields.NameText.setStyleSheet("text-transform: none;")
+        self.parent.fields.CommentText.setStyleSheet("text-transform: none;")
 
     def set_contact_vars(self):
         """Copy the reports, the name and the comment into the contact."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Name"] = parent.other_1.text()
-        parent.contact["Comment"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["Name"] = parent.fields.NameText.text()
+        parent.contact["Comment"] = parent.fields.CommentText.text()
 
     def prefill(self):
-        """Nothing to prefill: other_1 is the received name."""
+        """Nothing to prefill: NameText is the received name."""
 
     def cabrillo(self, filename, file_encoding):
         """No Cabrillo export: the mode has no sponsor log format."""
@@ -72,6 +84,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -92,7 +106,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -103,7 +117,7 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.NameText, parent.fields.CommentText):
                 # If the operator corrected a busted callsign after the
                 # exchange was already sent, resend the corrected call ahead of
                 # the QRZ/TU macro so the other station logs the right
@@ -124,12 +138,12 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.NameText, parent.fields.CommentText):
                 parent.make_button_green(parent.esm_dict["QRZ"])
                 buttons_to_send.append(parent.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")
@@ -181,5 +195,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Name', '')}")
+            if parent.fields.NameText.text() == "":
+                parent.fields.NameText.setText(f"{result.get('Name', '')}")

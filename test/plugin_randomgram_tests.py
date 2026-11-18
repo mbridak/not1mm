@@ -70,9 +70,11 @@ def test_calc_score_of_an_empty_log_is_zero():
 
 def _prefilled(monkeypatch, groups, qsos):
     monkeypatch.setattr(randomgram, "rgGroups", groups)
-    parent = SimpleNamespace(other_1=_Field(), database=_Database(qsos=qsos))
+    parent = SimpleNamespace(
+        fields=SimpleNamespace(SntNrText=_Field()), database=_Database(qsos=qsos)
+    )
     load_contest("randomgram", parent).prefill()
-    return parent.other_1.text()
+    return parent.fields.SntNrText.text()
 
 
 def test_prefill_strips_the_newline(monkeypatch):
