@@ -51,9 +51,7 @@ from pathlib import Path
 
 from PyQt6 import QtWidgets
 
-from not1mm.lib import contact_info
-from not1mm.lib import plugin_common
-from not1mm.lib import version
+from not1mm.lib import contact_info, plugin_common, version
 from not1mm.lib.plugin_common import gen_adif, get_points
 
 logger = logging.getLogger(__name__)
@@ -830,7 +828,7 @@ class ContestBase:
                     "END-OF-LOG:", "\r\n", file_descriptor, file_encoding
                 )
             parent.show_message_box(f"Cabrillo saved to: {filename}")
-        except IOError as exception:
+        except OSError as exception:
             logger.critical(
                 "cabrillo: IO error: %s, writing to %s", exception, filename
             )
@@ -884,6 +882,9 @@ class ContestBase:
         line(f"ADDRESS-POSTALCODE: {station.get('Zip', '')}")
         line(f"ADDRESS-COUNTRY: {station.get('Country', '')}")
         line(f"EMAIL: {station.get('Email', '')}")
+        soapboxlines = self.parent.contest_settings.get("Soapbox", "").splitlines()
+        for sbline in soapboxlines:
+            line(f"SOAPBOX: {sbline}")
 
     def cabrillo_contest_name(self) -> str:
         """The ``CONTEST:`` value: the Cabrillo name, unless this contest differs.
@@ -1157,7 +1158,7 @@ def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
     for source in _contest_sources():
         try:
             info = _contest_info(source)
-        except Exception:  # noqa: BLE001 -- one broken plugin must not hide the rest
+        except Exception:
             if not tolerant:
                 raise
             logger.warning(
@@ -1308,7 +1309,7 @@ def contest_label_for_identifier(identifier) -> str:
     wanted = identifier.casefold()
     try:
         infos = available_contests()
-    except Exception:  # noqa: BLE001 -- naming one contest must not need them all
+    except Exception:
         logger.warning(
             "Naming contest %r without the full registry", identifier, exc_info=True
         )
