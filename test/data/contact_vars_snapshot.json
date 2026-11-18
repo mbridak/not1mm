@@ -1,0 +1,742 @@
+{
+ "errors": {},
+ "plugins": {
+  "10_10_fall_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "10_10_spring_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "10_10_summer_phone": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "10_10_winter_phone": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "aadx_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "aadx_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "agcw_qrp": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CCxxx xxx"
+   }
+  },
+  "ari_40_80": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "ari_dx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_10m": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_160m": {
+   "columns": {
+    "Exchange1": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "arrl_dx_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "arrl_dx_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "arrl_field_day": {
+   "columns": {
+    "Exchange1": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "arrl_rtty_ru": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_ss_cw": {
+   "columns": {
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_ss_phone": {
+   "columns": {
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_vhf_jan": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_vhf_jun": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "arrl_vhf_sep": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ca_qso_party": {
+   "columns": {
+    "Exchange1": "other_1:CC",
+    "NR": "receive:BB",
+    "SentNr": "sent:AA"
+   }
+  },
+  "canada_day": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "cq_160_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "cq_160_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "cq_wpx_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "cq_wpx_rtty": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "cq_wpx_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "cq_ww_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "ZN": "other_2:DD"
+   }
+  },
+  "cq_ww_rtty": {
+   "columns": {
+    "Exchange1": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "ZN": "other_1:CC"
+   }
+  },
+  "cq_ww_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "ZN": "other_2:DD"
+   }
+  },
+  "cq_ww_vhf": {
+   "columns": {}
+  },
+  "cqws": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "cwo": {
+   "columns": {
+    "Name": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "cwt": {
+   "columns": {
+    "NR": "other_2:CC DD",
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "darc_schwaben": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "darc_vhf": {
+   "columns": {
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "darc_xmas": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "dxpedition": {
+   "columns": {
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "ea_majestad_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ea_majestad_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ea_rtty": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "es_field_day": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "es_ll_kv": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "es_manual_key": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "es_open": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "eudx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "euhfc": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "general_logging": {
+   "columns": {
+    "Comment": "other_2:DD",
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "hadx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "helvetia": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "iaru_fieldday_r1_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "iaru_fieldday_r1_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "iaru_hf": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "ZN": "other_2:DD"
+   }
+  },
+  "icwc_mst": {
+   "columns": {
+    "Name": "other_2:DD",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "jidx_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "jidx_ph": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "john_moyle_field_day": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "k1usn_sst": {
+   "columns": {
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "labre_rs_digi": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "lz-dx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "na_sprint_cw": {
+   "columns": {
+    "Name": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "na_sprint_rtty": {
+   "columns": {
+    "Name": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "nac_vhf": {
+   "columns": {
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "naqp_cw": {
+   "columns": {
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "naqp_rtty": {
+   "columns": {
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "naqp_ssb": {
+   "columns": {
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "oceania_dx_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "oceania_dx_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ok1wc": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "pacc": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "phone_weekly_test": {
+   "columns": {
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "qso_party_rst": {
+   "columns": {
+    "Exchange1": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "qso_party_sn": {
+   "columns": {
+    "Exchange1": "other_1:CC",
+    "NR": "receive:BB",
+    "SentNr": "sent:AA"
+   }
+  },
+  "raem": {
+   "columns": {
+    "Exchange1": "other_2:DD",
+    "NR": "other_1:CC"
+   }
+  },
+  "randomgram": {
+   "columns": {
+    "Comment": "other_2:DD",
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "rda_contest": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "rdxc": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ref_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ref_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "rsgb_80m_cc": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "rsgb_commonwealth_beru": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "rsgb_iota": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "sac_cw": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "sac_ssb": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "spdx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ssa_mt_cw": {
+   "columns": {
+    "Exchange1": "other_2:DD",
+    "NR": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "ssa_mt_ssb": {
+   "columns": {
+    "Exchange1": "other_2:DD",
+    "NR": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "stew_perry_topband": {
+   "columns": {
+    "NR": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA"
+   }
+  },
+  "ta_vhf_uhf_contest": {
+   "columns": {
+    "SentNr": "other_1:CC"
+   }
+  },
+  "trans_tasman": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "ukeidx": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "vhf_sprint": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "wag": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "weekly_rtty": {
+   "columns": {
+    "Exchange1": "other_2:CC DD",
+    "Name": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  },
+  "wia_remembrance": {
+   "columns": {
+    "NR": "other_2:DD",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "SentNr": "other_1:CC"
+   }
+  },
+  "winter_field_day": {
+   "columns": {
+    "Exchange1": "other_1:CC",
+    "RCV": "receive:BB",
+    "SNT": "sent:AA",
+    "Sect": "other_2:DD"
+   }
+  }
+ }
+}

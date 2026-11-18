@@ -89,6 +89,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
+from not1mm.lib.fields import Fields
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.ham_utility import (
@@ -174,6 +175,48 @@ class MainWindow(QtWidgets.QMainWindow):
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.
     voice_output_available = False
+    # The entry widget that last took focus, for the ESM state machine.
+    current_widget_object = None
+
+    # -- the entry window's old widget names --------------------------------
+    # The exchange boxes are built from the contest's declaration now (see
+    # not1mm/lib/fields.py); the callsign comes from main.ui.  These aliases
+    # keep the rest of this file and the plugins working until every plugin
+    # has been moved to parent.fields.<Name>.
+    # (load_ui() walks dir(MainWindow) and evaluates every property, so these
+    # return None until __init__ has built the fields.)
+    @property
+    def callsign(self) -> QtWidgets.QLineEdit | None:
+        fields = self.__dict__.get("fields")
+        return fields.callsign if fields is not None else None
+
+    @property
+    def sent(self):
+        fields = self.__dict__.get("fields")
+        return fields.edit("SNTText") if fields is not None else None
+
+    @property
+    def receive(self):
+        fields = self.__dict__.get("fields")
+        return fields.edit("RCVText") if fields is not None else None
+
+    @property
+    def other_1(self):
+        fields = self.__dict__.get("fields")
+        return fields.legacy_edit("other_1") if fields is not None else None
+
+    @property
+    def other_2(self):
+        fields = self.__dict__.get("fields")
+        return fields.legacy_edit("other_2") if fields is not None else None
+
+    @property
+    def exch_label(self):
+        fields = self.__dict__.get("fields")
+        if fields is None:
+            return None
+        field = fields.last_field()
+        return field.label if field is not None else None
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -229,6 +272,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         load_ui(self, fsutils.APP_DATA_PATH / "main.ui")
+        # The exchange boxes come from the loaded contest's declaration; the
+        # callsign is built here too, replacing main.ui's placeholder, so the
+        # TAB cycle is cw_entry -> callsign -> exchange (see fields.py).  The
+        # row is rebuilt when a contest with different boxes is loaded.
+        self.fields = Fields(
+            self.horizontalLayout,
+            self.CallSignTextFrame,
+            edit_font=QFont(self.fontfamily, 20),
+        )
+        self._sync_callsign_widgets()
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
@@ -267,21 +320,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw_speed.setFont(
                 QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
             )
-            self.callsign_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.snt_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.rcv_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.other_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.exch_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
+            self.fields.apply_font(self.fontfamily, def_font_size, 20)
             self.heading_distance.setFont(
                 QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
             )
@@ -294,11 +333,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.score.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
             self.mults.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
 
-            self.callsign.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.sent.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.receive.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.other_1.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.other_2.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
             self.dupe_indicator.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
 
         self.history_info.hide()
@@ -328,13 +362,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.utc_clock_timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.utc_clock_timer.timeout.connect(self.update_utc_clock)
         self.update_utc_clock()
-        self.inputs_dict = {
-            self.callsign: "callsign",
-            self.sent: "sent",
-            self.receive: "receive",
-            self.other_1: "other_1",
-            self.other_2: "other_2",
-        }
+        self.inputs_dict = self.fields.inputs()
         self.cw_entry.hide()
         self.leftdot.hide()
         self.cwprogressBar.hide()
@@ -347,7 +375,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ft8 = FT8Watcher()
         self.ft8.set_callback(None)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
-        self.next_field = self.other_2
+        self.next_field = self.fields.last_edit()
         self.dupe_indicator.hide()
 
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
@@ -417,22 +445,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.returnPressed.connect(self.check_esm_with_enter)
         self.callsign.cursorPositionChanged.connect(self.check_esm)
         self.callsign.installEventFilter(self)
-        self.sent.returnPressed.connect(self.check_esm_with_enter)
-        self.sent.cursorPositionChanged.connect(self.check_esm)
-        self.sent.installEventFilter(self)
-        self.receive.returnPressed.connect(self.check_esm_with_enter)
-        self.receive.cursorPositionChanged.connect(self.check_esm)
-        self.receive.installEventFilter(self)
-        self.other_1.returnPressed.connect(self.check_esm_with_enter)
-        self.other_1.cursorPositionChanged.connect(self.check_esm)
-        self.other_1.installEventFilter(self)
-        self.other_2.returnPressed.connect(self.check_esm_with_enter)
-        self.other_2.textEdited.connect(self.other_2_changed)
-        self.other_2.cursorPositionChanged.connect(self.check_esm)
-        self.other_2.installEventFilter(self)
+        self.wire_fields()
 
-        self.sent.setText("59")
-        self.receive.setText("59")
+        self.set_rst("59")
         icon_path = fsutils.APP_DATA_PATH
         self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
@@ -1563,11 +1578,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(darkPalette)
             self.menuView.setPalette(darkPalette)
             self.menuWindow.setPalette(darkPalette)
-            self.callsign.setPalette(darkPalette)
-            self.sent.setPalette(darkPalette)
-            self.receive.setPalette(darkPalette)
-            self.other_1.setPalette(darkPalette)
-            self.other_2.setPalette(darkPalette)
+            self.fields.apply_palette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
         else:
             lightPalette = catppuccin.build_latte_palette()
@@ -1581,11 +1592,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(lightPalette)
             self.menuView.setPalette(lightPalette)
             self.menuWindow.setPalette(lightPalette)
-            self.callsign.setPalette(lightPalette)
-            self.sent.setPalette(lightPalette)
-            self.receive.setPalette(lightPalette)
-            self.other_1.setPalette(lightPalette)
-            self.other_2.setPalette(lightPalette)
+            self.fields.apply_palette(lightPalette)
             self.cw_entry.setPalette(lightPalette)
 
         edit_dialog = getattr(self.log_window, "edit_contact_dialog", None)
@@ -2303,8 +2310,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.database.current_contest = self.pref.get("contest")
                     if self.contest_settings.get("ContestName"):
                         """Reset these in case a contest disabled them"""
-                        self.other_1.setStyleSheet("text-transform: uppercase;")
-                        self.other_2.setStyleSheet("text-transform: uppercase;")
+                        self.fields.apply_upper()
                         """Reset this too, in case user set it"""
                         self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
@@ -2319,6 +2325,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
                         self.contest.init_contest()
+                        # The ESM state machine's string names follow the
+                        # contest: legacy names in legacy mode, box names once
+                        # a contest declares EntryWindowInfo.
+                        self.inputs_dict = self.fields.inputs()
                         self.hide_band_mode(
                             self.contest_settings.get("ModeCategory", "")
                         )
@@ -2921,7 +2931,7 @@ class MainWindow(QtWidgets.QMainWindow):
         action = None
         if obj == self.callsign:
             action = key_bindings.get(f"Callsign:{key_name}", None)
-        elif obj in (self.sent, self.receive):
+        elif obj in self.fields.report_edits():
             action = key_bindings.get(f"Report:{key_name}", None)
         elif obj == self.other_1:
             action = key_bindings.get(f"Other 1:{key_name}", None)
@@ -2959,20 +2969,18 @@ class MainWindow(QtWidgets.QMainWindow):
         if obj == self.callsign:
             self.callsign_command()
             return True
-        # The slot each field owns in advance_on_space: [callsign, sent,
-        # receive, other_1, other_2].
-        slot = {
-            self.sent: 1,
-            self.receive: 2,
-            self.other_1: 3,
-            self.other_2: 4,
-        }.get(obj)
-        if slot is None:
+        # The slot each field owns in advance_on_space: [callsign, then the
+        # boxes in window order].  A box past the end of the list is a
+        # separator, like the list's default.
+        slot = self.fields.index(obj)
+        if slot is None or slot == 0:
             return False
         advance = getattr(self.contest, "advance_on_space", None)
-        if not (self.contest and advance and advance[slot]):
+        if not (self.contest and advance):
             return False
-        next_tab = self.tab_next.get(obj)
+        if slot < len(advance) and not advance[slot]:
+            return False
+        next_tab = self.tab_next.get(obj) or self.fields.last_edit()
         next_tab.setFocus()
         next_tab.deselect()
         next_tab.end(False)
@@ -3051,6 +3059,52 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
+    def wire_fields(self) -> None:
+        """Connect the current exchange boxes to the window's handlers.
+
+        Called once at startup and again after a contest load replaces the
+        boxes; the old widgets (and their connections) are gone by then.
+        """
+        for field in self.fields:
+            edit = field.edit
+            edit.returnPressed.connect(self.check_esm_with_enter)
+            edit.cursorPositionChanged.connect(self.check_esm)
+            edit.textEdited.connect(self.other_2_changed)
+            edit.installEventFilter(self)
+
+    def _sync_callsign_widgets(self) -> None:
+        """Point the window and the .ui form at the callsign Fields built.
+
+        load_ui() keeps the generated form so retranslateUi() can re-apply the
+        language; its callsign entries still reference the deleted placeholder,
+        so they have to be replaced or a language switch would touch dead
+        objects.
+        """
+        self.CallSignTextFrame = self.fields.callsign_frame
+        self.CallSignTextLabel = self.fields.callsign_label
+        self.CallSignText = self.fields.callsign
+        ui = getattr(self, "_ui", None)
+        if ui is not None:
+            ui.CallSignTextFrame = self.CallSignTextFrame
+            ui.CallSignTextLabel = self.CallSignTextLabel
+            ui.CallSignText = self.CallSignText
+
+    def after_fields_rebuilt(self) -> None:
+        """Finish a rebuild: rewire, and re-apply what lives outside the row."""
+        self._sync_callsign_widgets()
+        self.wire_fields()
+        self.inputs_dict = self.fields.inputs()
+        # The widget the ESM state machine last saw has just been deleted.
+        self.current_widget_object = None
+        self.current_widget = None
+        if self.current_palette is not None:
+            self.fields.apply_palette(self.current_palette)
+
+    def set_rst(self, text: str) -> None:
+        """Put *text* in each report box this contest actually shows."""
+        for edit in self.fields.report_edits():
+            edit.setText(text)
+
     def entry_focus_in(self, obj, event) -> None:
         """Settle an entry field the operator has just TABbed into.
 
@@ -3069,7 +3123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Put the cursor at the end of the field TAB has just moved into."""
         obj.deselect()
         obj.end(False)
-        if obj in (self.sent, self.receive):
+        if obj in self.fields.report_edits():
             self.highlight_599(obj)
 
     def highlight_599(self, field: QLineEdit) -> None:
@@ -3200,11 +3254,9 @@ class MainWindow(QtWidgets.QMainWindow):
             ):
                 match self.current_mode:
                     case "LSB" | "USB" | "SSB" | "FM" | "AM":
-                        self.sent.setText("59")
-                        self.receive.setText("59")
+                        self.set_rst("59")
                     case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
-                        self.sent.setText("599")
-                        self.receive.setText("599")
+                        self.set_rst("599")
                     case (
                         "FT8"
                         | "FT4"
@@ -3218,18 +3270,14 @@ class MainWindow(QtWidgets.QMainWindow):
                         | "PKTUSB"
                         | "PKTLSB"
                     ):
-                        self.sent.setText("599")
-                        self.receive.setText("599")
+                        self.set_rst("599")
                     case _:
-                        self.sent.setText("")
-                        self.receive.setText("")
+                        self.set_rst("")
                 # end match
             else:
-                self.sent.setText("")
-                self.receive.setText("")
+                self.set_rst("")
         self.callsign.clear()
-        self.other_1.clear()
-        self.other_2.clear()
+        self.fields.clear_exchange()
         self.callsign.setFocus()
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
@@ -3747,10 +3795,21 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{MYGRID}", self.station.get("GridSquare", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
-        macro = macro.replace("{OTHER1}", self.other_1.text())
-        macro = macro.replace("{OTHER2}", self.other_2.text())
-        macro = macro.replace("{SNT}", self.format_rst(self.sent.text(), cut))
-        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text(), cut))
+        # {OTHER1}/{OTHER2} are the old positional names; a migrated contest
+        # resolves them to its first/second non-report box.  {SENTNR} follows
+        # the box that carries SentNr, wherever the contest put it.
+        macro = macro.replace("{OTHER1}", self.fields.legacy_text("other_1"))
+        macro = macro.replace("{OTHER2}", self.fields.legacy_text("other_2"))
+        snt = self.fields.edit("SNTText")
+        macro = macro.replace(
+            "{SNT}", self.format_rst(snt.text() if snt is not None else "", cut)
+        )
+        sent_nr = self.fields.by_column("SentNr")
+        if sent_nr is None:
+            sent_nr_text = self.fields.legacy_text("other_1")
+        else:
+            sent_nr_text = sent_nr.edit.text()
+        macro = macro.replace("{SENTNR}", self.format_serial(sent_nr_text, cut))
         macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial), cut))
         macro = macro.replace("{PREVCALL}", self.previous_contact.get("Call", ""))
 
@@ -4702,8 +4761,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
                 if self.contest and self.contest.name != "QSO_PARTY_SN":
-                    self.sent.setText("599")
-                    self.receive.setText("599")
+                    self.set_rst("599")
                     self.read_macros()
                     if self.contest.name == "ICWC Medium Speed Test":
                         self.contest.prefill()
@@ -4714,8 +4772,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
                 if self.contest and self.contest.name != "QSO_PARTY_SN":
-                    self.sent.setText("59")
-                    self.receive.setText("59")
+                    self.set_rst("59")
                 self.read_macros()
                 self.show_CW_macros()
             return
@@ -4741,8 +4798,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             self.current_mode = "RTTY"
             if self.contest and self.contest.name != "QSO_PARTY_SN":
-                self.sent.setText("599")
-                self.receive.setText("599")
+                self.set_rst("599")
             self.read_macros()
             self.show_CW_macros()
 

@@ -221,6 +221,189 @@ def discover_cases(root: Path = CONTEST_DIR) -> list[Case]:
     return cases
 
 
+class FakeField:
+    """A Qt-free stand-in for ``not1mm.lib.fields.EntryField``."""
+
+    def __init__(self, box, edit):
+        self.box = box
+        self.spec = box.spec
+        self.name = box.spec.name
+        self.edit = edit
+        self.frame = object()
+        self.label = FakeLineEdit(
+            box.label if box.label is not None else box.spec.label
+        )
+
+    def set_visible(self, visible):
+        self.box.visible = visible
+
+    def set_label(self, text):
+        self.label.setText(text or "")
+
+    def set_accessible(self, name): ...
+
+    def clear(self):
+        self.edit.setText("")
+
+
+# The four boxes a not-migrated plugin still describes, and where the harness
+# already keeps their line edits.
+_LEGACY_ATTRS = {
+    "SNTText": "sent",
+    "RCVText": "receive",
+    "SntNrText": "other_1",
+    "RcvNrText": "other_2",
+}
+_LEGACY_ALIASES = {
+    "sent": "SNTText",
+    "receive": "RCVText",
+    "other_1": "SntNrText",
+    "other_2": "RcvNrText",
+}
+
+
+class FakeFields:
+    """The ``Fields`` API for a headless parent.
+
+    It records the boxes ``ContestBase.interface()`` configures and resolves
+    the old positional names onto the harness's existing line edits, so the
+    shared harness keeps working without a QApplication.
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.callsign = parent.callsign
+        self._fields: dict[str, FakeField] = {}
+        self._legacy = True
+
+    def configure(self, boxes, legacy=False):
+        self._legacy = legacy
+        names = tuple(box.spec.name for box in boxes)
+        if tuple(self._fields) != names:
+            self._fields = {
+                box.spec.name: FakeField(box, self._edit_for(box.spec.name))
+                for box in boxes
+            }
+        else:
+            for box in boxes:
+                self._fields[box.spec.name].box = box
+        return False
+
+    def _edit_for(self, name):
+        field = self._fields.get(name)
+        if field is not None:
+            return field.edit
+        attribute = _LEGACY_ATTRS.get(name)
+        if attribute is not None:
+            return getattr(self.parent, attribute)
+        return FakeLineEdit()
+
+    def __iter__(self):
+        return iter(self._fields.values())
+
+    def __getattr__(self, name):
+        if name == "CallSignText":
+            return self.__dict__["callsign"]
+        fields = self.__dict__.get("_fields", {})
+        if name in fields:
+            return fields[name].edit
+        raise AttributeError(name)
+
+    def field(self, name):
+        return self._fields.get(name)
+
+    def edit(self, name, default=None):
+        if name in ("callsign", "CallSignText"):
+            return self.callsign
+        field = self._fields.get(name)
+        if field is not None:
+            return field.edit
+        if name in _LEGACY_ALIASES:
+            legacy = self.legacy_edit(name)
+            return legacy if legacy is not None else default
+        return default
+
+    def names(self):
+        return tuple(name for name, field in self._fields.items() if field.box.visible)
+
+    def all_names(self):
+        return tuple(self._fields)
+
+    def display_order(self):
+        return (self.callsign,) + tuple(
+            field.edit for field in self._fields.values() if field.box.visible
+        )
+
+    def all_order(self):
+        return (self.callsign,) + tuple(field.edit for field in self._fields.values())
+
+    def index(self, edit):
+        try:
+            return self.all_order().index(edit)
+        except ValueError:
+            return None
+
+    def last_field(self):
+        for field in reversed(self._fields.values()):
+            return field
+        return None
+
+    def last_edit(self):
+        field = self.last_field()
+        return field.edit if field is not None else self.callsign
+
+    def report_edits(self):
+        return tuple(
+            self._fields[name].edit
+            for name in ("SNTText", "RCVText")
+            if name in self._fields
+        )
+
+    def by_column(self, column):
+        for field in self._fields.values():
+            if field.spec.column == column:
+                return field
+        return None
+
+    def legacy_edit(self, name):
+        if name not in _LEGACY_ALIASES:
+            return None
+        if self._legacy:
+            field = self._fields.get(_LEGACY_ALIASES[name])
+            return field.edit if field is not None else None
+        extras = [
+            field
+            for field in self._fields.values()
+            if field.spec.column not in ("SNT", "RCV")
+        ]
+        index = 0 if name == "other_1" else 1
+        if index < len(extras):
+            return extras[index].edit
+        return None
+
+    def legacy_text(self, name):
+        edit = self.legacy_edit(name)
+        return edit.text() if edit is not None else ""
+
+    def inputs(self):
+        if self._legacy:
+            names = ("callsign", "sent", "receive", "other_1", "other_2")
+        else:
+            names = ("CallSignText",) + self.all_names()
+        return dict(zip(self.all_order(), names))
+
+    def clear_exchange(self):
+        for name, field in self._fields.items():
+            if name not in ("SNTText", "RCVText"):
+                field.edit.setText("")
+
+    def apply_font(self, *args, **kwargs): ...
+
+    def apply_palette(self, palette): ...
+
+    def apply_upper(self): ...
+
+
 class ContestHarness:
     """Just enough of the main window to drive a plugin's import and export."""
 
@@ -246,6 +429,8 @@ class ContestHarness:
         self.other_1 = FakeLineEdit()
         self.other_2 = FakeLineEdit()
         self.exch_label = FakeLineEdit()
+        self.fields = FakeFields(self)
+        self.after_fields_rebuilt = lambda: None
         self.contact = {}
         self.contact_is_dupe = 0
         self.dupes = 0

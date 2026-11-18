@@ -1,13 +1,14 @@
-"""The entry window's TAB cycle.
+"""The entry window's TAB/SPACE cycle.
 
-``TabOrder`` defaults to the fields the contest *shows*, so ``EntryFields`` is
-the one list to keep in step; only a contest that shows a field but keeps it out
-of the cycle names the order itself.  The corpus never covers tab order, so the
-derived default and AGCW's override are pinned here.
+The cycle comes from the boxes the contest shows: ``EntryFields`` while a
+plugin still uses the old four-frame description, ``EntryWindowInfo`` once it
+has moved to named boxes.  The corpus never covers tab order, so the derived
+default and AGCW's all-four case are pinned here.
 """
 
 from __future__ import annotations
 
+from contest_harness import FakeFields
 from not1mm.lib.contest import load_contest
 
 ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
@@ -41,16 +42,10 @@ class Parent:
     """Just enough of the main window for init_contest()."""
 
     def __init__(self):
-        for name in (
-            ENTRY_FIELDS
-            + WIDGETS
-            + (
-                "snt_label",
-                "other_label",
-                "exch_label",
-            )
-        ):
+        for name in ENTRY_FIELDS:
             setattr(self, name, Widget(name))
+        self.fields = FakeFields(self)
+        self.after_fields_rebuilt = lambda: None
         self.tab_next = {}
         self.tab_prev = {}
 
@@ -63,11 +58,17 @@ def started(plugin: str) -> Parent:
 
 
 def test_visible_fields_follow_entry_fields():
-    """The shown fields are EntryFields, callsign first, in window order."""
+    """The shown boxes are the ones the old four frames describe."""
     parent = Parent()
     contest = load_contest("ari_40_80", parent)
-    assert contest.visible_fields() == ("callsign", "sent", "receive", "other_2")
-    assert load_contest("ari_dx", Parent()).visible_fields() == ENTRY_FIELDS
+    assert contest.visible_fields() == ("callsign", "SNTText", "RCVText", "RcvNrText")
+    assert load_contest("ari_dx", Parent()).visible_fields() == (
+        "callsign",
+        "SNTText",
+        "RCVText",
+        "SntNrText",
+        "RcvNrText",
+    )
 
 
 def test_advance_on_space_defaults_to_separating():
@@ -118,7 +119,8 @@ def test_the_default_order_is_the_window_order():
 def test_agcw_tabs_through_every_visible_field():
     """AGCW shows the RST fields, and TAB walks them like every other contest."""
     parent = started("agcw_qrp")
-    assert parent.field1.shown and parent.field2.shown
+    assert "SNTText" in parent.fields.names()
+    assert "RCVText" in parent.fields.names()
     tab = parent.tab_next
     assert tab[parent.callsign] is parent.sent
     assert tab[parent.sent] is parent.receive

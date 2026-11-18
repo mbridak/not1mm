@@ -49,9 +49,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from PyQt6 import QtWidgets
-
 from not1mm.lib import contact_info, plugin_common, version
+from not1mm.lib.fields import legacy_entry_boxes, parse_entry_window_info
 from not1mm.lib.plugin_common import gen_adif, get_points
 
 logger = logging.getLogger(__name__)
@@ -60,11 +59,24 @@ logger = logging.getLogger(__name__)
 PACKAGE_PATH = Path(__file__).resolve().parent.parent
 PLUGIN_PATH = PACKAGE_PATH / "plugins"
 
-# The five entry-window widgets a TAB cycle can visit.
+# The five entry-window widgets the old fixed window had, and the four frames
+# that could be shown or hidden.  Kept while a plugin still describes itself
+# with EntryFields; the fields module turns them into named boxes.
 ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
-
-# The four entry fields that can be shown or hidden.
 ENTRY_WIDGETS = ("field1", "field2", "field3", "field4")
+
+
+def entry_edit(parent, name):
+    """The line edit for *name*, on a window that has Fields or the old widgets.
+
+    ``name`` is a box name, a legacy positional name (``other_1``) or
+    ``callsign``.  Returns None where the contest shows no such box.
+    """
+    fields = getattr(parent, "fields", None)
+    if fields is not None:
+        return fields.edit(name)
+    return getattr(parent, name, None)
+
 
 # The log window columns almost every contest starts from.
 LOG_INFO = [
@@ -303,16 +315,26 @@ class ContestBase:
     ADIFContestID = None
 
     # -- entry window -------------------------------------------------------
-    # These defaults describe the exchange by far the most common in contests:
-    # RST sent, a serial number, RST received.  A contest that sends a name, a
-    # grid, a section or a province sets them (or overrides interface()).
+    # The entry window is built from the boxes this contest declares.  Until a
+    # plugin declares EntryWindowInfo it keeps the old description below: which
+    # of the four fixed frames it showed, and what they were called.
+    #
+    # A migrated contest declares N1MM's EntryWindowInfo, a flat name/width
+    # list, and FrameText with one label per box in the same order:
+    #
+    #     EntryWindowInfo = ("SNTText", 450, "RCVText", 450,
+    #                        "SntNrText", 625, "RcvNrText", 625)
+    #     FrameText       = ("SNT", "RCV", "SentNR", "RcvNR")
+    #
+    # The box names are the way plugin code reaches the widgets through
+    # parent.fields (fields.Exchange1Text.text()); see not1mm/lib/fields.py.
     #
     # Focus leaves a field on either of two keys, and they are meant to walk
     # different fields:
     #
     #   TAB    every field the contest shows, in the window's own order
-    #          (callsign, then EntryFields).  Qt's own focus chain does this
-    #          now, and skips a hidden field by itself -- see visible_fields().
+    #          (callsign first).  Qt's own focus chain does this now, and
+    #          skips a hidden field by itself.
     #   SPACE  only the "interesting" fields the operator types: RST is almost
     #          always 599, so space steps over sent and receive.  A field whose
     #          text may contain spaces (a name, a grid) keeps the space and the
@@ -322,15 +344,17 @@ class ContestBase:
     # SPACE along, and advance_on_space only decides whether a space advances
     # at all -- so a field TabOrder leaves out is left out of SPACE too.
     #
+    # EntryWindowInfo is None while a plugin still uses the old description.
+    EntryWindowInfo = None
     # Which of the four entry fields this contest uses ...
     EntryFields = ENTRY_WIDGETS
-    # ... and what they are called.  FrameText is (sent, other, exchange);
-    # an empty string leaves that label alone.  The received-RST label is the
-    # odd one out -- most contests leave it "RCV" -- so it has its own knob.
-    FrameText = ("SNT", "SentNR", "RcvNR")
+    # ... and what they are called.  In legacy mode FrameText is (sent, other,
+    # exchange) and the received-RST label is the odd one out, so it has its
+    # own knob.  Empty means "no label"; the defaults are in fields.py.
+    FrameText = ()
     RcvLabel = ""
     # Screen-reader names, one per entry field; an empty string is skipped.
-    AccessibleNames = ("RST Sent", "", "Sent Number", "Received Number")
+    AccessibleNames = ()
     # The order SPACE walks the entry fields in, or None for "the fields this
     # contest shows, in the window's own order" -- which is what almost every
     # contest wants, so EntryFields is the one list to keep in step.  A contest
@@ -434,50 +458,85 @@ class ContestBase:
         return self.LogInfo
 
     # -- setup --------------------------------------------------------------
+    def entry_boxes(self):
+        """The boxes this contest wants, with their labels and visibility.
+
+        A migrated contest describes them with :attr:`EntryWindowInfo`; one
+        that has not moved yet keeps the old four-frame description.  The
+        result is passed straight to ``Fields.configure()``.
+        """
+        if self.EntryWindowInfo is None:
+            return legacy_entry_boxes(
+                self.EntryFields,
+                self.FrameText,
+                self.RcvLabel,
+                self.AccessibleNames,
+            )
+        boxes = parse_entry_window_info(self.EntryWindowInfo)
+        labels = tuple(self.FrameText)
+        accessible = tuple(self.AccessibleNames)
+        described = []
+        for index, box in enumerate(boxes):
+            if index < len(labels):
+                box.label = labels[index]
+            if index < len(accessible):
+                box.accessible = accessible[index]
+            described.append(box)
+        return tuple(described)
+
     def init_contest(self):
-        """Set up the entry window and the TAB order for this contest."""
+        """Set up the entry window and the SPACE cycle for this contest."""
+        self.interface()
         self.set_tab_next()
         self.set_tab_prev()
-        self.interface()
-        self.parent.next_field = getattr(self.parent, self.NextField)
+        target = entry_edit(self.parent, self.NextField)
+        if target is None:
+            fields = getattr(self.parent, "fields", None)
+            target = fields.last_edit() if fields is not None else self.parent.callsign
+        self.parent.next_field = target
 
     def interface(self):
-        """Show the entry fields this contest uses and label them."""
+        """Show the boxes this contest uses, and (re)label them.
+
+        ``Fields.configure`` only rebuilds the widgets when the set of boxes
+        changes, so a language switch or a contest switch that keeps the same
+        row preserves what the operator typed.
+        """
         parent = self.parent
-        for field in ENTRY_WIDGETS:
-            widget = getattr(parent, field)
-            if field in self.EntryFields:
-                widget.show()
-            else:
-                widget.hide()
-        for label, text in zip(
-            ("snt_label", "other_label", "exch_label"), self.FrameText
-        ):
-            if text:
-                getattr(parent, label).setText(
-                    QtWidgets.QApplication.translate("ContestPlugin", text)
-                )
-        if self.RcvLabel:
-            parent.rcv_label.setText(
-                QtWidgets.QApplication.translate("ContestPlugin", self.RcvLabel)
-            )
-        # The accessible name goes on the line edit, not on the frame: the
-        # frame is only the show/hide container, and the line edit is the
-        # widget that takes focus, so it is the one a screen reader names.
-        for field, accessible in zip(ENTRY_FIELDS[1:], self.AccessibleNames):
-            if accessible:
-                getattr(parent, field).setAccessibleName(accessible)
+        fields = getattr(parent, "fields", None)
+        if fields is None:
+            return
+        if fields.configure(self.entry_boxes(), legacy=self.EntryWindowInfo is None):
+            after = getattr(parent, "after_fields_rebuilt", None)
+            if after is not None:
+                after()
 
     def visible_fields(self) -> tuple:
         """The entry fields this contest shows, callsign first, in window order.
 
-        The callsign is always shown; the other four follow :attr:`EntryFields`.
+        The callsign is always shown; the rest are the contest's boxes, in the
+        order it declared them.
         """
+        parent = self.parent
+        fields = getattr(parent, "fields", None)
+        if fields is not None and fields.all_names():
+            return ("callsign",) + fields.names()
         return ("callsign",) + tuple(
-            name
-            for widget, name in zip(ENTRY_WIDGETS, ENTRY_FIELDS[1:])
-            if widget in self.EntryFields
+            box.spec.name for box in self.entry_boxes() if box.visible
         )
+
+    def _space_order(self):
+        """The visible line edits SPACE walks, callsign first."""
+        fields = self.parent.fields
+        if self.TabOrder is not None:
+            named = [
+                edit
+                for name in self.TabOrder
+                if (edit := fields.edit(name)) is not None
+            ]
+            if named:
+                return (fields.callsign, *named)
+        return fields.display_order()
 
     def set_tab_next(self):
         """SPACE walks the entry fields in :attr:`TabOrder`, then wraps.
@@ -488,18 +547,18 @@ class ContestBase:
         the first field unless there is nothing after it.
         """
         parent = self.parent
-        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
-        fields = [getattr(parent, name) for name in order]
+        fields = parent.fields
+        order = self._space_order()
         following = {}
-        for index, field in enumerate(fields):
-            following[field] = fields[(index + 1) % len(fields)]
+        for index, edit in enumerate(order):
+            following[edit] = order[(index + 1) % len(order)]
         visited = set(order)
-        for index, name in enumerate(ENTRY_FIELDS):
-            widget = getattr(parent, name)
-            if widget in following:
+        all_edits = fields.all_order()
+        for index, edit in enumerate(all_edits):
+            if edit in following:
                 continue
-            after = [n for n in ENTRY_FIELDS[index + 1 :] if n in visited]
-            following[widget] = getattr(parent, after[0]) if after else fields[0]
+            after = [e for e in all_edits[index + 1 :] if e in visited]
+            following[edit] = after[0] if after else order[0]
         parent.tab_next = following
 
     def set_tab_prev(self):
@@ -509,20 +568,26 @@ class ContestBase:
         while a contest's own reverse order is still worth stating.
         """
         parent = self.parent
-        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
+        fields = parent.fields
+        order = self._space_order()
         if self.TabOrderPrev is not None:
-            order = self.TabOrderPrev
-        fields = [getattr(parent, name) for name in order]
+            named = [
+                edit
+                for name in self.TabOrderPrev
+                if (edit := fields.edit(name)) is not None
+            ]
+            if named:
+                order = (fields.callsign, *named)
         previous = {}
-        for index, field in enumerate(fields):
-            previous[field] = fields[index - 1]
+        for index, edit in enumerate(order):
+            previous[edit] = order[index - 1]
         visited = set(order)
-        for index, name in enumerate(ENTRY_FIELDS):
-            widget = getattr(parent, name)
-            if widget in previous:
+        all_edits = fields.all_order()
+        for index, edit in enumerate(all_edits):
+            if edit in previous:
                 continue
-            before = [n for n in ENTRY_FIELDS[:index] if n in visited]
-            previous[widget] = getattr(parent, before[-1]) if before else fields[-1]
+            before = [e for e in all_edits[:index] if e in visited]
+            previous[edit] = before[-1] if before else order[-1]
         parent.tab_prev = previous
 
     # -- logging ------------------------------------------------------------
@@ -542,7 +607,8 @@ class ContestBase:
         the CW cut numbers belong on the air, not in the log.
         """
         parent = self.parent
-        if parent.other_1.text():
+        target = entry_edit(parent, "other_1")
+        if target is None or target.text():
             return
         exchange = parent.process_macro(
             str(parent.contest_settings.get("SentExchange", "") or "")
@@ -550,7 +616,7 @@ class ContestBase:
             cut=False,
         )
         if exchange:
-            parent.other_1.setText(exchange)
+            target.setText(exchange)
 
     def is_dupe(self, call: str, band, mode: str) -> bool:
         """Is this call on this band+mode a dupe?  (UDC DupeType)
@@ -990,7 +1056,12 @@ class ContestBase:
         """
         parent = self.parent
         if new_focused_widget is not None:
+            # The old string name is kept for plugins that override process_esm
+            # and compare it; the widget itself is what the branches below use,
+            # so a named box needs no positional name.
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -1008,10 +1079,10 @@ class ContestBase:
         ):
             parent.restore_button_color(a_button)
 
-        exchange = getattr(parent, self.ESMExchangeField)
+        exchange = entry_edit(parent, self.ESMExchangeField)
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -1022,7 +1093,7 @@ class ContestBase:
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget == self.ESMExchangeField:
+            elif exchange is not None and focused is exchange:
                 if exchange.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
@@ -1047,12 +1118,12 @@ class ContestBase:
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget == self.ESMExchangeField:
+            elif exchange is not None and focused is exchange:
                 if exchange.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
