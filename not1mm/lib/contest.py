@@ -618,6 +618,23 @@ class ContestBase:
         if exchange:
             target.setText(exchange)
 
+    def report_default(self) -> str:
+        """The RST a contest sends when its entry window has no report box.
+
+        The old fixed window always had two report boxes, so a contest that
+        hid them still had them filled by the mode switch.  A declared window
+        has no box to read, so the value comes from the mode: phone is 59,
+        everything else 599.
+        """
+        mode = getattr(self.parent, "current_mode", "")
+        if not isinstance(mode, str):
+            mode = ""
+        if mode in ("LSB", "USB", "SSB", "FM", "AM"):
+            return "59"
+        if not mode and self.Mode == "SSB":
+            return "59"
+        return "599"
+
     def is_dupe(self, call: str, band, mode: str) -> bool:
         """Is this call on this band+mode a dupe?  (UDC DupeType)
 

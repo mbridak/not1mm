@@ -55,8 +55,24 @@ class Contest(ContestBase):
         "RcvNr",
         "PTS",
     ]
-    FrameText = ("SNT", "", "Prov or SN")
-    AccessibleNames = ("RST Sent", "", "", "Province or Serial Number")
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "RcvNrText",
+        625,
+    )
+    FrameText = ("SNT", "RCV", "SentNR", "Prov or SN")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Sent Number",
+        "Province or Serial Number",
+    )
+    NextField = "RcvNrText"
     # An Italian province once per band, and a DXCC country (Italy excepted)
     # once per band.  Both keys are conditional, so they are methods.
     NumMults = 2
@@ -131,10 +147,11 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, and the multipliers the contact is worth."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        fields = parent.fields
+        parent.contact["SNT"] = fields.SNTText.text()
+        parent.contact["RCV"] = fields.RCVText.text()
+        parent.contact["SentNr"] = fields.SntNrText.text()
+        parent.contact["NR"] = fields.RcvNrText.text().upper()
         self.mark_multipliers()
 
     def ft8_handler(self, packet):
@@ -154,18 +171,18 @@ class Contest(ContestBase):
         sent_string = packet.get("STX_STRING", "")
         if sent_string != "":
             parent.contact["SentNr"] = sent_string
-            parent.other_1.setText(str(sent_string))
+            parent.fields.SntNrText.setText(str(sent_string))
         else:
             parent.contact["SentNr"] = packet.get("STX", "000")
-            parent.other_1.setText(str(packet.get("STX", "000")))
+            parent.fields.SntNrText.setText(str(packet.get("STX", "000")))
 
         rx_string = packet.get("STATE", "")
         if rx_string != "":
             parent.contact["NR"] = rx_string
-            parent.other_2.setText(str(rx_string))
+            parent.fields.RcvNrText.setText(str(rx_string))
         else:
             parent.contact["NR"] = packet.get("SRX", "000")
-            parent.other_2.setText(str(packet.get("SRX", "000")))
+            parent.fields.RcvNrText.setText(str(packet.get("SRX", "000")))
 
         parent.contact["Mode"] = packet.get("MODE", "ERR")
         parent.contact["Freq"] = round(float(packet.get("FREQ", "0.0")) * 1000, 2)
@@ -193,5 +210,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Sect', '')}")

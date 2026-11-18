@@ -207,13 +207,12 @@ input each county separated by a '/'.
 """
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     WritesGridLocator = False  # the CQP header has no GRID-LOCATOR line
-    # The RST fields carry the serial numbers; the exchange is other_1.
-    EntryFields = ("field1", "field2", "field3")
-    FrameText = ("SentNR", "State/County", "")
-    RcvLabel = "RcvNR"
-    AccessibleNames = ("SentNR", "RcvNR", "State/County", "")
-    NextField = "receive"
-    ESMExchangeField = "other_1"  # the exchange is the first extra field
+    # The first two boxes carry the serial numbers; the exchange is the third.
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625, "Exchange1Text", 615)
+    FrameText = ("SentNR", "RcvNR", "State/County")
+    AccessibleNames = ("Sent Number", "Received Number", "State/County")
+    NextField = "RcvNrText"
+    ESMExchangeField = "Exchange1Text"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -285,9 +284,11 @@ input each county separated by a '/'.
     def set_contact_vars(self):
         """The serials and the exchange, then the multiplier."""
         parent = self.parent
-        parent.contact["SentNr"] = parent.sent.text()
-        parent.contact["NR"] = parent.receive.text()
-        parent.contact["Exchange1"] = normalize_exchange(parent.other_1.text())
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
+        parent.contact["Exchange1"] = normalize_exchange(
+            parent.fields.Exchange1Text.text()
+        )
         self.mark_multipliers()
 
     def mark_multipliers(self):
@@ -352,8 +353,8 @@ input each county separated by a '/'.
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.sent.text()) == 0:
-            parent.sent.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def cabrillo_qso_lines(self, contact):
         """One line per county pair, for a contact on a county line."""
@@ -407,5 +408,5 @@ input each county separated by a '/'.
         """Prefill the exchange from the call history file."""
         parent = self.parent
         result = parent.database.fetch_call_history(parent.callsign.text())
-        if result and parent.other_1.text() == "":
-            parent.other_1.setText(f"{result.get('Exch1', '')}")
+        if result and parent.fields.Exchange1Text.text() == "":
+            parent.fields.Exchange1Text.setText(f"{result.get('Exch1', '')}")

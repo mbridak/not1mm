@@ -46,12 +46,15 @@ class Contest(ContestBase):
     DupeType = 2  # once per band
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
-    # Only the name and the location are used; the RSTs are hidden.
-    EntryFields = ("field3", "field4")
-    FrameText = ("SNT", "Name", "State")
-    AccessibleNames = ("RST Sent", "", "Name", "State")
+    # Only the name and the location are shown; the RSTs come from the mode
+    # (see report_default()).
+    EntryWindowInfo = ("NameText", 855, "SectText", 600)
+    FrameText = ("Name", "State")
+    AccessibleNames = ("Name", "State")
     # The module focused the name field after a lookup, not the location.
-    NextField = "other_1"
+    NextField = "NameText"
+    # The location is the box that finishes the contact.
+    ESMExchangeField = "SectText"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -98,10 +101,11 @@ class Contest(ContestBase):
         """The received exchange, and the multiplier it is worth."""
         parent = self.parent
         contact = parent.contact
-        contact["SNT"] = parent.sent.text()
-        contact["RCV"] = parent.receive.text()
-        contact["Name"] = parent.other_1.text().upper()
-        contact["Sect"] = parent.other_2.text().upper()
+        report = self.report_default()
+        contact["SNT"] = report
+        contact["RCV"] = report
+        contact["Name"] = parent.fields.NameText.text().upper()
+        contact["Sect"] = parent.fields.SectText.text().upper()
         contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
         contact["Exchange1"] = self._multiplier_key(contact)
         self.mark_multipliers()
@@ -135,7 +139,7 @@ class Contest(ContestBase):
             self.parent.log_window.msg_from_main(cmd)
 
     def prefill(self):
-        """Nothing to prefill: other_1 is the name, not the sent serial."""
+        """Nothing to prefill: NameText is the received name, not a serial."""
 
     def cabrillo_qso_line(self, contact):
         """The NAQP line: the operator's name/location, then the received pair."""
@@ -163,6 +167,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -183,7 +189,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -194,23 +200,23 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.NameText, parent.fields.SectText):
                 continent = parent.contact.get("Continent")
-                if parent.other_1.text() == "" or (
-                    parent.other_2.text() == "" and continent == "NA"
+                if parent.fields.NameText.text() == "" or (
+                    parent.fields.SectText.text() == "" and continent == "NA"
                 ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isalpha()
-                    and parent.other_2.text().isalpha()
+                    parent.fields.NameText.text().isalpha()
+                    and parent.fields.SectText.text().isalpha()
                     and continent == "NA"
                 ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
                     buttons_to_send.append("LOGIT")
-                elif parent.other_1.text().isalpha() and continent != "NA":
+                elif parent.fields.NameText.text().isalpha() and continent != "NA":
                     parent.make_button_green(parent.esm_dict["QRZ"])
                     buttons_to_send.append(parent.esm_dict["QRZ"])
                     buttons_to_send.append("LOGIT")
@@ -229,27 +235,27 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.NameText, parent.fields.SectText):
                 continent = parent.contact.get("Continent")
-                if parent.other_1.text() == "" or (
-                    parent.other_2.text() == "" and continent == "NA"
+                if parent.fields.NameText.text() == "" or (
+                    parent.fields.SectText.text() == "" and continent == "NA"
                 ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isalpha()
-                    and parent.other_2.text().isalpha()
+                    parent.fields.NameText.text().isalpha()
+                    and parent.fields.SectText.text().isalpha()
                     and continent == "NA"
                 ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")
-                elif parent.other_1.text().isalpha() and continent != "NA":
+                elif parent.fields.NameText.text().isalpha() and continent != "NA":
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
                     buttons_to_send.append("LOGIT")
@@ -283,7 +289,7 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Name', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.NameText.text() == "":
+                parent.fields.NameText.setText(f"{result.get('Name', '')}")
+            if parent.fields.SectText.text() == "":
+                parent.fields.SectText.setText(f"{result.get('State', '')}")

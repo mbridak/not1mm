@@ -20,10 +20,12 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "CQ Zone No."
     DupeType = 2  # once per band
     SendsRTCScore = True
-    # The reports, the fixed sent exchange (other_1 is hidden) and their zone.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "CQ Zone")
-    AccessibleNames = ("RST Sent", "", "", "C Q Zone")
+    # The reports and the received zone; the sent exchange is fixed.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "CQ Zone")
+    AccessibleNames = ("RST Sent", "RST Received", "C Q Zone")
+    NextField = "Exchange1Text"
+    ESMExchangeField = "Exchange1Text"
     # Each country and each zone once per band.
     NumMults = 2
     Multiplier1Name = "Country"
@@ -87,17 +89,16 @@ class Contest(ContestBase):
     def prefill(self):
         """Fill the zone from a call lookup; the sent exchange is fixed."""
         parent = self.parent
-        if len(parent.other_2.text()) == 0:
-            parent.other_2.setText(str(parent.contact.get("ZN", "")))
-        parent.other_1.setText(str(parent.contest_settings.get("SentExchange", 0)))
+        zone = parent.fields.Exchange1Text
+        if len(zone.text()) == 0:
+            zone.setText(str(parent.contact.get("ZN", "")))
 
     def set_contact_vars(self):
         """The reports, the received zone and the fixed sent exchange."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["ZN"] = parent.other_2.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["ZN"] = parent.fields.Exchange1Text.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
 
     def recalculate_mults(self):
@@ -121,5 +122,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('CQZone', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('CQZone', '')}")

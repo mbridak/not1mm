@@ -276,11 +276,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # callsign is built here too, replacing main.ui's placeholder, so the
         # TAB cycle is cw_entry -> callsign -> exchange (see fields.py).  The
         # row is rebuilt when a contest with different boxes is loaded.
-        self.fields = Fields(
-            self.horizontalLayout,
-            self.CallSignTextFrame,
-            edit_font=QFont(self.fontfamily, 20),
-        )
+        # Fields takes the entry font from main.ui's callsign box, so the row
+        # keeps the font the designer shows (the box is recreated, not edited).
+        self.fields = Fields(self.horizontalLayout, self.CallSignTextFrame)
         self._sync_callsign_widgets()
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():

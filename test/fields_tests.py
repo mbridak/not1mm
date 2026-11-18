@@ -20,6 +20,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from PyQt6 import QtWidgets
+from PyQt6.QtGui import QFont
 
 from not1mm.lib.contest import load_contest
 from not1mm.lib.fields import (
@@ -169,6 +170,7 @@ def window(app):
     QtWidgets.QLabel("Callsign", callsign_frame).setObjectName("CallSignTextLabel")
     callsign = QtWidgets.QLineEdit(callsign_frame)
     callsign.setObjectName("CallSignText")
+    callsign.setFont(QFont("JetBrains Mono", 20))
     layout.addWidget(callsign_frame, 900)
     yield layout, callsign_frame
     container.deleteLater()
@@ -183,6 +185,15 @@ def test_callsign_replaces_the_designer_placeholder(app, window):
     assert fields.callsign_frame.objectName() == "CallSignTextFrame"
     assert fields.callsign is not placeholder_edit
     assert layout.itemAt(0).widget() is fields.callsign_frame
+
+
+def test_entry_font_follows_the_designer_box(app, window):
+    """main.ui's font is carried to every box, including the rebuilt callsign."""
+    layout, placeholder = window
+    fields = Fields(layout, placeholder)
+    for edit in (fields.callsign, fields.SNTText, fields.RcvNrText):
+        assert edit.font().family() == "JetBrains Mono"
+        assert edit.font().pointSize() == 20
 
 
 def test_fields_build_the_declared_boxes_in_order(app, window):

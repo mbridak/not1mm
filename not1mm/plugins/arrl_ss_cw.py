@@ -125,14 +125,26 @@ See the Contest Specific Notes section of the manual for more info.
 """
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
-    # The four fields are the RSTs, the sent serial and the received exchange.
-    FrameText = ("SNT", "SentNR", "sn prec ck sec")
+    # The four boxes are the RSTs, the sent serial and the received exchange.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "Exchange1Text",
+        615,
+    )
+    FrameText = ("SNT", "RCV", "SentNR", "sn prec ck sec")
     AccessibleNames = (
         "RST Sent",
-        "",
+        "RST Received",
         "Sent Number",
         "Serial Number Precident check section",
     )
+    NextField = "Exchange1Text"
+    ESMExchangeField = "Exchange1Text"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -172,7 +184,7 @@ See the Contest Specific Notes section of the manual for more info.
         letter.
         """
         parent = self.parent
-        exchange = parent.other_2.text().upper()
+        exchange = parent.fields.Exchange1Text.text().upper()
         sn = prec = ck = sec = ""
         call = parent.callsign.text()
 
@@ -229,9 +241,9 @@ See the Contest Specific Notes section of the manual for more info.
         """The exchange, parsed into its parts, and the multiplier."""
         parent = self.parent
         sn, prec, ck, sec, call = self.parse_exchange()
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
         parent.contact["NR"] = sn
         parent.contact["Prec"] = prec
         parent.contact["CK"] = ck
@@ -245,8 +257,8 @@ See the Contest Specific Notes section of the manual for more info.
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def cabrillo_qso_line(self, contact):
         """The Sweepstakes line: the operator's own exchange, then the received.
@@ -294,7 +306,7 @@ See the Contest Specific Notes section of the manual for more info.
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(
                     f" {result.get('CK', '')}{result.get('Sect', '')}"
                 )

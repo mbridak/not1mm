@@ -313,6 +313,13 @@ class Fields:
         exchange boxes -- exactly the intended cycle, without setTabOrder().
         """
         if placeholder is not None:
+            if self._edit_font is None:
+                # main.ui is the one place that names the entry font; the old
+                # font lived only on those widgets, so carry it over to the
+                # boxes built here (otherwise they fall back to the app font).
+                old = placeholder.findChild(QtWidgets.QLineEdit, CALLSIGN_SPEC.name)
+                if old is not None:
+                    self._edit_font = old.font()
             self.layout.removeWidget(placeholder)
             placeholder.setParent(None)
             placeholder.deleteLater()
