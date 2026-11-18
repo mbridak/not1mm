@@ -67,6 +67,7 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-11-17] @mbridak Fix: Include soapbox lines in Cabrillo. fixes Cabrillo and filled soapbox lin...
 - [2026-11-14] Merge pull request #745 from df7cb/contest-discovery
   - Build the contest picker from discovered contests
 - [2026-11-13] Merge pull request #743 from df7cb/contest-refactor

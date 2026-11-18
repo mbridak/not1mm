@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-11-17] @mbridak Fix: Include soapbox lines in Cabrillo. fixes Cabrillo and filled soapbox lin...
 - [2026-11-14] Merge pull request #745 from df7cb/contest-discovery
   - Build the contest picker from discovered contests
 - [2026-11-13] Merge pull request #743 from df7cb/contest-refactor
@@ -3056,9 +3057,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
