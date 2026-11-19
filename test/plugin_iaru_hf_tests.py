@@ -80,9 +80,15 @@ def test_class_metadata():
     assert Contest.Mode == "BOTH"
     assert Contest.ZoneType == "IARU"  # the exchange is the ITU zone
     assert Contest.DupeType == 3
-    # the sent exchange is the fixed setting, so other_1 stays hidden
-    assert Contest.EntryFields == ("field1", "field2", "field4")
-    assert Contest.FrameText == ("SNT", "", "ITU Zone")
+    assert Contest.EntryWindowInfo == (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "Exchange1Text",
+        615,
+    )
+    assert Contest.FrameText == ("SNT", "RCV", "ITU Zone")
     assert "Mode" in Contest.LogInfo
     assert "RcvNr" in Contest.LogInfo
 
@@ -119,17 +125,18 @@ def test_set_contact_vars_captures_the_zone():
 
     ctx = SimpleNamespace(
         contact={"Call": "K6GTE", "CountryPrefix": "K"},
-        sent=field("599"),
-        receive=field("599"),
-        other_1=field("8"),
-        other_2=field("28"),
+        fields=SimpleNamespace(
+            SNTText=field("599"),
+            RCVText=field("599"),
+            Exchange1Text=field("28"),
+        ),
         contest_settings={"SentExchange": "8"},
     )
     load_contest("iaru_hf", ctx).set_contact_vars()
     assert ctx.contact["SNT"] == "599"
     assert ctx.contact["RCV"] == "599"
     assert ctx.contact["ZN"] == "28"
-    assert ctx.contact["NR"] == "28"
+    assert "NR" not in ctx.contact
     assert ctx.contact["SentNr"] == "8"
 
 
@@ -146,13 +153,11 @@ def test_prefill_fills_the_zone_from_the_contact():
 
     ctx = SimpleNamespace(
         contact={"ZN": "28"},
-        other_1=Field(),
-        other_2=Field(),
+        fields=SimpleNamespace(Exchange1Text=Field()),
         contest_settings={"SentExchange": "8"},
     )
     load_contest("iaru_hf", ctx).prefill()
-    assert ctx.other_2.text() == "28"
-    assert ctx.other_1.text() == "8"
+    assert ctx.fields.Exchange1Text.text() == "28"
 
 
 # -- the numbers the corpus cases produce --------------------------------------

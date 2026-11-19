@@ -47,10 +47,14 @@ BOXFORT = {
 
 def standard_plugins():
     """Migrated plugins whose mapping is still the old four direct copies."""
+    standard_boxes = {"SNTText", "RCVText", "SntNrText", "RcvNrText"}
     names = []
     for name, data in SNAPSHOT.items():
         module = importlib.import_module(f"not1mm.plugins.{name}")
         if getattr(module.Contest, "EntryWindowInfo", None) is None:
+            continue
+        boxes = {box.spec.name for box in load_contest(name, None).entry_boxes()}
+        if not standard_boxes <= boxes:
             continue
         if all(
             STANDARD_SOURCES.get(column) == spec.split(":", 1)[0]
@@ -175,6 +179,60 @@ def test_ca_qso_party_serials_and_exchange():
     assert contact["Exchange1"] == "CA"
     # The reports were never part of this contest's exchange.
     assert "SNT" not in contact or not contact["SNT"]
+
+
+THREE_BOX = [
+    "10_10_fall_cw",
+    "10_10_spring_cw",
+    "10_10_summer_phone",
+    "10_10_winter_phone",
+    "ari_40_80",
+    "arrl_160m",
+    "arrl_dx_cw",
+    "arrl_dx_ssb",
+    "cq_160_cw",
+    "cq_160_ssb",
+    "cqws",
+    "euhfc",
+    "iaru_hf",
+]
+
+
+@pytest.mark.parametrize("plugin", THREE_BOX)
+def test_the_three_box_family_has_one_received_exchange(plugin):
+    contest = load_contest(plugin, None)
+    assert [box.spec.name for box in contest.entry_boxes()] == [
+        "SNTText",
+        "RCVText",
+        "Exchange1Text",
+    ]
+    assert contest.esm_field_name() == "Exchange1Text"
+    assert contest.next_field_name() == "Exchange1Text"
+    cls = importlib.import_module(f"not1mm.plugins.{plugin}").Contest
+    assert "process_esm" not in cls.__dict__
+
+
+@pytest.mark.parametrize(
+    "plugin,value,column,expected",
+    [
+        ("10_10_fall_cw", "Dave 1234 NC", "NR", "DAVE 1234 NC"),
+        ("ari_40_80", "ab123", "NR", "AB123"),
+        ("arrl_160m", "org", "Exchange1", "org"),
+        ("arrl_dx_cw", "100", "NR", "100"),
+        ("cq_160_cw", "org", "NR", "org"),
+        ("cqws", "single-op", "NR", "single-op"),
+        ("euhfc", "82", "NR", "82"),
+        ("iaru_hf", "28", "ZN", "28"),
+    ],
+)
+def test_the_three_box_family_still_fills_the_same_column(
+    plugin, value, column, expected
+):
+    contact = _run(
+        plugin,
+        {"SNTText": "599", "RCVText": "599", "Exchange1Text": value},
+    )
+    assert contact[column] == expected
 
 
 @pytest.mark.parametrize("plugin", standard_plugins())

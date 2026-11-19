@@ -143,8 +143,6 @@ See the Contest Specific Notes section of the manual for more info.
         "Sent Number",
         "Serial Number Precident Check Section",
     )
-    NextField = "Exchange1Text"
-    ESMExchangeField = "Exchange1Text"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

@@ -52,9 +52,6 @@ class Contest(ContestBase):
     FrameText = ("Name", "State")
     AccessibleNames = ("Name", "State")
     # The module focused the name field after a lookup, not the location.
-    NextField = "NameText"
-    # The location is the box that finishes the contact.
-    ESMExchangeField = "SectText"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

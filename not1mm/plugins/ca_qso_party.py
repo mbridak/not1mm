@@ -211,8 +211,6 @@ input each county separated by a '/'.
     EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625, "Exchange1Text", 615)
     FrameText = ("SentNR", "RcvNR", "State/County")
     AccessibleNames = ("Sent Number", "Received Number", "State/County")
-    NextField = "RcvNrText"
-    ESMExchangeField = "Exchange1Text"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

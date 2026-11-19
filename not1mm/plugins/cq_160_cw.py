@@ -20,11 +20,15 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "ST/Prov or DX CQ Zone"
     DupeType = 1  # once per contest
     Bands = (1.8,)
-    # The reports, the fixed sent exchange (other_1 is hidden) and their
+    # The reports and the received exchange; the sent exchange is fixed.
     # state, province or CQ zone.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "ST/Prov/CQ Zone")
-    AccessibleNames = ("RST Sent", "", "", "Received Exchange")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "ST/Prov/CQ Zone")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Received Exchange",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -101,10 +105,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports, the fixed sent exchange and the received zone."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", "")
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -131,5 +135,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('State', '')}")

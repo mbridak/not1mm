@@ -436,9 +436,11 @@ class ContestBase:
     TabOrder = None
     # The reverse of the same cycle; nothing walks it now that TAB is Qt's own.
     TabOrderPrev = None
-    # Where the focus goes once a lookup has run on the callsign, by field
-    # name; almost every contest leaves it on the last exchange field.
-    NextField = "other_2"
+    # Where the focus goes once a lookup has run on the callsign.  None means
+    # the first exchange box the operator still has to fill: the first visible
+    # box that is neither a report nor the sent-exchange box (which is usually
+    # filled for them).
+    NextField = None
 
     # not1mm-specific: whether a space typed in other_1/other_2 is a separator
     # -- strip it and advance to the next field -- or part of the exchange.
@@ -457,10 +459,9 @@ class ContestBase:
 
     # -- ESM ----------------------------------------------------------------
     # Which entry field carries the received exchange, and so which field
-    # finishes the contact.  The base expects the second extra field; a
-    # contest whose exchange is the first one (and leaves other_2 hidden)
-    # sets "other_1".
-    ESMExchangeField = "other_2"
+    # finishes the contact.  None means the last visible box -- the received
+    # exchange in every shape the window has had.
+    ESMExchangeField = None
     # UDC's QsoErrorString: which boxes must hold something before the contact
     # can be finished, e.g.
     #     "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"
@@ -563,12 +564,53 @@ class ContestBase:
             described.append(box)
         return tuple(described)
 
+    def visible_boxes(self) -> tuple:
+        """``(name, column)`` for every box the contest shows, in order."""
+        return tuple(
+            (box.spec.name, box.spec.column)
+            for box in self.entry_boxes()
+            if box.visible
+        )
+
+    def default_next_field_name(self) -> str:
+        """The first box the operator still has to fill.
+
+        Reports are skipped (the mode fills them) and so is the sent-exchange
+        box (prefill fills it).  A contest that shows only reports falls back
+        to the first box after the sent report -- DXpedition's received report
+        -- and a window with no exchange boxes leaves the callsign alone.
+        """
+        boxes = self.visible_boxes()
+        for name, column in boxes:
+            if column not in ("SNT", "RCV", "SentNr"):
+                return name
+        for name, _ in boxes:
+            if name != "SNTText":
+                return name
+        return "callsign"
+
+    def default_esm_exchange_field_name(self) -> str:
+        """The last visible box: the received exchange, whatever its name."""
+        boxes = self.visible_boxes()
+        if boxes:
+            return boxes[-1][0]
+        all_boxes = self.entry_boxes()
+        return all_boxes[-1].spec.name if all_boxes else "callsign"
+
+    def next_field_name(self) -> str:
+        """Where a lookup leaves the focus: the declaration or the default."""
+        return self.NextField or self.default_next_field_name()
+
+    def esm_field_name(self) -> str:
+        """The box that finishes the contact: the declaration or the last one."""
+        return self.ESMExchangeField or self.default_esm_exchange_field_name()
+
     def init_contest(self):
         """Set up the entry window and the SPACE cycle for this contest."""
         self.interface()
         self.set_tab_next()
         self.set_tab_prev()
-        target = entry_edit(self.parent, self.NextField)
+        target = entry_edit(self.parent, self.next_field_name())
         if target is None:
             fields = getattr(self.parent, "fields", None)
             target = fields.last_edit() if fields is not None else self.parent.callsign
@@ -686,7 +728,14 @@ class ContestBase:
         the CW cut numbers belong on the air, not in the log.
         """
         parent = self.parent
-        target = entry_edit(parent, "other_1")
+        fields = getattr(parent, "fields", None)
+        if fields is not None and hasattr(fields, "by_column"):
+            box = fields.by_column("SentNr")
+            target = box.edit if box is not None else None
+        else:
+            # A parent without Fields (an old test harness) still has the
+            # positional name.
+            target = entry_edit(parent, "other_1")
         if target is None or target.text():
             return
         exchange = parent.process_macro(
@@ -1142,7 +1191,7 @@ class ContestBase:
     # -- ESM ----------------------------------------------------------------
     def qso_error_rules(self) -> tuple:
         """The QsoErrorString rules that decide whether the exchange is here."""
-        return parse_qso_error_string(self.QsoErrorString, self.ESMExchangeField)
+        return parse_qso_error_string(self.QsoErrorString, self.esm_field_name())
 
     def esm_exchange_edits(self) -> tuple:
         """The line edits ESM acts on when the operator is in the exchange.
@@ -1153,7 +1202,7 @@ class ContestBase:
         ``ESMExchangeField``.
         """
         if self.QsoErrorString is None:
-            edit = entry_edit(self.parent, self.ESMExchangeField)
+            edit = entry_edit(self.parent, self.esm_field_name())
             return (edit,) if edit is not None else ()
         rules = self.qso_error_rules()
         if not rules:

@@ -153,7 +153,6 @@ class Contest(ContestBase):
         "Received Serial Number",
         "Received Locator",
     )
-    ESMExchangeField = "Exchange1Text"
     # Each contacted locator square -- the first four characters of the
     # exchange -- once per band.
     NumMults = 1

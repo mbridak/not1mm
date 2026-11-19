@@ -24,8 +24,6 @@ class Contest(ContestBase):
     EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
     FrameText = ("SNT", "RCV", "CQ Zone")
     AccessibleNames = ("RST Sent", "RST Received", "C Q Zone")
-    NextField = "Exchange1Text"
-    ESMExchangeField = "Exchange1Text"
     # Each country and each zone once per band.
     NumMults = 2
     Multiplier1Name = "Country"

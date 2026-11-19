@@ -68,11 +68,14 @@ class Contest(ContestBase):
     Mode = "BOTH"  # CW SSB BOTH RTTY
     EXCHANGE_HINT = "Station Type"
     DupeType = 2  # once per band
-    # The reports and the station type; other_1 is unused.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "Station type")
-    AccessibleNames = ("RST Sent", "", "", "Received Exchange")
-    NextField = "other_2"
+    # The reports and the station type.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "Station type")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Received Exchange",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -107,10 +110,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the station type; this contest marks no multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text()
 
     def prefill(self):
         """Nothing to fill: the sent exchange is a fixed setting."""

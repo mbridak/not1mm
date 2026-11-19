@@ -72,7 +72,6 @@ class Contest(ContestBase):
         "Sent Number",
         "Province or Serial Number",
     )
-    NextField = "RcvNrText"
     # An Italian province once per band, and a DXCC country (Italy excepted)
     # once per band.  Both keys are conditional, so they are methods.
     NumMults = 2

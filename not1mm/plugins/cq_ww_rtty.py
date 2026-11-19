@@ -65,8 +65,6 @@ Please make sure you set the Mode to RTTY Above."""
         "C Q Zone",
         "U S State or Providence",
     )
-    NextField = "Exchange1Text"
-    ESMExchangeField = "SectText"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

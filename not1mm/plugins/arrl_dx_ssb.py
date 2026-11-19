@@ -26,10 +26,14 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "State/Province"
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
-    # other_1 is not used; the whole exchange is the received power/state.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "Power/State/Province")
-    AccessibleNames = ("RST Sent", "", "", "Power or state or province")
+    # The whole exchange is the received power/state, in Exchange1Text.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "Power/State/Province")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Power or state or province",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -107,9 +111,9 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, and the multiplier the contact is worth."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text().upper()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
         self.mark_multipliers()
 
@@ -132,11 +136,11 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
+            if parent.fields.Exchange1Text.text() == "":
                 if result.get("State", ""):
-                    parent.other_2.setText(f"{result.get('State', '')}")
+                    parent.fields.Exchange1Text.setText(f"{result.get('State', '')}")
                 if result.get("Power", ""):
-                    parent.other_2.setText(f"{result.get('Power', '')}")
+                    parent.fields.Exchange1Text.setText(f"{result.get('Power', '')}")
 
 
 # The call history file this contest reads:

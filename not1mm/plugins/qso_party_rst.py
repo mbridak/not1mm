@@ -57,7 +57,6 @@ class Contest(ContestBase):
     RcvLabel = "Rcv RST"
     AccessibleNames = ("Snt", "Rcv", "", "")
     NextField = "other_1"
-    ESMExchangeField = "other_1"  # the exchange is the first extra field
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

@@ -28,7 +28,6 @@ class Contest(ContestBase):
     EntryFields = ("field1", "field2", "field3")
     FrameText = ("SNT", "Grid", "")
     AccessibleNames = ("RST Sent", "", "Grid", "")
-    ESMExchangeField = "other_1"
     # After a call lookup the focus goes straight to the grid.
     NextField = "other_1"
     LogInfo = [

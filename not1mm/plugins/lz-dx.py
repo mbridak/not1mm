@@ -39,10 +39,24 @@ class Contest(ContestBase):
         "M2",
         "PTS",
     ]
-    # The hidden serial and the visible district or zone.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("", "Sent", "District/ITU")
-    AccessibleNames = ("", "", "Sent", "District or ITU")
+    # The sent serial and the visible district or zone.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "RcvNrText",
+        625,
+    )
+    FrameText = ("SNT", "RCV", "Sent", "District/ITU")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Sent",
+        "District or ITU",
+    )
     # Every ITU zone once per band, plus the LZ districts for a foreign
     # entrant or the DXCC countries for an LZ one.
     NumMults = 2
@@ -130,10 +144,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange, then mark the two multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -159,5 +173,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

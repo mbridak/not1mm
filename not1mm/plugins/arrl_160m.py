@@ -48,10 +48,15 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "ST/Prov or DX report only"
     SendsRTCScore = True
     Bands = (1.8,)
-    # other_1 is not used; the received exchange is the section.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "ARRL/RAC Section")
-    AccessibleNames = ("RST Sent", "", "", "Received Exchange")
+    # The received exchange is the section, in Exchange1Text.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "ARRL/RAC Section")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Received Exchange",
+    )
+    QsoErrorString = "Exchange1Text_Any_not_Empty"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -122,10 +127,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange; the received section is stored in ``Exchange1``."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
-        parent.contact["Exchange1"] = parent.other_2.text()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text()
 
     def cabrillo_qso_line(self, contact):
         """The base's line, but the received exchange is ``Exchange1``.
@@ -150,88 +155,11 @@ class Contest(ContestBase):
             f"{str(exchange).ljust(6)}"
         )
 
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        A DX station has no exchange to copy, so its contact is finished as soon
-        as the call is in; a W/VE station waits for the section.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        wve = parent.contact.get("CountryPrefix", "") in ("K", "VE")
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget == "other_2":
-                if not wve or parent.other_2.text() != "":
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget == "other_2":
-                if not wve or parent.other_2.text() != "":
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
+    def esm_exchange_ready(self):
+        """A DX station sends no section; only a W/VE one has one to copy."""
+        if self.parent.contact.get("CountryPrefix", "") not in ("K", "VE"):
+            return True
+        return super().esm_exchange_ready()
 
     def populate_history_info_line(self):
         """Show history info if available."""
@@ -251,5 +179,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Exch1', '')}")

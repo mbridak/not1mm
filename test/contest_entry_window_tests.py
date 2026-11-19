@@ -46,6 +46,8 @@ class Parent:
             setattr(self, name, Widget(name))
         self.fields = FakeFields(self)
         self.after_fields_rebuilt = lambda: None
+        self.set_running = lambda _running: None
+        self.station = {}
         self.tab_next = {}
         self.tab_prev = {}
 
@@ -61,7 +63,12 @@ def test_visible_fields_follow_entry_fields():
     """The shown boxes are the ones the old four frames describe."""
     parent = Parent()
     contest = load_contest("ari_40_80", parent)
-    assert contest.visible_fields() == ("callsign", "SNTText", "RCVText", "RcvNrText")
+    assert contest.visible_fields() == (
+        "callsign",
+        "SNTText",
+        "RCVText",
+        "Exchange1Text",
+    )
     assert load_contest("ari_dx", Parent()).visible_fields() == (
         "callsign",
         "SNTText",
@@ -84,23 +91,34 @@ def test_advance_on_space_defaults_to_separating():
 
 
 def test_a_hidden_field_is_not_in_the_tab_cycle():
-    """10-10 hides other_1, so the derived order skips it."""
-    parent = started("10_10_fall_cw")
+    """DXpedition shows only the reports, so the extras are skipped."""
+    parent = started("dxpedition")
     tab = parent.tab_next
     assert tab[parent.callsign] is parent.sent
     assert tab[parent.sent] is parent.receive
-    assert tab[parent.receive] is parent.other_2  # not the hidden other_1
+    assert tab[parent.receive] is parent.callsign
+    # the hidden fields still have a destination, should focus land on them
+    assert tab[parent.other_1] is parent.callsign
     assert tab[parent.other_2] is parent.callsign
-    # the hidden field still has a destination, should focus land on it
-    assert tab[parent.other_1] is parent.other_2
+
+
+def test_a_lookup_lands_on_the_first_field_to_fill():
+    """NextField defaults to the first box that is not a report or SentNR."""
+    parent = started("naqp_cw")
+    assert parent.next_field is parent.fields.edit("NameText")
+    parent = started("10_10_fall_cw")
+    assert parent.next_field is parent.fields.edit("Exchange1Text")
+    parent = started("ari_dx")
+    assert parent.next_field is parent.fields.edit("RcvNrText")
 
 
 def test_shift_tab_reverses_the_derived_order():
     """Shift-TAB is the same cycle backwards."""
     parent = started("ari_40_80")
+    exchange = parent.fields.edit("Exchange1Text")
     prev = parent.tab_prev
-    assert prev[parent.callsign] is parent.other_2
-    assert prev[parent.other_2] is parent.receive
+    assert prev[parent.callsign] is exchange
+    assert prev[exchange] is parent.receive
     assert prev[parent.receive] is parent.sent
     assert prev[parent.sent] is parent.callsign
 

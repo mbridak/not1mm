@@ -123,11 +123,24 @@ A station may be worked once per band every three hours.  FM counts as SSB and R
         241000.0,
         300000.0,
     )
-    # Only the sent years and the received years are used; other_1 (field3) is
-    # hidden.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("", "Sent", "Years Licenced")
-    AccessibleNames = ("", "", "Sent", "Years Licenced")
+    # The sent years and the received years are both used.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "RcvNrText",
+        625,
+    )
+    FrameText = ("SNT", "RCV", "Sent", "Years Licenced")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Sent",
+        "Years Licenced",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -165,10 +178,10 @@ A station may be worked once per band every three hours.  FM counts as SSB and R
     def set_contact_vars(self):
         """The exchange: the sent years, and the received years in ``NR``."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
 
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0

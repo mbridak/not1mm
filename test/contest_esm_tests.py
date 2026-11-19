@@ -192,6 +192,45 @@ def test_every_declared_qso_error_string_names_declared_boxes():
         assert {rule.box for rule in rules} <= declared, path.stem
 
 
+# -- the derived field names ------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "plugin,expected",
+    [
+        ("ari_dx", ("RcvNrText", "RcvNrText")),
+        ("10_10_fall_cw", ("Exchange1Text", "Exchange1Text")),
+        ("naqp_cw", ("NameText", "SectText")),
+        ("cq_ww_rtty", ("Exchange1Text", "SectText")),
+        ("ca_qso_party", ("RcvNrText", "Exchange1Text")),
+        ("arrl_ss_cw", ("Exchange1Text", "Exchange1Text")),
+        ("ssa_mt_cw", ("RcvNrText", "Exchange1Text")),
+        ("lz-dx", ("RcvNrText", "RcvNrText")),
+        ("cq_ww_vhf", ("RcvNrText", "RcvNrText")),  # still legacy field3/field4
+    ],
+)
+def test_next_and_esm_fields_are_derived(plugin, expected):
+    contest = load_contest(plugin, None)
+    assert (contest.next_field_name(), contest.esm_field_name()) == expected
+
+
+def test_a_reports_only_window_still_has_a_lookup_landing():
+    contest = load_contest("dxpedition", None)
+    assert contest.default_next_field_name() == "RCVText"
+    assert contest.default_esm_exchange_field_name() == "RCVText"
+
+
+def test_migrated_contests_do_not_declare_the_two_fields():
+    for path in sorted(PLUGIN_PATH.glob("*.py")):
+        if path.stem in {"__init__", "base"}:
+            continue
+        cls = importlib.import_module(f"not1mm.plugins.{path.stem}").Contest
+        if getattr(cls, "EntryWindowInfo", None) is None:
+            continue
+        assert cls.NextField is None, path.stem
+        assert cls.ESMExchangeField is None, path.stem
+
+
 # -- the base machine, on one of the migrated contests ----------------------
 
 
@@ -228,6 +267,19 @@ def test_search_and_pounce_sends_the_exchange_and_logs():
     )
     assert window.sent_buttons == [window.esm_dict["EXCH"]]
     assert window.saved == 1
+
+
+def test_arrl_160_is_station_dependent():
+    contest, window = _window_for("arrl_160m")
+    assert "process_esm" not in type(contest).__dict__
+    window.contact = {"CountryPrefix": "K"}
+    window.fields.edit("Exchange1Text").setText("")
+    assert contest.esm_exchange_ready() is False
+    window.fields.edit("Exchange1Text").setText("ORG")
+    assert contest.esm_exchange_ready() is True
+    window.contact = {"CountryPrefix": "DL"}
+    window.fields.edit("Exchange1Text").setText("")
+    assert contest.esm_exchange_ready() is True
 
 
 def test_an_explicit_empty_qso_error_string_has_no_rules():

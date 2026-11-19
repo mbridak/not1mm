@@ -20,10 +20,14 @@ class Contest(ContestBase):
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "Automobile Code"
     Bands = (3.5, 7)
-    # The whole exchange is the automobile code, so other_1 is not used.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "Automobile Code")
-    AccessibleNames = ("RST Sent", "", "", "Received Exchange")
+    # The whole exchange is the automobile code, in Exchange1Text.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "Automobile Code")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Received Exchange",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -62,10 +66,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, and the automobile code the contact is worth."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text().upper()
         self.mark_multipliers()
 
     def populate_history_info_line(self):
@@ -85,5 +89,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Sect', '')}")

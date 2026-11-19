@@ -36,9 +36,6 @@ class Contest(ContestBase):
     FrameText = ("SNT", "RCV", "Name", "Comment")
     AccessibleNames = ("RST Sent", "RST Received", "Name", "Comment")
     # A callsign lookup leaves the focus on the name field.
-    NextField = "NameText"
-    # The comment is the box that finishes the contact.
-    ESMExchangeField = "CommentText"
     # The name and the comment contain spaces, so a space is text and not a
     # separator in either extra field.
     advance_on_space = [True, True, True, False, False]

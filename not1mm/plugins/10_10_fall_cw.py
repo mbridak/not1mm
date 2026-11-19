@@ -23,16 +23,20 @@ class Contest(ContestBase):
     EXCHANGE_HINT = "Name + 10-10# + SPC"
     SendsRTCScore = True
     Bands = (28,)
-    # The entry window hides other_1; the whole exchange goes in other_2, whose
+    # The whole exchange goes in Exchange1Text, whose
     # spaces are significant.
-    EntryFields = ("field1", "field2", "field4")
     advance_on_space = [True, True, True, False, False]
-    FrameText = ("SNT", "", "Name 1010# SPC")
-    AccessibleNames = ("RST Sent", "", "", "Name 10 10 # SPC")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "Name 1010# SPC")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Name 10 10 # SPC",
+    )
 
     def validate(self):
         """The exchange is a name, a 10-10 number and an SPC."""
-        exchange = self.parent.other_2.text().upper().split()
+        exchange = self.parent.fields.Exchange1Text.text().upper().split()
         return (
             len(exchange) == 3
             and exchange[0].isalpha()
@@ -43,11 +47,11 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The whole exchange in NR, the name split out, and a validity check."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text().upper()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
-        exchange = parent.other_2.text().upper().split()
+        exchange = parent.fields.Exchange1Text.text().upper().split()
         if len(exchange) == 3:
             parent.contact["Name"] = exchange[0]
             parent.contact["Comment"] = self.DisplayName
@@ -65,7 +69,7 @@ class Contest(ContestBase):
             return 0
         exchange = str(parent.contact.get("NR", "")).upper().split()
         if len(exchange) != 3:
-            exchange = parent.other_2.text().upper().split()
+            exchange = parent.fields.Exchange1Text.text().upper().split()
         if len(exchange) == 3:
             try:
                 if int(exchange[1]) > 0:

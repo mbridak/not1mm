@@ -34,9 +34,13 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The hidden serial and the visible licence year.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "Lic Year")
-    AccessibleNames = ("RST Sent", "", "", "License Year")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "Lic Year")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "License Year",
+    )
     # Each licence year once per band, whatever the mode.
     NumMults = 1
     Multiplier1Name = "NR"
@@ -72,9 +76,9 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the licence year; nothing is marked."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", "")
 
     def recalculate_mults(self):
@@ -115,5 +119,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Sect', '')}")

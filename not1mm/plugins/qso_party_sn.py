@@ -66,7 +66,6 @@ input each county separated by a '/'.
     RcvLabel = "RcvNR"
     AccessibleNames = ("SentNR", "RcvNR", "", "")
     NextField = "receive"
-    ESMExchangeField = "other_1"  # the exchange is the first extra field
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
