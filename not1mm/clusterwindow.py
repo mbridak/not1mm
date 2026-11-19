@@ -9,6 +9,7 @@ Purpose: Standalone dock widget for DX cluster traffic.
 import logging
 import re
 from datetime import UTC, datetime
+from typing import Any
 
 from PyQt6 import QtGui, QtNetwork
 from PyQt6.QtCore import pyqtSignal
@@ -193,7 +194,7 @@ class ClusterWindow(QDockWidget):
                 r"(\d{2}-\w{3}-\d{4})\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*?)\s+<(\w+)>",
                 data,
             ):
-                cmd = {}
+                cmd: dict[Any, Any] = {}
                 cmd["cmd"] = "SPACEWEATHER"
                 cmd["date"] = match.group(1)
                 cmd["hour"] = match.group(2)
