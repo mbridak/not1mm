@@ -255,7 +255,8 @@ class CheckWindow(QDockWidget):
         return self.background_colors_cache
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.checkwindow_closed.emit()
         event.accept()
 

@@ -155,6 +155,7 @@ class ZoneWindow(QDockWidget):
                     self.scrollToZone(str(msg.get("itu", "")))
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.zone_trackerwindow_closed.emit()
         event.accept()

@@ -183,6 +183,7 @@ class DXCCWindow(QDockWidget):
                 self.scrollToDXCC(msg.get("dxcc", ""))
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.dxcc_trackerwindow_closed.emit()
         event.accept()

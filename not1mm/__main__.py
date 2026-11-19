@@ -179,6 +179,7 @@ class MainWindow(QtWidgets.QMainWindow):
     voice_thread = QThread()
     rtc_thread = QThread()
 
+    main_window_closing = False
     rig_control = None
     log_window = None
     check_window = None
@@ -1802,6 +1803,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         None
         """
+        self.main_window_closing = True
         self._shutdown()
         app.quit()
 

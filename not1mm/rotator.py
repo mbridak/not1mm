@@ -410,6 +410,7 @@ class RotatorWindow(QDockWidget):
             self.rotator.connect()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.rotatorwindow_closed.emit()
         event.accept()

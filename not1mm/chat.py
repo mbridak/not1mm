@@ -58,7 +58,8 @@ class ChatWindow(QDockWidget):
         self.active: bool = bool(mode)
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.chatwindow_closed.emit()
         event.accept()
 

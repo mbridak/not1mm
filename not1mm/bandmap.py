@@ -916,6 +916,7 @@ class BandMapWindow(QDockWidget):
 
     def closeEvent(self, _event: QtGui.QCloseEvent) -> None:
         """Triggered when instance closes."""
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.bandmapwindow_closed.emit()
         _event.accept()
