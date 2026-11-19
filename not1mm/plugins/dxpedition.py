@@ -24,9 +24,9 @@ class Contest(ContestBase):
     DupeType = 4  # no dupe checking
     SupportsFT8 = True
     # Only the two report fields are used.
-    EntryFields = ("field1", "field2")
-    FrameText = ("SNT", "", "")
-    AccessibleNames = ("RST Sent", "", "", "")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450)
+    FrameText = ("SNT", "RCV")
+    AccessibleNames = ("RST Sent", "RST Received")
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -37,7 +37,6 @@ class Contest(ContestBase):
     ]
     # A callsign lookup leaves the focus on the received report, not on an
     # exchange field.
-    NextField = "receive"
 
     def init_contest(self):
         """Start in run mode, with no call remembered yet."""
@@ -52,8 +51,8 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Copy the two reports into the contact."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
 
     def prefill(self):
         """Nothing to prefill: this mode sends no exchange."""
@@ -72,6 +71,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -92,7 +93,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -120,7 +121,7 @@ class Contest(ContestBase):
                             parent.restore_button_color(parent.esm_dict["EXCH"])
                             parent.make_button_green(parent.esm_dict["QRZ"])
 
-            elif parent.current_widget in ("sent", "receive"):
+            elif focused in (parent.fields.SNTText, parent.fields.RCVText):
                 parent.make_button_green(parent.esm_dict["QRZ"])
                 buttons_to_send.append(parent.esm_dict["QRZ"])
                 buttons_to_send.append("LOGIT")

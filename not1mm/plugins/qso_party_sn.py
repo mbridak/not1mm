@@ -60,12 +60,10 @@ input each county separated by a '/'.
     # Allow for rovers: the same station may be worked again.
     DupeType = 4
     Bands = (1.8, 3.5, 7, 14, 21, 28, 50, 144, 432)
-    # The serials and the county/state/country; other_2 is unused.
-    EntryFields = ("field1", "field2", "field3")
-    FrameText = ("SentNR", "County/State/DX", "")
-    RcvLabel = "RcvNR"
-    AccessibleNames = ("SentNR", "RcvNR", "", "")
-    NextField = "receive"
+    # The serials and the county/state/country; Exchange1Text is the exchange.
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625, "Exchange1Text", 615)
+    FrameText = ("SentNR", "RcvNR", "County/State/DX")
+    AccessibleNames = ("SentNR", "RcvNR", "County/State/DX")
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -118,9 +116,9 @@ input each county separated by a '/'.
     def set_contact_vars(self):
         """The serials and the received county/state/country."""
         parent = self.parent
-        parent.contact["SentNr"] = parent.sent.text()
-        parent.contact["NR"] = parent.receive.text()
-        parent.contact["Exchange1"] = parent.other_1.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text().upper()
         self.mark_multipliers()
 
     def prefill(self):
@@ -129,8 +127,8 @@ input each county separated by a '/'.
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.sent.text()) == 0:
-            parent.sent.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def after_recalculate_mults(self):
         """Refresh the log window after a rescore."""
@@ -208,5 +206,5 @@ input each county separated by a '/'.
             parent.history_info.setText(
                 f"{county} {result.get('UserText', '')}".strip()
             )
-            if county and not parent.other_1.text():
-                parent.other_1.setText(county)
+            if county and not parent.fields.Exchange1Text.text():
+                parent.fields.Exchange1Text.setText(county)

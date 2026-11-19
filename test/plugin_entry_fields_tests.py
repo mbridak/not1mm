@@ -242,6 +242,70 @@ def test_a_free_form_exchange_keeps_a_space(plugin):
     assert contest.advance_on_space == [True, True, False]
 
 
+LAST_GROUP = [
+    "qso_party_rst",
+    "qso_party_sn",
+    "stew_perry_topband",
+    "raem",
+    "dxpedition",
+]
+
+
+@pytest.mark.parametrize("plugin", LAST_GROUP)
+def test_the_last_group_is_migrated(plugin):
+    contest = load_contest(plugin, None)
+    boxes = [box.spec.name for box in contest.entry_boxes()]
+    assert boxes
+    assert contest.ESMExchangeField is None
+    assert contest.NextField is None
+
+
+@pytest.mark.parametrize(
+    "plugin,values,column,expected",
+    [
+        (
+            "qso_party_rst",
+            {"SNTText": "599", "RCVText": "599", "Exchange1Text": "ca"},
+            "Exchange1",
+            "CA",
+        ),
+        (
+            "qso_party_sn",
+            {"SntNrText": "001", "RcvNrText": "002", "Exchange1Text": "ca"},
+            "SentNr",
+            "001",
+        ),
+        (
+            "qso_party_sn",
+            {"SntNrText": "001", "RcvNrText": "002", "Exchange1Text": "ca"},
+            "NR",
+            "002",
+        ),
+        (
+            "stew_perry_topband",
+            {"SNTText": "599", "RCVText": "599", "RcvNrText": "em12"},
+            "NR",
+            "EM12",
+        ),
+        (
+            "raem",
+            {"SntNrText": "001", "RcvNrText": "002", "Exchange1Text": "55N 37E"},
+            "SentNr",
+            "001",
+        ),
+        (
+            "raem",
+            {"SntNrText": "001", "RcvNrText": "002", "Exchange1Text": "55N 37E"},
+            "Exchange1",
+            "55N 37E",
+        ),
+    ],
+)
+def test_the_last_group_fills_its_columns(plugin, values, column, expected):
+    contact = _run(plugin, values)
+    assert contact[column] == expected
+
+
 THREE_BOX = [
     "10_10_fall_cw",
     "10_10_spring_cw",

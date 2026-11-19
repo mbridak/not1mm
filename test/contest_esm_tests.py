@@ -199,6 +199,7 @@ ADOPTED_TWO_BOX = [
     "cwt",
     "k1usn_sst",
     "phone_weekly_test",
+    "raem",
 ]
 
 

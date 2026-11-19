@@ -123,9 +123,14 @@ def test_every_unmigrated_plugin_still_describes_its_old_window():
         assert [box.accessible for box in boxes] == [
             expected["accessible"][key] for key in ACCESSIBLE_KEYS
         ], plugin
-    # The list shrinks with each migration batch; it must not be empty until
-    # Phase 3 deletes the legacy description entirely.
-    assert checked
+    if not checked:
+        pytest.skip("every plugin now declares EntryWindowInfo")
+
+
+def test_every_plugin_now_declares_its_entry_window():
+    """The migration is complete: no plugin is left on the old description."""
+    for plugin in plugin_names():
+        assert load_contest(plugin, Parent()).EntryWindowInfo is not None, plugin
 
 
 def test_legacy_boxes_keep_the_old_defaults():

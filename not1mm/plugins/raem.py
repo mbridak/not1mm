@@ -76,12 +76,12 @@ And in the exchange macro put '# {EXCH}'.
     DupeType = 2  # once per band
     Bands = (3.5, 7, 14, 21, 28)
     SendsRTCScore = True
-    NextField = "other_1"
     # The received RST is hidden: the entry window is our serial, their serial
     # and their coordinates.
-    EntryFields = ("field1", "field3", "field4")
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625, "Exchange1Text", 615)
     FrameText = ("Sent S/N", "Rcv S/N", "Exchange")
-    AccessibleNames = ("Sent Serial Number", "", "Serial Number", "Exchange")
+    AccessibleNames = ("Sent Serial Number", "Serial Number", "Exchange")
+    QsoErrorString = "RcvNrText_Any_not_Empty, Exchange1Text_Any_not_Empty"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -95,24 +95,24 @@ And in the exchange macro put '# {EXCH}'.
     def interface(self):
         """The entry window, and a blank sent-serial field."""
         super().interface()
-        self.parent.sent.setText("")
+        self.parent.fields.SntNrText.setText("")
 
     def prefill(self):
         """Fill the sent serial, which lives in the sent field here."""
         serial_nr = str(self.parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(self.parent.sent.text()) == 0:
-            self.parent.sent.setText(serial_nr)
+        if len(self.parent.fields.SntNrText.text()) == 0:
+            self.parent.fields.SntNrText.setText(serial_nr)
 
     def set_contact_vars(self):
         """The reports are fixed; the serials and the coordinates are typed."""
         parent = self.parent
         parent.contact["SNT"] = "599"
         parent.contact["RCV"] = "599"
-        parent.contact["SentNr"] = parent.sent.text()
-        parent.contact["NR"] = parent.other_1.text()
-        parent.contact["Exchange1"] = parent.other_2.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text()
 
     def points(self):
         """50 points, the degrees apart, and the two bonuses."""
@@ -146,88 +146,6 @@ And in the exchange macro put '# {EXCH}'.
 
     def recalculate_mults(self):
         """Nothing to mark: there is no counted multiplier, only the 1.1."""
-
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        The exchange is the serial *and* the coordinates, so both fields have
-        to be filled before the contact is finished.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
 
     def cabrillo_qso_line(self, contact):
         """The RAEM line: the serial and the coordinates both ways."""
@@ -264,5 +182,5 @@ And in the exchange macro put '# {EXCH}'.
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Exch1', '')}")

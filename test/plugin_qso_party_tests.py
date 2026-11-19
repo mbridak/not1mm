@@ -74,20 +74,26 @@ class _Field:
     ],
 )
 def test_rst_prefill_uses_the_live_mode(mode, expected):
-    ctx = SimpleNamespace(radio_state={"mode": mode}, sent=_Field(), receive=_Field())
+    ctx = SimpleNamespace(
+        radio_state={"mode": mode},
+        fields=SimpleNamespace(SNTText=_Field(), RCVText=_Field()),
+    )
     load_contest("qso_party_rst", ctx).prefill()
-    assert ctx.sent.text() == expected
-    assert ctx.receive.text() == expected
+    assert ctx.fields.SNTText.text() == expected
+    assert ctx.fields.RCVText.text() == expected
 
 
 def test_rst_prefill_needs_a_mode():
-    ctx = SimpleNamespace(radio_state={"mode": ""}, sent=_Field(), receive=_Field())
+    ctx = SimpleNamespace(
+        radio_state={"mode": ""},
+        fields=SimpleNamespace(SNTText=_Field(), RCVText=_Field()),
+    )
     load_contest("qso_party_rst", ctx).prefill()
-    assert ctx.sent.text() == ""
-    assert ctx.receive.text() == ""
+    assert ctx.fields.SNTText.text() == ""
+    assert ctx.fields.RCVText.text() == ""
 
 
 def test_sn_prefill_fills_the_serial():
-    ctx = SimpleNamespace(current_sn=7, sent=_Field())
+    ctx = SimpleNamespace(current_sn=7, fields=SimpleNamespace(SntNrText=_Field()))
     load_contest("qso_party_sn", ctx).prefill()
-    assert ctx.sent.text() == "007"
+    assert ctx.fields.SntNrText.text() == "007"

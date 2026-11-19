@@ -24,12 +24,11 @@ class Contest(ContestBase):
     DupeType = 1  # 1 once per contest, 2 work each band, 3 each band/mode
     SendsRTCScore = True
     Bands = (1.8,)
-    # The grid is the only exchange field; other_2 is hidden.
-    EntryFields = ("field1", "field2", "field3")
-    FrameText = ("SNT", "Grid", "")
-    AccessibleNames = ("RST Sent", "", "Grid", "")
+    # The grid is the only exchange field.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "RcvNrText", 625)
+    FrameText = ("SNT", "RCV", "Grid")
+    AccessibleNames = ("RST Sent", "RST Received", "Grid")
     # After a call lookup the focus goes straight to the grid.
-    NextField = "other_1"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -68,9 +67,9 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the received grid; nothing is marked."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_1.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
 
     def prefill(self):
         """The operator types the grid; the setup has nothing to fill in."""
@@ -112,5 +111,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Loc1', '')}")

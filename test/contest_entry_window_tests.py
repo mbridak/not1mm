@@ -9,7 +9,7 @@ default and AGCW's all-four case are pinned here.
 from __future__ import annotations
 
 from contest_harness import FakeFields
-from not1mm.lib.contest import load_contest
+from not1mm.lib.contest import ContestBase, load_contest
 
 ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
 WIDGETS = ("field1", "field2", "field3", "field4")
@@ -90,15 +90,22 @@ def test_advance_on_space_defaults_to_separating():
     ]
 
 
+class HiddenFieldsContest(ContestBase):
+    """A legacy description that hides the second report and the last box."""
+
+    EntryFields = ("field1", "field3")
+
+
 def test_a_hidden_field_is_not_in_the_tab_cycle():
-    """DXpedition shows only the reports, so the extras are skipped."""
-    parent = started("dxpedition")
+    """A hidden box is skipped; it still has a destination."""
+    parent = Parent()
+    HiddenFieldsContest(parent).init_contest()
     tab = parent.tab_next
     assert tab[parent.callsign] is parent.sent
-    assert tab[parent.sent] is parent.receive
-    assert tab[parent.receive] is parent.callsign
-    # the hidden fields still have a destination, should focus land on them
+    assert tab[parent.sent] is parent.other_1
     assert tab[parent.other_1] is parent.callsign
+    # the hidden fields still have a destination, should focus land on them
+    assert tab[parent.receive] is parent.other_1
     assert tab[parent.other_2] is parent.callsign
 
 

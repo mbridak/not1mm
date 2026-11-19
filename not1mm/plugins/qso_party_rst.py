@@ -51,12 +51,10 @@ class Contest(ContestBase):
     # Allow for rovers: the same station may be worked again.
     DupeType = 4
     Bands = (1.8, 3.5, 7, 14, 21, 28, 50, 144, 432)
-    # The reports and the county/state/country; other_2 is unused.
-    EntryFields = ("field1", "field2", "field3")
-    FrameText = ("Sent RST", "County/State/DX", "")
-    RcvLabel = "Rcv RST"
-    AccessibleNames = ("Snt", "Rcv", "", "")
-    NextField = "other_1"
+    # The reports and the county/state/country; Exchange1Text is the exchange.
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("Sent RST", "Rcv RST", "County/State/DX")
+    AccessibleNames = ("Snt", "Rcv", "County/State/DX")
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -109,9 +107,9 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the received county/state/country."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Exchange1"] = parent.other_1.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text().upper()
         self.mark_multipliers()
 
     def prefill(self):
@@ -124,8 +122,8 @@ class Contest(ContestBase):
             report = "599"
         else:
             return
-        parent.sent.setText(report)
-        parent.receive.setText(report)
+        parent.fields.SNTText.setText(report)
+        parent.fields.RCVText.setText(report)
 
     def after_recalculate_mults(self):
         """Refresh the log window after a rescore."""
@@ -203,5 +201,5 @@ class Contest(ContestBase):
             parent.history_info.setText(
                 f"{county} {result.get('UserText', '')}".strip()
             )
-            if county and not parent.other_1.text():
-                parent.other_1.setText(county)
+            if county and not parent.fields.Exchange1Text.text():
+                parent.fields.Exchange1Text.setText(county)
