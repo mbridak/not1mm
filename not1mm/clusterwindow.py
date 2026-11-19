@@ -181,6 +181,8 @@ class ClusterWindow(QDockWidget):
                         "set dx mode " + self.pref.get("cluster_mode", "OPEN")
                     )
                     self.cluster_send("sh wwv 1")
+                else:
+                    self.cluster_send("show/wwv 1")
                 logger.debug(f"callsign login acknowledged {data}")
 
             if "BEACON" in data:
