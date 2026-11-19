@@ -1774,7 +1774,13 @@ class MainWindow(QtWidgets.QMainWindow):
         except (RuntimeError, AttributeError):
             ...
 
-        cmd = {"cmd": "HALT"}
+        # Fix #746
+        vfo_rig: typing.Any | None = getattr(self.vfo_window, "rig_control", None)
+        close: typing.Any | None = getattr(vfo_rig, "close", None)
+        if close is not None:
+            close()
+
+        cmd: dict[str, str] = {"cmd": "HALT"}
         if self.bandmap_window:
             self.bandmap_window.msg_from_main(cmd)
         if self.log_window:
