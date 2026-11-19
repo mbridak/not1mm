@@ -269,16 +269,18 @@ S&P  F5:      {MYCALL}
     DupeType = 2  # once per band
     SendsRTCScore = True
     SupportsFT8 = True
-    # Makes the main window call parse_exchange() on every edit of other_2.
+    # Makes the main window call parse_exchange() on every edit of Exchange1Text.
     call_parse_exchange_on_edit = True
     # Only the two exchange fields are used; the RSTs are hidden.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "SentNR", "NR Name Loc")
-    AccessibleNames = ("", "", "Sent Serial Number", "Serial Number Name Location")
-    NextField = "other_2"
-    # other_2 is a free-form "NR Name Loc", so a space there is part of the
-    # exchange; other_1 is the sent serial and a space still separates.
-    advance_on_space = [True, True, True, True, False]
+    EntryWindowInfo = ("SntNrText", 625, "Exchange1Text", 615)
+    FrameText = ("SentNR", "NR Name Loc")
+    AccessibleNames = (
+        "Sent Serial Number",
+        "Serial Number Name Location",
+    )
+    # Exchange1Text is a free-form "NR Name Loc", so a space there is part
+    # of the exchange; SntNrText is the sent serial and still separates.
+    advance_on_space = [True, True, False]
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -324,7 +326,7 @@ S&P  F5:      {MYCALL}
             else ""
         )
         nr, name_tok, loc, call_out = split_exchange(
-            parent, parent.other_2.text(), call, pfx
+            parent, parent.fields.Exchange1Text.text(), call, pfx
         )
         label = f"nr:{nr} name:{name_tok} loc:{loc}"
         if call_out != call:
@@ -381,8 +383,8 @@ S&P  F5:      {MYCALL}
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr in ("None", "REQUESTED"):
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def points(self):
         """1 point for a valid QSO; a non-NA operator scores only NA contacts."""
@@ -411,9 +413,9 @@ S&P  F5:      {MYCALL}
         parent = self.parent
         contact = parent.contact
         nr, name_tok, loc, call = self.parse_exchange()
-        contact["SNT"] = parent.sent.text()
-        contact["RCV"] = parent.receive.text()
-        contact["SentNr"] = parent.other_1.text().strip() or 0
+        contact["SNT"] = self.report_default()
+        contact["RCV"] = self.report_default()
+        contact["SentNr"] = parent.fields.SntNrText.text().strip() or 0
         contact["NR"] = nr or 0
         contact["Name"] = name_tok
         contact["Sect"] = loc
@@ -539,6 +541,8 @@ S&P  F5:      {MYCALL}
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in [
             parent.esm_dict["CQ"],
@@ -553,10 +557,10 @@ S&P  F5:      {MYCALL}
                 parent.restore_button_color(a_button)
 
         buttons_to_send = []
-        in_exchange = parent.current_widget in ("other_1", "other_2")
+        in_exchange = focused in (parent.fields.SntNrText, parent.fields.Exchange1Text)
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.esm_call_sent = ""
                     if self.qsy_needed():
@@ -600,7 +604,7 @@ S&P  F5:      {MYCALL}
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
@@ -641,11 +645,11 @@ S&P  F5:      {MYCALL}
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
+            if parent.fields.Exchange1Text.text() == "":
                 prefill_text = f"{result.get('Name', '')} {_history_location(result)}"
                 prefill_text = prefill_text.strip().upper()
                 if prefill_text:
-                    parent.other_2.setText(prefill_text + " ")
+                    parent.fields.Exchange1Text.setText(prefill_text + " ")
 
     # -- FT8 / digital -------------------------------------------------------
     def ft8_handler(self, packet: dict):
@@ -658,15 +662,15 @@ S&P  F5:      {MYCALL}
         logger.debug("%s", f"{packet=}")
         parent.callsign.setText(packet.get("CALL", ""))
         parent.contact["Call"] = packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
 
         stx = str(packet.get("STX", "")).strip()
         if stx.isdigit() and int(stx) > 0:
-            parent.other_1.setText(stx)
-        elif not parent.other_1.text():
+            parent.fields.SntNrText.setText(stx)
+        elif not parent.fields.SntNrText.text():
             current_sn = getattr(parent, "current_sn", None)
-            parent.other_1.setText(str(current_sn or 1))
+            parent.fields.SntNrText.setText(str(current_sn or 1))
 
         srx = str(packet.get("SRX", "")).strip()
         srx_string = str(packet.get("SRX_STRING", "")).strip()
@@ -676,7 +680,7 @@ S&P  F5:      {MYCALL}
             or packet.get("ARRL_SECT", "")
         )
         parts = [srx, str(packet.get("NAME", "")).strip(), srx_string, location]
-        parent.other_2.setText(" ".join(p for p in parts if p))
+        parent.fields.Exchange1Text.setText(" ".join(p for p in parts if p))
 
         freq_mhz = float(packet.get("FREQ", "0.0") or 0.0)
         parent.contact["Mode"] = packet.get("MODE", "ERR")

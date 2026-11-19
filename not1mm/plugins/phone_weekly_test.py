@@ -33,10 +33,13 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The reports are not part of this contest's exchange.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "Name", "State")
-    AccessibleNames = ("", "", "Name", "State")
-    NextField = "other_1"
+    EntryWindowInfo = ("NameText", 855, "SectText", 600)
+    QsoErrorString = "NameText_Any_not_Empty, SectText_Any_not_Empty"
+    FrameText = ("Name", "State")
+    AccessibleNames = (
+        "Name",
+        "State",
+    )
     # Each US state, VE province and North American country, once per band.  A
     # station outside North America sends only a name, so it has no section --
     # the empty section used to count as one multiplier that they all shared.
@@ -63,15 +66,15 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, and the section multiplier."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Name"] = parent.other_1.text().upper()
-        parent.contact["Sect"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["Name"] = parent.fields.NameText.text().upper()
+        parent.contact["Sect"] = parent.fields.SectText.text().upper()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
         self.mark_multipliers()
 
     def prefill(self):
-        """`other_1` is the *received* name, so the sent exchange is the setup's."""
+        """NameText is the *received* name, so the sent exchange is the setup's."""
 
     def points(self):
         """One point, but only when one end of the contact is in North America."""
@@ -114,88 +117,6 @@ class Contest(ContestBase):
         cmd["cmd"] = "UPDATELOG"
         if self.parent.log_window:
             self.parent.log_window.msg_from_main(cmd)
-
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        A North American station sends a name *and* a section, so both entry
-        fields have to be filled before the contact can be finished.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
 
     def cabrillo_qso_line(self, contact):
         """The Phone Fray line: the sent exchange, then the name and section."""

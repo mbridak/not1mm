@@ -233,8 +233,10 @@ class EntryField:
         self.edit = QtWidgets.QLineEdit(self.frame)
         self.edit.setObjectName(self.name)
         self.edit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
-        if self.spec.max_length:
-            self.edit.setMaxLength(self.spec.max_length)
+        # N1MM's max lengths stay metadata, not policy: not1mm's boxes carry
+        # longer text than their N1MM names suggest (a 6-character grid in a
+        # serial-named box, a free-form exchange), and the old window never
+        # truncated.  Enforcing them here silently cut those exchanges.
         if edit_font is not None:
             self.edit.setFont(edit_font)
         if self.spec.description:

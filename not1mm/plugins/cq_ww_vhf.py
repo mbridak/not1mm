@@ -110,9 +110,12 @@ class Contest(ContestBase):
     SupportsFT8 = True
     LocationFallback = "DX"
     # Only the sent and received grids are used; the RSTs are hidden.
-    EntryFields = ("field3", "field4")
-    FrameText = ("SNT", "Sent Grid", "Grid")
-    AccessibleNames = ("RST Sent", "", "Sent Grid", "Gridsquare")
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625)
+    FrameText = ("Sent Grid", "Grid")
+    AccessibleNames = (
+        "Sent Grid",
+        "Gridsquare",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -165,12 +168,12 @@ class Contest(ContestBase):
         parent = self.parent
         parent.contact["SNT"] = ""
         parent.contact["RCV"] = ""
-        parent.contact["NR"] = normalize_grid(parent.other_2.text())
-        parent.contact["SentNr"] = normalize_grid(parent.other_1.text())
+        parent.contact["NR"] = normalize_grid(parent.fields.RcvNrText.text())
+        parent.contact["SentNr"] = normalize_grid(parent.fields.SntNrText.text())
 
     def validate(self):
         """Validate the exchange entry."""
-        return validate_exchange(self.parent.other_2.text())
+        return validate_exchange(self.parent.fields.RcvNrText.text())
 
     def specific_contest_check_dupe(self, call):
         """A dupe is the same call on the same band from the same grid.
@@ -192,9 +195,9 @@ class Contest(ContestBase):
         """Put the sent grid (the rover location, or the set exchange) in."""
         parent = self.parent
         if parent.RoverLocation:
-            parent.other_1.setText(str(parent.RoverLocation))
+            parent.fields.SntNrText.setText(str(parent.RoverLocation))
         else:
-            parent.other_1.setText(
+            parent.fields.SntNrText.setText(
                 str(parent.contest_settings.get("SentExchange", "")).upper()
             )
 
@@ -258,8 +261,8 @@ class Contest(ContestBase):
         )
         parent.contact["SNT"] = ""
         parent.contact["RCV"] = ""
-        parent.other_1.setText(my_grid)
-        parent.other_2.setText(their_grid)
+        parent.fields.SntNrText.setText(my_grid)
+        parent.fields.RcvNrText.setText(their_grid)
         parent.save_contact()
 
     def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -267,6 +270,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.esm_dict["CQ"],
@@ -283,7 +288,7 @@ class Contest(ContestBase):
         buttons_to_send = []
 
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -294,8 +299,8 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_2",):
-                if not validate_exchange(parent.other_2.text()):
+            elif focused is parent.fields.RcvNrText:
+                if not validate_exchange(parent.fields.RcvNrText.text()):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -323,13 +328,13 @@ class Contest(ContestBase):
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_2",):
-                if not validate_exchange(parent.other_2.text()):
+            elif focused is parent.fields.RcvNrText:
+                if not validate_exchange(parent.fields.RcvNrText.text()):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -363,5 +368,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Loc1', '')}")

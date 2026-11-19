@@ -26,12 +26,14 @@ class Contest(ContestBase):
     SupportsFT8 = True
     SendsRTCScore = True
     # The reports are hidden; only the two exchange fields are shown.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "Sent S/N", "Name + S/N")
-    AccessibleNames = ("", "", "Sent Serial Number", "Name and Serial Number")
-    NextField = "other_2"
+    EntryWindowInfo = ("SntNrText", 625, "Exchange1Text", 615)
+    FrameText = ("Sent S/N", "Name + S/N")
+    AccessibleNames = (
+        "Sent Serial Number",
+        "Name and Serial Number",
+    )
     # The exchange is "name number", which contains a space.
-    advance_on_space = [True, True, True, True, False]
+    advance_on_space = [True, True, False]
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -53,8 +55,8 @@ class Contest(ContestBase):
         parent = self.parent
         parent.contact["SNT"] = "599"
         parent.contact["RCV"] = "599"
-        parent.contact["SentNr"] = parent.other_1.text()
-        exchange = parent.other_2.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        exchange = parent.fields.Exchange1Text.text().upper()
         if " " in exchange:
             parent.contact["Name"], parent.contact["NR"] = exchange.split(" ")
         else:
@@ -66,8 +68,8 @@ class Contest(ContestBase):
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def recalculate_mults(self):
         """No marks: this contest never set ``IsMultiplier1``."""
@@ -96,7 +98,7 @@ class Contest(ContestBase):
         their_nr = (
             the_packet.get("SRX_STRING", "") or the_packet.get("SRX", "")
         ).upper()
-        our_nr = the_packet.get("STX", "") or parent.other_1.text()
+        our_nr = the_packet.get("STX", "") or parent.fields.SntNrText.text()
         # Some loggers put the whole received exchange into SRX_STRING.
         if " " in their_nr:
             exchange = their_nr.split()[:2]
@@ -109,8 +111,8 @@ class Contest(ContestBase):
         # when both were copied, just the name when only that was, and nothing
         # when only the number was (NR set below then survives).
         parent.callsign.setText(the_packet.get("CALL", ""))
-        parent.other_1.setText(our_nr)
-        parent.other_2.setText(
+        parent.fields.SntNrText.setText(our_nr)
+        parent.fields.Exchange1Text.setText(
             f"{their_name} {their_nr}" if their_name and their_nr else their_name
         )
         parent.contact["Call"] = the_packet.get("CALL", "")
@@ -147,5 +149,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Name', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Name', '')}")

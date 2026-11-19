@@ -1,5 +1,7 @@
 """Tests for the UDP ADIF (ft8_handler) entry point of the CW sprint plugins."""
 
+from types import SimpleNamespace
+
 import pytest
 
 from not1mm.lib.contest import load_contest
@@ -63,6 +65,15 @@ class FakeMainWindow:
         self.receive = FakeLineEdit("599")
         self.other_1 = FakeLineEdit()
         self.other_2 = FakeLineEdit()
+        self.fields = SimpleNamespace(
+            SNTText=self.sent,
+            RCVText=self.receive,
+            SntNrText=self.other_1,
+            Exchange1Text=self.other_2,
+            NameText=self.other_1,
+            RcvNrText=self.other_2,
+            SectText=self.other_2,
+        )
         self.contact = {}
         self.contest_settings = {"SentExchange": "JOE 5678"}
         self.contact_is_dupe = 0

@@ -34,10 +34,12 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The reports are not part of this contest's exchange.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "Name", "SPC")
-    AccessibleNames = ("", "", "Name", "SPC")
-    NextField = "other_1"
+    EntryWindowInfo = ("NameText", 855, "SectText", 600)
+    FrameText = ("Name", "SPC")
+    AccessibleNames = (
+        "Name",
+        "SPC",
+    )
     # Each callsign worked, once for the whole contest.
     NumMults = 1
     Multiplier1Name = "CallSign"
@@ -47,18 +49,18 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, the combined key for the QSO line, and the multiplier."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Name"] = parent.other_1.text().upper()
-        parent.contact["Sect"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["Name"] = parent.fields.NameText.text().upper()
+        parent.contact["Sect"] = parent.fields.SectText.text().upper()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
         parent.contact["Exchange1"] = (
-            f"{parent.other_1.text().upper()} {parent.other_2.text().upper()}"
+            f"{parent.fields.NameText.text().upper()} {parent.fields.SectText.text().upper()}"
         )
         self.mark_multipliers()
 
     def prefill(self):
-        """`other_1` is the *received* name, so the sent exchange is the setup's."""
+        """NameText is the *received* name, so the sent exchange is the setup's."""
 
     def after_recalculate_mults(self):
         """Refresh the log window, as the module's replay did."""
@@ -77,6 +79,8 @@ class Contest(ContestBase):
         parent = self.parent
         if new_focused_widget is not None:
             parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -96,7 +100,7 @@ class Contest(ContestBase):
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -107,12 +111,16 @@ class Contest(ContestBase):
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.Exchange1Text):
+                if (
+                    parent.fields.SectText.text() == ""
+                    or parent.fields.NameText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                    parent.fields.NameText.text().isalpha()
+                    and parent.fields.SectText.text().isalpha()
                 ):
                     self._resend_corrected_call(buttons_to_send)
                     parent.make_button_green(parent.esm_dict["QRZ"])
@@ -137,17 +145,21 @@ class Contest(ContestBase):
                         )
                 parent.fldigi_util.send_string(sendstring)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.SntNrText, parent.fields.Exchange1Text):
+                if (
+                    parent.fields.SectText.text() == ""
+                    or parent.fields.NameText.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
+                    parent.fields.NameText.text().isalpha()
+                    and parent.fields.SectText.text().isalpha()
                 ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
@@ -173,13 +185,13 @@ class Contest(ContestBase):
         parent = self.parent
         parent.callsign.setText(the_packet.get("CALL"))
         parent.contact["Call"] = the_packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
         parent.contact["Exchange1"] = the_packet.get("SRX_STRING", "")
         if " " in str(the_packet.get("SRX_STRING", "")):
             exch1, exch2 = str(the_packet.get("SRX_STRING", "")).strip().split(" ")
-            parent.other_1.setText(exch1)
-            parent.other_2.setText(exch2)
+            parent.fields.NameText.setText(exch1)
+            parent.fields.SectText.setText(exch2)
         parent.contact["Mode"] = the_packet.get("MODE", "ERR")
         parent.contact["Freq"] = round(float(the_packet.get("FREQ", "0.0")) * 1000, 2)
         parent.contact["QSXFreq"] = round(
@@ -229,7 +241,7 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Name', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.NameText.text() == "":
+                parent.fields.NameText.setText(f"{result.get('Name', '')}")
+            if parent.fields.SectText.text() == "":
+                parent.fields.SectText.setText(f"{result.get('Sect', '')}")

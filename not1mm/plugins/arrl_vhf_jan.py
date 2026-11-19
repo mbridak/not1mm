@@ -54,9 +54,12 @@ class Contest(ContestBase):
     SendsRTCScore = True
     Bands = (50, 144, 222, 432, 902, 1296, 2300)
     # Only the sent and received grids are used; the RSTs are hidden.
-    EntryFields = ("field3", "field4")
-    FrameText = ("SNT", "Sent Grid", "Grid")
-    AccessibleNames = ("RST Sent", "", "Sent Grid", "Gridsquare")
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625)
+    FrameText = ("Sent Grid", "Grid")
+    AccessibleNames = (
+        "Sent Grid",
+        "Gridsquare",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -132,10 +135,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The sent and received grids; the RSTs are not used."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def cabrillo_qso_line(self, contact):
         """The VHF line: frequency to the MHz, and no RST.
@@ -174,8 +177,8 @@ class Contest(ContestBase):
         parent = self.parent
         parent.callsign.setText(packet.get("CALL"))
         parent.contact["Call"] = packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
         my_grid = packet.get("MY_GRIDSQUARE", "")
         if my_grid:
             my_grid = my_grid[:4]
@@ -189,8 +192,8 @@ class Contest(ContestBase):
         parent.contact["Band"] = get_logged_band(
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )
-        parent.other_1.setText(my_grid)
-        parent.other_2.setText(their_grid)
+        parent.fields.SntNrText.setText(my_grid)
+        parent.fields.RcvNrText.setText(their_grid)
         parent.save_contact()
 
     def populate_history_info_line(self):
@@ -211,5 +214,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Loc1', '')}")

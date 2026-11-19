@@ -181,6 +181,67 @@ def test_ca_qso_party_serials_and_exchange():
     assert "SNT" not in contact or not contact["SNT"]
 
 
+THREE_TWO = [
+    "arrl_field_day",
+    "winter_field_day",
+    "arrl_vhf_jan",
+    "arrl_vhf_jun",
+    "arrl_vhf_sep",
+    "cq_ww_vhf",
+    "cwo",
+    "cwt",
+    "icwc_mst",
+    "k1usn_sst",
+    "na_sprint_cw",
+    "na_sprint_rtty",
+    "phone_weekly_test",
+    "vhf_sprint",
+    "weekly_rtty",
+]
+
+
+@pytest.mark.parametrize("plugin", THREE_TWO)
+def test_the_two_box_family_declares_only_exchange_boxes(plugin):
+    contest = load_contest(plugin, None)
+    boxes = [box.spec.name for box in contest.entry_boxes()]
+    assert len(boxes) == 2
+    assert "SNTText" not in boxes and "RCVText" not in boxes
+    assert contest.ESMExchangeField is None
+    assert contest.NextField is None
+
+
+@pytest.mark.parametrize(
+    "plugin,values,column,expected",
+    [
+        (
+            "arrl_field_day",
+            {"Exchange1Text": "3a", "SectText": "org"},
+            "Exchange1",
+            "3A",
+        ),
+        ("arrl_field_day", {"Exchange1Text": "3a", "SectText": "org"}, "Sect", "ORG"),
+        ("arrl_vhf_jan", {"SntNrText": "fn31", "RcvNrText": "em12"}, "NR", "EM12"),
+        ("cwo", {"SntNrText": "001", "Exchange1Text": "123 bob"}, "Name", "BOB"),
+        ("cwo", {"SntNrText": "001", "Exchange1Text": "123 bob"}, "NR", "123"),
+        ("cwt", {"NameText": "bob", "RcvNrText": "123"}, "Name", "BOB"),
+        ("icwc_mst", {"SntNrText": "001", "Exchange1Text": "bob 123"}, "Name", "BOB"),
+        ("k1usn_sst", {"NameText": "bob", "SectText": "nc"}, "Sect", "NC"),
+        ("phone_weekly_test", {"NameText": "bob", "SectText": "nc"}, "Name", "BOB"),
+        ("weekly_rtty", {"NameText": "bob", "SectText": "nc"}, "Sect", "NC"),
+    ],
+)
+def test_the_two_box_family_fills_its_columns(plugin, values, column, expected):
+    contact = _run(plugin, values)
+    assert contact[column] == expected
+
+
+@pytest.mark.parametrize("plugin", ["cwo", "icwc_mst", "na_sprint_cw"])
+def test_a_free_form_exchange_keeps_a_space(plugin):
+    contest = load_contest(plugin, None)
+    # callsign, the sent box (separates), the free-form received box (keeps it)
+    assert contest.advance_on_space == [True, True, False]
+
+
 THREE_BOX = [
     "10_10_fall_cw",
     "10_10_spring_cw",

@@ -236,8 +236,10 @@ def test_fields_apply_labels_widths_and_lengths(app, window):
     boxes[0].accessible = "Remarks"
     fields.configure(boxes)
 
-    assert fields.CommentText.maxLength() == 60
-    assert fields.NameText.maxLength() == 20
+    # N1MM's maxima are metadata; the old window never truncated, and a grid
+    # or a free-form exchange can be longer than the box's N1MM name suggests.
+    assert fields.CommentText.maxLength() > 60
+    assert fields.NameText.maxLength() > 20
     assert fields.field("CommentText").label.text() == "Remarks"
     assert fields.CommentText.accessibleName() == "Remarks"
     assert layout.stretch(1) == 1695

@@ -27,11 +27,14 @@ class Contest(ContestBase):
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
     # Only the class and section fields are used; the RSTs are hidden.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "Class", "Section")
-    AccessibleNames = ("", "", "Class", "Section")
+    EntryWindowInfo = ("Exchange1Text", 615, "SectText", 600)
+    QsoErrorString = "Exchange1Text_Any_not_Empty, SectText_Any_not_Empty"
+    FrameText = ("Class", "Section")
+    AccessibleNames = (
+        "Class",
+        "Section",
+    )
     # The module focused the class field after a lookup, not the section.
-    NextField = "other_1"
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -76,13 +79,13 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange; the class and section are the received ones."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Exchange1"] = parent.other_1.text().upper()
-        parent.contact["Sect"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["Exchange1"] = parent.fields.Exchange1Text.text().upper()
+        parent.contact["Sect"] = parent.fields.SectText.text().upper()
 
     def prefill(self):
-        """Nothing to prefill: other_1 is the class, not the sent serial."""
+        """Nothing to prefill: Exchange1Text is the class, not the sent serial."""
 
     def cabrillo_qso_line(self, contact):
         """The Field Day line: the operator's own exchange, then class/section.
@@ -116,95 +119,13 @@ class Contest(ContestBase):
             return "DG"
         return mode
 
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        The exchange is the class *and* the section, so both fields have to be
-        filled before the contact is finished.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
-
     def ft8_handler(self, packet):
         """Log a QSO reported by WSJT-X or fldigi over UDP."""
         parent = self.parent
         parent.callsign.setText(packet.get("CALL"))
         parent.contact["Call"] = packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
         parent.contact["Exchange1"] = packet.get("CLASS", "ERR")
         parent.contact["Sect"] = packet.get("ARRL_SECT", "ERR")
         parent.contact["Mode"] = packet.get("MODE", "ERR")
@@ -213,8 +134,8 @@ class Contest(ContestBase):
         parent.contact["Band"] = get_logged_band(
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )
-        parent.other_1.setText(packet.get("CLASS", "ERR"))
-        parent.other_2.setText(packet.get("ARRL_SECT", "ERR"))
+        parent.fields.Exchange1Text.setText(packet.get("CLASS", "ERR"))
+        parent.fields.SectText.setText(packet.get("ARRL_SECT", "ERR"))
         parent.save_contact()
 
     def populate_history_info_line(self):
@@ -235,7 +156,7 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Exch1', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.SectText.text() == "":
+                parent.fields.SectText.setText(f"{result.get('Sect', '')}")

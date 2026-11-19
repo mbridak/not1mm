@@ -192,6 +192,47 @@ def test_every_declared_qso_error_string_names_declared_boxes():
         assert {rule.box for rule in rules} <= declared, path.stem
 
 
+ADOPTED_TWO_BOX = [
+    "arrl_field_day",
+    "winter_field_day",
+    "cwo",
+    "cwt",
+    "k1usn_sst",
+    "phone_weekly_test",
+]
+
+
+@pytest.mark.parametrize("plugin", ADOPTED_TWO_BOX)
+def test_the_two_box_family_has_no_esm_override(plugin):
+    cls = importlib.import_module(f"not1mm.plugins.{plugin}").Contest
+    assert cls.QsoErrorString
+    assert "process_esm" not in cls.__dict__
+
+
+@pytest.mark.parametrize("plugin", ADOPTED_TWO_BOX)
+def test_each_two_box_rule_gates_the_contact(plugin):
+    contest, window = _window_for(plugin)
+    rules = contest.qso_error_rules()
+    assert len(rules) == 2
+    edits = [window.fields.edit(rule.box) for rule in rules]
+    assert all(edit is not None for edit in edits)
+
+    for missing in edits:
+        window.sent_buttons.clear()
+        window.saved = 0
+        for edit in edits:
+            edit.setText("X")
+        missing.setText("")
+        contest.process_esm(new_focused_widget=edits[0], with_enter=True)
+        assert window.esm_dict["AGN"] in window.sent_buttons
+        assert window.saved == 0
+
+    for edit in edits:
+        edit.setText("X")
+    contest.process_esm(new_focused_widget=edits[0], with_enter=True)
+    assert window.saved == 1
+
+
 # -- the derived field names ------------------------------------------------
 
 
