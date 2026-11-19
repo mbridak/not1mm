@@ -32,6 +32,7 @@ class ClusterWindow(QDockWidget):
         self.action = action
         self.parent = parent
 
+        self.clustertype = "unknown"
         self.pref = Preferences.data()
         load_ui(self, fsutils.APP_DATA_PATH / "clusterwindow.ui")
         self.setObjectName("cluster-window")
@@ -131,34 +132,7 @@ class ClusterWindow(QDockWidget):
             logger.debug(f"< {data}")
             self.append_message(data)
 
-            if (
-                "login:" in data.lower()
-                or "call:" in data.lower()
-                or "callsign:" in data.lower()
-            ):
-                login = self.pref.get("cluster_login", "") or self.pref.get(
-                    "current_op", ""
-                )
-                self.cluster_send(login)
-
-            if "password:" in data.lower():
-                self.cluster_send(self.pref.get("cluster_password", ""))
-
-            if "HELLO" in data.upper():
-                self.test_for_data = self.socket.canReadLine
-                self.connectButton.setText("Connected")
-                self.cluster_send(self.pref.get("cluster_filter", ""))
-                self.cluster_send("set dx extension Section")
-                self.cluster_send(
-                    "set dx mode " + self.pref.get("cluster_mode", "OPEN")
-                )
-                self.cluster_send("sh wwv 1")
-                logger.debug(f"callsign login acknowledged {data}")
-
-            if "BEACON" in data:
-                pass
-
-            if "DX de" in data:
+            if data.startswith("DX de"):
                 parts = data.split()
                 spotter = parts[2]
                 freq = parts[3]
@@ -177,6 +151,40 @@ class ClusterWindow(QDockWidget):
                     self.message.emit(spot)
                 except ValueError:
                     logger.debug(f"couldn't parse freq from datablock {data}")
+                continue
+
+            if "ar-cluster" in data.lower():
+                self.clustertype = "ar-cluster"
+            if "dxspider" in data.lower():
+                self.clustertype = "dxspider"
+
+            if (
+                "login:" in data.lower()
+                or "call:" in data.lower()
+                or "callsign:" in data.lower()
+            ):
+                login = self.pref.get("cluster_login", "") or self.pref.get(
+                    "current_op", ""
+                )
+                self.cluster_send(login)
+
+            if "password:" in data.lower():
+                self.cluster_send(self.pref.get("cluster_password", ""))
+
+            if "HELLO" in data.upper():
+                self.test_for_data = self.socket.canReadLine
+                self.connectButton.setText("Connected")
+                self.cluster_send(self.pref.get("cluster_filter", ""))
+                if self.clustertype == "ar-cluster":
+                    self.cluster_send("set dx extension Section")
+                    self.cluster_send(
+                        "set dx mode " + self.pref.get("cluster_mode", "OPEN")
+                    )
+                    self.cluster_send("sh wwv 1")
+                logger.debug(f"callsign login acknowledged {data}")
+
+            if "BEACON" in data:
+                pass
 
             # wwv data
             if match := re.search(
