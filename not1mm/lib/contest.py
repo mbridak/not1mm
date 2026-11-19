@@ -1153,10 +1153,6 @@ class ContestBase:
         """
         parent = self.parent
         if new_focused_widget is not None:
-            # The old string name is kept for plugins that override process_esm
-            # and compare it; the widget itself is what the branches below use,
-            # so a named box needs no positional name.
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
             parent.current_widget_object = new_focused_widget
         focused = getattr(parent, "current_widget_object", None)
 

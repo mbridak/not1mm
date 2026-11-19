@@ -144,6 +144,40 @@ def parse_entry_window_info(info) -> tuple[FieldBox, ...]:
     return tuple(boxes)
 
 
+def binding_contexts(fields, callsign, cw_entry, obj) -> tuple:
+    """The binding scopes to try for *obj*, most specific first.
+
+    ``SNTText`` comes before ``Report``, and ``SntNrText`` before ``Other 1``
+    and ``Exchange``.  The aggregates are what the dialog has always offered
+    and what stored bindings use; the box names are optional additions.  The
+    callsign keeps its ``Callsign`` name, not the box name.
+    """
+    contexts = []
+    if obj is callsign:
+        contexts.append("Callsign")
+    elif obj is cw_entry:
+        contexts.append("CW entry")
+    else:
+        field = fields.field_for_edit(obj)
+        if field is not None:
+            contexts.append(field.name)
+    reports = tuple(
+        field.edit for field in fields if field.name in ("SNTText", "RCVText")
+    )
+    extras = tuple(
+        field.edit for field in fields if field.spec.column not in ("SNT", "RCV")
+    )
+    if obj in reports:
+        contexts.append("Report")
+    if extras and obj is extras[0]:
+        contexts.append("Other 1")
+    elif len(extras) > 1 and obj is extras[1]:
+        contexts.append("Other 2")
+    if obj in extras:
+        contexts.append("Exchange")
+    return tuple(dict.fromkeys(contexts))
+
+
 class EntryField:
     """One box: a frame holding a label and a line edit."""
 

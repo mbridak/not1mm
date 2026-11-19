@@ -89,7 +89,7 @@ from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
-from not1mm.lib.fields import Fields
+from not1mm.lib.fields import Fields, binding_contexts
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.ham_utility import (
@@ -2911,20 +2911,10 @@ class MainWindow(QtWidgets.QMainWindow):
         key_name = QKeySequence(event.key() | event.modifiers().value).toString()
 
         action = None
-        extras = self.extra_edits()
-        if obj == self.callsign:
-            action = key_bindings.get(f"Callsign:{key_name}", None)
-        elif obj in self.fields.report_edits():
-            action = key_bindings.get(f"Report:{key_name}", None)
-        elif extras and obj is extras[0]:
-            action = key_bindings.get(f"Other 1:{key_name}", None)
-        elif len(extras) > 1 and obj is extras[1]:
-            action = key_bindings.get(f"Other 2:{key_name}", None)
-        elif obj == self.cw_entry:
-            action = key_bindings.get(f"CW entry:{key_name}", None)
-        # Exchange covers every box after the reports.
-        if action is None and obj in extras:
-            action = key_bindings.get(f"Exchange:{key_name}", None)
+        for context in binding_contexts(self.fields, self.callsign, self.cw_entry, obj):
+            action = key_bindings.get(f"{context}:{key_name}", None)
+            if action:
+                break
         # generic binding
         if action is None:
             action = key_bindings.get(key_name, None)
