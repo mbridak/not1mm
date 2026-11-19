@@ -1,5 +1,10 @@
 # Changelog
 
+- [2026-11-19] @mbridak Fix: Prevents undocked windows from clearing their display flags when the mai...
+  - @mbridak Fix: Segfault on quit when TCI is enabled (VFO window's TCI client is never c...
+  - @mbridak Fix: Ensure check window database is accessible before updating current contest. Fixes #747
+  - @mbridak spider cluster command to show WWV information
+  - @mbridak improve parse DX data and update cluster type handling. Fix DX-Spider Cluster...
 - [2026-11-17] @mbridak Fix: Include soapbox lines in Cabrillo. fixes Cabrillo and filled soapbox lin...
 - [2026-11-14] Merge pull request #745 from df7cb/contest-discovery
   - Build the contest picker from discovered contests
@@ -3057,3 +3062,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
