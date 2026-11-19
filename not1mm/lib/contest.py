@@ -392,15 +392,15 @@ class ContestBase:
     # The box names are the way plugin code reaches the widgets through
     # parent.fields (fields.Exchange1Text.text()); see not1mm/lib/fields.py.
     #
-    # Focus leaves a field on either of two keys, and they are meant to walk
-    # different fields:
+    # Focus leaves a field on either of two keys:
     #
     #   TAB    every field the contest shows, in the window's own order
     #          (callsign first).  Qt's own focus chain does this now, and
     #          skips a hidden field by itself.
-    #   SPACE  only the "interesting" fields the operator types: RST is almost
-    #          always 599, so space steps over sent and receive.  A field whose
-    #          text may contain spaces (a name, a grid) keeps the space and the
+    #   SPACE  the next field, like TAB -- except where the space is part of
+    #          the text: a box whose FieldSpec says a space is data
+    #          (CommentText) or one this contest lists in SpaceKeepsFocus
+    #          (a name, a grid, "Name 1010# SPC") keeps the space and the
     #          focus instead of advancing.
     #
     # The boxes this contest declares, in order.
