@@ -49,8 +49,8 @@ class Contest(ContestBase):
     # not a keyed multiplier, so show_mults() is that count and get_mults() is
     # empty (as the module's was).
     NumMults = 1
-    Multiplier1Name = "Grid"
-    MultSqlString = "Grid"
+    Multiplier1Name = "Sect"
+    MultSqlString = "Sect"
     IsMult1Per = 4
 
     def points(self):

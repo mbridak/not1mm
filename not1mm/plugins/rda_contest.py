@@ -172,7 +172,11 @@ class Contest(ContestBase):
         parent = self.parent
         parent.contact["SNT"] = parent.fields.SNTText.text()
         parent.contact["RCV"] = parent.fields.RCVText.text()
-        parent.contact["SentNr"] = self.my_sent_exchange()
+        # The operator may have edited the sent box after prefill; fall back
+        # to the computed exchange when it is empty.
+        parent.contact["SentNr"] = (
+            parent.fields.SntNrText.text() or self.my_sent_exchange()
+        )
         parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0

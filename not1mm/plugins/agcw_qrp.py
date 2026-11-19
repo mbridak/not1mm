@@ -81,6 +81,10 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
             parent.contest_settings.get("SentExchange", "xxx xxx").strip("#")
         )
         parent.contact["NR"] = parent.fields.RcvNrText.text().upper().replace(" ", "/")
+        # The module's multiplier is the member inside NR; MiscText is the
+        # column the base query can count it from.
+        member = received_fields(parent.contact["NR"])[2]
+        parent.contact["MiscText"] = member if member and member != "NM" else ""
         self.mark_multipliers()
 
     def mult_value(self, slot, contact):

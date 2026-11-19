@@ -20,7 +20,12 @@ from types import SimpleNamespace
 import pytest
 
 from contest_harness import cty_lookup
-from not1mm.lib.contest import load_contest
+from not1mm.lib.contest import (
+    MULT_KEYS,
+    ContestBase,
+    PLUGIN_PATH,
+    load_contest,
+)
 
 SNAPSHOT = json.loads(
     (Path(__file__).parent / "data" / "contact_vars_snapshot.json").read_text(
@@ -67,8 +72,10 @@ def standard_plugins():
 class FakeLineEdit:
     def __init__(self, text=""):
         self._text = text
+        self.reads = 0
 
     def text(self):
+        self.reads += 1
         return self._text
 
     def setText(self, text):  # noqa: N802
@@ -85,6 +92,7 @@ class FakeFields:
         object.__setattr__(
             self, "_edits", {box.spec.name: FakeLineEdit() for box in boxes}
         )
+        object.__setattr__(self, "_specs", {box.spec.name: box.spec for box in boxes})
 
     def __getattr__(self, name):
         try:
@@ -93,7 +101,10 @@ class FakeFields:
             raise AttributeError(name) from None
 
     def __iter__(self):
-        return iter(self._edits.items())
+        return (
+            SimpleNamespace(spec=self._specs[name], edit=edit)
+            for name, edit in self._edits.items()
+        )
 
 
 class FakeDatabase:
@@ -103,9 +114,15 @@ class FakeDatabase:
     def fetch_all_contacts_asc(self):
         return []
 
+    def exec_sql(self, *args, **kwargs):
+        return {"count": 0}
 
-def _run(plugin, values, mode="CW", station=None):
-    """Load *plugin* with the boxes in *values* filled, then log the contact."""
+    def __getattr__(self, _name):
+        return lambda *args, **kwargs: {}
+
+
+def _run_fields(plugin, values, mode="CW", station=None):
+    """Load *plugin*, fill *values*, log; return (contact, fields)."""
     contest = load_contest(plugin, None)
     boxes = contest.entry_boxes()
     declared = {box.spec.name for box in boxes}
@@ -122,17 +139,28 @@ def _run(plugin, values, mode="CW", station=None):
         contact_is_dupe=0,
         callsign=FakeLineEdit("K1ABC"),
         exch_label=FakeLineEdit(),
+        history_info=FakeLineEdit(),
         station=station or {"Call": "K6GTE"},
         current_mode=mode,
         current_sn="1",
+        pref={"contest": 1, "run_state": False},
+        radio_state={"mode": mode},
+        ctyfile={},
         contest_settings={"SentExchange": "03"},
         database=FakeDatabase(),
         cty_lookup=cty_lookup,
         show_message_box=lambda *_args, **_kwargs: None,
+        log_window=None,
     )
     contest.parent = parent
     contest.set_contact_vars()
-    return parent.contact
+    return parent.contact, fields
+
+
+def _run(plugin, values, mode="CW", station=None):
+    """Load *plugin* with the boxes in *values* filled, then log the contact."""
+    contact, _ = _run_fields(plugin, values, mode, station)
+    return contact
 
 
 def test_ari_dx_reads_the_plain_four_boxes():
@@ -303,6 +331,75 @@ def test_the_last_group_is_migrated(plugin):
 def test_the_last_group_fills_its_columns(plugin, values, column, expected):
     contact = _run(plugin, values)
     assert contact[column] == expected
+
+
+def _all_plugins():
+    return sorted(
+        path.stem
+        for path in PLUGIN_PATH.glob("*.py")
+        if path.stem not in {"__init__", "base"}
+    )
+
+
+def _value_for(plugin, spec):
+    """A value that lets every contest read its box without crashing."""
+    if plugin == "agcw_qrp" and spec.name == "RcvNrText":
+        return "001 QRO 123"
+    return {
+        "SNTText": "599",
+        "RCVText": "599",
+        "SntNrText": "001",
+        "RcvNrText": "01",
+        "Exchange1Text": "AA",
+        "MiscText": "AA",
+        "SectText": "AA",
+        "GridSquareText": "FN31",
+        "NameText": "AA",
+        "CommentText": "AA",
+    }.get(spec.name, "AA")
+
+
+@pytest.mark.parametrize("plugin", _all_plugins())
+def test_every_declared_box_is_read_when_logging(plugin):
+    """A declared box that logging never reads is a dead box."""
+    boxes = load_contest(plugin, None).entry_boxes()
+    values = {box.spec.name: _value_for(plugin, box.spec) for box in boxes}
+    _, fields = _run_fields(plugin, values)
+    for name, edit in fields._edits.items():
+        assert edit.reads > 0, (plugin, name)
+
+
+@pytest.mark.parametrize("plugin", _all_plugins())
+def test_every_multiplier_key_is_known(plugin):
+    contest = load_contest(plugin, None)
+    for slot in (1, 2, 3):
+        if slot > contest.NumMults:
+            continue
+        key = contest._mult_key(slot)
+        if key is not None:
+            assert key in MULT_KEYS, (plugin, slot, key)
+
+
+CALL_DERIVED = {"CountryPrefix", "WPXPrefix", "CallSign", "LASTLETTER"}
+
+
+@pytest.mark.parametrize("plugin", _all_plugins())
+def test_a_multiplier_column_is_filled(plugin):
+    """A column whose multiplier query the base builds must get a value."""
+    contest = load_contest(plugin, None)
+    if not contest.NumMults or contest.mult_sql is not ContestBase.mult_sql:
+        return
+    boxes = contest.entry_boxes()
+    values = {box.spec.name: _value_for(plugin, box.spec) for box in boxes}
+    contact, _ = _run_fields(plugin, values)
+    for slot, _name, key, _per in contest._mult_slots():
+        if key in CALL_DERIVED:
+            continue
+        entry = MULT_KEYS.get(key)
+        assert entry is not None, (plugin, slot, key)
+        sql = entry[0]
+        column = sql[7:].split(",")[0] if sql.startswith("substr(") else sql
+        assert contact.get(column), (plugin, slot, key, column)
 
 
 THREE_BOX = [

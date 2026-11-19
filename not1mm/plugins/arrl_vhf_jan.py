@@ -138,6 +138,9 @@ class Contest(ContestBase):
         parent.contact["SNT"] = self.report_default()
         parent.contact["RCV"] = self.report_default()
         parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        # The Grid multiplier reads GridSquare; use the received grid rather
+        # than whatever the call lookup guessed.
+        parent.contact["GridSquare"] = parent.contact["NR"]
         parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def cabrillo_qso_line(self, contact):

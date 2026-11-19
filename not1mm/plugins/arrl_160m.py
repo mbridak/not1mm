@@ -70,7 +70,7 @@ class Contest(ContestBase):
     # A DXCC country (W/VE only) and a section, each once for the contest.
     NumMults = 1
     Multiplier1Name = "Sect"
-    MultSqlString = "Sect"
+    MultSqlString = "Exchange"
     IsMult1Per = 4
 
     def _is_wve(self, call):

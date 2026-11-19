@@ -726,18 +726,16 @@ class ContestBase:
         return self.PointsPerContact
 
     def set_contact_vars(self):
-        """Copy the entry fields into ``self.parent.contact``.
+        """Copy each declared box into the contact column it names.
 
-        The exchange most contests use -- RST and a serial number, sent and
-        received -- and then the multipliers the contact is worth.  A contest
-        whose fields differ overrides this.
+        The base mapping is the N1MM one (SNTText -> SNT, RcvNrText -> NR, …);
+        a contest whose exchange is parsed, normalised or derived overrides
+        this.  Multipliers are marked after the columns are filled.
         """
         parent = self.parent
-        fields = parent.fields
-        parent.contact["SNT"] = fields.SNTText.text()
-        parent.contact["RCV"] = fields.RCVText.text()
-        parent.contact["SentNr"] = fields.SntNrText.text()
-        parent.contact["NR"] = fields.RcvNrText.text()
+        for field in parent.fields:
+            if field.spec.column:
+                parent.contact[field.spec.column] = field.edit.text()
         self.mark_multipliers()
 
     # -- multipliers --------------------------------------------------------
