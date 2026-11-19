@@ -8,7 +8,7 @@ class FlDigi_Comm:
         self.target = "http://127.0.0.1:7362"
 
     def send_string(
-        self, message: str = None, nlbefore: bool = True, rxafter: bool = True
+        self, message: str = "", nlbefore: bool = True, rxafter: bool = True
     ):
         """send string"""
         nl = chr(10)

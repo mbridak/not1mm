@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Single source of truth for reading and writing not1mm.json.
 
@@ -14,24 +13,26 @@ from json import dumps, loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 
 logger = logging.getLogger("preferences")
 
 
 class Preferences:
     _path: Path = fsutils.CONFIG_FILE
-    _data: dict = {}
-    _defaults: dict = {
+    _data: dict = {}  # noqa: RUF012
+    _defaults: dict = {  # noqa: RUF012
         "sounddevice": "default",
         "useqrz": False,
         "lookupusername": "username",
         "lookuppassword": "password",
         "run_state": True,
+        "run_to_sp_on_qsy": False,
         "command_buttons": False,
         "cw_macros": True,
         "bands_modes": True,
-        "bands": ["160", "80", "40", "20", "15", "10"],
+        "bands": ["160m", "80m", "40m", "20m", "15m", "10m"],
+        "band_memory": {},
         "current_database": "ham.db",
         "contest": "",
         "multicast_group": "239.1.1.1",
@@ -57,6 +58,7 @@ class Preferences:
         "CAT_ip": "127.0.0.1",
         "userigctld": False,
         "useflrig": False,
+        "usetci": False,
         "cwip": "127.0.0.1",
         "cwport": 6789,
         "cwtype": 0,
@@ -65,16 +67,20 @@ class Preferences:
         "CAT_port": 4532,
         "cluster_server": "dxc.nc7j.com",
         "cluster_port": 7373,
+        "cluster_font_size": 10,
         "cluster_filter": "Set DX Filter SpotterCont=NA",
         "cluster_mode": "OPEN",
         "cluster_expire": 1,
         "logwindow": False,
         "bandmapwindow": False,
+        "clusterwindow": False,
         "checkwindow": False,
         "vfowindow": False,
         "ratewindow": False,
         "statisticswindow": False,
         "darkmode": True,
+        "language": "en_US",
+        "export_dir": "",
     }
 
     @classmethod
@@ -113,5 +119,5 @@ class Preferences:
             with open(tmp_path, "wt", encoding="utf-8") as file_descriptor:
                 file_descriptor.write(dumps(cls._data, indent=4))
             os.replace(tmp_path, path)
-        except (IOError, TypeError, ValueError) as exc:
+        except (OSError, TypeError, ValueError) as exc:
             logger.critical("writepreferences: %s", exc)

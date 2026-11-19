@@ -1,5 +1,338 @@
 # Changelog
 
+- [2026-11-19] @mbridak Fix: Prevents undocked windows from clearing their display flags when the mai...
+  - @mbridak Fix: Segfault on quit when TCI is enabled (VFO window's TCI client is never c...
+  - @mbridak Fix: Ensure check window database is accessible before updating current contest. Fixes #747
+  - @mbridak spider cluster command to show WWV information
+  - @mbridak improve parse DX data and update cluster type handling. Fix DX-Spider Cluster...
+- [2026-11-17] @mbridak Fix: Include soapbox lines in Cabrillo. fixes Cabrillo and filled soapbox lin...
+- [2026-11-14] Merge pull request #745 from df7cb/contest-discovery
+  - Build the contest picker from discovered contests
+- [2026-11-13] Merge pull request #743 from df7cb/contest-refactor
+  - Run black on all files touched
+  - Drop the adapter for unconverted contest modules
+  - Convert the general-logging modes to the contest base class
+  - Convert the UKEI, WIA Remembrance and Winter Field Day contests to the contest base class
+  - Convert the Trans-Tasman contest to the contest base class
+  - Convert the grid-exchange contests to the contest base class
+  - Convert the RSGB contests to the contest base class
+- [2026-11-12] Convert the weekly tests to the contest base class
+  - Convert the John Moyle Field Day contest to the contest base class
+  - Convert the VHF/UHF contests to the contest base class
+  - Convert the REF pair to the contest base class
+  - SSA MT: convert the Manadstest pair to classes
+  - SAC: convert the Scandinavian Activity Contest pair to classes
+  - JIDX: convert the CW and phone contests to classes
+  - IARU: convert the Region 1 Field Day pair and IARU HF to classes
+  - RDXC: convert the Russian DX Contest to a class
+  - RDA: convert the Russian District Award contest to a class
+  - RAEM: convert the Ernst Krenkel Memorial contest to a class
+  - PACC: convert the Dutch PACC contest to a class
+  - NA Sprint: convert the Sprint pair to classes
+  - NAQP: convert the three North American QSO Party contests to classes
+  - Oceania: convert the two Oceania DX contests to classes
+  - EU: convert six assorted European contests to classes
+  - ES: convert the four Estonian contests to classes
+  - EA: convert the three URE contests to classes
+  - DARC: convert the three plugins to classes
+  - CWops sprints: convert the five plugins to classes
+  - CQ WW VHF: convert the plugin to a class
+  - CQ WW: convert the CW, SSB and RTTY plugins to classes
+  - CQ 160: convert the two plugins to classes
+  - RAC Canada Day: convert the plugin to a class
+  - QSO parties: convert the three plugins to classes
+  - ARRL Field Day: convert the plugin to a class
+  - ARRL single-band: convert the three plugins to classes
+  - ARRL VHF: convert the three plugins to classes
+  - ARRL SS: convert the two plugins to classes
+  - ARRL DX: convert the two plugins to classes
+  - contest: write the Cabrillo name as the ADIF CONTEST_ID
+- [2026-11-11] contest: make the entry window's TAB order and space handling declarative
+  - ARI: convert the 40/80 and DX plugins to classes
+  - AGCW QRP: convert the plugin to a class
+  - AADX: convert the two All Asia DX plugins to classes
+  - 10-10: convert the four sprints to classes
+  - contest: declare the sent exchange and expand it through process_macro
+  - contest: answer questions about a call (contact_info)
+  - contest: declare the multipliers and answer the dupe/mult questions
+  - tests: pin versions after the plugin module is imported
+- [2026-11-10] contest: identify a contest by its Cabrillo name
+  - contest: use the Cabrillo names the sponsors actually expect
+- [2026-11-09] contest plugins: share a ContestBase class and convert CQ WPX
+  - Merge pull request #740 from microphonon/ss_bandmap
+  - Merge pull request #723 from DJLax5/issue-445-export-dialog
+  - fix main
+  - Merge branch 'master' into issue-445-export-dialog
+  - bandmap for SS
+  - Delete .github/workflows/python-package.yml
+  - @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
+  - @mbridak disable socket draining in rigctld_command Fixes #738
+- [2026-11-08] Fixed contests: Now accepts the filename in export
+  - Add: Ask for the log export file name with a save dialog (#445)
+- [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
+  - Add audio resampling and play-back at the native sampling rate of the desired output sound devices
+- [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
+  - Removed Preference.save in the update band memory
+- [2026-11-04] Merge branch 'master' of http://github.com/mbridak/not1mm
+  - Merge pull request #725 from DJLax5/issue-719-cq-freq
+  - Merge pull request #728 from DJLax5/issue-717-band-memory
+  - Merge pull request #727 from DJLax5/issue-722-utc-clock
+- [2026-11-01] Band buttons: remember last frequency per band, mode and VFO (#717)
+  - Store CQ frequency on F1 Key and Click, adds  switch to S&P on QSY option
+- [2026-11-04] Adds a UTC clock to the top right of the main window
+- [2026-11-03] Merge pull request #726 from DJLax5/issue-718-spot-dx
+  - Merge pull request #731 from df7cb/new-spots-clear-freq
+  - Make "new spots clear frequency" configurable
+  - Merge pull request #730 from df7cb/contest
+  - tci: the CW test expects the wrong command for sending text
+  - Cabrillo name of EUHFC is EUHFC
+  - tests: add the contest log corpus, its generator and its runner
+  - US contests: in-area scoring and the empty section
+  - VHF and distance contests: the band and mode multipliers
+  - Award, DX and activity contests: the DXCC models and the prefixes
+  - European HF contests: the stored exchange, the geographic points and the prefill
+  - SAC: match the entities cty.dat actually stores
+  - AADX contests: work out the duplicate before re-scoring, and guard the lookups
+  - 10-10 contests: read the logged exchange, not the entry field
+  - REF contests: the multiplier model and the stragglers
+  - ARI contests: scoring, prefixes and the 40-80 Cabrillo name
+  - JIDX contests: score only JA-DX contacts, and the Cabrillo category
+  - NAQP and the CW activity tests
+  - URE (Spain) contests: the exchange, EF0F and the multipliers
+  - SSA Manadstest: the multiplier key and a locator crash
+  - DARC contests: the DOK and prefix multipliers, and re-scoring duplicates
+  - ERAU (Estonia) contests: the ES-only rule and the dupe windows
+  - RSGB and UK contests: credit, modes and the multiplier model
+  - WIA and VK contests: the dupe windows, the prefixes and the Oceania points
+  - IARU contests: multipliers once per band, and the entrant's own zone
+  - ARRL contests: contest credit, multipliers and the mode/band tables
+  - CQ contests: fix the country, QTH and band multipliers
+  - plugin_common: round-trip the station callsign through ADIF
+  - ham_utility: add band_mhz_of() to normalise a stored band
+  - database: make the period duplicate window half-open
+  - plugin_common: read a contact's own time for a windowed dupe rule
+  - plugin_common: share the ADIF import and the Cabrillo/EDI export
+- [2026-11-01] Merge pull request #724 from DJLax5/issue-715-cabrillo-crash
+  - Removed my call to a generic one
+  - Merge pull request #711 from rxcomm/na-sprint
+  - Fix Cabrillo export crash on QSO without exchange (#715)
+  - Make SPOT_DX key action use MainWindow.spot_dx (#718)
+- [2026-09-25] This commit adds support for a new contest, the NA Sprint. Rules for the contest are a...
+- [2026-10-30] Merge pull request #709 from microphonon/statistics
+  - add CTY ZN breakdown
+- [2026-10-29] Merge pull request #708 from microphonon/qso_party
+- [2026-10-28] fix qso parties
+  - @mbridak Fix: Enable socket draining and improve logging format in rigctld_command and...
+- [2026-10-27] @mbridak Fix: Add additional indexes to improve database query performance
+  - @mbridak Fix: Add drain_socket method to toss stale data.
+- [2026-10-26] @mbridak Fix: Add support for {VOICE0} macro to trigger voice memory 0
+  - @mbridak Fix: Add is_floatable method to validate float conversion for frequency checks
+- [2026-10-23] Merge branch 'master' of http://github.com/mbridak/not1mm
+  - @mbridak Fix: Add online_score_xml to WAG plugin fixes #702
+- [2026-10-18] @mbridak Fix: update Cabrillo timestamp handling and improve location formatting
+- [2026-10-17] @mbridak Fix: Cabrillo output formatting for multiple county lines.
+- [2026-10-11] @mbridak Fix: frequency in Cabrillo QSO field.
+- [2026-10-05] @mbridak Fix: ADIF output for CQP. Fixes #695
+  - @mbridak Fix: ADIF contest name to preferred enumerated value.
+  - @mbridak Adjust CW place holder text to make it clear that it's not an actual value in the field.
+- [2026-10-02] @mbridak fix: EditContact dialog had no theme applied.
+  - @mbridak made contact edit and edit keys dialogs modal so they would appear above floating windows.
+- [2026-10-01] @mbridak fix: exclude DX from spc count. Fixes #694
+  - @mbridak Enhance exchange handling for county lines in CQP Cabrillo format
+  - @mbridak correct exchange for CQP.
+  - @mbridak Update main.py to supress 59/9 insertions for CQP.
+  - Implement feature X to enhance user experience and optimize performance
+- [2026-09-27] @mbridak Fix: ESM flow for outside NA. Other suppoprting code. CQ WW RTTY issues Fixes #692
+  - @mbridak Added link to SwiftKeyer.
+- [2026-09-24] Merge pull request #690 from rxcomm/retransmit-corrected-call
+  - ran black not1mm test . on this branch
+- [2026-09-20] Apply corrected-call-before-QRZ/TU to all remaining ESM plugins
+  - Apply corrected-call-before-QRZ/TU to CWT plugin
+  - Add option to resend corrected callsign before QRZ/TU in Run-mode ESM
+- [2026-09-19] @mbridak Fix: update score report fields for contest and operator information
+- [2026-09-18] Merge branch 'master' of http://github.com/mbridak/not1mm
+  - @mbridak Add send n1mm score packet.
+  - @mbridak Fix: quotation marks inside f-srtring.
+- [2026-09-11] Merge pull request #687 from chibondking/contactinfo-zone-key
+  - contactinfo: fix the key so CQ zone actually reaches the packet
+- [2026-09-10] Merge pull request #686 from chibondking/contactinfo-continent-prefix
+  - Remove stray editor swap file committed by mistake
+  - contactinfo: send the real Continent and CountryPrefix
+  - @mbridak Refactor dialog handling to use exec() instead of open() for modal behavior
+- [2026-09-07] Merge pull request #681 from Cryptems-Industries/fix-iaru-fieldday-r1-scoring
+  - fixed output of 0 to 000 to conform to iaru rg 1 fd cabrillo logging rules
+  - added option for automatic test discovery
+  - fixed wrong multiplier calculation for iaru fd r1
+- [2026-09-06] Merge pull request #680 from microphonon/cwo
+  - fix Cabrillo formatting
+- [2026-09-05] remove flatpak file
+  - Merge pull request #678 from df7cb/adif-callsign
+  - Fix /P callsigns in adif export
+- [2026-09-03] @mbridak Add gen_edi function to plugin_common. removed the 3 different edi functions ...
+  - @mbridak fix: timestamp in EDI export in ta_vhf_uhf_contest
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak fix: reduce timeout for HamQTH API requests to 1s, willy tested willy approved.
+- [2026-09-02] Merge pull request #677 from sblanchard/master
+  - fix: MST ft8_handler no longer logs a lone received serial as the name
+  - fix: CWO ft8_handler reads SRX_STRING and never leaks the previous exchange
+  - Merge upstream mbridak/master (PR #4): callbook timeout 2s, v26.9.2
+  - Merge pull request #3 from sblanchard/ft8-handler-cw-sprints
+  - @mbridak Reduce callbook lookup timeout from 10 seconds to 2.
+  - Add ft8_handler to CWT, SST, MST and CW Open plugins
+- [2026-09-01] Add script to automate flatpak update process
+- [2026-08-31] Fix handling of SentNr and NR in EDI output; enhance bandinMHz mapping tests
+  - Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak Add NAC VHF contest
+  - Merge pull request #2 from mbridak/master
+- [2026-08-30] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak CWO plugin: improved contact variable handling
+- [2026-08-28] @mbridak correct cabrillo name in ukei-dx
+  - Merge pull request #673 from ra0sms/add-rda-contest
+  - Add RDA Contest plugin
+- [2026-08-26] Merge pull request #672 from mbridak/add-CQP
+  - @mbridak Add California QSO Party plugin and UI updates.
+  - @mbridak Update schwaben add ESM, adjust advance_on_space configuration
+- [2026-08-25] @mbridak Update Catppuccin color definitions and adjust CheckWindow background colors ...
+- [2026-08-24] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - @mbridak More Portuguese updates.
+  - @mbridak Update dupe checking logic and improve band point validation in CQ WW VHF
+  - @mbridak Correct spelling of Majestad.
+  - @mbridak remove redundant language.
+  - @mbridak Some Portuguese corrections.
+- [2026-08-23] @mbridak Add CQ WW VHF
+  - @mbridak Add DARC Schwaben
+  - Merge pull request #670 from mbridak/add-rsgb-beru
+  - @mbridak fix: improve code readability and update exchange hint
+- [2026-08-22] @mbridak first try adding rsgb beru
+- [2026-08-21] Merge pull request #669 from mbridak/Fix-bandmap-marked-spots-disappearing
+  - @mbridak Fix: marked spots retention.
+- [2026-08-20] @mbridak Add Portuguese language support for Brazil and Portugal
+  - @mbridak Fix: light mode band indicators. Refactor font weight.
+- [2026-08-19] Merge pull request #665 from mbridak/fix-adif-import
+  - @mbridak Handle both OperationalError and IntegrityError in exec_sql_commit method
+  - Merge pull request #664 from mbridak/add-wpx-to-stats
+  - @mbridak Add WPX statistics to the stats window
+  - Merge pull request #663 from mbridak/improve-voice-keying
+  - @mbridak Refactor voice keying logic to improve handling.
+- [2026-08-18] @mbridak Update UI elements in bandmap and cluster windows to use icons instead of tex...
+  - @mbridak Add Catppuccin Latte theme for light mode.
+  - @mbridak Add Catppuccin Mocha theme to fix dark mode handling on Gnome.
+  - @mbridak disable darkmode in gnome.
+- [2026-08-17] Merge pull request #661 from mbridak/660-font-cluster
+  - @mbridak Add cluster window font resize buttons.
+  - @mbridak Fix: main window title.
+- [2026-08-16] @mbridak Fix:  The tray icon and other stuff sometimes persisted after quit.
+- [2026-08-15] @mbridak Fix: clusterwindow always opened at program lanch.
+- [2026-08-14] Merge pull request #658 from mbridak/language-translations
+  - @mbridak Refactor plugin interfaces to use Qt translation for labels
+  - @mbridak Add initial translations.
+  - @mbridak Add internationalization support and language preferences
+- [2026-08-13] Merge pull request #656 from mbridak/add-rdxc-contest
+  - @mbridak Add RDXC contest.
+- [2026-08-12] @mbridak Update installation instructions for Flatpak support
+  - Merge pull request #655 from mbridak/flatpak
+  - @mbridak Generate flatpak.
+  - @mbridak Test is running as flatpak and don't do the xdg menu stuff.
+  - @mbridak Add DBus access.
+- [2026-08-11] @mbridak Add portaudio module with build configuration and source URL
+  - @mbridak Update Flatpak configuration: bump runtime and base versions, adjust filesyst...
+  - @mbridak Add build script and update Flatpak configuration for not1mm
+  - Merge pull request #654 from mbridak/add-trans-tasman
+  - @mbridak Add Trans Tasman contest support and update UI
+  - @mbridak Update EXCHANGE_HINT to use "#" for John Moyle Field Day and Oceania DX plugins
+  - Merge pull request #1 from mbridak/master
+- [2026-08-10] Merge pull request #653 from mbridak/john-moyle-field-day
+  - @mbridak Add JOHN MOYLE FIELD DAY plugin
+- [2026-08-09] Merge pull request #650 from IonixV/master
+  - Merge pull request #652 from mbridak/add-oceania-dx
+  - @mbridak Add Oceania DX CW and SSB plugins.
+  - Merge branch 'master' into master
+- [2026-08-08] Merge pull request #651 from mbridak/649-not1mm-2687-crashes-after-sending-qso-to-renfield
+  - @mbridak Fix: Update datetime parsing to handle timezone information in server command expiration
+  - Fix formatting of the code of conduct header
+- [2026-08-07] @mbridak Add imp_adif import to multiple plugins.
+  - Merge pull request #647 from Koji-Kawano/all_asia
+  - All Asia DX contest 1st commit
+- [2026-08-06] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Update version to 26.8.6 and refresh changelog with recent changes
+  - Merge pull request #645 from df7cb/band
+- [2026-08-05] Consolidate band/frequency conversion into a single source-of-truth table
+- [2026-08-04] Remove some dead variables
+- [2026-08-06] Merge branch 'master' into all_asia
+- [2026-08-05] Merge pull request #644 from df7cb/spotdx
+  - Move SPOTDX to clusterwindow.py
+  - temporary commit for All Asia
+- [2026-08-04] @mbridak add 3hr band/mode dupe check to rd contest.
+- [2026-08-03] @mbridak RD-Contest Update cabrillo function: enhance mode handling and format output ...
+  - Merge pull request #641 from mbridak/rd-contest
+  - @mbridak Update WIA Remembrance plugin: enhance scoring logic and clarify exchange instructions
+  - Merge pull request #640 from df7cb/clusterwindow
+- [2026-07-28] Create a Cluster window
+- [2026-08-02] @mbridak Maybe Fix: update TCI sendcw method to use cw_macros command for CW transmission
+  - @mbridak Fix: maybe Add: send cw_macros_stop command in stopcw method
+  - @mbridak Fix: self assigned variable in rsgb-iota
+  - Merge pull request #639 from df7cb/euhfc
+  - Fix more Cabrillo names and enable online scores
+  - Online scoring for EUHFC
+- [2026-08-01] Merge pull request #638 from sblanchard/add-tci-support
+  - docs: record cw_msg signature confirmed working on live AetherSDR
+  - docs: note TCI rig control support in changelog
+  - Wire TCI into vfo.py, fix online staleness, add missing send_cat_string stub
+  - test: add fake TCI server for integration testing
+  - Correct stale RTTY mode expectation in plan Task 4 test
+  - feat: wire TCI backend into radio dispatch, settings, and UI
+  - feat: add TciCAT backend implementing the CAT contract over TCI
+  - fix: release socket/timer on their own thread after close(), fix backoff double-increm...
+  - feat: add TCI websocket client with state cache
+  - feat: add TCI protocol parsing and mode translation
+  - docs: fix TCI handshake doc overclaim, wrong comment, and stat rounding
+  - Add TCI probe and record live AetherSDR handshake
+  - Ignore .superpowers scratch directory
+  - Correct TCI port to 50001 to match the AetherSDR under test
+  - Add implementation plan for TCI CAT backend (phase 1)
+  - Add design spec for TCI support (AetherSDR compatibility)
+- [2026-07-31] @mbridak Remove extra European HF Championship contest entry from contests.sql
+  - @mbridak Add WIA Remembrance contest support and update UI for new contest entry
+- [2026-07-30] Merge pull request #636 from mbridak/add-hadx
+  - @mbridak Add HADX contest support and update UI for new contest entry
+- [2026-07-28] Merge branch 'master' of https://github.com/mbridak/not1mm
+  - Merge pull request #635 from mbridak/cqws
+  - @mbridak Add CQWS contest option to new contest UI
+  - @mbridak Add CQ World Scout plugin
+  - Merge pull request #634 from df7cb/cat-ri
+  - Refactor RI macro CAT functions
+  - Merge pull request #633 from ivica3730k/master
+  - feat: add European HF Championship contest
+- [2026-07-27] Merge pull request #632 from df7cb/rigctld-lock
+  - Protect rigctld_command with a lock
+- [2026-07-26] Merge pull request #631 from df7cb/actions
+- [2026-07-27] Add rotator actions
+  - Rotator: Add rotate 30° left/right buttons
+- [2026-07-26] Add actions to increment/decrement report and exchange
+  - Action names need to be UPPER CASE
+  - Merge pull request #630 from ivica3730k/master
+  - fix: properly select VFO from rigctld
+  - @mbridak Fix: RSGB IOTA call history.
+  - Merge pull request #628 from df7cb/hotkey-help
+  - Merge branch 'master' into hotkey-help
+  - Merge pull request #626 from df7cb/operator
+  - Merge pull request #627 from df7cb/radio-race
+  - Merge pull request #625 from df7cb/nesteddocks
+  - Build Hotkeys help window from actual key bindings
+- [2026-07-25] Make OPON an action and connect it to Ctrl+O
+  - Move current operator to preferences
+  - Initialize rig_control.cat earlier
+  - Set MainWindow dock option AllowNestedDocks
+- [2026-07-24] @mbridak Update Python version requirement to 3.11, 3.10 EOL in October.
+  - @mbridak Refactor datetime handling to use UTC. Combined nested if statments with 'and...
+- [2026-07-23] Merge pull request #623 from df7cb/contestnr
+- [2026-07-24] Fix corruption of current_contest after changing settings
+- [2026-07-20] Merge pull request #621 from df7cb/sync-vfos
+- [2026-07-21] Synchronize VFOs
+- [2026-07-19] @mbridak Fix: Replace slashes in current_op with dashes for file path consistency
+- [2026-07-18] Merge pull request #619 from df7cb/edit-keys
+- [2026-07-14] Configure key bindings in a new Edit Keys dialog
+- [2026-07-17] @mbridak Remove unused import of dumps from json in __main__.py
 - [2026-07-16] Merge pull request #618 from df7cb/preferences
 - [2026-07-17] Save bandmap zoom level in preferences
 - [2026-07-16] Refactor lookupservice setup
@@ -2729,3 +3062,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit

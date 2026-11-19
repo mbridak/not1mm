@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 not1mm Contest logger
 Email: michael.bridak@gmail.com
@@ -10,16 +9,15 @@ Purpose: Onscreen widget to show possible matches to callsigns entered in the ma
 import logging
 import queue
 from dataclasses import dataclass
-from typing import Optional
 
-from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtWidgets import QApplication, QDockWidget, QLabel, QVBoxLayout, QWidget
 from rapidfuzz.distance import Levenshtein
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 from not1mm.lib.super_check_partial import SCP
 
@@ -39,12 +37,12 @@ class CheckWindow(QDockWidget):
 
     message = pyqtSignal(dict)
     dbname = None
-    pref = {}
+    pref = {}  # noqa: RUF012
     call = None
     masterLayout: QVBoxLayout = None
     dxcLayout: QVBoxLayout = None
     qsoLayout: QVBoxLayout = None
-    background_colors_cache: Optional[BackgroundColors] = None
+    background_colors_cache: BackgroundColors | None = None
     checkwindow_closed = pyqtSignal()
 
     masterScrollWidget: QWidget = None
@@ -60,7 +58,7 @@ class CheckWindow(QDockWidget):
         self.database = DataBase(self.dbname, fsutils.APP_DATA_PATH)
         self.database.current_contest = self.pref.get("contest", 0)
 
-        uic.loadUi(fsutils.APP_DATA_PATH / "checkwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "checkwindow.ui")
         self.mscp = SCP(fsutils.APP_DATA_PATH)
         self._udpwatch = None
         self.udp_fifo = queue.Queue()
@@ -73,7 +71,7 @@ class CheckWindow(QDockWidget):
         )
 
     def msg_from_main(self, packet):
-        """"""
+        """Process messages from the main window."""
 
         if packet.get("cmd", "") == "UPDATELOG":
             self.clear_lists()
@@ -202,25 +200,22 @@ class CheckWindow(QDockWidget):
         background_colors = self.background_colors_for_mode()
         call_items = []
         for call in call_list:
-            if call:
-                if self.call:
-                    label_text = ""
-                    diff_score = 0
-                    for tag, i1, i2, j1, j2 in Levenshtein.opcodes(call, self.call):
-                        if tag == "equal":
-                            label_text += call[i1:i2]
-                            continue
-                        elif tag == "replace":
-                            label_text += f"<span style='background-color: {background_colors.character_remove_color};'>{call[i1:i2]}</span>"
-                            diff_score += max((i2 - i1), (j2 - j1)) * (
-                                len(call) + 1 - i2
-                            )
-                        elif tag == "insert" or tag == "delete":
-                            label_text += f"<span style='background-color: {background_colors.character_add_color};'>{call[i1:i2]}</span>"
-                            diff_score += max((i2 - i1), (j2 - j1)) * (len(call) - i2)
-                    if call == self.call:
-                        label_text = f"<span style='background-color: {background_colors.character_match_color};'>{call}</span>"
-                    call_items.append((diff_score, label_text, call))
+            if call and self.call:
+                label_text = ""
+                diff_score = 0
+                for tag, i1, i2, j1, j2 in Levenshtein.opcodes(call, self.call):
+                    if tag == "equal":
+                        label_text += call[i1:i2]
+                        continue
+                    elif tag == "replace":
+                        label_text += f"<span style='background-color: {background_colors.character_remove_color};'>{call[i1:i2]}</span>"
+                        diff_score += max((i2 - i1), (j2 - j1)) * (len(call) + 1 - i2)
+                    elif tag == "insert" or tag == "delete":
+                        label_text += f"<span style='background-color: {background_colors.character_add_color};'>{call[i1:i2]}</span>"
+                        diff_score += max((i2 - i1), (j2 - j1)) * (len(call) - i2)
+                if call == self.call:
+                    label_text = f"<span style='background-color: {background_colors.character_match_color};'>{call}</span>"
+                call_items.append((diff_score, label_text, call))
 
         call_items = sorted(call_items, key=lambda x: x[0])
         for i in reversed(range(layout.count())):
@@ -244,23 +239,24 @@ class CheckWindow(QDockWidget):
             text_lightness = palette.windowText().color().lightness()
             background_lightness = palette.window().color().lightness()
             if background_lightness < text_lightness:
-                # dark mode
+                # dark mode – Catppuccin Mocha
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#dd3333",
-                    character_add_color="#3333dd",
-                    character_match_color="#33bb33",
+                    character_remove_color="#d20f39",
+                    character_add_color="#0c3589",
+                    character_match_color="#1e5713",
                 )
             else:
-                # light mode
+                # light mode – Catppuccin Latte
                 self.background_colors_cache = CheckWindow.BackgroundColors(
-                    character_remove_color="#ffcccc",
-                    character_add_color="#ccccff",
-                    character_match_color="#ccffcc",
+                    character_remove_color="#f38ba8",
+                    character_add_color="#89b4fa",
+                    character_match_color="#a6e3a1",
                 )
         return self.background_colors_cache
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.checkwindow_closed.emit()
         event.accept()
 

@@ -2,13 +2,14 @@ import logging
 from json import loads
 from json.decoder import JSONDecodeError
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -16,12 +17,12 @@ logger = logging.getLogger(__name__)
 
 class DXCCWindow(QDockWidget):
     message = pyqtSignal(dict)
-    ctyfile = {}
+    ctyfile = {}  # noqa: RUF012
     dbname = None
     db = None
     model = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "DXCC",
         1: "160m",
         2: "80m",
@@ -37,7 +38,7 @@ class DXCCWindow(QDockWidget):
         super().__init__()
         self.action = action
         self.active = False
-        uic.loadUi(fsutils.APP_DATA_PATH / "dxcc_tracker.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "dxcc_tracker.ui")
         self.dxcc_table.setColumnCount(len(self.columns))
         for column_number, column_name in self.columns.items():
             self.dxcc_table.setHorizontalHeaderItem(
@@ -67,8 +68,8 @@ class DXCCWindow(QDockWidget):
                 fsutils.APP_DATA_PATH / "cty.json", "rt", encoding="utf-8"
             ) as c_file:
                 self.ctyfile = loads(c_file.read())
-        except (IOError, JSONDecodeError, TypeError):
-            logging.critical("There was an error parsing the BigCity file.")
+        except (OSError, JSONDecodeError, TypeError):
+            logger.critical("There was an error parsing the BigCity file.")
 
     def dxcc_lookup(self, dxcc: str) -> str:
         """Lookup callsign in cty.dat file.
@@ -165,7 +166,7 @@ class DXCCWindow(QDockWidget):
         self.get_log()
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window"""
 
         if self.active is True and self.isVisible():
             if msg.get("cmd", "") in (
@@ -174,16 +175,15 @@ class DXCCWindow(QDockWidget):
                 "DELETE",
                 "DELETED",
             ):
-                ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
-                ...
                 self.load_new_db()
                 self.get_log()
             if msg.get("cmd", "") == "SCROLLTODXCC":
                 self.scrollToDXCC(msg.get("dxcc", ""))
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.dxcc_trackerwindow_closed.emit()
         event.accept()

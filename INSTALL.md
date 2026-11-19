@@ -2,6 +2,25 @@
 
 This section will hopefully get you started with installing Not1MM.
 
+## Via Flatpak
+
+Go to the latest [Release](https://github.com/mbridak/not1mm/releases) and grab the flatpak file.
+
+### Install
+
+```bash
+flatpak install --user not1mm.flatpak
+```
+### Run it
+
+```bash
+flatpak run io.github.mbridak.not1mm 
+```
+
+Or find it in your launcher.
+
+## Via uv or pip or pipx or running from Git source
+
 ## Prerequisites
 
 Not1MM requires:

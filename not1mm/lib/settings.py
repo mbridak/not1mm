@@ -1,8 +1,10 @@
 """Settings Dialog Class"""
 
 import logging
-from PyQt6 import QtWidgets, uic
 
+from PyQt6 import QtWidgets
+
+from not1mm.lib.i18n import available_languages, load_ui
 from not1mm.lib.preferences import Preferences
 
 try:
@@ -18,7 +20,7 @@ class Settings(QtWidgets.QDialog):
         """initialize dialog"""
         super().__init__(parent)
         self.logger = logging.getLogger("settings")
-        uic.loadUi(app_data_path / "configuration.ui", self)
+        load_ui(self, app_data_path / "configuration.ui")
         # self.tabWidget.setTabVisible(5, False)
         # self.group_tab.hide()
         self.buttonBox.accepted.connect(self.save_changes)
@@ -29,7 +31,7 @@ class Settings(QtWidgets.QDialog):
             "Usually 6789 for cwdaemon and 8000 for pywinkeyer."
         )
         self.rigcontrolport_field.setToolTip(
-            "Usually 4532 for rigctld and 12345 for flrig."
+            "Usually 4532 for rigctld, 12345 for flrig, and 50001 or 40001 for TCI."
         )
         self.preference = pref
         if sd:
@@ -64,6 +66,9 @@ class Settings(QtWidgets.QDialog):
         )
 
         self.qsy_on_change.setChecked(bool(self.preference.get("sandpqsy", False)))
+        self.sp_on_freq_change.setChecked(
+            bool(self.preference.get("run_to_sp_on_qsy", False))
+        )
 
         self.edit_rst.setChecked(bool(self.preference.get("edit_rst", False)))
 
@@ -104,6 +109,10 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.esm_qsob4.setCurrentIndex(index)
 
+        self.esm_send_corrected_call.setChecked(
+            bool(self.preference.get("esm_send_corrected_call", False))
+        )
+
         for device in self.devices:
             if device.get("max_output_channels"):
                 self.sounddevice.addItem(device.get("name"))
@@ -124,6 +133,7 @@ class Settings(QtWidgets.QDialog):
         self.catpoll_field.setText(str(self.preference.get("CAT_polldelta", 500)))
         self.userigctld_radioButton.setChecked(bool(self.preference.get("userigctld")))
         self.useflrig_radioButton.setChecked(bool(self.preference.get("useflrig")))
+        self.usetci_radioButton.setChecked(bool(self.preference.get("usetci")))
 
         self.rotctld_address.setText(str(self.preference.get("rotctld_address", "")))
         self.rotctld_port.setText(str(self.preference.get("rotctld_port", "")))
@@ -198,6 +208,7 @@ class Settings(QtWidgets.QDialog):
             str(self.preference.get("cluster_server", "dxc.nc7j.com"))
         )
         self.cluster_port_field.setText(str(self.preference.get("cluster_port", 7373)))
+        self.cluster_login_field.setText(str(self.preference.get("cluster_login", "")))
         self.cluster_password_field.setText(
             str(self.preference.get("cluster_password", ""))
         )
@@ -207,39 +218,46 @@ class Settings(QtWidgets.QDialog):
         if index != -1:
             self.cluster_mode.setCurrentIndex(index)
 
-        self.activate_160m.setChecked(bool("160" in self.preference.get("bands", [])))
-        self.activate_80m.setChecked(bool("80" in self.preference.get("bands", [])))
-        self.activate_60m.setChecked(bool("60" in self.preference.get("bands", [])))
-        self.activate_40m.setChecked(bool("40" in self.preference.get("bands", [])))
-        self.activate_30m.setChecked(bool("30" in self.preference.get("bands", [])))
-        self.activate_20m.setChecked(bool("20" in self.preference.get("bands", [])))
-        self.activate_17m.setChecked(bool("17" in self.preference.get("bands", [])))
-        self.activate_15m.setChecked(bool("15" in self.preference.get("bands", [])))
-        self.activate_12m.setChecked(bool("12" in self.preference.get("bands", [])))
-        self.activate_10m.setChecked(bool("10" in self.preference.get("bands", [])))
-        self.activate_6m.setChecked(bool("6" in self.preference.get("bands", [])))
-        self.activate_4m.setChecked(bool("4" in self.preference.get("bands", [])))
-        self.activate_2m.setChecked(bool("2" in self.preference.get("bands", [])))
+        self.activate_160m.setChecked(bool("160m" in self.preference.get("bands", [])))
+        self.activate_80m.setChecked(bool("80m" in self.preference.get("bands", [])))
+        self.activate_60m.setChecked(bool("60m" in self.preference.get("bands", [])))
+        self.activate_40m.setChecked(bool("40m" in self.preference.get("bands", [])))
+        self.activate_30m.setChecked(bool("30m" in self.preference.get("bands", [])))
+        self.activate_20m.setChecked(bool("20m" in self.preference.get("bands", [])))
+        self.activate_17m.setChecked(bool("17m" in self.preference.get("bands", [])))
+        self.activate_15m.setChecked(bool("15m" in self.preference.get("bands", [])))
+        self.activate_12m.setChecked(bool("12m" in self.preference.get("bands", [])))
+        self.activate_10m.setChecked(bool("10m" in self.preference.get("bands", [])))
+        self.activate_6m.setChecked(bool("6m" in self.preference.get("bands", [])))
+        self.activate_4m.setChecked(bool("4m" in self.preference.get("bands", [])))
+        self.activate_2m.setChecked(bool("2m" in self.preference.get("bands", [])))
         self.activate_1dot25.setChecked(
-            bool("1.25" in self.preference.get("bands", []))
+            bool("1.25m" in self.preference.get("bands", []))
         )
         self.activate_70cm.setChecked(bool("70cm" in self.preference.get("bands", [])))
         self.activate_33cm.setChecked(bool("33cm" in self.preference.get("bands", [])))
         self.activate_23cm.setChecked(bool("23cm" in self.preference.get("bands", [])))
 
+        for code, name in available_languages():
+            self.language.addItem(name, code)
+        value = self.preference.get("language", "en_US")
+        index = self.language.findData(value)
+        if index != -1:
+            self.language.setCurrentIndex(index)
+
     def set_cwdaemon_port_hint(self):
         """Sets placeholder hint for the CW interface."""
         self.cwip_field.setEnabled(True)
         self.cwport_field.setEnabled(True)
-        self.cwip_field.setPlaceholderText("127.0.0.1")
-        self.cwport_field.setPlaceholderText("6789")
+        self.cwip_field.setPlaceholderText("Try 127.0.0.1")
+        self.cwport_field.setPlaceholderText("Try 6789")
 
     def set_winkeyer_port_hint(self):
         """Sets placeholder hint for the CW interface."""
         self.cwip_field.setEnabled(True)
         self.cwport_field.setEnabled(True)
-        self.cwip_field.setPlaceholderText("127.0.0.1")
-        self.cwport_field.setPlaceholderText("8000")
+        self.cwip_field.setPlaceholderText("Try 127.0.0.1")
+        self.cwport_field.setPlaceholderText("Try 8000")
 
     def set_catforcw_port_hint(self):
         """Sets placeholder hint for the CW interface."""
@@ -273,6 +291,7 @@ class Settings(QtWidgets.QDialog):
         self.preference["use_call_history"] = self.use_call_history.isChecked()
 
         self.preference["sandpqsy"] = self.qsy_on_change.isChecked()
+        self.preference["run_to_sp_on_qsy"] = self.sp_on_freq_change.isChecked()
 
         self.preference["edit_rst"] = self.edit_rst.isChecked()
 
@@ -284,6 +303,9 @@ class Settings(QtWidgets.QDialog):
         self.preference["esm_mycall"] = self.esm_mycall.currentText()
         self.preference["esm_qrz"] = self.esm_qrz.currentText()
         self.preference["esm_qsob4"] = self.esm_qsob4.currentText()
+        self.preference["esm_send_corrected_call"] = (
+            self.esm_send_corrected_call.isChecked()
+        )
 
         self.preference["sounddevice"] = self.sounddevice.currentText()
         self.preference["useqrz"] = self.useqrz_radioButton.isChecked()
@@ -302,6 +324,7 @@ class Settings(QtWidgets.QDialog):
             ...
         self.preference["userigctld"] = self.userigctld_radioButton.isChecked()
         self.preference["useflrig"] = self.useflrig_radioButton.isChecked()
+        self.preference["usetci"] = self.usetci_radioButton.isChecked()
 
         self.preference["rotctld_address"] = self.rotctld_address.text()
         try:
@@ -314,7 +337,6 @@ class Settings(QtWidgets.QDialog):
             self.preference["cwport"] = int(self.cwport_field.text())
         except ValueError:
             self.preference["cwport"] = None
-            ...
         cwpaddingchar_button = self.cwpaddingchar_group.checkedButton()
         self.preference["cwpaddingchar"] = (
             cwpaddingchar_button.text() if cwpaddingchar_button else "0"
@@ -370,38 +392,39 @@ class Settings(QtWidgets.QDialog):
             self.preference["cluster_port"] = int(self.cluster_port_field.text())
         except ValueError:
             ...
+        self.preference["cluster_login"] = self.cluster_login_field.text()
         self.preference["cluster_password"] = self.cluster_password_field.text()
         self.preference["cluster_filter"] = self.cluster_filter.text()
         self.preference["cluster_mode"] = self.cluster_mode.currentText()
-        bandlist = list()
+        bandlist = []
         if self.activate_160m.isChecked():
-            bandlist.append("160")
+            bandlist.append("160m")
         if self.activate_80m.isChecked():
-            bandlist.append("80")
+            bandlist.append("80m")
         if self.activate_60m.isChecked():
-            bandlist.append("60")
+            bandlist.append("60m")
         if self.activate_40m.isChecked():
-            bandlist.append("40")
+            bandlist.append("40m")
         if self.activate_30m.isChecked():
-            bandlist.append("30")
+            bandlist.append("30m")
         if self.activate_20m.isChecked():
-            bandlist.append("20")
+            bandlist.append("20m")
         if self.activate_17m.isChecked():
-            bandlist.append("17")
+            bandlist.append("17m")
         if self.activate_15m.isChecked():
-            bandlist.append("15")
+            bandlist.append("15m")
         if self.activate_12m.isChecked():
-            bandlist.append("12")
+            bandlist.append("12m")
         if self.activate_10m.isChecked():
-            bandlist.append("10")
+            bandlist.append("10m")
         if self.activate_6m.isChecked():
-            bandlist.append("6")
+            bandlist.append("6m")
         if self.activate_4m.isChecked():
-            bandlist.append("4")
+            bandlist.append("4m")
         if self.activate_2m.isChecked():
-            bandlist.append("2")
+            bandlist.append("2m")
         if self.activate_1dot25.isChecked():
-            bandlist.append("1.25")
+            bandlist.append("1.25m")
         if self.activate_70cm.isChecked():
             bandlist.append("70cm")
         if self.activate_33cm.isChecked():
@@ -409,4 +432,5 @@ class Settings(QtWidgets.QDialog):
         if self.activate_23cm.isChecked():
             bandlist.append("23cm")
         self.preference["bands"] = bandlist
+        self.preference["language"] = self.language.currentData()
         Preferences.save()

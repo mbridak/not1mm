@@ -1,6 +1,8 @@
 """Select Contest Dialog"""
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
+
+from not1mm.lib.i18n import load_ui
 
 
 class SelectContest(QtWidgets.QDialog):
@@ -8,7 +10,7 @@ class SelectContest(QtWidgets.QDialog):
 
     def __init__(self, app_data_path):
         super().__init__(None)
-        uic.loadUi(app_data_path / "pickcontest.ui", self)
+        load_ui(self, app_data_path / "pickcontest.ui")
         self.buttonBox.clicked.connect(self.store)
 
     def store(self):

@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "I2ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "",
+    "Zip": "00000",
+    "Country": "Italy",
+    "Email": "i2abc@example.com",
+    "GridSquare": "JN45",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "SSB+CW+DIGITAL",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-01-03 12:00:00",
+    "SentExchange": "MI"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 6,
+    "mults": 5,
+    "score": 45,
+    "dupes": 1
+  }
+}

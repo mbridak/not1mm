@@ -30,8 +30,7 @@ Not1MM attempts to be a usable ham/amateur radio contest logger. It's written in
 \subsection{The Why}
 \textbf{Currently, this exists for my own personal enjoyment}. I recently retired after 35+ years working for 'The Phone Company', GTE → Verizon → Frontier. And being a Gentleman of Leisure, I needed something to do in my free time. I am a casual contester and could not find any contesting software for Linux that I wanted to use. \textbf{Tucnak} is very robust and mature contest logger that is available at \url{http://tucnak.nagano.cz/}. It just wasn't for me.
 \subsection{Target Environment}
-The target operating system for this application is \index{Linux}Linux. It may be able to run on other platforms such as \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. I've recently purchased an M4 \index{Mac}Mac Mini, so I'll probably put more effort into that platform as well.
-\subsection{Current State or Code Maturity}
+The target operating system for this application is \index{Linux}Linux and \index{MacOS}MacOS. It may be able to run on other platforms such as \index{BSD}BSD and \index{Windows}Windows. But I don't have a way, or desire, to directly support them. 
 Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm desperately trying to change that. The current focus of development is adding support for Multi-Multi contest operations. It is something that I have no practical experience in. So you can expect the same quality of code fit and finish.
 \subsection{Known Issues}
 \begin{itemize}
@@ -48,6 +47,7 @@ Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm despera
     \item 10 10 Spring CW
     \item 10 10 Summer Phone
     \item 10 10 Winter Phone
+    \item AADX
     \item AGCW QRP
     \item ARI 40 80
     \item ARI DX
@@ -58,29 +58,40 @@ Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm despera
     \item ARRL RTTY Roundup
     \item ARRL Sweepstakes
     \item ARRL VHF
+    \item CAQP
+    \item Canada Day
     \item CQ 160
     \item CQ WPX
+    \item CQ World Scout
     \item CQ World Wide
     \item CWOps CWT, CWO
+    \item DARC Schwaben
     \item DARC Xmas
     \item DARC VHF
     \item Dutch PACC
-    \item EA Majistad CW
-    \item EA Majistad SSB
+    \item EA Majestad CW
+    \item EA Majestad SSB
     \item EA RTTY
     \item ES FIELD DAY HF
+    \item ES LL KV
+    \item ES Manual Key
     \item ES OPEN HF
     \item Estonian LL Cup
     \item EUDX
+    \item European HF Championship
+    \item HADX
     \item Helvetia
     \item IARU Field day
     \item IARU HF
     \item ICWC MST
     \item Japan International DX
+    \item John Moyle Memorial FD
     \item K1USN Slow Speed Test
     \item Labre RS Digi
     \item LZ DX
+    \item NAC VHF
     \item NAQP
+    \item Oceania DX
     \item OK1WC
     \item Phone Weekly Test
     \item RAEM
@@ -88,16 +99,21 @@ Not1MM is -- at times -- fairly stable. Recently, it would seem that I'm despera
     \item RandomGram
     \item REF CW, SSB
     \item RSGB 80M CC
+    \item RSGB Commonwealth
     \item RSGB IOTA
+    \item Russia DX
+    \item Russian District Award
     \item SAC CW, SSB
     \item SPDX
     \item SSA MT
     \item State QSO (limited)
     \item Stew Perry Top band
     \item TA VHF UHF
+    \item Trans Tasman
     \item UK/EI DX
     \item Weekly RTTY
     \item Work All Germany
+    \item WIA Remembrance Day
     \item Winter Field Day
 \end{itemize}
 \end{multicols}
@@ -106,10 +122,26 @@ At present, there are no specific \index{State QSO parties}State QSO parties. Th
 \newpage
 \section{Installation}
 
-\subsection{Not1MM Dependencies}
+\subsection{Flatpak}
+Not1MM can now be installed via flatpak. Look in the Github repos README.md for a link to download the not1mm.flatpak file.
+\subsubsection{Flatpak Install}
+Once downloaded you can install the flatpak with:
+
+\begin{verbatim}
+    flatpak install --user not1mm.flatpak
+\end{verbatim}
+
+\subsubsection{Run it}
+\begin{verbatim}
+    flatpak run io.github.mbridak.not1mm
+\end{verbatim}
+ 
+Or find it in your launcher.
+
+\subsection{Installing via uv}
 Install these software packages through your distribution package manager before continuing:
 \begin{itemize}
-    \item Python 3.10+
+    \item Python 3.11+
     \item PyQt6
     \item libportaudio2
     \item libxcb-cursor0 (maybe... Depends on the distro)
@@ -122,27 +154,27 @@ Install these software packages through your distribution package manager before
 \subsubsection{Single line install}
 From the terminal type:
 \begin{verbatim}
-    • curl -LsSf uvx.sh/not1mm/install.sh | sh
+    curl -LsSf uvx.sh/not1mm/install.sh | sh
 \end{verbatim}
-\subsubsection{Multiple line install}
+\subsubsection{Multiple line install and updates}
 Install uv as described at \url{https://docs.astral.sh/uv/}. Run the following line in the terminal:
 \begin{verbatim}
-    • curl -LsSf https://astral.sh/uv/install.sh | sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 \end{verbatim}
-Instruct it to run Not1MM:
+Instruct it to run Not1MM without installing:
 \begin{verbatim}
-    • uvx not1mm@latest
+    uvx not1mm@latest
 \end{verbatim}
-or install it with:
+Either install or update it with:
 \begin{verbatim}
-    • uv tool install not1mm@latest
+    uv tool install not1mm@latest
 \end{verbatim}
 
 \noindent That's it... it will go out, fetch the latest version of Not1MM, setup a Python virtual environment, get all the needed python libraries, cache everything, and run Not1MM. 
 \subsubsection{Running the software}
 Start Not1MM from the command line by typing: 
 \begin{verbatim}
-    • not1mm
+    not1mm
 \end{verbatim}
 The first time it runs will take a minute, but on subsequent launches it's lightning quick and will automatically check for updates. You will prompted to download the latest version. A lovely non-AI generated icon may appear on the desktop that can be clicked to launch the application.
 \subsubsection{Python versions and rollbacks}
@@ -150,13 +182,13 @@ The first time it runs will take a minute, but on subsequent launches it's light
 If your Linux distro is not current it may be using an older version Python -- perhaps 3.10. There can be significant performance benefits to using the latest Python release, but simply downloading and installing it will likely corrupt your system. The much safer approach is to run Not1MM inside a virtual environment with the desired Python version. To run Not1MM with Python 3.14, for example, you would type this line in the terminal:
 
 \begin{verbatim}
-    • uvx --python 3.14 not1mm@latest
+    uvx --python 3.14 not1mm@latest
 \end{verbatim}
 
-\noindent You can also rollback to an earlier version of Not1MM if the latest update has a bug (This happens a lot as we test in production).To run version 23.5.29 of the software with Python 3.10, for example, you would type:
+\noindent You can also rollback to an earlier version of Not1MM if the latest update has a bug (This happens a lot as we test in production). To run version 23.5.29 of the software with Python 3.11, for example, you would type:
 
 \begin{verbatim}
-    • uvx --python 3.10 not1mm==23.5.19
+    • uvx --python 3.11 not1mm==23.5.19
 \end{verbatim}
 
 Pow! Enjoy the pain... 
@@ -309,11 +341,11 @@ A small transceiver icon changes color to indicate the CAT status. Green: Connec
 Under the CW tab, there are three options:
 
 \begin{itemize}
- \item cwdaemon\index{cwdaemon} normally uses IP 127.0.0.1 and port 6789
+ \item cwdaemon\index{cwdaemon} normally uses IP 127.0.0.1 and port 6789. There are versions of cwdaemon that key via the serial or parallel port, and one that talks to the K1EL keyer chip.
 
- \item pywinkeyer normally uses IP 127.0.0.1 and port 8000
+ \item pywinkeyer normally uses IP 127.0.0.1 and port 8000. It will interface with my K1EL winkeyer client for Linux https://github.com/mbridak/PyWinKeyerSerial or https://github.com/mbridak/SwiftKeyer for MacOS.
 
- \item CAT can be used if your radio supports it. Morse characters are sent via rigctld\index{rigctld}.
+ \item CAT can be used if your radio supports it. Morse characters will be sent via rigctld\index{rigctld}.
 \end{itemize}
 
 Other CW configuration settings:
@@ -523,6 +555,71 @@ For example, to enable the auto-notch filter on a Yaesu FT-710, the command woul
 Note that CAT/CI-V command macros are only available when either FLRig\index{FLRig} or rigctld\index{rigctld} (HamLib)\index{HamLib} are being used for transceiver control.
 
 \newpage
+\section{Keyboard key bindings}
+\begin{tabular}{| c | p{9cm} |}
+	\hline
+	\textbf{Key} & \textbf{Result} \\
+	\hline
+	Esc & Stop CW sending and antenna rotation.\\
+	\hline
+	PgUp & Increase the CW sending speed. \\
+	\hline
+	PgDown & Decrease the CW sending speed. \\
+	\hline
+	Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
+	\hline
+	Arrow-Down & Jump to the next spot below the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
+	\hline
+	TAB & Move cursor to the right one field. \\
+	\hline
+	Shift-Tab & Move cursor left One field. \\
+	\hline
+	SPACE & When in the callsign field, move the input to the next field in the exchange. \\
+	\hline
+	Enter & Submit entered data to the log, unless ESM is enabled. \\
+	\hline
+	F1-F12 & Send (CW/RTTY/Voice) macros. \\
+	\hline
+	CTRL-S & Spot callsign to the cluster. \\
+	\hline
+	CTRL-M & Mark callsign in the bandmap window. \\
+	\hline
+	CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
+	\hline
+	CTRL-SHIFT-K & Open CW text input field. \\
+	\hline
+	CTRL-= & Log the contact without sending the ESM macros. \\
+	\hline
+	CTRL-W & Clear the input fields of any text. \\
+	\hline
+	CTRL-R & Toggle the Run state. \\
+	\hline
+	CTRL-Q & Jump to last CQ frequency. \\
+	\hline
+	ALT-B	& Toggle the bandmap window. \\
+	\hline
+	ALT-C	& Toggle the Check Partial window. \\
+	\hline
+	ALT-L	& Toggle the QSO Log window. \\
+	\hline
+	ALT-R	& Toggle the Rate window. \\
+	\hline
+	ALT-S	& Toggle the Statistics window. \\
+	\hline
+	ALT-V	& Toggle the VFO\index{VFO} window. \\
+	\hline
+	ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+	\hline
+	ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
+	\hline
+\end{tabular}
+\subsubsection{And how to edit them}
+\vspace{0.5cm}
+\includegraphics[width=0.9\linewidth]{pic/edit_keys.png}
+\vspace{0.5cm}\\
+Luckily now you don't have to be stuck with my preferred bindings. The \index{key bindings} key bindings can now be edited \textbf{File >> Edit Keys}.
+
+\newpage
 \section{cty.dat and QRZ for Distance and Bearing}
 
 When a callsign is entered, a lookup\index{lookup} is done in the cty.dat\index{cty.dat} file to identify the country of origin, geographic center, CQ\index{CQ} zone, and ITU\index{ITU} region. Great circle calculations are then done to determine the heading\index{heading} and distance\index{distance} from the home grid\index{grid} square to the geographic center of the DX station. This information is displayed at the bottom left.
@@ -557,66 +654,6 @@ Next, a request is made to qrz.com\index{QRZ} for the grid square of the callsig
 \includegraphics[width=0.9\linewidth]{pic/mainwithcallouts.png}
 \vspace{0.5cm}
 
-\subsubsection{Keyboard Commands}
-
-\begin{tabular}{| c | p{9cm} |}
-    \hline
-    \textbf{Key} & \textbf{Result} \\
-    \hline
-    Esc & Stop CW sending and antenna rotation.\\
-    \hline
-    PgUp & Increase the CW sending speed. \\
-    \hline
-    PgDown & Decrease the CW sending speed. \\
-    \hline
-    Arrow-Up & Jump to the next spot above the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
-    \hline
-    Arrow-Down & Jump to the next spot below the current VFO\index{VFO} cursor in the bandmap window (CAT\index{CAT} Required). \\
-    \hline
-    TAB & Move cursor to the right one field. \\
-    \hline
-    Shift-Tab & Move cursor left One field. \\
-    \hline
-    SPACE & When in the callsign field, move the input to the next field in the exchange. \\
-    \hline
-    Enter & Submit entered data to the log, unless ESM is enabled. \\
-    \hline
-    F1-F12 & Send (CW/RTTY/Voice) macros. \\
-    \hline
-    CTRL-S & Spot callsign to the cluster. \\
-    \hline
-    CTRL-M & Mark callsign in the bandmap window. \\
-    \hline
-    CTRL-G & Tune to a spot matching partial text in the callsign entry field (CAT\index{CAT} Required). \\
-    \hline
-    CTRL-SHIFT-K & Open CW text input field. \\
-    \hline
-    CTRL-= & Log the contact without sending the ESM macros. \\
-    \hline
-    CTRL-W & Clear the input fields of any text. \\
-    \hline
-    CTRL-R & Toggle the Run state. \\
-    \hline
-    CTRL-Q & Jump to last CQ frequency. \\
-    \hline
-    ALT-B	& Toggle the bandmap window. \\
-    \hline
-    ALT-C	& Toggle the Check Partial window. \\
-    \hline
-    ALT-L	& Toggle the QSO Log window. \\
-    \hline
-    ALT-R	& Toggle the Rate window. \\
-    \hline
-    ALT-S	& Toggle the Statistics window. \\
-    \hline
-    ALT-V	& Toggle the VFO\index{VFO} window. \\
-    \hline
-    ALT-.(period)	& Increase the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
-    \hline
-    ALT-,(comma)	& Decrease the VFO frequency by 20 Hz (cw); 100 Hz (ssb). \\
-    \hline
-\end{tabular}
-
 \subsection{The Log Window}
 
 \textbf{Window >> Log Window}
@@ -645,17 +682,19 @@ You cannot directly edit the multiplier\index{multiplier} status of a contact. S
 
 \newpage
 
-\subsection{The Bandmap Window}
+\subsection{The Bandmap and Cluster Windows}
 
-\textbf{Window >> Bandmap}`
+\textbf{Window >> Bandmap} and \textbf{Window >> Cluster} respectively.
 
-The bandmap displays worked stations and spots drawn from the Cluster node specified in the Configuration Settings. Enter your callsign and press the Connect button. When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress.
+The Cluster window is used to connect to the cluster node specified in the Configuration Settings. Press the Connect button in the cluster window to start the inflow of spots. The Bandmap window displays worked stations and spots that have been received by the Cluster window, sorted by frequency.  When CAT\index{CAT} is enabled, the bandmap\index{bandmap} will track with the VFO\index{VFO}. This is still a work in progress.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/bandmap.png}
 \vspace{0.5cm}
+\includegraphics[width=0.5\linewidth]{pic/cluster_spots.png}
+\vspace{0.5cm}
 
-The VFO\index{VFO} frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth\index{bandwidth} if available via CAT\index{CAT}.
+The VFO\index{VFO} frequency is indicated with a small green triangle above the tick marks. A vertical blue bar displays the receive filter bandwidth\index{bandwidth} reported by the radio if available via CAT\index{CAT}.
 
 \vspace{0.5cm}
 \includegraphics[width=0.5\linewidth]{pic/VFO_and_bandwidth_markers.png}
@@ -803,7 +842,7 @@ The program automatically updates the score as each new entry is logged. There m
 \newpage
 \section{ESM}
 \index{ESM}
-I caved and started working on ESM or Enter Sends Message. To test it out you can go to \textbf{FILE >> Configuration Settings}
+To turn on ESM or Enter Sends Message you can go to \textbf{FILE >> Configuration Settings}
 
 \vspace{0.5cm}
 \includegraphics[width=0.9\linewidth]{pic/configuration_options.png}

@@ -9,8 +9,8 @@ modules:
         --prefix=${FLATPAK_DEST} "rapidfuzz" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/30/83/80d22997acd928eda7deadc19ccd15883904622396d6571e935993e0453a/rapidfuzz-3.14.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
-        sha256: 6c5f545f454871e6af05753a0172849c82feaf0f521c5ca62ba09e1b382d6382
+        url: https://files.pythonhosted.org/packages/90/79/2fc252a63bc91d3c3b234d0a3a6ad4ebc460037a23cdcdaf9285f986e6c9/rapidfuzz-3.14.5-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+        sha256: 17a34330cd2a538c1ce5d400b61ba358c5b72c654b928ff87b362e88f8b864c7
         x-checker-data:
           name: radpidfuzz
           packagetype: bdist_wheel
@@ -288,8 +288,8 @@ modules:
     sources:
       - &id008
         type: file
-        url: https://files.pythonhosted.org/packages/d9/7d/9c8a781c88933725445a859cac5d01b5871588a15969ee6aeb618ba99eee/numpy-2.4.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
-        sha256: 7ad270f438cbdd402c364980317fb6b117d9ec5e226fff5b4148dd9aa9fc6e02
+        url: https://files.pythonhosted.org/packages/7b/44/59a1eb68e773c4098d107ef34a0dbdeca501d72ffcfbff9a7707343921ce/numpy-2.5.2-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+        sha256: 29b86ff8a6cc556b47ec6b64b194815cc80e6bf5eedcc6cddfd65318cb0b4eee
         x-checker-data:
           name: numpy
           type: pypi
@@ -342,22 +342,6 @@ modules:
         sha256: 03267c4e493315294834a0870f31dbb3b28a95561b80b134f0bd3cf2d5f0e618
         x-checker-data:
           name: soundfile
-          type: pypi
-    cleanup:
-      - /bin
-      - /share/man/man1
-  - name: python3-not1mm
-    buildsystem: simple
-    build-commands:
-      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "not1mm" --no-build-isolation
-    sources:
-      - type: file
-        url: https://files.pythonhosted.org/packages/2d/ae/155459949b1ede57683fe7a7402710c6ee6eb042fc2776bcba38ceeb6ce8/not1mm-25.12.27.1-py3-none-any.whl
-        sha256: 96d08d85ec7ec345abad8d0ddb9a042b9f07c623edfc43bc12ddf56998c11930
-        x-checker-data:
-          name: not1mm
-          packagetype: bdist_wheel
           type: pypi
     cleanup:
       - /bin

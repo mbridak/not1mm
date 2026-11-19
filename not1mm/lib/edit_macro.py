@@ -1,15 +1,16 @@
 """edit the macro buttons"""
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
+
+from not1mm.lib.i18n import load_ui
 
 
 class EditMacro(QtWidgets.QDialog):
-
     def __init__(self, function_key, app_data_path):
         self.function_key = function_key
         parent = None
         super().__init__(parent)
-        uic.loadUi(app_data_path / "editmacro.ui", self)
+        load_ui(self, app_data_path / "editmacro.ui")
         self.buttonBox.clicked.connect(self.store)
         self.macro_label.setText(function_key.text())
         self.the_macro.setText(function_key.toolTip())

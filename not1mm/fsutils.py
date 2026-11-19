@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 fsutils.py: Filesystem utilities for not1mm.
 @kyleboyle

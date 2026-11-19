@@ -21,12 +21,11 @@ logger = logging.getLogger("database")
 class DataBase:
     """Database class for our database."""
 
-    current_contest = 1
-
-    def __init__(self, database: str, app_data_dir: str):
+    def __init__(self, database: str, app_data_dir: str, current_contest=None):
         """initializes DataBase instance"""
         logger.debug("Database: %s", database)
         self.app_data_dir = app_data_dir
+        self.current_contest = current_contest
         self.empty_contact = {
             "TS": "",
             "Call": "",
@@ -133,7 +132,9 @@ class DataBase:
             logger.error("%s", exception)
             return ()
 
-    def exec_sql_commit(self, query: str, params=(), commit=True, error_logger=logger.error) -> None:
+    def exec_sql_commit(
+        self, query: str, params=(), commit=True, error_logger=logger.error
+    ) -> None:
         """Exec write query with database changes and commit"""
         try:
             logger.debug("%s", query)
@@ -143,7 +144,7 @@ class DataBase:
             cursor.execute(query, params)
             if commit:
                 self.conn.commit()
-        except sqlite3.OperationalError as exception:
+        except (sqlite3.OperationalError, sqlite3.IntegrityError) as exception:
             error_logger("%s", exception)
 
     def commit_it(self):
@@ -155,9 +156,9 @@ class DataBase:
             return
 
         fields, values, placeholders = [], [], []
-        for field in row.keys():
+        for field, value in row.items():
             fields.append(field)
-            values.append(row[field])
+            values.append(value)
             placeholders.append("?")
 
         self.exec_sql_commit(
@@ -172,11 +173,11 @@ class DataBase:
             return
 
         fields, values = [], []
-        for field in row.keys():
+        for field, value in row.items():
             if field == key:
                 continue
             fields.append(f"{field} = ?")
-            values.append(row[field])
+            values.append(value)
 
         self.exec_sql_commit(
             f"update {table} set {', '.join(fields)} where {key} = ?;",
@@ -369,7 +370,9 @@ class DataBase:
 
     def get_next_contest_nr(self):
         """Returns the next ContestNR to use."""
-        return self.exec_sql("select count(*) + 1 as count from ContestInstance;")
+        return self.exec_sql(
+            "select coalesce(max(ContestNR), 0) + 1 as nr from ContestInstance;"
+        )
 
     def fetch_contest_by_id(self, contest_nr: str) -> dict:
         """returns a dict of ContestInstance"""
@@ -443,8 +446,20 @@ class DataBase:
         self.exec_sql_commit("delete from CALLHISTORY;")
 
     def fetch_call_history(self, call: str):
-        """"""
+        """Returns call history values for matching a call."""
         return self.exec_sql("select * from CALLHISTORY where call = ?;", (call,))
+
+    def fetch_previous_qso(self, call: str):
+        """The most recent contact with *call* in this contest, if any.
+
+        What a station was worked as the last time: its grid, its section, the
+        exchange it sent.  Used to prefill, and to predict a multiplier from.
+        """
+        return self.exec_sql(
+            "select * from dxlog where Call = ? and ContestNR = ? "
+            "order by TS desc limit 1;",
+            (call, self.current_contest),
+        )
 
     def fetch_all_contacts_asc(self) -> list:
         """returns a list of dicts with contacts in the database."""
@@ -650,11 +665,27 @@ class DataBase:
             (dxcc, self.current_contest),
         )
 
+    def fetch_dxcc_band_exists(self, dxcc, band) -> dict:
+        """Return the count of a DXCC entity on a band in the current contest."""
+        return self.exec_sql(
+            "select count(*) as dxcc_band_count from dxlog "
+            "where CountryPrefix = ? and Band = ? and ContestNR = ?;",
+            (dxcc, band, self.current_contest),
+        )
+
     def fetch_dxcc_exists_before_me(self, dxcc, time_stamp) -> dict:
         """returns the dict dxcc_count of dxcc existing in current contest."""
         return self.exec_sql(
             "select count(*) as dxcc_count from dxlog where TS < ? and CountryPrefix = ? and ContestNR = ?;",
             (time_stamp, dxcc, self.current_contest),
+        )
+
+    def fetch_dxcc_exists_before_me_on_band(self, dxcc, time_stamp, band) -> dict:
+        """Return earlier QSOs with a DXCC entity on a band in this contest."""
+        return self.exec_sql(
+            "select count(*) as dxcc_band_count from dxlog "
+            "where TS < ? and CountryPrefix = ? and Band = ? and ContestNR = ?;",
+            (time_stamp, dxcc, band, self.current_contest),
         )
 
     def fetch_wpx_exists(self, wpx) -> dict:
@@ -784,6 +815,47 @@ class DataBase:
             (self.current_contest,),
         )
 
+    def fetch_mult_key_count(self, expression: str, per: tuple = ()) -> dict:
+        """Count the distinct values of a multiplier key in this contest.
+
+        *expression* is a SQL expression over a DXLOG row and *per* the columns
+        the key is counted per (``Band``, ``Mode``): the translation of a UDC
+        ``MultSqlString`` / ``IsMultPer`` pair into one query.  So
+        ``("WPXPrefix", ())`` counts prefixes once for the contest and
+        ``("substr(Call,-1)", ("Band",))`` counts last letters per band.
+        """
+        key = expression
+        for column in per:
+            key += f" || ':' || {column}"
+        return self.exec_sql(
+            f"select count(DISTINCT {key}) as count from dxlog where ContestNR = ?;",
+            (self.current_contest,),
+        )
+
+    def mult_key_exists(
+        self, expression: str, value, per: tuple = (), band=None, mode=None
+    ) -> dict:
+        """Count the logged contacts already carrying a multiplier key.
+
+        The live counterpart of :meth:`fetch_mult_key_count`: is the key of the
+        contact being logged already in the log, on this band/mode?
+        """
+        where = [f"{expression} = ?"]
+        params = [value]
+        if "Band" in per:
+            where.append("Band = ?")
+            params.append(band)
+        if "Mode" in per:
+            where.append("Mode = ?")
+            params.append(mode)
+        params.append(self.current_contest)
+        return self.exec_sql(
+            "select count(*) as count from dxlog where "
+            + " and ".join(where)
+            + " and ContestNR = ?;",
+            tuple(params),
+        )
+
     def fetch_qso_count(self) -> dict:
         """return QSO count"""
         return self.exec_sql(
@@ -890,9 +962,14 @@ class DataBase:
         )
 
     def check_dupe_on_period_mode(self, call, band, mode, period_1, period_2) -> dict:
-        """Checks if a call is dupe on band/mode"""
+        """Checks if a call is dupe on band/mode within a time period.
+
+        The window is half-open - [period_1, period_2) - so that a contact
+        logged exactly on a boundary belongs to the later period only, which
+        is how the caller picks the period.
+        """
         return self.exec_sql(
-            "select count(*) as isdupe from dxlog where Call = ? and Mode = ? and Band = ? and ContestNR = ? AND TS >= ? AND TS <= ?;",
+            "select count(*) as isdupe from dxlog where Call = ? and Mode = ? and Band = ? and ContestNR = ? AND TS >= ? AND TS < ?;",
             (call, mode, band, self.current_contest, period_1, period_2),
         )
 

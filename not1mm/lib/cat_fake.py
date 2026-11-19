@@ -5,7 +5,7 @@ GPL V3
 """
 
 import logging
-import os
+
 from not1mm.lib.cat_interface import CAT
 
 if __name__ == "__main__":

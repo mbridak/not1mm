@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "TA1ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Ornek Sokak",
+    "City": "Orneksehir",
+    "State": "",
+    "Zip": "00000",
+    "Country": "Turkey",
+    "Email": "ta1abc@example.com",
+    "GridSquare": "KN41",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "SSB+CW",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-07-04 12:00:00",
+    "SentExchange": "KN41"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 5,
+    "mults": 0,
+    "score": 4506,
+    "dupes": 1
+  }
+}

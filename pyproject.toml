@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "not1mm" 
-version = "26.7.16"
+version = "26.11.19"
 description = "NOT1MM Logger"
-license = "GPL-3.0-or-later"
+license = { text = "GPL-3.0-or-later" }
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
   { name="Michael Bridak", email="michael.bridak@gmail.com" },
 ]
@@ -49,8 +49,13 @@ exclude = ["not1mm.testing*", "not1mm.not1mm.testing*", "testing*", "test", "usb
 
 [tool.setuptools.package-data]
 "not1mm.data" = ["*.json", "*.txt", "*.SCP", "*.ui", "*.ttf", "*.desktop", "*.png", "*.qss", "*.sql", "*.html", "*.metainfo.xml",]
+"not1mm.data.translations" = ["*.ts", "*.qm",]
 "not1mm.data.phonetics" = ["*.wav",]
 "not1mm.icon" = ["*.png",]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
 
 [project.scripts]
 not1mm = "not1mm.__main__:run"

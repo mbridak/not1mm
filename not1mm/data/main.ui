@@ -23,7 +23,6 @@
    <font>
     <family>JetBrains Mono</family>
     <pointsize>11</pointsize>
-    <weight>100</weight>
    </font>
   </property>
   <property name="focusPolicy">
@@ -41,6 +40,9 @@
     <width>32</width>
     <height>32</height>
    </size>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
@@ -748,7 +750,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -793,7 +794,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -834,8 +834,7 @@
                  <property name="font">
                   <font>
                    <family>JetBrains Mono</family>
-                   <pointsize>20</pointsize>
-                   <weight>100</weight>
+                   <pointsize>20</pointsize>                   
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -871,7 +870,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -913,7 +911,6 @@
                   <font>
                    <family>JetBrains Mono</family>
                    <pointsize>20</pointsize>
-                   <weight>100</weight>
                   </font>
                  </property>
                  <property name="focusPolicy">
@@ -1070,7 +1067,6 @@
                <font>
                 <family>JetBrains Mono</family>
                 <pointsize>11</pointsize>
-                <weight>100</weight>
                </font>
               </property>
               <property name="text">
@@ -1530,8 +1526,6 @@
     <property name="font">
      <font>
       <family>JetBrains Mono</family>
-      <pointsize>11</pointsize>
-      <weight>100</weight>
      </font>
     </property>
     <property name="title">
@@ -1554,6 +1548,7 @@
     <addaction name="actionImport_ADIF"/>
     <addaction name="separator"/>
     <addaction name="actionEdit_Macros"/>
+    <addaction name="actionEdit_Keys"/>
     <addaction name="separator"/>
     <addaction name="actionLoad_Call_History_File"/>
     <addaction name="actionUpdate_CTY"/>
@@ -1582,6 +1577,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionBandmap"/>
+    <addaction name="actionCluster"/>
     <addaction name="actionCheck_Window"/>
     <addaction name="actionLog_Window"/>
     <addaction name="actionRate_Window"/>
@@ -1600,11 +1596,19 @@
     </property>
     <addaction name="actionRecalculate_Mults"/>
     <addaction name="actionMark_Contacts_Dirty"/>
+    <addaction name="separator"/>
+    <addaction name="actionSynchronize_VFOs"/>
+   </widget>
+   <widget class="QMenu" name="menuLanguage">
+    <property name="title">
+     <string>Language</string>
+    </property>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuWindow"/>
    <addaction name="menuOther"/>
+   <addaction name="menuLanguage"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
@@ -1617,7 +1621,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1649,7 +1652,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1675,7 +1677,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1701,7 +1702,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -1718,7 +1718,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1738,7 +1737,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1758,7 +1756,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -1769,7 +1766,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1789,7 +1785,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1809,7 +1804,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1832,7 +1826,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1855,7 +1848,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1878,7 +1870,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1901,7 +1892,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -1924,7 +1914,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1944,7 +1933,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1964,7 +1952,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -1984,7 +1971,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2004,7 +1990,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2024,7 +2009,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="autoRepeat">
@@ -2044,7 +2028,16 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
+    </font>
+   </property>
+  </action>
+  <action name="actionEdit_Keys">
+   <property name="text">
+    <string>Edit Keys</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
     </font>
    </property>
   </action>
@@ -2064,6 +2057,19 @@
     <string>Alt+B</string>
    </property>
   </action>
+  <action name="actionCluster">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cluster</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
+  </action>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
@@ -2076,7 +2082,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2092,7 +2097,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2111,7 +2115,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2128,7 +2131,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2145,7 +2147,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2165,7 +2166,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2197,7 +2197,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2214,7 +2213,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2231,7 +2229,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
@@ -2241,12 +2238,6 @@
   <action name="actionMark_Contacts_Dirty">
    <property name="text">
     <string>Mark Contacts Dirty</string>
-   </property>
-   <property name="font">
-    <font>
-     <family>JetBrains Mono</family>
-     <weight>100</weight>
-    </font>
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
@@ -2268,7 +2259,6 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
   </action>
@@ -2282,11 +2272,18 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
-     <weight>100</weight>
     </font>
    </property>
    <property name="shortcut">
     <string>Alt+Z</string>
+   </property>
+  </action>
+  <action name="actionSynchronize_VFOs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Synchronize VFOs</string>
    </property>
   </action>
  </widget>

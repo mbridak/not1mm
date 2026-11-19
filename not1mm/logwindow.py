@@ -11,13 +11,14 @@ import logging
 import math
 import queue
 
-from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QItemSelectionModel, Qt, pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_contact import EditContact
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.n1mm import N1MM
 from not1mm.lib.preferences import Preferences
 
@@ -59,8 +60,8 @@ class LogWindow(QDockWidget):
     dbname = None
     edit_contact_dialog = None
     current_palette = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "YYYY-MM-DD HH:MM:SS",
         1: "Call",
         2: "Freq (KHz)",
@@ -103,7 +104,7 @@ class LogWindow(QDockWidget):
 
         self.database.current_contest = self.pref.get("contest", 0)
         self.contact = self.database.empty_contact
-        uic.loadUi(fsutils.APP_DATA_PATH / "logwindow.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "logwindow.ui")
         self.setWindowTitle(
             f"QSO History - {self.pref.get('current_database', 'ham.db')}"
         )
@@ -176,7 +177,7 @@ class LogWindow(QDockWidget):
         self.message.emit(cmd)
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window."""
         if msg.get("cmd", "") == "UPDATELOG":
             logger.debug("External refresh command.")
             self.get_log()
@@ -197,7 +198,7 @@ class LogWindow(QDockWidget):
                 self.focusedLog.setColumnHidden(self.get_column(column), False)
 
     def resize_headers_to_match(self) -> None:
-        """"""
+        """Resizes the focused log headers to the same size as the general log."""
         for i in range(self.generalLog.columnCount()):
             self.focusedLog.setColumnWidth(i, self.generalLog.columnWidth(i))
 
@@ -636,7 +637,7 @@ class LogWindow(QDockWidget):
         self.edit_contact_dialog.mult_3.setChecked(
             bool(self.contact.get("IsMultiplier3", ""))
         )
-        self.edit_contact_dialog.show()
+        self.edit_contact_dialog.exec()
         debugline = f"Right Clicked Item: {uuid}"
         logger.debug(debugline)
 
@@ -702,16 +703,13 @@ class LogWindow(QDockWidget):
         None
         """
         self.database.delete_contact(self.contact.get("ID", ""))
-        if self.n1mm:
-            if self.n1mm.send_contact_packets:
-                self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
-                self.n1mm.contactdelete["call"] = self.contact.get("Call", "")
-                self.n1mm.contactdelete["contestnr"] = self.contact.get("ContestNR", 1)
-                self.n1mm.contactdelete["StationName"] = self.pref.get(
-                    "n1mm_station_name"
-                )
-                self.n1mm.contactdelete["ID"] = self.contact.get("ID", "")
-                self.n1mm.send_contact_delete()
+        if self.n1mm and self.n1mm.send_contact_packets:
+            self.n1mm.contactdelete["timestamp"] = self.contact.get("TS", "")
+            self.n1mm.contactdelete["call"] = self.contact.get("Call", "")
+            self.n1mm.contactdelete["contestnr"] = self.contact.get("ContestNR", 1)
+            self.n1mm.contactdelete["StationName"] = self.pref.get("n1mm_station_name")
+            self.n1mm.contactdelete["ID"] = self.contact.get("ID", "")
+            self.n1mm.send_contact_delete()
         self.edit_contact_dialog.close()
         self.get_log()
         cmd = {}
@@ -1083,6 +1081,7 @@ class LogWindow(QDockWidget):
         _ = message_box.exec_()
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.logwindow_closed.emit()
         event.accept()

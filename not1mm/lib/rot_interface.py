@@ -1,5 +1,5 @@
-import socket
 import logging
+import socket
 
 if __name__ == "__main__":
     print("I'm not the program you are looking for.")
@@ -32,7 +32,7 @@ class RotatorInterface:
             self.socket = socket.create_connection((self.host, self.port), timeout=1)
             self.connected = True
             logger.info(f"Connected to rotator at {self.host}:{self.port}")
-        except (socket.timeout, ConnectionRefusedError, OSError) as e:
+        except (TimeoutError, ConnectionRefusedError, OSError) as e:
             self.connected = False
             logger.warning(
                 f"Failed to connect to rotator at {self.host}:{self.port}: {e}"

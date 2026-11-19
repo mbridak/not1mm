@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "UA3ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "",
+    "Zip": "00000",
+    "Country": "European Russia",
+    "Email": "ua3abc@example.com",
+    "GridSquare": "KO85",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "SSB+CW",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-08-15 08:00:00",
+    "SentExchange": "MO-01"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 6,
+    "mults": 8,
+    "score": 96,
+    "dupes": 1
+  }
+}

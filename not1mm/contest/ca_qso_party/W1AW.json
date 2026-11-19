@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "W1AW",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "CT",
+    "Zip": "00000",
+    "Country": "United States",
+    "Email": "w1aw@example.com",
+    "GridSquare": "FN31",
+    "ARRLSection": "CT",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "SSB+CW",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-01-03 12:00:00",
+    "SentExchange": "CT"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 10,
+    "mults": 2,
+    "score": 24,
+    "dupes": 1
+  }
+}

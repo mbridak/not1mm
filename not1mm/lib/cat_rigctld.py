@@ -6,7 +6,8 @@ GPL V3
 
 import logging
 import socket
-import os
+import threading
+
 from not1mm.lib.cat_interface import CAT
 
 if __name__ == "__main__":
@@ -35,9 +36,19 @@ class RigctldCAT(CAT):
         """
         super().__init__(host, port)
         self.rigctrlsocket = None
+        self._sock_lock = threading.RLock()  # reentrant (same thread can reacquire)
         self.rigctld_bw = "0"
         self.interface = "rigctld"
+        self.sync_vfos = False
+        self.current_vfo = "VFOA"
         self.reinit()
+
+    def is_floatable(self, thing_to_test):
+        try:
+            float(thing_to_test)
+            return True
+        except ValueError:
+            return False
 
     def reinit(self):
         """initialise rigctld
@@ -61,7 +72,6 @@ class RigctldCAT(CAT):
             ConnectionRefusedError,
             TimeoutError,
             OSError,
-            socket.error,
             socket.gaierror,
         ) as exception:
             self.rigctrlsocket = None
@@ -76,32 +86,43 @@ class RigctldCAT(CAT):
         The reply is expected to end with "RPRT N" which is guaranteed in the
         extended response protocol (prefix="+").
         """
-
-        if (
-            not self.online
-            or self.rigctrlsocket is None
-            or not hasattr(self.rigctrlsocket, "send")
-        ):
-            if auto_reinit:
+        with self._sock_lock:  # protect against other threads sending commands
+            if (
+                not self.online
+                or self.rigctrlsocket is None
+                or not hasattr(self.rigctrlsocket, "send")
+            ) and auto_reinit:
                 self.reinit()
-        if not self.online:
-            return ""
-        try:
-            logger.debug("> %s", command)
-            self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
-            report = ""
-            while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
-                thegrab = self.rigctrlsocket.recv(1024).decode()
-                if thegrab == "":  # socket closed
-                    break
-                report += thegrab
-            logger.debug("< %s", report)
-            return report
-        except (TimeoutError, OSError, UnicodeDecodeError, socket.error) as exception:
-            self.online = False
-            logger.info("%s", f"{exception}")
-            self.rigctrlsocket = None
+            if not self.online:
+                return ""
+            try:
+                # self.drain_socket()
+                logger.debug(f">{prefix}{command}")
+                self.rigctrlsocket.send(bytes(prefix + command + "\n", "utf-8"))
+                report = ""
+                while "RPRT" not in report:  # read until we get "RPRT X" from rigctld
+                    thegrab = self.rigctrlsocket.recv(1024).decode()
+                    if thegrab == "":  # socket closed
+                        break
+                    report += thegrab
+                logger.debug(f"<{report}")
+                return report
+            except (TimeoutError, OSError, UnicodeDecodeError) as exception:
+                self.online = False
+                logger.info("%s", f"{exception}")
+                self.rigctrlsocket = None
         return ""
+
+    def drain_socket(self):
+        orig_timeout = self.rigctrlsocket.gettimeout()
+        self.rigctrlsocket.settimeout(0.001)
+        try:
+            while True:
+                _ = self.rigctrlsocket.recv(4096)
+        except TimeoutError:
+            pass
+        finally:
+            self.rigctrlsocket.settimeout(orig_timeout)
 
     def rigctld_parse(self, report: str) -> dict:
         """Parse a extended response protocol message (prefix +) into fields.
@@ -133,7 +154,16 @@ class RigctldCAT(CAT):
                 fields["RPRT"] = v
             else:  # some response parts don't have labels
                 fields["line"] = line
+        logger.debug(f"{fields}")
         return fields
+
+    def get_active_vfo(self) -> str:
+        """Get the currently selected VFO from rigctld."""
+        report = self.rigctld_parse(self.rigctld_command("v"))
+        vfo = report.get("VFO", report.get("line", "")).strip().upper()
+        if vfo in ("VFOA", "VFOB"):
+            self.current_vfo = vfo
+        return self.current_vfo
 
     def sendvoicememory(self, memoryspot=1):
         self.rigctld_command(f"\\send_voice_mem {memoryspot}")
@@ -148,13 +178,13 @@ class RigctldCAT(CAT):
 
     def set_cw_speed(self, speed):
         """Set CW speed via rigctld"""
-        self.rigctld_command(f"L VFOA KEYSPD {speed}")
+        self.rigctld_command(f"L {self.get_active_vfo()} KEYSPD {speed}")
 
     def get_vfo(self) -> str:
         """Poll the radio for current vfo using the interface"""
-        report = self.rigctld_parse(self.rigctld_command("f VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"f {self.get_active_vfo()}"))
         freq = report.get("Frequency", "")
-        if freq.isnumeric():
+        if self.is_floatable(freq):
             return str(int(float(freq)))
         else:
             return ""
@@ -163,7 +193,7 @@ class RigctldCAT(CAT):
         """Returns the current mode filter width of the radio"""
         # QMX 'DIGI-U DIGI-L CW-U CW-L' or 'LSB', 'USB', 'CW', 'FM', 'AM', 'FSK'
         # 7300 'AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D'
-        report = self.rigctld_parse(self.rigctld_command("m VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"m {self.get_active_vfo()}"))
         # get_mode:|Mode: CW|Passband: 500|RPRT 0
         self.rigctld_bw = report.get("Passband", "0")
         return report.get("Mode", "")
@@ -174,36 +204,61 @@ class RigctldCAT(CAT):
 
     def get_power(self) -> int:
         """Get power level from rig"""
-        report = self.rigctld_parse(self.rigctld_command("l VFOA RFPOWER"))
+        report = self.rigctld_parse(
+            self.rigctld_command(f"l {self.get_active_vfo()} RFPOWER")
+        )
         # get_level: RFPOWER |0.000000|RPRT 0
         return int(float(report.get("line", 0)) * 100)
 
     def get_ptt(self) -> str:
         """Get PTT state"""
-        report = self.rigctld_parse(self.rigctld_command("t VFOA"))
+        report = self.rigctld_parse(self.rigctld_command(f"t {self.get_active_vfo()}"))
         return report.get("PTT", "0")
 
     def get_mode_list(self) -> list:
         "Get a list of modes supported by the radio"
         # set_mode: VFOA:?|AM CW USB LSB RTTY FM CWR RTTYR PKTLSB PKTUSB FM-D AM-D PSK PSKR
         # RPRT 0
-        report = self.rigctld_parse(self.rigctld_command("M VFOA ?"))
+        report = self.rigctld_parse(
+            self.rigctld_command(f"M {self.get_active_vfo()} ?")
+        )
         return report.get("line", "").split(" ")
 
     def set_vfo(self, freq: str) -> bool:
         """Sets the radios vfo"""
-        self.rigctld_command(f"F VFOA {freq}")
+        active_vfo = self.get_active_vfo()
+        self.rigctld_command(f"F {active_vfo} {freq}")
+        if self.sync_vfos:
+            other_vfo = "VFOB" if active_vfo == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
         return True
+
+    def set_sync_vfos(self, sync_vfos: bool):
+        """
+        Turn on/off the Sync VFOs feature. Syncs frequencies once when turned
+        on and then with every set_vfo().
+
+        It also turns on VFO Tracking mode on supported rigs. On ICOM, setting
+        VFOA using CAT doesn't automatically update VFOB even when tracking is
+        active, so we still need to set VFOB explicitly.
+        """
+        self.sync_vfos = sync_vfos
+        # turn on SY/Tracking on supported rigs
+        self.rigctld_command(f"\\set_func VFOA SYNC {int(self.sync_vfos)}")
+        # sync now when activating
+        if self.sync_vfos and (freq := self.get_vfo()):
+            other_vfo = "VFOB" if self.get_active_vfo() == "VFOA" else "VFOA"
+            self.rigctld_command(f"F {other_vfo} {freq}")
 
     def set_mode(self, mode: str) -> bool:
         """Sets the radios mode"""
-        self.rigctld_command(f"M VFOA {mode} 0")
+        self.rigctld_command(f"M {self.get_active_vfo()} {mode} 0")
         return True
 
     def set_power(self, power):
         """Sets the radios power"""
         if power.isnumeric() and int(power) >= 1 and int(power) <= 100:
-            rig_cmd = f"L VFOA RFPOWER {str(float(power) / 100)}"
+            rig_cmd = f"L {self.get_active_vfo()} RFPOWER {float(power) / 100}"
             self.rigctld_command(rig_cmd)
             return True
         else:
@@ -220,71 +275,28 @@ class RigctldCAT(CAT):
         # Get 'PTT' status.
         # Returns PTT as a value in set_ptt above.
         """
-        self.rigctld_command("T VFOA 1")
+        self.rigctld_command(f"T {self.get_active_vfo()} 1")
         return True
 
     def ptt_off(self) -> bool:
         """turn ptt on/off"""
-        self.rigctld_command("T VFOA 0")
+        self.rigctld_command(f"T {self.get_active_vfo()} 0")
         return True
 
     def send_cat_string(self, cmdstr=""):
         """send a raw cat string to radio"""
-        cmdstr = cmdstr.strip()
-        test1 = cmdstr.replace(" ", "")
-        if test1 == "":
+        cmd, thisishex, ok = self._parse_cat_command(cmdstr)
+        if not ok or cmd == "":
             return True
-        working = cmdstr
-        test2 = [" ", " x", " X", "\\"]
-        test3 = "0123456789ABCDEF "  # trailing space
-        ishex = False
-        # does this look like hex?
-        for c2 in test2:
-            if c2 in working:
-                ishex = True
-        if ishex:
-            working = working.replace("x", "")
-            working = working.replace("X", "")
-            working = working.replace("\\", "")
-            working = working.upper()
-            # should be space-delimited now
-            # any illegal chars?
-            for c3 in working:
-                if c3 not in test3:
-                    logger.debug(f"Bad char in command string: [{cmdstr}]")
-                    return True
-            # hex checks out so far
-            spacesok = True
-            for i in range(len(working)):
-                if (i + 1) % 3 == 0:  # every 3rd char
-                    if working[i] != " ":
-                        spacesok = False
-            if not spacesok:
-                logger.debug(f"Bad delimiters in cmd string: [{cmdstr}]")
-                return True
-        else:
-            """not hex, but plain ascii text - do nothing"""
-
-        return self.__send_cat_string_rigctld(working, ishex)
-
-    def __send_cat_string_rigctld(self, cmd, thisishex):
-        """convert string to rigctld format, send to rigctld"""
-        if not self.rigctrlsocket:
-            return 0
         if thisishex:
             # make string "\0x" delimited for rigctld
-            cmd = cmd.replace(" ", "\\0x")
-            cmd = "|w \\0x" + cmd
+            payload = "w \\0x" + cmd.replace(" ", "\\0x")
         else:
-            cmd = "|w " + cmd
-        bcmd = bytes(cmd, "utf-8")
-        logger.debug("%s", f"Sending rig command: [{bcmd}]")
+            payload = "w " + cmd
+        logger.debug("%s", f"Sending rig command: [{payload}]")
 
-        try:
-            if hasattr(self.rigctrlsocket, "send"):
-                self.rigctrlsocket.send(bcmd)
-        except socket.error:
-            logger.debug("Socket error!")
-            self.online = False
-            self.rigctrlsocket = None
-            return 0
+        report = self.rigctld_command(payload)
+        if "RPRT 0" not in report:
+            logger.info("rigctld rejected CAT cmd %r -> %s", payload, report.strip())
+            return False
+        return True

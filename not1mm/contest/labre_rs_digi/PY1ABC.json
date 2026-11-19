@@ -1,0 +1,38 @@
+{
+  "station": {
+    "Call": "PY1ABC",
+    "Name": "Sample Operator",
+    "Street1": "1 Example Lane",
+    "City": "Anytown",
+    "State": "",
+    "Zip": "00000",
+    "Country": "Brazil",
+    "Email": "py1abc@example.com",
+    "GridSquare": "GG87",
+    "ARRLSection": "DX",
+    "Club": "Example Contest Club",
+    "STXeq": "IC-7300",
+    "SAnte": "Dipole",
+    "SAntH1": "10m"
+  },
+  "contest_settings": {
+    "OperatorCategory": "SINGLE-OP",
+    "AssistedCategory": "NON-ASSISTED",
+    "BandCategory": "ALL",
+    "ModeCategory": "RTTY",
+    "PowerCategory": "HIGH",
+    "TransmitterCategory": "ONE",
+    "OverlayCategory": "N/A",
+    "StartDate": "2026-01-03 12:00:00",
+    "SentExchange": "GG87"
+  },
+  "pref": {
+    "contest": 1
+  },
+  "expected": {
+    "qsos": 4,
+    "mults": 3,
+    "score": 12,
+    "dupes": 1
+  }
+}

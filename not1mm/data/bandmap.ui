@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>342</width>
+    <width>322</width>
     <height>700</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>322</width>
+    <height>204</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>BandMap</string>
@@ -31,57 +37,10 @@
      <number>6</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Callsign</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="callsignField">
-        <property name="focusPolicy">
-         <enum>Qt::FocusPolicy::ClickFocus</enum>
-        </property>
-        <property name="accessibleName">
-         <string>callsign</string>
-        </property>
-        <property name="accessibleDescription">
-         <string>callsign used to sign in to dx cluster.</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">text-transform: uppercase;</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="connectButton">
-        <property name="focusPolicy">
-         <enum>Qt::FocusPolicy::NoFocus</enum>
-        </property>
-        <property name="toolTip">
-         <string>Connect to DX cluster.</string>
-        </property>
-        <property name="accessibleName">
-         <string>connect</string>
-        </property>
-        <property name="accessibleDescription">
-         <string>connect to d x cluster.</string>
-        </property>
-        <property name="text">
-         <string>Connect</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="font">
        <font>
         <family>JetBrains Mono</family>
-        <weight>100</weight>
         <pointsize>9</pointsize>
        </font>
       </property>
@@ -96,14 +55,13 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>328</width>
+         <width>306</width>
          <height>579</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>JetBrains Mono</family>
-         <weight>100</weight>
          <pointsize>9</pointsize>
         </font>
        </property>
@@ -125,7 +83,6 @@
           <property name="font">
            <font>
             <family>JetBrains Mono</family>
-            <weight>100</weight>
             <pointsize>6</pointsize>
            </font>
           </property>
@@ -226,7 +183,10 @@
          <string>zoom in</string>
         </property>
         <property name="text">
-         <string>+</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomIn"/>
         </property>
        </widget>
       </item>
@@ -251,7 +211,10 @@
          <string>zoom out</string>
         </property>
         <property name="text">
-         <string>-</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ZoomOut"/>
         </property>
        </widget>
       </item>

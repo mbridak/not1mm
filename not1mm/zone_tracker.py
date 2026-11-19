@@ -1,12 +1,13 @@
 import logging
 
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QBrush, QColor
 from PyQt6.QtWidgets import QDockWidget
 
-import not1mm.fsutils as fsutils
+from not1mm import fsutils
 from not1mm.lib.database import DataBase
+from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger(__name__)
@@ -17,8 +18,8 @@ class ZoneWindow(QDockWidget):
     dbname = None
     db = None
     model = None
-    pref = {}
-    columns = {
+    pref = {}  # noqa: RUF012
+    columns = {  # noqa: RUF012
         0: "Zone",
         1: "160m",
         2: "80m",
@@ -34,7 +35,7 @@ class ZoneWindow(QDockWidget):
         super().__init__()
         self.action = action
         self.active = False
-        uic.loadUi(fsutils.APP_DATA_PATH / "zone_tracker.ui", self)
+        load_ui(self, fsutils.APP_DATA_PATH / "zone_tracker.ui")
         self.zone_table.setColumnCount(len(self.columns))
         for column_number, column_name in self.columns.items():
             self.zone_table.setHorizontalHeaderItem(
@@ -135,7 +136,7 @@ class ZoneWindow(QDockWidget):
         self.get_log()
 
     def msg_from_main(self, msg):
-        """"""
+        """Process messages from the main window."""
         if self.active is True and self.isVisible():
             if msg.get("cmd", "") in (
                 "UPDATELOG",
@@ -143,10 +144,8 @@ class ZoneWindow(QDockWidget):
                 "DELETE",
                 "DELETED",
             ):
-                ...
                 self.get_log()
             if msg.get("cmd", "") == "NEWDB":
-                ...
                 self.load_new_db()
                 self.get_log()
             if msg.get("cmd", "") == "SCROLLTOZone":
@@ -156,6 +155,7 @@ class ZoneWindow(QDockWidget):
                     self.scrollToZone(str(msg.get("itu", "")))
 
     def closeEvent(self, event) -> None:
-        self.action.setChecked(False)
+        if self.parent().main_window_closing is False:
+            self.action.setChecked(False)
         self.zone_trackerwindow_closed.emit()
         event.accept()

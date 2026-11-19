@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Not1MM Contest logger
 Email: michael.bridak@gmail.com
@@ -18,8 +16,11 @@ except OSError as exception:
     print(exception)
     print("portaudio is not installed")
     sd = None
+import numpy as np
 import soundfile as sf
 from PyQt6.QtCore import QObject, QThread, pyqtSignal
+
+from not1mm.lib.preferences import Preferences
 
 logger = logging.getLogger("voice_keying")
 
@@ -35,20 +36,34 @@ def has_output_device(sounddevice_name="default") -> bool:
     return True
 
 
+def resample(data, from_rate: float, to_rate: float):
+    """Linearly resample mono (1-D) or multichannel (2-D) audio to to_rate."""
+    if from_rate == to_rate or len(data) == 0:
+        return data
+    n_out = max(1, round(len(data) * to_rate / from_rate))
+    src = np.arange(len(data))
+    dst = np.linspace(0, len(data) - 1, n_out)
+    if data.ndim == 1:
+        return np.interp(dst, src, data).astype(np.float32)
+    return np.column_stack(
+        [np.interp(dst, src, data[:, ch]) for ch in range(data.shape[1])]
+    ).astype(np.float32)
+
+
 class Voice(QObject):
     """Voice class"""
 
     ptt_on = pyqtSignal()
     ptt_off = pyqtSignal()
     data_path = None
-    current_op = None
     sounddevice = None
     nonblocking = False
-    voicings = []
+    voicings = []  # noqa: RUF012
 
     def __init__(self) -> None:
         super().__init__()
         """setup interface"""
+        self.pref = Preferences.data()
 
     def run(self):
         while True:
@@ -65,11 +80,16 @@ class Voice(QObject):
                 self.nonblocking = len(self.voicings)
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
-                    data, _fs = sf.read(filename, dtype="float32")
+                    data, file_rate = sf.read(filename, dtype="float32")
                     try:
                         sd.default.device = self.sounddevice
-                        sd.default.samplerate = 44100.0
-                        sd.play(data, blocking=False)
+                        # Play at the device's native rate: some host APIs
+                        # (e.g. JACK/PipeWire) reject any other rate.
+                        out_rate = sd.query_devices(self.sounddevice, "output")[
+                            "default_samplerate"
+                        ]
+                        data = resample(data, file_rate, out_rate)
+                        sd.play(data, out_rate, blocking=False)
                         if self.nonblocking > 0:
                             sd.wait()
                         # https://snyk.io/advisor/python/sounddevice/functions/sounddevice.PortAudioError
@@ -120,18 +140,24 @@ class Voice(QObject):
         if not has_output_device(self.sounddevice):
             logger.warning("No available output sound device for voice keying.")
             return
-        op_path = self.data_path / self.current_op
-        if "[" in the_string:
-            sub_string = the_string.strip("[]").lower()
-            filename = f"{str(op_path)}/{sub_string}.wav"
-            if Path(filename).is_file():
-                self.voicings.append(filename)
-            return
-        for letter in the_string.lower():
-            if letter in "abcdefghijklmnopqrstuvwxyz 1234567890":
-                if letter == " ":
-                    letter = "space"
-                filename = f"{str(op_path)}/{letter}.wav"
+        op_path = self.data_path / self.pref.get("current_op", "").replace("/", "-")
+
+        char_iterator = iter(the_string.lower())
+
+        for char in char_iterator:
+            if char == "[":
+                substring = ""
+                for sub_char in char_iterator:
+                    if sub_char == "]":
+                        break
+                    substring += sub_char
+                filename = f"{op_path!s}/{substring}.wav"
+                if Path(filename).is_file():
+                    self.voicings.append(filename)
+            if char in "abcdefghijklmnopqrstuvwxyz 1234567890[]":
+                if char == " ":
+                    char = "space"
+                filename = f"{op_path!s}/{char}.wav"
                 if Path(filename).is_file():
                     logger.debug("Voicing: %s", filename)
                     self.voicings.append(filename)
