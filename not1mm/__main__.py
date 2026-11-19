@@ -2312,9 +2312,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         """Reset this too, in case user set it"""
                         self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
-                        self.check_window.database.current_contest = self.pref.get(
-                            "contest"
-                        )
+                        if hasattr(self.check_window, "database"):
+                            self.check_window.database.current_contest = self.pref.get(
+                                "contest"
+                            )
 
                         self.contest = load_contest(
                             self.contest_settings.get("ContestName"), self
