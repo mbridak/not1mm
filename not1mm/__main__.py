@@ -1744,7 +1744,7 @@ class MainWindow(QtWidgets.QMainWindow):
         memory = self.get_band_memory(vfo_name)
         if memory.get(key) == int(vfo):
             return
-        last_key = self.band_memory_key.get(vfo_name)
+        # last_key = self.band_memory_key.get(vfo_name)
         # Build new dicts. Do not change the dict in Preferences._defaults.
         band_memory = self.pref.get("band_memory")
         band_memory = dict(band_memory) if isinstance(band_memory, dict) else {}
@@ -1754,6 +1754,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _shutdown(self) -> None:
         """Common cleanup for quit_app and closeEvent."""
+
+        Preferences.save()
 
         if self.tray_icon is not None:
             self.tray_icon.hide()
@@ -1787,8 +1789,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.log_window.msg_from_main(cmd)
         if self.lookup_service:
             self.lookup_service.msg_from_main(cmd)
-
-        Preferences.save()
 
     def quit_app(self) -> None:
         """
