@@ -64,7 +64,7 @@ class Contest(ContestBase):
     Bands = (3.5, 7, 14, 21, 28)
     # The district is part of the received exchange and its space is
     # significant ("002 G"), so neither exchange field strips one.
-    advance_on_space = [True, True, True, False, False]
+    SpaceKeepsFocus = ("SntNrText", "RcvNrText")
     EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     FrameText = ("SNT", "RCV", "Sent Nr", "# and Dist")
     AccessibleNames = ("RST Sent", "Sent Number", "", "Number and District")

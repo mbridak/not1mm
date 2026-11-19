@@ -151,20 +151,20 @@ def test_prefill_sent_exchange(headless, monkeypatch):
 
     harness.process_macro = fake_macro
 
-    harness.other_1.setText("")
+    harness.fields.SntNrText.setText("")
     harness.contest_settings["SentExchange"] = "MIKE CA"
     contest.prefill()
-    assert harness.other_1.text() == "MIKE CA"
+    assert harness.fields.SntNrText.text() == "MIKE CA"
 
-    harness.other_1.setText("")
+    harness.fields.SntNrText.setText("")
     harness.contest_settings["SentExchange"] = ""
     contest.prefill()
-    assert harness.other_1.text() == "007"
+    assert harness.fields.SntNrText.text() == "007"
     assert seen["cut"] is False, "the prefill asks for the logged form"
 
-    harness.other_1.setText("TYPED")
+    harness.fields.SntNrText.setText("TYPED")
     contest.prefill()
-    assert harness.other_1.text() == "TYPED", "an operator entry is left alone"
+    assert harness.fields.SntNrText.text() == "TYPED", "an operator entry is left alone"
 
 
 def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):

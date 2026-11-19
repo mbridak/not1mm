@@ -14,10 +14,8 @@ box carries in not1mm; N1MM's name for it is in the comment, and the two differ
 only for the callsign (N1MM's ``CallSign``, not1mm's ``Call``).
 
 Which fields exist is the contest's business: the module never adds or hides a
-box by itself.  A contest that has not migrated yet passes the four legacy
-boxes (``LEGACY_NAMES``) and asks for ``legacy=True``; that makes the old
-positional names (``sent``, ``receive``, ``other_1``, ``other_2``) work until
-every plugin has moved over.
+box by itself.  ``EntryWindowInfo`` is the declaration and ``DEFAULT_ENTRY_WINDOW``
+is what a contest with an ordinary RST/serial exchange inherits.
 
 One instance is one entry window's worth of boxes.  The class is not tied to
 ``MainWindow`` or the database, so a second station (SO2R) can own a second
@@ -99,27 +97,6 @@ DEFAULT_ENTRY_WINDOW = (
     625,
 )
 
-# The four boxes the old fixed window had, in its order, and the old attribute
-# names.  A plugin that has not migrated is described with these.
-LEGACY_NAMES = ("SNTText", "RCVText", "SntNrText", "RcvNrText")
-LEGACY_ALIASES = {
-    "sent": "SNTText",
-    "receive": "RCVText",
-    "other_1": "SntNrText",
-    "other_2": "RcvNrText",
-}
-# What main.ui used to put above the four boxes before any contest ran.
-LEGACY_LABELS = ("SNT", "RCV", "OTHER_1", "OTHER_2")
-LEGACY_ACCESSIBLE = (
-    "RST Sent",
-    "",
-    "Sent Number",
-    "Received Number",
-)
-# The labels the old ContestBase put on the four boxes when a plugin did not
-# name them itself.
-LEGACY_FRAME_TEXT = ("SNT", "SentNR", "RcvNR")
-
 
 @dataclass
 class FieldBox:
@@ -127,7 +104,6 @@ class FieldBox:
 
     spec: FieldSpec
     width: int
-    visible: bool = True
     label: str | None = None  # None = the spec's default
     accessible: str | None = None  # None = the spec's default; "" = none
 
@@ -165,49 +141,6 @@ def parse_entry_window_info(info) -> tuple[FieldBox, ...]:
         if width <= 0:
             raise ValueError(f"EntryWindowInfo: width for {name} must be positive")
         boxes.append(FieldBox(spec, width))
-    return tuple(boxes)
-
-
-def legacy_entry_boxes(entry_fields, frame_text=(), rcv_label="", accessible_names=()):
-    """The four old boxes, described the way the old window showed them.
-
-    *entry_fields* is the plugin's ``EntryFields`` (the frames it shows);
-    *frame_text* is its three-entry ``FrameText`` (sent, other, exchange);
-    *rcv_label* overrides the received-report label; *accessible_names* is its
-    four-entry ``AccessibleNames``.  An empty FrameText entry keeps the old
-    window's default label for that box, which is what it showed when the
-    label was not set.
-    """
-    visible = set(entry_fields)
-    widgets = ("field1", "field2", "field3", "field4")
-    labels = list(LEGACY_LABELS)
-    if not frame_text:
-        frame_text = LEGACY_FRAME_TEXT
-    if frame_text[0]:
-        labels[0] = frame_text[0]
-    if len(frame_text) > 1 and frame_text[1]:
-        labels[2] = frame_text[1]
-    if len(frame_text) > 2 and frame_text[2]:
-        labels[3] = frame_text[2]
-    if rcv_label:
-        labels[1] = rcv_label
-    boxes = []
-    for index, (name, widget) in enumerate(zip(LEGACY_NAMES, widgets)):
-        spec = FIELD_SPECS[name]
-        accessible = (
-            accessible_names[index]
-            if index < len(accessible_names)
-            else LEGACY_ACCESSIBLE[index]
-        )
-        boxes.append(
-            FieldBox(
-                spec,
-                spec.width,
-                visible=widget in visible,
-                label=labels[index],
-                accessible=accessible,
-            )
-        )
     return tuple(boxes)
 
 
@@ -268,10 +201,6 @@ class EntryField:
             name = self.spec.accessible
         self.edit.setAccessibleName(name)
 
-    def set_visible(self, visible: bool) -> None:
-        self.box.visible = visible
-        self.frame.setVisible(visible)
-
     def apply_font(self, family: str, label_point: int, edit_point: int) -> None:
         self.label.setFont(QFont(family, label_point, QFont.Weight.Thin))
         self.edit.setFont(QFont(family, edit_point, QFont.Weight.Thin))
@@ -297,7 +226,6 @@ class Fields:
         self.layout = layout
         self._boxes: dict[str, EntryField] = {}
         self._key: tuple | None = None
-        self._legacy = True
         self._font: tuple | None = None
         self._palette = None
         self._edit_font = edit_font
@@ -307,7 +235,7 @@ class Fields:
         self.callsign_frame = self._callsign.frame
         # Start with the ordinary four boxes so the window is usable before a
         # contest has been loaded.
-        self.configure(legacy_entry_boxes(("field1", "field2", "field3", "field4")))
+        self.configure(parse_entry_window_info(DEFAULT_ENTRY_WINDOW))
 
     # -- the callsign ------------------------------------------------------
     def _build_callsign(self, placeholder) -> EntryField:
@@ -340,16 +268,15 @@ class Fields:
         return field
 
     # -- building ----------------------------------------------------------
-    def configure(self, boxes, legacy: bool = False) -> bool:
+    def configure(self, boxes) -> bool:
         """Show *boxes*; return True when the widgets themselves were rebuilt.
 
-        Labels, visibility and accessible names are updated in place, so a
-        language switch or a contest that hides a field keeps what the operator
-        typed.  A different set of boxes (or widths) is rebuilt, because the
-        focus chain and the layout have to follow the new row.
+        Labels and accessible names are updated in place, so a language switch
+        keeps what the operator typed.  A different set of boxes (or widths) is
+        rebuilt, because the focus chain and the layout have to follow the new
+        row.
         """
         boxes = tuple(boxes)
-        self._legacy = legacy
         key = tuple((box.spec.name, box.width) for box in boxes)
         rebuilt = key != self._key
         if rebuilt:
@@ -372,7 +299,6 @@ class Fields:
         for box in boxes:
             field = self._boxes[box.spec.name]
             field.box = box
-            field.set_visible(box.visible)
             field.set_label(box.label)
             field.set_accessible(box.accessible)
         return rebuilt
@@ -400,7 +326,7 @@ class Fields:
         )
 
     def __iter__(self):
-        """Every exchange box, in declaration order (hidden ones included)."""
+        """Every exchange box, in declaration order."""
         return iter(self._boxes.values())
 
     def __len__(self) -> int:
@@ -413,38 +339,39 @@ class Fields:
         field = self._boxes.get(name)
         if field is not None:
             return field.edit
-        if name in LEGACY_ALIASES:
-            legacy = self.legacy_edit(name)
-            return legacy if legacy is not None else default
         return default
 
     def field(self, name: str) -> EntryField | None:
         return self._boxes.get(name)
 
     def names(self) -> tuple:
-        """The visible exchange boxes, in display order."""
-        return tuple(field.name for field in self._boxes.values() if field.box.visible)
+        """The exchange boxes, in display order."""
+        return tuple(self._boxes)
 
     def all_names(self) -> tuple:
-        """Every exchange box, visible or not, in display order."""
+        """Every exchange box, in display order."""
         return tuple(self._boxes)
 
     def display_order(self) -> tuple:
-        """The callsign then the visible exchange edits, in display order."""
-        return (self.callsign,) + tuple(
-            field.edit for field in self._boxes.values() if field.box.visible
-        )
-
-    def all_order(self) -> tuple:
-        """The callsign then every exchange edit, visible or not."""
+        """The callsign then the exchange edits, in display order."""
         return (self.callsign,) + tuple(field.edit for field in self._boxes.values())
 
+    def all_order(self) -> tuple:
+        """The callsign then every exchange edit."""
+        return self.display_order()
+
     def index(self, edit) -> int | None:
-        """Where *edit* sits in the old positional scheme (0 = callsign)."""
+        """Where *edit* sits in the row (0 = callsign)."""
         try:
             return self.all_order().index(edit)
         except ValueError:
             return None
+
+    def field_for_edit(self, edit) -> EntryField | None:
+        for field in self._boxes.values():
+            if field.edit is edit:
+                return field
+        return None
 
     def last_field(self) -> EntryField | None:
         for field in reversed(self._boxes.values()):
@@ -468,41 +395,6 @@ class Fields:
             if field.spec.column == column:
                 return field
         return None
-
-    # -- the old positional names -----------------------------------------
-    def legacy_edit(self, name: str):
-        """Resolve ``other_1`` and friends.
-
-        A migrated contest has no fixed slots, so the first and second box that
-        is neither report stands in for ``other_1``/``other_2`` -- the same
-        boxes in every contest shape the old window could describe.
-        """
-        if name not in LEGACY_ALIASES:
-            return None
-        if self._legacy:
-            field = self._boxes.get(LEGACY_ALIASES[name])
-            return field.edit if field is not None else None
-        extras = [
-            field
-            for field in self._boxes.values()
-            if field.spec.column not in ("SNT", "RCV")
-        ]
-        index = 0 if name == "other_1" else 1
-        if index < len(extras):
-            return extras[index].edit
-        return None
-
-    def legacy_text(self, name: str) -> str:
-        edit = self.legacy_edit(name)
-        return edit.text() if edit is not None else ""
-
-    def inputs(self) -> dict:
-        """The old ``inputs_dict``: line edit -> the name the ESM code uses."""
-        if self._legacy:
-            names = ("callsign", "sent", "receive", "other_1", "other_2")
-        else:
-            names = ("CallSignText",) + self.all_names()
-        return dict(zip(self.all_order(), names))
 
     # -- presentation ------------------------------------------------------
     def apply_font(self, family: str, label_point: int = 13, edit_point: int = 20):

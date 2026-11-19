@@ -280,7 +280,7 @@ S&P  F5:      {MYCALL}
     )
     # Exchange1Text is a free-form "NR Name Loc", so a space there is part
     # of the exchange; SntNrText is the sent serial and still separates.
-    advance_on_space = [True, True, False]
+    SpaceKeepsFocus = ("Exchange1Text",)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -540,7 +540,6 @@ S&P  F5:      {MYCALL}
         """ESM state machine, Sprint flavored."""
         parent = self.parent
         if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
             parent.current_widget_object = new_focused_widget
         focused = getattr(parent, "current_widget_object", None)
 

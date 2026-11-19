@@ -23,7 +23,7 @@ class Contest(ContestBase):
     Bands = (28,)
     # The whole exchange goes in Exchange1Text, whose
     # spaces are significant.
-    advance_on_space = [True, True, True, False, False]
+    SpaceKeepsFocus = ("Exchange1Text",)
     EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
     FrameText = ("SNT", "RCV", "Name 1010# SPC")
     AccessibleNames = (

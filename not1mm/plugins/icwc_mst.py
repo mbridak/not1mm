@@ -33,7 +33,7 @@ class Contest(ContestBase):
         "Name and Serial Number",
     )
     # The exchange is "name number", which contains a space.
-    advance_on_space = [True, True, False]
+    SpaceKeepsFocus = ("Exchange1Text",)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

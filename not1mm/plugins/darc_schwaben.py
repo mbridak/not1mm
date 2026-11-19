@@ -71,7 +71,7 @@ class Contest(ContestBase):
     DupeType = 3  # work each band/mode once
     # The exchange may carry a locator beside the DOK ("T01 JN58ZZ"), so a
     # space is part of it and does not advance the focus.
-    advance_on_space = [True, True, True, True, False]
+    SpaceKeepsFocus = ("RcvNrText",)
     # The DOK is the "sent" exchange and the received one, hence the labels.
     EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     QsoErrorString = "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"

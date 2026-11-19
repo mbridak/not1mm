@@ -46,7 +46,7 @@ For the Run exchange macro I’d put ’{SNT} # {EXCH}’"""
     SendsRTCScore = True
     # RcvNrText holds "serial power member" with spaces; they are turned into
     # slashes as the contact is stored, so they must survive being typed.
-    advance_on_space = [True, True, True, True, False]
+    SpaceKeepsFocus = ("RcvNrText",)
     Bands = (3.5, 7, 14, 21, 28)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",

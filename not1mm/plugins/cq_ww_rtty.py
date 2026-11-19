@@ -238,7 +238,6 @@ Please make sure you set the Mode to RTTY Above."""
         """
         parent = self.parent
         if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
             parent.current_widget_object = new_focused_widget
         focused = getattr(parent, "current_widget_object", None)
 

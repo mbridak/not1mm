@@ -30,7 +30,7 @@ class Contest(ContestBase):
     Bands = (50, 144, 432)
     DefaultContestExchange = "#"
     # The received exchange is "# grid", so a space is part of it.
-    advance_on_space = [True, True, True, True, False]
+    SpaceKeepsFocus = ("Exchange1Text",)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

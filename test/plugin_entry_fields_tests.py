@@ -238,8 +238,7 @@ def test_the_two_box_family_fills_its_columns(plugin, values, column, expected):
 @pytest.mark.parametrize("plugin", ["cwo", "icwc_mst", "na_sprint_cw"])
 def test_a_free_form_exchange_keeps_a_space(plugin):
     contest = load_contest(plugin, None)
-    # callsign, the sent box (separates), the free-form received box (keeps it)
-    assert contest.advance_on_space == [True, True, False]
+    assert contest.SpaceKeepsFocus == ("Exchange1Text",)
 
 
 LAST_GROUP = [

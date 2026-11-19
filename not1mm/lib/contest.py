@@ -12,7 +12,7 @@ the concept exists there:
 https://n1mmwp.hamdocs.com/appendices/udc-editor/
 so that a .udc file can later be turned into the same kind of object without
 inventing a second vocabulary for the same things.  Knobs with no UDC
-equivalent (``advance_on_space``, the ESM hooks) keep plain names.
+equivalent (the ESM hooks) keep plain names.
 
 Three names, three jobs:
 
@@ -51,8 +51,8 @@ from pathlib import Path
 
 from not1mm.lib import contact_info, plugin_common, version
 from not1mm.lib.fields import (
+    DEFAULT_ENTRY_WINDOW,
     FIELD_SPECS,
-    legacy_entry_boxes,
     parse_entry_window_info,
 )
 from not1mm.lib.plugin_common import gen_adif, get_points
@@ -63,18 +63,12 @@ logger = logging.getLogger(__name__)
 PACKAGE_PATH = Path(__file__).resolve().parent.parent
 PLUGIN_PATH = PACKAGE_PATH / "plugins"
 
-# The five entry-window widgets the old fixed window had, and the four frames
-# that could be shown or hidden.  Kept while a plugin still describes itself
-# with EntryFields; the fields module turns them into named boxes.
-ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
-ENTRY_WIDGETS = ("field1", "field2", "field3", "field4")
-
 
 def entry_edit(parent, name):
-    """The line edit for *name*, on a window that has Fields or the old widgets.
+    """The line edit for *name*, on a window that has Fields.
 
-    ``name`` is a box name, a legacy positional name (``other_1``) or
-    ``callsign``.  Returns None where the contest shows no such box.
+    ``name`` is a box name (``Exchange1Text``) or ``callsign``.  Returns None
+    where the contest has no such box.
     """
     fields = getattr(parent, "fields", None)
     if fields is not None:
@@ -387,12 +381,9 @@ class ContestBase:
     ADIFContestID = None
 
     # -- entry window -------------------------------------------------------
-    # The entry window is built from the boxes this contest declares.  Until a
-    # plugin declares EntryWindowInfo it keeps the old description below: which
-    # of the four fixed frames it showed, and what they were called.
-    #
-    # A migrated contest declares N1MM's EntryWindowInfo, a flat name/width
-    # list, and FrameText with one label per box in the same order:
+    # The entry window is built from the boxes this contest declares:
+    # N1MM's EntryWindowInfo, a flat name/width list, and FrameText with one
+    # label per box in the same order:
     #
     #     EntryWindowInfo = ("SNTText", 450, "RCVText", 450,
     #                        "SntNrText", 625, "RcvNrText", 625)
@@ -412,43 +403,23 @@ class ContestBase:
     #          text may contain spaces (a name, a grid) keeps the space and the
     #          focus instead of advancing.
     #
-    # TabOrder builds tab_next, which the key intercept in __main__.py sends
-    # SPACE along, and advance_on_space only decides whether a space advances
-    # at all -- so a field TabOrder leaves out is left out of SPACE too.
-    #
-    # EntryWindowInfo is None while a plugin still uses the old description.
-    EntryWindowInfo = None
-    # Which of the four entry fields this contest uses ...
-    EntryFields = ENTRY_WIDGETS
-    # ... and what they are called.  In legacy mode FrameText is (sent, other,
-    # exchange) and the received-RST label is the odd one out, so it has its
-    # own knob.  Empty means "no label"; the defaults are in fields.py.
+    # The boxes this contest declares, in order.
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    # One label per box, in the same order; "" leaves a label blank.
     FrameText = ()
-    RcvLabel = ""
-    # Screen-reader names, one per entry field; an empty string is skipped.
+    # Screen-reader names, one per box; an empty string uses the box default.
     AccessibleNames = ()
-    # The order SPACE walks the entry fields in, or None for "the fields this
-    # contest shows, in the window's own order" -- which is what almost every
-    # contest wants, so EntryFields is the one list to keep in step.  A contest
-    # that shows a field but keeps it out of the cycle (AGCW's RST fields)
-    # names the order itself.  TAB is Qt's own chain, so this no longer shapes
-    # it.
-    TabOrder = None
-    # The reverse of the same cycle; nothing walks it now that TAB is Qt's own.
-    TabOrderPrev = None
     # Where the focus goes once a lookup has run on the callsign.  None means
-    # the first exchange box the operator still has to fill: the first visible
-    # box that is neither a report nor the sent-exchange box (which is usually
+    # the first exchange box the operator still has to fill: the first box
+    # that is neither a report nor the sent-exchange box (which is usually
     # filled for them).
     NextField = None
 
-    # not1mm-specific: whether a space typed in other_1/other_2 is a separator
-    # -- strip it and advance to the next field -- or part of the exchange.
-    # The default is the usual one, a space separates, so only a contest whose
-    # exchange *contains* spaces (a name, a grid, "Name 1010# SPC") declares
-    # it, with the slot set to False.  The slots are [callsign, sent, receive,
-    # other_1, other_2]; only 3 and 4 are read.
-    advance_on_space = [True, True, True, True, True]
+    # Boxes whose text may contain a space, so SPACE stays in the field
+    # instead of advancing.  The FieldSpec default covers CommentText; a
+    # contest whose exchange contains spaces (a name, a grid, "Name 1010# SPC")
+    # lists its boxes here.
+    SpaceKeepsFocus = ()
     # not1mm-specific: parse other_2 into its parts as it is typed, and show
     # them, for a contest whose received exchange is several fields in one
     # textbox (Sweepstakes' "sn prec ck sec").
@@ -459,7 +430,7 @@ class ContestBase:
 
     # -- ESM ----------------------------------------------------------------
     # Which entry field carries the received exchange, and so which field
-    # finishes the contact.  None means the last visible box -- the received
+    # finishes the contact.  None means the last box -- the received
     # exchange in every shape the window has had.
     ESMExchangeField = None
     # UDC's QsoErrorString: which boxes must hold something before the contact
@@ -541,17 +512,8 @@ class ContestBase:
     def entry_boxes(self):
         """The boxes this contest wants, with their labels and visibility.
 
-        A migrated contest describes them with :attr:`EntryWindowInfo`; one
-        that has not moved yet keeps the old four-frame description.  The
-        result is passed straight to ``Fields.configure()``.
+        The result is passed straight to ``Fields.configure()``.
         """
-        if self.EntryWindowInfo is None:
-            return legacy_entry_boxes(
-                self.EntryFields,
-                self.FrameText,
-                self.RcvLabel,
-                self.AccessibleNames,
-            )
         boxes = parse_entry_window_info(self.EntryWindowInfo)
         labels = tuple(self.FrameText)
         accessible = tuple(self.AccessibleNames)
@@ -564,13 +526,9 @@ class ContestBase:
             described.append(box)
         return tuple(described)
 
-    def visible_boxes(self) -> tuple:
-        """``(name, column)`` for every box the contest shows, in order."""
-        return tuple(
-            (box.spec.name, box.spec.column)
-            for box in self.entry_boxes()
-            if box.visible
-        )
+    def declared_boxes(self) -> tuple:
+        """``(name, column)`` for every box the contest declares, in order."""
+        return tuple((box.spec.name, box.spec.column) for box in self.entry_boxes())
 
     def default_next_field_name(self) -> str:
         """The first box the operator still has to fill.
@@ -580,7 +538,7 @@ class ContestBase:
         to the first box after the sent report -- DXpedition's received report
         -- and a window with no exchange boxes leaves the callsign alone.
         """
-        boxes = self.visible_boxes()
+        boxes = self.declared_boxes()
         for name, column in boxes:
             if column not in ("SNT", "RCV", "SentNr"):
                 return name
@@ -590,8 +548,8 @@ class ContestBase:
         return "callsign"
 
     def default_esm_exchange_field_name(self) -> str:
-        """The last visible box: the received exchange, whatever its name."""
-        boxes = self.visible_boxes()
+        """The last box: the received exchange, whatever its name."""
+        boxes = self.declared_boxes()
         if boxes:
             return boxes[-1][0]
         all_boxes = self.entry_boxes()
@@ -609,7 +567,6 @@ class ContestBase:
         """Set up the entry window and the SPACE cycle for this contest."""
         self.interface()
         self.set_tab_next()
-        self.set_tab_prev()
         target = entry_edit(self.parent, self.next_field_name())
         if target is None:
             fields = getattr(self.parent, "fields", None)
@@ -627,7 +584,7 @@ class ContestBase:
         fields = getattr(parent, "fields", None)
         if fields is None:
             return
-        if fields.configure(self.entry_boxes(), legacy=self.EntryWindowInfo is None):
+        if fields.configure(self.entry_boxes()):
             after = getattr(parent, "after_fields_rebuilt", None)
             if after is not None:
                 after()
@@ -642,74 +599,18 @@ class ContestBase:
         fields = getattr(parent, "fields", None)
         if fields is not None and fields.all_names():
             return ("callsign",) + fields.names()
-        return ("callsign",) + tuple(
-            box.spec.name for box in self.entry_boxes() if box.visible
-        )
-
-    def _space_order(self):
-        """The visible line edits SPACE walks, callsign first."""
-        fields = self.parent.fields
-        if self.TabOrder is not None:
-            named = [
-                edit
-                for name in self.TabOrder
-                if (edit := fields.edit(name)) is not None
-            ]
-            if named:
-                return (fields.callsign, *named)
-        return fields.display_order()
+        return ("callsign",) + tuple(box.spec.name for box in self.entry_boxes())
 
     def set_tab_next(self):
-        """SPACE walks the entry fields in :attr:`TabOrder`, then wraps.
+        """SPACE walks the entry fields in window order, then wraps.
 
-        A field the order leaves out -- a hidden one, or an RST field the
-        contest skips -- advances to the next field the order does visit, in
-        the window's own order.  SPACE moves forward, so it does not wrap to
-        the first field unless there is nothing after it.
+        SPACE moves forward, so it does not wrap to the first field unless
+        there is nothing after it.
         """
-        parent = self.parent
-        fields = parent.fields
-        order = self._space_order()
-        following = {}
-        for index, edit in enumerate(order):
-            following[edit] = order[(index + 1) % len(order)]
-        visited = set(order)
-        all_edits = fields.all_order()
-        for index, edit in enumerate(all_edits):
-            if edit in following:
-                continue
-            after = [e for e in all_edits[index + 1 :] if e in visited]
-            following[edit] = after[0] if after else order[0]
-        parent.tab_next = following
-
-    def set_tab_prev(self):
-        """The reverse cycle of :meth:`set_tab_next`.
-
-        Nothing walks it since TAB became Qt's own focus chain; it is kept
-        while a contest's own reverse order is still worth stating.
-        """
-        parent = self.parent
-        fields = parent.fields
-        order = self._space_order()
-        if self.TabOrderPrev is not None:
-            named = [
-                edit
-                for name in self.TabOrderPrev
-                if (edit := fields.edit(name)) is not None
-            ]
-            if named:
-                order = (fields.callsign, *named)
-        previous = {}
-        for index, edit in enumerate(order):
-            previous[edit] = order[index - 1]
-        visited = set(order)
-        all_edits = fields.all_order()
-        for index, edit in enumerate(all_edits):
-            if edit in previous:
-                continue
-            before = [e for e in all_edits[:index] if e in visited]
-            previous[edit] = before[-1] if before else order[-1]
-        parent.tab_prev = previous
+        order = self.parent.fields.display_order()
+        self.parent.tab_next = {
+            edit: order[(index + 1) % len(order)] for index, edit in enumerate(order)
+        }
 
     # -- logging ------------------------------------------------------------
     def reset_label(self):

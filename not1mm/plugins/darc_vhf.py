@@ -55,7 +55,7 @@ class Contest(ContestBase):
     WritesEDI = True
     # The received exchange is "# grid", so a space is part of it; the label
     # follows what was typed (see parse_exchange).
-    advance_on_space = [True, True, True, True, False]
+    SpaceKeepsFocus = ("RcvNrText",)
     call_parse_exchange_on_edit = True
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",

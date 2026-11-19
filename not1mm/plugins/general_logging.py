@@ -38,7 +38,7 @@ class Contest(ContestBase):
     # A callsign lookup leaves the focus on the name field.
     # The name and the comment contain spaces, so a space is text and not a
     # separator in either extra field.
-    advance_on_space = [True, True, True, False, False]
+    SpaceKeepsFocus = ("NameText", "CommentText")
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -80,7 +80,6 @@ class Contest(ContestBase):
         """
         parent = self.parent
         if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
             parent.current_widget_object = new_focused_widget
         focused = getattr(parent, "current_widget_object", None)
 

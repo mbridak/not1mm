@@ -38,7 +38,7 @@ class Contest(ContestBase):
     AccessibleNames = ("RST Sent", "", "Sent Number", "Number and District")
     # The sent and received exchanges both hold a serial and an IOTA reference
     # separated by a space, so the space in either field is part of the text.
-    advance_on_space = [True, True, True, False, False]
+    SpaceKeepsFocus = ("SntNrText", "RcvNrText")
     SendsRTCScore = True
     # Each IOTA reference once per band and mode.
     NumMults = 1

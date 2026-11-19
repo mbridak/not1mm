@@ -190,25 +190,14 @@ class MainWindow(QtWidgets.QMainWindow):
         fields = self.__dict__.get("fields")
         return fields.callsign if fields is not None else None
 
-    @property
-    def sent(self):
+    def extra_edits(self) -> tuple:
+        """The exchange boxes that are not the sent/received reports."""
         fields = self.__dict__.get("fields")
-        return fields.edit("SNTText") if fields is not None else None
-
-    @property
-    def receive(self):
-        fields = self.__dict__.get("fields")
-        return fields.edit("RCVText") if fields is not None else None
-
-    @property
-    def other_1(self):
-        fields = self.__dict__.get("fields")
-        return fields.legacy_edit("other_1") if fields is not None else None
-
-    @property
-    def other_2(self):
-        fields = self.__dict__.get("fields")
-        return fields.legacy_edit("other_2") if fields is not None else None
+        if fields is None:
+            return ()
+        return tuple(
+            field.edit for field in fields if field.spec.column not in ("SNT", "RCV")
+        )
 
     @property
     def exch_label(self):
@@ -243,7 +232,6 @@ class MainWindow(QtWidgets.QMainWindow):
     rtc_url = ""
     rtc_pass = ""
 
-    current_widget = None
     previous_language = "en_US"
 
     auto_cq = False
@@ -360,7 +348,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.utc_clock_timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.utc_clock_timer.timeout.connect(self.update_utc_clock)
         self.update_utc_clock()
-        self.inputs_dict = self.fields.inputs()
         self.cw_entry.hide()
         self.leftdot.hide()
         self.cwprogressBar.hide()
@@ -1459,13 +1446,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 if self.contest and "General Logging" in self.contest.name:
                     box = self.fields.by_column("Name")
-                    target = box.edit if box is not None else self.other_1
-                    if nickname:
-                        target.setText(nickname)
-                    elif fname:
-                        target.setText(fname)
-                    elif name:
-                        target.setText(name)
+                    if box is not None and nickname:
+                        box.edit.setText(nickname)
+                    elif box is not None and fname:
+                        box.edit.setText(fname)
+                    elif box is not None and name:
+                        box.edit.setText(name)
 
                 if isinstance(grid, str) and len(grid) > 0:
                     self.contact["GridSquare"] = grid
@@ -2325,10 +2311,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
                         self.contest.init_contest()
-                        # The ESM state machine's string names follow the
-                        # contest: legacy names in legacy mode, box names once
-                        # a contest declares EntryWindowInfo.
-                        self.inputs_dict = self.fields.inputs()
                         self.hide_band_mode(
                             self.contest_settings.get("ModeCategory", "")
                         )
@@ -2929,18 +2911,19 @@ class MainWindow(QtWidgets.QMainWindow):
         key_name = QKeySequence(event.key() | event.modifiers().value).toString()
 
         action = None
+        extras = self.extra_edits()
         if obj == self.callsign:
             action = key_bindings.get(f"Callsign:{key_name}", None)
         elif obj in self.fields.report_edits():
             action = key_bindings.get(f"Report:{key_name}", None)
-        elif obj == self.other_1:
+        elif extras and obj is extras[0]:
             action = key_bindings.get(f"Other 1:{key_name}", None)
-        elif obj == self.other_2:
+        elif len(extras) > 1 and obj is extras[1]:
             action = key_bindings.get(f"Other 2:{key_name}", None)
         elif obj == self.cw_entry:
             action = key_bindings.get(f"CW entry:{key_name}", None)
-        # Exchange is Other 1 + 2
-        if action is None and obj in (self.other_1, self.other_2):
+        # Exchange covers every box after the reports.
+        if action is None and obj in extras:
             action = key_bindings.get(f"Exchange:{key_name}", None)
         # generic binding
         if action is None:
@@ -2952,12 +2935,10 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
         return False  # key not handled here
 
-    # SPACE walks to the next field the same way TAB does, but only where the
-    # contest's advance_on_space says a space separates; a field whose exchange
-    # may contain one (a name, a grid, "Name 1010# SPC") keeps the key and the
-    # text.  In the callsign it ends the call and runs what was typed -- a
-    # command or a frequency.  (ContestBase's entry-window note has the
-    # intended TAB-vs-SPACE rule.)
+    # SPACE walks to the next field the same way TAB does, except in a box the
+    # contest lists in SpaceKeepsFocus or whose FieldSpec says a space is data
+    # (a name, a grid, "Name 1010# SPC").  In the callsign it ends the call and
+    # runs what was typed -- a command or a frequency.
     def space_in_entry(self, obj) -> bool:
         """Handle a SPACE typed in an entry field.
 
@@ -2969,16 +2950,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if obj == self.callsign:
             self.callsign_command()
             return True
-        # The slot each field owns in advance_on_space: [callsign, then the
-        # boxes in window order].  A box past the end of the list is a
-        # separator, like the list's default.
-        slot = self.fields.index(obj)
-        if slot is None or slot == 0:
+        field = self.fields.field_for_edit(obj)
+        if field is None:
             return False
-        advance = getattr(self.contest, "advance_on_space", None)
-        if not (self.contest and advance):
-            return False
-        if slot < len(advance) and not advance[slot]:
+        keeps = getattr(self.contest, "SpaceKeepsFocus", ())
+        if field.name in keeps or not field.spec.space_advances:
             return False
         next_tab = self.tab_next.get(obj) or self.fields.last_edit()
         next_tab.setFocus()
@@ -3093,10 +3069,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Finish a rebuild: rewire, and re-apply what lives outside the row."""
         self._sync_callsign_widgets()
         self.wire_fields()
-        self.inputs_dict = self.fields.inputs()
         # The widget the ESM state machine last saw has just been deleted.
         self.current_widget_object = None
-        self.current_widget = None
         if self.current_palette is not None:
             self.fields.apply_palette(self.current_palette)
 
@@ -3795,20 +3769,35 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{MYGRID}", self.station.get("GridSquare", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
-        # {OTHER1}/{OTHER2} are the old positional names; a migrated contest
-        # resolves them to its first/second non-report box.  {SENTNR} follows
-        # the box that carries SentNr, wherever the contest put it.
-        macro = macro.replace("{OTHER1}", self.fields.legacy_text("other_1"))
-        macro = macro.replace("{OTHER2}", self.fields.legacy_text("other_2"))
+        # Per-box placeholders, named after the field.  {SNT} and {SENTNR}
+        # keep their RST/serial formatting below; these are the raw text.
+        for box_name, token in (
+            ("RCVText", "{RCV}"),
+            ("RcvNrText", "{RCVNR}"),
+            ("Exchange1Text", "{EXCHANGE1}"),
+            ("MiscText", "{MISC}"),
+            ("SectText", "{SECT}"),
+            ("GridSquareText", "{GRID}"),
+            ("NameText", "{NAME}"),
+            ("CommentText", "{COMMENT}"),
+        ):
+            edit = self.fields.edit(box_name)
+            if edit is not None and token in macro:
+                macro = macro.replace(token, edit.text())
+        # {OTHER1}/{OTHER2} are the first/second box after the reports;
+        # {SENTNR} follows the box that carries SentNr, wherever the contest
+        # put it (the first extra box when it has no dedicated one).
+        extras = self.extra_edits()
+        other1 = extras[0].text() if extras else ""
+        other2 = extras[1].text() if len(extras) > 1 else ""
+        macro = macro.replace("{OTHER1}", other1)
+        macro = macro.replace("{OTHER2}", other2)
         snt = self.fields.edit("SNTText")
         macro = macro.replace(
             "{SNT}", self.format_rst(snt.text() if snt is not None else "", cut)
         )
         sent_nr = self.fields.by_column("SentNr")
-        if sent_nr is None:
-            sent_nr_text = self.fields.legacy_text("other_1")
-        else:
-            sent_nr_text = sent_nr.edit.text()
+        sent_nr_text = sent_nr.edit.text() if sent_nr is not None else other1
         macro = macro.replace("{SENTNR}", self.format_serial(sent_nr_text, cut))
         macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial), cut))
         macro = macro.replace("{PREVCALL}", self.previous_contact.get("Call", ""))

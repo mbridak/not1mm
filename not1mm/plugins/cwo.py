@@ -36,7 +36,7 @@ and the name of the other operator. eg. "123 Fred". (Advance on spacebar is disa
         "Received Number and Name",
     )
     # The received exchange is "number name", which contains a space.
-    advance_on_space = [True, True, False]
+    SpaceKeepsFocus = ("Exchange1Text",)
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
