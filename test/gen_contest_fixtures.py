@@ -5155,8 +5155,46 @@ BATCH4 = {
 }
 
 _B2_CATEGORY = {"CW": "CW", "SSB": "SSB", "RTTY": "RTTY", None: "SSB+CW"}
+
+
 # Contests whose scoring depends on where *your* station is get a second log
 # from a station in a different part of the world.
+# ------------------------------------------------------------ sk_memorial
+# A contest defined by a UDC file (not1mm/data/udc/sk_memorial.udc), not a
+# plugin: CW, the exchange is RST plus the Silent Key callsign, and each SK
+# call is a multiplier once per band.  Two stations sending the same SK call
+# on a band share one multiplier; the same call on another band is another.
+def sk(call, freq, time_on, sk_call):
+    """A SK Memorial QSO: sent and received RST, sent and received SK call."""
+    return qso(
+        CALL=call,
+        QSO_DATE=DATE,
+        TIME_ON=time_on,
+        FREQ=freq,
+        MODE="CW",
+        SNT="599",
+        RCV="599",
+        STX_STRING="HA6NA",
+        EXCHANGE1=sk_call,
+        STATION_CALLSIGN=STATION["Call"],
+    )
+
+
+FIXTURES["sk_memorial"] = {
+    "K6GTE": {
+        "station": STATION,
+        "contest_settings": {**CATS, "SentExchange": "HA6NA"},
+        "qsos": [
+            sk("K1ABC", "3.512", "070000", "HA6NA"),
+            sk("K2DEF", "3.515", "070200", "HA6NA"),
+            sk("K3GHI", "7.015", "070500", "HA6NA"),
+            # K1ABC again on 80m: a dupe, but its SK call adds no multiplier
+            sk("K1ABC", "3.520", "070800", "HA6NA"),
+        ],
+    }
+}
+
+
 _B2_VARIANTS = {
     "cq_wpx_cw": [DL],
     "cq_wpx_ssb": [DL],

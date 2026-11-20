@@ -46,6 +46,7 @@ import datetime
 import importlib
 import logging
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -145,6 +146,12 @@ def parse_qso_error_string(value: str | None, default_box: str) -> tuple[QsoRule
 
 
 # The log window columns almost every contest starts from.
+#
+# A UDC's LogInfo names only the *extras*; the loader always adds the base
+# columns (date/time, Call, frequency, Mode) in not1mm/lib/parse_udc.py.  A
+# plugin still lists the whole row here, and a few leave Mode out, so the same
+# contest can show a different log display depending on where it came from.
+# Shrinking these to the extras, the way a UDC does, is a later change.
 LOG_INFO = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
@@ -1280,6 +1287,7 @@ class ContestInfo:
     display_name: str  # what to show, e.g. "CQ WPX CW"
     cabrillo_name: str = ""  # the Cabrillo CONTEST: value, e.g. "CQ-WPX-CW"
     sort_order: int = 100  # where it goes in the picker
+    udc_path: Path | None = None  # set for a UDC-defined contest, None for a plugin
 
     @property
     def picker_label(self) -> str:
@@ -1312,10 +1320,57 @@ def _contest_info(source: str) -> ContestInfo | None:
     )
 
 
-def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
-    """Every contest definition, in file-name order.
+def _udc_info(path: Path) -> ContestInfo | None:
+    """Read one .udc file, or None if it declares no contest."""
+    from not1mm.lib.parse_udc import contest_from_udc, parse_udc
 
-    A plugin that does not load is a hard error unless *tolerant*, in which
+    udc = parse_udc(path)
+    contest_class = contest_from_udc(udc)
+    identifier = contest_id(contest_class)
+    if identifier is None:
+        logger.warning("UDC %s declares no identity", path.name)
+        return None
+    return ContestInfo(
+        source=udc.source,
+        identifier=identifier,
+        display_name=getattr(contest_class, "DisplayName", None) or "",
+        cabrillo_name=getattr(contest_class, "CabrilloName", None) or "",
+        sort_order=getattr(contest_class, "SortOrder", 100),
+        udc_path=path,
+    )
+
+
+def _scan_udcs(*, tolerant: bool = False) -> list[ContestInfo]:
+    """Every UDC the installation can read, in file-name order."""
+    from not1mm.lib.parse_udc import UdcError, udc_files
+
+    found = []
+    for _source, path in sorted(
+        udc_files().items(), key=lambda item: item[0].casefold()
+    ):
+        try:
+            info = _udc_info(path)
+        except UdcError as exc:
+            if not tolerant:
+                raise
+            logger.warning("Skipping UDC %s: %s", path.name, exc)
+            continue
+        except Exception:  # noqa: BLE001 -- one broken file must not hide the rest
+            if not tolerant:
+                raise
+            logger.warning(
+                "Skipping UDC %s: it does not load", path.name, exc_info=True
+            )
+            continue
+        if info is not None:
+            found.append(info)
+    return found
+
+
+def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
+    """Every contest definition: the plugins, then the UDC files.
+
+    A definition that does not load is a hard error unless *tolerant*, in which
     case it is skipped with a warning and the rest are still offered.
     """
     found = []
@@ -1331,20 +1386,23 @@ def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
             continue
         if info is not None:
             found.append(info)
+    found.extend(_scan_udcs(tolerant=tolerant))
     return found
 
 
 def available_contests() -> list[ContestInfo]:
-    """Every contest that ships with not1mm.
+    """Every contest this installation can open: the plugins and the UDCs.
 
     Built on demand, because it has to import each definition to read what it
     declares -- cheap once, and only needed when a contest has to be found by
-    something other than the name of the file it lives in.
+    something other than the name of the file it lives in.  A broken definition
+    is skipped rather than taking the registry down: a user-supplied .udc must
+    not be able to hide every built-in contest.
     """
     global _AVAILABLE
     if _AVAILABLE is not None:
         return _AVAILABLE
-    _AVAILABLE = _scan_contests()
+    _AVAILABLE = _scan_contests(tolerant=True)
     return _AVAILABLE
 
 
@@ -1395,27 +1453,77 @@ def _find_module(identifier: str):
     return _import_source(matches[0].source) if matches else None
 
 
+def _find_udc(identifier: str) -> Path | None:
+    """The .udc file for *identifier*, matched like a plugin's names.
+
+    The file stem is tried first -- that is the identifier a UDC contest is
+    stored under -- then the identifier, display name and Cabrillo name the
+    file declares.
+    """
+    from not1mm.lib.parse_udc import udc_files
+
+    if not isinstance(identifier, str) or not identifier:
+        return None
+    wanted = identifier.casefold()
+    for source, path in udc_files().items():
+        if source.casefold() == wanted:
+            return path
+    for info in available_contests():
+        if info.udc_path is not None and wanted in (
+            info.identifier.casefold(),
+            info.source.casefold(),
+            info.display_name.casefold(),
+            info.cabrillo_name.casefold(),
+        ):
+            return info.udc_path
+    return None
+
+
 def load_contest(identifier: str, parent):
-    """Import the contest called *identifier* and bind it to the main window.
+    """Open the contest called *identifier* and bind it to the main window.
 
     A contest is a ``class Contest(ContestBase)`` in
-    ``not1mm.plugins.<source>``, and its test fixtures are in
-    ``not1mm/contest/<source>/``.
+    ``not1mm.plugins.<source>`` (with test fixtures in
+    ``not1mm/contest/<source>/``), or a ``.udc`` file, whose stem is the
+    identifier.
     """
     contest_class = contest_metadata(identifier)
     if contest_class is None:
-        raise ModuleNotFoundError(f"no contest plugin named {identifier!r}")
+        raise ModuleNotFoundError(f"no contest named {identifier!r}")
     return contest_class(parent)
 
 
 def contest_metadata(identifier: str):
-    """The ``Contest`` class for *identifier*, or None if there is no such contest."""
+    """The ``Contest`` class for *identifier*, or None if there is no such contest.
+
+    A plugin wins over a UDC file that claims the same identifier, because the
+    built-in contests are the ones the rest of the application is tested
+    against.
+    """
     module = _find_module(identifier)
-    if module is None:
+    if module is not None:
+        contest_class = getattr(module, "Contest", None)
+        if contest_class is None:
+            logger.warning("Contest %s defines no Contest class", identifier)
+        return contest_class
+
+    path = _find_udc(identifier)
+    if path is None:
         return None
-    contest_class = getattr(module, "Contest", None)
-    if contest_class is None:
-        logger.warning("Contest %s defines no Contest class", identifier)
+    from not1mm.lib.parse_udc import UdcError, contest_from_udc, parse_udc
+
+    try:
+        contest_class = contest_from_udc(parse_udc(path))
+    except UdcError as exc:
+        logger.warning("UDC %s cannot be loaded: %s", path.name, exc)
+        return None
+    unimplemented = getattr(contest_class, "UdcUnimplemented", ())
+    if unimplemented:
+        logger.warning(
+            "UDC %s: parsed but not applied: %s",
+            path.name,
+            ", ".join(unimplemented),
+        )
     return contest_class
 
 
@@ -1456,7 +1564,18 @@ def contest_picker_entries() -> list[tuple[str, str]]:
     """
     infos = _scan_contests(tolerant=True)
     infos.sort(key=lambda info: (info.sort_order, info.display_name.casefold()))
-    return [(info.picker_label, info.identifier) for info in infos]
+    labels = [info.picker_label for info in infos]
+    counts = Counter(labels)
+    # Two files may carry the same DisplayName (the AGCW pair shares only its
+    # Name, but nothing stops a user copying one).  The label has to stay
+    # unique so the picker cannot hide one behind the other.
+    return [
+        (
+            label if counts[label] == 1 else f"{label} [{info.source}]",
+            info.identifier,
+        )
+        for label, info in zip(labels, infos)
+    ]
 
 
 def contest_label_for_identifier(identifier) -> str:

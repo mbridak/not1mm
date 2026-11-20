@@ -85,7 +85,9 @@ def test_an_old_stored_value_still_resolves():
 
 def test_every_contest_declares_an_identifier():
     available = contest.available_contests()
-    assert len(available) == 96
+    from not1mm.lib.parse_udc import udc_files
+
+    assert len(available) == len(contest._contest_sources()) + len(udc_files())
     assert len({info.source for info in available}) == len(available)
     for info in available:
         assert info.identifier, info.source

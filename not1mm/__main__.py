@@ -2273,6 +2273,35 @@ class MainWindow(QtWidgets.QMainWindow):
         Preferences.save()
         self.load_contest()
 
+    def warn_about_udc_limits(self) -> None:
+        """Say once which UDC parameters not1mm does not implement yet.
+
+        A UDC file can declare things not1mm only parses (a points rule list, a
+        section list, a hand-coded Cabrillo line).  Loading it silently would
+        score the contest wrongly, so the operator is told, once per contest
+        for this session; the log keeps the full list either way.
+        """
+        unimplemented = getattr(self.contest, "UdcUnimplemented", ())
+        if not unimplemented:
+            return
+        warned = getattr(self, "_udc_warned", None)
+        if warned is None:
+            warned = self._udc_warned = set()
+        identifier = getattr(self.contest, "ContestName", "") or self.contest.name
+        if identifier in warned:
+            return
+        warned.add(identifier)
+        logger.warning(
+            "UDC %s: parsed but not applied: %s",
+            identifier,
+            ", ".join(unimplemented),
+        )
+        self.show_message_box(
+            f"{self.contest.DisplayName} comes from a UDC file.\n\n"
+            "These parameters are not implemented by not1mm yet:\n\n"
+            + "\n".join(f"  {item}" for item in unimplemented)
+        )
+
     def load_contest(self) -> None:
         """
         Loads the contest stored in the preference file.
@@ -2311,6 +2340,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
                         self.contest.init_contest()
+                        self.warn_about_udc_limits()
                         self.hide_band_mode(
                             self.contest_settings.get("ModeCategory", "")
                         )
@@ -2345,7 +2375,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.update_rtc_xml()
                 except ModuleNotFoundError:
                     self.pref["contest"] = 1
-                    self.show_message_box("Contest plugin not found")
+                    self.show_message_box("Contest not found")
                     # Nothing was loaded, so there is no contest to wire up.
                     # Without this the method goes on to use self.contest --
                     # None at startup -- and the window fails to open.

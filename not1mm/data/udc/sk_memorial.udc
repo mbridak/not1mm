@@ -1,0 +1,31 @@
+[Author]
+AuthorName = not1mm
+Callsign =
+Email =
+
+[File]
+Revision = 1.0.0
+LastUpdate = 2026-11-20
+Description = Silent Key Memorial Contest (SKMC). CW, 80/40m, 1 November 0600-0859 UTC. Exchange: RST + a Silent Key callsign; each SK callsign counts once per band.
+
+[Contest]
+Name = SKMC
+DisplayName = Silent Key Memorial Contest
+CabrilloName = SKMC
+Mode = CW
+DupeType = 2
+
+Multiplier1Name = SK Calls
+MultSqlString = Exchange
+IsMultPer = 1
+NumMults = 1
+PointsPerContact = 1
+
+DefaultContestExchange = SKCALL
+EntryWindowInfo = SNTText, 450, SntNrText, 625, RCVText, 450, Exchange1Text, 900
+FrameText = SntRpt SntSK RcvRpt RcvSK
+QsoErrorString = Exchange1Text_Any_not_Empty
+LogInfo = SentReport, 500, SentNr, 500, ReceiveReport, 500, Exchange1, 900, IsMultiplier1, 500, Points, 400
+
+CabrilloVersion = 3.0
+CabrilloFormat = 1

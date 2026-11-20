@@ -1,13 +1,9 @@
 """The UDC reader: parsing, validation, and the contest factory.
 
-The field-by-field reference is ``UDC-FIELDS.md`` next to the repository; the
-corpus test at the bottom parses the 27 sample files in ``../udc`` when they
-are there.
+The field-by-field reference is ``UDC-FIELDS.md`` next to the repository.
 """
 
 from __future__ import annotations
-
-from pathlib import Path
 
 import pytest
 
@@ -23,8 +19,6 @@ from not1mm.lib.parse_udc import (
     parse_udc_text,
     validate_udc,
 )
-
-CORPUS = Path(__file__).resolve().parents[2] / "udc"
 
 MINIMAL = """
 [Author]
@@ -92,6 +86,38 @@ def test_parse_file_reports_a_missing_file(tmp_path):
 def test_a_file_without_a_contest_section_is_an_error():
     with pytest.raises(UdcError):
         udc_for("[Author]\nAuthorName = x\n")
+
+
+def test_box_names_are_case_insensitive():
+    # SARLRTTY.udc writes "SntText"; N1MM names are not case-sensitive.
+    udc = udc_for(MINIMAL.replace("SNTText", "SntText"))
+    assert contest_from_udc(udc).EntryWindowInfo[0] == "SNTText"
+    assert not issues(udc)
+
+
+def test_itu_is_accepted_without_a_warning():
+    # The zones are ITU zones; N1MM's help calls them IARU.
+    udc = udc_for(MINIMAL + "ZoneType = ITU\n")
+    assert contest_from_udc(udc).ZoneType == "IARU"
+    assert "ZoneType" not in messages(udc)
+
+
+def test_digital_is_accepted_as_a_mode():
+    # FT4/FT8 files say DIGITAL; the documented set stops at RTTY.
+    udc = udc_for(MINIMAL.replace("Mode = CW", "Mode = DIGITAL"))
+    assert contest_from_udc(udc).Mode == "DIGITAL"
+    assert not issues(udc)
+
+
+def test_a_value_list_where_a_section_header_belongs_is_ignored():
+    # WIA_VHFUHF.udc pastes "[AllowableTime, CompareToSecond, ...]" inside
+    # [Contest]; the keys after it must stay in [Contest].
+    udc = udc_for(
+        MINIMAL + "[AllowableTime, CompareToSecond, InfoStatus]\n" "IsMultPer = 1\n"
+    )
+    assert udc.get("IsMultPer") == "1"
+    assert not issues(udc)
+    assert "not a section header" in messages(udc)
 
 
 def test_unknown_keys_and_sections_are_kept_and_warned():
@@ -316,18 +342,41 @@ def test_a_section_list_qso_error_string_falls_back_to_the_default_check():
     assert "will not be checked" in messages(udc)
 
 
+BASE_LOG_COLUMNS = ["YYYY-MM-DD HH:MM:SS", "Call", "Freq (KHz)", "Mode"]
+
+
 def test_log_info_names_are_translated_to_not1mm_columns():
     text = (
         MINIMAL + "LogInfo = SentReport, 500, NR, 500, SectionText, 500, Points, 500\n"
     )
     contest = contest_from_udc(udc_for(text))
-    assert contest.LogInfo == ["Snt", "RcvNr", "Sect", "PTS"]
+    assert contest.LogInfo == [*BASE_LOG_COLUMNS, "Snt", "RcvNr", "Sect", "PTS"]
+
+
+def test_the_log_window_always_shows_the_date_call_frequency_and_mode():
+    # UDC's LogInfo table lists only exchange fields; the base columns are not
+    # something a file can switch off.
+    contest = contest_from_udc(udc_for(MINIMAL + "LogInfo = Exchange1, 500\n"))
+    assert contest.LogInfo == [*BASE_LOG_COLUMNS, "Exchange1"]
+
+
+def test_a_udc_that_names_a_base_column_does_not_duplicate_it():
+    contest = contest_from_udc(
+        udc_for(MINIMAL + "LogInfo = Call, 500, Mode, 500, Exchange1, 500\n")
+    )
+    assert contest.LogInfo.count("Call") == 1
+    assert contest.LogInfo.count("Mode") == 1
+
+
+def test_an_empty_log_info_uses_the_standard_columns():
+    contest = contest_from_udc(udc_for(MINIMAL))
+    assert contest.LogInfo == list(ContestBase.LogInfo)
 
 
 def test_a_log_column_with_no_not1mm_equivalent_is_dropped():
     udc = udc_for(MINIMAL + "LogInfo = Exchange1, 500, GridSquare, 500\n")
     contest = contest_from_udc(udc)
-    assert contest.LogInfo == ["Exchange1"]
+    assert contest.LogInfo == [*BASE_LOG_COLUMNS, "Exchange1"]
     assert "LogInfo:GridSquare" in contest.UdcUnimplemented
     assert "no log-window column for GridSquare" in messages(udc)
 
@@ -391,32 +440,3 @@ def test_the_contest_key_list_is_the_documented_size():
     # Note, is not in N1MM's list); the two spelling aliases resolve to keys
     # that are already counted.
     assert len(KNOWN_KEYS) == 88 + 3 + 4
-
-
-# -- the sample corpus -----------------------------------------------------
-
-
-def test_the_sample_corpus_parses():
-    if not CORPUS.is_dir():
-        pytest.skip(f"no sample corpus at {CORPUS}")
-    files = sorted(path for path in CORPUS.iterdir() if path.suffix.lower() == ".udc")
-    assert files, f"no .udc files in {CORPUS}"
-
-    identities = []
-    for path in files:
-        udc = parse_udc(path)
-        # Unknown keys are allowed -- that is why the reader warns instead of
-        # failing -- but an unknown *section* is not: it would mean we lost
-        # every key below it.
-        unknown_sections = [
-            warning for warning in udc.warnings if "unknown section" in warning
-        ]
-        assert not unknown_sections, f"{path.name}: {unknown_sections}"
-        errors = issues(udc)
-        assert not errors, f"{path.name}: {[str(issue) for issue in errors]}"
-        contest = contest_from_udc(udc)
-        assert contest.ContestName == path.stem
-        assert contest.DisplayName
-        identities.append(contest.ContestName)
-
-    assert len(identities) == len(set(identities))

@@ -38,6 +38,11 @@ if platform.system() in ["Windows", "Darwin"]:
     CONFIG_PATH = USER_DATA_PATH
     CONFIG_FILE = CONFIG_PATH / "not1mm.json"
 
+# User-provided contest definitions.  The parser reads the bundled directory
+# in not1mm/data/udc first, so a file here with the same name wins.
+UDC_PATH = USER_DATA_PATH / "udc"
+UDC_PATH.mkdir(parents=True, exist_ok=True)
+
 
 def openFileWithOS(file):
     """Open a file with the default program for that OS."""

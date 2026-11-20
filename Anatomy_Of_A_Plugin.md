@@ -383,15 +383,34 @@ A placeholder only expands when the contest declares that box; otherwise it is
 left in the text as typed, so keep a contest's messages to the boxes it
 declares.
 
+## Contests defined by a UDC file
+
+A contest does not have to be a Python class. A `.udc` file is read when the
+contest list is built, turned into the same `ContestBase` subclass a plugin
+describes, and offered in the picker beside the plugins. The reference for the format and for what the
+loader applies is `UDC-FIELDS.md` (it lives next to the repository, not in it).
+
+Files come from `not1mm/data/udc/` (shipped) and the user's `udc/` directory
+under the app-data path; a user file whose name matches a bundled one overrides
+it. The file stem is the contest's identifier, because the UDC `Name` is not
+unique (`AGCW-YLCWP-om.udc` and `AGCW-YLCWP-yl.udc` share one).
+
+Identity, the entry window and labels, `LogInfo`, the multipliers and their
+counting, `DefaultContestExchange`, a basic `QsoErrorString`, an integer
+`PointsPerContact` and the Cabrillo line are applied. A parameter not1mm only
+parses is reported when the contest is opened and listed in
+`UdcUnimplemented` on the class; nothing is silently ignored.
+
 ## Adding a new contest to the dropdown list
 
 There is nothing to add by hand. The New Contest dropdown is built from the
-`plugins` directory: every `not1mm/plugins/*.py` that defines a
-`class Contest(ContestBase)` shows up in the list, labelled with its
-`DisplayName` -- and with its `CabrilloName` in parentheses when the two names
-really differ, e.g. `ARI International DX (ARI-DX)`. A dropdown entry therefore
-always matches the plugin that will be loaded, and a new plugin needs no change
-to `new_contest.ui`.
+`plugins` directory and the `.udc` files: every `not1mm/plugins/*.py` that
+defines a `class Contest(ContestBase)`, and every User Defined Contest, shows
+up in the list, labelled with its `DisplayName` -- and with its `CabrilloName`
+in parentheses when the two names really differ, e.g.
+`ARI International DX (ARI-DX)`. A dropdown entry therefore always matches the
+definition that will be loaded, and a new plugin or UDC needs no change to
+`new_contest.ui`.
 
 Contests are listed lowest `SortOrder` first and then by display name.
 `SortOrder` defaults to `100`; General Logging sets `50` to keep the non-contest

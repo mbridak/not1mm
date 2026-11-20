@@ -219,8 +219,14 @@ _MODE_NAMES = {
     "both": "BOTH",
     "mixed": "BOTH",
     "rtty": "RTTY",
+    # Real files use these for FT4/FT8 events.  N1MM's documented set is CW,
+    # SSB, BOTH and RTTY, but rejecting the files would help nobody.
+    "digital": "DIGITAL",
+    "digi": "DIGITAL",
 }
-_ZONE_TYPES = {"cq": "CQ", "iaru": "IARU"}
+# N1MM's help says "IARU", but the zones are ITU zones and real files say ITU;
+# both mean the same to not1mm, and neither is worth a warning.
+_ZONE_TYPES = {"cq": "CQ", "iaru": "IARU", "itu": "IARU"}
 _DUPE_TYPES = (1, 2, 3, 4)
 _MULT_PER_VALUES = (0, 1, 2, 3, 4)
 _CABRILLO_FORMATS = (0, 1, 2, 3, 4, 5, 99)
@@ -233,6 +239,11 @@ _MULT_KIND_ALIASES = {
     "misctext": "Misc",
     "exchange1": "Exchange",
 }
+
+# The log window always shows these.  UDC's LogInfo only lists the *extra*
+# columns an author can choose (its table is all exchange fields), so a file
+# that names neither the date, the call nor the frequency must not hide them.
+LOG_INFO_BASE = ("YYYY-MM-DD HH:MM:SS", "Call", "Freq (KHz)", "Mode")
 
 # UDC's LogInfo names, and the log-window column each one means.  Names with
 # no not1mm column are dropped (with a warning) rather than invented.
@@ -339,6 +350,15 @@ def parse_udc_text(text: str, source: str, path: Path | None = None) -> Udc:
             continue
         if line.startswith("[") and line.endswith("]"):
             written = line[1:-1].strip()
+            if any(character in written for character in ",;="):
+                # A parameter's value list pasted where a header belongs
+                # (WIA_VHFUHF.udc has "[AllowableTime, CompareToSecond, ...]").
+                # Keeping the current section is better than losing every key
+                # below it to a section that cannot exist.
+                udc.warnings.append(
+                    f"line {number}: not a section header: {line!r}; ignored"
+                )
+                continue
             canonical = SECTION_NAMES.get(written.casefold())
             if canonical is None:
                 udc.warnings.append(f"line {number}: unknown section [{written}]")
@@ -392,6 +412,37 @@ def parse_udc_text(text: str, source: str, path: Path | None = None) -> Udc:
     return udc
 
 
+# -- where the files live --------------------------------------------------
+# UDCs shipped with not1mm, and the user's own.  A user file wins when the two
+# have the same name (stem), because that is how a user overrides a bundled
+# contest without editing the package.
+BUNDLED_UDC_DIR = Path(__file__).resolve().parents[1] / "data" / "udc"
+
+
+def udc_directories() -> tuple[Path, ...]:
+    """The directories .udc files are read from, in precedence order."""
+    from not1mm import fsutils
+
+    return (BUNDLED_UDC_DIR, Path(fsutils.UDC_PATH))
+
+
+def udc_files(directories=None) -> dict[str, Path]:
+    """``stem -> path`` for every .udc file found.
+
+    *directories* defaults to :func:`udc_directories`.  Later directories win,
+    so the user's copy of a name replaces the bundled one.
+    """
+    found: dict[str, Path] = {}
+    for directory in udc_directories() if directories is None else directories:
+        directory = Path(directory)
+        if not directory.is_dir():
+            continue
+        for path in sorted(directory.iterdir(), key=lambda item: item.name.casefold()):
+            if path.is_file() and path.suffix.casefold() == ".udc":
+                found[path.stem] = path
+    return found
+
+
 # -- the value grammars ----------------------------------------------------
 
 
@@ -406,12 +457,16 @@ def _boxes(value: str) -> tuple:
         raise ValueError(
             f"EntryWindowInfo needs name/width pairs, got {len(items)} entries"
         )
-    names = items[::2]
-    for name in names:
-        if name not in FIELD_SPECS:
+    # N1MM names are not case-sensitive, and files write "SntText".
+    canonical = {name.casefold(): name for name in FIELD_SPECS}
+    names = []
+    for written in items[::2]:
+        name = canonical.get(written.casefold())
+        if name is None:
             raise ValueError(
-                f"unknown box {name!r}; expected one of {', '.join(FIELD_SPECS)}"
+                f"unknown box {written!r}; expected one of {', '.join(FIELD_SPECS)}"
             )
+        names.append(name)
     if len(set(names)) != len(names):
         raise ValueError("a box is declared twice")
     pairs = []
@@ -721,8 +776,24 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     if any(label.casefold() in _ZONE_LABELS for label in labels):
         unimplemented.append("FrameText")  # the CQZone/IARUZone prefill
 
-    columns, dropped = _log_columns(udc.get("LogInfo"))
+    if udc.get("LogInfo").strip():
+        declared, dropped = _log_columns(udc.get("LogInfo"))
+        columns = list(LOG_INFO_BASE)
+        for column in declared:
+            if column not in columns:
+                columns.append(column)
+    else:
+        dropped = []
+        columns = list(ContestBase.LogInfo)
     unimplemented.extend(f"LogInfo:{name}" for name in dropped)
+
+    box_names = boxes[::2]
+    box_columns = [FIELD_SPECS[name].column for name in box_names]
+    received_column = next(
+        (column for column in reversed(box_columns) if column not in ("SNT", "RCV")),
+        "NR",
+    )
+    sent_column = "SentNr" if "SentNr" in box_columns else ""
 
     points_text = udc.get("PointsPerContact").strip()
     if points_text and not _INTEGER.fullmatch(points_text):
@@ -764,13 +835,16 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "PointsPerContact": points,
         "EntryWindowInfo": boxes,
         "FrameText": labels,
-        "LogInfo": columns or list(ContestBase.LogInfo),
+        "LogInfo": columns,
         "DefaultContestExchange": udc.get("DefaultContestExchange"),
         "QsoErrorString": qso_error,
         "UdcName": udc.name,
         "UdcPath": str(udc.path) if udc.path else "",
         "UdcAuthor": dict(udc.section("Author")),
         "UdcFile": dict(udc.section("File")),
+        "UdcReceivedColumn": received_column,
+        "UdcSentColumn": sent_column,
+        "cabrillo_qso_line": _udc_cabrillo_qso_line,
         "UdcRaw": dict(udc.section("Contest")),
     }
     attributes.update(_multiplier_attributes(udc, unimplemented))
@@ -780,6 +854,33 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     contest_class.__module__ = __name__
     contest_class.__qualname__ = f"UdcContest[{udc.source}]"
     return contest_class
+
+
+def _udc_cabrillo_qso_line(self, contact) -> str:
+    """The standard ``QSO:`` line, with the UDC's own exchange columns.
+
+    :meth:`ContestBase.cabrillo_qso_line` always prints ``SentNr`` and ``NR``;
+    a UDC puts the received exchange where its declaration says (``Exchange1``,
+    ``MiscText``, ``Sect``, ``GridSquare``).  The factory records the last
+    declared exchange box, because that is the received exchange -- the same
+    box ESM treats as the one that finishes the contact.
+    """
+    the_date_and_time = contact.get("TS", "")
+    loggeddate = the_date_and_time[:10]
+    loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
+    frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+    sent = str(contact.get(self.UdcSentColumn, ""))
+    received = str(contact.get(self.UdcReceivedColumn, ""))
+    return (
+        f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
+        f"{loggeddate} {loggedtime} "
+        f"{contact.get('StationPrefix', '').ljust(13)} "
+        f"{str(contact.get('SNT', '')).ljust(3)} "
+        f"{sent.ljust(6)} "
+        f"{contact.get('Call', '').ljust(13)} "
+        f"{str(contact.get('RCV', '')).ljust(3)} "
+        f"{received.ljust(6)}"
+    )
 
 
 def load_udc(path: str | Path, parent) -> ContestBase:
