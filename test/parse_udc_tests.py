@@ -5,6 +5,8 @@ The field-by-field reference is ``UDC-FIELDS.md`` next to the repository.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 
 from not1mm.lib.contest import ContestBase
@@ -335,6 +337,20 @@ def test_a_qso_error_string_is_passed_through():
     assert contest.QsoErrorString == "RcvNrText_Any_not_Empty"
 
 
+def test_a_sec_list_validates_the_exchange():
+    udc = udc_for(
+        MINIMAL + "MultWindowType = ARRL_RAC_Section\n"
+        "QsoErrorString = ARRL_RAC_Section\n"
+    )
+    contest_class = contest_from_udc(udc)
+    assert contest_class.MultWindowType == "ARRL_RAC_Section"
+    assert contest_class.section_list is not None
+    (rule,) = contest_class(SimpleNamespace()).qso_error_rules()
+    assert rule.accepts("ORG")
+    assert not rule.accepts("ZZ")
+    assert "MultWindowType" not in contest_class.UdcUnimplemented
+
+
 def test_a_section_list_qso_error_string_falls_back_to_the_default_check():
     udc = udc_for(MINIMAL + "QsoErrorString = ARI\n")
     contest = contest_from_udc(udc)
@@ -385,7 +401,7 @@ def test_a_log_column_with_no_not1mm_equivalent_is_dropped():
 def test_unimplemented_parameters_are_recorded_on_the_class():
     udc = udc_for(MINIMAL + "MultWindowType = ARI\nBonusPoints = DL, 25\n")
     contest = contest_from_udc(udc)
-    assert "MultWindowType" in contest.UdcUnimplemented
+    assert "MultWindowType:ARI" in contest.UdcUnimplemented
     assert "BonusPoints" in contest.UdcUnimplemented
     assert "parsed, but not applied" in messages(udc)
 

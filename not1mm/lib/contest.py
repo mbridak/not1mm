@@ -50,7 +50,13 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from not1mm.lib import contact_info, plugin_common, points_rules, version
+from not1mm.lib import (
+    contact_info,
+    plugin_common,
+    points_rules,
+    sections,
+    version,
+)
 from not1mm.lib.fields import (
     DEFAULT_ENTRY_WINDOW,
     FIELD_SPECS,
@@ -102,8 +108,9 @@ class QsoRule:
     """One QsoErrorString check: a box, a shape, and whether empty is allowed."""
 
     box: str
-    kind: str  # "any", "numeric" or "grid"
+    kind: str  # "any", "numeric", "grid" or "list"
     allow_empty: bool
+    codes: frozenset[str] | None = None  # for kind "list"
 
     def accepts(self, text: str) -> bool:
         text = str(text)
@@ -113,6 +120,8 @@ class QsoRule:
             return text.strip().isdigit()
         if self.kind == "grid":
             return bool(_GRID_RE.match(text.strip()))
+        if self.kind == "list":
+            return text.strip().upper() in (self.codes or frozenset())
         return True
 
 
@@ -135,13 +144,28 @@ def parse_qso_error_string(value: str | None, default_box: str) -> tuple[QsoRule
                 box = name
                 rule_text = spec[len(name) + 1 :]
                 break
+        rule = rule_text.strip()
+        # A .sec list name may be followed by "_or_Empty" or "_not_Empty".
+        # None means "whatever the rule's own default is".
+        allow_empty = None
+        for suffix, empty in (("_or_empty", True), ("_not_empty", False)):
+            if rule.casefold().endswith(suffix):
+                rule = rule[: -len(suffix)].rstrip()
+                allow_empty = empty
+                break
         try:
-            kind, allow_empty = _QSO_RULES[rule_text.strip().lower()]
-        except KeyError as exc:
-            raise ValueError(
-                f"QsoErrorString: unknown rule {rule_text!r} in {spec!r}"
-            ) from exc
-        rules.append(QsoRule(box, kind, allow_empty))
+            kind, default_empty = _QSO_RULES[rule.lower()]
+        except KeyError:
+            section = sections.load_sec(rule)
+            if section is None:
+                raise ValueError(
+                    f"QsoErrorString: unknown rule {rule_text!r} in {spec!r}"
+                ) from None
+            rules.append(QsoRule(box, "list", bool(allow_empty), section.codes))
+            continue
+        rules.append(
+            QsoRule(box, kind, default_empty if allow_empty is None else allow_empty)
+        )
     return tuple(rules)
 
 
@@ -465,6 +489,9 @@ class ContestBase:
     Bands = ()
     # Which zone scheme the contest exchanges: "CQ" (most) or "IARU".  (UDC.)
     ZoneType = "CQ"
+    # The .sec list a section multiplier is validated against (UDC's
+    # MultWindowType): "Section", "DOK", or the name of a user file.
+    MultWindowType = ""
     # Points for a valid contact: a number, or a rule list in N1MM's
     # PointsPerContact grammar.  A rule list is evaluated by points() against
     # the contact and the station; a contest whose points it cannot express
@@ -498,6 +525,13 @@ class ContestBase:
         )
 
     # -- the names the application used before this was a class -------------
+    @property
+    def section_list(self):
+        """The :attr:`MultWindowType` list, or None when none is named."""
+        if not self.MultWindowType:
+            return None
+        return sections.load_sec(self.MultWindowType)
+
     @property
     def name(self):
         """The old name for :attr:`DisplayName`."""

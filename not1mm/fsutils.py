@@ -43,6 +43,11 @@ if platform.system() in ["Windows", "Darwin"]:
 UDC_PATH = USER_DATA_PATH / "udc"
 UDC_PATH.mkdir(parents=True, exist_ok=True)
 
+# User-provided section lists (.sec files).  The parser reads the bundled
+# directory in not1mm/data/sec first, so a file here with the same name wins.
+SEC_PATH = USER_DATA_PATH / "sec"
+SEC_PATH.mkdir(parents=True, exist_ok=True)
+
 
 def openFileWithOS(file):
     """Open a file with the default program for that OS."""

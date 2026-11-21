@@ -81,6 +81,21 @@ def test_numeric_and_grid_shapes():
     assert not grid.accepts("JO8")
 
 
+def test_a_sec_list_name_is_a_rule():
+    # MultWindowType names a .sec file; QsoErrorString can validate against it.
+    (rule,) = parse_qso_error_string("ARRL_RAC_Section", "Exchange1Text")
+    assert (rule.box, rule.kind) == ("Exchange1Text", "list")
+    assert rule.accepts("ORG")
+    assert not rule.accepts("ZZ")
+
+
+def test_a_sec_list_can_allow_an_empty_exchange():
+    (rule,) = parse_qso_error_string("ARRL_RAC_Section_or_Empty", "Exchange1Text")
+    assert rule.allow_empty
+    assert rule.accepts("")
+    assert not rule.accepts("ZZ")
+
+
 def test_an_unknown_rule_is_an_error():
     with pytest.raises(ValueError, match="unknown rule"):
         parse_qso_error_string("RcvNrText_Anything", "RcvNrText")

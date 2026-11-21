@@ -45,6 +45,7 @@ from pathlib import Path
 
 from not1mm.lib.contest import MULT_KEYS, ContestBase, parse_qso_error_string
 from not1mm.lib import points_rules
+from not1mm.lib import sections
 from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW, FIELD_SPECS
 
 logger = logging.getLogger("parse_udc")
@@ -195,6 +196,7 @@ APPLIED_KEYS = frozenset(
         "DefaultContestExchange",
         "QsoErrorString",
         "PointsPerContact",
+        "MultWindowType",
     }
 )
 
@@ -614,6 +616,14 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
                 f"{len(labels)} labels for {count} boxes; the extras are ignored",
             )
 
+    mult_window = udc.get("MultWindowType").strip()
+    if mult_window and sections.load_sec(mult_window) is None:
+        warn(
+            "MultWindowType",
+            f"no .sec list named {mult_window!r}; the section multiplier is "
+            "not checked",
+        )
+
     if udc.get("LogInfo").strip():
         try:
             _columns, dropped = _log_columns(udc.get("LogInfo"))
@@ -821,6 +831,10 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         # contest type to key that on, so the plain number is what is used.
         unimplemented.append("PointsPerContact:vhf")
 
+    mult_window = udc.get("MultWindowType").strip()
+    if mult_window and sections.load_sec(mult_window) is None:
+        unimplemented.append(f"MultWindowType:{mult_window}")
+
     cabrillo_format = udc.get("CabrilloFormat").strip()
     if cabrillo_format and cabrillo_format != "1":
         unimplemented.append("CabrilloFormat")
@@ -853,6 +867,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "ZoneType": zone_type,
         "PointsPerContact": points,
         "PointsRules": points_rule,
+        "MultWindowType": udc.get("MultWindowType").strip(),
         "EntryWindowInfo": boxes,
         "FrameText": labels,
         "LogInfo": columns,

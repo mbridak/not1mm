@@ -220,6 +220,14 @@ turns those into the SQL that counts the log (`show_mults()`), the value a
 contact contributes (`mult_value()`), and the mark on the first contact of each
 multiplier (`recalculate_mults()`).
 
+A section multiplier can name the list it is validated against with
+`MultWindowType` — the **`.sec` file name**, such as `"ARRL_RAC_Section"` or
+`"DOK"`. `self.section_list` returns it, and `QsoErrorString` can name the same
+file to require the received exchange to be one of its codes
+(`ARRL_RAC_Section`, `ARRL_RAC_Section_or_Empty`). Lists are read from
+`not1mm/data/sec/` and the user's `sec/` directory; the `Type` line inside the
+file is metadata, not the lookup name.
+
 Override `mult_value()` and `mult_sql()` when the key is conditional — a
 province only when the received exchange is a code rather than a serial, for
 example — and `get_mults()` when the score page needs more than the counts.
@@ -411,8 +419,9 @@ it. The file stem is the contest's identifier, because the UDC `Name` is not
 unique (`AGCW-YLCWP-om.udc` and `AGCW-YLCWP-yl.udc` share one).
 
 Identity, the entry window and labels, `LogInfo`, the multipliers and their
-counting, `DefaultContestExchange`, a basic `QsoErrorString`, `PointsRules`
-(or a plain `PointsPerContact`) and the Cabrillo line are applied. A parameter not1mm only
+counting, `DefaultContestExchange`, `QsoErrorString` (rules or a `.sec` list),
+`PointsRules` (or a plain `PointsPerContact`), `MultWindowType` and the Cabrillo
+line are applied. A parameter not1mm only
 parses is reported when the contest is opened and listed in
 `UdcUnimplemented` on the class; nothing is silently ignored.
 
