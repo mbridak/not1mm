@@ -51,6 +51,7 @@ class Contest(ContestBase):
     DisplayName = "HELVETIA"
     CabrilloName = "HELVETIA"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "HB, 10, SameContinent, 1, OtherContinent, 3"
     EXCHANGE_HINT = "Canton or #"
     DupeType = 3  # once per band and mode
     Bands = (1.8, 3.5, 7, 14, 21, 28)
@@ -88,26 +89,6 @@ class Contest(ContestBase):
             return "", ""
         item = result.get(next(iter(result)), {})
         return item.get("entity", ""), item.get("continent", "")
-
-    def points(self):
-        """10 points for a Swiss station, 1 or 3 by continent otherwise."""
-        parent = self.parent
-        if parent.contact_is_dupe:
-            return 0
-
-        their_country, their_continent = self._entity(parent.contact.get("Call", ""))
-        if not their_country:
-            return 0
-
-        # The entrant's own lookup can fail too; _entity guards that, where the
-        # module left my_continent unbound and points() raised.
-        _, my_continent = self._entity(parent.station.get("Call", ""))
-
-        if their_country == "Switzerland":
-            return 10
-        if my_continent != their_continent:
-            return 3
-        return 1
 
     def mult_value(self, slot, contact):
         """The canton when an HB station sent one; the country is a column."""

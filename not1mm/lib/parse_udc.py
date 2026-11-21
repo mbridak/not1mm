@@ -29,12 +29,11 @@ the contest rather than ours.
 What is applied
 ---------------
 
-This is the first phase: identity, entry window, multipliers and the simple
-declarations.  A parameter that is parsed but not applied (a rule list in
-``PointsPerContact``, a section list in ``MultWindowType``, a hand-coded
-``CabrilloString``) is recorded on the class in ``UdcUnimplemented`` so the
-application can warn about it and a later phase can find it.  Nothing is
-silently dropped.
+Identity, entry window, multipliers, ``PointsPerContact`` rules and the simple
+declarations are applied.  A parameter that is parsed but not applied (a
+section list in ``MultWindowType``, a hand-coded ``CabrilloString``) is
+recorded on the class in ``UdcUnimplemented`` so the application can warn
+about it and a later phase can find it.  Nothing is silently dropped.
 """
 
 from __future__ import annotations
@@ -45,6 +44,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from not1mm.lib.contest import MULT_KEYS, ContestBase, parse_qso_error_string
+from not1mm.lib import points_rules
 from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW, FIELD_SPECS
 
 logger = logging.getLogger("parse_udc")
@@ -628,9 +628,15 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
 
     points = udc.get("PointsPerContact").strip()
     if points and not _INTEGER.fullmatch(points):
+        try:
+            points_rules.parse_points(points)
+        except points_rules.PointsRulesError as exc:
+            error("PointsPerContact", str(exc))
+    if points and _INTEGER.fullmatch(points) and udc.name.casefold().startswith("vhf"):
         warn(
             "PointsPerContact",
-            "rule lists are not implemented yet; contacts will score 1 point",
+            "a VHF contest scores by distance (km x points); not1mm uses the "
+            "number as plain points",
         )
 
     for slot, key in (
@@ -796,11 +802,24 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     sent_column = "SentNr" if "SentNr" in box_columns else ""
 
     points_text = udc.get("PointsPerContact").strip()
+    points_rule = ""
     if points_text and not _INTEGER.fullmatch(points_text):
-        unimplemented.append("PointsPerContact")
-        points = 1  # UDC's default, until the rule grammar lands
+        parsed = points_rules.parse_points(points_text)
+        if parsed.is_rules:
+            points_rule = points_text
+            points = 0
+        else:
+            points = parsed.default
     else:
         points = _safe_number(points_text, 1)
+    if (
+        points_text
+        and _INTEGER.fullmatch(points_text)
+        and udc.name.casefold().startswith("vhf")
+    ):
+        # N1MM's VHF rule multiplies the km by the number; not1mm has no
+        # contest type to key that on, so the plain number is what is used.
+        unimplemented.append("PointsPerContact:vhf")
 
     cabrillo_format = udc.get("CabrilloFormat").strip()
     if cabrillo_format and cabrillo_format != "1":
@@ -833,6 +852,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "DupeType": dupe_type,
         "ZoneType": zone_type,
         "PointsPerContact": points,
+        "PointsRules": points_rule,
         "EntryWindowInfo": boxes,
         "FrameText": labels,
         "LogInfo": columns,

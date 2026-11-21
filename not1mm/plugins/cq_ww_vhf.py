@@ -54,21 +54,6 @@ def validate_exchange(text: str) -> bool:
     return normalize_grid(text) != ""
 
 
-def points_for_band(band) -> int:
-    """Return QSO points for a band. 6m = 1 point, 2m = 2 points.
-
-    ``band`` may be the stored MHz float, its string form, or the legacy plain
-    band number, because the live logging path and the database disagree on the
-    representation.
-    """
-
-    if band in ("50.0", "6", 50.0):
-        return 1
-    if band in ("144.0", "2", 144.0):
-        return 2
-    return 0
-
-
 def contest_name_for(contest_settings: dict) -> str:
     """Return the correct Cabrillo contest name based on the mode category.
 
@@ -104,6 +89,7 @@ class Contest(ContestBase):
     DisplayName = "CQ WW VHF"
     CabrilloName = "CQ-VHF-SSBCW"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "6m, 1, 2m, 2"
     EXCHANGE_HINT = "4-character grid square"
     SOAPBOX_HINT = "CQ WW VHF - Exchange is your 4 digit gridsquare"
     DupeType = 5  # the contest decides: once per call, band and sent grid
@@ -156,12 +142,6 @@ class Contest(ContestBase):
 
     def recalculate_mults(self):
         """No marks: the multipliers are counted from the log (see show_mults)."""
-
-    def points(self):
-        """1 point on 6m, 2 on 2m, nothing elsewhere."""
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        return points_for_band(self.parent.contact.get("Band", ""))
 
     def set_contact_vars(self):
         """The grids; neither RST is used."""

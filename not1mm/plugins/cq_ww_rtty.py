@@ -38,6 +38,7 @@ class Contest(ContestBase):
     DisplayName = "CQ WW RTTY"
     CabrilloName = "CQ-WW-RTTY"
     Mode = "RTTY"  # CW SSB BOTH RTTY
+    PointsRules = "MyCountry, 1, SameContinent, 2, OtherContinent, 3"
     EXCHANGE_HINT = "CQ Zone + (state/VE area)"
     SOAPBOX_HINT = """If you are outside North America, In your station settings, set the ARRL Section to DX.
 
@@ -87,29 +88,6 @@ Please make sure you set the Mode to RTTY Above."""
     Multiplier3Name = "CQ Zone"
     MultSqlString3 = "CQZONE"
     IsMult3Per = 1
-
-    def points(self):
-        """3 across continents, 2 within one, 1 inside a country."""
-        parent = self.parent
-        if parent.contact_is_dupe > 0:
-            return 0
-        mine = parent.cty_lookup(parent.station.get("Call", ""))
-        if mine is None:
-            return 0
-        item = mine.get(next(iter(mine)))
-        mycountry = item.get("entity", "")
-        mycontinent = item.get("continent", "")
-        theirs = parent.cty_lookup(parent.contact.get("Call", ""))
-        if theirs is not None:
-            item = theirs.get(next(iter(theirs)))
-            entity = item.get("entity", "")
-            continent = item.get("continent", "")
-            if mycountry.upper() == entity.upper():
-                return 1
-            if mycontinent == continent:
-                return 2
-            return 3
-        return 0
 
     def mult_value(self, slot, contact):
         """The country, the W/VE QTH, and the zone."""

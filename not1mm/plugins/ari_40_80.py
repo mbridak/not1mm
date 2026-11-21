@@ -17,6 +17,7 @@ class Contest(ContestBase):
     DisplayName = "ARI 40 80"
     CabrilloName = "40-80"
     Mode = "BOTH"
+    PointsRules = "SSB, 1, FM, 1, AM, 1, RTTY, 2, CW, 3"
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "Automobile Code"
     Bands = (3.5, 7)
@@ -49,19 +50,6 @@ class Contest(ContestBase):
         if slot == 1:
             return "NULLIF(NR, '')"
         return super().mult_sql(slot)
-
-    def points(self):
-        """Points for the contact being logged: 3 CW, 2 RTTY, 1 phone."""
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        mode = self.parent.contact.get("Mode", "").upper()
-        if mode in ("SSB", "USB", "LSB", "FM", "AM", "PH"):
-            return 1
-        if mode in ("RTTY", "RY"):
-            return 2
-        if mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
-            return 3
-        return 0
 
     def set_contact_vars(self):
         """The exchange, and the automobile code the contact is worth."""

@@ -24,6 +24,7 @@ class Contest(ContestBase):
     DisplayName = "ES LL KV"
     CabrilloName = "ES-LL-KV"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "SSB, 1, FM, 1, AM, 1, CW, 2"
     EXCHANGE_HINT = "#"
     DupeType = 5  # a call again in each 15-minute period
     LogInfo = [
@@ -50,17 +51,6 @@ class Contest(ContestBase):
     def specific_contest_check_dupe(self, call: str) -> dict:
         """A call per band and mode in each 15-minute period of the hour."""
         return period_dupe_check(self.parent, call, 60, 15)
-
-    def points(self):
-        """CW is worth 2 points, phone 1."""
-        if self.parent.contact_is_dupe:
-            return 0
-        mode = self.parent.contact.get("Mode", "").upper()
-        if mode in ("SSB", "USB", "LSB", "FM", "AM", "PH"):
-            return 1
-        if mode in ("CW", "CW-U", "CW-L", "CW-R", "CWR"):
-            return 2
-        return 0
 
     def mult_value(self, slot, contact):
         """The Estonian call area, from the third character of the prefix."""

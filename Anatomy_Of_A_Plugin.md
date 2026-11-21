@@ -71,9 +71,21 @@ empty (a serial is `"#"`, a fixed exchange is the text). Both are optional.
 `Bands` lists the bands in MHz. It documents the contest and lets a test
 reject an off-band log.
 
-`PointsPerContact` is the points for one valid contact. A contest whose points
-depend on where the operator is, or on the contact, overrides `points()`
-instead.
+`PointsPerContact` is the points for one valid contact, either a number or a
+rule list in `PointsRules`:
+
+```python
+PointsRules = "SSB, 1, CW, 2, DIGI, 2"          # by mode
+PointsRules = "MyCountry, 1, SameContinent, 2, OtherContinent, 3"
+PointsRules = "6m, 1, 2m, 2, 70cm, 5"           # by band
+PointsRules = "1, /QRP, 5, /P, 3"               # a default plus suffixes
+```
+
+The base `points()` evaluates the rules against the contact and the station
+(`40m, 160m`, continents, countries, `MyCountry`, `MyGrid`, `SectIs_xxx`,
+`ExchIs_xxx`, `Exchange, *`, distance tables `1/600/10; …`, `+n` additives).
+A contest whose points the grammar cannot express (a band matrix crossed with
+the operator's side, a station-type ladder) overrides `points()` instead.
 
 `SupportsFT8`, `WritesEDI`, `WritesGridLocator`, `SendsRTCScore` and `UsesESM`
 are capability flags; several replace what used to be `hasattr()` probes.
@@ -243,8 +255,11 @@ differs.
 
 Most of these exist in the base; override only the ones that differ.
 
-`points()` returns the point value of the contact being logged. Point
-assignment is often complicated by continents, countries, zones, power, etc.
+`points()` returns the point value of the contact being logged. The base
+implementation uses `PointsRules` when the contest declares them, else
+`PointsPerContact`; point assignment is often complicated by continents,
+countries, zones, power, etc., so a contest whose rules do not fit overrides
+it (and must return 0 for a dupe).
 
 `predupe()` is called when the callsign is entered and checked. The CWT plugin
 uses this to query the DB for a matching callsign, allowing it to automatically
@@ -396,8 +411,8 @@ it. The file stem is the contest's identifier, because the UDC `Name` is not
 unique (`AGCW-YLCWP-om.udc` and `AGCW-YLCWP-yl.udc` share one).
 
 Identity, the entry window and labels, `LogInfo`, the multipliers and their
-counting, `DefaultContestExchange`, a basic `QsoErrorString`, an integer
-`PointsPerContact` and the Cabrillo line are applied. A parameter not1mm only
+counting, `DefaultContestExchange`, a basic `QsoErrorString`, `PointsRules`
+(or a plain `PointsPerContact`) and the Cabrillo line are applied. A parameter not1mm only
 parses is reported when the contest is opened and listed in
 `UdcUnimplemented` on the class; nothing is silently ignored.
 

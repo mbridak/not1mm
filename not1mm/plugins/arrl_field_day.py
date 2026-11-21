@@ -12,8 +12,6 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 from not1mm.lib.contest import ContestBase
 from not1mm.lib.ham_utility import get_logged_band
 
-_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
-
 
 class Contest(ContestBase):
     """ARRL Field Day."""
@@ -21,6 +19,7 @@ class Contest(ContestBase):
     DisplayName = "ARRL Field Day"
     CabrilloName = "ARRL-FD"
     Mode = "BOTH"
+    PointsRules = "SSB, 1, FM, 1, AM, 1, CW, 2, RTTY, 2, PSK, 2, DIGI, 2"
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "1D ORG"
     SupportsFT8 = True
@@ -52,17 +51,6 @@ class Contest(ContestBase):
     Multiplier1Name = "Sect"
     MultSqlString = "Sect"
     IsMult1Per = 4
-
-    def points(self):
-        """1 point phone, 2 CW or digital (rule 7.1)."""
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        mode = str(self.parent.contact.get("Mode", "")).upper()
-        if not mode:
-            return 0
-        if mode in _PHONE_MODES:
-            return 1
-        return 2
 
     def show_mults(self):
         """The number of band/mode combinations worked."""

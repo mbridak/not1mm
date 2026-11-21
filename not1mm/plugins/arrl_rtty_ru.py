@@ -20,6 +20,7 @@ class Contest(ContestBase):
     DisplayName = "ARRL RTTY Roundup"
     CabrilloName = "ARRL-RTTY"
     Mode = "RTTY"
+    PointsPerContact = 1
     DupeType = 2  # once per band
     EXCHANGE_HINT = "State/Province or #"
     SupportsFT8 = True
@@ -33,12 +34,6 @@ class Contest(ContestBase):
     Multiplier1Name = "CountryPrefix"
     MultSqlString = "CountryPrefix"
     IsMult1Per = 2
-
-    def points(self):
-        """One point per contact."""
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        return 1
 
     def show_mults(self, rtc=None):
         """States/provinces once per band, plus DXCC once per band.

@@ -19,6 +19,7 @@ class Contest(ContestBase):
     DisplayName = "EUHFC"
     CabrilloName = "EUHFC"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "EU, 1"
     EXCHANGE_HINT = "Lic. Year (2 digits)"
     DupeType = 3  # once per band and mode
     Bands = (1.8, 3.5, 7, 14, 21, 28)
@@ -47,14 +48,6 @@ class Contest(ContestBase):
     MultSqlString = "NR"
     IsMult1Per = 1
     SendsRTCScore = True
-
-    def points(self):
-        """One point, and only for a continental-European contact."""
-        if self.parent.contact_is_dupe:
-            return 0
-        if self.parent.contact.get("Continent", "") != "EU":
-            return 0
-        return 1
 
     def mult_value(self, slot, contact):
         """The licence year, unless the exchange is empty."""

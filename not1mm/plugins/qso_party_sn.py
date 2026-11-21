@@ -47,6 +47,7 @@ class Contest(ContestBase):
     # the identifier is what tells the two apart (not1mm.lib.contest.contest_id).
     ContestName = "qso_party_sn"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "SSB, 1, FM, 1, AM, 1, CW, 2, RTTY, 2, PSK, 2, DIGI, 2"
     EXCHANGE_HINT = "# State/Prov or County"
     SOAPBOX_HINT = """
 If you're on a county line enter each separated by a '/'
@@ -81,37 +82,6 @@ input each county separated by a '/'.
     Multiplier1Name = "County/State/DX"
     MultSqlString = "Exchange"
     IsMult1Per = 4
-
-    def points(self):
-        """Phone is one point, CW and the digital modes two.
-
-        A mode the rules do not name scores nothing.
-        """
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        mode = self.parent.contact.get("Mode", "")
-        if mode in ("LSB", "USB", "SSB", "FM", "AM"):
-            return 1
-        if mode in (
-            "CW",
-            "CW-U",
-            "CW-L",
-            "CW-R",
-            "CWR",
-            "FT8",
-            "FT4",
-            "RTTY",
-            "PSK31",
-            "FSK441",
-            "MSK144",
-            "JT65",
-            "JT9",
-            "Q65",
-            "PKTUSB",
-            "PKTLSB",
-        ):
-            return 2
-        return 0
 
     def set_contact_vars(self):
         """The serials and the received county/state/country."""

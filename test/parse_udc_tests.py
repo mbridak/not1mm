@@ -319,12 +319,13 @@ def test_an_integer_points_value_is_applied():
     assert "PointsPerContact" not in contest.UdcUnimplemented
 
 
-def test_a_points_rule_is_flagged_and_falls_back():
+def test_a_points_rule_list_is_applied():
     udc = udc_for(MINIMAL + "PointsPerContact = 40m, 1, 80m, 2\n")
     contest = contest_from_udc(udc)
-    assert contest.PointsPerContact == 1  # UDC's default until the grammar lands
-    assert "PointsPerContact" in contest.UdcUnimplemented
-    assert "rule lists are not implemented" in messages(udc)
+    assert contest.PointsPerContact == 0  # the rule table does the scoring
+    assert contest.PointsRules == "40m, 1, 80m, 2"
+    assert "PointsPerContact" not in contest.UdcUnimplemented
+    assert "PointsPerContact" not in messages(udc)
 
 
 def test_a_qso_error_string_is_passed_through():

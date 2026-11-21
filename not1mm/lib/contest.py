@@ -50,7 +50,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from not1mm.lib import contact_info, plugin_common, version
+from not1mm.lib import contact_info, plugin_common, points_rules, version
 from not1mm.lib.fields import (
     DEFAULT_ENTRY_WINDOW,
     FIELD_SPECS,
@@ -465,10 +465,13 @@ class ContestBase:
     Bands = ()
     # Which zone scheme the contest exchanges: "CQ" (most) or "IARU".  (UDC.)
     ZoneType = "CQ"
-    # Points for a valid contact.  A contest whose points depend on where the
-    # operator is (WPX's North-America asymmetry, WAG's DL side) overrides
-    # points() instead -- UDC's PointsPerContact cannot express those.
+    # Points for a valid contact: a number, or a rule list in N1MM's
+    # PointsPerContact grammar.  A rule list is evaluated by points() against
+    # the contact and the station; a contest whose points it cannot express
+    # (a band matrix crossed with the operator's side, say) overrides points().
     PointsPerContact = 0
+    # e.g. "40m, 1, 80m, 2, 160m, 3" or "MyCountry, 1, SameContinent, 2".
+    PointsRules = ""
     # The multipliers, up to three, named and counted the way UDC does it:
     # MultiplierNName is the display name, MultSqlStringN the kind of key,
     # IsMultNPer how the key is counted (see MULT_PER_COLUMNS), NumMults how
@@ -488,6 +491,11 @@ class ContestBase:
 
     def __init__(self, parent):
         self.parent = parent  # the main window (or the contest harness)
+        # Parse once: the rules are a class constant, and points() runs for
+        # every contact.
+        self._points_rules = (
+            points_rules.parse_points(self.PointsRules) if self.PointsRules else None
+        )
 
     # -- the names the application used before this was a class -------------
     @property
@@ -725,11 +733,25 @@ class ContestBase:
     def points(self):
         """Points for the contact being logged.
 
-        Zero for a dupe, else :attr:`PointsPerContact`.  A contest whose points
-        depend on where the operator is (WPX, WAG) overrides this.
+        Zero for a dupe.  Otherwise :attr:`PointsRules` decides, or else
+        :attr:`PointsPerContact`.  A contest whose points the rule grammar
+        cannot express (WPX's North-America asymmetry, WAG's DL side) overrides
+        this.
         """
         if self.parent.contact_is_dupe:
             return 0
+        if self._points_rules is not None:
+            parent = self.parent
+            return points_rules.score(
+                self._points_rules,
+                contact=getattr(parent, "contact", {}) or {},
+                station=getattr(parent, "station", {}) or {},
+                lookup=getattr(parent, "cty_lookup", None),
+                sent_exchange=str(
+                    getattr(parent, "contest_settings", {}).get("SentExchange", "")
+                    or ""
+                ),
+            )
         return self.PointsPerContact
 
     def set_contact_vars(self):
