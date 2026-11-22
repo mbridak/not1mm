@@ -78,11 +78,11 @@ from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib import catppuccin, contact_info, plugin_common
 from not1mm.lib.about import About
 from not1mm.lib.contest import (
-    contest_id,
-    contest_identifier_for_display,
-    contest_label_for_identifier,
+    FALLBACK_BASENAME,
+    contest_basename_for_display,
+    contest_label_for_basename,
+    contest_metadata,
     load_contest,
-    path_name,
 )
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
@@ -2075,17 +2075,17 @@ class MainWindow(QtWidgets.QMainWindow):
             for contest in contests:
                 number_of_rows = self.contest_dialog.contest_list.rowCount()
                 self.contest_dialog.contest_list.insertRow(number_of_rows)
-                contest_id = str(contest.get("ContestID", 1))
+                contest_nr = str(contest.get("ContestID", 1))
                 # Show the contest the way the New Contest picker does --
-                # "OK1WC Memorial Contest (MWC)", not the stored "MWC".  An
+                # "OK1WC Memorial Contest (MWC)", not the stored "ok1wc".  An
                 # unknown or missing name is shown as it is; opening it may
                 # still fail, but this list must not.
-                contest_name = contest_label_for_identifier(
+                contest_name = contest_label_for_basename(
                     contest.get("ContestName") or ""
                 )
                 start_date = contest.get("StartDate", 1)
                 self.contest_dialog.contest_list.setItem(
-                    number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_id)
+                    number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_nr)
                 )
                 self.contest_dialog.contest_list.setItem(
                     number_of_rows, 1, QtWidgets.QTableWidgetItem(contest_name)
@@ -2167,7 +2167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
         # Select the entry that stands for the loaded contest.
-        self.select_picker_entry(contest_id(self.contest))
+        self.select_picker_entry(self.contest.BaseName)
         value = self.contest_settings.get("OperatorCategory")
         self.refill_dropdown(self.contest_dialog.operator_class, value)
         value = self.contest_settings.get("BandCategory")
@@ -2198,40 +2198,40 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contest_dialog.exec()
 
-    def contest_identifier_from_dialog(self) -> str:
-        """The identifier of the contest picked in the dialog.
+    def contest_basename_from_dialog(self) -> str:
+        """The basename of the contest picked in the dialog.
 
-        The picker's labels are derived from the plugins, so the identifier
-        they stand for travels as each entry's item data; the fold over the
-        label remains only for an entry that somehow carries none.
+        The picker's labels are derived from the plugins, so the basename they
+        stand for travels as each entry's item data; the fold over the label
+        remains only for an entry that somehow carries none.
         """
         picker = self.contest_dialog.contest
         chosen = picker.currentData()
         if chosen:
             return chosen
         label = picker.currentText()
-        identifier = contest_identifier_for_display(label)
-        if identifier is None:
+        basename = contest_basename_for_display(label)
+        if basename is None:
             # Not a contest we know about.  Store something that can be looked
             # up again rather than nothing, but say so.
             logger.warning("Unknown contest selected: %r", label)
             return label.lower().replace(" ", "_")
-        return identifier
+        return basename
 
-    def select_picker_entry(self, identifier: str) -> None:
-        """Select the contest picker entry that stands for *identifier*.
+    def select_picker_entry(self, basename: str) -> None:
+        """Select the contest picker entry that stands for *basename*.
 
-        The entry carries the identifier as item data, so this is a lookup
-        rather than a guess from its label.  An identifier no longer installed
+        The entry carries the basename as item data, so this is a lookup
+        rather than a guess from its label.  A basename no longer installed
         leaves the picker on its current entry.
         """
         picker = self.contest_dialog.contest
-        if not identifier:
+        if not basename:
             return
-        index = picker.findData(identifier)
+        index = picker.findData(basename)
         if index < 0:
             # A value stored by an older version may be a picker label.
-            legacy = contest_identifier_for_display(identifier)
+            legacy = contest_basename_for_display(basename)
             if legacy:
                 index = picker.findData(legacy)
         if index >= 0:
@@ -2251,7 +2251,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         contest = {}
-        contest["ContestName"] = self.contest_identifier_from_dialog()
+        contest["ContestName"] = self.contest_basename_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -2287,13 +2287,13 @@ class MainWindow(QtWidgets.QMainWindow):
         warned = getattr(self, "_udc_warned", None)
         if warned is None:
             warned = self._udc_warned = set()
-        identifier = getattr(self.contest, "ContestName", "") or self.contest.name
-        if identifier in warned:
+        basename = self.contest.BaseName or self.contest.name
+        if basename in warned:
             return
-        warned.add(identifier)
+        warned.add(basename)
         logger.warning(
             "UDC %s: parsed but not applied: %s",
-            identifier,
+            basename,
             ", ".join(unimplemented),
         )
         self.show_message_box(
@@ -2334,9 +2334,29 @@ class MainWindow(QtWidgets.QMainWindow):
                                 "contest"
                             )
 
-                        self.contest = load_contest(
-                            self.contest_settings.get("ContestName"), self
-                        )
+                        stored_name = self.contest_settings.get("ContestName")
+                        try:
+                            self.contest = load_contest(stored_name, self)
+                        except ModuleNotFoundError:
+                            # The stored id is no longer installed.  Open the
+                            # log in General Logging so the contacts stay
+                            # reachable; the operator picks the contest again
+                            # afterwards.
+                            logger.warning(
+                                "Unknown contest %r: opening it as General Logging",
+                                stored_name,
+                            )
+                            fallback = contest_metadata(FALLBACK_BASENAME)
+                            if fallback is None:
+                                self.pref["contest"] = 1
+                                self.show_message_box("Contest not found")
+                                return
+                            self.contest = fallback(self)
+                            self.show_message_box(
+                                f"Unknown contest {stored_name!r}, opened as "
+                                "General Logging. Select a valid contest "
+                                "after loading."
+                            )
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
                         self.contest.init_contest()
@@ -3343,6 +3363,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["QSXFreq"] = round(
             float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
         )
+        # DXLOG.ContestName is the Cabrillo name; ContestInstance.ContestName
+        # is the contest's basename (see not1mm.lib.contest.ContestBase).
         self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["ContestNR"] = self.pref.get("contest", "0")
         self.contact["StationPrefix"] = self.station.get("Call", "")
@@ -3514,7 +3536,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         next_number = self.database.get_next_contest_nr()
         contest = {}
-        contest["ContestName"] = self.contest_identifier_from_dialog()
+        contest["ContestName"] = self.contest_basename_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -5030,12 +5052,10 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
 
-        identifier = contest_id(self.contest)
-        if identifier is None:
+        basename = self.contest.BaseName
+        if not basename:
             return ""
-        # The contest's identifier, mangled into something that can be a
-        # directory name ("FD CW" -> "FD_CW").
-        contest_dir = fsutils.USER_DATA_PATH / path_name(identifier)
+        contest_dir = fsutils.USER_DATA_PATH / basename
 
         if not contest_dir.exists():
             os.mkdir(contest_dir)

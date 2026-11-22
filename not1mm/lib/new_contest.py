@@ -11,11 +11,11 @@ def fill_picker(combo) -> None:
 
     Kept a plain function so it can be exercised without a display: a combo
     only has to provide ``clear()`` and ``addItem()``.  The label is what the
-    operator reads, the item data is the identifier the database stores.
+    operator reads, the item data is the basename the database stores.
     """
     combo.clear()
-    for label, identifier in contest_picker_entries():
-        combo.addItem(label, identifier)
+    for label, basename in contest_picker_entries():
+        combo.addItem(label, basename)
 
 
 class NewContest(QtWidgets.QDialog):

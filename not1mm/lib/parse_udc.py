@@ -292,13 +292,13 @@ _ZONE_LABELS = ("cqzone", "iaruzone")
 class Udc:
     """One parsed UDC file.
 
-    ``source`` is the file stem: not1mm's identifier for the contest, unique
-    even when the UDC's ``Name`` is not.  ``sections`` holds every key we read,
-    canonicalised where it is known and as written otherwise, so nothing in the
-    file is lost.
+    ``basename`` is the file stem: not1mm's identifier for the contest,
+    unique even when the UDC's ``Name`` is not.  ``sections`` holds every key
+    we read, canonicalised where it is known and as written otherwise, so
+    nothing in the file is lost.
     """
 
-    source: str
+    basename: str
     path: Path | None = None
     sections: dict[str, dict[str, str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
@@ -321,12 +321,12 @@ class Udc:
     @property
     def display_name(self) -> str:
         """What the picker shows, falling back to ``Name`` and the file stem."""
-        return self.get("DisplayName") or self.name or self.source
+        return self.get("DisplayName") or self.name or self.basename
 
     @property
     def cabrillo_name(self) -> str:
         """The ``CONTEST:`` value, falling back to ``Name`` and the file stem."""
-        return self.get("CabrilloName") or self.name or self.source
+        return self.get("CabrilloName") or self.name or self.basename
 
 
 def _decode(data: bytes, path: Path | None) -> str:
@@ -339,10 +339,10 @@ def _decode(data: bytes, path: Path | None) -> str:
     raise UdcError(f"{path or '<text>'}: not UTF-8 or CP1252")
 
 
-def parse_udc(path: str | Path, *, source: str | None = None) -> Udc:
+def parse_udc(path: str | Path, *, basename: str | None = None) -> Udc:
     """Parse the ``.udc`` file at *path*.
 
-    *source* overrides the identifier (the file stem is the default), for a
+    *basename* overrides the identifier (the file stem is the default), for a
     caller that has to disambiguate two files with the same name.
     """
     path = Path(path)
@@ -350,10 +350,10 @@ def parse_udc(path: str | Path, *, source: str | None = None) -> Udc:
         data = path.read_bytes()
     except OSError as exc:
         raise UdcError(f"{path}: {exc.strerror or exc}") from exc
-    return parse_udc_text(_decode(data, path), source or path.stem, path=path)
+    return parse_udc_text(_decode(data, path), basename or path.stem, path=path)
 
 
-def parse_udc_text(text: str, source: str, path: Path | None = None) -> Udc:
+def parse_udc_text(text: str, basename: str, path: Path | None = None) -> Udc:
     """Parse UDC text, as :func:`parse_udc` does from a file.
 
     Tolerates what the editor and the hand-edited files do: a BOM, CRLF, no
@@ -361,7 +361,7 @@ def parse_udc_text(text: str, source: str, path: Path | None = None) -> Udc:
     lines starting with ``;`` or ``#``, and unknown keys or sections (kept and
     warned about, never rejected).
     """
-    udc = Udc(source=source, path=path)
+    udc = Udc(basename=basename, path=path)
     section: str | None = None
 
     for number, raw in enumerate(text.splitlines(), start=1):
@@ -428,7 +428,7 @@ def parse_udc_text(text: str, source: str, path: Path | None = None) -> Udc:
         bucket[name] = value
 
     if "Contest" not in udc.sections:
-        raise UdcError(f"{source}: no [Contest] section")
+        raise UdcError(f"{basename}: no [Contest] section")
     return udc
 
 
@@ -858,14 +858,14 @@ def _multiplier_rule_attributes(udc: Udc) -> dict:
 def contest_from_udc(udc: Udc) -> type[ContestBase]:
     """The ``Contest`` class *udc* describes.
 
-    The class's identifier is ``udc.source`` (the file stem), so two files that
+    The class's identifier is ``udc.basename`` (the file stem), so two files that
     share a UDC ``Name`` still get distinct contests.  Anything not applied in
     this phase is listed in ``UdcUnimplemented``; ``UdcRaw`` keeps the whole
     ``[Contest]`` section for later phases.
     """
     errors = [issue for issue in validate_udc(udc) if issue.level == "error"]
     if errors:
-        raise UdcError(f"{udc.source}: " + "; ".join(str(issue) for issue in errors))
+        raise UdcError(f"{udc.basename}: " + "; ".join(str(issue) for issue in errors))
 
     unimplemented: list[str] = []
 
@@ -960,7 +960,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     attributes = {
         "DisplayName": udc.display_name,
         "CabrilloName": udc.cabrillo_name,
-        "ContestName": udc.source,
+        "BaseName": udc.basename,
         "Mode": mode,
         "DupeType": dupe_type,
         "ZoneType": zone_type,
@@ -987,7 +987,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
 
     contest_class = type("Contest", (ContestBase,), attributes)
     contest_class.__module__ = __name__
-    contest_class.__qualname__ = f"UdcContest[{udc.source}]"
+    contest_class.__qualname__ = f"UdcContest[{udc.basename}]"
     return contest_class
 
 

@@ -46,11 +46,15 @@ or older notes:
 `DisplayName` is what appears at the top of the main window and in the New
 Contest picker, e.g. `ARI International DX`.
 
-`CabrilloName` is the identifier saved in the database and written as the
-Cabrillo `CONTEST:` value and the ADIF `CONTEST_ID`, e.g. `ARI-DX`.
+`CabrilloName` is the sponsor's name for the contest, written as the Cabrillo
+`CONTEST:` value and the ADIF `CONTEST_ID`, e.g. `ARI-DX`, and used in the log
+file names and the contact rows. It is not unique: the QSO party templates
+share `QSO_PARTY` and the Ten-Ten sprints share `10-10-SPRINT`.
 
-`ContestName` overrides the identifier for the few contests that share a
-Cabrillo name but are not interchangeable; leave it unset otherwise.
+`BaseName` is the identifier saved in the database and the name of the
+contest's macro directory. The loader sets it to the stem of the file the
+contest is defined in, so a plugin never declares it. That file name is the
+only name two contests cannot share.
 
 `SortOrder` places the contest in the picker (lower first, then by display
 name). It defaults to `100`; General Logging sets `50` to stay on top.
@@ -424,8 +428,9 @@ loader applies is `UDC-FIELDS.md` (it lives next to the repository, not in it).
 
 Files come from `not1mm/data/udc/` (shipped) and the user's `udc/` directory
 under the app-data path; a user file whose name matches a bundled one overrides
-it. The file stem is the contest's identifier, because the UDC `Name` is not
-unique (`AGCW-YLCWP-om.udc` and `AGCW-YLCWP-yl.udc` share one).
+it. The file stem is the contest's identifier (its `BaseName`), because the
+UDC `Name` is not unique (`AGCW-YLCWP-om.udc` and `AGCW-YLCWP-yl.udc` share
+one).
 
 Identity, the entry window and labels, `LogInfo`, the multipliers and their
 counting, `DefaultContestExchange`, `QsoErrorString` (rules or a `.sec` list),
@@ -449,6 +454,6 @@ Contests are listed lowest `SortOrder` first and then by display name.
 `SortOrder` defaults to `100`; General Logging sets `50` to keep the non-contest
 mode at the top.
 
-`CabrilloName` is also the identifier saved in the database (unless the plugin
-overrides it with `ContestName`), so the picker and the log agree on what the
-contest is called.
+The picker's item data is the definition's `BaseName`, which is what the
+database stores, so the picker and the log agree on which contest was used.
+The `CabrilloName` is only what the sponsor's log checker sees.

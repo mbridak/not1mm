@@ -40,8 +40,8 @@ FrameText = SNT RCV Sent Rcvd
 """
 
 
-def udc_for(text: str, source: str = "test") -> Udc:
-    return parse_udc_text(text, source)
+def udc_for(text: str, basename: str = "test") -> Udc:
+    return parse_udc_text(text, basename)
 
 
 def issues(udc: Udc, level: str = "error") -> list:
@@ -70,7 +70,7 @@ def test_parse_file_uses_the_stem(tmp_path):
     path = tmp_path / "my-contest.udc"
     path.write_text(MINIMAL, encoding="utf-8")
     udc = parse_udc(path)
-    assert udc.source == "my-contest"
+    assert udc.basename == "my-contest"
     assert udc.path == path
 
 
@@ -234,7 +234,7 @@ def test_the_factory_maps_the_identity():
     assert issubclass(contest, ContestBase)
     assert contest.DisplayName == "Test Contest"
     assert contest.CabrilloName == "TEST"
-    assert contest.ContestName == "test"  # the source, not the UDC Name
+    assert contest.BaseName == "test"  # the file stem, not the UDC Name
     assert contest.UdcName == "TEST"
     assert contest.Mode == "CW"
     assert contest.DupeType == 2
@@ -465,7 +465,7 @@ def test_load_udc_binds_the_parent(tmp_path):
     parent = object()
     contest = load_udc(path, parent)
     assert contest.parent is parent
-    assert contest.ContestName == "load-me"
+    assert contest.BaseName == "load-me"
 
 
 # -- identity --------------------------------------------------------------
@@ -480,8 +480,8 @@ def test_two_files_that_share_a_name_get_distinct_identities():
     yl_contest = contest_from_udc(yl)
     assert om_contest.UdcName == yl_contest.UdcName == "AGCW-YLCWP"
     assert om_contest.CabrilloName == yl_contest.CabrilloName
-    assert om_contest.ContestName != yl_contest.ContestName
-    assert {om_contest.ContestName, yl_contest.ContestName} == {
+    assert om_contest.BaseName != yl_contest.BaseName
+    assert {om_contest.BaseName, yl_contest.BaseName} == {
         "AGCW-YLCWP-om",
         "AGCW-YLCWP-yl",
     }

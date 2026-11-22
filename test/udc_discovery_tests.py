@@ -61,7 +61,7 @@ def test_the_package_ships_a_udc():
 
 def test_the_shipped_udc_parses_without_errors():
     udc = parse_udc.parse_udc(SHIPPED)
-    assert udc.source == "sk_memorial"
+    assert udc.basename == "sk_memorial"
     errors = [issue for issue in parse_udc.validate_udc(udc) if issue.level == "error"]
     assert not errors
 
@@ -128,9 +128,7 @@ def test_a_user_file_wins_over_the_bundled_one(user_dir):
 
 def test_the_registry_includes_the_udc():
     infos = [info for info in contest.available_contests() if info.udc_path]
-    assert [(info.source, info.identifier) for info in infos] == [
-        ("sk_memorial", "sk_memorial")
-    ]
+    assert [info.basename for info in infos] == ["sk_memorial"]
     assert infos[0].display_name == "Silent Key Memorial Contest"
     assert infos[0].cabrillo_name == "SKMC"
 
@@ -146,18 +144,21 @@ def test_the_picker_lists_the_udc():
     ) in contest.contest_picker_entries()
 
 
-def test_a_udc_is_found_by_stem_display_and_cabrillo():
-    for asked in ("sk_memorial", "Silent Key Memorial Contest", "SKMC"):
+def test_a_udc_is_found_by_its_stem():
+    for asked in ("sk_memorial", "SK_MEMORIAL"):
         contest_class = contest.contest_metadata(asked)
         assert contest_class is not None, asked
-        assert contest_class.ContestName == "sk_memorial"
+        assert contest_class.BaseName == "sk_memorial"
+    # A display or Cabrillo name is not an identifier.
+    assert contest.contest_metadata("Silent Key Memorial Contest") is None
+    assert contest.contest_metadata("SKMC") is None
 
 
 def test_load_contest_opens_a_udc():
     parent = object()
     loaded = contest.load_contest("sk_memorial", parent)
     assert loaded.parent is parent
-    assert loaded.ContestName == "sk_memorial"
+    assert loaded.BaseName == "sk_memorial"
     assert loaded.DisplayName == "Silent Key Memorial Contest"
 
 
@@ -166,8 +167,8 @@ def test_two_files_with_the_same_name_are_two_contests(user_dir):
     write(user_dir, "pair-b.udc", udc_text("PAIR", "Pair B", "PAIR"))
     a = contest.contest_metadata("pair-a")
     b = contest.contest_metadata("pair-b")
-    assert a.ContestName == "pair-a"
-    assert b.ContestName == "pair-b"
+    assert a.BaseName == "pair-a"
+    assert b.BaseName == "pair-b"
     assert a.UdcName == b.UdcName == "PAIR"
     assert a.DisplayName != b.DisplayName
 
@@ -177,7 +178,7 @@ def test_two_udcs_with_the_same_label_stay_apart(user_dir):
     write(user_dir, "twin-a.udc", udc_text("TWIN", "Twin Contest", "TWIN"))
     write(user_dir, "twin-b.udc", udc_text("TWIN", "Twin Contest", "TWIN"))
     labels = dict(
-        (identifier, label) for label, identifier in contest.contest_picker_entries()
+        (basename, label) for label, basename in contest.contest_picker_entries()
     )
     assert labels["twin-a"] == "Twin Contest (TWIN) [twin-a]"
     assert labels["twin-b"] == "Twin Contest (TWIN) [twin-b]"
@@ -189,7 +190,7 @@ def test_a_broken_udc_is_skipped_and_the_rest_survive(user_dir):
         "broken.udc",
         udc_text("BROKEN", "Broken").replace("Mode = CW", "Mode = FM"),
     )
-    labels = [identifier for _label, identifier in contest.contest_picker_entries()]
+    labels = [basename for _label, basename in contest.contest_picker_entries()]
     assert "sk_memorial" in labels
     assert "broken" not in labels
     assert contest.contest_metadata("broken") is None

@@ -19,12 +19,14 @@ Three names, three jobs:
 * ``DisplayName`` is what the application shows: the contest picker and the
   window title.
 * ``CabrilloName`` is the sponsor's name for the contest, and so the Cabrillo
-  ``CONTEST:`` value, the base of the log filenames, the identifier kept in the
-  database (``ContestInstance.ContestName``) and the directory the contest's
-  macro files live in (``~/.local/share/not1mm/<identifier>``).  See
-  :func:`contest_id`.
-* ``ContestName`` overrides the identifier, for the few contests that share a
-  Cabrillo name with another but are not interchangeable.
+  ``CONTEST:`` value, the ADIF ``CONTEST_ID``, the base of the log filenames
+  and what a contact row records.
+* ``BaseName`` is the stem of the file the contest is defined in --
+  ``not1mm/plugins/<basename>.py`` or ``<basename>.udc``.  That is the
+  identifier the database keeps (``ContestInstance.ContestName``) and the
+  directory the contest's macro files live in
+  (``~/.local/share/not1mm/<basename>``), because it is the one name two
+  definitions cannot share.
 * ``SortOrder`` is where the contest sits in the New Contest picker.  Lower
   comes first; contests with the same order are listed by display name.
 
@@ -361,25 +363,6 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
     )
 
 
-def contest_id(contest) -> str | None:
-    """The identifier of *contest*: its Cabrillo name unless it overrides it.
-
-    The Cabrillo name is what the sponsor's log checker recognises, so it is
-    what identifies the contest everywhere technical: the database column, the
-    log filenames, the directory under ``~/.local/share/not1mm``.  A contest
-    that shares its Cabrillo name with another but is not interchangeable --
-    or that has no meaningful one -- sets ``ContestName`` and is identified by
-    that instead.  (N1MM's UDC files call this field ``Name``.)
-
-    Works on anything carrying the metadata: an instance or a class.
-    """
-    for attribute in ("ContestName", "CabrilloName", "cabrillo_name"):
-        value = getattr(contest, attribute, None)
-        if isinstance(value, str) and value:
-            return value
-    return None
-
-
 def contest_picker_label(display_name: str, cabrillo_name: str) -> str:
     """How the New Contest picker names a contest.
 
@@ -397,17 +380,6 @@ def contest_picker_label(display_name: str, cabrillo_name: str) -> str:
     if not cabrillo_name or fold(display_name) == fold(cabrillo_name):
         return display_name
     return f"{display_name} ({cabrillo_name})"
-
-
-def path_name(identifier: str) -> str:
-    """*identifier* as a file or directory name.
-
-    A Cabrillo name can contain a space ("FD CW") or not be upper case at all
-    ("Schwaben Contest"); a log file or directory called that is asking for
-    trouble, so the spaces become underscores.  The log itself keeps the name
-    as it is.
-    """
-    return identifier.replace(" ", "_")
 
 
 class ContestBase:
@@ -429,10 +401,11 @@ class ContestBase:
     # display name.  General Logging sets 50 to keep the non-contest mode at
     # the top of the list.
     SortOrder = 100
-    # The identifier, where it is not simply the Cabrillo name.  Only the few
-    # contests that share a Cabrillo name but are not interchangeable set this
-    # -- see contest_id().  N1MM's UDC files call the field Name.
-    ContestName = None
+    # The identifier: the stem of the file this contest is defined in, e.g.
+    # "cq_wpx_cw" for not1mm/plugins/cq_wpx_cw.py or "MWC" for MWC.udc.  The
+    # loader sets it; it is what the database, the macro directory and the
+    # logs use.
+    BaseName = None
     EXCHANGE_HINT = ""  # placeholder in the New Contest dialog
     # The sent exchange, as a template.  A contest that always sends one thing
     # (a serial, a zone) declares it; the operator's value in the contest setup
@@ -1568,26 +1541,31 @@ def _import_optional(dotted_name: str):
         return None
 
 
-def _import_source(source: str):
-    """The module a contest is defined in, by the name of its file.
+def _import_plugin(basename: str):
+    """The plugin module a contest is defined in, by the name of its file.
 
-    A contest is ``not1mm/plugins/<source>.py``; ``<source>`` is what the
-    identifiers in the database used to be.
+    A contest is ``not1mm/plugins/<basename>.py``; ``<basename>`` is its
+    identifier.  The class is stamped with it here, because this is the one
+    place that knows the file name rather than the class's Cabrillo name.
     """
-    return _import_optional(f"not1mm.plugins.{source}")
+    module = _import_optional(f"not1mm.plugins.{basename}")
+    if module is not None:
+        contest_class = getattr(module, "Contest", None)
+        if contest_class is not None:
+            contest_class.BaseName = basename
+    return module
 
 
-# An identifier that could be a file or directory name; anything with a dot or
-# a space in it (most Cabrillo names) is not worth trying to import.
-_SOURCE_NAME = re.compile(r"[A-Za-z0-9_-]+")
+# A basename that could be imported as a module; anything with a dot or a
+# space in it (most Cabrillo names) is not worth trying.
+_BASENAME = re.compile(r"[A-Za-z0-9_-]+")
 
 
 @dataclass(frozen=True)
 class ContestInfo:
     """One contest this installation can open."""
 
-    source: str  # where it is defined, e.g. "cq_wpx_cw"
-    identifier: str  # what the database stores, e.g. "CQ-WPX-CW"
+    basename: str  # where it is defined, and what the database stores
     display_name: str  # what to show, e.g. "CQ WPX CW"
     cabrillo_name: str = ""  # the Cabrillo CONTEST: value, e.g. "CQ-WPX-CW"
     sort_order: int = 100  # where it goes in the picker
@@ -1599,25 +1577,27 @@ class ContestInfo:
         return contest_picker_label(self.display_name, self.cabrillo_name)
 
 
+# A stored contest name that no longer resolves opens as this contest, so its
+# contacts stay reachable until the operator picks the real one again.
+FALLBACK_BASENAME = "general_logging"
+
 _AVAILABLE: list[ContestInfo] | None = None
 
 
-def _contest_info(source: str) -> ContestInfo | None:
+def _contest_info(basename: str) -> ContestInfo | None:
     """Read one plugin, or None if it declares no contest."""
-    module = _import_source(source)
+    module = _import_plugin(basename)
     if module is None:
         return None
     metadata = getattr(module, "Contest", None)
     if metadata is None:
-        logger.warning("Contest %s defines no Contest class", source)
+        logger.warning("Contest %s defines no Contest class", basename)
         return None
-    identifier = contest_id(metadata)
-    if identifier is None:
-        logger.warning("Contest %s declares no Cabrillo name", source)
+    if not getattr(metadata, "CabrilloName", None):
+        logger.warning("Contest %s declares no Cabrillo name", basename)
         return None
     return ContestInfo(
-        source=source,
-        identifier=identifier,
+        basename=basename,
         display_name=getattr(metadata, "DisplayName", None) or "",
         cabrillo_name=getattr(metadata, "CabrilloName", None) or "",
         sort_order=getattr(metadata, "SortOrder", 100),
@@ -1630,13 +1610,8 @@ def _udc_info(path: Path) -> ContestInfo | None:
 
     udc = parse_udc(path)
     contest_class = contest_from_udc(udc)
-    identifier = contest_id(contest_class)
-    if identifier is None:
-        logger.warning("UDC %s declares no identity", path.name)
-        return None
     return ContestInfo(
-        source=udc.source,
-        identifier=identifier,
+        basename=udc.basename,
         display_name=getattr(contest_class, "DisplayName", None) or "",
         cabrillo_name=getattr(contest_class, "CabrilloName", None) or "",
         sort_order=getattr(contest_class, "SortOrder", 100),
@@ -1649,7 +1624,7 @@ def _scan_udcs(*, tolerant: bool = False) -> list[ContestInfo]:
     from not1mm.lib.parse_udc import UdcError, udc_files
 
     found = []
-    for _source, path in sorted(
+    for _basename, path in sorted(
         udc_files().items(), key=lambda item: item[0].casefold()
     ):
         try:
@@ -1678,14 +1653,14 @@ def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
     case it is skipped with a warning and the rest are still offered.
     """
     found = []
-    for source in _contest_sources():
+    for basename in _contest_basenames():
         try:
-            info = _contest_info(source)
-        except Exception:
+            info = _contest_info(basename)
+        except Exception:  # noqa: BLE001 -- one broken plugin must not hide the rest
             if not tolerant:
                 raise
             logger.warning(
-                "Skipping contest %s: it does not load", source, exc_info=True
+                "Skipping contest %s: it does not load", basename, exc_info=True
             )
             continue
         if info is not None:
@@ -1710,108 +1685,80 @@ def available_contests() -> list[ContestInfo]:
     return _AVAILABLE
 
 
-def _contest_sources() -> list[str]:
+def _contest_basenames() -> list[str]:
     """The name of every contest definition that ships with not1mm."""
     return sorted(
         path.stem for path in PLUGIN_PATH.glob("*.py") if path.stem != "__init__"
     )
 
 
-def _find_module(identifier: str):
-    """The module for *identifier*.
+def _find_module(basename: str):
+    """The plugin module for *basename*.
 
-    Whatever the database recorded over the years has to keep loading: the id
-    (the Cabrillo name), the name of the file the contest lives in, or its
-    display name.  A source name is tried first because that is a plain import;
-    the Cabrillo name needs the whole tree scanned to see which file declares
-    it.
+    A basename is a plain import; a differently-cased one is matched against
+    the plugin files.  A display or Cabrillo name is not an identifier and does
+    not resolve here -- :func:`contest_basename_for_display` is the one place
+    that turns a human label into a basename.
     """
-    if not isinstance(identifier, str) or not identifier:
+    if not isinstance(basename, str) or not basename:
         return None
-    if _SOURCE_NAME.fullmatch(identifier):
-        module = _import_source(identifier)
+    if _BASENAME.fullmatch(basename):
+        module = _import_plugin(basename)
         if module is not None:
             return module
 
-    wanted = identifier.casefold()
-    matches = [
-        info
-        for info in available_contests()
-        if wanted
-        in (
-            info.identifier.casefold(),
-            info.source.casefold(),
-            info.display_name.casefold(),
-        )
-    ]
-    if len(matches) > 1:
-        # Two definitions share an identifier and it does not say which one is
-        # meant -- the fall and spring Ten-Ten QSO parties, for one.  Say so
-        # rather than pick silently.
-        logger.warning(
-            "Contest %r is ambiguous, using %s: %s",
-            identifier,
-            matches[0].source,
-            ", ".join(info.source for info in matches),
-        )
-    return _import_source(matches[0].source) if matches else None
-
-
-def _find_udc(identifier: str) -> Path | None:
-    """The .udc file for *identifier*, matched like a plugin's names.
-
-    The file stem is tried first -- that is the identifier a UDC contest is
-    stored under -- then the identifier, display name and Cabrillo name the
-    file declares.
-    """
-    from not1mm.lib.parse_udc import udc_files
-
-    if not isinstance(identifier, str) or not identifier:
-        return None
-    wanted = identifier.casefold()
-    for source, path in udc_files().items():
-        if source.casefold() == wanted:
-            return path
-    for info in available_contests():
-        if info.udc_path is not None and wanted in (
-            info.identifier.casefold(),
-            info.source.casefold(),
-            info.display_name.casefold(),
-            info.cabrillo_name.casefold(),
-        ):
-            return info.udc_path
+    wanted = basename.casefold()
+    for name in _contest_basenames():
+        if name.casefold() == wanted:
+            return _import_plugin(name)
     return None
 
 
-def load_contest(identifier: str, parent):
-    """Open the contest called *identifier* and bind it to the main window.
+def _find_udc(basename: str) -> Path | None:
+    """The .udc file for *basename*.
+
+    The file stem is the identifier; the match is case-insensitive.
+    """
+    from not1mm.lib.parse_udc import udc_files
+
+    if not isinstance(basename, str) or not basename:
+        return None
+    wanted = basename.casefold()
+    for stem, path in udc_files().items():
+        if stem.casefold() == wanted:
+            return path
+    return None
+
+
+def load_contest(basename: str, parent):
+    """Open the contest called *basename* and bind it to the main window.
 
     A contest is a ``class Contest(ContestBase)`` in
-    ``not1mm.plugins.<source>`` (with test fixtures in
-    ``not1mm/contest/<source>/``), or a ``.udc`` file, whose stem is the
+    ``not1mm.plugins.<basename>`` (with test fixtures in
+    ``not1mm/contest/<basename>/``), or a ``.udc`` file, whose stem is the
     identifier.
     """
-    contest_class = contest_metadata(identifier)
+    contest_class = contest_metadata(basename)
     if contest_class is None:
-        raise ModuleNotFoundError(f"no contest named {identifier!r}")
+        raise ModuleNotFoundError(f"no contest named {basename!r}")
     return contest_class(parent)
 
 
-def contest_metadata(identifier: str):
-    """The ``Contest`` class for *identifier*, or None if there is no such contest.
+def contest_metadata(basename: str):
+    """The ``Contest`` class for *basename*, or None if there is no such contest.
 
-    A plugin wins over a UDC file that claims the same identifier, because the
+    A plugin wins over a UDC file that claims the same basename, because the
     built-in contests are the ones the rest of the application is tested
     against.
     """
-    module = _find_module(identifier)
+    module = _find_module(basename)
     if module is not None:
         contest_class = getattr(module, "Contest", None)
         if contest_class is None:
-            logger.warning("Contest %s defines no Contest class", identifier)
+            logger.warning("Contest %s defines no Contest class", basename)
         return contest_class
 
-    path = _find_udc(identifier)
+    path = _find_udc(basename)
     if path is None:
         return None
     from not1mm.lib.parse_udc import UdcError, contest_from_udc, parse_udc
@@ -1831,8 +1778,8 @@ def contest_metadata(identifier: str):
     return contest_class
 
 
-def contest_identifier_for_display(display_name: str) -> str | None:
-    """The identifier of the contest once labelled *display_name* in the picker.
+def contest_basename_for_display(display_name: str) -> str | None:
+    """The basename of the contest once labelled *display_name* in the picker.
 
     The picker used to be a hand-maintained list of short labels ("OK1WC",
     "LZ-DX", "10 10 FALL CW") kept in the .ui file, and what linked a label to
@@ -1842,29 +1789,29 @@ def contest_identifier_for_display(display_name: str) -> str | None:
     has to keep resolving.  A contest's own display name is accepted too, for
     callers that have one.
 
-    The picker no longer needs this -- it carries the identifier as item data
+    The picker no longer needs this -- it carries the basename as item data
     and labels itself with :func:`contest_picker_label` -- but stored values
-    from before the change still go through here.
+    from older versions still go through here.
     """
     folded = display_name.casefold().replace(" ", "_")
     wanted = display_name.casefold()
     available = available_contests()
     for info in available:
-        if info.source.casefold() == folded:
-            return info.identifier
+        if info.basename.casefold() == folded:
+            return info.basename
     for info in available:
         if info.display_name.casefold() == wanted:
-            return info.identifier
+            return info.basename
     return None
 
 
 def contest_picker_entries() -> list[tuple[str, str]]:
     """The New Contest picker, in the order it is shown.
 
-    Each entry is ``(label, identifier)``: the label is what the operator
-    reads, the identifier is what the database stores.  Contests come first,
-    lowest ``SortOrder`` first and then by display name; a plugin that does not
-    load is left out so the picker still opens on the rest.
+    Each entry is ``(label, basename)``: the label is what the operator reads,
+    the basename is what the database stores.  Contests come first, lowest
+    ``SortOrder`` first and then by display name; a plugin that does not load
+    is left out so the picker still opens on the rest.
     """
     infos = _scan_contests(tolerant=True)
     infos.sort(key=lambda info: (info.sort_order, info.display_name.casefold()))
@@ -1875,37 +1822,33 @@ def contest_picker_entries() -> list[tuple[str, str]]:
     # unique so the picker cannot hide one behind the other.
     return [
         (
-            label if counts[label] == 1 else f"{label} [{info.source}]",
-            info.identifier,
+            label if counts[label] == 1 else f"{label} [{info.basename}]",
+            info.basename,
         )
         for label, info in zip(labels, infos)
     ]
 
 
-def contest_label_for_identifier(identifier) -> str:
-    """How to show a stored contest name: its picker label, else the name itself.
+def contest_label_for_basename(basename) -> str:
+    """How to show a stored contest name in the list of saved contests.
 
-    Used where a contest is shown but not picked -- the list of saved contests.
-    A name this installation no longer has a plugin for (or a value left over
-    from an older version) is shown as it was stored rather than hidden or
-    raised over; opening it may still fail later, but the list stays usable.
+    A name this installation knows gets its picker label.  A name it no longer
+    has a definition for (or a value left over from an older version) is shown
+    as ``<basename> (unknown contest)``: the stored name is not hidden, and the
+    operator can see at a glance that opening it needs a replacement.
     """
     # The database column is nullable; a cell always wants a string.
-    if not isinstance(identifier, str) or not identifier:
-        return "" if identifier is None else str(identifier)
-    wanted = identifier.casefold()
+    if not isinstance(basename, str) or not basename:
+        return "" if basename is None else str(basename)
+    wanted = basename.casefold()
     try:
         infos = available_contests()
     except Exception:
         logger.warning(
-            "Naming contest %r without the full registry", identifier, exc_info=True
+            "Naming contest %r without the full registry", basename, exc_info=True
         )
         infos = _scan_contests(tolerant=True)
     for info in infos:
-        if wanted in (
-            info.identifier.casefold(),
-            info.source.casefold(),
-            info.display_name.casefold(),
-        ):
+        if info.basename.casefold() == wanted:
             return info.picker_label
-    return identifier
+    return f"{basename} (unknown contest)"

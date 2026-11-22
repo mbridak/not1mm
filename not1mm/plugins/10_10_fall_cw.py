@@ -16,8 +16,6 @@ class Contest(ContestBase):
 
     DisplayName = "10 10 FALL CW"
     CabrilloName = "10-10-SPRINT"
-    # Fall and spring share the Cabrillo name; the source name tells them apart.
-    ContestName = "10_10_fall_cw"
     Mode = "CW"
     DupeType = 1  # once per contest
     EXCHANGE_HINT = "Name + 10-10# + SPC"

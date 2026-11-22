@@ -43,9 +43,6 @@ class Contest(ContestBase):
 
     DisplayName = "QSO PARTY RST"
     CabrilloName = "QSO_PARTY"
-    # qso_party_sn carries the same Cabrillo name but a different exchange, so
-    # the identifier is what tells the two apart (not1mm.lib.contest.contest_id).
-    ContestName = "qso_party_rst"
     Mode = "BOTH"  # CW SSB BOTH RTTY
     PointsRules = "SSB, 1, FM, 1, AM, 1, CW, 2, RTTY, 2, PSK, 2, DIGI, 2"
     EXCHANGE_HINT = "County"
