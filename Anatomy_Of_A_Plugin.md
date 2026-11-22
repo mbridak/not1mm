@@ -228,6 +228,12 @@ file to require the received exchange to be one of its codes
 `not1mm/data/sec/` and the user's `sec/` directory; the `Type` line inside the
 file is metadata, not the lookup name.
 
+UDC's per-slot multiplier rules are class attributes too: `MultMultN` (0
+keeps the multiplier visible but out of the score), `DoNotCountMeAsMultN`,
+`CountMultOnlyForN`, `DoNotCountMultOnlyForN`, `CountMultOnlyForSecN` and
+`MultiplierBands`. The base applies them in both `mult_value()` and
+`mult_sql()`, so marking and counting agree.
+
 Override `mult_value()` and `mult_sql()` when the key is conditional — a
 province only when the received exchange is a code rather than a serial, for
 example — and `get_mults()` when the score page needs more than the counts.

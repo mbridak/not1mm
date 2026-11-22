@@ -207,7 +207,7 @@ def test_an_odd_log_info_is_an_error():
 
 
 def test_a_bad_multiplier_kind_is_a_warning():
-    udc = udc_for(MINIMAL + "MultSqlString = Comment\nNumMults = 1\n")
+    udc = udc_for(MINIMAL + "MultSqlString = BogusKind\nNumMults = 1\n")
     assert "not a multiplier kind" in messages(udc)
 
 

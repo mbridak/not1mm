@@ -58,6 +58,11 @@ from not1mm.lib import (
     sections,
     version,
 )
+from not1mm.lib.ham_utility import (
+    band_mhz_of,
+    calculate_wpx_prefix,
+    get_not1mm_band,
+)
 from not1mm.lib.fields import (
     DEFAULT_ENTRY_WINDOW,
     FIELD_SPECS,
@@ -220,6 +225,7 @@ MULT_KEYS = {
     "CallSign": ("Call", _column("Call")),
     "LASTLETTER": ("substr(Call,-1)", _last_letter),
     "Misc": ("MiscText", _column("MiscText")),
+    "Comment": ("Comment", _column("Comment")),
     "Exchange": ("Exchange1", _column("Exchange1")),
     # The received exchange, which UDC has no name for.  Many domestic
     # contests key a multiplier on it, and it is the province or county codes
@@ -232,6 +238,35 @@ MULT_KEYS = {
 
 # UDC IsMultPer: what a key is counted per.  (0 is "no multipliers".)
 MULT_PER_COLUMNS = {0: (), 1: ("Band",), 2: ("Mode",), 3: ("Band", "Mode"), 4: ()}
+
+
+# UDC's MultiplierBands: which bands a multiplier counts on.  0 means "no
+# restriction" (the default for a plugin; a UDC defaults to 1).
+def _band_set(*names) -> tuple:
+    """MHz values for band names, from ham_utility's canonical table."""
+    return tuple(get_not1mm_band(name) for name in names)
+
+
+MULTIPLIER_BANDS = {
+    1: _band_set("160m", "80m", "40m", "20m", "15m", "10m"),
+    2: _band_set("160m", "80m", "60m", "40m", "30m", "20m", "17m", "15m", "12m", "10m"),
+    3: _band_set("160m", "80m", "40m", "20m", "15m", "10m", "6m", "2m"),
+    4: _band_set("6m", "4m", "2m", "1.25m", "70cm", "33cm", "23cm", "13cm", "9cm"),
+}
+_CONTINENT_CODES = frozenset({"AF", "AS", "EU", "NA", "SA", "OC", "AN"})
+
+
+def _split_mult_values(tokens) -> tuple:
+    """Split filter tokens into (country prefixes, continent codes)."""
+    prefixes = tuple(token for token in tokens if token not in _CONTINENT_CODES)
+    continents = tuple(token for token in tokens if token in _CONTINENT_CODES)
+    return prefixes, continents
+
+
+def _sql_values(values) -> str:
+    """A comma-separated SQL list of quoted strings."""
+    return ", ".join("'" + str(value).replace("'", "''") + "'" for value in values)
+
 
 # The multiplier ids the real-time score page (Contest Online ScoreBoard)
 # understands, from the declared type.  It knows exactly seven: zone, country,
@@ -519,6 +554,28 @@ class ContestBase:
     IsMult3Per = None
     # The default "per" for a slot that does not name its own.
     IsMultPer = 4  # once per contest
+    # UDC's per-slot multiplier rules.  MultMultN = 0 keeps the multiplier for
+    # display but leaves it out of the score; DoNotCountMeAsMultN drops the
+    # operator's own country/section/prefix; CountMultOnlyForN and
+    # DoNotCountMultOnlyForN filter by country or continent;
+    # CountMultOnlyForSecN filters by section; MultiplierBands limits the
+    # bands a multiplier counts on (0 = no restriction).
+    MultMult = 1
+    MultMult2 = 1
+    MultMult3 = 1
+    DoNotCountMeAsMult = False
+    DoNotCountMeAsMult2 = False
+    DoNotCountMeAsMult3 = False
+    CountMultOnlyFor = ()
+    CountMultOnlyFor2 = ()
+    CountMultOnlyFor3 = ()
+    DoNotCountMultOnlyFor = ()
+    DoNotCountMultOnlyFor2 = ()
+    DoNotCountMultOnlyFor3 = ()
+    CountMultOnlyForSec = ()
+    CountMultOnlyForSec2 = ()
+    CountMultOnlyForSec3 = ()
+    MultiplierBands = 0
 
     def __init__(self, parent):
         self.parent = parent  # the main window (or the contest harness)
@@ -840,25 +897,185 @@ class ContestBase:
                 return per
         return ()
 
+    def _slot_attr(self, slot: int, base: str):
+        """A per-slot attribute: ``MultMult`` for 1, ``MultMult2`` for 2, ..."""
+        name = base if slot == 1 else f"{base}{slot}"
+        return getattr(self, name, getattr(self, base))
+
+    def _mult_scored(self, slot: int) -> bool:
+        """Whether a slot's count belongs to the score (UDC's MultMultN)."""
+        return bool(self._slot_attr(slot, "MultMult"))
+
+    def _lookup_entity(self, call: str) -> dict:
+        lookup = getattr(self.parent, "cty_lookup", None)
+        if lookup is None or not call:
+            return {}
+        try:
+            result = lookup(call)
+        except Exception:  # noqa: BLE001 -- a lookup must not break scoring
+            return {}
+        if not result:
+            return {}
+        return result.get(next(iter(result))) or {}
+
+    def _contact_country(self, contact) -> str:
+        text = str(contact.get("CountryPrefix") or "").upper()
+        if text:
+            return text
+        return str(
+            self._lookup_entity(contact.get("Call", "")).get("primary_pfx", "")
+        ).upper()
+
+    def _contact_continent(self, contact) -> str:
+        text = str(contact.get("Continent") or "").upper()
+        if text:
+            return text
+        return str(
+            self._lookup_entity(contact.get("Call", "")).get("continent", "")
+        ).upper()
+
+    def _my_country(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return str(
+            self._lookup_entity(station.get("Call", "")).get("primary_pfx", "")
+            or station.get("CountryPrefix", "")
+        ).upper()
+
+    def _my_section(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return str(station.get("ARRLSection", "") or "").upper()
+
+    def _my_wpx(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return calculate_wpx_prefix(station.get("Call", "")).upper()
+
+    def _country_condition(self, tokens) -> str | None:
+        prefixes, continents = _split_mult_values(tokens)
+        parts = []
+        if prefixes:
+            parts.append(f"upper(CountryPrefix) IN ({_sql_values(prefixes)})")
+        if continents:
+            parts.append(f"upper(Continent) IN ({_sql_values(continents)})")
+        return f"({' OR '.join(parts)})" if parts else None
+
+    def _mult_allowed(self, slot: int, contact, value) -> bool:
+        """Apply UDC's multiplier filters to one contact's key."""
+        bands = MULTIPLIER_BANDS.get(self.MultiplierBands)
+        if bands:
+            band = band_mhz_of(contact.get("Band"))
+            if band and not any(abs(band - item) < 0.01 for item in bands):
+                return False
+
+        tokens = self._slot_attr(slot, "CountMultOnlyFor")
+        prefixes, continents = _split_mult_values(tokens)
+        if prefixes or continents:
+            country = self._contact_country(contact)
+            continent = self._contact_continent(contact)
+            if not (
+                (prefixes and country in prefixes)
+                or (continents and continent in continents)
+            ):
+                return False
+
+        tokens = self._slot_attr(slot, "DoNotCountMultOnlyFor")
+        prefixes, continents = _split_mult_values(tokens)
+        if prefixes or continents:
+            country = self._contact_country(contact)
+            continent = self._contact_continent(contact)
+            if (prefixes and country in prefixes) or (
+                continents and continent in continents
+            ):
+                return False
+
+        sections = self._slot_attr(slot, "CountMultOnlyForSec")
+        if sections and str(contact.get("Sect", "")).upper() not in sections:
+            return False
+
+        if self._slot_attr(slot, "DoNotCountMeAsMult"):
+            key = self._mult_key(slot) or ""
+            text = str(value).upper()
+            if key in ("Section", "Sect") and text == self._my_section():
+                return False
+            if key == "CountryPrefix" and text == self._my_country():
+                return False
+            if key == "WPXPrefix" and text == self._my_wpx():
+                return False
+        return True
+
+    def _mult_sql_conditions(self, slot: int) -> list:
+        """The SQL filters for a slot's multiplier key."""
+        conditions = []
+        bands = MULTIPLIER_BANDS.get(self.MultiplierBands)
+        if bands:
+            conditions.append(f"Band IN ({_sql_values(bands)})")
+
+        tokens = self._slot_attr(slot, "CountMultOnlyFor")
+        if tokens:
+            condition = self._country_condition(tokens)
+            if condition:
+                conditions.append(condition)
+
+        tokens = self._slot_attr(slot, "DoNotCountMultOnlyFor")
+        if tokens:
+            condition = self._country_condition(tokens)
+            if condition:
+                conditions.append(f"NOT {condition}")
+
+        sections = self._slot_attr(slot, "CountMultOnlyForSec")
+        if sections:
+            conditions.append(f"upper(Sect) IN ({_sql_values(sections)})")
+
+        if self._slot_attr(slot, "DoNotCountMeAsMult"):
+            key = self._mult_key(slot) or ""
+            mine = ""
+            column = ""
+            if key in ("Section", "Sect"):
+                mine, column = self._my_section(), "Sect"
+            elif key == "CountryPrefix":
+                mine, column = self._my_country(), "CountryPrefix"
+            elif key == "WPXPrefix":
+                mine, column = self._my_wpx(), "WPXPrefix"
+            if mine and column:
+                conditions.append(
+                    f"upper({column}) != '{mine.replace(chr(39), chr(39) * 2)}'"
+                )
+        return conditions
+
     def mult_type_name(self, slot: int) -> str:
         """The score-page id for a slot's multiplier (see RTC_MULT_TYPES)."""
         key = self._mult_key(slot) or ""
         return RTC_MULT_TYPES.get(key, key.lower())
 
     def mult_sql(self, slot: int):
-        """The SQL expression for a slot's key, or None if it has no name."""
+        """The SQL expression for a slot's key, or None if it has no name.
+
+        UDC's filters (count only for, bands, own country, ...) are part of the
+        expression, so counting the log and marking a contact agree.
+        """
         entry = MULT_KEYS.get(self._mult_key(slot) or "")
-        return entry[0] if entry else None
+        if not entry:
+            return None
+        base = entry[0]
+        conditions = self._mult_sql_conditions(slot)
+        if conditions:
+            return f"CASE WHEN {' AND '.join(conditions)} THEN ({base}) END"
+        return base
 
     def mult_value(self, slot: int, contact):
         """The multiplier a contact contributes to a slot, or None.
 
         Works on a logged contact, on the one being typed, and on a bandmap
         spot (which carries only Call/Band/Mode); a key that needs the received
-        exchange returns None until it has been entered.
+        exchange returns None until it has been entered.  The slot's filters
+        (UDC's CountMultOnlyFor, DoNotCountMeAsMult, ...) are applied here too.
         """
         entry = MULT_KEYS.get(self._mult_key(slot) or "")
-        return entry[1](contact) if entry else None
+        if not entry:
+            return None
+        value = entry[1](contact)
+        if not self._mult_allowed(slot, contact, value):
+            return None
+        return value
 
     def is_new_mult(self, slot: int, contact) -> int:
         """1 when the contact's key for this slot is not in the log yet."""
@@ -901,7 +1118,11 @@ class ContestBase:
 
     def show_mults(self):
         """Multiplier count for the score display; 0 when there are none."""
-        return sum(self._mult_count(slot) for slot, _, _, _ in self._mult_slots())
+        return sum(
+            self._mult_count(slot)
+            for slot, _, _, _ in self._mult_slots()
+            if self._mult_scored(slot)
+        )
 
     def calc_score(self):
         """Claimed score: the points, times the multipliers if there are any."""
@@ -909,7 +1130,7 @@ class ContestBase:
         points = 0
         if result is not None:
             points = int(result.get("Points") or 0)
-        if self.NumMults:
+        if any(self._mult_scored(slot) for slot, _, _, _ in self._mult_slots()):
             return points * self.show_mults()
         return points
 
@@ -944,11 +1165,11 @@ class ContestBase:
     # -- the score page / cluster -------------------------------------------
     def get_mults(self):
         """Multiplier counts for the real-time score XML, keyed by type id."""
-        slots = list(self._mult_slots())
+        slots = [entry for entry in self._mult_slots() if self._mult_scored(entry[0])]
         if not slots:
             return {}
         if len(slots) == 1:
-            return {self.mult_type_name(slots[0][0]): self.show_mults()}
+            return {self.mult_type_name(slots[0][0]): self._mult_count(slots[0][0])}
         return {
             self.mult_type_name(slot): self._mult_count(slot) for slot, _, _, _ in slots
         }

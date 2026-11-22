@@ -199,6 +199,22 @@ APPLIED_KEYS = frozenset(
         "PointsPerContact",
         "MultWindowType",
         "CabrilloString",
+        "MultMult",
+        "MultMult2",
+        "MultMult3",
+        "DoNotCountMeAsMult",
+        "DoNotCountMeAsMult2",
+        "DoNotCountMeAsMult3",
+        "CountMultOnlyFor",
+        "CountMultOnlyFor2",
+        "CountMultOnlyFor3",
+        "DoNotCountMultOnlyFor",
+        "DoNotCountMultOnlyFor2",
+        "DoNotCountMultOnlyFor3",
+        "CountMultOnlyForSec",
+        "CountMultOnlyForSec2",
+        "CountMultOnlyForSec3",
+        "MultiplierBands",
     }
 )
 
@@ -537,6 +553,17 @@ def _safe_number(value: str, default: int, allowed: tuple | None = None) -> int:
         return default
 
 
+def _flag(value: str) -> bool:
+    """A UDC boolean (True/False, 1/0, yes/no)."""
+    return str(value).strip().casefold() in ("true", "1", "yes")
+
+
+def _tokens(value: str) -> tuple:
+    """A comma/space separated list, upper-cased and de-duplicated."""
+    parts = (part.strip().upper() for part in re.split(r"[\s,]+", str(value)))
+    return tuple(dict.fromkeys(part for part in parts if part))
+
+
 # -- validation ------------------------------------------------------------
 
 
@@ -597,6 +624,25 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
         and udc.get("NumMults").strip()
     ):
         warn("IsMultPer", "0 means no multipliers; NumMults is ignored")
+
+    for key in ("MultMult", "MultMult2", "MultMult3"):
+        text = udc.get(key).strip()
+        if text and text not in ("0", "1"):
+            error(key, "0 or 1")
+    for key in (
+        "DoNotCountMeAsMult",
+        "DoNotCountMeAsMult2",
+        "DoNotCountMeAsMult3",
+    ):
+        text = udc.get(key).strip()
+        if text and text.casefold() not in ("true", "false", "0", "1", "yes", "no"):
+            error(key, f"{text!r} is not True or False")
+    bands = udc.get("MultiplierBands").strip()
+    if bands:
+        try:
+            _number(bands, 1, (1, 2, 3, 4))
+        except ValueError as exc:
+            error("MultiplierBands", str(exc))
 
     boxes = ()
     if udc.get("EntryWindowInfo").strip():
@@ -782,6 +828,33 @@ def _multiplier_attributes(udc: Udc, unimplemented: list[str]) -> dict:
     return attributes
 
 
+def _multiplier_rule_attributes(udc: Udc) -> dict:
+    """UDC's per-slot multiplier filters and the band set."""
+    attributes = {}
+    for slot in (1, 2, 3):
+        suffix = "" if slot == 1 else str(slot)
+        attributes[f"MultMult{suffix}"] = _safe_number(
+            udc.get(f"MultMult{suffix}"), 1, (0, 1)
+        )
+        attributes[f"DoNotCountMeAsMult{suffix}"] = _flag(
+            udc.get(f"DoNotCountMeAsMult{suffix}")
+        )
+        attributes[f"CountMultOnlyFor{suffix}"] = _tokens(
+            udc.get(f"CountMultOnlyFor{suffix}")
+        )
+        attributes[f"DoNotCountMultOnlyFor{suffix}"] = _tokens(
+            udc.get(f"DoNotCountMultOnlyFor{suffix}")
+        )
+        attributes[f"CountMultOnlyForSec{suffix}"] = _tokens(
+            udc.get(f"CountMultOnlyForSec{suffix}")
+        )
+    # N1MM's default is 1 ("All HF contest bands").
+    attributes["MultiplierBands"] = _safe_number(
+        udc.get("MultiplierBands"), 1, (1, 2, 3, 4)
+    )
+    return attributes
+
+
 def contest_from_udc(udc: Udc) -> type[ContestBase]:
     """The ``Contest`` class *udc* describes.
 
@@ -909,6 +982,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "UdcRaw": dict(udc.section("Contest")),
     }
     attributes.update(_multiplier_attributes(udc, unimplemented))
+    attributes.update(_multiplier_rule_attributes(udc))
     attributes["UdcUnimplemented"] = tuple(dict.fromkeys(unimplemented))
 
     contest_class = type("Contest", (ContestBase,), attributes)
