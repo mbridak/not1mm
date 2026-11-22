@@ -227,6 +227,27 @@ def test_a_continent_and_band_combination():
     assert worth("SameContinent+40, 5", Band=3.5, CountryPrefix="K") == 0
 
 
+def test_a_same_continent_band_accepts_both_spellings():
+    # N1MM writes the band as a metre number; a unit and a numeric MHz value
+    # are accepted too.
+    for token in ("80", "80m", "3.5"):
+        assert worth(f"SameContinent+{token}, 5", Band=3.5, CountryPrefix="K") == 5
+    assert worth("SameContinent+7, 5", Band=7.0, CountryPrefix="K") == 5
+
+
+def test_a_same_continent_number_is_a_metre_name_first():
+    # "+10" is N1MM's 10m (28 MHz), not 10 MHz (30m).
+    assert worth("SameContinent+10, 5", Band=28.0, CountryPrefix="K") == 5
+    assert worth("SameContinent+10, 5", Band=10.0, CountryPrefix="K") == 0
+
+
+def test_a_numeric_band_in_points_needs_its_unit():
+    # A bare integer in PointsPerContact is a default score or a points
+    # value, so numeric MHz cannot be told apart; the reader says so.
+    with pytest.raises(PointsRulesError, match="unit"):
+        parse_points("3.5, 2")
+
+
 # -- additive values and distance ------------------------------------------
 
 

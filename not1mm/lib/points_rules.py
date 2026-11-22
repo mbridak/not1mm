@@ -36,7 +36,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, replace
 
-from not1mm.lib.ham_utility import band_mhz_of, distance, get_not1mm_band
+from not1mm.lib.ham_utility import band_mhz_of, distance, parse_band
 
 
 class PointsRulesError(ValueError):
@@ -100,6 +100,7 @@ _MODE_TOKENS = {
 _CONTINENTS = {"af", "as", "eu", "na", "sa", "oc", "an"}
 _BAND_TOKEN = re.compile(r"^\d+(?:\.\d+)?(?:m|cm|mm|mc)$", re.I)
 _VALUE = re.compile(r"^(\+?)(\d+)(\*?)$")
+_NUMBER = re.compile(r"^\d+(?:\.\d+)?$")
 
 # Explicit rules, checked before the prefixed ones.
 _EXPLICIT = {
@@ -137,15 +138,15 @@ def _value(token: str) -> tuple[int | None, bool] | None:
 def _band(token: str) -> float | None:
     """A band token as MHz, or None when it is not a band.
 
-    ``SameContinent+80`` writes the band without the ``m``, so a bare number
-    is read as metres too.
+    A criterion carries its unit (``40m``, ``70cm``): a bare number in
+    ``PointsPerContact`` is the default score or a points value, so numeric
+    MHz cannot be told apart there.  The ``SameContinent+80`` form is parsed
+    by :func:`~not1mm.lib.ham_utility.parse_band` directly.
     """
-    text = token.strip().casefold()
-    if _BAND_TOKEN.match(text):
-        return get_not1mm_band(text) or None
-    if text.isdigit():
-        return get_not1mm_band(text + "m") or None
-    return None
+    text = token.strip()
+    if not _BAND_TOKEN.match(text):
+        return None
+    return parse_band(text) or None
 
 
 def _rule(token: str) -> Rule:
@@ -157,7 +158,7 @@ def _rule(token: str) -> Rule:
 
     if "+" in folded:
         head, _, band = folded.partition("+")
-        if head in ("samecontinent", "othercontinent") and (mhz := _band(band)):
+        if head in ("samecontinent", "othercontinent") and (mhz := parse_band(band)):
             kind = (
                 "same_continent_band"
                 if head == "samecontinent"
@@ -201,6 +202,12 @@ def _rule(token: str) -> Rule:
 
     if token.startswith("+") or token.startswith("-"):
         raise PointsRulesError(f"{token!r} is not a points rule")
+
+    if _NUMBER.fullmatch(folded):
+        raise PointsRulesError(
+            f"{token!r} is a number where a band or rule belongs; "
+            "write a band with its unit (e.g. 40m)"
+        )
 
     # Anything left is a country prefix from wl_cty.dat.
     return Rule("country", token.upper())
