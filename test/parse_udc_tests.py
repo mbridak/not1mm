@@ -351,6 +351,46 @@ def test_a_sec_list_validates_the_exchange():
     assert "MultWindowType" not in contest_class.UdcUnimplemented
 
 
+def test_a_cabrillo_string_is_applied():
+    text = MINIMAL + (
+        "CabrilloFormat = 99\n"
+        "CabrilloString = SNT, 4, SentNr, 4, CallSign, 13, RCV, 4, RcvNr, 4\n"
+    )
+    contest_class = contest_from_udc(udc_for(text))
+    assert contest_class.CabrilloString.startswith("SNT")
+    assert "CabrilloString" not in contest_class.UdcUnimplemented
+    assert "CabrilloFormat" not in contest_class.UdcUnimplemented
+    line = contest_class(SimpleNamespace()).cabrillo_qso_line(
+        {
+            "TS": "2026-08-01 07:12:00",
+            "Freq": 3512.5,
+            "Mode": "CW",
+            "StationPrefix": "K6GTE",
+            "SNT": "599",
+            "SentNr": "001",
+            "Call": "K1ABC",
+            "RCV": "599",
+            "NR": "012",
+        }
+    )
+    assert line.startswith("QSO:  3512 CW 2026-08-01 0712 K6GTE")
+    assert line.endswith("599 001 K1ABC        599 012 ")
+
+
+def test_an_unknown_cabrillo_field_is_reported():
+    udc = udc_for(
+        MINIMAL + "CabrilloFormat = 99\nCabrilloString = SNT, 4, LastExch, 3\n"
+    )
+    contest_class = contest_from_udc(udc)
+    assert "CabrilloString:LastExch" in contest_class.UdcUnimplemented
+    assert "unknown field" in messages(udc)
+
+
+def test_cabrillo_version_2_is_not_implemented():
+    contest_class = contest_from_udc(udc_for(MINIMAL + "CabrilloVersion = 2.0\n"))
+    assert "CabrilloVersion" in contest_class.UdcUnimplemented
+
+
 def test_a_section_list_qso_error_string_falls_back_to_the_default_check():
     udc = udc_for(MINIMAL + "QsoErrorString = ARI\n")
     contest = contest_from_udc(udc)

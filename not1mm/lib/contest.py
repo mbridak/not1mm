@@ -51,6 +51,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from not1mm.lib import (
+    cabrillostring,
     contact_info,
     plugin_common,
     points_rules,
@@ -386,6 +387,9 @@ class ContestBase:
     # -- identity (UDC [Contest] names) -------------------------------------
     DisplayName = None  # "CQ WPX CW"; shown, and used as a directory name
     CabrilloName = None  # "CQ-WPX-CW"; the Cabrillo CONTEST: value
+    # N1MM's hand-coded QSO line: "SNT, 4, SentNr, 4, CallSign, 13, ...".
+    # When set, it replaces the layout cabrillo_qso_line() would otherwise use.
+    CabrilloString = ""
     # Where the contest goes in the New Contest picker: lower first, then by
     # display name.  General Logging sets 50 to keep the non-contest mode at
     # the top of the list.
@@ -522,6 +526,11 @@ class ContestBase:
         # every contact.
         self._points_rules = (
             points_rules.parse_points(self.PointsRules) if self.PointsRules else None
+        )
+        self._cabrillo_format = (
+            cabrillostring.parse_cabrillostring(self.CabrilloString)
+            if self.CabrilloString
+            else None
         )
 
     # -- the names the application used before this was a class -------------
@@ -1135,19 +1144,37 @@ class ContestBase:
         a serial number, sent and received.  A contest that sends a name, a
         grid, a section or something else overrides this.
         """
+        if self._cabrillo_format is not None:
+            parent = self.parent
+            settings = getattr(parent, "contest_settings", {}) or {}
+            sent = str(contact.get("SentNr", "")) or str(
+                settings.get("SentExchange", "") or ""
+            )
+            return cabrillostring.qso_line(
+                self._cabrillo_format,
+                contact,
+                my_call=str(contact.get("StationPrefix", "")),
+                mode=self.cabrillo_mode(contact.get("Mode", "")),
+                sent_exchange=sent,
+            )
+
         the_date_and_time = contact.get("TS", "")
         loggeddate = the_date_and_time[:10]
         loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
         frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+        # A UDC records its exchange in the last declared box; a plugin uses
+        # the serial columns.
+        sent_column = getattr(self, "UdcSentColumn", "SentNr") or "SentNr"
+        received_column = getattr(self, "UdcReceivedColumn", "NR") or "NR"
         return (
             f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
             f"{loggeddate} {loggedtime} "
             f"{contact.get('StationPrefix', '').ljust(13)} "
             f"{str(contact.get('SNT', '')).ljust(3)} "
-            f"{str(contact.get('SentNr', '')).ljust(6)} "
+            f"{str(contact.get(sent_column, '')).ljust(6)} "
             f"{contact.get('Call', '').ljust(13)} "
             f"{str(contact.get('RCV', '')).ljust(3)} "
-            f"{str(contact.get('NR', '')).ljust(6)}"
+            f"{str(contact.get(received_column, '')).ljust(6)}"
         )
 
     # -- ESM ----------------------------------------------------------------

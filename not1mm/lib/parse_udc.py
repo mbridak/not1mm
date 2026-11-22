@@ -31,7 +31,7 @@ What is applied
 
 Identity, entry window, multipliers, ``PointsPerContact`` rules and the simple
 declarations are applied.  A parameter that is parsed but not applied (a
-section list in ``MultWindowType``, a hand-coded ``CabrilloString``) is
+section list in ``MultWindowType``, a ``GenericPrintString`` export) is
 recorded on the class in ``UdcUnimplemented`` so the application can warn
 about it and a later phase can find it.  Nothing is silently dropped.
 """
@@ -44,6 +44,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from not1mm.lib.contest import MULT_KEYS, ContestBase, parse_qso_error_string
+from not1mm.lib import cabrillostring
 from not1mm.lib import points_rules
 from not1mm.lib import sections
 from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW, FIELD_SPECS
@@ -197,6 +198,7 @@ APPLIED_KEYS = frozenset(
         "QsoErrorString",
         "PointsPerContact",
         "MultWindowType",
+        "CabrilloString",
     }
 )
 
@@ -697,8 +699,24 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
             f"{declared} declared, but only {len(with_key)} have a key",
         )
 
+    cabrillo_string = udc.get("CabrilloString").strip()
+    if cabrillo_string:
+        try:
+            parsed_string = cabrillostring.parse_cabrillostring(cabrillo_string)
+        except cabrillostring.CabrilloStringError as exc:
+            error("CabrilloString", str(exc))
+        else:
+            if parsed_string.unknown:
+                warn(
+                    "CabrilloString",
+                    f"unknown field(s) {', '.join(parsed_string.unknown)}; "
+                    "the columns are left blank",
+                )
+
     cabrillo_format = udc.get("CabrilloFormat").strip()
-    if cabrillo_format and cabrillo_format != "1":
+    if cabrillo_format == "99" and not cabrillo_string:
+        warn("CabrilloFormat", "99 needs a CabrilloString")
+    elif cabrillo_format not in ("", "1", "99"):
         warn(
             "CabrilloFormat",
             f"{cabrillo_format} is not implemented; not1mm writes the "
@@ -835,8 +853,16 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     if mult_window and sections.load_sec(mult_window) is None:
         unimplemented.append(f"MultWindowType:{mult_window}")
 
+    cabrillo_string = udc.get("CabrilloString").strip()
+    if cabrillo_string:
+        parsed_string = cabrillostring.parse_cabrillostring(cabrillo_string)
+        unimplemented.extend(f"CabrilloString:{name}" for name in parsed_string.unknown)
     cabrillo_format = udc.get("CabrilloFormat").strip()
-    if cabrillo_format and cabrillo_format != "1":
+    if (cabrillo_format == "99" and not cabrillo_string) or cabrillo_format not in (
+        "",
+        "1",
+        "99",
+    ):
         unimplemented.append("CabrilloFormat")
     cabrillo_version = udc.get("CabrilloVersion").strip()
     if cabrillo_version and cabrillo_version not in ("3", "3.0"):
@@ -868,6 +894,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "PointsPerContact": points,
         "PointsRules": points_rule,
         "MultWindowType": udc.get("MultWindowType").strip(),
+        "CabrilloString": cabrillo_string,
         "EntryWindowInfo": boxes,
         "FrameText": labels,
         "LogInfo": columns,
@@ -879,7 +906,6 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "UdcFile": dict(udc.section("File")),
         "UdcReceivedColumn": received_column,
         "UdcSentColumn": sent_column,
-        "cabrillo_qso_line": _udc_cabrillo_qso_line,
         "UdcRaw": dict(udc.section("Contest")),
     }
     attributes.update(_multiplier_attributes(udc, unimplemented))
@@ -889,33 +915,6 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
     contest_class.__module__ = __name__
     contest_class.__qualname__ = f"UdcContest[{udc.source}]"
     return contest_class
-
-
-def _udc_cabrillo_qso_line(self, contact) -> str:
-    """The standard ``QSO:`` line, with the UDC's own exchange columns.
-
-    :meth:`ContestBase.cabrillo_qso_line` always prints ``SentNr`` and ``NR``;
-    a UDC puts the received exchange where its declaration says (``Exchange1``,
-    ``MiscText``, ``Sect``, ``GridSquare``).  The factory records the last
-    declared exchange box, because that is the received exchange -- the same
-    box ESM treats as the one that finishes the contact.
-    """
-    the_date_and_time = contact.get("TS", "")
-    loggeddate = the_date_and_time[:10]
-    loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
-    frequency = str(round(contact.get("Freq", "0"))).rjust(5)
-    sent = str(contact.get(self.UdcSentColumn, ""))
-    received = str(contact.get(self.UdcReceivedColumn, ""))
-    return (
-        f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
-        f"{loggeddate} {loggedtime} "
-        f"{contact.get('StationPrefix', '').ljust(13)} "
-        f"{str(contact.get('SNT', '')).ljust(3)} "
-        f"{sent.ljust(6)} "
-        f"{contact.get('Call', '').ljust(13)} "
-        f"{str(contact.get('RCV', '')).ljust(3)} "
-        f"{received.ljust(6)}"
-    )
 
 
 def load_udc(path: str | Path, parent) -> ContestBase:

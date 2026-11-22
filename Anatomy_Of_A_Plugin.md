@@ -297,8 +297,11 @@ declaratively-scored contest.
 afterwards.
 
 `cabrillo_qso_line(contact)` returns one Cabrillo `QSO:` line; the header, the
-file and the ADIF log come from the base. `cabrillo()` and `adif()` are only
-overridden when the whole file differs (EDI, a sponsor-specific summary).
+file and the ADIF log come from the base. A contest that needs a hand-coded
+layout sets `CabrilloString` (N1MM's `field, width` list, e.g.
+`"SNT, 4, SentNr, 4, CallSign, 13, RCV, 4, RcvNr, 4"`) instead of overriding
+the method; `cabrillo()` and `adif()` are only overridden when the whole file
+differs (EDI, a sponsor-specific summary).
 
 `ft8_handler(packet)` accepts a QSO from WSJT-X or fldigi over UDP; set
 `SupportsFT8 = True` when you implement it.
