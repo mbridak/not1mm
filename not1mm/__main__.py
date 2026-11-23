@@ -5052,7 +5052,8 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
 
-        basename = self.contest.BaseName
+        # poll_radio() can ask for macros before a contest is loaded.
+        basename = getattr(self.contest, "BaseName", None)
         if not basename:
             return ""
         contest_dir = fsutils.USER_DATA_PATH / basename
@@ -5118,6 +5119,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         macro_file = self.get_macro_filename()
+        if not macro_file:
+            return
         try:
             with open(macro_file, "r", encoding="utf-8") as file_descriptor:
                 for line in file_descriptor:
