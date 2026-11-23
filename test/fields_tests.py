@@ -13,7 +13,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PyQt6 import QtWidgets
 from PyQt6.QtGui import QFont
 
-from not1mm.lib.contest import PLUGIN_PATH, load_contest
+from not1mm.lib.contest import PLUGIN_PATH, ContestBase, load_contest
 from not1mm.lib.fields import (
     DEFAULT_ENTRY_WINDOW,
     FIELD_SPECS,
@@ -177,6 +177,22 @@ def test_fields_apply_labels_widths_and_lengths(app, window):
     assert fields.CommentText.accessibleName() == "Remarks"
     assert layout.stretch(1) == 1695
     assert layout.stretch(2) == 855
+
+
+def test_blank_frame_labels_fall_back_to_the_box_labels(app, window):
+    class Contest(ContestBase):
+        EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+        FrameText = ("Sent", "", "Serial", "")
+
+    layout, callsign_frame = window
+    fields = Fields(layout, callsign_frame)
+    fields.configure(Contest(None).entry_boxes())
+    assert [field.label.text() for field in fields] == [
+        "Sent",
+        "RCV",
+        "Serial",
+        "RcvNR",
+    ]
 
 
 def test_rebuild_keeps_the_callsign_and_the_same_row_keeps_its_text(app, window):

@@ -107,10 +107,11 @@ AccessibleNames = ("RST Sent", "RST Received",
                    "Sent Number", "Received Number")
 ```
 
-`FrameText` has one label per declared box, in the same order; an empty string
-leaves that label blank. `AccessibleNames` is the screen-reader name for each
-box, also optional and positional. The width is N1MM's relative layout width,
-not pixels.
+`FrameText` has one label per declared box, in the same order; an empty or
+missing entry falls back to the box's default label (the `typical label` in the
+table below), not a blank header. `AccessibleNames` is the screen-reader name
+for each box, also optional and positional. The width is N1MM's relative layout
+width, not pixels.
 
 The boxes available to a declaration are:
 

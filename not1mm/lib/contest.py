@@ -607,7 +607,9 @@ class ContestBase:
         accessible = tuple(self.AccessibleNames)
         described = []
         for index, box in enumerate(boxes):
-            if index < len(labels):
+            # An empty entry means "use the box's default label", so a .udc
+            # without FrameText (or a short one) still labels every field.
+            if index < len(labels) and labels[index]:
                 box.label = labels[index]
             if index < len(accessible):
                 box.accessible = accessible[index]
