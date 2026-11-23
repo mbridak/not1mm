@@ -1,6 +1,10 @@
 # Changelog
 
-- [2026-11-23] Merge pull request #748 from df7cb/udc-multis
+- [2026-11-23] Merge pull request #749 from df7cb/udc
+  - Label every entry box when FrameText leaves a label out
+  - Use the declared entry boxes in the report and exchange actions
+  - @mbridak Update UDC file support for MacOS in user manual
+  - Merge pull request #748 from df7cb/udc-multis
   - Check for a loaded contest before reading macros
   - Drop KHz suffix from Freq column header
   - Move OK1WC Memorial from a plugin to a shipped UDC
