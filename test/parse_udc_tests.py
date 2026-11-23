@@ -424,7 +424,14 @@ def test_a_section_list_qso_error_string_falls_back_to_the_default_check():
     assert "will not be checked" in messages(udc)
 
 
-BASE_LOG_COLUMNS = ["YYYY-MM-DD HH:MM:SS", "Call", "Freq (KHz)", "Mode"]
+BASE_LOG_COLUMNS = ["YYYY-MM-DD HH:MM:SS", "Call", "Freq", "Mode"]
+
+
+def test_freq_is_the_accepted_log_info_spelling():
+    text = MINIMAL + "LogInfo = Freq, 500, Points, 500\n"
+    contest = contest_from_udc(udc_for(text))
+    assert contest.LogInfo == [*BASE_LOG_COLUMNS, "PTS"]
+    assert contest.UdcUnimplemented == ()
 
 
 def test_log_info_names_are_translated_to_not1mm_columns():

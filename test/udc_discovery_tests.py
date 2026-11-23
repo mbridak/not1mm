@@ -92,7 +92,7 @@ def test_the_shipped_udc_is_the_silent_key_memorial():
     assert contest_class.LogInfo[:4] == [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
-        "Freq (KHz)",
+        "Freq",
         "Mode",
     ]
     assert "Exchange1" in contest_class.LogInfo

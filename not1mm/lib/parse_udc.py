@@ -270,7 +270,7 @@ _MULT_KIND_ALIASES = {
 # The log window always shows these.  UDC's LogInfo only lists the *extra*
 # columns an author can choose (its table is all exchange fields), so a file
 # that names neither the date, the call nor the frequency must not hide them.
-LOG_INFO_BASE = ("YYYY-MM-DD HH:MM:SS", "Call", "Freq (KHz)", "Mode")
+LOG_INFO_BASE = ("YYYY-MM-DD HH:MM:SS", "Call", "Freq", "Mode")
 
 # UDC's LogInfo names, and the log-window column each one means.  Names with
 # no not1mm column are dropped (with a warning) rather than invented.
@@ -289,6 +289,7 @@ _LOG_COLUMNS = {
     "sectiontext": "Sect",
     "mode": "Mode",
     "call": "Call",
+    "freq": "Freq",
 }
 
 # Labels that make N1MM prefill the received zone into Exchange1Text.

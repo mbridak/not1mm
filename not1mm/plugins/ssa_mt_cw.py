@@ -128,7 +128,7 @@ class Contest(ContestBase):
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
-        "Freq (KHz)",
+        "Freq",
         "Snt",
         "Rcv",
         "SentNr",
