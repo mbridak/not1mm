@@ -299,7 +299,26 @@ def test_a_missing_entry_window_gets_the_standard_boxes():
 
 def test_a_short_frame_text_is_padded_with_blank_labels():
     udc = udc_for(MINIMAL.replace("FrameText = SNT RCV Sent Rcvd", "FrameText = SNT"))
-    assert contest_from_udc(udc).FrameText == ("SNT", "", "", "")
+    contest = contest_from_udc(udc)
+    assert contest.FrameText == ("SNT", "", "", "")
+    # The blanks are the boxes' default labels, not blank headers.
+    assert [box.label for box in contest(None).entry_boxes()] == [
+        "SNT",
+        None,
+        None,
+        None,
+    ]
+
+
+def test_a_udc_without_frame_text_uses_the_box_labels():
+    udc = udc_for(MINIMAL.replace("FrameText = SNT RCV Sent Rcvd\n", ""))
+    contest = contest_from_udc(udc)
+    assert [box.label for box in contest(None).entry_boxes()] == [
+        None,
+        None,
+        None,
+        None,
+    ]
 
 
 def test_the_factory_maps_the_multipliers():
