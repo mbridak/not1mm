@@ -241,6 +241,31 @@ def test_the_factory_maps_the_identity():
     assert contest.ZoneType == "CQ"
 
 
+def test_the_not1mm_extension_keys_are_applied():
+    contest = contest_from_udc(
+        udc_for(
+            MINIMAL
+            + "SendsRTCScore = True\n"
+            + "ExchangeHint = #\n"
+            + "Bands = 80m, 40m\n"
+        )
+    )
+    assert contest.SendsRTCScore is True
+    assert contest.EXCHANGE_HINT == "#"
+    assert contest.Bands == (3.5, 7.0)
+    assert contest.UdcUnimplemented == ()
+
+
+def test_the_extension_bands_accept_numeric_mhz():
+    contest = contest_from_udc(udc_for(MINIMAL + "Bands = 3.5, 7\n"))
+    assert contest.Bands == (3.5, 7.0)
+
+
+def test_bad_extension_values_are_errors():
+    udc = udc_for(MINIMAL + "SendsRTCScore = maybe\nBands = 40x\n")
+    assert [issue.key for issue in issues(udc)] == ["SendsRTCScore", "Bands"]
+
+
 def test_mixed_case_and_missing_values_use_the_udc_defaults():
     text = MINIMAL.replace("Mode = CW", "Mode = Both").replace("DupeType = 2", "")
     udc = udc_for(text)
@@ -491,9 +516,10 @@ def test_two_files_that_share_a_name_get_distinct_identities():
 
 
 def test_the_contest_key_list_is_the_documented_size():
-    # UDC-FIELDS.md counts 88 [Contest] parameters.  A new one belongs in both.
-    assert len(CONTEST_KEYS) == 88
+    # UDC-FIELDS.md counts 88 [Contest] parameters, plus the three marked
+    # "added by not1mm".  A new one belongs in both.
+    assert len(CONTEST_KEYS) == 88 + 3
     # [Contest] + [Author] + [File] (the four metadata keys, one of which,
     # Note, is not in N1MM's list); the two spelling aliases resolve to keys
     # that are already counted.
-    assert len(KNOWN_KEYS) == 88 + 3 + 4
+    assert len(KNOWN_KEYS) == 88 + 3 + 3 + 4

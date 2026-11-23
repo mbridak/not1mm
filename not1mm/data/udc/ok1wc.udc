@@ -1,0 +1,29 @@
+[Author]
+AuthorName = not1mm
+Callsign =
+Email =
+
+[File]
+Revision = 1.0.0
+LastUpdate = 2026-11-23
+Description = OK1WC Memorial Contest (MWC). One hour every Monday, CW on 80m and 40m; serial exchange, one point a QSO, last callsign letter as the multiplier.
+
+[Contest]
+Name = MWC
+DisplayName = OK1WC Memorial Contest
+CabrilloName = MWC
+Mode = CW
+DupeType = 2
+DefaultContestExchange = #
+EntryWindowInfo = SNTText, 450, RCVText, 450, SntNrText, 625, RcvNrText, 625
+LogInfo = SentReport, 500, SentNR, 500, ReceiveReport, 500, NR, 500, IsMultiplier1, 500, Points, 500
+PointsPerContact = 1
+NumMults = 1
+Multiplier1Name = Callsign
+MultSqlString = LASTLETTER
+IsMult1Per = 1
+
+; The keys below are not1mm extensions, not part of N1MM's UDC format.
+SendsRTCScore = True
+ExchangeHint = #
+Bands = 80m, 40m

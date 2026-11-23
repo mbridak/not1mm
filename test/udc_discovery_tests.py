@@ -1,7 +1,8 @@
 """UDC discovery: the bundled and user directories, and the contest registry.
 
-The shipped file is ``not1mm/data/udc/sk_memorial.udc``; the tests point the
-user directory at a temporary one, so nothing touches the real home directory.
+The shipped files are ``not1mm/data/udc/sk_memorial.udc`` and
+``ok1wc.udc``; the tests point the user directory at a temporary one, so
+nothing touches the real home directory.
 """
 
 from __future__ import annotations
@@ -128,13 +129,24 @@ def test_a_user_file_wins_over_the_bundled_one(user_dir):
 
 def test_the_registry_includes_the_udc():
     infos = [info for info in contest.available_contests() if info.udc_path]
-    assert [info.basename for info in infos] == ["sk_memorial"]
-    assert infos[0].display_name == "Silent Key Memorial Contest"
-    assert infos[0].cabrillo_name == "SKMC"
+    assert [info.basename for info in infos] == ["ok1wc", "sk_memorial"]
+    assert infos[1].display_name == "Silent Key Memorial Contest"
+    assert infos[1].cabrillo_name == "SKMC"
 
 
 def test_the_registry_still_has_the_plugins():
     assert any(info.udc_path is None for info in contest.available_contests())
+
+
+def test_the_shipped_ok1wc_udc_is_the_memorial():
+    path = udc_files()["ok1wc"]
+    contest_class = parse_udc.contest_from_udc(parse_udc.parse_udc(path))
+    assert contest_class.DisplayName == "OK1WC Memorial Contest"
+    assert contest_class.CabrilloName == "MWC"
+    assert contest_class.SendsRTCScore is True
+    assert contest_class.EXCHANGE_HINT == "#"
+    assert contest_class.Bands == (3.5, 7.0)
+    assert contest_class.UdcUnimplemented == ()
 
 
 def test_the_picker_lists_the_udc():

@@ -48,6 +48,7 @@ from not1mm.lib import cabrillostring
 from not1mm.lib import points_rules
 from not1mm.lib import sections
 from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW, FIELD_SPECS
+from not1mm.lib.ham_utility import parse_band
 
 logger = logging.getLogger("parse_udc")
 
@@ -75,11 +76,12 @@ class UdcIssue:
 AUTHOR_KEYS = ("AuthorName", "Callsign", "Email")
 FILE_KEYS = ("Revision", "LastUpdate", "Description", "Note")
 
-# Every [Contest] parameter N1MM documents (see UDC-FIELDS.md).  A file may
-# carry keys that are not here -- a newer N1MM -- and they are kept and
-# reported, never rejected.
+# Every [Contest] parameter N1MM documents (see UDC-FIELDS.md), plus the keys
+# marked "added by not1mm".  A file may carry keys that are not here -- a
+# newer N1MM -- and they are kept and reported, never rejected.
 CONTEST_KEYS = (
     "BandChangesPerPeriod",
+    "Bands",  # added by not1mm
     "BonusPoints",
     "BonusPoints2",
     "CQZoneMultContest",
@@ -110,6 +112,7 @@ CONTEST_KEYS = (
     "DupeType",
     "EndOfContest",
     "EntryWindowInfo",
+    "ExchangeHint",  # added by not1mm
     "FrameText",
     "GenericPrintString",
     "GenericPrintStringHeader",
@@ -157,6 +160,7 @@ CONTEST_KEYS = (
     "SOBandChangeTimerDuration",
     "ScoreSummaryMultNames",
     "SelfSpotAllowed",
+    "SendsRTCScore",  # added by not1mm
     "SetSentTimeForContact",
     "ShowMyCountryStations",
     "ShowWarcBands",
@@ -180,6 +184,8 @@ APPLIED_KEYS = frozenset(
         "Mode",
         "DupeType",
         "ZoneType",
+        "SendsRTCScore",  # added by not1mm
+        "Bands",  # added by not1mm
         "NumMults",
         "Multiplier1Name",
         "Multiplier2Name",
@@ -195,6 +201,7 @@ APPLIED_KEYS = frozenset(
         "FrameText",
         "LogInfo",
         "DefaultContestExchange",
+        "ExchangeHint",  # added by not1mm
         "QsoErrorString",
         "PointsPerContact",
         "MultWindowType",
@@ -564,6 +571,24 @@ def _tokens(value: str) -> tuple:
     return tuple(dict.fromkeys(part for part in parts if part))
 
 
+def _bands(value: str) -> tuple[float, ...]:
+    """A comma/space separated band list as MHz, de-duplicated.
+
+    Each token is read by :func:`~not1mm.lib.ham_utility.parse_band`, so
+    ``80m``, ``3.5`` and ``40m`` all work.
+    """
+    found = []
+    for part in re.split(r"[\s,]+", str(value)):
+        if not part:
+            continue
+        mhz = parse_band(part)
+        if not mhz:
+            raise ValueError(f"{part!r} is not a band")
+        if mhz not in found:
+            found.append(mhz)
+    return tuple(found)
+
+
 # -- validation ------------------------------------------------------------
 
 
@@ -633,6 +658,7 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
         "DoNotCountMeAsMult",
         "DoNotCountMeAsMult2",
         "DoNotCountMeAsMult3",
+        "SendsRTCScore",  # added by not1mm
     ):
         text = udc.get(key).strip()
         if text and text.casefold() not in ("true", "false", "0", "1", "yes", "no"):
@@ -643,6 +669,11 @@ def validate_udc(udc: Udc) -> list[UdcIssue]:
             _number(bands, 1, (1, 2, 3, 4))
         except ValueError as exc:
             error("MultiplierBands", str(exc))
+    if udc.get("Bands").strip():
+        try:
+            _bands(udc.get("Bands"))
+        except ValueError as exc:
+            error("Bands", str(exc))
 
     boxes = ()
     if udc.get("EntryWindowInfo").strip():
@@ -964,6 +995,8 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "Mode": mode,
         "DupeType": dupe_type,
         "ZoneType": zone_type,
+        "SendsRTCScore": _flag(udc.get("SendsRTCScore")),
+        "Bands": _bands(udc.get("Bands")),
         "PointsPerContact": points,
         "PointsRules": points_rule,
         "MultWindowType": udc.get("MultWindowType").strip(),
@@ -972,6 +1005,7 @@ def contest_from_udc(udc: Udc) -> type[ContestBase]:
         "FrameText": labels,
         "LogInfo": columns,
         "DefaultContestExchange": udc.get("DefaultContestExchange"),
+        "EXCHANGE_HINT": udc.get("ExchangeHint").strip(),
         "QsoErrorString": qso_error,
         "UdcName": udc.name,
         "UdcPath": str(udc.path) if udc.path else "",

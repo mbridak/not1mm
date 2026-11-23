@@ -521,14 +521,6 @@
     "SentNr": "other_1:CC"
    }
   },
-  "ok1wc": {
-   "columns": {
-    "NR": "other_2:DD",
-    "RCV": "receive:BB",
-    "SNT": "sent:AA",
-    "SentNr": "other_1:CC"
-   }
-  },
   "pacc": {
    "columns": {
     "NR": "other_2:DD",

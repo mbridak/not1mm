@@ -63,7 +63,12 @@ def test_multiplier_is_declared_not_hand_counted(headless, monkeypatch):
 
     ok1wc = loaded("ok1wc/K6GTE", headless, monkeypatch).contest
     assert (ok1wc.MultSqlString, ok1wc.IsMult1Per) == ("LASTLETTER", 1)
-    assert ok1wc.mult_sql(1) == "substr(Call,-1)"
+    # A UDC's MultiplierBands defaults to 1 (HF contest bands), so the key
+    # carries its band filter.
+    assert ok1wc.mult_sql(1) == (
+        "CASE WHEN Band IN ('1.8', '3.5', '7.0', '14.0', '21.0', '28.0') "
+        "THEN (substr(Call,-1)) END"
+    )
     assert ok1wc._mult_columns(1) == ("Band",)
     assert ok1wc.get_mults() == {"wpxprefix": 6}
 

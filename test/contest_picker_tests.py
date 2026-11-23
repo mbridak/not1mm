@@ -106,14 +106,14 @@ def test_a_plugin_that_does_not_load_is_left_out():
     real = contest._contest_info
 
     def broken(basename):
-        if basename == "ok1wc":
+        if basename == "ari_dx":
             raise RuntimeError("this plugin is broken")
         return real(basename)
 
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(contest, "_contest_info", broken)
         basenames = {info.basename for info in contest._scan_contests(tolerant=True)}
-        assert "ok1wc" not in basenames
+        assert "ari_dx" not in basenames
         assert len(basenames) == len(contest.available_contests()) - 1
         # The strict registry still refuses to pretend nothing happened.
         with pytest.raises(RuntimeError):

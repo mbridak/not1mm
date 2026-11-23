@@ -439,6 +439,11 @@ line are applied. A parameter not1mm only
 parses is reported when the contest is opened and listed in
 `UdcUnimplemented` on the class; nothing is silently ignored.
 
+Three keys are not1mm extensions rather than N1MM's: `Bands` (the valid bands,
+e.g. `80m, 40m`), `ExchangeHint` (the setup-dialog placeholder) and
+`SendsRTCScore`. A file we write groups them at the end, under a `;` comment
+saying they are extensions.
+
 ## Adding a new contest to the dropdown list
 
 There is nothing to add by hand. The New Contest dropdown is built from the
