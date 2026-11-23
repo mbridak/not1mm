@@ -174,9 +174,12 @@ def CW_SPEED_DOWN(self) -> None:
 
 def RST_INCR(self, increment=1) -> None:
     """Increment report in RST field"""
-    # use sent when that has focus, else use receive (so the action also works
-    # from elsewhere)
-    widget = self.sent if self.sent.hasFocus() else self.receive
+    # Use the focused report; otherwise the received one (so the action also
+    # works from elsewhere).  A contest may show neither or only one.
+    reports = self.fields.report_edits()
+    if not reports:
+        return
+    widget = next((edit for edit in reports if edit.hasFocus()), reports[-1])
     text = widget.text()
     # this assumes the "interesting" part of the report is always the 2nd digit
     if len(text) >= 2 and text[1].isnumeric():
@@ -194,9 +197,12 @@ def RST_DECR(self) -> None:
 
 def EXCH_INCR(self, increment=1) -> None:
     """Increment number in exchange field"""
-    # use other_1 when that has focus, else use other_2 (so the action also
-    # works from elsewhere)
-    widget = self.other_1 if self.other_1.hasFocus() else self.other_2
+    # Use the focused exchange box; otherwise the last one (so the action also
+    # works from elsewhere).  The boxes come from the contest's declaration.
+    extras = self.extra_edits()
+    if not extras:
+        return
+    widget = next((edit for edit in extras if edit.hasFocus()), extras[-1])
     # find the first number in the text (groups: prefix, number, suffix)
     if m := re.match(r"(.*?)(\d+)(.*)", widget.text()):
         len_number = len(m.group(2))
