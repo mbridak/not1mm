@@ -7,6 +7,8 @@ import json
 import uuid
 from pathlib import Path
 
+from types import SimpleNamespace
+
 import pytest
 
 import not1mm
@@ -67,6 +69,10 @@ class Harness:
         self.receive = FakeLineEdit("599")
         self.other_1 = FakeLineEdit()
         self.other_2 = FakeLineEdit()
+        self.fields = SimpleNamespace(
+            SntNrText=self.other_1,
+            Exchange1Text=self.other_2,
+        )
         self.exch_label = FakeLineEdit()
         self.contact = {}
         self.contact_is_dupe = 0

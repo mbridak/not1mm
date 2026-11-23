@@ -10,9 +10,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
-
-_PHONE_MODES = ("LSB", "USB", "SSB", "FM", "AM", "PH")
-_CW_MODES = ("CW", "CW-U", "CW-L", "CWR", "CW-R")
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 class Contest(ContestBase):
@@ -21,6 +19,7 @@ class Contest(ContestBase):
     DisplayName = "ARRL 10M"
     CabrilloName = "ARRL-10"
     Mode = "BOTH"
+    PointsRules = "SSB, 2, FM, 2, AM, 2, CW, 4"
     DupeType = 3  # once per band and mode
     EXCHANGE_HINT = "State/Province"
     SOAPBOX_HINT = """If you’re exchange is (RST + Serial No.) You should edit your exchange macro keys to be '{SNT} {SENTNR}' and a '#' character in the sent exchange field above.
@@ -29,7 +28,8 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
 """
     SendsRTCScore = True
     Bands = (28,)
-    FrameText = ("SNT", "SentNR", "State|Prov|SN|ITU")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "State|Prov|SN|ITU")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -42,17 +42,6 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
     Multiplier1Name = "CountryPrefix"
     MultSqlString = "CountryPrefix"
     IsMult1Per = 2
-
-    def points(self):
-        """2 points phone, 4 CW (rule 5.1)."""
-        if self.parent.contact_is_dupe > 0:
-            return 0
-        mode = str(self.parent.contact.get("Mode", "")).upper()
-        if mode in _PHONE_MODES:
-            return 2
-        if mode in _CW_MODES:
-            return 4
-        return 0
 
     def show_mults(self, rtc=None):
         """States/provinces and /MM once per mode, plus DXCC once per mode.
@@ -92,10 +81,10 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
     def set_contact_vars(self):
         """The exchange; the received one is a state/province or a serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def populate_history_info_line(self):
         """Show history info if available."""
@@ -115,5 +104,5 @@ If you’re exchange is (RST + State/Province/ITU), you should edit your exchang
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('State', '')}")

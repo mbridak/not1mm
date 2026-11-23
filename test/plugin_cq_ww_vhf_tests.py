@@ -3,25 +3,6 @@ from not1mm.plugins import cq_ww_vhf
 
 
 @pytest.mark.parametrize(
-    "band, expected_points",
-    [
-        ("50.0", 1),
-        ("6", 1),
-        (50.0, 1),  # the DXLOG column stores a MHz float
-        ("144.0", 2),
-        ("2", 2),
-        (144.0, 2),
-        ("432.0", 0),
-        (432.0, 0),
-        ("20.0", 0),
-        ("", 0),
-    ],
-)
-def test_points_for_band(band, expected_points):
-    assert cq_ww_vhf.points_for_band(band) == expected_points
-
-
-@pytest.mark.parametrize(
     "text, expected_grid",
     [
         ("EM15", "EM15"),

@@ -12,19 +12,21 @@ the concept exists there:
 https://n1mmwp.hamdocs.com/appendices/udc-editor/
 so that a .udc file can later be turned into the same kind of object without
 inventing a second vocabulary for the same things.  Knobs with no UDC
-equivalent (``advance_on_space``, the ESM hooks) keep plain names.
+equivalent (the ESM hooks) keep plain names.
 
 Three names, three jobs:
 
 * ``DisplayName`` is what the application shows: the contest picker and the
   window title.
 * ``CabrilloName`` is the sponsor's name for the contest, and so the Cabrillo
-  ``CONTEST:`` value, the base of the log filenames, the identifier kept in the
-  database (``ContestInstance.ContestName``) and the directory the contest's
-  macro files live in (``~/.local/share/not1mm/<identifier>``).  See
-  :func:`contest_id`.
-* ``ContestName`` overrides the identifier, for the few contests that share a
-  Cabrillo name with another but are not interchangeable.
+  ``CONTEST:`` value, the ADIF ``CONTEST_ID``, the base of the log filenames
+  and what a contact row records.
+* ``BaseName`` is the stem of the file the contest is defined in --
+  ``not1mm/plugins/<basename>.py`` or ``<basename>.udc``.  That is the
+  identifier the database keeps (``ContestInstance.ContestName``) and the
+  directory the contest's macro files live in
+  (``~/.local/share/not1mm/<basename>``), because it is the one name two
+  definitions cannot share.
 * ``SortOrder`` is where the contest sits in the New Contest picker.  Lower
   comes first; contests with the same order are listed by display name.
 
@@ -46,12 +48,28 @@ import datetime
 import importlib
 import logging
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from PyQt6 import QtWidgets
-
-from not1mm.lib import contact_info, plugin_common, version
+from not1mm.lib import (
+    cabrillostring,
+    contact_info,
+    plugin_common,
+    points_rules,
+    sections,
+    version,
+)
+from not1mm.lib.ham_utility import (
+    band_mhz_of,
+    calculate_wpx_prefix,
+    get_not1mm_band,
+)
+from not1mm.lib.fields import (
+    DEFAULT_ENTRY_WINDOW,
+    FIELD_SPECS,
+    parse_entry_window_info,
+)
 from not1mm.lib.plugin_common import gen_adif, get_points
 
 logger = logging.getLogger(__name__)
@@ -60,13 +78,112 @@ logger = logging.getLogger(__name__)
 PACKAGE_PATH = Path(__file__).resolve().parent.parent
 PLUGIN_PATH = PACKAGE_PATH / "plugins"
 
-# The five entry-window widgets a TAB cycle can visit.
-ENTRY_FIELDS = ("callsign", "sent", "receive", "other_1", "other_2")
 
-# The four entry fields that can be shown or hidden.
-ENTRY_WIDGETS = ("field1", "field2", "field3", "field4")
+def entry_edit(parent, name):
+    """The line edit for *name*, on a window that has Fields.
+
+    ``name`` is a box name (``Exchange1Text``) or ``callsign``.  Returns None
+    where the contest has no such box.
+    """
+    fields = getattr(parent, "fields", None)
+    if fields is not None:
+        return fields.edit(name)
+    return getattr(parent, name, None)
+
+
+# -- UDC QsoErrorString -----------------------------------------------------
+# N1MM's QsoErrorString validates a box before a QSO is logged.  The syntax is
+# a comma-separated list of specs; a spec is "Box_Rule", or a bare rule for
+# the exchange box.  We use the part that answers "is the exchange there?"
+# to drive ESM: the boxes a spec names with a rule that rejects empty are the
+# exchange ESM waits for.  (UDC documents Any/Numeric only for
+# Exchange1Text/MiscText/CommentText/NameText, and RcvNrText for the two Any
+# variants; a rule on SntNrText is a not1mm extension, understood here but not
+# by N1MM.)
+_GRID_RE = re.compile(r"^[A-R]{2}[0-9]{2}([A-X]{2})?$", re.IGNORECASE)
+_QSO_RULES = {
+    "any": ("any", True),
+    "any_not_empty": ("any", False),
+    "numeric": ("numeric", True),
+    "numeric_not_empty": ("numeric", False),
+    "grid": ("grid", False),
+}
+_QSO_BOXES = tuple(sorted((*FIELD_SPECS, "CallSignText"), key=len, reverse=True))
+
+
+@dataclass(frozen=True)
+class QsoRule:
+    """One QsoErrorString check: a box, a shape, and whether empty is allowed."""
+
+    box: str
+    kind: str  # "any", "numeric", "grid" or "list"
+    allow_empty: bool
+    codes: frozenset[str] | None = None  # for kind "list"
+
+    def accepts(self, text: str) -> bool:
+        text = str(text)
+        if not text.strip():
+            return self.allow_empty
+        if self.kind == "numeric":
+            return text.strip().isdigit()
+        if self.kind == "grid":
+            return bool(_GRID_RE.match(text.strip()))
+        if self.kind == "list":
+            return text.strip().upper() in (self.codes or frozenset())
+        return True
+
+
+def parse_qso_error_string(value: str | None, default_box: str) -> tuple[QsoRule, ...]:
+    """Parse UDC's ``QsoErrorString`` into rules.
+
+    ``None`` means the contest did not declare one: the old single-exchange-box
+    check is kept.  ``""`` means "do not check" (UDC's wording) -- no rules, so
+    ESM has no completeness requirement.
+    """
+    if value is None:
+        return (QsoRule(default_box, "any", False),)
+    specs = [part.strip() for part in str(value).split(",") if part.strip()]
+    rules = []
+    for spec in specs:
+        box = default_box
+        rule_text = spec
+        for name in _QSO_BOXES:
+            if spec.startswith(f"{name}_"):
+                box = name
+                rule_text = spec[len(name) + 1 :]
+                break
+        rule = rule_text.strip()
+        # A .sec list name may be followed by "_or_Empty" or "_not_Empty".
+        # None means "whatever the rule's own default is".
+        allow_empty = None
+        for suffix, empty in (("_or_empty", True), ("_not_empty", False)):
+            if rule.casefold().endswith(suffix):
+                rule = rule[: -len(suffix)].rstrip()
+                allow_empty = empty
+                break
+        try:
+            kind, default_empty = _QSO_RULES[rule.lower()]
+        except KeyError:
+            section = sections.load_sec(rule)
+            if section is None:
+                raise ValueError(
+                    f"QsoErrorString: unknown rule {rule_text!r} in {spec!r}"
+                ) from None
+            rules.append(QsoRule(box, "list", bool(allow_empty), section.codes))
+            continue
+        rules.append(
+            QsoRule(box, kind, default_empty if allow_empty is None else allow_empty)
+        )
+    return tuple(rules)
+
 
 # The log window columns almost every contest starts from.
+#
+# A UDC's LogInfo names only the *extras*; the loader always adds the base
+# columns (date/time, Call, frequency, Mode) in not1mm/lib/parse_udc.py.  A
+# plugin still lists the whole row here, and a few leave Mode out, so the same
+# contest can show a different log display depending on where it came from.
+# Shrinking these to the extras, the way a UDC does, is a later change.
 LOG_INFO = [
     "YYYY-MM-DD HH:MM:SS",
     "Call",
@@ -110,6 +227,7 @@ MULT_KEYS = {
     "CallSign": ("Call", _column("Call")),
     "LASTLETTER": ("substr(Call,-1)", _last_letter),
     "Misc": ("MiscText", _column("MiscText")),
+    "Comment": ("Comment", _column("Comment")),
     "Exchange": ("Exchange1", _column("Exchange1")),
     # The received exchange, which UDC has no name for.  Many domestic
     # contests key a multiplier on it, and it is the province or county codes
@@ -122,6 +240,35 @@ MULT_KEYS = {
 
 # UDC IsMultPer: what a key is counted per.  (0 is "no multipliers".)
 MULT_PER_COLUMNS = {0: (), 1: ("Band",), 2: ("Mode",), 3: ("Band", "Mode"), 4: ()}
+
+
+# UDC's MultiplierBands: which bands a multiplier counts on.  0 means "no
+# restriction" (the default for a plugin; a UDC defaults to 1).
+def _band_set(*names) -> tuple:
+    """MHz values for band names, from ham_utility's canonical table."""
+    return tuple(get_not1mm_band(name) for name in names)
+
+
+MULTIPLIER_BANDS = {
+    1: _band_set("160m", "80m", "40m", "20m", "15m", "10m"),
+    2: _band_set("160m", "80m", "60m", "40m", "30m", "20m", "17m", "15m", "12m", "10m"),
+    3: _band_set("160m", "80m", "40m", "20m", "15m", "10m", "6m", "2m"),
+    4: _band_set("6m", "4m", "2m", "1.25m", "70cm", "33cm", "23cm", "13cm", "9cm"),
+}
+_CONTINENT_CODES = frozenset({"AF", "AS", "EU", "NA", "SA", "OC", "AN"})
+
+
+def _split_mult_values(tokens) -> tuple:
+    """Split filter tokens into (country prefixes, continent codes)."""
+    prefixes = tuple(token for token in tokens if token not in _CONTINENT_CODES)
+    continents = tuple(token for token in tokens if token in _CONTINENT_CODES)
+    return prefixes, continents
+
+
+def _sql_values(values) -> str:
+    """A comma-separated SQL list of quoted strings."""
+    return ", ".join("'" + str(value).replace("'", "''") + "'" for value in values)
+
 
 # The multiplier ids the real-time score page (Contest Online ScoreBoard)
 # understands, from the declared type.  It knows exactly seven: zone, country,
@@ -216,25 +363,6 @@ def output_cabrillo_line(line_to_output, ending, file_descriptor, file_encoding)
     )
 
 
-def contest_id(contest) -> str | None:
-    """The identifier of *contest*: its Cabrillo name unless it overrides it.
-
-    The Cabrillo name is what the sponsor's log checker recognises, so it is
-    what identifies the contest everywhere technical: the database column, the
-    log filenames, the directory under ``~/.local/share/not1mm``.  A contest
-    that shares its Cabrillo name with another but is not interchangeable --
-    or that has no meaningful one -- sets ``ContestName`` and is identified by
-    that instead.  (N1MM's UDC files call this field ``Name``.)
-
-    Works on anything carrying the metadata: an instance or a class.
-    """
-    for attribute in ("ContestName", "CabrilloName", "cabrillo_name"):
-        value = getattr(contest, attribute, None)
-        if isinstance(value, str) and value:
-            return value
-    return None
-
-
 def contest_picker_label(display_name: str, cabrillo_name: str) -> str:
     """How the New Contest picker names a contest.
 
@@ -254,17 +382,6 @@ def contest_picker_label(display_name: str, cabrillo_name: str) -> str:
     return f"{display_name} ({cabrillo_name})"
 
 
-def path_name(identifier: str) -> str:
-    """*identifier* as a file or directory name.
-
-    A Cabrillo name can contain a space ("FD CW") or not be upper case at all
-    ("Schwaben Contest"); a log file or directory called that is asking for
-    trouble, so the spaces become underscores.  The log itself keeps the name
-    as it is.
-    """
-    return identifier.replace(" ", "_")
-
-
 class ContestBase:
     """Common behaviour of a contest plugin.
 
@@ -277,14 +394,18 @@ class ContestBase:
     # -- identity (UDC [Contest] names) -------------------------------------
     DisplayName = None  # "CQ WPX CW"; shown, and used as a directory name
     CabrilloName = None  # "CQ-WPX-CW"; the Cabrillo CONTEST: value
+    # N1MM's hand-coded QSO line: "SNT, 4, SentNr, 4, CallSign, 13, ...".
+    # When set, it replaces the layout cabrillo_qso_line() would otherwise use.
+    CabrilloString = ""
     # Where the contest goes in the New Contest picker: lower first, then by
     # display name.  General Logging sets 50 to keep the non-contest mode at
     # the top of the list.
     SortOrder = 100
-    # The identifier, where it is not simply the Cabrillo name.  Only the few
-    # contests that share a Cabrillo name but are not interchangeable set this
-    # -- see contest_id().  N1MM's UDC files call the field Name.
-    ContestName = None
+    # The identifier: the stem of the file this contest is defined in, e.g.
+    # "cq_wpx_cw" for not1mm/plugins/cq_wpx_cw.py or "MWC" for MWC.udc.  The
+    # loader sets it; it is what the database, the macro directory and the
+    # logs use.
+    BaseName = None
     EXCHANGE_HINT = ""  # placeholder in the New Contest dialog
     # The sent exchange, as a template.  A contest that always sends one thing
     # (a serial, a zone) declares it; the operator's value in the contest setup
@@ -303,63 +424,65 @@ class ContestBase:
     ADIFContestID = None
 
     # -- entry window -------------------------------------------------------
-    # These defaults describe the exchange by far the most common in contests:
-    # RST sent, a serial number, RST received.  A contest that sends a name, a
-    # grid, a section or a province sets them (or overrides interface()).
+    # The entry window is built from the boxes this contest declares:
+    # N1MM's EntryWindowInfo, a flat name/width list, and FrameText with one
+    # label per box in the same order:
     #
-    # Focus leaves a field on either of two keys, and they are meant to walk
-    # different fields:
+    #     EntryWindowInfo = ("SNTText", 450, "RCVText", 450,
+    #                        "SntNrText", 625, "RcvNrText", 625)
+    #     FrameText       = ("SNT", "RCV", "SentNR", "RcvNR")
+    #
+    # The box names are the way plugin code reaches the widgets through
+    # parent.fields (fields.Exchange1Text.text()); see not1mm/lib/fields.py.
+    #
+    # Focus leaves a field on either of two keys:
     #
     #   TAB    every field the contest shows, in the window's own order
-    #          (callsign, then EntryFields) -- see visible_fields().
-    #   SPACE  only the "interesting" fields the operator types: RST is almost
-    #          always 599, so space steps over sent and receive.  A field whose
-    #          text may contain spaces (a name, a grid) keeps the space and the
+    #          (callsign first).  Qt's own focus chain does this now, and
+    #          skips a hidden field by itself.
+    #   SPACE  the next field, like TAB -- except where the space is part of
+    #          the text: a box whose FieldSpec says a space is data
+    #          (CommentText) or one this contest lists in SpaceKeepsFocus
+    #          (a name, a grid, "Name 1010# SPC") keeps the space and the
     #          focus instead of advancing.
     #
-    # There is one cycle today: TabOrder builds tab_next, the *_changed()
-    # handlers in __main__.py send SPACE along the same map, and
-    # advance_on_space only decides whether a space advances at all -- so a
-    # field TabOrder leaves out is left out of both keys.
-    #
-    # Which of the four entry fields this contest uses ...
-    EntryFields = ENTRY_WIDGETS
-    # ... and what they are called.  FrameText is (sent, other, exchange);
-    # an empty string leaves that label alone.  The received-RST label is the
-    # odd one out -- most contests leave it "RCV" -- so it has its own knob.
-    FrameText = ("SNT", "SentNR", "RcvNR")
-    RcvLabel = ""
-    # Screen-reader names, one per entry field; an empty string is skipped.
-    AccessibleNames = ("RST Sent", "", "Sent Number", "Received Number")
-    # The order TAB walks the entry fields in, or None for "the fields this
-    # contest shows, in the window's own order" -- which is what almost every
-    # contest wants, so EntryFields is the one list to keep in step.  A contest
-    # that shows a field but keeps it out of the cycle (AGCW's RST fields)
-    # names the order itself.  Shift-TAB walks the same order backwards unless
-    # a contest overrides TabOrderPrev.
-    TabOrder = None
-    TabOrderPrev = None
-    # Where the focus goes once a lookup has run on the callsign, by field
-    # name; almost every contest leaves it on the last exchange field.
-    NextField = "other_2"
+    # The boxes this contest declares, in order.
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    # One label per box, in the same order; "" leaves a label blank.
+    FrameText = ()
+    # Screen-reader names, one per box; an empty string uses the box default.
+    AccessibleNames = ()
+    # Where the focus goes once a lookup has run on the callsign.  None means
+    # the first exchange box the operator still has to fill: the first box
+    # that is neither a report nor the sent-exchange box (which is usually
+    # filled for them).
+    NextField = None
 
-    # not1mm-specific: whether a space typed in other_1/other_2 is a separator
-    # -- strip it and advance to the next field -- or part of the exchange.
-    # The default is the usual one, a space separates, so only a contest whose
-    # exchange *contains* spaces (a name, a grid, "Name 1010# SPC") declares
-    # it, with the slot set to False.  The slots are [callsign, sent, receive,
-    # other_1, other_2]; only 3 and 4 are read.
-    advance_on_space = [True, True, True, True, True]
+    # Boxes whose text may contain a space, so SPACE stays in the field
+    # instead of advancing.  The FieldSpec default covers CommentText; a
+    # contest whose exchange contains spaces (a name, a grid, "Name 1010# SPC")
+    # lists its boxes here.
+    SpaceKeepsFocus = ()
+    # not1mm-specific: parse other_2 into its parts as it is typed, and show
+    # them, for a contest whose received exchange is several fields in one
+    # textbox (Sweepstakes' "sn prec ck sec").
+    call_parse_exchange_on_edit = False
 
     # -- log window ---------------------------------------------------------
     LogInfo = list(LOG_INFO)
 
     # -- ESM ----------------------------------------------------------------
     # Which entry field carries the received exchange, and so which field
-    # finishes the contact.  The base expects the second extra field; a
-    # contest whose exchange is the first one (and leaves other_2 hidden)
-    # sets "other_1".
-    ESMExchangeField = "other_2"
+    # finishes the contact.  None means the last box -- the received
+    # exchange in every shape the window has had.
+    ESMExchangeField = None
+    # UDC's QsoErrorString: which boxes must hold something before the contact
+    # can be finished, e.g.
+    #     "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"
+    # None (not declared) keeps the single ESMExchangeField check; "" means no
+    # check at all (UDC's "do not check"), so ESM logs as soon as an exchange
+    # box has focus.
+    QsoErrorString = None
 
     # -- capabilities (the old hasattr() probes) ---------------------------
     UsesESM = True  # process_esm() drives the ESM state machine
@@ -378,10 +501,16 @@ class ContestBase:
     Bands = ()
     # Which zone scheme the contest exchanges: "CQ" (most) or "IARU".  (UDC.)
     ZoneType = "CQ"
-    # Points for a valid contact.  A contest whose points depend on where the
-    # operator is (WPX's North-America asymmetry, WAG's DL side) overrides
-    # points() instead -- UDC's PointsPerContact cannot express those.
+    # The .sec list a section multiplier is validated against (UDC's
+    # MultWindowType): "Section", "DOK", or the name of a user file.
+    MultWindowType = ""
+    # Points for a valid contact: a number, or a rule list in N1MM's
+    # PointsPerContact grammar.  A rule list is evaluated by points() against
+    # the contact and the station; a contest whose points it cannot express
+    # (a band matrix crossed with the operator's side, say) overrides points().
     PointsPerContact = 0
+    # e.g. "40m, 1, 80m, 2, 160m, 3" or "MyCountry, 1, SameContinent, 2".
+    PointsRules = ""
     # The multipliers, up to three, named and counted the way UDC does it:
     # MultiplierNName is the display name, MultSqlStringN the kind of key,
     # IsMultNPer how the key is counted (see MULT_PER_COLUMNS), NumMults how
@@ -398,11 +527,50 @@ class ContestBase:
     IsMult3Per = None
     # The default "per" for a slot that does not name its own.
     IsMultPer = 4  # once per contest
+    # UDC's per-slot multiplier rules.  MultMultN = 0 keeps the multiplier for
+    # display but leaves it out of the score; DoNotCountMeAsMultN drops the
+    # operator's own country/section/prefix; CountMultOnlyForN and
+    # DoNotCountMultOnlyForN filter by country or continent;
+    # CountMultOnlyForSecN filters by section; MultiplierBands limits the
+    # bands a multiplier counts on (0 = no restriction).
+    MultMult = 1
+    MultMult2 = 1
+    MultMult3 = 1
+    DoNotCountMeAsMult = False
+    DoNotCountMeAsMult2 = False
+    DoNotCountMeAsMult3 = False
+    CountMultOnlyFor = ()
+    CountMultOnlyFor2 = ()
+    CountMultOnlyFor3 = ()
+    DoNotCountMultOnlyFor = ()
+    DoNotCountMultOnlyFor2 = ()
+    DoNotCountMultOnlyFor3 = ()
+    CountMultOnlyForSec = ()
+    CountMultOnlyForSec2 = ()
+    CountMultOnlyForSec3 = ()
+    MultiplierBands = 0
 
     def __init__(self, parent):
         self.parent = parent  # the main window (or the contest harness)
+        # Parse once: the rules are a class constant, and points() runs for
+        # every contact.
+        self._points_rules = (
+            points_rules.parse_points(self.PointsRules) if self.PointsRules else None
+        )
+        self._cabrillo_format = (
+            cabrillostring.parse_cabrillostring(self.CabrilloString)
+            if self.CabrilloString
+            else None
+        )
 
     # -- the names the application used before this was a class -------------
+    @property
+    def section_list(self):
+        """The :attr:`MultWindowType` list, or None when none is named."""
+        if not self.MultWindowType:
+            return None
+        return sections.load_sec(self.MultWindowType)
+
     @property
     def name(self):
         """The old name for :attr:`DisplayName`."""
@@ -429,99 +597,108 @@ class ContestBase:
         return self.LogInfo
 
     # -- setup --------------------------------------------------------------
+    def entry_boxes(self):
+        """The boxes this contest wants, with their labels and visibility.
+
+        The result is passed straight to ``Fields.configure()``.
+        """
+        boxes = parse_entry_window_info(self.EntryWindowInfo)
+        labels = tuple(self.FrameText)
+        accessible = tuple(self.AccessibleNames)
+        described = []
+        for index, box in enumerate(boxes):
+            if index < len(labels):
+                box.label = labels[index]
+            if index < len(accessible):
+                box.accessible = accessible[index]
+            described.append(box)
+        return tuple(described)
+
+    def declared_boxes(self) -> tuple:
+        """``(name, column)`` for every box the contest declares, in order."""
+        return tuple((box.spec.name, box.spec.column) for box in self.entry_boxes())
+
+    def default_next_field_name(self) -> str:
+        """The first box the operator still has to fill.
+
+        Reports are skipped (the mode fills them) and so is the sent-exchange
+        box (prefill fills it).  A contest that shows only reports falls back
+        to the first box after the sent report -- DXpedition's received report
+        -- and a window with no exchange boxes leaves the callsign alone.
+        """
+        boxes = self.declared_boxes()
+        for name, column in boxes:
+            if column not in ("SNT", "RCV", "SentNr"):
+                return name
+        for name, _ in boxes:
+            if name != "SNTText":
+                return name
+        return "callsign"
+
+    def default_esm_exchange_field_name(self) -> str:
+        """The last box: the received exchange, whatever its name."""
+        boxes = self.declared_boxes()
+        if boxes:
+            return boxes[-1][0]
+        all_boxes = self.entry_boxes()
+        return all_boxes[-1].spec.name if all_boxes else "callsign"
+
+    def next_field_name(self) -> str:
+        """Where a lookup leaves the focus: the declaration or the default."""
+        return self.NextField or self.default_next_field_name()
+
+    def esm_field_name(self) -> str:
+        """The box that finishes the contact: the declaration or the last one."""
+        return self.ESMExchangeField or self.default_esm_exchange_field_name()
+
     def init_contest(self):
-        """Set up the entry window and the TAB order for this contest."""
-        self.set_tab_next()
-        self.set_tab_prev()
+        """Set up the entry window and the SPACE cycle for this contest."""
         self.interface()
-        self.parent.next_field = getattr(self.parent, self.NextField)
+        self.set_tab_next()
+        target = entry_edit(self.parent, self.next_field_name())
+        if target is None:
+            fields = getattr(self.parent, "fields", None)
+            target = fields.last_edit() if fields is not None else self.parent.callsign
+        self.parent.next_field = target
 
     def interface(self):
-        """Show the entry fields this contest uses and label them."""
+        """Show the boxes this contest uses, and (re)label them.
+
+        ``Fields.configure`` only rebuilds the widgets when the set of boxes
+        changes, so a language switch or a contest switch that keeps the same
+        row preserves what the operator typed.
+        """
         parent = self.parent
-        for field in ENTRY_WIDGETS:
-            widget = getattr(parent, field)
-            if field in self.EntryFields:
-                widget.show()
-            else:
-                widget.hide()
-        for label, text in zip(
-            ("snt_label", "other_label", "exch_label"), self.FrameText
-        ):
-            if text:
-                getattr(parent, label).setText(
-                    QtWidgets.QApplication.translate("ContestPlugin", text)
-                )
-        if self.RcvLabel:
-            parent.rcv_label.setText(
-                QtWidgets.QApplication.translate("ContestPlugin", self.RcvLabel)
-            )
-        # The accessible name goes on the line edit, not on the frame: the
-        # frame is only the show/hide container, and the line edit is the
-        # widget that takes focus, so it is the one a screen reader names.
-        for field, accessible in zip(ENTRY_FIELDS[1:], self.AccessibleNames):
-            if accessible:
-                getattr(parent, field).setAccessibleName(accessible)
+        fields = getattr(parent, "fields", None)
+        if fields is None:
+            return
+        if fields.configure(self.entry_boxes()):
+            after = getattr(parent, "after_fields_rebuilt", None)
+            if after is not None:
+                after()
 
     def visible_fields(self) -> tuple:
         """The entry fields this contest shows, callsign first, in window order.
 
-        The callsign is always shown; the other four follow :attr:`EntryFields`.
+        The callsign is always shown; the rest are the contest's boxes, in the
+        order it declared them.
         """
-        return ("callsign",) + tuple(
-            name
-            for widget, name in zip(ENTRY_WIDGETS, ENTRY_FIELDS[1:])
-            if widget in self.EntryFields
-        )
+        parent = self.parent
+        fields = getattr(parent, "fields", None)
+        if fields is not None and fields.all_names():
+            return ("callsign",) + fields.names()
+        return ("callsign",) + tuple(box.spec.name for box in self.entry_boxes())
 
     def set_tab_next(self):
-        """TAB walks the entry fields in :attr:`TabOrder`, then wraps.
+        """SPACE walks the entry fields in window order, then wraps.
 
-        A field the order leaves out -- a hidden one, or an RST field the
-        contest skips -- advances to the next field the order does visit, in
-        the window's own order.  TAB moves forward, so it does not wrap to the
-        first field unless there is nothing after it.
+        SPACE moves forward, so it does not wrap to the first field unless
+        there is nothing after it.
         """
-        parent = self.parent
-        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
-        fields = [getattr(parent, name) for name in order]
-        following = {}
-        for index, field in enumerate(fields):
-            following[field] = fields[(index + 1) % len(fields)]
-        visited = set(order)
-        for index, name in enumerate(ENTRY_FIELDS):
-            widget = getattr(parent, name)
-            if widget in following:
-                continue
-            after = [n for n in ENTRY_FIELDS[index + 1 :] if n in visited]
-            following[widget] = getattr(parent, after[0]) if after else fields[0]
-        parent.tab_next = following
-
-    def set_tab_prev(self):
-        """Shift-TAB walks :attr:`TabOrderPrev` backwards.
-
-        By default that is :attr:`TabOrder` itself, i.e. the reverse cycle of
-        :meth:`set_tab_next`.  A contest whose fields collapse onto each other
-        (several fields all advancing to the same one) can set TabOrderPrev to
-        get its own order back.  A field the order leaves out goes back to the
-        previous field the order visits, in the window's own order.
-        """
-        parent = self.parent
-        order = self.TabOrder if self.TabOrder is not None else self.visible_fields()
-        if self.TabOrderPrev is not None:
-            order = self.TabOrderPrev
-        fields = [getattr(parent, name) for name in order]
-        previous = {}
-        for index, field in enumerate(fields):
-            previous[field] = fields[index - 1]
-        visited = set(order)
-        for index, name in enumerate(ENTRY_FIELDS):
-            widget = getattr(parent, name)
-            if widget in previous:
-                continue
-            before = [n for n in ENTRY_FIELDS[:index] if n in visited]
-            previous[widget] = getattr(parent, before[-1]) if before else fields[-1]
-        parent.tab_prev = previous
+        order = self.parent.fields.display_order()
+        self.parent.tab_next = {
+            edit: order[(index + 1) % len(order)] for index, edit in enumerate(order)
+        }
 
     # -- logging ------------------------------------------------------------
     def reset_label(self):
@@ -540,7 +717,15 @@ class ContestBase:
         the CW cut numbers belong on the air, not in the log.
         """
         parent = self.parent
-        if parent.other_1.text():
+        fields = getattr(parent, "fields", None)
+        if fields is not None and hasattr(fields, "by_column"):
+            box = fields.by_column("SentNr")
+            target = box.edit if box is not None else None
+        else:
+            # A parent without Fields (an old test harness) still has the
+            # positional name.
+            target = entry_edit(parent, "other_1")
+        if target is None or target.text():
             return
         exchange = parent.process_macro(
             str(parent.contest_settings.get("SentExchange", "") or "")
@@ -548,7 +733,24 @@ class ContestBase:
             cut=False,
         )
         if exchange:
-            parent.other_1.setText(exchange)
+            target.setText(exchange)
+
+    def report_default(self) -> str:
+        """The RST a contest sends when its entry window has no report box.
+
+        The old fixed window always had two report boxes, so a contest that
+        hid them still had them filled by the mode switch.  A declared window
+        has no box to read, so the value comes from the mode: phone is 59,
+        everything else 599.
+        """
+        mode = getattr(self.parent, "current_mode", "")
+        if not isinstance(mode, str):
+            mode = ""
+        if mode in ("LSB", "USB", "SSB", "FM", "AM"):
+            return "59"
+        if not mode and self.Mode == "SSB":
+            return "59"
+        return "599"
 
     def is_dupe(self, call: str, band, mode: str) -> bool:
         """Is this call on this band+mode a dupe?  (UDC DupeType)
@@ -604,25 +806,38 @@ class ContestBase:
     def points(self):
         """Points for the contact being logged.
 
-        Zero for a dupe, else :attr:`PointsPerContact`.  A contest whose points
-        depend on where the operator is (WPX, WAG) overrides this.
+        Zero for a dupe.  Otherwise :attr:`PointsRules` decides, or else
+        :attr:`PointsPerContact`.  A contest whose points the rule grammar
+        cannot express (WPX's North-America asymmetry, WAG's DL side) overrides
+        this.
         """
         if self.parent.contact_is_dupe:
             return 0
+        if self._points_rules is not None:
+            parent = self.parent
+            return points_rules.score(
+                self._points_rules,
+                contact=getattr(parent, "contact", {}) or {},
+                station=getattr(parent, "station", {}) or {},
+                lookup=getattr(parent, "cty_lookup", None),
+                sent_exchange=str(
+                    getattr(parent, "contest_settings", {}).get("SentExchange", "")
+                    or ""
+                ),
+            )
         return self.PointsPerContact
 
     def set_contact_vars(self):
-        """Copy the entry fields into ``self.parent.contact``.
+        """Copy each declared box into the contact column it names.
 
-        The exchange most contests use -- RST and a serial number, sent and
-        received -- and then the multipliers the contact is worth.  A contest
-        whose fields differ overrides this.
+        The base mapping is the N1MM one (SNTText -> SNT, RcvNrText -> NR, …);
+        a contest whose exchange is parsed, normalised or derived overrides
+        this.  Multipliers are marked after the columns are filled.
         """
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        for field in parent.fields:
+            if field.spec.column:
+                parent.contact[field.spec.column] = field.edit.text()
         self.mark_multipliers()
 
     # -- multipliers --------------------------------------------------------
@@ -655,25 +870,185 @@ class ContestBase:
                 return per
         return ()
 
+    def _slot_attr(self, slot: int, base: str):
+        """A per-slot attribute: ``MultMult`` for 1, ``MultMult2`` for 2, ..."""
+        name = base if slot == 1 else f"{base}{slot}"
+        return getattr(self, name, getattr(self, base))
+
+    def _mult_scored(self, slot: int) -> bool:
+        """Whether a slot's count belongs to the score (UDC's MultMultN)."""
+        return bool(self._slot_attr(slot, "MultMult"))
+
+    def _lookup_entity(self, call: str) -> dict:
+        lookup = getattr(self.parent, "cty_lookup", None)
+        if lookup is None or not call:
+            return {}
+        try:
+            result = lookup(call)
+        except Exception:  # noqa: BLE001 -- a lookup must not break scoring
+            return {}
+        if not result:
+            return {}
+        return result.get(next(iter(result))) or {}
+
+    def _contact_country(self, contact) -> str:
+        text = str(contact.get("CountryPrefix") or "").upper()
+        if text:
+            return text
+        return str(
+            self._lookup_entity(contact.get("Call", "")).get("primary_pfx", "")
+        ).upper()
+
+    def _contact_continent(self, contact) -> str:
+        text = str(contact.get("Continent") or "").upper()
+        if text:
+            return text
+        return str(
+            self._lookup_entity(contact.get("Call", "")).get("continent", "")
+        ).upper()
+
+    def _my_country(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return str(
+            self._lookup_entity(station.get("Call", "")).get("primary_pfx", "")
+            or station.get("CountryPrefix", "")
+        ).upper()
+
+    def _my_section(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return str(station.get("ARRLSection", "") or "").upper()
+
+    def _my_wpx(self) -> str:
+        station = getattr(self.parent, "station", {}) or {}
+        return calculate_wpx_prefix(station.get("Call", "")).upper()
+
+    def _country_condition(self, tokens) -> str | None:
+        prefixes, continents = _split_mult_values(tokens)
+        parts = []
+        if prefixes:
+            parts.append(f"upper(CountryPrefix) IN ({_sql_values(prefixes)})")
+        if continents:
+            parts.append(f"upper(Continent) IN ({_sql_values(continents)})")
+        return f"({' OR '.join(parts)})" if parts else None
+
+    def _mult_allowed(self, slot: int, contact, value) -> bool:
+        """Apply UDC's multiplier filters to one contact's key."""
+        bands = MULTIPLIER_BANDS.get(self.MultiplierBands)
+        if bands:
+            band = band_mhz_of(contact.get("Band"))
+            if band and not any(abs(band - item) < 0.01 for item in bands):
+                return False
+
+        tokens = self._slot_attr(slot, "CountMultOnlyFor")
+        prefixes, continents = _split_mult_values(tokens)
+        if prefixes or continents:
+            country = self._contact_country(contact)
+            continent = self._contact_continent(contact)
+            if not (
+                (prefixes and country in prefixes)
+                or (continents and continent in continents)
+            ):
+                return False
+
+        tokens = self._slot_attr(slot, "DoNotCountMultOnlyFor")
+        prefixes, continents = _split_mult_values(tokens)
+        if prefixes or continents:
+            country = self._contact_country(contact)
+            continent = self._contact_continent(contact)
+            if (prefixes and country in prefixes) or (
+                continents and continent in continents
+            ):
+                return False
+
+        sections = self._slot_attr(slot, "CountMultOnlyForSec")
+        if sections and str(contact.get("Sect", "")).upper() not in sections:
+            return False
+
+        if self._slot_attr(slot, "DoNotCountMeAsMult"):
+            key = self._mult_key(slot) or ""
+            text = str(value).upper()
+            if key in ("Section", "Sect") and text == self._my_section():
+                return False
+            if key == "CountryPrefix" and text == self._my_country():
+                return False
+            if key == "WPXPrefix" and text == self._my_wpx():
+                return False
+        return True
+
+    def _mult_sql_conditions(self, slot: int) -> list:
+        """The SQL filters for a slot's multiplier key."""
+        conditions = []
+        bands = MULTIPLIER_BANDS.get(self.MultiplierBands)
+        if bands:
+            conditions.append(f"Band IN ({_sql_values(bands)})")
+
+        tokens = self._slot_attr(slot, "CountMultOnlyFor")
+        if tokens:
+            condition = self._country_condition(tokens)
+            if condition:
+                conditions.append(condition)
+
+        tokens = self._slot_attr(slot, "DoNotCountMultOnlyFor")
+        if tokens:
+            condition = self._country_condition(tokens)
+            if condition:
+                conditions.append(f"NOT {condition}")
+
+        sections = self._slot_attr(slot, "CountMultOnlyForSec")
+        if sections:
+            conditions.append(f"upper(Sect) IN ({_sql_values(sections)})")
+
+        if self._slot_attr(slot, "DoNotCountMeAsMult"):
+            key = self._mult_key(slot) or ""
+            mine = ""
+            column = ""
+            if key in ("Section", "Sect"):
+                mine, column = self._my_section(), "Sect"
+            elif key == "CountryPrefix":
+                mine, column = self._my_country(), "CountryPrefix"
+            elif key == "WPXPrefix":
+                mine, column = self._my_wpx(), "WPXPrefix"
+            if mine and column:
+                conditions.append(
+                    f"upper({column}) != '{mine.replace(chr(39), chr(39) * 2)}'"
+                )
+        return conditions
+
     def mult_type_name(self, slot: int) -> str:
         """The score-page id for a slot's multiplier (see RTC_MULT_TYPES)."""
         key = self._mult_key(slot) or ""
         return RTC_MULT_TYPES.get(key, key.lower())
 
     def mult_sql(self, slot: int):
-        """The SQL expression for a slot's key, or None if it has no name."""
+        """The SQL expression for a slot's key, or None if it has no name.
+
+        UDC's filters (count only for, bands, own country, ...) are part of the
+        expression, so counting the log and marking a contact agree.
+        """
         entry = MULT_KEYS.get(self._mult_key(slot) or "")
-        return entry[0] if entry else None
+        if not entry:
+            return None
+        base = entry[0]
+        conditions = self._mult_sql_conditions(slot)
+        if conditions:
+            return f"CASE WHEN {' AND '.join(conditions)} THEN ({base}) END"
+        return base
 
     def mult_value(self, slot: int, contact):
         """The multiplier a contact contributes to a slot, or None.
 
         Works on a logged contact, on the one being typed, and on a bandmap
         spot (which carries only Call/Band/Mode); a key that needs the received
-        exchange returns None until it has been entered.
+        exchange returns None until it has been entered.  The slot's filters
+        (UDC's CountMultOnlyFor, DoNotCountMeAsMult, ...) are applied here too.
         """
         entry = MULT_KEYS.get(self._mult_key(slot) or "")
-        return entry[1](contact) if entry else None
+        if not entry:
+            return None
+        value = entry[1](contact)
+        if not self._mult_allowed(slot, contact, value):
+            return None
+        return value
 
     def is_new_mult(self, slot: int, contact) -> int:
         """1 when the contact's key for this slot is not in the log yet."""
@@ -716,7 +1091,11 @@ class ContestBase:
 
     def show_mults(self):
         """Multiplier count for the score display; 0 when there are none."""
-        return sum(self._mult_count(slot) for slot, _, _, _ in self._mult_slots())
+        return sum(
+            self._mult_count(slot)
+            for slot, _, _, _ in self._mult_slots()
+            if self._mult_scored(slot)
+        )
 
     def calc_score(self):
         """Claimed score: the points, times the multipliers if there are any."""
@@ -724,7 +1103,7 @@ class ContestBase:
         points = 0
         if result is not None:
             points = int(result.get("Points") or 0)
-        if self.NumMults:
+        if any(self._mult_scored(slot) for slot, _, _, _ in self._mult_slots()):
             return points * self.show_mults()
         return points
 
@@ -759,11 +1138,11 @@ class ContestBase:
     # -- the score page / cluster -------------------------------------------
     def get_mults(self):
         """Multiplier counts for the real-time score XML, keyed by type id."""
-        slots = list(self._mult_slots())
+        slots = [entry for entry in self._mult_slots() if self._mult_scored(entry[0])]
         if not slots:
             return {}
         if len(slots) == 1:
-            return {self.mult_type_name(slots[0][0]): self.show_mults()}
+            return {self.mult_type_name(slots[0][0]): self._mult_count(slots[0][0])}
         return {
             self.mult_type_name(slot): self._mult_count(slot) for slot, _, _, _ in slots
         }
@@ -959,36 +1338,105 @@ class ContestBase:
         a serial number, sent and received.  A contest that sends a name, a
         grid, a section or something else overrides this.
         """
+        if self._cabrillo_format is not None:
+            parent = self.parent
+            settings = getattr(parent, "contest_settings", {}) or {}
+            sent = str(contact.get("SentNr", "")) or str(
+                settings.get("SentExchange", "") or ""
+            )
+            return cabrillostring.qso_line(
+                self._cabrillo_format,
+                contact,
+                my_call=str(contact.get("StationPrefix", "")),
+                mode=self.cabrillo_mode(contact.get("Mode", "")),
+                sent_exchange=sent,
+            )
+
         the_date_and_time = contact.get("TS", "")
         loggeddate = the_date_and_time[:10]
         loggedtime = the_date_and_time[11:13] + the_date_and_time[14:16]
         frequency = str(round(contact.get("Freq", "0"))).rjust(5)
+        # A UDC records its exchange in the last declared box; a plugin uses
+        # the serial columns.
+        sent_column = getattr(self, "UdcSentColumn", "SentNr") or "SentNr"
+        received_column = getattr(self, "UdcReceivedColumn", "NR") or "NR"
         return (
             f"QSO: {frequency} {self.cabrillo_mode(contact.get('Mode', ''))} "
             f"{loggeddate} {loggedtime} "
             f"{contact.get('StationPrefix', '').ljust(13)} "
             f"{str(contact.get('SNT', '')).ljust(3)} "
-            f"{str(contact.get('SentNr', '')).ljust(6)} "
+            f"{str(contact.get(sent_column, '')).ljust(6)} "
             f"{contact.get('Call', '').ljust(13)} "
             f"{str(contact.get('RCV', '')).ljust(3)} "
-            f"{str(contact.get('NR', '')).ljust(6)}"
+            f"{str(contact.get(received_column, '')).ljust(6)}"
         )
 
     # -- ESM ----------------------------------------------------------------
+    def qso_error_rules(self) -> tuple:
+        """The QsoErrorString rules that decide whether the exchange is here."""
+        return parse_qso_error_string(self.QsoErrorString, self.esm_field_name())
+
+    def esm_exchange_edits(self) -> tuple:
+        """The line edits ESM acts on when the operator is in the exchange.
+
+        The boxes named in ``QsoErrorString`` when it is declared; with ``""``
+        every non-report box, because there is nothing to check and any
+        exchange field may finish the contact; with ``None`` the old single
+        ``ESMExchangeField``.
+        """
+        if self.QsoErrorString is None:
+            edit = entry_edit(self.parent, self.esm_field_name())
+            return (edit,) if edit is not None else ()
+        rules = self.qso_error_rules()
+        if not rules:
+            return tuple(
+                field.edit
+                for field in getattr(self.parent, "fields", ())
+                if field.spec.column not in ("SNT", "RCV")
+            )
+        edits = []
+        for rule in rules:
+            edit = entry_edit(self.parent, rule.box)
+            if edit is None:
+                logger.warning(
+                    "%s: QsoErrorString names %r, which is not declared",
+                    self.DisplayName,
+                    rule.box,
+                )
+                continue
+            edits.append(edit)
+        return tuple(edits)
+
+    def esm_exchange_ready(self) -> bool:
+        """Do the QsoErrorString rules accept what is in the boxes?
+
+        A hook as much as a check: a contest whose completeness depends on the
+        station (NAQP's name + optional location, ARRL 160's DX/W-VE split) or
+        on the shape of the text overrides this, and keeps the base's response
+        -- AGN when it is not ready, the exchange/QRZ and LOGIT when it is.
+        """
+        for rule in self.qso_error_rules():
+            edit = entry_edit(self.parent, rule.box)
+            if edit is None:
+                continue
+            if not rule.accepts(edit.text()):
+                return False
+        return True
+
     def process_esm(self, new_focused_widget=None, with_enter=False):
         """Drive the Enter-Sends-Message state machine for this contact.
 
-        The exchange counts as copied once the exchange field has something in
-        it; an empty field asks for a repeat.  That is deliberately not a
-        validity check: an exchange our rules do not recognise is not fixed by
-        a repeat, so judging it (and letting the operator log anyway) is a
-        separate concern.  A contest whose exchange is a different widget, or
-        whose macros go somewhere other than the function keys, overrides
-        this, as the RTTY contests do.
+        The exchange counts as copied when the contest's QsoErrorString rules
+        accept it; otherwise ESM asks for a repeat.  That is deliberately not
+        a validity check: an exchange our rules do not recognise is not fixed
+        by a repeat, so judging it (and letting the operator log anyway) is a
+        separate concern.  A contest whose macros go somewhere other than the
+        function keys overrides this, as the RTTY contests do.
         """
         parent = self.parent
         if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -1006,10 +1454,10 @@ class ContestBase:
         ):
             parent.restore_button_color(a_button)
 
-        exchange = getattr(parent, self.ESMExchangeField)
+        exchange_edits = self.esm_exchange_edits()
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -1020,8 +1468,8 @@ class ContestBase:
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget == self.ESMExchangeField:
-                if exchange.text() == "":
+            elif any(focused is edit for edit in exchange_edits):
+                if not self.esm_exchange_ready():
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -1045,13 +1493,13 @@ class ContestBase:
                             parent.esm_call_sent = parent.callsign.text()
                         parent.process_function_key(button)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget == self.ESMExchangeField:
-                if exchange.text() == "":
+            elif any(focused is edit for edit in exchange_edits):
+                if not self.esm_exchange_ready():
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 else:
@@ -1093,29 +1541,35 @@ def _import_optional(dotted_name: str):
         return None
 
 
-def _import_source(source: str):
-    """The module a contest is defined in, by the name of its file.
+def _import_plugin(basename: str):
+    """The plugin module a contest is defined in, by the name of its file.
 
-    A contest is ``not1mm/plugins/<source>.py``; ``<source>`` is what the
-    identifiers in the database used to be.
+    A contest is ``not1mm/plugins/<basename>.py``; ``<basename>`` is its
+    identifier.  The class is stamped with it here, because this is the one
+    place that knows the file name rather than the class's Cabrillo name.
     """
-    return _import_optional(f"not1mm.plugins.{source}")
+    module = _import_optional(f"not1mm.plugins.{basename}")
+    if module is not None:
+        contest_class = getattr(module, "Contest", None)
+        if contest_class is not None:
+            contest_class.BaseName = basename
+    return module
 
 
-# An identifier that could be a file or directory name; anything with a dot or
-# a space in it (most Cabrillo names) is not worth trying to import.
-_SOURCE_NAME = re.compile(r"[A-Za-z0-9_-]+")
+# A basename that could be imported as a module; anything with a dot or a
+# space in it (most Cabrillo names) is not worth trying.
+_BASENAME = re.compile(r"[A-Za-z0-9_-]+")
 
 
 @dataclass(frozen=True)
 class ContestInfo:
     """One contest this installation can open."""
 
-    source: str  # where it is defined, e.g. "cq_wpx_cw"
-    identifier: str  # what the database stores, e.g. "CQ-WPX-CW"
+    basename: str  # where it is defined, and what the database stores
     display_name: str  # what to show, e.g. "CQ WPX CW"
     cabrillo_name: str = ""  # the Cabrillo CONTEST: value, e.g. "CQ-WPX-CW"
     sort_order: int = 100  # where it goes in the picker
+    udc_path: Path | None = None  # set for a UDC-defined contest, None for a plugin
 
     @property
     def picker_label(self) -> str:
@@ -1123,46 +1577,68 @@ class ContestInfo:
         return contest_picker_label(self.display_name, self.cabrillo_name)
 
 
+# A stored contest name that no longer resolves opens as this contest, so its
+# contacts stay reachable until the operator picks the real one again.
+FALLBACK_BASENAME = "general_logging"
+
 _AVAILABLE: list[ContestInfo] | None = None
 
 
-def _contest_info(source: str) -> ContestInfo | None:
+def _contest_info(basename: str) -> ContestInfo | None:
     """Read one plugin, or None if it declares no contest."""
-    module = _import_source(source)
+    module = _import_plugin(basename)
     if module is None:
         return None
     metadata = getattr(module, "Contest", None)
     if metadata is None:
-        logger.warning("Contest %s defines no Contest class", source)
+        logger.warning("Contest %s defines no Contest class", basename)
         return None
-    identifier = contest_id(metadata)
-    if identifier is None:
-        logger.warning("Contest %s declares no Cabrillo name", source)
+    if not getattr(metadata, "CabrilloName", None):
+        logger.warning("Contest %s declares no Cabrillo name", basename)
         return None
     return ContestInfo(
-        source=source,
-        identifier=identifier,
+        basename=basename,
         display_name=getattr(metadata, "DisplayName", None) or "",
         cabrillo_name=getattr(metadata, "CabrilloName", None) or "",
         sort_order=getattr(metadata, "SortOrder", 100),
     )
 
 
-def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
-    """Every contest definition, in file-name order.
+def _udc_info(path: Path) -> ContestInfo | None:
+    """Read one .udc file, or None if it declares no contest."""
+    from not1mm.lib.parse_udc import contest_from_udc, parse_udc
 
-    A plugin that does not load is a hard error unless *tolerant*, in which
-    case it is skipped with a warning and the rest are still offered.
-    """
+    udc = parse_udc(path)
+    contest_class = contest_from_udc(udc)
+    return ContestInfo(
+        basename=udc.basename,
+        display_name=getattr(contest_class, "DisplayName", None) or "",
+        cabrillo_name=getattr(contest_class, "CabrilloName", None) or "",
+        sort_order=getattr(contest_class, "SortOrder", 100),
+        udc_path=path,
+    )
+
+
+def _scan_udcs(*, tolerant: bool = False) -> list[ContestInfo]:
+    """Every UDC the installation can read, in file-name order."""
+    from not1mm.lib.parse_udc import UdcError, udc_files
+
     found = []
-    for source in _contest_sources():
+    for _basename, path in sorted(
+        udc_files().items(), key=lambda item: item[0].casefold()
+    ):
         try:
-            info = _contest_info(source)
-        except Exception:
+            info = _udc_info(path)
+        except UdcError as exc:
+            if not tolerant:
+                raise
+            logger.warning("Skipping UDC %s: %s", path.name, exc)
+            continue
+        except Exception:  # noqa: BLE001 -- one broken file must not hide the rest
             if not tolerant:
                 raise
             logger.warning(
-                "Skipping contest %s: it does not load", source, exc_info=True
+                "Skipping UDC %s: it does not load", path.name, exc_info=True
             )
             continue
         if info is not None:
@@ -1170,93 +1646,140 @@ def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
     return found
 
 
+def _scan_contests(*, tolerant: bool = False) -> list[ContestInfo]:
+    """Every contest definition: the plugins, then the UDC files.
+
+    A definition that does not load is a hard error unless *tolerant*, in which
+    case it is skipped with a warning and the rest are still offered.
+    """
+    found = []
+    for basename in _contest_basenames():
+        try:
+            info = _contest_info(basename)
+        except Exception:  # noqa: BLE001 -- one broken plugin must not hide the rest
+            if not tolerant:
+                raise
+            logger.warning(
+                "Skipping contest %s: it does not load", basename, exc_info=True
+            )
+            continue
+        if info is not None:
+            found.append(info)
+    found.extend(_scan_udcs(tolerant=tolerant))
+    return found
+
+
 def available_contests() -> list[ContestInfo]:
-    """Every contest that ships with not1mm.
+    """Every contest this installation can open: the plugins and the UDCs.
 
     Built on demand, because it has to import each definition to read what it
     declares -- cheap once, and only needed when a contest has to be found by
-    something other than the name of the file it lives in.
+    something other than the name of the file it lives in.  A broken definition
+    is skipped rather than taking the registry down: a user-supplied .udc must
+    not be able to hide every built-in contest.
     """
     global _AVAILABLE
     if _AVAILABLE is not None:
         return _AVAILABLE
-    _AVAILABLE = _scan_contests()
+    _AVAILABLE = _scan_contests(tolerant=True)
     return _AVAILABLE
 
 
-def _contest_sources() -> list[str]:
+def _contest_basenames() -> list[str]:
     """The name of every contest definition that ships with not1mm."""
     return sorted(
         path.stem for path in PLUGIN_PATH.glob("*.py") if path.stem != "__init__"
     )
 
 
-def _find_module(identifier: str):
-    """The module for *identifier*.
+def _find_module(basename: str):
+    """The plugin module for *basename*.
 
-    Whatever the database recorded over the years has to keep loading: the id
-    (the Cabrillo name), the name of the file the contest lives in, or its
-    display name.  A source name is tried first because that is a plain import;
-    the Cabrillo name needs the whole tree scanned to see which file declares
-    it.
+    A basename is a plain import; a differently-cased one is matched against
+    the plugin files.  A display or Cabrillo name is not an identifier and does
+    not resolve here -- :func:`contest_basename_for_display` is the one place
+    that turns a human label into a basename.
     """
-    if not isinstance(identifier, str) or not identifier:
+    if not isinstance(basename, str) or not basename:
         return None
-    if _SOURCE_NAME.fullmatch(identifier):
-        module = _import_source(identifier)
+    if _BASENAME.fullmatch(basename):
+        module = _import_plugin(basename)
         if module is not None:
             return module
 
-    wanted = identifier.casefold()
-    matches = [
-        info
-        for info in available_contests()
-        if wanted
-        in (
-            info.identifier.casefold(),
-            info.source.casefold(),
-            info.display_name.casefold(),
-        )
-    ]
-    if len(matches) > 1:
-        # Two definitions share an identifier and it does not say which one is
-        # meant -- the fall and spring Ten-Ten QSO parties, for one.  Say so
-        # rather than pick silently.
-        logger.warning(
-            "Contest %r is ambiguous, using %s: %s",
-            identifier,
-            matches[0].source,
-            ", ".join(info.source for info in matches),
-        )
-    return _import_source(matches[0].source) if matches else None
+    wanted = basename.casefold()
+    for name in _contest_basenames():
+        if name.casefold() == wanted:
+            return _import_plugin(name)
+    return None
 
 
-def load_contest(identifier: str, parent):
-    """Import the contest called *identifier* and bind it to the main window.
+def _find_udc(basename: str) -> Path | None:
+    """The .udc file for *basename*.
+
+    The file stem is the identifier; the match is case-insensitive.
+    """
+    from not1mm.lib.parse_udc import udc_files
+
+    if not isinstance(basename, str) or not basename:
+        return None
+    wanted = basename.casefold()
+    for stem, path in udc_files().items():
+        if stem.casefold() == wanted:
+            return path
+    return None
+
+
+def load_contest(basename: str, parent):
+    """Open the contest called *basename* and bind it to the main window.
 
     A contest is a ``class Contest(ContestBase)`` in
-    ``not1mm.plugins.<source>``, and its test fixtures are in
-    ``not1mm/contest/<source>/``.
+    ``not1mm.plugins.<basename>`` (with test fixtures in
+    ``not1mm/contest/<basename>/``), or a ``.udc`` file, whose stem is the
+    identifier.
     """
-    contest_class = contest_metadata(identifier)
+    contest_class = contest_metadata(basename)
     if contest_class is None:
-        raise ModuleNotFoundError(f"no contest plugin named {identifier!r}")
+        raise ModuleNotFoundError(f"no contest named {basename!r}")
     return contest_class(parent)
 
 
-def contest_metadata(identifier: str):
-    """The ``Contest`` class for *identifier*, or None if there is no such contest."""
-    module = _find_module(identifier)
-    if module is None:
+def contest_metadata(basename: str):
+    """The ``Contest`` class for *basename*, or None if there is no such contest.
+
+    A plugin wins over a UDC file that claims the same basename, because the
+    built-in contests are the ones the rest of the application is tested
+    against.
+    """
+    module = _find_module(basename)
+    if module is not None:
+        contest_class = getattr(module, "Contest", None)
+        if contest_class is None:
+            logger.warning("Contest %s defines no Contest class", basename)
+        return contest_class
+
+    path = _find_udc(basename)
+    if path is None:
         return None
-    contest_class = getattr(module, "Contest", None)
-    if contest_class is None:
-        logger.warning("Contest %s defines no Contest class", identifier)
+    from not1mm.lib.parse_udc import UdcError, contest_from_udc, parse_udc
+
+    try:
+        contest_class = contest_from_udc(parse_udc(path))
+    except UdcError as exc:
+        logger.warning("UDC %s cannot be loaded: %s", path.name, exc)
+        return None
+    unimplemented = getattr(contest_class, "UdcUnimplemented", ())
+    if unimplemented:
+        logger.warning(
+            "UDC %s: parsed but not applied: %s",
+            path.name,
+            ", ".join(unimplemented),
+        )
     return contest_class
 
 
-def contest_identifier_for_display(display_name: str) -> str | None:
-    """The identifier of the contest once labelled *display_name* in the picker.
+def contest_basename_for_display(display_name: str) -> str | None:
+    """The basename of the contest once labelled *display_name* in the picker.
 
     The picker used to be a hand-maintained list of short labels ("OK1WC",
     "LZ-DX", "10 10 FALL CW") kept in the .ui file, and what linked a label to
@@ -1266,59 +1789,66 @@ def contest_identifier_for_display(display_name: str) -> str | None:
     has to keep resolving.  A contest's own display name is accepted too, for
     callers that have one.
 
-    The picker no longer needs this -- it carries the identifier as item data
+    The picker no longer needs this -- it carries the basename as item data
     and labels itself with :func:`contest_picker_label` -- but stored values
-    from before the change still go through here.
+    from older versions still go through here.
     """
     folded = display_name.casefold().replace(" ", "_")
     wanted = display_name.casefold()
     available = available_contests()
     for info in available:
-        if info.source.casefold() == folded:
-            return info.identifier
+        if info.basename.casefold() == folded:
+            return info.basename
     for info in available:
         if info.display_name.casefold() == wanted:
-            return info.identifier
+            return info.basename
     return None
 
 
 def contest_picker_entries() -> list[tuple[str, str]]:
     """The New Contest picker, in the order it is shown.
 
-    Each entry is ``(label, identifier)``: the label is what the operator
-    reads, the identifier is what the database stores.  Contests come first,
-    lowest ``SortOrder`` first and then by display name; a plugin that does not
-    load is left out so the picker still opens on the rest.
+    Each entry is ``(label, basename)``: the label is what the operator reads,
+    the basename is what the database stores.  Contests come first, lowest
+    ``SortOrder`` first and then by display name; a plugin that does not load
+    is left out so the picker still opens on the rest.
     """
     infos = _scan_contests(tolerant=True)
     infos.sort(key=lambda info: (info.sort_order, info.display_name.casefold()))
-    return [(info.picker_label, info.identifier) for info in infos]
+    labels = [info.picker_label for info in infos]
+    counts = Counter(labels)
+    # Two files may carry the same DisplayName (the AGCW pair shares only its
+    # Name, but nothing stops a user copying one).  The label has to stay
+    # unique so the picker cannot hide one behind the other.
+    return [
+        (
+            label if counts[label] == 1 else f"{label} [{info.basename}]",
+            info.basename,
+        )
+        for label, info in zip(labels, infos)
+    ]
 
 
-def contest_label_for_identifier(identifier) -> str:
-    """How to show a stored contest name: its picker label, else the name itself.
+def contest_label_for_basename(basename) -> str:
+    """How to show a stored contest name in the list of saved contests.
 
-    Used where a contest is shown but not picked -- the list of saved contests.
-    A name this installation no longer has a plugin for (or a value left over
-    from an older version) is shown as it was stored rather than hidden or
-    raised over; opening it may still fail later, but the list stays usable.
+    A name this installation knows gets its picker label.  A name it no longer
+    has a definition for (or a value left over from an older version) is shown
+    as ``<basename> (unknown contest)``: the stored name is not hidden, and the
+    operator can see at a glance that opening it needs a replacement.
     """
     # The database column is nullable; a cell always wants a string.
-    if not isinstance(identifier, str) or not identifier:
-        return "" if identifier is None else str(identifier)
-    wanted = identifier.casefold()
+    if not isinstance(basename, str) or not basename:
+        return "" if basename is None else str(basename)
+    wanted = basename.casefold()
     try:
         infos = available_contests()
     except Exception:
         logger.warning(
-            "Naming contest %r without the full registry", identifier, exc_info=True
+            "Naming contest %r without the full registry", basename, exc_info=True
         )
         infos = _scan_contests(tolerant=True)
     for info in infos:
-        if wanted in (
-            info.identifier.casefold(),
-            info.source.casefold(),
-            info.display_name.casefold(),
-        ):
+        if info.basename.casefold() == wanted:
             return info.picker_label
-    return identifier
+    return f"{basename} (unknown contest)"

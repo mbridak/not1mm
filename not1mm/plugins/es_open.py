@@ -13,6 +13,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase, period_dupe_check
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import calculate_wpx_prefix
 
 
@@ -36,7 +37,8 @@ class Contest(ContestBase):
         "PTS",
     ]
     # The reports, our serial and their serial.
-    FrameText = ("", "Sent", "SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent", "SN")
     AccessibleNames = ("", "", "Sent", "SN")
     # Each Estonian call area once per band and mode.
     NumMults = 1
@@ -98,10 +100,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange; this contest marks no multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0
 

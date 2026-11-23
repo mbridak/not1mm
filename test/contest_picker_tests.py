@@ -22,25 +22,25 @@ class StubCombo:
     def clear(self):
         self.items.clear()
 
-    def addItem(self, label, identifier=None):  # noqa: N802 -- Qt spelling
-        self.items.append((label, identifier))
+    def addItem(self, label, basename=None):  # noqa: N802 -- Qt spelling
+        self.items.append((label, basename))
 
 
 def test_the_picker_offers_every_contest():
     entries = contest.contest_picker_entries()
     available = contest.available_contests()
     assert len(entries) == len(available)
-    assert {identifier for _, identifier in entries} == {
-        info.identifier for info in available
+    assert {basename for _, basename in entries} == {
+        info.basename for info in available
     }
 
 
-def test_labels_and_identifiers_are_unique():
+def test_labels_and_basenames_are_unique():
     entries = contest.contest_picker_entries()
     labels = [label for label, _ in entries]
-    identifiers = [identifier for _, identifier in entries]
+    basenames = [basename for _, basename in entries]
     assert len(set(labels)) == len(labels)
-    assert len(set(identifiers)) == len(identifiers)
+    assert len(set(basenames)) == len(basenames)
 
 
 @pytest.mark.parametrize(
@@ -62,7 +62,7 @@ def test_the_label_rule(display_name, cabrillo_name, expected):
 def test_a_shared_cabrillo_name_stays_two_entries():
     """Pairs that share a Cabrillo name name themselves and stay distinct."""
     labels = dict(
-        (identifier, label) for label, identifier in contest.contest_picker_entries()
+        (basename, label) for label, basename in contest.contest_picker_entries()
     )
     assert labels["10_10_fall_cw"] == "10 10 FALL CW (10-10-SPRINT)"
     assert labels["10_10_spring_cw"] == "10 10 SPRING CW (10-10-SPRINT)"
@@ -76,27 +76,27 @@ def test_modes_come_before_the_contests():
     Everything else keeps the default, so the ordering is a property of the
     two things that are not contests rather than of every plugin.
     """
-    info = {i.source: i for i in contest.available_contests()}
+    info = {i.basename: i for i in contest.available_contests()}
     assert info["general_logging"].sort_order == 50
     assert info["dxpedition"].sort_order == 60
     assert all(
         i.sort_order == 100
-        for source, i in info.items()
-        if source not in ("general_logging", "dxpedition")
+        for basename, i in info.items()
+        if basename not in ("general_logging", "dxpedition")
     )
 
     entries = contest.contest_picker_entries()
     assert entries[:2] == [
-        ("General Logging", "General-Logging"),
-        ("DX-Pedition", "DX-Pedition"),
+        ("General Logging", "general_logging"),
+        ("DX-Pedition", "dxpedition"),
     ]
 
 
 def test_the_rest_is_ordered_by_sort_order_then_display_name():
-    info = {i.identifier: i for i in contest.available_contests()}
+    info = {i.basename: i for i in contest.available_contests()}
     keys = [
-        (info[identifier].sort_order, info[identifier].display_name.casefold())
-        for _, identifier in contest.contest_picker_entries()
+        (info[basename].sort_order, info[basename].display_name.casefold())
+        for _, basename in contest.contest_picker_entries()
     ]
     assert keys == sorted(keys)
 
@@ -105,38 +105,43 @@ def test_a_plugin_that_does_not_load_is_left_out():
     """The picker opens on the rest of the contests, with a warning."""
     real = contest._contest_info
 
-    def broken(source):
-        if source == "ok1wc":
+    def broken(basename):
+        if basename == "ari_dx":
             raise RuntimeError("this plugin is broken")
-        return real(source)
+        return real(basename)
 
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(contest, "_contest_info", broken)
-        sources = {info.source for info in contest._scan_contests(tolerant=True)}
-        assert "ok1wc" not in sources
-        assert len(sources) == len(contest.available_contests()) - 1
+        basenames = {info.basename for info in contest._scan_contests(tolerant=True)}
+        assert "ari_dx" not in basenames
+        assert len(basenames) == len(contest.available_contests()) - 1
         # The strict registry still refuses to pretend nothing happened.
         with pytest.raises(RuntimeError):
             contest._scan_contests()
 
 
-def test_fill_picker_puts_the_identifier_in_the_item_data():
-    combo = StubCombo(stale=[("old label", "old-identifier")])
+def test_fill_picker_puts_the_basename_in_the_item_data():
+    combo = StubCombo(stale=[("old label", "old-basename")])
     fill_picker(combo)
     assert combo.items == contest.contest_picker_entries()
 
 
-def test_a_stored_identifier_can_be_shown_as_the_picker_label():
-    assert contest.contest_label_for_identifier("MWC") == "OK1WC Memorial Contest (MWC)"
-    # Old databases stored the name of the file the contest lives in.
+def test_a_stored_name_is_shown_as_a_label_or_as_unknown():
+    assert contest.contest_label_for_basename("ok1wc") == "OK1WC Memorial Contest (MWC)"
+    # A display or Cabrillo name is not an identifier, so it is shown as an
+    # unknown contest.
     assert (
-        contest.contest_label_for_identifier("ok1wc") == "OK1WC Memorial Contest (MWC)"
+        contest.contest_label_for_basename("CQ WPX CW") == "CQ WPX CW (unknown contest)"
     )
-    # Nothing installed answers to this, so it keeps its stored name.
-    assert contest.contest_label_for_identifier("no-such-thing") == "no-such-thing"
+    assert contest.contest_label_for_basename("MWC") == "MWC (unknown contest)"
+    # Nothing installed answers to this either.
+    assert (
+        contest.contest_label_for_basename("no-such-thing")
+        == "no-such-thing (unknown contest)"
+    )
     # The column is nullable; the list always wants something to show.
-    assert contest.contest_label_for_identifier(None) == ""
-    assert contest.contest_label_for_identifier(1) == "1"
+    assert contest.contest_label_for_basename(None) == ""
+    assert contest.contest_label_for_basename(1) == "1"
 
 
 def test_a_broken_plugin_does_not_break_the_saved_contest_list(monkeypatch):
@@ -146,5 +151,8 @@ def test_a_broken_plugin_does_not_break_the_saved_contest_list(monkeypatch):
         raise RuntimeError("this plugin is broken")
 
     monkeypatch.setattr(contest, "available_contests", broken)
-    assert contest.contest_label_for_identifier("MWC") == "OK1WC Memorial Contest (MWC)"
-    assert contest.contest_label_for_identifier("no-such-thing") == "no-such-thing"
+    assert contest.contest_label_for_basename("ok1wc") == "OK1WC Memorial Contest (MWC)"
+    assert (
+        contest.contest_label_for_basename("no-such-thing")
+        == "no-such-thing (unknown contest)"
+    )

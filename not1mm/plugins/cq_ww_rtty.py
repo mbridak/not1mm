@@ -38,6 +38,7 @@ class Contest(ContestBase):
     DisplayName = "CQ WW RTTY"
     CabrilloName = "CQ-WW-RTTY"
     Mode = "RTTY"  # CW SSB BOTH RTTY
+    PointsRules = "MyCountry, 1, SameContinent, 2, OtherContinent, 3"
     EXCHANGE_HINT = "CQ Zone + (state/VE area)"
     SOAPBOX_HINT = """If you are outside North America, In your station settings, set the ARRL Section to DX.
 
@@ -45,11 +46,26 @@ Please make sure you set the Mode to RTTY Above."""
     DupeType = 2  # once per band
     SendsRTCScore = True
     SupportsFT8 = True
-    # The reports, the zone in the first extra field and the state/VE area in
-    # the second, so a call lookup goes to the zone.
-    FrameText = ("SNT", "CQ Zone", "State/Prov")
-    AccessibleNames = ("RST Sent", "", "C Q Zone", "U S State or Providence")
-    NextField = "other_1"
+    # The reports, the zone and the state/VE area; a call lookup goes to the
+    # zone.  N1MM puts the zone in Exchange1Text and the state/VE area in a
+    # section-style box.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "Exchange1Text",
+        615,
+        "SectText",
+        600,
+    )
+    FrameText = ("SNT", "RCV", "CQ Zone", "State/Prov")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "C Q Zone",
+        "U S State or Providence",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -72,29 +88,6 @@ Please make sure you set the Mode to RTTY Above."""
     Multiplier3Name = "CQ Zone"
     MultSqlString3 = "CQZONE"
     IsMult3Per = 1
-
-    def points(self):
-        """3 across continents, 2 within one, 1 inside a country."""
-        parent = self.parent
-        if parent.contact_is_dupe > 0:
-            return 0
-        mine = parent.cty_lookup(parent.station.get("Call", ""))
-        if mine is None:
-            return 0
-        item = mine.get(next(iter(mine)))
-        mycountry = item.get("entity", "")
-        mycontinent = item.get("continent", "")
-        theirs = parent.cty_lookup(parent.contact.get("Call", ""))
-        if theirs is not None:
-            item = theirs.get(next(iter(theirs)))
-            entity = item.get("entity", "")
-            continent = item.get("continent", "")
-            if mycountry.upper() == entity.upper():
-                return 1
-            if mycontinent == continent:
-                return 2
-            return 3
-        return 0
 
     def mult_value(self, slot, contact):
         """The country, the W/VE QTH, and the zone."""
@@ -146,16 +139,17 @@ Please make sure you set the Mode to RTTY Above."""
     def prefill(self):
         """Fill the zone from a call lookup."""
         parent = self.parent
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(str(parent.contact.get("ZN", "")))
+        zone = parent.fields.Exchange1Text
+        if len(zone.text()) == 0:
+            zone.setText(str(parent.contact.get("ZN", "")))
 
     def set_contact_vars(self):
         """The reports, the zone, the state/VE area and the sent exchange."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["ZN"] = parent.other_1.text()
-        parent.contact["Exchange1"] = parent.other_2.text() or "DX"
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["ZN"] = parent.fields.Exchange1Text.text()
+        parent.contact["Exchange1"] = parent.fields.SectText.text() or "DX"
         sent = parent.contest_settings.get("SentExchange", 0)
         if " " in str(sent):
             parent.contact["SentNr"] = sent
@@ -198,8 +192,8 @@ Please make sure you set the Mode to RTTY Above."""
         logger.debug(f"{the_packet=}")
         parent.callsign.setText(the_packet.get("CALL"))
         parent.contact["Call"] = the_packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["Exchange1"] = f"{the_packet.get('STATE', '')}".strip()
         parent.contact["ZN"] = the_packet.get("CQZ", "")
         parent.contact["Mode"] = the_packet.get("MODE", "ERR")
@@ -210,8 +204,8 @@ Please make sure you set the Mode to RTTY Above."""
         parent.contact["Band"] = get_logged_band(
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
-        parent.other_1.setText(str(the_packet.get("CQZ", "ERR")))
-        parent.other_2.setText(f"{the_packet.get('STATE', '')}".strip())
+        parent.fields.Exchange1Text.setText(str(the_packet.get("CQZ", "ERR")))
+        parent.fields.SectText.setText(f"{the_packet.get('STATE', '')}".strip())
         parent.save_contact()
 
     def process_esm(self, new_focused_widget=None, with_enter=False):
@@ -222,7 +216,8 @@ Please make sure you set the Mode to RTTY Above."""
         """
         parent = self.parent
         if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
+            parent.current_widget_object = new_focused_widget
+        focused = getattr(parent, "current_widget_object", None)
 
         for a_button in (
             parent.F1,
@@ -242,7 +237,7 @@ Please make sure you set the Mode to RTTY Above."""
 
         buttons_to_send = []
         if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) < 3:
                     parent.make_button_green(parent.esm_dict["CQ"])
                     buttons_to_send.append(parent.esm_dict["CQ"])
@@ -253,16 +248,16 @@ Please make sure you set the Mode to RTTY Above."""
                     buttons_to_send.append(parent.esm_dict["HISCALL"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
+            elif focused in (parent.fields.Exchange1Text, parent.fields.SectText):
                 needs_qth = (
                     parent.contact.get("Continent", "") == "NA"
-                    and parent.other_2.text() == ""
+                    and parent.fields.SectText.text() == ""
                 )
-                if needs_qth or parent.other_1.text() == "":
+                if needs_qth or parent.fields.Exchange1Text.text() == "":
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
-                elif parent.other_1.text().isnumeric() and (
-                    parent.other_2.text().isalpha()
+                elif parent.fields.Exchange1Text.text().isnumeric() and (
+                    parent.fields.SectText.text().isalpha()
                     or parent.contact.get("Continent", "") != "NA"
                 ):
                     self._resend_corrected_call(buttons_to_send)
@@ -288,18 +283,21 @@ Please make sure you set the Mode to RTTY Above."""
                         )
                 parent.fldigi_util.send_string(sendstring)
         else:
-            if parent.current_widget == "callsign":
+            if focused is parent.callsign:
                 if len(parent.callsign.text()) > 2:
                     parent.make_button_green(parent.esm_dict["MYCALL"])
                     buttons_to_send.append(parent.esm_dict["MYCALL"])
 
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_2.text() == "" or parent.other_1.text() == "":
+            elif focused in (parent.fields.Exchange1Text, parent.fields.SectText):
+                if (
+                    parent.fields.SectText.text() == ""
+                    or parent.fields.Exchange1Text.text() == ""
+                ):
                     parent.make_button_green(parent.esm_dict["AGN"])
                     buttons_to_send.append(parent.esm_dict["AGN"])
                 elif (
-                    parent.other_1.text().isnumeric()
-                    and parent.other_2.text().isalpha()
+                    parent.fields.Exchange1Text.text().isnumeric()
+                    and parent.fields.SectText.text().isalpha()
                 ):
                     parent.make_button_green(parent.esm_dict["EXCH"])
                     buttons_to_send.append(parent.esm_dict["EXCH"])
@@ -338,7 +336,7 @@ Please make sure you set the Mode to RTTY Above."""
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('CQZone', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('CQZone', '')}")
+            if parent.fields.SectText.text() == "":
+                parent.fields.SectText.setText(f"{result.get('State', '')}")

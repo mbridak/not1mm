@@ -78,12 +78,14 @@ class FakeDatabase:
 
 def _entry_ctx(his_call, sect, band="7.0", seen=()):
     """Minimal fake main window for set_contact_vars()."""
+
+    class Fields:
+        NameText = FakeLineEdit("DAVE")
+        SectText = FakeLineEdit(sect)
+
     return SimpleNamespace(
         contact={"Call": his_call, "Band": band},
-        sent=FakeLineEdit("599"),
-        receive=FakeLineEdit("599"),
-        other_1=FakeLineEdit("DAVE"),
-        other_2=FakeLineEdit(sect),
+        fields=Fields(),
         station={"Call": "K6GTE"},
         cty_lookup=cty_lookup,
         contest_settings={"SentExchange": "MIKE CA"},

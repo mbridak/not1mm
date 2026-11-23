@@ -88,9 +88,11 @@ def test_calc_score_handles_none_points():
 
 def test_set_contact_vars_captures_exchange():
     contest, parent = _contest(contact={})
-    parent.sent = SimpleNamespace(text=lambda: "599")
-    parent.receive = SimpleNamespace(text=lambda: "599")
-    parent.other_2 = SimpleNamespace(text=lambda: "82")
+    parent.fields = SimpleNamespace(
+        SNTText=SimpleNamespace(text=lambda: "599"),
+        RCVText=SimpleNamespace(text=lambda: "599"),
+        Exchange1Text=SimpleNamespace(text=lambda: "82"),
+    )
     parent.contest_settings = {"SentExchange": "17"}
     contest.set_contact_vars()
     assert parent.contact["SNT"] == "599"

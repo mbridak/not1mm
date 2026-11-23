@@ -4,17 +4,22 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 import not1mm.actions
 from not1mm import fsutils
+from not1mm.lib.fields import FIELD_SPECS
 from not1mm.lib.i18n import load_ui
 from not1mm.lib.preferences import Preferences
 
+# The aggregate scopes, then every box by its N1MM name.  A binding on a box
+# applies only when that box is in the loaded contest; the aggregates still
+# cover whichever boxes play that role.  A box-specific binding wins.
 _KNOWN_CONTEXTS = [
     "*",
     "Callsign",
     "Report",
     "Exchange",
+    "CW entry",
+    *FIELD_SPECS,
     "Other 1",
     "Other 2",
-    "CW entry",
 ]
 
 

@@ -78,17 +78,18 @@ from not1mm.dxcc_tracker import DXCCWindow
 from not1mm.lib import catppuccin, contact_info, plugin_common
 from not1mm.lib.about import About
 from not1mm.lib.contest import (
-    contest_id,
-    contest_identifier_for_display,
-    contest_label_for_identifier,
+    FALLBACK_BASENAME,
+    contest_basename_for_display,
+    contest_label_for_basename,
+    contest_metadata,
     load_contest,
-    path_name,
 )
 from not1mm.lib.cwinterface import CW
 from not1mm.lib.database import DataBase
 from not1mm.lib.edit_macro import EditMacro
 from not1mm.lib.edit_rove import Rove
 from not1mm.lib.edit_station import EditStation
+from not1mm.lib.fields import Fields, binding_contexts
 from not1mm.lib.fldigi_sendstring import FlDigi_Comm
 from not1mm.lib.ft8_watcher import FT8Watcher
 from not1mm.lib.ham_utility import (
@@ -174,6 +175,37 @@ class MainWindow(QtWidgets.QMainWindow):
     current_sn = None
     # Starts false and is set true when runtime output-device checks succeed.
     voice_output_available = False
+    # The entry widget that last took focus, for the ESM state machine.
+    current_widget_object = None
+
+    # -- the entry window's old widget names --------------------------------
+    # The exchange boxes are built from the contest's declaration now (see
+    # not1mm/lib/fields.py); the callsign comes from main.ui.  These aliases
+    # keep the rest of this file and the plugins working until every plugin
+    # has been moved to parent.fields.<Name>.
+    # (load_ui() walks dir(MainWindow) and evaluates every property, so these
+    # return None until __init__ has built the fields.)
+    @property
+    def callsign(self) -> QtWidgets.QLineEdit | None:
+        fields = self.__dict__.get("fields")
+        return fields.callsign if fields is not None else None
+
+    def extra_edits(self) -> tuple:
+        """The exchange boxes that are not the sent/received reports."""
+        fields = self.__dict__.get("fields")
+        if fields is None:
+            return ()
+        return tuple(
+            field.edit for field in fields if field.spec.column not in ("SNT", "RCV")
+        )
+
+    @property
+    def exch_label(self):
+        fields = self.__dict__.get("fields")
+        if fields is None:
+            return None
+        field = fields.last_field()
+        return field.label if field is not None else None
 
     radio_thread = QThread()
     voice_thread = QThread()
@@ -200,7 +232,6 @@ class MainWindow(QtWidgets.QMainWindow):
     rtc_url = ""
     rtc_pass = ""
 
-    current_widget = None
     previous_language = "en_US"
 
     auto_cq = False
@@ -229,6 +260,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCorner(Qt.Corner.BottomLeftCorner, Qt.DockWidgetArea.LeftDockWidgetArea)
         self.fontfamily = self.load_fonts_from_dir(os.fspath(fsutils.APP_DATA_PATH))
         load_ui(self, fsutils.APP_DATA_PATH / "main.ui")
+        # The exchange boxes come from the loaded contest's declaration; the
+        # callsign is built here too, replacing main.ui's placeholder, so the
+        # TAB cycle is cw_entry -> callsign -> exchange (see fields.py).  The
+        # row is rebuilt when a contest with different boxes is loaded.
+        # Fields takes the entry font from main.ui's callsign box, so the row
+        # keeps the font the designer shows (the box is recreated, not edited).
+        self.fields = Fields(self.horizontalLayout, self.CallSignTextFrame)
+        self._sync_callsign_widgets()
         self.tray_icon = None
         if not QSystemTrayIcon.isSystemTrayAvailable():
             print("System tray not available for this system")
@@ -267,21 +306,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.cw_speed.setFont(
                 QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
             )
-            self.callsign_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.snt_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.rcv_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.other_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
-            self.exch_label.setFont(
-                QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
-            )
+            self.fields.apply_font(self.fontfamily, def_font_size, 20)
             self.heading_distance.setFont(
                 QFont(self.fontfamily, def_font_size, QFont.Weight.Thin)
             )
@@ -294,11 +319,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.score.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
             self.mults.setFont(QFont(self.fontfamily, def_font_size, QFont.Weight.Thin))
 
-            self.callsign.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.sent.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.receive.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.other_1.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
-            self.other_2.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
             self.dupe_indicator.setFont(QFont(self.fontfamily, 20, QFont.Weight.Thin))
 
         self.history_info.hide()
@@ -328,13 +348,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.utc_clock_timer.setTimerType(Qt.TimerType.PreciseTimer)
         self.utc_clock_timer.timeout.connect(self.update_utc_clock)
         self.update_utc_clock()
-        self.inputs_dict = {
-            self.callsign: "callsign",
-            self.sent: "sent",
-            self.receive: "receive",
-            self.other_1: "other_1",
-            self.other_2: "other_2",
-        }
         self.cw_entry.hide()
         self.leftdot.hide()
         self.cwprogressBar.hide()
@@ -347,7 +360,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ft8 = FT8Watcher()
         self.ft8.set_callback(None)
         self.mscp = SCP(fsutils.APP_DATA_PATH)
-        self.next_field = self.other_2
+        self.next_field = self.fields.last_edit()
         self.dupe_indicator.hide()
 
         self.cw_speed.valueChanged.connect(self.cwspeed_spinbox_changed)
@@ -417,25 +430,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.returnPressed.connect(self.check_esm_with_enter)
         self.callsign.cursorPositionChanged.connect(self.check_esm)
         self.callsign.installEventFilter(self)
-        self.sent.returnPressed.connect(self.check_esm_with_enter)
-        self.sent.textEdited.connect(self.sent_changed)
-        self.sent.cursorPositionChanged.connect(self.check_esm)
-        self.sent.installEventFilter(self)
-        self.receive.returnPressed.connect(self.check_esm_with_enter)
-        self.receive.textEdited.connect(self.receive_changed)
-        self.receive.cursorPositionChanged.connect(self.check_esm)
-        self.receive.installEventFilter(self)
-        self.other_1.returnPressed.connect(self.check_esm_with_enter)
-        self.other_1.textEdited.connect(self.other_1_changed)
-        self.other_1.cursorPositionChanged.connect(self.check_esm)
-        self.other_1.installEventFilter(self)
-        self.other_2.returnPressed.connect(self.check_esm_with_enter)
-        self.other_2.textEdited.connect(self.other_2_changed)
-        self.other_2.cursorPositionChanged.connect(self.check_esm)
-        self.other_2.installEventFilter(self)
+        self.wire_fields()
 
-        self.sent.setText("59")
-        self.receive.setText("59")
+        self.set_rst("59")
         icon_path = fsutils.APP_DATA_PATH
         self.greendot = QtGui.QPixmap(str(icon_path / "greendot.png"))
         self.reddot = QtGui.QPixmap(str(icon_path / "reddot.png"))
@@ -1013,6 +1010,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.vfo_window.hide()
 
+        self.no_focus_dock_tabs()
         self.cwspeed_spinbox_changed()
 
         if not DEBUG_ENABLED and VersionTest(__version__).test():
@@ -1314,25 +1312,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_esm_with_enter(self) -> None:
         """Check for ESM, otherwise save contact."""
-        if self.use_esm:
-            if getattr(self.contest, "UsesESM", False):
-                self.contest.process_esm(with_enter=True)
-            else:
-                self.save_contact()
+        if self.use_esm and getattr(self.contest, "UsesESM", False):
+            self.contest.process_esm(with_enter=True)
         else:
             self.save_contact()
 
     def check_esm(self) -> None:
-        """Check for ESM, otherwise save contact."""
-        if self.use_esm:
-            if getattr(self.contest, "UsesESM", False):
-                self.contest.process_esm()
-            else:
-                ...
-                # self.save_contact()
-        else:
-            ...
-            # self.save_contact()
+        """Check for ESM."""
+        if self.use_esm and getattr(self.contest, "UsesESM", False):
+            self.contest.process_esm()
 
     def show_splash_msg(self, msg: str) -> None:
         """Show text message in the splash window."""
@@ -1457,12 +1445,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 nickname = msg.get("result", {}).get("nickname", "")
 
                 if self.contest and "General Logging" in self.contest.name:
-                    if nickname:
-                        self.other_1.setText(nickname)
-                    elif fname:
-                        self.other_1.setText(fname)
-                    elif name:
-                        self.other_1.setText(name)
+                    box = self.fields.by_column("Name")
+                    if box is not None and nickname:
+                        box.edit.setText(nickname)
+                    elif box is not None and fname:
+                        box.edit.setText(fname)
+                    elif box is not None and name:
+                        box.edit.setText(name)
 
                 if isinstance(grid, str) and len(grid) > 0:
                     self.contact["GridSquare"] = grid
@@ -1575,11 +1564,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(darkPalette)
             self.menuView.setPalette(darkPalette)
             self.menuWindow.setPalette(darkPalette)
-            self.callsign.setPalette(darkPalette)
-            self.sent.setPalette(darkPalette)
-            self.receive.setPalette(darkPalette)
-            self.other_1.setPalette(darkPalette)
-            self.other_2.setPalette(darkPalette)
+            self.fields.apply_palette(darkPalette)
             self.cw_entry.setPalette(darkPalette)
         else:
             lightPalette = catppuccin.build_latte_palette()
@@ -1593,11 +1578,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.menuOther.setPalette(lightPalette)
             self.menuView.setPalette(lightPalette)
             self.menuWindow.setPalette(lightPalette)
-            self.callsign.setPalette(lightPalette)
-            self.sent.setPalette(lightPalette)
-            self.receive.setPalette(lightPalette)
-            self.other_1.setPalette(lightPalette)
-            self.other_2.setPalette(lightPalette)
+            self.fields.apply_palette(lightPalette)
             self.cw_entry.setPalette(lightPalette)
 
         edit_dialog = getattr(self.log_window, "edit_contact_dialog", None)
@@ -2094,17 +2075,17 @@ class MainWindow(QtWidgets.QMainWindow):
             for contest in contests:
                 number_of_rows = self.contest_dialog.contest_list.rowCount()
                 self.contest_dialog.contest_list.insertRow(number_of_rows)
-                contest_id = str(contest.get("ContestID", 1))
+                contest_nr = str(contest.get("ContestID", 1))
                 # Show the contest the way the New Contest picker does --
-                # "OK1WC Memorial Contest (MWC)", not the stored "MWC".  An
+                # "OK1WC Memorial Contest (MWC)", not the stored "ok1wc".  An
                 # unknown or missing name is shown as it is; opening it may
                 # still fail, but this list must not.
-                contest_name = contest_label_for_identifier(
+                contest_name = contest_label_for_basename(
                     contest.get("ContestName") or ""
                 )
                 start_date = contest.get("StartDate", 1)
                 self.contest_dialog.contest_list.setItem(
-                    number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_id)
+                    number_of_rows, 0, QtWidgets.QTableWidgetItem(contest_nr)
                 )
                 self.contest_dialog.contest_list.setItem(
                     number_of_rows, 1, QtWidgets.QTableWidgetItem(contest_name)
@@ -2186,7 +2167,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contest_dialog.title.setText("")
         self.contest_dialog.accepted.connect(self.save_edited_contest)
         # Select the entry that stands for the loaded contest.
-        self.select_picker_entry(contest_id(self.contest))
+        self.select_picker_entry(self.contest.BaseName)
         value = self.contest_settings.get("OperatorCategory")
         self.refill_dropdown(self.contest_dialog.operator_class, value)
         value = self.contest_settings.get("BandCategory")
@@ -2217,40 +2198,40 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.contest_dialog.exec()
 
-    def contest_identifier_from_dialog(self) -> str:
-        """The identifier of the contest picked in the dialog.
+    def contest_basename_from_dialog(self) -> str:
+        """The basename of the contest picked in the dialog.
 
-        The picker's labels are derived from the plugins, so the identifier
-        they stand for travels as each entry's item data; the fold over the
-        label remains only for an entry that somehow carries none.
+        The picker's labels are derived from the plugins, so the basename they
+        stand for travels as each entry's item data; the fold over the label
+        remains only for an entry that somehow carries none.
         """
         picker = self.contest_dialog.contest
         chosen = picker.currentData()
         if chosen:
             return chosen
         label = picker.currentText()
-        identifier = contest_identifier_for_display(label)
-        if identifier is None:
+        basename = contest_basename_for_display(label)
+        if basename is None:
             # Not a contest we know about.  Store something that can be looked
             # up again rather than nothing, but say so.
             logger.warning("Unknown contest selected: %r", label)
             return label.lower().replace(" ", "_")
-        return identifier
+        return basename
 
-    def select_picker_entry(self, identifier: str) -> None:
-        """Select the contest picker entry that stands for *identifier*.
+    def select_picker_entry(self, basename: str) -> None:
+        """Select the contest picker entry that stands for *basename*.
 
-        The entry carries the identifier as item data, so this is a lookup
-        rather than a guess from its label.  An identifier no longer installed
+        The entry carries the basename as item data, so this is a lookup
+        rather than a guess from its label.  A basename no longer installed
         leaves the picker on its current entry.
         """
         picker = self.contest_dialog.contest
-        if not identifier:
+        if not basename:
             return
-        index = picker.findData(identifier)
+        index = picker.findData(basename)
         if index < 0:
             # A value stored by an older version may be a picker label.
-            legacy = contest_identifier_for_display(identifier)
+            legacy = contest_basename_for_display(basename)
             if legacy:
                 index = picker.findData(legacy)
         if index >= 0:
@@ -2270,7 +2251,7 @@ class MainWindow(QtWidgets.QMainWindow):
         None
         """
         contest = {}
-        contest["ContestName"] = self.contest_identifier_from_dialog()
+        contest["ContestName"] = self.contest_basename_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -2291,6 +2272,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.database.update_contest(contest)
         Preferences.save()
         self.load_contest()
+
+    def warn_about_udc_limits(self) -> None:
+        """Say once which UDC parameters not1mm does not implement yet.
+
+        A UDC file can declare things not1mm only parses (a points rule list, a
+        section list, a hand-coded Cabrillo line).  Loading it silently would
+        score the contest wrongly, so the operator is told, once per contest
+        for this session; the log keeps the full list either way.
+        """
+        unimplemented = getattr(self.contest, "UdcUnimplemented", ())
+        if not unimplemented:
+            return
+        warned = getattr(self, "_udc_warned", None)
+        if warned is None:
+            warned = self._udc_warned = set()
+        basename = self.contest.BaseName or self.contest.name
+        if basename in warned:
+            return
+        warned.add(basename)
+        logger.warning(
+            "UDC %s: parsed but not applied: %s",
+            basename,
+            ", ".join(unimplemented),
+        )
+        self.show_message_box(
+            f"{self.contest.DisplayName} comes from a UDC file.\n\n"
+            "These parameters are not implemented by not1mm yet:\n\n"
+            + "\n".join(f"  {item}" for item in unimplemented)
+        )
 
     def load_contest(self) -> None:
         """
@@ -2315,8 +2325,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.database.current_contest = self.pref.get("contest")
                     if self.contest_settings.get("ContestName"):
                         """Reset these in case a contest disabled them"""
-                        self.other_1.setStyleSheet("text-transform: uppercase;")
-                        self.other_2.setStyleSheet("text-transform: uppercase;")
+                        self.fields.apply_upper()
                         """Reset this too, in case user set it"""
                         self.RoverLocation = ""
                         """Inform check window in case this is a change of contest"""
@@ -2325,12 +2334,33 @@ class MainWindow(QtWidgets.QMainWindow):
                                 "contest"
                             )
 
-                        self.contest = load_contest(
-                            self.contest_settings.get("ContestName"), self
-                        )
+                        stored_name = self.contest_settings.get("ContestName")
+                        try:
+                            self.contest = load_contest(stored_name, self)
+                        except ModuleNotFoundError:
+                            # The stored id is no longer installed.  Open the
+                            # log in General Logging so the contacts stay
+                            # reachable; the operator picks the contest again
+                            # afterwards.
+                            logger.warning(
+                                "Unknown contest %r: opening it as General Logging",
+                                stored_name,
+                            )
+                            fallback = contest_metadata(FALLBACK_BASENAME)
+                            if fallback is None:
+                                self.pref["contest"] = 1
+                                self.show_message_box("Contest not found")
+                                return
+                            self.contest = fallback(self)
+                            self.show_message_box(
+                                f"Unknown contest {stored_name!r}, opened as "
+                                "General Logging. Select a valid contest "
+                                "after loading."
+                            )
                         logger.debug("Loaded Contest Name = %s", self.contest.name)
                         self.set_window_title()
                         self.contest.init_contest()
+                        self.warn_about_udc_limits()
                         self.hide_band_mode(
                             self.contest_settings.get("ModeCategory", "")
                         )
@@ -2365,7 +2395,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.update_rtc_xml()
                 except ModuleNotFoundError:
                     self.pref["contest"] = 1
-                    self.show_message_box("Contest plugin not found")
+                    self.show_message_box("Contest not found")
                     # Nothing was loaded, so there is no contest to wire up.
                     # Without this the method goes on to use self.contest --
                     # None at startup -- and the window fails to open.
@@ -2922,25 +2952,19 @@ class MainWindow(QtWidgets.QMainWindow):
         """
         Common key intercept code for eventFilter and keyPressEvent.
         """
+        if event.key() == Qt.Key.Key_Space:
+            return self.space_in_entry(obj)
+
         key_bindings = self.pref.get(
             "key_bindings", not1mm.actions.default_key_bindings
         )
         key_name = QKeySequence(event.key() | event.modifiers().value).toString()
 
         action = None
-        if obj == self.callsign:
-            action = key_bindings.get(f"Callsign:{key_name}", None)
-        elif obj in (self.sent, self.receive):
-            action = key_bindings.get(f"Report:{key_name}", None)
-        elif obj == self.other_1:
-            action = key_bindings.get(f"Other 1:{key_name}", None)
-        elif obj == self.other_2:
-            action = key_bindings.get(f"Other 2:{key_name}", None)
-        elif obj == self.cw_entry:
-            action = key_bindings.get(f"CW entry:{key_name}", None)
-        # Exchange is Other 1 + 2
-        if action is None and obj in (self.other_1, self.other_2):
-            action = key_bindings.get(f"Exchange:{key_name}", None)
+        for context in binding_contexts(self.fields, self.callsign, self.cw_entry, obj):
+            action = key_bindings.get(f"{context}:{key_name}", None)
+            if action:
+                break
         # generic binding
         if action is None:
             action = key_bindings.get(key_name, None)
@@ -2951,6 +2975,33 @@ class MainWindow(QtWidgets.QMainWindow):
                 return True
         return False  # key not handled here
 
+    # SPACE walks to the next field the same way TAB does, except in a box the
+    # contest lists in SpaceKeepsFocus or whose FieldSpec says a space is data
+    # (a name, a grid, "Name 1010# SPC").  In the callsign it ends the call and
+    # runs what was typed -- a command or a frequency.
+    def space_in_entry(self, obj) -> bool:
+        """Handle a SPACE typed in an entry field.
+
+        True when the key was consumed: it stepped out of the field, or, in
+        the callsign, ended the call.  False leaves the space to the widget.
+        """
+        if obj is None:
+            obj = self.focusWidget()
+        if obj == self.callsign:
+            self.callsign_command()
+            return True
+        field = self.fields.field_for_edit(obj)
+        if field is None:
+            return False
+        keeps = getattr(self.contest, "SpaceKeepsFocus", ())
+        if field.name in keeps or not field.spec.space_advances:
+            return False
+        next_tab = self.tab_next.get(obj) or self.fields.last_edit()
+        next_tab.setFocus()
+        next_tab.deselect()
+        next_tab.end(False)
+        return True
+
     def eventFilter(self, obj, event) -> bool:
         """
         This intercepts key events on the input widgets.
@@ -2959,6 +3010,12 @@ class MainWindow(QtWidgets.QMainWindow):
         then forwarded to MainWindow.keyPressEvent.
         """
 
+        if event.type() == QEvent.Type.FocusIn:
+            self.entry_focus_in(obj, event)
+            return False
+        if event.type() == QEvent.Type.FocusOut:
+            self.entry_focus_out(obj)
+            return False
         if event.type() != QEvent.Type.KeyPress:
             return False
         return self.process_key_bindings(event, obj=obj)
@@ -2971,87 +3028,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.process_key_bindings(event):
             return
 
-        modifier = event.modifiers()
-        if event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Backtab:
-            if self.sent.hasFocus():
-                logger.debug("From sent")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.sent)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                else:
-                    next_tab = self.tab_next.get(self.sent)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                    self.highlight_599(next_tab)
-                return
-            if self.receive.hasFocus():
-                logger.debug("From receive")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.receive)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.receive)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.other_1.hasFocus():
-                logger.debug("From other_1")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.other_1)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.other_1)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.other_2.hasFocus():
-                logger.debug("From other_2")
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.other_2)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                    self.highlight_599(prev_tab)
-                else:
-                    next_tab = self.tab_next.get(self.other_2)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                return
-            if self.callsign.hasFocus():
-                logger.debug("From callsign")
-                self.check_callsign(self.callsign.text())
-                self.check_dupe(self.callsign.text())
-                if modifier == Qt.KeyboardModifier.ShiftModifier:
-                    prev_tab = self.tab_prev.get(self.callsign)
-                    prev_tab.setFocus()
-                    prev_tab.deselect()
-                    prev_tab.end(False)
-                else:
-                    text = self.callsign.text()
-                    text = text.upper()
-                    cmd = {}
-                    cmd["cmd"] = "LOOKUP_CALL"
-                    cmd["call"] = text
-                    if self.lookup_service:
-                        self.lookup_service.msg_from_main(cmd)
-                    next_tab = self.tab_next.get(self.callsign)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
-                    self.highlight_599(next_tab)
-                return
         if event.key() == Qt.Key.Key_F1:
             if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
                 self.set_running(True)
@@ -3099,9 +3075,99 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_F12:
             self.process_function_key(self.F12)
 
+    def wire_fields(self) -> None:
+        """Connect the current exchange boxes to the window's handlers.
+
+        Called once at startup and again after a contest load replaces the
+        boxes; the old widgets (and their connections) are gone by then.
+        """
+        for field in self.fields:
+            edit = field.edit
+            edit.returnPressed.connect(self.check_esm_with_enter)
+            edit.cursorPositionChanged.connect(self.check_esm)
+            edit.textEdited.connect(self.other_2_changed)
+            edit.installEventFilter(self)
+
+    def _sync_callsign_widgets(self) -> None:
+        """Point the window and the .ui form at the callsign Fields built.
+
+        load_ui() keeps the generated form so retranslateUi() can re-apply the
+        language; its callsign entries still reference the deleted placeholder,
+        so they have to be replaced or a language switch would touch dead
+        objects.
+        """
+        self.CallSignTextFrame = self.fields.callsign_frame
+        self.CallSignTextLabel = self.fields.callsign_label
+        self.CallSignText = self.fields.callsign
+        ui = getattr(self, "_ui", None)
+        if ui is not None:
+            ui.CallSignTextFrame = self.CallSignTextFrame
+            ui.CallSignTextLabel = self.CallSignTextLabel
+            ui.CallSignText = self.CallSignText
+
+    def after_fields_rebuilt(self) -> None:
+        """Finish a rebuild: rewire, and re-apply what lives outside the row."""
+        self._sync_callsign_widgets()
+        self.wire_fields()
+        # The widget the ESM state machine last saw has just been deleted.
+        self.current_widget_object = None
+        if self.current_palette is not None:
+            self.fields.apply_palette(self.current_palette)
+
+    def set_rst(self, text: str) -> None:
+        """Put *text* in each report box this contest actually shows."""
+        for edit in self.fields.report_edits():
+            edit.setText(text)
+
+    def entry_focus_in(self, obj, event) -> None:
+        """Settle an entry field the operator has just TABbed into.
+
+        QLineEdit selects the whole text when it takes focus with TAB, and it
+        does that after this filter has run, so the fix is deferred: the entry
+        window wants the cursor at the end instead -- or, for an RST field,
+        the middle digit of a "599" -- see settle_tab_focus().
+        """
+        if event.reason() in (
+            Qt.FocusReason.TabFocusReason,
+            Qt.FocusReason.BacktabFocusReason,
+        ):
+            QtCore.QTimer.singleShot(0, lambda: self.settle_tab_focus(obj))
+
+    def settle_tab_focus(self, obj) -> None:
+        """Put the cursor at the end of the field TAB has just moved into."""
+        obj.deselect()
+        obj.end(False)
+        if obj in self.fields.report_edits():
+            self.highlight_599(obj)
+
     def highlight_599(self, field: QLineEdit) -> None:
         if field.text() == "599" and self.pref.get("edit_rst", False):
             field.setSelection(1, 1)
+
+    def entry_focus_out(self, obj) -> None:
+        """Commit the callsign once the operator leaves it."""
+        if obj == self.callsign:
+            self.callsign_commit()
+
+    def no_focus_dock_tabs(self) -> None:
+        """Keep the dock tab bar out of the TAB cycle.
+
+        We want the TAB key to exactly cycle the entry fields. QMainWindow
+        shows a QTabBar for tabified dock widgets, and a QTabBar is a TAB stop
+        by default. Disable that.
+        """
+        for tab_bar in self.findChildren(QtWidgets.QTabBar):
+            tab_bar.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def event(self, event) -> bool:
+        """Redo the dock tab bar's focus policy when the layout is redone.
+
+        Whenever the layout changes, set focus policy to catch any new QTabBar
+        that would be TAB-able.
+        """
+        if event.type() == QEvent.Type.LayoutRequest:
+            self.no_focus_dock_tabs()
+        return super().event(event)
 
     def set_window_title(self) -> None:
         """
@@ -3202,11 +3268,9 @@ class MainWindow(QtWidgets.QMainWindow):
             ):
                 match self.current_mode:
                     case "LSB" | "USB" | "SSB" | "FM" | "AM":
-                        self.sent.setText("59")
-                        self.receive.setText("59")
+                        self.set_rst("59")
                     case "CW" | "CW-U" | "CW-L" | "CW-R" | "CWR":
-                        self.sent.setText("599")
-                        self.receive.setText("599")
+                        self.set_rst("599")
                     case (
                         "FT8"
                         | "FT4"
@@ -3220,18 +3284,14 @@ class MainWindow(QtWidgets.QMainWindow):
                         | "PKTUSB"
                         | "PKTLSB"
                     ):
-                        self.sent.setText("599")
-                        self.receive.setText("599")
+                        self.set_rst("599")
                     case _:
-                        self.sent.setText("")
-                        self.receive.setText("")
+                        self.set_rst("")
                 # end match
             else:
-                self.sent.setText("")
-                self.receive.setText("")
+                self.set_rst("")
         self.callsign.clear()
-        self.other_1.clear()
-        self.other_2.clear()
+        self.fields.clear_exchange()
         self.callsign.setFocus()
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
@@ -3303,6 +3363,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.contact["QSXFreq"] = round(
             float(self.radio_state.get("vfoa", 0.0)) / 1000, 2
         )
+        # DXLOG.ContestName is the Cabrillo name; ContestInstance.ContestName
+        # is the contest's basename (see not1mm.lib.contest.ContestBase).
         self.contact["ContestName"] = self.contest.cabrillo_name
         self.contact["ContestNR"] = self.pref.get("contest", "0")
         self.contact["StationPrefix"] = self.station.get("Call", "")
@@ -3474,7 +3536,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         next_number = self.database.get_next_contest_nr()
         contest = {}
-        contest["ContestName"] = self.contest_identifier_from_dialog()
+        contest["ContestName"] = self.contest_basename_from_dialog()
         contest["StartDate"] = self.contest_dialog.dateTimeEdit.dateTime().toString(
             "yyyy-MM-dd hh:mm:ss"
         )
@@ -3749,10 +3811,36 @@ class MainWindow(QtWidgets.QMainWindow):
         macro = macro.replace("{MYCALL}", self.station.get("Call", ""))
         macro = macro.replace("{MYGRID}", self.station.get("GridSquare", ""))
         macro = macro.replace("{HISCALL}", self.callsign.text())
-        macro = macro.replace("{OTHER1}", self.other_1.text())
-        macro = macro.replace("{OTHER2}", self.other_2.text())
-        macro = macro.replace("{SNT}", self.format_rst(self.sent.text(), cut))
-        macro = macro.replace("{SENTNR}", self.format_serial(self.other_1.text(), cut))
+        # Per-box placeholders, named after the field.  {SNT} and {SENTNR}
+        # keep their RST/serial formatting below; these are the raw text.
+        for box_name, token in (
+            ("RCVText", "{RCV}"),
+            ("RcvNrText", "{RCVNR}"),
+            ("Exchange1Text", "{EXCHANGE1}"),
+            ("MiscText", "{MISC}"),
+            ("SectText", "{SECT}"),
+            ("GridSquareText", "{GRID}"),
+            ("NameText", "{NAME}"),
+            ("CommentText", "{COMMENT}"),
+        ):
+            edit = self.fields.edit(box_name)
+            if edit is not None and token in macro:
+                macro = macro.replace(token, edit.text())
+        # {OTHER1}/{OTHER2} are the first/second box after the reports;
+        # {SENTNR} follows the box that carries SentNr, wherever the contest
+        # put it (the first extra box when it has no dedicated one).
+        extras = self.extra_edits()
+        other1 = extras[0].text() if extras else ""
+        other2 = extras[1].text() if len(extras) > 1 else ""
+        macro = macro.replace("{OTHER1}", other1)
+        macro = macro.replace("{OTHER2}", other2)
+        snt = self.fields.edit("SNTText")
+        macro = macro.replace(
+            "{SNT}", self.format_rst(snt.text() if snt is not None else "", cut)
+        )
+        sent_nr = self.fields.by_column("SentNr")
+        sent_nr_text = sent_nr.edit.text() if sent_nr is not None else other1
+        macro = macro.replace("{SENTNR}", self.format_serial(sent_nr_text, cut))
         macro = macro.replace("{PREVNR}", self.format_serial(str(prev_serial), cut))
         macro = macro.replace("{PREVCALL}", self.previous_contact.get("Call", ""))
 
@@ -4351,117 +4439,15 @@ class MainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def sent_changed(self) -> None:
-        """
-        The text in the sent field has changed.
-        """
-        if self.contest and "DX-Pedition" in self.contest.name:
-            text = self.sent.text()
-            text = text.upper()
-            position = self.sent.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.sent.setText(stripped_text)
-            self.sent.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.sent)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
-    def receive_changed(self) -> None:
-        """
-        The text in the receive field has changed.
-        """
-        if self.contest and self.contest.name in [
-            "DX-Pedition",
-            "California QSO Party",
-        ]:
-            text = self.receive.text()
-            text = text.upper()
-            position = self.receive.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.receive.setText(stripped_text)
-            self.receive.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.receive)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
-    # SPACE advances along tab_next -- the same cycle TAB walks -- but only for
-    # a field whose advance_on_space slot is set; otherwise the space is kept,
-    # so a field whose text may contain spaces (a name, a grid) can be typed.
-    # (ContestBase's entry-window note has the intended TAB-vs-SPACE rule.)
-    def other_1_changed(self) -> None:
-        """
-        The text in the other_1 field has changed.
-        Strip out any spaces and set the text.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if (
-            self.contest
-            and hasattr(self.contest, "advance_on_space")
-            and self.contest.advance_on_space[3]
-        ):
-            text = self.other_1.text()
-            text = text.upper()
-            position = self.other_1.cursorPosition()
-            stripped_text = text.strip().replace(" ", "")
-            self.other_1.setText(stripped_text)
-            self.other_1.setCursorPosition(position)
-            if " " in text:
-                next_tab = self.tab_next.get(self.other_1)
-                next_tab.setFocus()
-                next_tab.deselect()
-                next_tab.end(False)
-
     def other_2_changed(self) -> None:
+        """Parse the exchange as it is typed, when the contest asks for it.
+
+        A contest whose received exchange is several fields in one textbox --
+        Sweepstakes' "sn prec ck sec" -- sets call_parse_exchange_on_edit and
+        keeps its own label in step.
         """
-        Text in other_2 has changed.
-        Strip out any spaces and set the text.
-        Parse the exchange if the contest is ARRL Sweepstakes.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-
-        if self.contest:
-            if "ARRL Sweepstakes" in self.contest.name:
-                self.contest.parse_exchange()
-                return
-            if (
-                hasattr(self.contest, "call_parse_exchange_on_edit")
-                and self.contest.advance_on_space
-            ):
-                self.contest.parse_exchange()
-            if (
-                hasattr(self.contest, "advance_on_space")
-                and self.contest.advance_on_space[4]
-            ):
-                text = self.other_2.text()
-                text = text.upper()
-                position = self.other_2.cursorPosition()
-                stripped_text = text.strip().replace(" ", "")
-                self.other_2.setText(stripped_text)
-                self.other_2.setCursorPosition(position)
-                if " " in text:
-                    next_tab = self.tab_next.get(self.other_2)
-                    next_tab.setFocus()
-                    next_tab.deselect()
-                    next_tab.end(False)
+        if self.contest and self.contest.call_parse_exchange_on_edit:
+            self.contest.parse_exchange()
 
     def callsign_changed(self) -> None:
         """
@@ -4490,40 +4476,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.callsign.setText(stripped_text)
         self.callsign.setCursorPosition(position)
 
-        if " " in text:
-            if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
-                self.change_mode(stripped_text)
-                return
-            if stripped_text == "OPON":
-                not1mm.actions.OPON(self)
-                self.clearinputs()
-                return
-            if stripped_text == "ROVE":
-                self.get_rover()
-                self.clearinputs()
-                return
-            if stripped_text == "HELP":
-                self.show_help_dialog()
-                self.clearinputs()
-                return
-            if self.is_floatable(stripped_text):
-                self.change_freq(stripped_text)
-                self.clearinputs()
-                return
-            cmd = {}
-            cmd["cmd"] = "LOOKUP_CALL"
-            cmd["call"] = stripped_text
-            if self.lookup_service:
-                self.lookup_service.msg_from_main(cmd)
-            self.next_field.setFocus()
-            if self.contest:
-                if self.use_call_history and hasattr(
-                    self.contest, "check_call_history"
-                ):
-                    self.contest.check_call_history()
-                if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
-                    self.contest.prefill()
-            return
         cmd = {}
         cmd["cmd"] = "CALLCHANGED"
         cmd["call"] = stripped_text
@@ -4544,6 +4496,61 @@ class MainWindow(QtWidgets.QMainWindow):
             and hasattr(self.contest, "populate_history_info_line")
         ):
             self.contest.populate_history_info_line()
+
+    def callsign_command(self) -> None:
+        """Run the callsign that was just typed, ended by a SPACE.
+
+        The callsign box doubles as a command line: a mode, a frequency, or
+        one of the "OPON"/"ROVE"/"HELP" commands.  Anything else is a call,
+        and that just steps into the first exchange field -- looking it up is
+        the focus handler's business, see callsign_commit().
+        """
+        stripped_text = self.callsign.text().upper().strip()
+        if stripped_text in ["CW", "RTTY", "SSB", "FM", "AM", "LSB", "USB"]:
+            self.change_mode(stripped_text)
+            return
+        if stripped_text == "OPON":
+            not1mm.actions.OPON(self)
+            self.clearinputs()
+            return
+        if stripped_text == "ROVE":
+            self.get_rover()
+            self.clearinputs()
+            return
+        if stripped_text == "HELP":
+            self.show_help_dialog()
+            self.clearinputs()
+            return
+        if self.is_floatable(stripped_text):
+            self.change_freq(stripped_text)
+            self.clearinputs()
+            return
+        # Not a command: step into the first exchange field.  The lookup runs
+        # when the callsign loses focus (see entry_focus_out).
+        self.next_field.setFocus()
+
+    def callsign_commit(self) -> None:
+        """Look up the call the operator has left behind in the callsign box.
+
+        Runs on the way out of the field, whether the operator left it with
+        SPACE, TAB or a mouse click, and pre-fills what the contest can from
+        the answer.
+        """
+        text = self.callsign.text().upper()
+        if not text:
+            return
+        self.check_callsign(text)
+        self.check_dupe(text)
+        cmd = {}
+        cmd["cmd"] = "LOOKUP_CALL"
+        cmd["call"] = text
+        if self.lookup_service:
+            self.lookup_service.msg_from_main(cmd)
+        if self.contest:
+            if self.use_call_history and hasattr(self.contest, "check_call_history"):
+                self.contest.check_call_history()
+            if "CQ WW" in self.contest.name or "IARU HF" in self.contest.name:
+                self.contest.prefill()
 
     def change_freq(self, stripped_text: str) -> None:
         """
@@ -4785,8 +4792,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_mode != "CW":
                 self.current_mode = "CW"
                 if self.contest and self.contest.name != "QSO_PARTY_SN":
-                    self.sent.setText("599")
-                    self.receive.setText("599")
+                    self.set_rst("599")
                     self.read_macros()
                     if self.contest.name == "ICWC Medium Speed Test":
                         self.contest.prefill()
@@ -4797,8 +4803,7 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.current_mode != "SSB":
                 self.current_mode = "SSB"
                 if self.contest and self.contest.name != "QSO_PARTY_SN":
-                    self.sent.setText("59")
-                    self.receive.setText("59")
+                    self.set_rst("59")
                 self.read_macros()
                 self.show_CW_macros()
             return
@@ -4824,8 +4829,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ):
             self.current_mode = "RTTY"
             if self.contest and self.contest.name != "QSO_PARTY_SN":
-                self.sent.setText("599")
-                self.receive.setText("599")
+                self.set_rst("599")
             self.read_macros()
             self.show_CW_macros()
 
@@ -5048,12 +5052,11 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             macro_file = "ssbmacros.txt"
 
-        identifier = contest_id(self.contest)
-        if identifier is None:
+        # poll_radio() can ask for macros before a contest is loaded.
+        basename = getattr(self.contest, "BaseName", None)
+        if not basename:
             return ""
-        # The contest's identifier, mangled into something that can be a
-        # directory name ("FD CW" -> "FD_CW").
-        contest_dir = fsutils.USER_DATA_PATH / path_name(identifier)
+        contest_dir = fsutils.USER_DATA_PATH / basename
 
         if not contest_dir.exists():
             os.mkdir(contest_dir)
@@ -5116,6 +5119,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         macro_file = self.get_macro_filename()
+        if not macro_file:
+            return
         try:
             with open(macro_file, "r", encoding="utf-8") as file_descriptor:
                 for line in file_descriptor:

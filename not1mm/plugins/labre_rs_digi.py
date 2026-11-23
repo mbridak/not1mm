@@ -12,6 +12,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import get_logged_band
 
 # The digital modes the sponsor's log checker wants written as one Cabrillo
@@ -52,7 +53,8 @@ class Contest(ContestBase):
         "RcvNr",
         "PTS",
     ]
-    FrameText = ("SNT", "SentNR", "Grid")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "SentNR", "Grid")
     AccessibleNames = ("RST Sent", "", "Sent Grid", "Gridsquare")
     # The first two characters of the received grid, once per band.
     NumMults = 1
@@ -89,10 +91,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports, the sent grid and the received grid; nothing is marked."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
 
     def recalculate_mults(self):
         """The module never marked a multiplier; the count reads the log."""
@@ -151,8 +153,8 @@ class Contest(ContestBase):
         parent.contact["Band"] = get_logged_band(
             str(int(float(packet.get("FREQ", "0.0")) * 1000000))
         )
-        parent.other_1.setText(my_grid)
-        parent.other_2.setText(their_grid)
+        parent.fields.SntNrText.setText(my_grid)
+        parent.fields.RcvNrText.setText(their_grid)
         parent.save_contact()
 
     def populate_history_info_line(self):
@@ -173,5 +175,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Loc1', '')}")

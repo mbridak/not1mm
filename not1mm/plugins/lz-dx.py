@@ -20,6 +20,7 @@ class Contest(ContestBase):
     DisplayName = "LZ DX"
     CabrilloName = "LZ-DX"
     Mode = "BOTH"  # CW SSB BOTH RTTY
+    PointsRules = "MyCountry, 1, LZ, 10, SameContinent, 1, OtherContinent, 3"
     EXCHANGE_HINT = "District or ITU-Zone"
     DupeType = 3  # once per band and mode
     Bands = (3.5, 7, 14, 21, 28)
@@ -39,10 +40,24 @@ class Contest(ContestBase):
         "M2",
         "PTS",
     ]
-    # The hidden serial and the visible district or zone.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("", "Sent", "District/ITU")
-    AccessibleNames = ("", "", "Sent", "District or ITU")
+    # The sent serial and the visible district or zone.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "RcvNrText",
+        625,
+    )
+    FrameText = ("SNT", "RCV", "Sent", "District/ITU")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Sent",
+        "District or ITU",
+    )
     # Every ITU zone once per band, plus the LZ districts for a foreign
     # entrant or the DXCC countries for an LZ one.
     NumMults = 2
@@ -65,28 +80,6 @@ class Contest(ContestBase):
     def _is_lz(self) -> bool:
         """True when the entrant is a Bulgarian station."""
         return self._entity(self.parent.station.get("Call", ""))[0] == "Bulgaria"
-
-    def points(self):
-        """10 points for an LZ station, 1 or 3 by continent otherwise."""
-        parent = self.parent
-        if parent.contact_is_dupe:
-            return 0
-
-        their_country, their_continent = self._entity(parent.contact.get("Call", ""))
-        if not their_country:
-            return 0
-
-        # The entrant's own lookup can fail too; _entity guards that, where the
-        # module left my_continent unbound and points() raised.
-        my_country, my_continent = self._entity(parent.station.get("Call", ""))
-
-        if my_country == "Bulgaria" and their_country == "Bulgaria":
-            return 1
-        if their_country == "Bulgaria":
-            return 10
-        if my_continent != their_continent:
-            return 3
-        return 1
 
     def mult_value(self, slot, contact):
         """A live ITU zone, or the district/country according to the entrant."""
@@ -130,10 +123,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports and the exchange, then mark the two multipliers."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -159,5 +152,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

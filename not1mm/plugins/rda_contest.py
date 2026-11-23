@@ -32,6 +32,7 @@ Cabrillo name:     RDAC
 import logging
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,9 @@ class Contest(ContestBase):
     SendsRTCScore = True
     # The reports, our exchange (a district code from Russia, else a serial)
     # and the received one.
-    FrameText = ("SNT", "SentNR", "Serial or RDA")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    QsoErrorString = "SntNrText_Any_not_Empty, RcvNrText_Any_not_Empty"
+    FrameText = ("SNT", "RCV", "SentNR", "Serial or RDA")
     AccessibleNames = (
         "RST Sent",
         "",
@@ -161,16 +164,20 @@ class Contest(ContestBase):
 
     def prefill(self):
         """Fill our half of the exchange: a district code or the next serial."""
-        if len(self.parent.other_1.text()) == 0:
-            self.parent.other_1.setText(self.my_sent_exchange())
+        if len(self.parent.fields.SntNrText.text()) == 0:
+            self.parent.fields.SntNrText.setText(self.my_sent_exchange())
 
     def set_contact_vars(self):
         """The reports, our exchange, and the received district or serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = self.my_sent_exchange()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        # The operator may have edited the sent box after prefill; fall back
+        # to the computed exchange when it is empty.
+        parent.contact["SentNr"] = (
+            parent.fields.SntNrText.text() or self.my_sent_exchange()
+        )
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         parent.contact["IsMultiplier1"] = 0
         parent.contact["IsMultiplier2"] = 0
         if parent.contact_is_dupe == 0:
@@ -255,88 +262,6 @@ class Contest(ContestBase):
             return 10  # QSO with Russian station
         return 0
 
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        The exchange is our district code or serial *and* theirs, so both
-        entry fields have to be filled before the contact is finished.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                else:
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
-
     def populate_history_info_line(self):
         """Show what call history knows about the station."""
         parent = self.parent
@@ -355,5 +280,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

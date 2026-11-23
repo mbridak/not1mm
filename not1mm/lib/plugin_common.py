@@ -835,9 +835,10 @@ def imp_adif(self):
             )
             return
 
-        # The identifier the log carries -- the same one the main window writes
-        # when a contact is logged live (MainWindow.save_contact), so an
-        # imported log is not distinguishable from one logged on the air.
+        # The Cabrillo name the log carries -- the same one the main window
+        # writes when a contact is logged live (MainWindow.save_contact), so
+        # an imported log is not distinguishable from one logged on the air.
+        # (ContestInstance.ContestName holds the contest's basename instead.)
         this_contact["ContestName"] = self.contest.cabrillo_name
 
         if q.get("SNT"):

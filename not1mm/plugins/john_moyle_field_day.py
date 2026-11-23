@@ -15,6 +15,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import datetime
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import calculate_wpx_prefix, get_logged_band
 from not1mm.lib.plugin_common import contest_time
 
@@ -137,6 +138,7 @@ class Contest(ContestBase):
         241000,
     )
     DefaultContestExchange = "#"
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -201,10 +203,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange, the block the contact belongs to, and its multiplier."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
         # Record the three-hour block on the contact; the log editor shows it.
         parent.contact["MiscText"] = str(_block_from_ts(parent.contact.get("TS", "")))
         self.mark_multipliers()
@@ -228,8 +230,8 @@ class Contest(ContestBase):
             serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def points(self):
         """Phone is one point and CW two; only an Oceania contact scores.

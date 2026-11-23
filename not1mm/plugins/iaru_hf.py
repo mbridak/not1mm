@@ -31,9 +31,13 @@ class Contest(ContestBase):
     SendsRTCScore = True
     # Only the RSTs and the received zone/society are used; the sent exchange
     # is the fixed station setting, so the first extra field stays hidden.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "ITU Zone")
-    AccessibleNames = ("RST Sent", "", "", "I T U Zone")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "ITU Zone")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "I T U Zone",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -86,18 +90,16 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Contest Specific"""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["ZN"] = parent.other_2.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["ZN"] = parent.fields.Exchange1Text.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
 
     def prefill(self):
         """Fill ITU Zone"""
         parent = self.parent
-        if len(parent.other_2.text()) == 0:
-            parent.other_2.setText(str(parent.contact.get("ZN", "")))
-        parent.other_1.setText(str(parent.contest_settings.get("SentExchange", 0)))
+        if len(parent.fields.Exchange1Text.text()) == 0:
+            parent.fields.Exchange1Text.setText(str(parent.contact.get("ZN", "")))
 
     def points(self):
         """
@@ -169,5 +171,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Sect', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('Sect', '')}")

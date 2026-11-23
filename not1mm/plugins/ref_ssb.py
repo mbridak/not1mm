@@ -17,6 +17,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 
 
 def _is_french(prefix) -> bool:
@@ -50,7 +51,8 @@ class Contest(ContestBase):
         "M2",
         "PTS",
     ]
-    FrameText = ("", "Sent", "Dep/Pfx/SN")
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
+    FrameText = ("SNT", "RCV", "Sent", "Dep/Pfx/SN")
     AccessibleNames = ("", "", "Sent", "Department, Prefix or SN")
     # The exchange a French station sends within the band, and the non-French
     # DXCC countries a French entrant works; each once per band.
@@ -144,10 +146,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The exchange; the received half is a department, a prefix or a serial."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text().upper()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text().upper()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -173,5 +175,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Exch1', '')}")

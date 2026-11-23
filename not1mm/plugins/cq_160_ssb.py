@@ -17,14 +17,19 @@ class Contest(ContestBase):
     DisplayName = "CQ 160 SSB"
     CabrilloName = "CQ-160-SSB"
     Mode = "SSB"  # CW SSB BOTH RTTY
+    PointsRules = "/MM, 5, MyCountry, 2, SameContinent, 5, OtherContinent, 10"
     EXCHANGE_HINT = "ST/Prov or DX CQ Zone"
     DupeType = 1  # once per contest
     Bands = (1.8,)
-    # The reports, the fixed sent exchange (other_1 is hidden) and their
+    # The reports and the received exchange; the sent exchange is fixed.
     # state, province or CQ zone.
-    EntryFields = ("field1", "field2", "field4")
-    FrameText = ("SNT", "", "ST/Prov/CQ Zone")
-    AccessibleNames = ("RST Sent", "", "", "Received Exchange")
+    EntryWindowInfo = ("SNTText", 450, "RCVText", 450, "Exchange1Text", 615)
+    FrameText = ("SNT", "RCV", "ST/Prov/CQ Zone")
+    AccessibleNames = (
+        "RST Sent",
+        "RST Received",
+        "Received Exchange",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -43,31 +48,6 @@ class Contest(ContestBase):
     Multiplier1Name = "State/Province/Country"
     MultSqlString = "CountryPrefix"
     IsMult1Per = 4
-
-    def points(self):
-        """10 across continents, 5 within one, 2 inside a country, /MM 5."""
-        parent = self.parent
-        if parent.contact_is_dupe > 0:
-            return 0
-        if "/MM" in parent.contact.get("Call", ""):
-            return 5
-        mine = parent.cty_lookup(parent.station.get("Call", ""))
-        if mine is None:
-            return 0
-        item = mine.get(next(iter(mine)))
-        mycountry = item.get("entity", "")
-        mycontinent = item.get("continent", "")
-        theirs = parent.cty_lookup(parent.contact.get("Call", ""))
-        if theirs is not None:
-            item = theirs.get(next(iter(theirs)))
-            entity = item.get("entity", "")
-            continent = item.get("continent", "")
-            if mycountry.upper() == entity.upper():
-                return 2
-            if mycontinent == continent:
-                return 5
-            return 10
-        return 0
 
     def mult_value(self, slot, contact):
         """The state/province a W/VE station sends, else the DXCC prefix.
@@ -101,10 +81,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The reports, the fixed sent exchange and the received zone."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", "")
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["NR"] = parent.fields.Exchange1Text.text()
         self.mark_multipliers()
 
     def after_recalculate_mults(self):
@@ -131,5 +111,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('State', '')}")
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(f"{result.get('State', '')}")

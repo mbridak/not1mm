@@ -221,6 +221,129 @@ def discover_cases(root: Path = CONTEST_DIR) -> list[Case]:
     return cases
 
 
+class FakeField:
+    """A Qt-free stand-in for ``not1mm.lib.fields.EntryField``."""
+
+    def __init__(self, box, edit):
+        self.box = box
+        self.spec = box.spec
+        self.name = box.spec.name
+        self.edit = edit
+        self.frame = object()
+        self.label = FakeLineEdit(
+            box.label if box.label is not None else box.spec.label
+        )
+
+    def set_label(self, text):
+        self.label.setText(text or "")
+
+    def set_accessible(self, name): ...
+
+    def clear(self):
+        self.edit.setText("")
+
+
+class FakeFields:
+    """The ``Fields`` API for a headless parent.
+
+    It records the boxes ``ContestBase.interface()`` configures, so the shared
+    harness keeps working without a QApplication.
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self.callsign = parent.callsign
+        self._fields: dict[str, FakeField] = {}
+
+    def configure(self, boxes):
+        names = tuple(box.spec.name for box in boxes)
+        if tuple(self._fields) != names:
+            self._fields = {
+                box.spec.name: FakeField(box, FakeLineEdit()) for box in boxes
+            }
+        else:
+            for box in boxes:
+                self._fields[box.spec.name].box = box
+        return False
+
+    def __iter__(self):
+        return iter(self._fields.values())
+
+    def __getattr__(self, name):
+        if name == "CallSignText":
+            return self.__dict__["callsign"]
+        fields = self.__dict__.get("_fields", {})
+        if name in fields:
+            return fields[name].edit
+        raise AttributeError(name)
+
+    def field(self, name):
+        return self._fields.get(name)
+
+    def edit(self, name, default=None):
+        if name in ("callsign", "CallSignText"):
+            return self.callsign
+        field = self._fields.get(name)
+        return field.edit if field is not None else default
+
+    def names(self):
+        return tuple(self._fields)
+
+    def all_names(self):
+        return tuple(self._fields)
+
+    def display_order(self):
+        return (self.callsign,) + tuple(field.edit for field in self._fields.values())
+
+    def all_order(self):
+        return self.display_order()
+
+    def index(self, edit):
+        try:
+            return self.all_order().index(edit)
+        except ValueError:
+            return None
+
+    def field_for_edit(self, edit):
+        for field in self._fields.values():
+            if field.edit is edit:
+                return field
+        return None
+
+    def last_field(self):
+        for field in reversed(self._fields.values()):
+            return field
+        return None
+
+    def last_edit(self):
+        field = self.last_field()
+        return field.edit if field is not None else self.callsign
+
+    def report_edits(self):
+        return tuple(
+            self._fields[name].edit
+            for name in ("SNTText", "RCVText")
+            if name in self._fields
+        )
+
+    def by_column(self, column):
+        for field in self._fields.values():
+            if field.spec.column == column:
+                return field
+        return None
+
+    def clear_exchange(self):
+        for name, field in self._fields.items():
+            if name not in ("SNTText", "RCVText"):
+                field.edit.setText("")
+
+    def apply_font(self, *args, **kwargs): ...
+
+    def apply_palette(self, palette): ...
+
+    def apply_upper(self): ...
+
+
 class ContestHarness:
     """Just enough of the main window to drive a plugin's import and export."""
 
@@ -246,6 +369,8 @@ class ContestHarness:
         self.other_1 = FakeLineEdit()
         self.other_2 = FakeLineEdit()
         self.exch_label = FakeLineEdit()
+        self.fields = FakeFields(self)
+        self.after_fields_rebuilt = lambda: None
         self.contact = {}
         self.contact_is_dupe = 0
         self.dupes = 0

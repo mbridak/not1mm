@@ -63,7 +63,12 @@ def test_multiplier_is_declared_not_hand_counted(headless, monkeypatch):
 
     ok1wc = loaded("ok1wc/K6GTE", headless, monkeypatch).contest
     assert (ok1wc.MultSqlString, ok1wc.IsMult1Per) == ("LASTLETTER", 1)
-    assert ok1wc.mult_sql(1) == "substr(Call,-1)"
+    # A UDC's MultiplierBands defaults to 1 (HF contest bands), so the key
+    # carries its band filter.
+    assert ok1wc.mult_sql(1) == (
+        "CASE WHEN Band IN ('1.8', '3.5', '7.0', '14.0', '21.0', '28.0') "
+        "THEN (substr(Call,-1)) END"
+    )
     assert ok1wc._mult_columns(1) == ("Band",)
     assert ok1wc.get_mults() == {"wpxprefix": 6}
 
@@ -151,20 +156,20 @@ def test_prefill_sent_exchange(headless, monkeypatch):
 
     harness.process_macro = fake_macro
 
-    harness.other_1.setText("")
+    harness.fields.SntNrText.setText("")
     harness.contest_settings["SentExchange"] = "MIKE CA"
     contest.prefill()
-    assert harness.other_1.text() == "MIKE CA"
+    assert harness.fields.SntNrText.text() == "MIKE CA"
 
-    harness.other_1.setText("")
+    harness.fields.SntNrText.setText("")
     harness.contest_settings["SentExchange"] = ""
     contest.prefill()
-    assert harness.other_1.text() == "007"
+    assert harness.fields.SntNrText.text() == "007"
     assert seen["cut"] is False, "the prefill asks for the logged form"
 
-    harness.other_1.setText("TYPED")
+    harness.fields.SntNrText.setText("TYPED")
     contest.prefill()
-    assert harness.other_1.text() == "TYPED", "an operator entry is left alone"
+    assert harness.fields.SntNrText.text() == "TYPED", "an operator entry is left alone"
 
 
 def test_fixtures_stay_within_the_declared_bands(headless, monkeypatch):

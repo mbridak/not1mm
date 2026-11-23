@@ -300,7 +300,7 @@ class DataBase:
         sql_command = (
             "CREATE TABLE IF NOT EXISTS ContestInstance ("
             "ContestID INTEGER PRIMARY KEY,"
-            "ContestName NVARCHAR(10),"
+            "ContestName NVARCHAR(64),"
             "StartDate DATETIME,"
             "OperatorCategory NVARCHAR(20) DEFAULT "
             "'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''',"

@@ -22,6 +22,7 @@ Only the parts that differ from :mod:`not1mm.lib.contest` are here.
 import re
 
 from not1mm.lib.contest import ContestBase, output_cabrillo_line
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.version import __version__
 
 # Rule 6: a UK&CD station is required at one or both ends of a contact for it
@@ -89,6 +90,7 @@ class Contest(ContestBase):
     # kept apart -- the contest's own rule.
     DupeType = 5
     Bands = (3.5,)
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",

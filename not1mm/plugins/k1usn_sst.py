@@ -27,10 +27,13 @@ class Contest(ContestBase):
     SupportsFT8 = True
     SendsRTCScore = True
     # The reports are hidden; only the two exchange fields are shown.
-    EntryFields = ("field3", "field4")
-    FrameText = ("", "Name", "SPC")
-    AccessibleNames = ("", "", "Name", "SPC")
-    NextField = "other_1"
+    EntryWindowInfo = ("NameText", 855, "SectText", 600)
+    QsoErrorString = "NameText_Any_not_Empty, SectText_Any_not_Empty"
+    FrameText = ("Name", "SPC")
+    AccessibleNames = (
+        "Name",
+        "SPC",
+    )
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -63,107 +66,15 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The name and state/province/country, and the multiplier mark."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["Name"] = parent.other_1.text().upper()
-        parent.contact["Sect"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["Name"] = parent.fields.NameText.text().upper()
+        parent.contact["Sect"] = parent.fields.SectText.text().upper()
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
         self.mark_multipliers()
 
     def prefill(self):
         """Nothing to fill: the sent exchange is a fixed setting."""
-
-    def process_esm(self, new_focused_widget=None, with_enter=False):
-        """ESM state machine.
-
-        Both exchange fields -- the name and the SPC -- are needed before the
-        contact can be logged, and both are text.
-        """
-        parent = self.parent
-        if new_focused_widget is not None:
-            parent.current_widget = parent.inputs_dict.get(new_focused_widget)
-
-        for a_button in (
-            parent.F1,
-            parent.F2,
-            parent.F3,
-            parent.F4,
-            parent.F5,
-            parent.F6,
-            parent.F7,
-            parent.F8,
-            parent.F9,
-            parent.F10,
-            parent.F11,
-            parent.F12,
-        ):
-            parent.restore_button_color(a_button)
-
-        buttons_to_send = []
-        if parent.pref.get("run_state"):
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) < 3:
-                    parent.make_button_green(parent.esm_dict["CQ"])
-                    buttons_to_send.append(parent.esm_dict["CQ"])
-                    parent.esm_call_sent = ""
-                elif len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["HISCALL"])
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["HISCALL"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                elif (
-                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
-                ):
-                    self._resend_corrected_call(buttons_to_send)
-                    parent.make_button_green(parent.esm_dict["QRZ"])
-                    buttons_to_send.append(parent.esm_dict["QRZ"])
-                    buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            parent.esm_call_sent = ""
-                            continue
-                        if button == parent.esm_dict.get("HISCALL"):
-                            parent.esm_call_sent = parent.callsign.text()
-                        parent.process_function_key(button)
-        else:
-            if parent.current_widget == "callsign":
-                if len(parent.callsign.text()) > 2:
-                    parent.make_button_green(parent.esm_dict["MYCALL"])
-                    buttons_to_send.append(parent.esm_dict["MYCALL"])
-
-            elif parent.current_widget in ("other_1", "other_2"):
-                if parent.other_1.text() == "" or parent.other_2.text() == "":
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-                elif (
-                    parent.other_1.text().isalpha() and parent.other_2.text().isalpha()
-                ):
-                    parent.make_button_green(parent.esm_dict["EXCH"])
-                    buttons_to_send.append(parent.esm_dict["EXCH"])
-                    buttons_to_send.append("LOGIT")
-                else:
-                    parent.make_button_green(parent.esm_dict["AGN"])
-                    buttons_to_send.append(parent.esm_dict["AGN"])
-
-            if with_enter is True and bool(len(buttons_to_send)):
-                for button in buttons_to_send:
-                    if button:
-                        if button == "LOGIT":
-                            parent.save_contact()
-                            continue
-                        parent.process_function_key(button)
 
     def after_recalculate_mults(self):
         """Refresh the log window after a rescore."""
@@ -195,11 +106,11 @@ class Contest(ContestBase):
             the_packet.get("STATE", "") or the_packet.get("SRX_STRING", "") or "DX"
         ).upper()
         parent.callsign.setText(the_packet.get("CALL", ""))
-        parent.other_1.setText(their_name)
-        parent.other_2.setText(their_spc)
+        parent.fields.NameText.setText(their_name)
+        parent.fields.SectText.setText(their_spc)
         parent.contact["Call"] = the_packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
         parent.contact["Name"] = their_name
         parent.contact["Sect"] = their_spc
         parent.contact["Mode"] = the_packet.get("MODE", "ERR")
@@ -230,7 +141,7 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_1.text() == "":
-                parent.other_1.setText(f"{result.get('Name', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Exch1', '')}")
+            if parent.fields.NameText.text() == "":
+                parent.fields.NameText.setText(f"{result.get('Name', '')}")
+            if parent.fields.SectText.text() == "":
+                parent.fields.SectText.setText(f"{result.get('Exch1', '')}")

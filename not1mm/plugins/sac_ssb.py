@@ -4,6 +4,7 @@ Find rules at: https://www.sactest.net/blog/scandinavian-activity-contest-2026-r
 """
 
 from not1mm.lib.contest import ContestBase
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.ham_utility import band_mhz_of
 
 # cty.dat's primary_pfx for each Scandinavian DXCC entity, which is what the
@@ -48,6 +49,7 @@ class Contest(ContestBase):
     DupeType = 2  # once per band
     Bands = (3.5, 7, 14, 21, 28)
     SendsRTCScore = True
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     DefaultContestExchange = "#"
     # Both halves of rule 8 are one key per band: a Scandinavian entrant
     # counts each DXCC entity, everyone else each prefix number inside a
@@ -162,10 +164,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Contest Specific"""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
 
     def recalculate_mults(self):
         """Mark nothing, as the module did.

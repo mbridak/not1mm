@@ -143,6 +143,9 @@ BANDS: tuple[BandDef, ...] = (
 _UNKNOWN_BAND = BandDef(0.0, 1.0, "unknown", 0.0, 0, 0, 0)
 _BY_BAND_NAME: dict[str, BandDef] = {b.name: b for b in BANDS}
 _BY_BAND_MHZ: dict[float, BandDef] = {b.band_mhz: b for b in BANDS}
+# "40m", "70cm", "1.25m", "6mm", and the "75mc" some files write.
+_BAND_TOKEN = re.compile(r"^\d+(?:\.\d+)?(?:m|cm|mm|mc)$", re.I)
+_BAND_NUMBER = re.compile(r"^\d+(?:\.\d+)?$")
 
 
 def khz2banddef(freq_khz: Decimal, unknown_band=False) -> BandDef | None:
@@ -208,6 +211,46 @@ def get_not1mm_band(band: str) -> float:
     """
     b = _BY_BAND_NAME.get(band)
     return b.band_mhz if b else 0.0
+
+
+def parse_band(token: str) -> float:
+    """A band token as not1mm's canonical MHz, or 0.0 when it is not a band.
+
+    ``40m``, ``70cm`` and ``160M`` are band names.  A bare number is a meter
+    band name first, which is what UDC files mean by ``10`` and ``40``; when
+    the number is not a band name (``7``, ``3.5``, ``420``) it is a frequency
+    in MHz, the spelling N1MM's ``PointsMultByBand`` uses, resolved to the
+    band whose range contains it (``420`` and ``1240`` are 70cm and 23cm).
+
+    Four numbers are both a meter name and a frequency: ``5`` (5m/60m),
+    ``10`` (10m/30m), ``40`` (40m/8m) and ``60`` (60m/5m).  The meter name
+    wins.  For the numeric reading write ``5.0``, ``10.0`` or ``40.0`` (or
+    the band names ``60m``, ``30m``, ``8m``).
+    """
+    text = str(token).strip().casefold()
+    if not text:
+        return 0.0
+    if _BAND_TOKEN.match(text):
+        return get_not1mm_band(text)
+
+    if _BAND_NUMBER.match(text):
+        mhz = get_not1mm_band(text + "m")
+        if mhz:
+            return mhz
+
+    try:
+        mhz = float(text)
+    except ValueError:
+        return 0.0
+    if not 0 < mhz < 1_000_000:
+        return 0.0
+    # A canonical value first ("10.0" is 30m, "18" is 17m), then the band
+    # whose start/end range contains it ("420" is 70cm).
+    band = _BY_BAND_MHZ.get(mhz)
+    if band is not None:
+        return band.band_mhz
+    band = khz2banddef(Decimal(str(mhz)) * 1000)
+    return band.band_mhz if band is not None else 0.0
 
 
 def band_mhz_of(band) -> float:
@@ -349,29 +392,3 @@ def distance_with_latlon(grid1: str, lat2: float, lon2: float) -> float:
     logger.debug("lat1:%d lon1:%d lat2:%d lon2:%d", lat1, lon1, lat2, lon2)
     # lat2, lon2 = gridtolatlon(grid2)
     return round(haversine(lon1, lat1, lon2, lat2))
-
-
-def parse_udc(filename: str) -> dict:
-    """
-    simply parses a n1mm style udc file and returns a dict with key value pairs.
-    """
-
-    udc_contest = {}
-    the_good_stuff = False
-
-    try:
-        with open(filename, "r", encoding="utf-8") as file_descriptor:
-            for line in file_descriptor:
-                if "[CONTEST]" in line.upper():
-                    the_good_stuff = True
-                    continue
-                if "=" in line and the_good_stuff is True:
-                    try:
-                        key, value = line.split("=")
-                        udc_contest[key.strip()] = value.strip()
-                    except ValueError:
-                        ...
-    except FileNotFoundError:
-        logger.debug("UDC file not found.")
-        return {}
-    return udc_contest

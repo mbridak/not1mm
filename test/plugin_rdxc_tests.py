@@ -82,10 +82,12 @@ def _make_entry_ctx(contact=None, is_dupe=0, seen=()):
     if contact is None:
         contact = {}
     ctx = _make_ctx(contact=contact, is_dupe=is_dupe)
-    ctx.sent = FakeLineEdit("599")
-    ctx.receive = FakeLineEdit("599")
-    ctx.other_1 = FakeLineEdit("001")
-    ctx.other_2 = FakeLineEdit("mos")
+    ctx.fields = SimpleNamespace(
+        SNTText=FakeLineEdit("599"),
+        RCVText=FakeLineEdit("599"),
+        SntNrText=FakeLineEdit("001"),
+        RcvNrText=FakeLineEdit("mos"),
+    )
     ctx.database = FakeDatabase(seen)
     return ctx
 
@@ -344,26 +346,26 @@ def test_calc_score_multiplies_points_by_mults(k6gte):
 def test_prefill_sets_zero_padded_serial():
     ctx = _make_ctx()
     ctx.current_sn = 12
-    ctx.other_1 = FakeLineEdit("")
+    ctx.fields = SimpleNamespace(SntNrText=FakeLineEdit(""))
     load_contest("rdxc", ctx).prefill()
-    assert ctx.other_1.text() == "012"
+    assert ctx.fields.SntNrText.text() == "012"
 
 
 def test_prefill_sets_001_when_there_is_no_serial():
     ctx = _make_ctx()
     ctx.current_sn = None
-    ctx.other_1 = FakeLineEdit("")
+    ctx.fields = SimpleNamespace(SntNrText=FakeLineEdit(""))
     load_contest("rdxc", ctx).prefill()
-    assert ctx.other_1.text() == "001"
+    assert ctx.fields.SntNrText.text() == "001"
 
 
 def test_prefill_keeps_existing_value():
     ctx = _make_ctx()
     ctx.current_sn = 12
-    ctx.other_1 = MagicMock()
-    ctx.other_1.text.return_value = "005"
+    ctx.fields = SimpleNamespace(SntNrText=MagicMock())
+    ctx.fields.SntNrText.text.return_value = "005"
     load_contest("rdxc", ctx).prefill()
-    ctx.other_1.setText.assert_not_called()
+    ctx.fields.SntNrText.setText.assert_not_called()
 
 
 def test_qso_line_format():

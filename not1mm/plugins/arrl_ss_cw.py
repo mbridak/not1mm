@@ -13,102 +13,6 @@ from PyQt6 import QtWidgets
 
 from not1mm.lib.contest import ContestBase
 
-# The ARRL/RAC sections: the multipliers, and the only valid received exchange.
-# Anything else means the station worked is not in W/VE and does not score for a
-# W/VE entrant (rule 2.1).
-ARRL_SECTIONS = frozenset(
-    (
-        "CO",
-        "IA",
-        "KS",
-        "MN",
-        "MO",
-        "ND",
-        "NE",
-        "SD",
-        "CT",
-        "EMA",
-        "ME",
-        "NH",
-        "RI",
-        "VT",
-        "WMA",
-        "ENY",
-        "NLI",
-        "NNJ",
-        "NNY",
-        "SNJ",
-        "WNY",
-        "DE",
-        "EPA",
-        "MDC",
-        "WPA",
-        "AL",
-        "GA",
-        "KY",
-        "NC",
-        "NFL",
-        "PR",
-        "SC",
-        "SFL",
-        "TN",
-        "VA",
-        "VI",
-        "WCF",
-        "AR",
-        "LA",
-        "MS",
-        "NM",
-        "NTX",
-        "OK",
-        "STX",
-        "WTX",
-        "EB",
-        "LAX",
-        "ORG",
-        "PAC",
-        "SB",
-        "SCV",
-        "SDG",
-        "SF",
-        "SJV",
-        "SV",
-        "AK",
-        "AZ",
-        "EWA",
-        "ID",
-        "MT",
-        "NV",
-        "OR",
-        "UT",
-        "WWA",
-        "WY",
-        "MI",
-        "OH",
-        "WV",
-        "IL",
-        "IN",
-        "WI",
-        "AB",
-        "BC",
-        "GH",
-        "MB",
-        "NB",
-        "NL",
-        "NS",
-        "ONE",
-        "ONN",
-        "ONS",
-        "PE",
-        "QC",
-        "SK",
-        "TER",
-    )
-)
-
-# The sections as a SQL list, for the multiplier key.
-_SECTIONS_SQL = ",".join(f"'{sect}'" for sect in sorted(ARRL_SECTIONS))
-
 
 class Contest(ContestBase):
     """ARRL Sweepstakes, CW."""
@@ -116,6 +20,7 @@ class Contest(ContestBase):
     DisplayName = "ARRL Sweepstakes CW"
     CabrilloName = "ARRL-SS-CW"
     Mode = "CW"
+    MultWindowType = "ARRL_RAC_Section"
     DupeType = 1  # once per contest
     EXCHANGE_HINT = "Prec Call Check Section"
     SOAPBOX_HINT = """For the Run Exchange macro I’d put:
@@ -125,11 +30,21 @@ See the Contest Specific Notes section of the manual for more info.
 """
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
-    # The four fields are the RSTs, the sent serial and the received exchange.
-    FrameText = ("SNT", "SentNR", "sn prec ck sec")
+    # The four boxes are the RSTs, the sent serial and the received exchange.
+    EntryWindowInfo = (
+        "SNTText",
+        450,
+        "RCVText",
+        450,
+        "SntNrText",
+        625,
+        "Exchange1Text",
+        615,
+    )
+    FrameText = ("SNT", "RCV", "SentNR", "sn prec ck sec")
     AccessibleNames = (
         "RST Sent",
-        "",
+        "RST Received",
         "Sent Number",
         "Serial Number Precident check section",
     )
@@ -148,7 +63,9 @@ See the Contest Specific Notes section of the manual for more info.
         "PTS",
     ]
     # The exchange is "sn prec ck sec", whose spaces are significant.
-    advance_on_space = [True, True, True, False, False]
+    SpaceKeepsFocus = ("SntNrText", "Exchange1Text")
+    # ... and it is one textbox, split into its parts as it is typed.
+    call_parse_exchange_on_edit = True
     # Each ARRL/RAC section once for the whole contest; a "DX" is not a section
     # and is not a multiplier.
     NumMults = 1
@@ -170,7 +87,7 @@ See the Contest Specific Notes section of the manual for more info.
         letter.
         """
         parent = self.parent
-        exchange = parent.other_2.text().upper()
+        exchange = parent.fields.Exchange1Text.text().upper()
         sn = prec = ck = sec = ""
         call = parent.callsign.text()
 
@@ -206,30 +123,39 @@ See the Contest Specific Notes section of the manual for more info.
         parent.exch_label.setText(f"sn:{sn} p:{prec} cl:{call} ck:{ck} sec:{sec}")
         return (sn, prec, ck, sec, call)
 
+    def _sections(self):
+        """The codes of the section list named by MultWindowType."""
+        section = self.section_list
+        return section.codes if section is not None else frozenset()
+
     def points(self):
         """2 points, but only between W/VE stations (rule 2.1)."""
         if self.parent.contact_is_dupe > 0:
             return 0
-        if str(self.parent.contact.get("Sect", "")).upper() not in ARRL_SECTIONS:
+        if str(self.parent.contact.get("Sect", "")).upper() not in self._sections():
             return 0
         return 2
 
     def mult_value(self, slot, contact):
         """The section, when it is a real ARRL/RAC one."""
         sect = str(contact.get("Sect", "")).upper()
-        return sect if sect in ARRL_SECTIONS else None
+        return sect if sect in self._sections() else None
 
     def mult_sql(self, slot):
         """The section as SQL, over the real sections only."""
-        return f"CASE WHEN upper(Sect) IN ({_SECTIONS_SQL}) THEN Sect END"
+        sections = self._sections()
+        if not sections:
+            return None
+        codes = ",".join(f"'{sect}'" for sect in sorted(sections))
+        return f"CASE WHEN upper(Sect) IN ({codes}) THEN Sect END"
 
     def set_contact_vars(self):
         """The exchange, parsed into its parts, and the multiplier."""
         parent = self.parent
         sn, prec, ck, sec, call = self.parse_exchange()
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
         parent.contact["NR"] = sn
         parent.contact["Prec"] = prec
         parent.contact["CK"] = ck
@@ -243,8 +169,8 @@ See the Contest Specific Notes section of the manual for more info.
         serial_nr = str(parent.current_sn).zfill(3)
         if serial_nr == "None":
             serial_nr = "001"
-        if len(parent.other_1.text()) == 0:
-            parent.other_1.setText(serial_nr)
+        if len(parent.fields.SntNrText.text()) == 0:
+            parent.fields.SntNrText.setText(serial_nr)
 
     def cabrillo_qso_line(self, contact):
         """The Sweepstakes line: the operator's own exchange, then the received.
@@ -292,7 +218,7 @@ See the Contest Specific Notes section of the manual for more info.
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(
+            if parent.fields.Exchange1Text.text() == "":
+                parent.fields.Exchange1Text.setText(
                     f" {result.get('CK', '')}{result.get('Sect', '')}"
                 )

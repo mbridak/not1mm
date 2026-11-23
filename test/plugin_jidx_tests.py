@@ -118,10 +118,12 @@ def test_a_contact_that_scores_carries_the_multiplier(plugin):
         contact={"Call": "JA1ABC", "Freq": 14040, "Band": 14.0},
         contact_is_dupe=0,
         station={"Call": "K6GTE"},
-        sent=Field("599"),
-        receive=Field("599"),
-        other_1=Field("3"),
-        other_2=Field("1"),
+        fields=SimpleNamespace(
+            SNTText=Field("599"),
+            RCVText=Field("599"),
+            SntNrText=Field("3"),
+            RcvNrText=Field("1"),
+        ),
         cty_lookup=cty_lookup,
         database=Database(),
     )
@@ -144,10 +146,12 @@ def test_a_dx_dx_contact_carries_no_multiplier(plugin):
         contact={"Call": "DL1ABC", "Freq": 14040, "Band": 14.0},
         contact_is_dupe=0,
         station={"Call": "K6GTE"},
-        sent=Field("599"),
-        receive=Field("599"),
-        other_1=Field("3"),
-        other_2=Field("14"),
+        fields=SimpleNamespace(
+            SNTText=Field("599"),
+            RCVText=Field("599"),
+            SntNrText=Field("3"),
+            RcvNrText=Field("14"),
+        ),
         cty_lookup=cty_lookup,
     )
     load_contest(plugin, app).set_contact_vars()

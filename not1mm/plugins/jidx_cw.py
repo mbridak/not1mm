@@ -20,6 +20,7 @@ Cabrillo name:     JIDX-CW
 """
 
 from not1mm.lib.contest import ContestBase, output_cabrillo_line
+from not1mm.lib.fields import DEFAULT_ENTRY_WINDOW
 from not1mm.lib.plugin_common import get_points
 from not1mm.lib.version import __version__
 
@@ -43,6 +44,7 @@ class Contest(ContestBase):
     DupeType = 2  # once per band
     SendsRTCScore = True
     Bands = (1.8, 3.5, 7, 14, 21, 28)
+    EntryWindowInfo = DEFAULT_ENTRY_WINDOW
     LogInfo = [
         "YYYY-MM-DD HH:MM:SS",
         "Call",
@@ -86,10 +88,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """Contest Specific"""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text()
+        parent.contact["SNT"] = parent.fields.SNTText.text()
+        parent.contact["RCV"] = parent.fields.RCVText.text()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text()
         # A JA-JA or DX-DX contact scores nothing, so it carries no multiplier;
         # the base's marking cannot see that, because Points is set after this.
         if self.points() > 0 and parent.contact.get("NR", ""):

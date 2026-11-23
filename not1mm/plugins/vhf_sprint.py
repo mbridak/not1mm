@@ -36,9 +36,12 @@ class Contest(ContestBase):
     ]
     # Only the two locator fields are shown: the reports are not part of the
     # exchange in this contest.
-    EntryFields = ("field3", "field4")
-    FrameText = ("SNT", "Sent Grid", "Grid")
-    AccessibleNames = ("RST Sent", "", "Sent Grid", "Gridsquare")
+    EntryWindowInfo = ("SntNrText", 625, "RcvNrText", 625)
+    FrameText = ("Sent Grid", "Grid")
+    AccessibleNames = (
+        "Sent Grid",
+        "Gridsquare",
+    )
     NumMults = 1
     Multiplier1Name = "Grid"
     MultSqlString = "NR"
@@ -56,10 +59,10 @@ class Contest(ContestBase):
     def set_contact_vars(self):
         """The locator is the received exchange; the RST fields are hidden."""
         parent = self.parent
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
-        parent.contact["SentNr"] = parent.other_1.text()
-        parent.contact["NR"] = parent.other_2.text().upper()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
+        parent.contact["SentNr"] = parent.fields.SntNrText.text()
+        parent.contact["NR"] = parent.fields.RcvNrText.text().upper()
 
     def points(self):
         """One point a contact below 902 MHz, the distance above it."""
@@ -121,8 +124,8 @@ class Contest(ContestBase):
         parent = self.parent
         parent.callsign.setText(the_packet.get("CALL"))
         parent.contact["Call"] = the_packet.get("CALL", "")
-        parent.contact["SNT"] = parent.sent.text()
-        parent.contact["RCV"] = parent.receive.text()
+        parent.contact["SNT"] = self.report_default()
+        parent.contact["RCV"] = self.report_default()
         my_grid = the_packet.get("MY_GRIDSQUARE", "")
         if my_grid:
             if len(my_grid) > 4:
@@ -143,8 +146,8 @@ class Contest(ContestBase):
         parent.contact["Band"] = get_logged_band(
             str(int(float(the_packet.get("FREQ", "0.0")) * 1000000))
         )
-        parent.other_1.setText(my_grid)
-        parent.other_2.setText(their_grid)
+        parent.fields.SntNrText.setText(my_grid)
+        parent.fields.RcvNrText.setText(their_grid)
         parent.save_contact()
 
     def populate_history_info_line(self):
@@ -165,5 +168,5 @@ class Contest(ContestBase):
         result = parent.database.fetch_call_history(parent.callsign.text())
         if result:
             parent.history_info.setText(f"{result.get('UserText', '')}")
-            if parent.other_2.text() == "":
-                parent.other_2.setText(f"{result.get('Loc1', '')}")
+            if parent.fields.RcvNrText.text() == "":
+                parent.fields.RcvNrText.setText(f"{result.get('Loc1', '')}")
