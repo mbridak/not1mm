@@ -67,6 +67,31 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
 
 ## Recent Changes
 
+- [2026-11-23] Merge pull request #748 from df7cb/udc-multis
+  - Check for a loaded contest before reading macros
+  - Drop KHz suffix from Freq column header
+  - Move OK1WC Memorial from a plugin to a shipped UDC
+- [2026-11-22] Accept both UDC band spellings in one reader
+  - Identify a contest by its definition's basename
+  - Score the UDC multiplier rules
+  - Build the Cabrillo QSO line from a CabrilloString
+- [2026-11-21] Read .sec section lists by explicit file name
+  - Score contests from a PointsRules declaration
+- [2026-11-20] Load contests from UDC files, and ship the Silent Key Memorial
+  - Read and validate UDC files, and build a contest from one
+  - Document the class-based plugin and the named entry window
+- [2026-11-19] Fill the declared columns and validate the multiplier mapping
+  - Add optional per-box key-binding contexts
+  - Remove the legacy entry-window layer and make SPACE per-box
+  - Migrate the last entry-window shapes to named fields
+  - Migrate the two-box entry-window contests to named fields
+  - Migrate the three-box contests and derive the lookup/ESM fields
+- [2026-11-18] Drive ESM from UDC's QsoErrorString
+  - Migrate the special all-four contests to named fields
+  - Migrate the standard entry-window contests to named fields
+  - Migrate the pilot contests to named entry fields
+  - Build the entry window from the contest's fields
+- [2026-11-17] Refactor space and tab handling
 - [2026-11-19] @mbridak Fix: Prevents undocked windows from clearing their display flags when the mai...
   - @mbridak Fix: Segfault on quit when TCI is enabled (VFO window's TCI client is never c...
   - @mbridak Fix: Ensure check window database is accessible before updating current contest. Fixes #747
@@ -134,6 +159,8 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   - Delete .github/workflows/python-package.yml
   - @mbridak Fix: Add support for DARC VHF exchange format in ADIF generation
   - @mbridak disable socket draining in rigctld_command Fixes #738
+- [2026-11-08] Fixed contests: Now accepts the filename in export
+  - Add: Ask for the log export file name with a save dialog (#445)
 - [2026-11-06] Merge pull request #735 from DJLax5/fix-voice-samplerate
   - Add audio resampling and play-back at the native sampling rate of the desired output sound devices
 - [2026-11-05] Merge pull request #732 from DJLax5/issue-717-band-memory
@@ -182,12 +209,6 @@ generated, 'cause I'm lazy, list of those who've submitted PR's.
   - Merge pull request #711 from rxcomm/na-sprint
   - Fix Cabrillo export crash on QSO without exchange (#715)
   - Make SPOT_DX key action use MainWindow.spot_dx (#718)
-- [2026-09-25] This commit adds support for a new contest, the NA Sprint. Rules for the contest are a...
-- [2026-10-30] Merge pull request #709 from microphonon/statistics
-  - add CTY ZN breakdown
-- [2026-10-29] Merge pull request #708 from microphonon/qso_party
-- [2026-10-28] fix qso parties
-  - @mbridak Fix: Enable socket draining and improve logging format in rigctld_command and...
 
 
 See [CHANGELOG.md](CHANGELOG.md) for prior changes.
