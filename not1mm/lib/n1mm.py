@@ -209,6 +209,7 @@ class N1MM:
                 radio_socket = socket.socket(
                     family=socket.AF_INET, type=socket.SOCK_DGRAM
                 )
+                radio_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                 logger.debug(
                     "********* %s", f"{ip_address} {int(port)} {bytes_to_send}"
                 )
