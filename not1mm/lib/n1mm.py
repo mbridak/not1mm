@@ -176,7 +176,8 @@ class N1MM:
 
     def send_score(self):
         """Send score"""
-        self._send(self.score_port, self.score_report, "scoreinfo")
+        # self._send(self.score_port, self.score_report, "scoreinfo")
+        self._send(self.score_port, self.score_report, "dynamicresults")
 
     def send_realtime_score(self):
         """Send score"""
