@@ -96,7 +96,9 @@ class Contest(ContestBase):
         parent = self.parent
         parent.contact["SNT"] = parent.fields.SNTText.text()
         parent.contact["RCV"] = parent.fields.RCVText.text()
-        parent.contact["ZN"] = parent.fields.Exchange1Text.text()
+        zone = parent.fields.Exchange1Text.text().strip()
+        parent.contact["ZN"] = zone
+        parent.contact["NR"] = zone  # feeds RcvNr
         parent.contact["SentNr"] = parent.contest_settings.get("SentExchange", 0)
 
     def recalculate_mults(self):
