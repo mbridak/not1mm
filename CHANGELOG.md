@@ -1,5 +1,7 @@
 # Changelog
 
+- [2026-11-25] @mbridak Enable broadcast for radio_socket in N1MM class
+  - @mbridak Fix crash on close with cluster window.
 - [2026-11-23] Merge pull request #749 from df7cb/udc
   - Label every entry box when FrameText leaves a label out
   - Use the declared entry boxes in the report and exchange actions
