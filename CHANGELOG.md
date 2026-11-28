@@ -1,6 +1,9 @@
 # Changelog
 
-- [2026-11-25] @mbridak Update send_score method to use dynamicresults instead of scoreinfo
+- [2026-11-27] @mbridak Fix spot management in BandMapWindow for improved performance. Fixes 100% CPU...
+- [2026-11-25] Merge pull request #750 from microphonon/CQWW
+  - fix logging bug
+  - @mbridak Update send_score method to use dynamicresults instead of scoreinfo
   - @mbridak Enable broadcast for radio_socket in N1MM class
   - @mbridak Fix crash on close with cluster window.
 - [2026-11-23] Merge pull request #749 from df7cb/udc
@@ -3094,9 +3097,3 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
-- [2023-02-09] trim
-  - remove
-  - hide crap
-  - Relative reference to images.
-  - Add pyc files.
-  - first commit
