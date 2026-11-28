@@ -1,5 +1,6 @@
 # Changelog
 
+- [2026-11-28] @mbridak Fixed bandmap not expiring old spots.
 - [2026-11-27] @mbridak Fix spot management in BandMapWindow for improved performance. Fixes 100% CPU...
 - [2026-11-25] Merge pull request #750 from microphonon/CQWW
   - fix logging bug
@@ -3097,3 +3098,9 @@
   - Add some dots.
   - Renamed dotindicators. center alignment for bands.
   - Add default window size. and others.
+- [2023-02-09] trim
+  - remove
+  - hide crap
+  - Relative reference to images.
+  - Add pyc files.
+  - first commit
