@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 PIXELSPERSTEP = 10
 UPDATE_INTERVAL = 2000
+REDRAW_INTERVAL = 200
 CLEAR_FREQ = 0.1  # 100 Hz
 
 
@@ -297,7 +298,7 @@ class Database:
         )
         self.db.commit()
 
-    def delete_spots(self, minutes: int) -> None:
+    def delete_spots(self, minutes: int) -> int:
         """
         Delete spots older than the specified number of minutes.
 
@@ -308,12 +309,14 @@ class Database:
 
         Returns
         -------
-        None
+        int
+        The number of rows deleted.
         """
         self.cursor.execute(
             "delete from spots where ts < datetime('now', ?) and comment not like '%MARKED%';",
             (f"-{minutes} minutes",),
         )
+        return self.cursor.rowcount
 
     def delete_marks(self) -> None:
         """Delete marked spots."""
@@ -396,6 +399,10 @@ class BandMapScene(QtWidgets.QGraphicsScene):
             action.setChecked(True)
 
         menu.exec(event.screenPos())
+        # Any of the Confirm/Mark/Unmark/Delete actions mutate the spot
+        # database without going through msg_from_main, so schedule a
+        # repaint to reflect the change.
+        self.parent.request_update()
 
 
 class BandMapWindow(QDockWidget):
@@ -471,9 +478,14 @@ class BandMapWindow(QDockWidget):
         self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
         self.freq = 0.0
         self.keepRXCenter = False
+        self._dirty = False
         self.update_timer = QtCore.QTimer()
         self.update_timer.timeout.connect(self.update_station_timer)
         self.update_timer.start(UPDATE_INTERVAL)
+        self.redraw_timer = QtCore.QTimer()
+        self.redraw_timer.setSingleShot(True)
+        self.redraw_timer.setInterval(REDRAW_INTERVAL)
+        self.redraw_timer.timeout.connect(self.update_stations)
         self.setDarkMode()
         self.update()
         self.request_workedlist()
@@ -530,7 +542,7 @@ class BandMapWindow(QDockWidget):
             self.spots.addspot(
                 spot, clear_freq=self.settings.get("bandmap_spots_clear_freq", False)
             )
-            self.update_stations()
+            self.request_update()
             return
         if packet.get("cmd", "") == "MARKDX":
             dx = packet.get("dx", "")
@@ -547,7 +559,7 @@ class BandMapWindow(QDockWidget):
                 "comment": comment,
             }
             self.spots.addspot(spot, clear_freq=True)
-            self.update_stations()
+            self.request_update()
             return
 
         if packet.get("cmd", "") == "FINDDX":
@@ -566,7 +578,7 @@ class BandMapWindow(QDockWidget):
             self.worked_list = packet.get("worked", {})
             self.dupe_type = packet.get("dupe_type", 2)
             logger.debug("%s", f"{self.worked_list}")
-            self.update_stations()
+            self.request_update()
             return
         if packet.get("cmd", "") == "CALLCHANGED":
             call = packet.get("call", "")
@@ -625,9 +637,16 @@ class BandMapWindow(QDockWidget):
         cmd["cmd"] = "GETWORKEDLIST"
         self.message.emit(cmd)
 
+    def request_update(self):
+        """Schedule a scene rebuild, coalescing bursts of incoming spots
+        into a single redraw instead of one full rebuild per spot."""
+        self._dirty = True
+        self.redraw_timer.start()
+
     def update_station_timer(self):
-        """doc"""
-        self.update_stations()
+        """Periodically age out old spots, repainting only when needed."""
+        if self.spot_aging() or self._dirty:
+            self.update_stations()
 
     def update(self):
         """doc"""
@@ -778,7 +797,6 @@ class BandMapWindow(QDockWidget):
         if self.active is False or not self.isVisible():
             return
         self.clear_all_callsign_from_scene()
-        self.spot_aging()
         step, _digits = self.determine_step_digits()
 
         result = self.spots.getspotsinband(self.currentBand.start, self.currentBand.end)
@@ -854,6 +872,8 @@ class BandMapWindow(QDockWidget):
                 min_y = text_y + text.boundingRect().height() / 2
                 self.textItemList.append(text)
 
+        self._dirty = False
+
     def determine_step_digits(self):
         """doc"""
         zoom = self.settings.get("bandmap_zoom", self.default_zoom)
@@ -877,10 +897,11 @@ class BandMapWindow(QDockWidget):
             self.currentBand = band2banddef(band, unknown_band=True)
             self.update()
 
-    def spot_aging(self) -> None:
-        """Delete spots older than age time."""
+    def spot_aging(self) -> bool:
+        """Delete spots older than age time. Return True if any were removed."""
         if self.agetime:
-            self.spots.delete_spots(self.agetime)
+            return self.spots.delete_spots(self.agetime) > 0
+        return False
 
     def clear_all_callsign_from_scene(self) -> None:
         """Remove callsigns from the scene."""
@@ -901,10 +922,12 @@ class BandMapWindow(QDockWidget):
     def clear_spots(self) -> None:
         """Delete all spots from the database."""
         self.spots.delete_spots(0)
+        self.request_update()
 
     def clear_marked(self) -> None:
         """Delete all marked spots."""
         self.spots.delete_marks()
+        self.request_update()
 
     def spot_aging_changed(self) -> None:
         """Called when spot aging spinbox is changed."""
